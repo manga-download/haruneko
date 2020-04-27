@@ -1,0 +1,22 @@
+{
+  "name": "hakuneko-dev",
+  "version": "1.0.0",
+  "description": "HakuNeko",
+  "license": "Unlicense",
+  "homepage": "https://git.io/hakuneko",
+  "devDependencies": {
+    "@types/chrome": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "nw": "0.45.4-sdk",
+    "typescript": "latest"
+  },
+  "scripts": {
+    "postinstall": "cd static && npm install",
+    "build": "tsc --build && cp -r ./static/* ./build",
+    "start": "npm run build && nw ./build",
+    "build:web": "",
+    "deploy:web": ""
+  }
+}

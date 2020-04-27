@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HakuNeko</title>
+        <script>
+            //const axios = require('axios');
+
+            async function wait(delay) {
+                return new Promise(resolve => setTimeout(resolve, delay));
+            }
+
+            function print(text) {
+                console.log(text);
+                let li = document.createElement('li');
+                li.innerText = text;
+                document.getElementById('events').appendChild(li);
+            }
+
+            async function fetchUI(url, script) {
+                //
+                return new Promise((resolve, reject) => {
+                    let cloudflare = `
+                        new Promise(resolve => {
+                            let code = document.querySelector('.cf-error-code');
+                            code = (code ? code.innerText : null);
+                            let message = document.querySelector('h2[data-translate]');
+                            message = (message && message.nextElementSibling ? message.nextElementSibling.innerText : null);
+                            let error = (code ? 'CF Error ' + code + ' => ' + message : null);
+                
+                            let meta = document.querySelector('meta[http-equiv="refresh"][content*="="]');
+                            let cf = document.querySelector('form#challenge-form');
+                
+                            resolve({
+                                error: code,
+                                redirect: (meta || cf)
+                            });
+                        });
+                    `;
+
+                    nw.Window.open(url, {
+                        position: 'center',
+                        show: false // true
+                    }, win => {
+                        win.on('loaded', async () => {
+                            console.log('LOADED');
+                            let check = await win.eval(null, cloudflare);
+                            console.log('REDIRECTING:', check);
+                            if(!check.error && !check.redirect) {
+                                let result = await win.eval(null, script);
+                                console.log('RESULT', result);
+                                win.close(true);
+                                resolve(result);
+                            }
+                        });
+                    });
+                });
+            }
+
+
+            async function testFetchHeaders() {
+                chrome.webRequest.onBeforeSendHeaders.addListener(details => {
+                    /* remove user agent header ...
+                    for (var i = 0; i < details.requestHeaders.length; ++i) {
+                        if (details.requestHeaders[i].name === 'User-Agent') {
+                        details.requestHeaders.splice(i, 1);
+                        break;
+                        }
+                    }
+                    */
+                    // [ { name: 'X-Referer', value: 'foo' }, { name: 'user-agent', value: 'bar' } ]
+                    /*
+                    let headers = details.requestHeaders.reduce((accumulator, item) => {
+                        accumulator[item.name.toLowerCase()] = item.value;
+                        return accumulator;
+                    }, {});
+                    */
+                    _setHeader(details.requestHeaders, 'User-Agent', 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)');
+                    _setHeader(details.requestHeaders, 'Referer', 'https://hakuneko.download');
+                    _setHeader(details.requestHeaders, 'Origin', 'hakuneko.download');
+                    _setHeader(details.requestHeaders, 'Cookie', 'adult=1');
+                    console.log('HEADERS:', details.requestHeaders);
+                    return {
+                        requestHeaders: details.requestHeaders
+                    };
+                }, { urls: [ '<all_urls>', '*://www.evil.com/*' ] }, [ 'blocking' /* sync request required for header modification */, 'requestHeaders', 'extraHeaders' /* allow change referer, origin, cookie */ ]);
+                let response = await fetch('https://postman-echo.com/get', {
+                    method: 'GET',
+                    referrer: 'https://hakuneko.download',
+                    headers: {
+                        'user-agent': 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)',
+                        //'referer': 'https://hakuneko.download',
+                        'origin': 'hakuneko.download',
+                        'cookie': 'adult=1',
+                        'x-foo': 'bar'
+                    }
+                });
+                let data = await response.json();
+
+                // assertions
+                if(data.headers['user-agent'] === 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)'
+                    && data.headers['referer'] === 'https://hakuneko.download'
+                    && data.headers['origin'] === 'hakuneko.download'
+                    && data.headers['cookie'] === 'adult=1'
+                    && data.headers['x-foo'] === 'bar'
+                ) {
+                    console.log('testFetchHeaders()', 'SUCCESS');
+                } else {
+                    console.error('testFetchHeaders()', 'FAILED');
+                }
+                /*
+                let data = await axios.get( 'https://postman-echo.com/get', {
+                    //url: 'https://postman-echo.com/get',
+                    headers: {
+                        'user-agent': 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)',
+                        //'referer': 'https://hakuneko.download',
+                        'origin': 'hakuneko.download',
+                        'cookie': 'adult=1',
+                        'x-foo': 'bar'
+                    }
+                    // merge cookies... ?
+                });
+                console.log('testFetchHeaders()', data.data);
+                */
+            }
+
+            async function testFetchBrowser() {
+                let script = `
+                    new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            try {
+                                resolve([...document.querySelectorAll('div#image a img')].map(img => img.src));
+                            } catch(error) {
+                                reject(error);
+                            }
+                        }, 2500);
+                    });
+                `;
+                let data = await fetchUI('https://www.japscan.co/lecture-en-ligne/the-ghostly-doctor/205/', script);
+
+                // assertions
+                if(data.length === 12) {
+                    console.log('testFetchBrowser()', 'SUCCESS');
+                } else {
+                    console.error('testFetchBrowser()', 'FAILED');
+                }
+            }
+
+            async function testFetchCORS() {
+                chrome.webRequest.onHeadersReceived.addListener(details => {
+                        let uri = new URL(details.url);
+                        
+                        /*
+                         * Some video sreaming sites (Streamango, OpenVideo) using 'X-Redirect' header instead of 'Location' header,
+                         * but fetch API only follows 'Location' header redirects => assign redirect to location
+                         */
+                        let redirect = details.responseHeaders['X-Redirect'] || details.responseHeaders['x-redirect'];
+                        if(redirect) {
+                            details.responseHeaders['Location'] = redirect;
+                        }
+                        if(uri.hostname.includes('mp4upload')) {
+                            /*
+                            *details.responseHeaders['Access-Control-Allow-Origin'] = '*';
+                            *details.responseHeaders['Access-Control-Allow-Methods'] = 'HEAD, GET';
+                            */
+                            details.responseHeaders['Access-Control-Expose-Headers'] = ['Content-Length'];
+                        }
+                        return {
+                            cancel: false,
+                            responseHeaders: details.responseHeaders
+                        };
+                    }, {
+                        urls: [ '<all_urls>' ]
+                    }
+                );
+            }
+
+            async function testInterceptRequestHeaders() {
+                chrome.webRequest.onBeforeRequest.addListener(details => {
+                        //console.log('onBeforeRequest:', details.url);
+                        return {
+                            cancel: false,
+                            requestHeaders: details.requestHeaders
+                        };
+                    }, { urls: ["<all_urls>"] }
+                );
+            }
+
+            async function testInterceptResponseHeaders() {
+                //
+            }
+
+            async function testProxyServer() {
+                // get IP from remote server
+                // assert remote IP is proxy IP
+            }
+
+            async function testProtocolHandler() {
+                // register protocol handler
+                // fetch data for custom handler
+                // assert response is from registered protocol handler
+            }
+
+            async function main() {
+                nw.Window.get().showDevTools();
+
+                print('Checking for updates ...');
+                await wait(1000);
+                print('No new updates found');
+                await wait(500);
+                print('Launching UI ...');
+                await wait(500);
+
+                // TEST CASE: Add Headers in Request
+                await testFetchHeaders();
+
+                // TEST CASE: Fetch via Browser and inject Script
+                await testFetchBrowser();
+
+                // TEST CASE: CORS Access-Control-Allow-Origin
+                await testFetchCORS();
+
+                // TEST CASE: Intercept Request (Headers)
+                await testInterceptRequestHeaders();
+
+                // TEST CASE: Intercept Response (Headers)
+                await testInterceptResponseHeaders();
+
+                // TEST CASE: Proxy Server
+                await testProxyServer();
+
+                // TEST CASE: Custom Protocol Handler
+                await testProtocolHandler();
+
+                // TEST CASE: Global Cloudflare Bypass
+
+
+                //window.location = new URL('/src/ui/index.html');
+            }
+
+            document.addEventListener('DOMContentLoaded', main);
+        </script>
+    </head>
+    <body>
+        <ul id="events"></ul>
+        <a href="https://japscan.co">JapScan</a>
+    </body>
+</html>
