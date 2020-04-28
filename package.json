@@ -4,6 +4,10 @@
   "description": "HakuNeko",
   "license": "Unlicense",
   "homepage": "https://git.io/hakuneko",
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest"
+  },
   "devDependencies": {
     "@types/chrome": "latest",
     "@types/node": "latest",

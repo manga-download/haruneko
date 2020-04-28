@@ -4,7 +4,9 @@
         "module": "ES2020",
         "outDir": "build",
         "rootDir": "src",
-        "sourceMap": true
+        "sourceMap": true,
+        "removeComments": true,
+        "moduleResolution": "node"
     },
     "include": [
         "src/**/*"

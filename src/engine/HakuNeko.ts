@@ -1,8 +1,8 @@
-interface IHakuNeko {
+export interface IHakuNeko {
     //
 }
 
-export default class HakuNeko implements IHakuNeko {
+export class HakuNeko implements IHakuNeko {
 
     constructor() {
         //

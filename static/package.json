@@ -7,8 +7,5 @@
         "position": "center",
         "width": 1280,
         "height": 720
-    },
-    "dependencies": {
-        "react": "latest"
     }
 }
