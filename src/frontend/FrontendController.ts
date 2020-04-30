@@ -29,7 +29,7 @@ export class FrontendController implements IFrontendController {
             let hook = document.querySelector(frontend.selector);
             hook.innerHTML = '';
             // TODO: dynamically load and initialize the frontend (from settings)
-            let file = frontend.path.replace('{id}', 'playground');
+            let file = frontend.path.replace('{id}', 'classic'); // 'playground'
             (await import(file)).default(hook);
         } catch(error) {
             console.error('Failed to load frontend!', error);

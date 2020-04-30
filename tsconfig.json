@@ -1,8 +1,15 @@
 {
     "compilerOptions": {
+        "types": [
+            "node",
+            "chrome",
+            "react",
+            "react-dom"
+        ],
+        "jsx": "react",
         "target": "ES2020",
         "module": "ES2020",
-        "outDir": "build",
+        "outDir": "build.web",
         "rootDir": "src",
         "sourceMap": true,
         "removeComments": true,

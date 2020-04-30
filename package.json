@@ -1,26 +1,26 @@
 {
-  "name": "hakuneko-dev",
-  "version": "1.0.0",
-  "description": "HakuNeko",
+  "name": "hakuneko",
+  "main": "main.js",
+  "description": "Manga, Anime & Novel Downloader",
   "license": "Unlicense",
   "homepage": "https://git.io/hakuneko",
-  "dependencies": {
-    "react": "latest",
-    "react-dom": "latest"
-  },
   "devDependencies": {
     "@types/chrome": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "nw": "0.45.4-sdk",
+    "serve": "latest",
     "typescript": "latest"
   },
   "scripts": {
-    "postinstall": "cd static && npm install",
-    "build": "tsc --build && cp -r ./static/* ./build",
-    "start": "npm run build && nw ./build",
-    "build:web": "",
-    "deploy:web": ""
+    "build:app": "node ./build.app.js",
+    "build:web": "tsc --build && cp -r ./static/* ./build.web/",
+    "deploy:web": "",
+    "serve": "serve ./build.web",
+    "start": "npm run build:app && npm run build:web && nw ./build.app"
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.0"
   }
 }
