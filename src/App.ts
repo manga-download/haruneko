@@ -1,6 +1,5 @@
-import Playground from './playground/Playground.js';
-import { IHakuNeko, HakuNeko } from './engine/HakuNeko.js';
-import { IFrontendController, FrontendController } from './frontend/FrontendController.js';
+import { IHakuNeko, HakuNeko } from './engine/HakuNeko';
+import { IFrontendController, FrontendController } from './frontend/FrontendController';
 
 declare global {
     interface Window {
@@ -15,6 +14,5 @@ declare global {
 //gui.Window.get().
 nw.Window.get().showDevTools();
 
-window.Playground = Playground;
 window.HakuNeko = new HakuNeko();
 window.Frontend = new FrontendController();

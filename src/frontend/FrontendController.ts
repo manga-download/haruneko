@@ -1,36 +1,42 @@
-const frontend = {
-    selector: '#hakuneko',
-    path: './{id}/Initialize.js'
-};
+import { IFrontendInfo, IFrontendModule } from './IFrontend';
+import { Info as InfoClassic } from './classic/Frontend.Info';
+import { Info as InfoPlayground } from './playground/Frontend.Info';
 
-export interface IFrontend {
-    id: string;
-    label: string;
-    description: string;
-}
+const frontendSelector: string = '#hakuneko';
+const frontendList: IFrontendInfo[] = [
+    InfoClassic,
+    InfoPlayground
+];
 
 export interface IFrontendController {
-    AvailableFrontends: IFrontend[];
+    AvailableFrontends: IFrontendInfo[];
     Initialize: () => Promise<void>;
 }
 
 export class FrontendController implements IFrontendController {
     
     constructor() {
-        document.addEventListener('DOMContentLoaded', this.Initialize);
+        document.addEventListener('DOMContentLoaded', this.Initialize.bind(this));
+        // TODO: listen to settings controller when the frontend is changed
     }
 
-    public get AvailableFrontends() {
-        return [];
+    public get AvailableFrontends(): IFrontendInfo[] {
+        return frontendList;
     }
 
-    public async Initialize() {
+    private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
+        let file = frontendList.find(item => item.ID === id).ModuleFile;
+        return ((await import(file)) as IFrontendModule);
+    }
+
+    public async Initialize(): Promise<void> {
         try {
-            let hook = document.querySelector(frontend.selector);
+            // TODO: get selected frontend from settings controller
+            let selectedFrontendID = 'classic'; // 'playground'
+            let frontend = await this.GetFrontendModuleByID(selectedFrontendID);
+            let hook = document.querySelector(frontendSelector);
             hook.innerHTML = '';
-            // TODO: dynamically load and initialize the frontend (from settings)
-            let file = frontend.path.replace('{id}', 'classic'); // 'playground'
-            (await import(file)).default(hook);
+            frontend.Render(hook);
         } catch(error) {
             console.error('Failed to load frontend!', error);
         }

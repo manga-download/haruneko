@@ -23,7 +23,7 @@ const params = {
 
 function getApplicationURL() {
     // from command line args (e.g. development)
-    //return path.join('..', 'build.web', 'index.html');
+    //return path.join('.', 'www', 'index.html');
     return 'http://localhost:5000';
     // for production
     //return 'https://hakuneko.app';

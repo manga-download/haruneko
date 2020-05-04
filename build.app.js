@@ -18,6 +18,14 @@ const files = [
     'main.js'
 ];
 
+async function generateIndexFrontends() {
+    //
+}
+
+async function generateIndexPlugins() {
+    //
+}
+
 (async function main() {
     await fs.ensureDir(target);
     for(let file of files) {

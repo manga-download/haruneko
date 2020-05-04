@@ -4,23 +4,32 @@
   "description": "Manga, Anime & Novel Downloader",
   "license": "Unlicense",
   "homepage": "https://git.io/hakuneko",
+  "dependencies": {
+    "fs-extra": "^9.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
   "devDependencies": {
     "@types/chrome": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "html-webpack-plugin": "latest",
     "nw": "0.45.4-sdk",
-    "serve": "latest",
-    "typescript": "latest"
+    "parcel-bundler": "latest",
+    "ts-loader": "latest",
+    "typescript": "latest",
+    "webpack": "latest",
+    "webpack-cli": "latest",
+    "webpack-dev-server": "latest"
   },
   "scripts": {
     "build:app": "node ./build.app.js",
-    "build:web": "tsc --build && cp -r ./static/* ./build.web/",
-    "deploy:web": "",
-    "serve": "serve ./build.web",
-    "start": "npm run build:app && npm run build:web && nw ./build.app"
-  },
-  "dependencies": {
-    "fs-extra": "^9.0.0"
+    "build:tsc": "tsc --build",
+    "build:parcel": "parcel build ./src/index.html ./src/frontend/classic/Frontend.tsx ./src/frontend/playground/Frontend.tsx --target browser --out-dir ./build.www",
+    "build:webpack": "webpack && cp ./src/index.html ./build.www/index.html",
+    "start": "npm run build:app && nw ./build.app",
+    "start:parcel": "parcel serve ./src/index.html ./src/frontend/classic/Frontend.tsx ./src/frontend/playground/Frontend.tsx --target browser --out-dir ./build.www --port 5000",
+    "start:webpack": "webpack-dev-server"
   }
 }

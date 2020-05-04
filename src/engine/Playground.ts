@@ -1,4 +1,4 @@
-import Headers from './Headers.js';
+import Headers from './Headers';
 
 async function Wait(delay: number) {
     return new Promise(resolve => setTimeout(resolve, delay));
@@ -11,14 +11,20 @@ function Print(message: string) {
     document.getElementById('events').appendChild(li);
 }
 
-export default {
+export interface IPlayground {
+    About: () => Promise<void>;
+    FetchHeadersTest: () => Promise<void>;
+}
+
+export class Playground implements IPlayground {
+
     async About(): Promise<void> {
         let info = [
             'Platform: ' + process.platform,
             'NW.js: ' + process.versions['node-webkit']
         ].join('\n');
         alert(info);
-    },
+    }
 
     async FetchHeadersTest(): Promise<void> {
         chrome.webRequest.onBeforeSendHeaders.addListener(details => {

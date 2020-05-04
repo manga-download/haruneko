@@ -1,3 +1,5 @@
+import { IFrontendModule } from '../IFrontend'
+
 function CreateItem(label: string, callback: () => void): HTMLLIElement {
     let anchor = document.createElement('a');
     anchor.href = '#';
@@ -28,10 +30,13 @@ function CreateApp(): HTMLElement[] {
     return [header, list];
 }
 
-export default async function (root: HTMLElement): Promise<void> {
-    // artificial delay to make loading screen visible
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    for(let element of CreateApp()) {
-        root.appendChild(element);
+export default class Classic implements IFrontendModule {
+
+    async Render(root: Element): Promise<void> {
+        // artificial delay to make loading screen visible
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        for(let element of CreateApp()) {
+            root.appendChild(element);
+        }
     }
 }
