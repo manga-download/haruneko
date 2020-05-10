@@ -1,6 +1,6 @@
 import { IFrontendInfo, IFrontendModule } from './IFrontend';
-import { Info as InfoClassic } from './classic/Frontend.Info';
-import { Info as InfoPlayground } from './playground/Frontend.Info';
+import { Info as InfoClassic } from './classic/FrontendInfo';
+import { Info as InfoPlayground } from './playground/FrontendInfo';
 
 const frontendSelector: string = '#hakuneko';
 const frontendList: IFrontendInfo[] = [
@@ -26,7 +26,8 @@ export class FrontendController implements IFrontendController {
 
     private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
         let file = frontendList.find(item => item.ID === id).ModuleFile;
-        return ((await import(file)) as IFrontendModule);
+        let module = await import(file);
+        return module.default as IFrontendModule;
     }
 
     public async Initialize(): Promise<void> {

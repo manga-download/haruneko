@@ -2,7 +2,7 @@ import { IFrontendModule } from '../IFrontend'
 const React = require('react');
 const ReactDOM = require('react-dom');
 
-export default class Classic implements IFrontendModule {
+ class Classic implements IFrontendModule {
 
     async Render(root: Element): Promise<void> {
         // artificial delay to make loading screen visible
@@ -10,3 +10,5 @@ export default class Classic implements IFrontendModule {
         ReactDOM.render(<strong>HakuNeko Frontend Classic (React)</strong>, root);
     }
 }
+
+export default new Classic();

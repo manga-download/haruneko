@@ -1,26 +1,25 @@
 const path = require('path');
 const fs = require('fs-extra');
 const config = require('./package.json');
+const argv = require('yargs').argv;
 
+    // TODO: apply current branch ...
+const baseURL = argv.url || `https://manga-download.github.io/hakuneko-nw/${'master'}`;
 const meta = {
     name: config.name,
+    title: `${config.title} - ${config.description}`,
     main: config.main,
-    //version: config.devDependencies.nw.split('-')[0],
+    url: baseURL + '/index.html',
     'node-remote': [
-        '*://localhost/*',
-        'https://manga-download.github.io/hakuneko/*'
-    ]
-    //dependencies: config.dependencies
-}
+        baseURL + '/*'
+    ],
+    dependencies: config.dependencies
+};
 const source = 'src';
 const target = 'build.app';
 const files = [
     'main.js'
 ];
-
-async function generateIndexFrontends() {
-    //
-}
 
 async function generateIndexPlugins() {
     //

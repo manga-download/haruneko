@@ -5,5 +5,5 @@ export const Info: IFrontendInfo = {
     Label: 'HakuNeko Classic',
     Description: 'The default frontend of HakuNeko ...',
     Screenshot: 'https://raw.githubusercontent.com/manga-download/hakuneko/master/assets/screenshot-pages.png',
-    ModuleFile: './classic/Frontend.ts'
+    ModuleFile: '/frontend/Classic.js'
 };

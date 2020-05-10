@@ -5,5 +5,5 @@ export const Info: IFrontendInfo = {
     Label: 'Developer Playground',
     Description: 'A frontend for experimenting and testing ...',
     Screenshot: undefined,
-    ModuleFile: './playground/Frontend.js'
+    ModuleFile: '/frontend/Playground.js'
 };

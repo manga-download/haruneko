@@ -30,7 +30,7 @@ function CreateApp(): HTMLElement[] {
     return [header, list];
 }
 
-export default class Classic implements IFrontendModule {
+class Playground implements IFrontendModule {
 
     async Render(root: Element): Promise<void> {
         // artificial delay to make loading screen visible
@@ -40,3 +40,5 @@ export default class Classic implements IFrontendModule {
         }
     }
 }
+
+export default new Playground();
