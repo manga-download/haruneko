@@ -8,27 +8,31 @@
   "dependencies": {
     "fs-extra": "9.0.0",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "vue": "next"
   },
   "devDependencies": {
     "@types/chrome": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "nw": "0.45.4-sdk",
+    "@vue/compiler-sfc": "latest",
+    "nw": "0.45.6-sdk",
     "rollup": "latest",
     "rollup-plugin-copy": "latest",
     "rollup-plugin-livereload": "latest",
     "rollup-plugin-serve": "latest",
     "rollup-plugin-terser": "latest",
     "rollup-plugin-typescript2": "latest",
+    "rollup-plugin-vue": "next",
     "typescript": "latest",
     "yargs": "latest"
   },
   "scripts": {
-    "build:app": "node ./build.app.js",
-    "build:tsc": "tsc --build && cp ./src/index.html ./build.www/index.html",
-    "build:rollup": "rollup --config",
-    "start": "rollup --config --watch"
+    "build:dev": "node ./build.app.js --url=http://localhost:5000",
+    "build:app": "node ./build.app.js --url=https://manga-download.github.io/hakuneko-nw --modules",
+    "build:web": "rollup --config --compact",
+    "serve": "rollup --config --watch",
+    "start": "nw ./build.app/"
   }
 }

@@ -1,14 +1,18 @@
 import config from './package.json';
 import copy from 'rollup-plugin-copy';
-import { terser } from "rollup-plugin-terser";
+import { terser as minify } from "rollup-plugin-terser";
 import typescript from 'rollup-plugin-typescript2';
 import serve from 'rollup-plugin-serve';
 //import reload from 'rollup-plugin-livereload';
+import vue from 'rollup-plugin-vue';
 
-const inputDirectory = 'src';
-const outputDirectory = 'build.www';
+import FrontendClassic from './src/frontend/classic/rollup.config';
+import FrontendPlayground from './src/frontend/playground/rollup.config';
 
-const watch = process.env.ROLLUP_WATCH === 'true';
+const outputDirectory = 'build.web';
+
+const isDevelopment = process.env.ROLLUP_WATCH === 'true';
+const isProduction = !isDevelopment;
 
 function launch(options) {
     return {
@@ -21,13 +25,13 @@ function launch(options) {
 
 const configApp = {
     input: {
-        'App': inputDirectory + '/App.ts',
-        'frontend/Classic': inputDirectory + '/frontend/classic/Frontend.tsx',
-        'frontend/Playground': inputDirectory + '/frontend/playground/Frontend.tsx'
+        'App': 'src/App.ts',
+        //'frontend/Classic': inputDirectory + '/frontend/classic/Frontend.tsx',
+        //'frontend/Playground': inputDirectory + '/frontend/playground/Frontend.ts'
     },
     output: [
         {
-            dir: 'build.www',
+            dir: outputDirectory,
             format: 'esm',
             sourcemap: true
         }
@@ -38,26 +42,31 @@ const configApp = {
     plugins: [
         copy({
             targets: [
-                { src: inputDirectory + '/*.html', dest: outputDirectory },
-                { src: inputDirectory + '/img/**/*', dest: outputDirectory + '/img' }
+                { src: 'src/*.html', dest: outputDirectory },
+                { src: 'src/img/**/*', dest: outputDirectory + '/img' }
             ]
         }),
+        vue(),
         typescript({
             typescript: require('typescript'),
         }),
-        //terser() // minifies generated bundles
-        watch && serve({
+        isProduction && minify({
+            include: [],
+            exclude: []
+        }),
+        isDevelopment && serve({
             contentBase: outputDirectory,
             port: 5000
-        }),/*
+        })/*,
         reload({
             watch: outputDirectory
         }),*/
-        //watch && launch({})
+        //isDevelopment && launch({})
     ]
 };
 
 export default [
-    configApp//,
-    //configClassic
+    configApp,
+    FrontendClassic,
+    FrontendPlayground
 ];

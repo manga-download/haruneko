@@ -33,7 +33,7 @@ export class FrontendController implements IFrontendController {
     public async Initialize(): Promise<void> {
         try {
             // TODO: get selected frontend from settings controller
-            let selectedFrontendID = 'classic'; // 'playground'
+            let selectedFrontendID = 'classic'; // 'playground' 'classic'
             let frontend = await this.GetFrontendModuleByID(selectedFrontendID);
             let hook = document.querySelector(frontendSelector);
             hook.innerHTML = '';

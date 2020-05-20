@@ -3,34 +3,64 @@ const fs = require('fs-extra');
 const config = require('./package.json');
 const argv = require('yargs').argv;
 
-    // TODO: apply current branch ...
-const baseURL = argv.url || `https://manga-download.github.io/hakuneko-nw/${'master'}`;
-const meta = {
-    name: config.name,
-    title: `${config.title} - ${config.description}`,
-    main: config.main,
-    url: baseURL + '/index.html',
-    'node-remote': [
-        baseURL + '/*'
-    ],
-    dependencies: config.dependencies
-};
-const source = 'src';
-const target = 'build.app';
-const files = [
-    'main.js'
-];
+const source = path.join(__dirname, 'src');
+const target = path.join(__dirname, 'build.app');
+const files = [ /*'main.js'*/ ];
 
-async function generateIndexPlugins() {
-    //
+async function getBranch() {
+    return 'master';
+}
+
+async function getManifest() {
+    let branch = await getBranch();
+    const baseURL = argv.url || `${config.url}/${branch}`;
+    return {
+        name: config.name,
+        description: config.description,
+        main: baseURL + '/index.html',
+        //main: config.main,
+        //url: baseURL + '/index.html',
+        'node-remote': [
+            baseURL + '/*'
+        ],
+        window: {
+            title: `${config.title} - ${config.description}`,
+            //icon: 'link.png',
+            //toolbar: true,
+            //frame: false,
+            position: 'center',
+            width: 1280,
+            height: 720
+        },
+        dependencies: config.dependencies
+    };
+}
+
+async function installModules() {
+
+    let modules = path.join(__dirname, target, 'node_modules');
+
+    try {
+        await fs.remove(modules);
+    } catch(error) {}
+
+    if(argv.modules) {
+        // `cd $target` && `npm install --only=production`
+    }
 }
 
 (async function main() {
     await fs.ensureDir(target);
+
+    // copy files
     for(let file of files) {
         fs.copy(path.join(source, file), path.join(target, file));
     }
-    fs.writeJSON(path.join(target, 'package.json'), meta, { spaces: 4 });
+
+    // write application manifest
+    let manifest = await getManifest();
+    fs.writeJSON(path.join(target, 'package.json'), manifest, { spaces: 4 });
+
     // install node modules for deployment
-    // `cd $target` && `npm install --only=production`
+    await installModules();
 })();

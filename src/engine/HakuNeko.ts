@@ -1,15 +1,26 @@
-import { IPlayground, Playground } from './Playground';
+//import { IPlayground, Playground } from './Playground';
+import { IPluginController, PluginController } from './PluginController';
 
 export interface IHakuNeko {
-    Playground: IPlayground;
+    //Playground: IPlayground;
+    PluginController: IPluginController;
 }
 
 export class HakuNeko implements IHakuNeko {
 
-    private playground: IPlayground;
+    //private _playground: IPlayground;
+    private readonly _pluginController: IPluginController;
 
+    constructor() {
+        //this._playground = new Playground();
+        this._pluginController = new PluginController();
+    }
+    /*
     public get Playground() {
-        this.playground = this.playground || new Playground();
-        return this.playground;
+        return this._playground;
+    }
+    */
+    public get PluginController() {
+        return this._pluginController;
     }
 }

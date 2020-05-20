@@ -6,15 +6,16 @@
             "react",
             "react-dom"
         ],
+        "strict": false, // should be migrated to true
         "jsx": "react",
         "target": "esnext",
         "module": "esnext",
-        "outDir": "build.www",
+        "outDir": "build.web",
         "rootDir": "src",
         "sourceMap": true,
         "inlineSources": true,
         "inlineSourceMap": false,
-        "removeComments": true, // keep comments for webpack, otherwise directives would be removed
+        "removeComments": true,
         "moduleResolution": "node"
     },
     "include": [
