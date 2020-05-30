@@ -1,4 +1,4 @@
-import Headers from './Headers';
+import Headers from './HeaderProcessor';
 
 async function Wait(delay: number) {
     return new Promise(resolve => setTimeout(resolve, delay));

@@ -1,17 +1,25 @@
 import { IMediaContainer, MediaContainer } from './MediaContainer'
 
 export interface IAnimeHost extends IMediaContainer {
-    GetMangas: () => Promise<IAnime[]>;
-    GetChapters: (manga: IAnime) => Promise<IEpisode[]>;
+    GetAnimes(): Promise<IAnime[]>;
+    GetEpisodes(anime: IAnime): Promise<IEpisode[]>;
+    GetVideo(episode: IEpisode): Promise<IVideo>;
 }
 
 export interface IAnime extends IMediaContainer {
     Host: IAnimeHost;
-    GetEpisodes: () => Promise<IEpisode[]>;
+    GetEpisodes(): Promise<IEpisode[]>;
 }
 
 export interface IEpisode extends IMediaContainer {
-    Anime: IAnime;
+    readonly Anime: IAnime;
+    GetVideo(): Promise<IVideo>;
+}
+
+export interface IVideo {
+    readonly Episode: IEpisode;
+    GetPlaylist(): Promise<IPlaylist>;
+    GetStream(): Promise<IStream>;
 }
 
 export interface IPlaylist {

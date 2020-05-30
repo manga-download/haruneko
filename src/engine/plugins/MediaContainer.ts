@@ -1,3 +1,20 @@
+export interface IMedia {
+    readonly Parent: IMediaContainer;
+}
+
+export class Media implements IMedia {
+
+    private readonly _parent: IMediaContainer;
+
+    public constructor(parent: IMediaContainer | null) {
+        this._parent = parent;
+    }
+
+    public get Parent(): IMediaContainer {
+        return this._parent;
+    }
+}
+
 export interface IMediaContainer {
     readonly Identifier: string | number;
     readonly Title: string;

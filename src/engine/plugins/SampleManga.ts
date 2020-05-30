@@ -1,4 +1,4 @@
-import { IMangaHost, IManga, IChapter, Manga, Chapter } from './MangaProvider'
+import { IMangaHost, IManga, IChapter, IPage, Manga, Chapter, Page } from './MangaProvider'
 import { MediaContainer } from './MediaContainer';
 
 export default class extends MediaContainer implements IMangaHost {
@@ -22,15 +22,12 @@ export default class extends MediaContainer implements IMangaHost {
             new Chapter('999', 'Ch. 999 - The End', '', manga)
         ];
     }
-/*
-    public bla(x: any): void {
-        if(x instanceof IManga)
-    }
-*/
+
     // Images | HLS Playlist | MP4 Stream
-    /*
-    public GetMedia(): Promise<IMedia> {
-        return null;
+    public async GetPages(chapter: IChapter): Promise<IPage[]> {
+        return [
+            new Page('http://img.google.com/a.png', chapter),
+            new Page('http://img.google.com/b.png', chapter)
+        ];
     }
-    */
 }

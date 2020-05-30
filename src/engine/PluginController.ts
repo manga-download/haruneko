@@ -2,6 +2,7 @@ import SampleMangaProvider from './plugins/SampleManga'
 import { IMediaContainer } from './plugins/MediaContainer';
 
 export interface IPluginController {
+    WebsitePlugins: IMediaContainer[];
 }
 
 export class PluginController implements IPluginController {
