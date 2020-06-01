@@ -8,21 +8,25 @@ const fetchApiUnsupportedHeaders = [
 ];
 
 function ConcealHeaders(headers: Headers) {
+    /*
     for(let key in headers.keys()) {
         if(fetchApiUnsupportedHeaders.includes(key.toLowerCase())) {
             let value = headers.get(key);
-            headers.set('x-' + key, value);
+            headers.set(fetchApiSupportedPrefix + key, value);
             headers.delete(key);
         }
     }
+    */
 }
 
 function RevealHeaders(headers: chrome.webRequest.HttpHeader[]) {
+    /*
     let value = headers.get('x-referer');
     if(value) {
         headers.set('referer', value);
         headers.delete('x-referer');
     }
+    */
 }
 
 export interface IRequestProvider {
@@ -66,11 +70,11 @@ export class RequestProvider implements IRequestProvider {
         //headers.SetHeader('Referer', 'https://hakuneko.download');
         //headers.SetHeader('Origin', 'hakuneko.download');
         //headers.SetHeader('Cookie', 'adult=1');
-
+/*
         if(/^https?:\/\/postman-echo.com/.test(details.url)) {
             headers.SetHeader('X-HakuNeko-URL', 'URL Match');
         }
-
+*/
         let map = [
             {
                 header: 'referer',
@@ -85,7 +89,7 @@ export class RequestProvider implements IRequestProvider {
         */
 
         return {
-            requestHeaders: headers.Values
+            requestHeaders: details.requestHeaders // headers.Values
         };
     }
 

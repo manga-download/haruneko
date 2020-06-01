@@ -6,7 +6,7 @@
             "react",
             "react-dom"
         ],
-        "strict": false, // should be migrated to true
+        "strict": false, // TODO: should be migrated to true
         "jsx": "react",
         "target": "esnext",
         "module": "esnext",

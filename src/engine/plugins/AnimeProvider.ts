@@ -43,6 +43,10 @@ export class Episode extends MediaContainer implements IEpisode, IMediaContainer
     get Anime() {
         return super.Parent as IAnime;
     }
+
+    public GetVideo(): Promise<IVideo> {
+        return null;
+    }
 }
 
 // playlist ?
