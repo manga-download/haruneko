@@ -3,10 +3,6 @@
     <head>
         <title>HakuNeko - Manga, Anime & Novel Downloader</title>
         <link rel="icon" href="./img/logo.png" />
-        <!--
-        <script src="./vendor/react.production.min.js"></script>
-        <script src="./vendor/react-dom.production.min.js"></script>
-        -->
         <script type="module" src="./App.js"></script>
         <style>
             html, body, #hakuneko {
@@ -15,10 +11,14 @@
                 width: 100%;
                 height: 100%;
             }
+            #loader {
+                padding: 2em;
+                text-align: center;
+            }
         </style>
     </head>
-    <body>
-        <div id="hakuneko">
+    <body id="hakuneko">
+        <div id="loader">
             <h3>Loading...</h3>
             <progress></progress>
         </div>
