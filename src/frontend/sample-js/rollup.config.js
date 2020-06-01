@@ -5,7 +5,7 @@ const isProduction = process.env.ROLLUP_WATCH !== 'true';
 
 export default {
     input: {
-        'frontend/Classic': 'src/frontend/classic/Frontend.ts'
+        'frontend/SampleJS': 'src/frontend/sample-js/Frontend.ts'
     },
     output: [
         {
