@@ -1,4 +1,4 @@
-const ReactDOM = require('react-dom');
+import * as ReactDOM from 'react-dom'
 import { IFrontendModule } from '../IFrontend'
 import App from './App';
 

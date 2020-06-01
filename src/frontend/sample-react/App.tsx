@@ -1,9 +1,8 @@
-const React = require('react');
-const useState = React.useState;
+import * as React from 'react'
 
 export default function App() {
 
-    const [ count, setCount ] = useState(0);
+    const [ count, setCount ] = React.useState(0);
 
     return (
         <div id="container">

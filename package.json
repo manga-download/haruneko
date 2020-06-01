@@ -6,23 +6,23 @@
   "license": "Unlicense",
   "homepage": "https://git.io/hakuneko",
   "dependencies": {
-    "fs-extra": "9.0.0",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "vue": "next"
+    "fs-extra": "9.0.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "latest",
+    "@rollup/plugin-node-resolve": "latest",
     "@types/chrome": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vue/compiler-sfc": "latest",
     "nw": "0.45.6-sdk",
+    "react": "latest",
+    "react-dom": "latest",
     "rollup": "latest",
     "rollup-plugin-copy": "latest",
     "rollup-plugin-css-only": "latest",
     "rollup-plugin-livereload": "latest",
-    "rollup-plugin-node-resolve": "latest",
     "rollup-plugin-serve": "latest",
     "rollup-plugin-svelte": "latest",
     "rollup-plugin-terser": "latest",
@@ -30,11 +30,12 @@
     "rollup-plugin-vue": "next",
     "svelte": "latest",
     "typescript": "latest",
+    "vue": "next",
     "yargs": "latest"
   },
   "scripts": {
     "build:dev": "node ./build.app.js --url=http://localhost:5000",
-    "build:app": "node ./build.app.js --url=https://manga-download.github.io/hakuneko-nw --modules",
+    "build:app": "node ./build.app.js --url=https://manga-download.github.io/hakuneko-nw --modules && cd build.app && npm install --only=production",
     "build:web": "rollup --config --compact",
     "serve": "rollup --config --watch",
     "start": "nw ./build.app/"

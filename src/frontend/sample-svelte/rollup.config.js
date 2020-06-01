@@ -1,5 +1,5 @@
 import svelte from 'rollup-plugin-svelte'
-import resolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import { terser as minify } from "rollup-plugin-terser"
 import typescript from 'rollup-plugin-typescript2'
 
@@ -28,9 +28,6 @@ export default {
           browser: true,
           dedupe: module => /^svelte(\/|$)/.test(module)
         }),
-        isProduction && minify({
-            include: [],
-            exclude: []
-        })
+        isProduction && minify()
     ]
 };

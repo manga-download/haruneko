@@ -1,5 +1,8 @@
-import { terser as minify } from "rollup-plugin-terser";
-import typescript from 'rollup-plugin-typescript2';
+// React still does not provide ESM exports, so we need CommonJS transformer plugin ...
+import commonjs from '@rollup/plugin-commonjs'
+import resolve from '@rollup/plugin-node-resolve'
+import { terser as minify } from "rollup-plugin-terser"
+import typescript from 'rollup-plugin-typescript2'
 
 const isProduction = process.env.ROLLUP_WATCH !== 'true';
 
@@ -17,10 +20,16 @@ export default {
     plugins: [
         typescript({
             typescript: require('typescript'),
+            rollupCommonJSResolveHack: true
         }),
-        isProduction && minify({
-            include: [],
-            exclude: []
-        })
+        resolve({
+            browser: true,
+            dedupe: module => /^react(-.*|$)/.test(module)
+        }),
+        commonjs({
+            include: 'node_modules/**',
+            sourceMap: false
+        }),
+        isProduction && minify()
     ]
 };

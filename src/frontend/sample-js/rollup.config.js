@@ -18,9 +18,6 @@ export default {
         typescript({
             typescript: require('typescript'),
         }),
-        isProduction && minify({
-            include: [],
-            exclude: []
-        })
+        isProduction && minify()
     ]
 };

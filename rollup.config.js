@@ -27,7 +27,7 @@ function launch(options) {
 
 const configApp = {
     input: {
-        'App': 'src/App.ts',
+        'Index': 'src/Index.ts',
         //'frontend/Classic': inputDirectory + '/frontend/classic/Frontend.tsx',
         //'frontend/Playground': inputDirectory + '/frontend/playground/Frontend.ts'
     },
@@ -51,10 +51,7 @@ const configApp = {
         typescript({
             typescript: require('typescript'),
         }),
-        isProduction && minify({
-            include: [],
-            exclude: []
-        }),
+        isProduction && minify(),
         isDevelopment && serve({
             contentBase: outputDirectory,
             port: 5000

@@ -1,5 +1,5 @@
 import vue from 'rollup-plugin-vue'
-import resolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import { terser as minify } from "rollup-plugin-terser"
 import typescript from 'rollup-plugin-typescript2'
 import css from 'rollup-plugin-css-only'
@@ -32,9 +32,6 @@ export default {
           browser: true,
           dedupe: module => /^vue(\/|$)/.test(module)
         }),
-        isProduction && minify({
-            include: [],
-            exclude: []
-        })
+        isProduction && minify()
     ]
 };
