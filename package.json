@@ -6,17 +6,22 @@
   "license": "Unlicense",
   "homepage": "https://git.io/hakuneko",
   "dependencies": {
-    "fs-extra": "9.0.0"
+    "fs-extra": "9.0.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "latest",
     "@rollup/plugin-node-resolve": "latest",
     "@types/chrome": "latest",
+    "@types/fs-extra": "latest",
+    "@types/jest": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vue/compiler-sfc": "latest",
-    "nw": "0.45.6-sdk",
+    "jest": "latest",
+    "jest-junit": "latest",
+    "jest-mock-extended": "latest",
+    "nw": "0.46.3-sdk",
     "react": "latest",
     "react-dom": "latest",
     "rollup": "latest",
@@ -29,6 +34,7 @@
     "rollup-plugin-typescript2": "latest",
     "rollup-plugin-vue": "next",
     "svelte": "latest",
+    "ts-jest": "latest",
     "typescript": "latest",
     "vue": "next",
     "yargs": "latest"
@@ -37,6 +43,9 @@
     "build:dev": "node ./build.app.js --url=http://localhost:5000",
     "build:app": "node ./build.app.js --url=https://manga-download.github.io/hakuneko-nw --modules && cd build.app && npm install --only=production",
     "build:web": "rollup --config --compact",
+    "test": "jest --color --config=jest.js",
+    "test:engine": "jest --color --config=jest-engine.js",
+    "test:frontend": "jest --color --config=jest-frontend.js",
     "serve": "rollup --config --watch",
     "start": "nw ./build.app/"
   }

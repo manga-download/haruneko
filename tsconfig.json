@@ -4,7 +4,8 @@
             "node",
             "chrome",
             "react",
-            "react-dom"
+            "react-dom",
+            "jest"
         ],
         "strict": false, // TODO: should be migrated to true
         "jsx": "react",
@@ -23,6 +24,7 @@
     ],
     "exclude": [
         "node_modules",
+        "**/*.test.ts",
         "**/*.spec.ts"
     ]
 }
