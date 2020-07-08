@@ -92,7 +92,7 @@ describe('HeaderProcessor', () => {
         }); 
     });
 
-    describe('Delete()', () => {
+    describe('DeleteHeader()', () => {
 
         it('Should delete existing header', async () => {
             const headers = [
@@ -117,7 +117,7 @@ describe('HeaderProcessor', () => {
         });  
     });
 
-    describe('ReplaceHeaderName()', () => {
+    describe('RenameHeader()', () => {
 
         it('Should rename existing header', async () => {
             const headers = [
@@ -125,8 +125,8 @@ describe('HeaderProcessor', () => {
                 { name: 'Referer', value: 'protocol://domain' }
             ];
             let testee = new HeaderProcessor(headers);
-            testee.ReplaceHeaderName('User-Agent', 'X-User-Agent');
-            testee.ReplaceHeaderName('referer', 'x-referer');
+            testee.RenameHeader('User-Agent', 'X-User-Agent');
+            testee.RenameHeader('referer', 'x-referer');
             const result = testee.GetHeaders();
             expect(result.length).toBe(2);
             AssertHeader(result[0], { name: 'x-user-agent', value: 'Mozilla/5.0' });
@@ -139,8 +139,8 @@ describe('HeaderProcessor', () => {
                 { name: 'Referer', value: 'protocol://domain' }
             ];
             let testee = new HeaderProcessor(headers);
-            testee.ReplaceHeaderName('User-Agent', 'user-agent');
-            testee.ReplaceHeaderName('referer', 'Referer');
+            testee.RenameHeader('User-Agent', 'user-agent');
+            testee.RenameHeader('referer', 'Referer');
             const result = testee.GetHeaders();
             expect(result.length).toBe(headers.length);
             AssertHeader(result[0], headers[0]);
@@ -152,7 +152,7 @@ describe('HeaderProcessor', () => {
                 { name: 'User-Agent', value: 'Mozilla/5.0' }
             ];
             let testee = new HeaderProcessor(headers);
-            expect(() => testee.ReplaceHeaderName('Referer', 'X-Referer')).toThrow(Error);
+            expect(() => testee.RenameHeader('Referer', 'X-Referer')).toThrow(Error);
         });
 
         it('Should throw when new header name already exist', async () => {
@@ -161,7 +161,7 @@ describe('HeaderProcessor', () => {
                 { name: 'Referer', value: 'protocol://domain' }
             ];
             let testee = new HeaderProcessor(headers);
-            expect(() => testee.ReplaceHeaderName('User-Agent', 'Referer')).toThrow(Error);
+            expect(() => testee.RenameHeader('User-Agent', 'Referer')).toThrow(Error);
         });  
     });
 });

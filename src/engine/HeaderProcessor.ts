@@ -3,7 +3,7 @@ export interface IHeaderProcessor {
     GetHeader(name: string): chrome.webRequest.HttpHeader;
     SetHeader(name: string, value: string): void;
     DeleteHeader(name: string): void;
-    ReplaceHeaderName(nameOld: string, nameNew: string): void;
+    RenameHeader(nameOld: string, nameNew: string): void;
 }
 
 export class HeaderProcessor implements IHeaderProcessor {
@@ -47,7 +47,7 @@ export class HeaderProcessor implements IHeaderProcessor {
         }
     }
 
-    public ReplaceHeaderName(nameOld: string, nameNew: string): void {
+    public RenameHeader(nameOld: string, nameNew: string): void {
         if(nameOld.toLowerCase() === nameNew.toLowerCase()) {
             return;
         }
