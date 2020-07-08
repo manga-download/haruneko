@@ -18,6 +18,7 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vue/compiler-sfc": "latest",
+    "eslint": "latest",
     "jest": "latest",
     "jest-junit": "latest",
     "jest-mock-extended": "latest",
@@ -40,6 +41,7 @@
     "yargs": "latest"
   },
   "scripts": {
+    "eslint": "eslint ./src/**/*.ts --ignore-path .gitignore --ignore-pattern *.test.ts",
     "build:dev": "node ./build.app.js --url=http://localhost:5000",
     "build:app": "node ./build.app.js --url=https://manga-download.github.io/hakuneko-nw --modules && cd build.app && npm install --only=production",
     "build:web": "rollup --config --compact",
