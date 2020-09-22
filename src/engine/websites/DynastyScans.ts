@@ -34,13 +34,14 @@ export default class extends MediaContainer implements IMangaHost {
 
     constructor() {
         super('dynasty-scans', 'DynastyScans', null, null);
+        //chrome.cookies.set({ url: this._url, name: 'adult', value: 'true' });
     }
 
     public async GetMangas(): Promise<IManga[]> {
         let mangaList: IManga[] = [];
         for(const path of ['/series', '/anthologies', '/issues', '/doujins']) {
             const uri = new URL(path + '.json', this._url);
-            const request = new Request(uri.href, {
+            const request = new ExploitedRequest(uri.href, {
                 //method: 'GET',
                 //mode: 'cors',
                 //redirect: 'follow',
@@ -48,7 +49,7 @@ export default class extends MediaContainer implements IMangaHost {
                 //credentials: 'same-origin', // 'include',
                 //headers: new Headers()
             });
-            const data = await window.HakuNeko.RequestProvider.FetchJSON<IMangas>(request);
+            const data = await HakuNeko.RequestProvider.FetchJSON<IMangas>(request);
             for(const letter in data) {
                 const mangas = data[letter].map(manga => {
                     const identifier = [path, manga.permalink].join('/');
@@ -64,7 +65,7 @@ export default class extends MediaContainer implements IMangaHost {
     public async GetChapters(manga: IManga): Promise<IChapter[]> {
         const uri = new URL(manga.Identifier + '.json', this._url);
         const request = new Request(uri.href);
-        const data = await window.HakuNeko.RequestProvider.FetchJSON<IChapters>(request);
+        const data = await HakuNeko.RequestProvider.FetchJSON<IChapters>(request);
         const chapterList = data.taggings.filter(chapter => !chapter.header).map(chapter => {
             const identifier = `/chapters/${chapter.permalink}`;
             const title = chapter.title.trim();
