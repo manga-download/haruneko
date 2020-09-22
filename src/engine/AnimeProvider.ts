@@ -1,4 +1,4 @@
-import { IMediaContainer, MediaContainer } from './MediaContainer'
+import { IMediaContainer, MediaContainer } from './MediaContainer';
 
 export interface IAnimeHost extends IMediaContainer {
     GetAnimes(): Promise<IAnime[]>;
@@ -23,11 +23,11 @@ export interface IVideo {
 }
 
 export interface IPlaylist {
-
+    readonly Dummy: null;
 }
 
 export interface IStream {
-    //
+    readonly Dummy: null;
 }
 
 export class Anime extends MediaContainer {
@@ -36,16 +36,16 @@ export class Anime extends MediaContainer {
 
 export class Episode extends MediaContainer implements IEpisode, IMediaContainer {
 
-    constructor(identifier: string, title: string, language: string, anime: IAnime) {
+    constructor(identifier: string, title: string, language: string | null, anime: IAnime) {
         super(identifier, title, language, anime);
     }
 
-    get Anime() {
+    get Anime(): IAnime {
         return super.Parent as IAnime;
     }
 
     public GetVideo(): Promise<IVideo> {
-        return null;
+        throw new Error('Not Implemented!');
     }
 }
 

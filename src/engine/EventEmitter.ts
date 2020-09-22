@@ -1,7 +1,7 @@
 export interface IEvent<TSender, TArgs> {
-    Dispatch: (sender: TSender, args: TArgs) => void;
-    Subscribe: (callback: (sender: TSender, args: TArgs) => void) => void;
-    Unsubscribe: (callback: (sender: TSender, args: TArgs) => void) => void;
+    Dispatch(sender: TSender, args: TArgs): void;
+    Subscribe(callback: (sender: TSender, args: TArgs) => void): void;
+    Unsubscribe(callback: (sender: TSender, args: TArgs) => void): void;
 }
 
 class Event<TSender, TArgs> {
@@ -10,16 +10,16 @@ class Event<TSender, TArgs> {
 
     public Dispatch(sender: TSender, args: TArgs): void {
         // callback all subscribers
-        for(let subscription of this._subscriptions) {
+        for(const subscription of this._subscriptions) {
             subscription(sender, args);
         }
     }
 
-    public Subscribe(callback): void {
+    public Subscribe(callback: (sender: TSender, args: TArgs) => void): void {
         this._subscriptions.add(callback);
     }
 
-    public Unsubscribe(callback): void {
+    public Unsubscribe(callback: (sender: TSender, args: TArgs) => void): void {
         this._subscriptions.delete(callback);
     }
 }

@@ -1,11 +1,11 @@
-import { IFrontendInfo, IFrontendModule } from './IFrontend'
-import { Info as InfoClassic } from './classic/FrontendInfo'
-import { Info as InfoJS } from './sample-js/FrontendInfo'
-import { Info as InfoReact } from './sample-react/FrontendInfo'
-import { Info as InfoSvelte } from './sample-svelte/FrontendInfo'
-import { Info as InfoVue } from './sample-vue/FrontendInfo'
+import { IFrontendInfo, IFrontendModule } from './IFrontend';
+import { Info as InfoClassic } from './classic/FrontendInfo';
+import { Info as InfoJS } from './sample-js/FrontendInfo';
+import { Info as InfoReact } from './sample-react/FrontendInfo';
+import { Info as InfoSvelte } from './sample-svelte/FrontendInfo';
+import { Info as InfoVue } from './sample-vue/FrontendInfo';
 
-const frontendSelector: string = '#hakuneko';
+const frontendSelector = '#hakuneko';
 const frontendList: IFrontendInfo[] = [
     InfoClassic,
     InfoJS,
@@ -24,7 +24,7 @@ export class FrontendController implements IFrontendController {
     private _mockStorageFrontendID = 'classic';
 
     constructor() {
-        document.addEventListener('DOMContentLoaded', event => this.Load());
+        document.addEventListener('DOMContentLoaded', () => this.Load());
         // TODO: listen to settings controller when the frontend is changed
     }
 
@@ -34,7 +34,7 @@ export class FrontendController implements IFrontendController {
 
     private async GetStoredFrontendID(): Promise<string> {
         // TODO: get selected frontend from settings controller or return default
-        let defaultFrontendID = this.AvailableFrontends[0].ID;
+        const defaultFrontendID = this.AvailableFrontends[0].ID;
         return this._mockStorageFrontendID || defaultFrontendID;
     }
 
@@ -44,25 +44,29 @@ export class FrontendController implements IFrontendController {
     }
 
     private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
-        let file = frontendList.find(item => item.ID === id).ModuleFile;
-        let module = await import(file);
-        return module.default as IFrontendModule;
+        const info = frontendList.find(item => item.ID === id);
+        if(info) {
+            const module = await import(info.ModuleFile);
+            return module.default as IFrontendModule;
+        } else {
+            throw new Error(`The frontend could not be found in the list of available frontends!`);
+        }
     }
 
     public async Load(frontendID?: string): Promise<void> {
         try {
-            let storedFrontendID = await this.GetStoredFrontendID()
+            const storedFrontendID = await this.GetStoredFrontendID();
             if(frontendID === storedFrontendID) {
                 return;
             }
             frontendID = frontendID || storedFrontendID;
-            let frontend = await this.GetFrontendModuleByID(frontendID);
-            let hook = document.querySelector(frontendSelector) as HTMLElement;
+            const frontend = await this.GetFrontendModuleByID(frontendID);
+            const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';
             frontend.Render(hook);
             this.SetStoredFrontendID(frontendID);
         } catch(error) {
-            console.error('Failed to load frontend!', error);
+            console.error(`Failed to load frontend with id '${frontendID}'!`, error);
         }
     }
 }

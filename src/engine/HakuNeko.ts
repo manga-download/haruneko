@@ -14,15 +14,15 @@ export class HakuNeko implements IHakuNeko {
     private readonly _pluginController: IPluginController = new PluginController();
     private readonly _requestProvider: IRequestProvider = new RequestProvider();
 
-    public get EventEmitter() {
+    public get EventEmitter(): IEventEmitter {
         return this._eventEmitter;
     }
 
-    public get PluginController() {
+    public get PluginController(): IPluginController {
         return this._pluginController;
     }
 
-    public get RequestProvider() {
+    public get RequestProvider(): IRequestProvider {
         return this._requestProvider;
     }
 }

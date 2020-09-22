@@ -1,0 +1,31 @@
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+# https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions
+
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  continuous-integration:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Deploy (dry)
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run deploy:dry

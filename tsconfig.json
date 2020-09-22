@@ -7,7 +7,7 @@
             "react-dom",
             "jest"
         ],
-        "strict": false, // TODO: should be migrated to true
+        "strict": true, // TODO: should be migrated to true
         "jsx": "react",
         "target": "esnext",
         "module": "esnext",
@@ -24,6 +24,8 @@
     ],
     "exclude": [
         "node_modules",
+        "**/*_test.ts",
+        "**/*_spec.ts",
         "**/*.test.ts",
         "**/*.spec.ts"
     ]

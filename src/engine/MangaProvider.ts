@@ -1,4 +1,4 @@
-import { IMedia, Media, IMediaContainer, MediaContainer } from './MediaContainer'
+import { IMedia, Media, IMediaContainer, MediaContainer } from './MediaContainer';
 
 export interface IMangaHost extends IMediaContainer {
     GetMangas(): Promise<IManga[]>;
@@ -23,15 +23,15 @@ export interface IPage extends IMedia {
 
 export class Manga extends MediaContainer implements IManga {
 
-    constructor(identifier: string, title: string, language: string, host: IMangaHost) {
+    constructor(identifier: string, title: string, language: string | null, host: IMangaHost) {
         super(identifier, title, language, host);
     }
 
-    get Host() {
+    get Host(): IMangaHost {
         return super.Parent as IMangaHost;
     }
 
-    async GetChapters() {
+    async GetChapters(): Promise<IChapter[]> {
         return this.Host.GetChapters(this);
     }
 }
@@ -42,11 +42,11 @@ export class Chapter extends MediaContainer implements IChapter, IMediaContainer
         super(identifier, title, language, manga);
     }
 
-    get Manga() {
+    get Manga(): IManga {
         return super.Parent as IManga;
     }
 
-    async GetPages() {
+    async GetPages(): Promise<IPage[]> {
         return this.Manga.Host.GetPages(this);
     }
 }
@@ -60,11 +60,11 @@ export class Page extends Media implements IPage {
         this._image = image;
     }
 
-    get Chapter() {
+    get Chapter(): IChapter {
         return super.Parent as IChapter;
     }
 
-    public async GetImage() {
+    public async GetImage(): Promise<string> {
         return this._image;
     }
 }

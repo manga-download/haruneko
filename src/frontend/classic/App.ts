@@ -1,4 +1,4 @@
-import { IMangaHost } from '../../engine/plugins/MangaProvider'
+import { IMangaHost } from '../../engine/MangaProvider'
 
 export default class App {
 
@@ -33,8 +33,8 @@ export default class App {
     private CreateInfo(): HTMLElement {
         return this.CreateElement('p', `
             <strong>Platform :</strong> ${process.platform}<br>
-            <strong>NW.js :</strong> ${process.versions['node-webkit']}
-        `);
+            <strong>NW.js :</strong> ${process.versions}
+        `); // process.versions['node-webkit']
     }
 
     private CreateFrontendButtonList() {

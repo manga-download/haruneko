@@ -1,7 +1,8 @@
-import svelte from 'rollup-plugin-svelte'
-import resolve from '@rollup/plugin-node-resolve'
-import { terser as minify } from "rollup-plugin-terser"
-import typescript from 'rollup-plugin-typescript2'
+import svelte from 'rollup-plugin-svelte';
+import preprocess from 'svelte-preprocess';
+import resolve from '@rollup/plugin-node-resolve';
+import { terser as minify } from "rollup-plugin-terser";
+import typescript from '@rollup/plugin-typescript';
 
 const isProduction = process.env.ROLLUP_WATCH !== 'true';
 
@@ -12,22 +13,21 @@ export default {
     output: [
         {
             dir: 'build.web',
-            format: 'esm',
+            format: 'es',
             sourcemap: true
         }
     ],
     plugins: [
-        typescript({
-            typescript: require('typescript'),
+        svelte({
+            dev: !isProduction,
+            preprocess: preprocess()
+            //css: css => css.write('build.web/css/sample-svelte.css')
         }),
-		svelte({
-			dev: !isProduction,
-			//css: css => css.write('build.web/css/sample-svelte.css')
-		}),
         resolve({
-          browser: true,
-          dedupe: module => /^svelte(\/|$)/.test(module)
+            browser: true,
+            dedupe: module => /^svelte(\/|$)/.test(module)
         }),
+        typescript(),
         isProduction && minify()
     ]
 };

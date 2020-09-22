@@ -1,10 +1,10 @@
-import { IMangaHost, IManga, IChapter, IPage, Manga, Chapter, Page } from './MangaProvider'
-import { MediaContainer } from './MediaContainer';
+import { IMangaHost, IManga, IChapter, IPage, Manga, Chapter, Page } from '../MangaProvider';
+import { MediaContainer } from '../MediaContainer';
 
 export default class extends MediaContainer implements IMangaHost {
 
     constructor() {
-        super('manga-provider', 'Sample Manga (Provider)', 'english', null);
+        super('manga-provider', 'Sample Manga (Provider)', 'multi-lingual', null);
     }
 
     // Mangas | Animes

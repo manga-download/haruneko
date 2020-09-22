@@ -17,12 +17,19 @@ async function getManifest() {
     return {
         name: config.name,
         description: config.description,
+        'chromium-args': '--ignore-certificate-errors',
         main: baseURL + '/index.html',
         //main: config.main,
         //url: baseURL + '/index.html',
         'node-remote': [
             baseURL + '/*'
         ],
+        /*
+        webkit: {
+            plugin: true,
+            'page-cache': false
+        },
+        */
         window: {
             title: `${config.title} - ${config.description}`,
             //icon: 'link.png',
@@ -42,7 +49,9 @@ async function installModules() {
 
     try {
         await fs.remove(modules);
-    } catch(error) {}
+    } catch(error) {
+        //
+    }
 
     if(argv.modules) {
         // `cd $target` && `npm install --only=production`

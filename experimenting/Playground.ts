@@ -1,15 +1,21 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+//@ts-nocheck
 //import Headers from './HeaderProcessor';
 
+/*
 async function Wait(delay: number) {
     return new Promise(resolve => setTimeout(resolve, delay));
 }
+*/
 
+/*
 function Print(message: string) {
     console.log(message);
     let li = document.createElement('li');
     li.innerText = message;
     document.getElementById('events').appendChild(li);
 }
+*/
 
 export interface IPlayground {
     About: () => Promise<void>;
@@ -19,7 +25,7 @@ export interface IPlayground {
 export class Playground implements IPlayground {
 
     async About(): Promise<void> {
-        let info = [
+        const info = [
             'Platform: ' + process.platform,
             'NW.js: ' + process.versions['node-webkit']
         ].join('\n');
@@ -43,18 +49,18 @@ export class Playground implements IPlayground {
                 return accumulator;
             }, {});
             */
-           let headers = new Headers(details.requestHeaders);
-           headers.SetHeader('User-Agent', 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)');
-           headers.SetHeader('Referer', 'https://hakuneko.download');
-           headers.SetHeader('Origin', 'hakuneko.download');
-           headers.SetHeader('Cookie', 'adult=1');
+            const headers = new Headers(details.requestHeaders);
+            headers.SetHeader('User-Agent', 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)');
+            headers.SetHeader('Referer', 'https://hakuneko.download');
+            headers.SetHeader('Origin', 'hakuneko.download');
+            headers.SetHeader('Cookie', 'adult=1');
             console.log('HEADERS:', headers.Values);
             return {
                 requestHeaders: headers.Values
             };
         }, { urls: [ '<all_urls>', '*://www.evil.com/*' ] }, [ 'blocking' /* sync request required for header modification */, 'requestHeaders', 'extraHeaders' /* allow change referer, origin, cookie */ ]);
 
-        let response = await fetch('https://postman-echo.com/get', {
+        const response = await fetch('https://postman-echo.com/get', {
             method: 'GET',
             referrer: 'https://hakuneko.download',
             headers: {
@@ -65,7 +71,7 @@ export class Playground implements IPlayground {
                 'x-foo': 'bar'
             }
         });
-        let data = await response.json();
+        const data = await response.json();
 
         // assertions
         if(data.headers['user-agent'] === 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)'

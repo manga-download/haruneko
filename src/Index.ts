@@ -1,13 +1,5 @@
-import { IHakuNeko, HakuNeko } from './engine/HakuNeko';
-import { IFrontendController, FrontendController } from './frontend/FrontendController';
-
-declare global {
-    interface Window {
-        HakuNeko: IHakuNeko;
-        Frontend: IFrontendController;
-    }
-    const nw: any
-}
+import { HakuNeko } from './engine/HakuNeko';
+import { FrontendController } from './frontend/FrontendController';
 
 //const gui = require('nw.gui');
 //gui.Window.get().

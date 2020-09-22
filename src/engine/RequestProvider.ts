@@ -1,36 +1,7 @@
-import { HeaderProcessor } from './HeaderProcessor';
-
-const fetchApiSupportedPrefix = 'x-';
-const fetchApiUnsupportedHeaders = [
-    'referer',
-    'origin',
-    'host'
-];
-
-function ConcealHeaders(headers: Headers) {
-    /*
-    for(let key in headers.keys()) {
-        if(fetchApiUnsupportedHeaders.includes(key.toLowerCase())) {
-            let value = headers.get(key);
-            headers.set(fetchApiSupportedPrefix + key, value);
-            headers.delete(key);
-        }
-    }
-    */
-}
-
-function RevealHeaders(headers: chrome.webRequest.HttpHeader[]) {
-    /*
-    let value = headers.get('x-referer');
-    if(value) {
-        headers.set('referer', value);
-        headers.delete('x-referer');
-    }
-    */
-}
+import { HeaderEditor, ConcealHeaders, RevealHeaders } from './transformers/HeaderEditor';
 
 export interface IRequestProvider {
-    fetch(request: Request): Promise<Response>;
+    Fetch(request: Request): Promise<Response>;
     //FetchDOM: () => Promise<any>;
     //FetchText: () => Promise<any>;
     FetchJSON<TResult>(request: Request): Promise<TResult>;
@@ -58,48 +29,53 @@ export class RequestProvider implements IRequestProvider {
     }
 
     private ConfigureHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
-        // go through each header
-        // check if a replace entry exists for the header
-        // check if a replace entry exists for the URL (regex match?)
-        // replace header
-        let dbg = details.requestHeaders[0];
-        dbg.name;
-        dbg.value;
-        //let headers = new Headers(details.requestHeaders);
-        //headers.SetHeader('User-Agent', 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)');
-        //headers.SetHeader('Referer', 'https://hakuneko.download');
+        const headers = new HeaderEditor(details.requestHeaders || []);
+        RevealHeaders(headers);
+        headers.AddHeader('User-Agent', 'Mozilla/5.0 (HakuNeko; Intel Mac OS X 10.15.3)', true);
+        headers.AddHeader('Referer', details.url, true);
         //headers.SetHeader('Origin', 'hakuneko.download');
         //headers.SetHeader('Cookie', 'adult=1');
-/*
-        if(/^https?:\/\/postman-echo.com/.test(details.url)) {
-            headers.SetHeader('X-HakuNeko-URL', 'URL Match');
-        }
-*/
-        let map = [
-            {
-                header: 'referer',
-                replacement: 'x-referer'
-            }
-        ];
-
-        /*
-        for(let header of map) {
-            headers.ReplaceHeaderName('X-HakuNeko-Header', 'Header Match');
-        }
-        */
 
         return {
             requestHeaders: details.requestHeaders // headers.Values
         };
     }
 
-    public async fetch(request: Request) {
+    public async Fetch(request: Request): Promise<Response> {
+        ConcealHeaders(request.headers);
         return fetch(request);
     }
 
+    private async FetchHTML(request: Request, replaceImageTags = true, clearIframettributes = true): Promise<HTMLHtmlElement> {
+        const response = await this.Fetch(request);
+        let content = await response.text();
+        if(replaceImageTags) {
+            content = content.replace(/<img/g, '<source');
+            content = content.replace(/<\/img/g, '</source');
+            content = content.replace(/<use/g, '<source');
+            content = content.replace(/<\/use/g, '</source');
+        }
+        if(clearIframettributes) {
+            content = content.replace(/<iframe[^<]*?>/g, '<iframe>');
+        }
+        let dom = document.createElement('html');
+        dom.innerHTML = content;
+        return dom;
+    }
+
     public async FetchJSON<TResult>(request: Request): Promise<TResult> {
-        ConcealHeaders(request.headers);
-        let response = await fetch(request);
+        const response = await this.Fetch(request);
         return response.json();
+    }
+
+    public async FetchCSS(request: Request, query: string): Promise<Element[]> {
+        const dom = await this.FetchHTML(request);
+        return [...dom.querySelectorAll(query)];
+    }
+
+    public async FetchXPATH(request: Request, xpath: string): Promise<Node[]> {
+        const dom = await this.FetchHTML(request);
+        const result = document.evaluate(xpath, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+        return new Array(result.snapshotLength).fill(null).map((_, index) => result.snapshotItem(index) as Node);
     }
 }
