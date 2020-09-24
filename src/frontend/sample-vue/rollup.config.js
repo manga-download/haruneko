@@ -26,8 +26,8 @@ export default {
             output: 'build.web/css/sample-vue.css'
         }),
         resolve({
-          browser: true,
-          dedupe: module => /^vue(\/|$)/.test(module)
+            browser: true,
+            dedupe: module => /^vue(\/|$)/.test(module)
         }),
         typescript(),
         isProduction && minify()

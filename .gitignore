@@ -1,5 +1,6 @@
 .cache/
 build*/
+docs/
 node_modules/
 package-lock.json
 junit.xml

@@ -50,8 +50,8 @@
   "scripts": {
     "lint": "eslint ./src/**/*.ts --ignore-path .gitignore",
     "build:dev": "node ./build.app.js --url=http://localhost:5000",
-    "build:app": "node ./build.app.js --url=https://manga-download.github.io/hakuneko-nw --modules && cd build.app && npm install --only=production",
-    "build:web": "rollup --config --compact",
+    "build:app": "node ./build.app.js --url=https://hakuneko.download/haruneko --modules && cd build.app && npm install --only=production",
+    "build:web": "rm -r -f build.web docs && rollup --config --compact && cp -r -f build.web/ docs/",
     "test": "cd test && jest --color --config=jest.js",
     "test:engine": "cd test && jest --color --config=jest-engine.js",
     "test:frontend": "cd test && jest --color --config=jest-frontend.js",
