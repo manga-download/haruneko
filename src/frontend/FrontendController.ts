@@ -21,7 +21,7 @@ export interface IFrontendController {
 
 export class FrontendController implements IFrontendController {
 
-    private _mockStorageFrontendID = 'classic';
+    private _mockStorageFrontendID = 'sample-svelte';
 
     constructor() {
         document.addEventListener('DOMContentLoaded', () => this.Load());
