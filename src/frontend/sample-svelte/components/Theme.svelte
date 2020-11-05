@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     export let persist = false;
     export let persistKey = "theme";
     export let theme = "white";
@@ -7,15 +7,15 @@
     import { onMount, afterUpdate, setContext } from "svelte";
     import { writable, derived } from "svelte/store";
 
-    const isValidTheme = (value) => themes.includes(value);
-    const isDark = (value) =>
+    const isValidTheme = (value: string) => themes.includes(value);
+    const isDark = (value: string) =>
         isValidTheme(value) && (value === "g90" || value === "g100");
 
     const dark = writable(isDark(theme));
     const light = derived(dark, (_) => !_);
 
     setContext("Theme", {
-        updateVar: (name, value) => {
+        updateVar: (name: string, value: string) => {
         document.documentElement.style.setProperty(name, value);
         },
         dark,
@@ -24,11 +24,10 @@
 
     onMount(() => {
         try {
-        const persisted_theme = localStorage.getItem(persistKey);
-
-        if (isValidTheme(persisted_theme)) {
-            theme = persisted_theme;
-        }
+            const persistedTheme = localStorage.getItem(persistKey) || theme;
+            if (isValidTheme(persistedTheme)) {
+                theme = persistedTheme;
+            }
         } catch (error) {
         console.error(error);
         }

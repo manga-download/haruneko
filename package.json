@@ -22,7 +22,7 @@
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "@vue/compiler-sfc": "latest",
-    "carbon-components-svelte": "^0.19.0",
+    "carbon-components-svelte": "latest",
     "eslint": "latest",
     "jest": "latest",
     "jest-junit": "latest",

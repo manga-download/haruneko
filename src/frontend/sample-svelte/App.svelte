@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import {
         Header,
         HeaderUtilities,
@@ -22,7 +22,6 @@
         UnorderedList, ListItem,
         Accordion, AccordionItem,
         InlineLoading,
-
         SkeletonPlaceholder,
     } from "carbon-components-svelte";
     import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
@@ -116,7 +115,7 @@
     <link rel="stylesheet" href="https://unpkg.com/carbon-components-svelte@0.14.0/css/all.css">
 </svelte:head>
 <Theme persist bind:theme>
-    <Header expandedByDefault="false" company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
+    <Header expandedByDefault={false} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
         <div slot="skip-to-content">
             <SkipToContent />
         </div>
@@ -138,7 +137,7 @@
         </HeaderUtilities>
     </Header>
 
-    <SideNav fixed=true bind:isOpen={isSideNavOpen}>
+    <SideNav fixed={true} bind:isOpen={isSideNavOpen}>
         <SideNavItems>
             <SideNavLink text="Link 1" />
             <SideNavLink text="Link 2" />
@@ -164,10 +163,8 @@
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
                         iconDescription="Connector"
-                        style="display:table-cell;"
                     />
                     <ComboBox
-                        style="display:table-cell;width:100%"
                         placeholder="Select a connector"
                         selectedIndex={0}
                         size="sm"
@@ -227,10 +224,8 @@
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
                         iconDescription="Connector"
-                        style="display:table-cell;"
                     />
                     <Dropdown
-                        style="display:table-cell;width:100%"
                         selectedIndex={0}
                         size="sm"
                         items={[{ id: '0', text: '*' }, { id: '1', text: 'gb' }, { id: '2', text: 'fr' }]}
