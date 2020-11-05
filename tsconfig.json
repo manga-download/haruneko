@@ -3,6 +3,7 @@
         "types": [
             "node",
             "chrome",
+            "svelte",
             "react",
             "react-dom",
             "jest"
