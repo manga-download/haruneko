@@ -141,7 +141,7 @@
 <svelte:head>
     <link rel="stylesheet" href="css/theme/dark.css" >
     <link rel="stylesheet" href="css/sample-svelte.css">
-    <link rel="stylesheet" href="https://unpkg.com/carbon-components-svelte@latest/css/all.css">
+    <link rel="stylesheet" href="css/theme/all.css">
 </svelte:head>
 <Theme persist bind:theme>
     <Header expandedByDefault=false company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>

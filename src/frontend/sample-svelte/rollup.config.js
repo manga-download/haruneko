@@ -28,7 +28,8 @@ export default {
         }),
         copy({
             targets: [
-                { src: 'src/frontend/sample-svelte/theme', dest: 'build.web/css' }
+                { src: 'src/frontend/sample-svelte/theme', dest: 'build.web/css' },
+                { src: 'node_modules/carbon-components-svelte/css/all.css', dest: 'build.web/css/theme' },
             ]
         }),
         resolve({
