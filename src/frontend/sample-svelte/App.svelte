@@ -22,7 +22,7 @@
         UnorderedList, ListItem,
         Accordion, AccordionItem,
         InlineLoading,
-        SkeletonPlaceholder,
+        SkeletonPlaceholder,Select
     } from "carbon-components-svelte";
     import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
     import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled16";
@@ -36,7 +36,7 @@
     let uimode = 'ui-mode-content' // content, download;
 
     function changeUIMode() {
-        uimode= uimode ==='ui-mode-content' ? 'ui-mode-download' : 'ui-mode-content';
+        uimode = (uimode === 'ui-mode-content' ? 'ui-mode-download' : 'ui-mode-content');
     }
 </script>
 <style>
@@ -72,11 +72,9 @@
     ::-webkit-scrollbar {
         width: 1em; /* Necessary so scrollbar changes from default*/
     }
-
     ::-webkit-scrollbar-track {
         background:#36393f; /* Background of scrollbar */
     }
-
     ::-webkit-scrollbar-thumb {
         background:#202225; /* Scroll marker */
         border-radius: 2em; /* So marker has rounded edges */
@@ -94,9 +92,9 @@
             "MangaList";
         grid-area: Manga;
     }
-    .MangaList { grid-area: MangaList; overflow-y: scroll; }
     .Connector { grid-area: Connector; display:table; }
     .MangaFilter { grid-area: MangaFilter; display:table; }
+    .MangaList { grid-area: MangaList; overflow-y: scroll; }
     .Chapter {
         display: grid;
         grid-template-rows: 2em 2em 2em 1fr;
@@ -108,9 +106,10 @@
             "ChapterList";
         grid-area: Chapter;
     }
-    .ChapterList { grid-area: ChapterList; }
     .LanguageFilter { grid-area: LanguageFilter; display:table; }
     .ChapterFilter {  grid-area: ChapterFilter; display:table; }
+    .ChapterList { grid-area: ChapterList; }
+    
     .Content { grid-area: Content; }
     .Bottom {
         grid-area: Bottom;
@@ -129,14 +128,23 @@
     .separator {
         border-bottom: var(--manga-control-separator);
     }
+
+    :global(.inline){
+        display:table-cell;
+        width:100%
+    }
+    :global(.inline-wide){
+        display:table-cell;
+        width:100%
+    }
 </style>
 <svelte:head>
     <link rel="stylesheet" href="css/theme/dark.css" >
     <link rel="stylesheet" href="css/sample-svelte.css">
-    <link rel="stylesheet" href="https://unpkg.com/carbon-components-svelte@0.14.0/css/all.css">
+    <link rel="stylesheet" href="https://unpkg.com/carbon-components-svelte@latest/css/all.css">
 </svelte:head>
 <Theme persist bind:theme>
-    <Header expandedByDefault={false} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
+    <Header expandedByDefault=false company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
         <div slot="skip-to-content">
             <SkipToContent />
         </div>
@@ -158,7 +166,7 @@
         </HeaderUtilities>
     </Header>
 
-    <SideNav fixed={true} bind:isOpen={isSideNavOpen}>
+    <SideNav fixed=true bind:isOpen={isSideNavOpen}>
         <SideNavItems>
             <SideNavLink text="Link 1" />
             <SideNavLink text="Link 2" />
@@ -184,12 +192,14 @@
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
                         iconDescription="Connector"
+                        class="inline"
                     />
                     <ComboBox
                         placeholder="Select a connector"
                         selectedIndex={0}
                         size="sm"
                         items={[{ id: '0', text: 'Bookmark' }, { id: '1', text: 'MangaHere' }, { id: '2', text: 'MangaDex' }]}
+                        class="inline-wide"
                     />
                 </div>
                 <div class="MangaFilter">
@@ -245,11 +255,13 @@
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
                         iconDescription="Connector"
+                        class="inline"
                     />
                     <Dropdown
                         selectedIndex={0}
                         size="sm"
                         items={[{ id: '0', text: '*' }, { id: '1', text: 'gb' }, { id: '2', text: 'fr' }]}
+                        class="inline-wide"
                     />
                 </div>
                 <div class="ChapterFilter">
