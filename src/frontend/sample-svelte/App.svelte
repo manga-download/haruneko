@@ -33,81 +33,102 @@
     let isSideNavOpen = false;
     let isOpen = false;
     let theme = "g90";
+    let uimode = 'ui-mode-content' // content, download;
+
+    function changeUIMode() {
+        uimode= uimode ==='ui-mode-content' ? 'ui-mode-download' : 'ui-mode-content';
+    }
 </script>
 <style>
-:global(#hakunekoapp) {
-    height: calc(100vh - 3.5em);
-    max-height: calc(100vh - 3.5em);
-    display: grid;
-    padding:0.5em; 
-    grid-template-columns: 20em 20em 1fr;
-    grid-template-rows: 30fr fit-content(0.5em);
-    gap: 0.3em 0.3em;
-    grid-template-areas:
-        "Manga Chapter Content"
-        "Bottom Bottom Content";
-}
+    :global(#hakuneko) {
+        
+        position: fixed; 
+        overflow:hidden;
+        width: 100%;
+        height: 100%;
+    }
+    :global(#hakunekoapp)  { 
+        height: calc(100vh - 3.5em);
+        max-height: calc(100vh - 3.5em);
+        display: grid;
+        padding:0.5em; 
+        gap: 0.3em 0.3em;
+        grid-template-rows: 30fr fit-content(0.5em);
 
-::-webkit-scrollbar {
-    width: 1em; /* Necessary so scrollbar changes from default*/
-}
+    }
+    :global(.ui-mode-content)  { 
+        grid-template-columns: 20em 20em 1fr;
+        grid-template-areas:
+            "Manga Chapter Content"
+            "Bottom Bottom Content";
+    }
+    :global(.ui-mode-download) {
+        grid-template-columns: minmax(20em,1fr) minmax(20em,1fr);
+        grid-template-areas:
+            "Manga Chapter"
+            "Bottom Bottom";
+    }
+    
+    ::-webkit-scrollbar {
+        width: 1em; /* Necessary so scrollbar changes from default*/
+    }
 
-::-webkit-scrollbar-track {
-    background:#36393f; /* Background of scrollbar */
-}
+    ::-webkit-scrollbar-track {
+        background:#36393f; /* Background of scrollbar */
+    }
 
-::-webkit-scrollbar-thumb {
-    background:#202225; /* Scroll marker */
-    border-radius: 2em; /* So marker has rounded edges */
-}
+    ::-webkit-scrollbar-thumb {
+        background:#202225; /* Scroll marker */
+        border-radius: 2em; /* So marker has rounded edges */
+    }
 
-.Manga {
-    min-height: 0;
-    display: grid;
-    grid-template-rows: 2em 2em 2em 1fr;
-    gap: 0.3em 0.3em;
-    grid-template-areas:
-        "MangaTitle"
-        "Connector"
-        "MangaFilter"
-        "MangaList";
-    grid-area: Manga;
-}
-.MangaList { grid-area: MangaList; overflow-y: scroll; }
-.Connector { grid-area: Connector; display:table; }
-.MangaFilter { grid-area: MangaFilter; display:table; }
-.Chapter {
-    display: grid;
-    grid-template-rows: 2em 2em 2em 1fr;
-    gap: 0.3em 0.3em;
-    grid-template-areas:
-        "ChapterTitle"
-        "LanguageFilter"
-        "ChapterFilter"
-        "ChapterList";
-    grid-area: Chapter;
-}
-.ChapterList { grid-area: ChapterList; }
-.LanguageFilter { grid-area: LanguageFilter; display:table; }
-.ChapterFilter {  grid-area: ChapterFilter; display:table; }
-.Content { grid-area: Content; }
-.Bottom {
-    grid-area: Bottom;
-    border-top: var(--manga-control-separator);
-}
+    .Manga {
+        min-height: 0;
+        display: grid;
+        grid-template-rows: 2em 2em 2em 1fr;
+        gap: 0.3em 0.3em;
+        grid-template-areas:
+            "MangaTitle"
+            "Connector"
+            "MangaFilter"
+            "MangaList";
+        grid-area: Manga;
+    }
+    .MangaList { grid-area: MangaList; overflow-y: scroll; }
+    .Connector { grid-area: Connector; display:table; }
+    .MangaFilter { grid-area: MangaFilter; display:table; }
+    .Chapter {
+        display: grid;
+        grid-template-rows: 2em 2em 2em 1fr;
+        gap: 0.3em 0.3em;
+        grid-template-areas:
+            "ChapterTitle"
+            "LanguageFilter"
+            "ChapterFilter"
+            "ChapterList";
+        grid-area: Chapter;
+    }
+    .ChapterList { grid-area: ChapterList; }
+    .LanguageFilter { grid-area: LanguageFilter; display:table; }
+    .ChapterFilter {  grid-area: ChapterFilter; display:table; }
+    .Content { grid-area: Content; }
+    .Bottom {
+        grid-area: Bottom;
+        border-top: var(--manga-control-separator);
+    }
 
-:global(.list) {
-    border: var(--manga-list-border);
-    background-color: var(--manga-list-background-color);
-    overflow-y: scroll;
-    white-space: nowrap;
-    list-style-type: none;
-    padding: 0.25em;
-}
+    :global(.list) {
+        border: var(--manga-list-border);
+        background-color: var(--manga-list-background-color);
+        overflow-y: scroll;
+        white-space: nowrap;
+        list-style-type: none;
+        padding: 0.25em;
+    }
 
-.separator {
-    border-bottom: var(--manga-control-separator);
-}
+    .separator {
+        border-bottom: var(--manga-control-separator);
+    }
 </style>
 <svelte:head>
     <link rel="stylesheet" href="css/theme/dark.css" >
@@ -121,7 +142,7 @@
         </div>
         <HeaderUtilities>
             <HeaderActionSearch />
-            <HeaderGlobalAction aria-label="Settings" icon={SettingsAdjust20} />
+            <HeaderGlobalAction on:click={changeUIMode} aria-label="Wide" icon={SettingsAdjust20} />
             <HeaderAction bind:isOpen>
             <HeaderPanelLinks>
                 <HeaderPanelDivider>Switcher subject 1</HeaderPanelDivider>
@@ -150,7 +171,7 @@
         </SideNavItems>
     </SideNav>
 
-    <Content id="hakunekoapp">
+    <Content id="hakunekoapp" class="{uimode}">
             <div class="Manga separator">
                 <div class="MangaTitle">
                     <h5 class="separator">Manga List</h5>
@@ -242,13 +263,14 @@
                     </UnorderedList>
                 </div>
             </div>
+            {#if uimode === 'ui-mode-content' }
             <div class="Content">
                 <SkeletonPlaceholder />
                 <SkeletonPlaceholder />
                 <SkeletonPlaceholder />
                 <SkeletonPlaceholder />
-
             </div>
+            {/if}
             <div class="Bottom">
                 <Accordion align="start" size="sm">
                     <AccordionItem title="Jobs">
