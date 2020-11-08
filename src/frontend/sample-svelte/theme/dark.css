@@ -1,3 +1,15 @@
+
+::-webkit-scrollbar {
+    width: 1em; /* Necessary so scrollbar changes from default*/
+}
+::-webkit-scrollbar-track {
+    background:#36393f; /* Background of scrollbar */
+}
+::-webkit-scrollbar-thumb {
+    background:#202225; /* Scroll marker */
+    border-radius: 2em; /* So marker has rounded edges */
+}
+
 :root {
     /*
         * application control group
