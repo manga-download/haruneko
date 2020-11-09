@@ -12,6 +12,7 @@
     "@rollup/plugin-commonjs": "latest",
     "@rollup/plugin-node-resolve": "latest",
     "@rollup/plugin-typescript": "latest",
+    "@sveltejs/svelte-virtual-list": "latest",
     "@types/chrome": "latest",
     "@types/fs-extra": "latest",
     "@types/jest": "latest",

@@ -22,14 +22,15 @@
         Accordion, AccordionItem,
         InlineLoading,
         SkeletonPlaceholder,
-        Grid, Row, Column,
-        Icon
+        Grid,
+        Icon,
     } from "carbon-components-svelte";
     import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
     import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled16";
     import PlugFilled16 from "carbon-icons-svelte/lib/PlugFilled16";
 
-    //import VirtualList from '@sveltejs/svelte-virtual-list';
+    // Meh ?
+    import VirtualList from "@sveltejs/svelte-virtual-list";
 
     import { onMount } from 'svelte';
 
@@ -47,6 +48,7 @@
     let theme = "g90";
     let uimode = 'ui-mode-content' // content, download;
     let app: HTMLElement;
+
     onMount(async () => {
         app = document.getElementById("hakunekoapp")!;
         app.classList.add(uimode);
@@ -58,16 +60,21 @@
         app.classList.add(uimode);
     }
 
-    let plugins : Array<IMangaHost> = window.HakuNeko.PluginController.WebsitePlugins as IMangaHost[];
+    let plugins: Array<IMangaHost> = window.HakuNeko.PluginController.WebsitePlugins as IMangaHost[];
     let pluginsCombo: Array<any>;
     $: pluginsCombo = Array.from(plugins,(plugin,key) => {return {id: key, text: plugin.Title}});
-    let selectedPlugin = 1; //fucking combobox not handling object binding
-    let mangas : Promise<IManga[]>;
-    $: mangas = plugins[selectedPlugin] ? plugins[selectedPlugin].GetMangas() : Promise.resolve([]);
+    let selectedPluginCombo = 1; //fucking combobox not handling object binding
+    let selectedPlugin: IMangaHost;
+    $: selectedPlugin = plugins[selectedPluginCombo];
+
+    let mangas: Promise<IManga[]> = Promise.resolve([]);
+    $: mangas = selectedPlugin ? selectedPlugin.GetMangas() : Promise.resolve([]);
     let selectedManga: IManga;
-    let chapters : Promise<IChapter[]>;
+
+    let chapters: Promise<IChapter[]>;
     $: chapters = selectedManga ? selectedManga.GetChapters() : Promise.resolve([]);
     let selectedChapter: IChapter;
+
 </script>
 <style>
     :global(#hakuneko) {
@@ -82,7 +89,7 @@
         max-height: calc(100vh - 3.5em);
         display: grid;
         padding:0.5em; 
-        gap: 0.3em 0.3em;
+        gap: 0.3em 1em;
         grid-template-rows: 30fr fit-content(0.5em);
     }
     :global(.ui-mode-content)  { 
@@ -107,12 +114,14 @@
             "MangaTitle"
             "Connector"
             "MangaFilter"
-            "MangaList";
+            "MangaList"
+            "MangaCount";
         grid-area: Manga;
     }
     .Connector { grid-area: Connector; display: table; }
     .MangaFilter { grid-area: MangaFilter; display: table; }
     .MangaList { grid-area: MangaList; overflow-y: scroll; overflow-x: hidden }
+    .MangaCount{grid-area: MangaCount; margin:0.25em;}
 
     :global(#connector-combo) { 
         display:table-cell;
@@ -126,12 +135,14 @@
             "ChapterTitle"
             "LanguageFilter"
             "ChapterFilter"
-            "ChapterList";
+            "ChapterList"
+            "ChapterCount";
         grid-area: Chapter;
     }
     .LanguageFilter { grid-area: LanguageFilter; display: table; }
     .ChapterFilter {  grid-area: ChapterFilter; display: table; }
     .ChapterList { grid-area: ChapterList; overflow-y: scroll; overflow-x:hidden}
+    .ChapterCount { grid-area: ChapterCount; margin:0.25em;}
     
     .Content { grid-area: Content; }
     .Bottom {
@@ -204,7 +215,7 @@
     </SideNav>
 
     <Content id="hakunekoapp">
-        <div class="Manga separator">
+        <div class="Manga">
             <div class="MangaTitle">
                 <h5 class="separator">Manga List</h5>
             </div>
@@ -223,7 +234,7 @@
                 <div class="inline-wide">
                     <ComboBox
                         placeholder="Select a connector"
-                        bind:selectedIndex={selectedPlugin}
+                        bind:selectedIndex={selectedPluginCombo}
                         size="sm"
                         items={pluginsCombo}
                     />
@@ -236,13 +247,20 @@
                 {#await mangas}
                     <InlineLoading status="active" description="Working..." />
                 {:then mangas}
-                    <ul>
-                        {#each mangas as manga, i}
-                            <Manga display="li" manga={manga} bind:selected={selectedManga}/> 
-                        {/each}
-                    </ul>
+                    <VirtualList items={mangas} let:item>
+                        <Manga manga={item} bind:selected={selectedManga}/>
+                    </VirtualList>
                 {:catch error}
                     <p style="color: red">{error.message}</p>
+                {/await}
+            </div>
+            <div class="MangaCount">
+                {#await mangas}
+                    Mangas : ?
+                {:then mangas}
+                    Mangas : {mangas.length}
+                {:catch error}
+                    Mangas : ?
                 {/await}
             </div>
         </div>
@@ -284,6 +302,15 @@
                     </Grid>
                 {:catch error}
                     <p style="color: red">{error.message}</p>
+                {/await}
+            </div>
+            <div class="ChapterCount">
+                {#await chapters}
+                    Chapters: ?
+                {:then chapters}
+                    Chapters: {chapters.length}
+                {:catch error}
+                    Chapters: ?
                 {/await}
             </div>
         </div>
