@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+    
     import {
         Row,Column,
         Icon
@@ -10,13 +13,12 @@
 
 	import type {IChapter } from '../../../engine/MangaProvider';
 	export let chapter: IChapter;
-	export let selected: IChapter;
+	export let selected: Boolean;
 	export let display = 'Row';
 </script>
 <style>
     .listitem{
-        padding-top:2px;
-        padding-bottom:2px;
+
         cursor: pointer;
     }
     .listitem:hover{
@@ -27,13 +29,10 @@
     }
 </style>
 {#if display==='Row'}
-<div class="listitem" class:selected={selected === chapter}>
-    <Row >
-        <Column sm={1} md={1} lg={1}><Icon render={CloudDownload16} /></Column>
-        <Column sm={1} md={1} lg={1}><Icon render={Image16} on:click={e => selected = chapter}/></Column>
-        <Column sm={1} md={1} lg={1}><Icon render={Bookmark16} /></Column>
-        <Column sm={1} md={4} lg={8}>{chapter.Title}</Column>
-    </Row>
+<div class="listitem" class:selected={selected} >
+    <Icon render={CloudDownload16} />
+    <Icon render={Image16} on:click={e => dispatch('select',chapter) }/>
+    <Icon render={Bookmark16} />
+    {chapter.Title}
 </div>
-
 {/if}

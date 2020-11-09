@@ -61,19 +61,31 @@
     }
 
     let plugins: Array<IMangaHost> = window.HakuNeko.PluginController.WebsitePlugins as IMangaHost[];
+    let mangas: Promise<IManga[]> = Promise.resolve([]);
+    let chapters: Promise<IChapter[]> = Promise.resolve([]);
+
+    let selectedPlugin: IMangaHost | null;
+    let selectedManga: IManga| null;
+    let selectedChapter: IChapter| null;
+
     let pluginsCombo: Array<any>;
     $: pluginsCombo = Array.from(plugins,(plugin,key) => {return {id: key, text: plugin.Title}});
     let selectedPluginCombo = 1; //fucking combobox not handling object binding
-    let selectedPlugin: IMangaHost;
     $: selectedPlugin = plugins[selectedPluginCombo];
 
-    let mangas: Promise<IManga[]> = Promise.resolve([]);
-    $: mangas = selectedPlugin ? selectedPlugin.GetMangas() : Promise.resolve([]);
-    let selectedManga: IManga;
-
-    let chapters: Promise<IChapter[]>;
-    $: chapters = selectedManga ? selectedManga.GetChapters() : Promise.resolve([]);
-    let selectedChapter: IChapter;
+    //On: PluginChange
+    $: {
+        mangas = selectedPlugin ? selectedPlugin.GetMangas() : Promise.resolve([]);
+        selectedManga = null;
+        selectedChapter = null;
+    }
+    
+    //On: MangaChange
+    $: {
+        chapters = selectedManga ? selectedManga.GetChapters() : Promise.resolve([]);
+        selectedChapter = null;
+    } 
+    
 
 </script>
 <style>
@@ -248,7 +260,7 @@
                     <InlineLoading status="active" description="Working..." />
                 {:then mangas}
                     <VirtualList items={mangas} let:item>
-                        <Manga manga={item} bind:selected={selectedManga}/>
+                        <Manga manga={item} selected={selectedManga===item} on:select={e => selectedManga = e.detail}/>
                     </VirtualList>
                 {:catch error}
                     <p style="color: red">{error.message}</p>
@@ -295,11 +307,9 @@
                 {#await chapters}
                     <InlineLoading status="active" description="Working..." />
                 {:then chapters}
-                    <Grid fullWidth  narrow>
-                        {#each chapters as chapter, i}
-                            <Chapter display="Row" chapter={chapter} bind:selected={selectedChapter}/>
-                        {/each}
-                    </Grid>
+                    {#each chapters as chapter, i}
+                        <Chapter chapter={chapter} selected={selectedChapter===chapter} on:select={e => selectedChapter = e.detail}/>
+                    {/each}
                 {:catch error}
                     <p style="color: red">{error.message}</p>
                 {/await}

@@ -1,7 +1,13 @@
 <script lang="ts">
-	import type {IManga } from '../../../engine/MangaProvider';
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+
+    import type {IManga } from '../../../engine/MangaProvider';
+    
 	export let manga: IManga;
-	export let selected: IManga;
+    export let selected: Boolean;
+    
+
 </script>
 <style>
 	.manga{
@@ -17,4 +23,4 @@
     }
 </style>
 
-<div class="manga" class:selected="{selected === manga}" on:click={e => selected = manga}>{manga.Title}</div>
+<div class="manga" class:selected="{selected}" on:click={e => dispatch('select',manga) }>{manga.Title}</div>
