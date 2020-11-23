@@ -22,8 +22,7 @@
         Accordion, AccordionItem,
         InlineLoading,
         SkeletonPlaceholder,
-        Grid,
-        Icon,
+        Modal,
     } from "carbon-components-svelte";
     import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
     import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled16";
@@ -38,6 +37,17 @@
     import Manga from "./components/Manga.svelte";
     import Chapter from "./components/Chapter.svelte";
 
+    import ConnectorSelect from "./components/ConnectorSelect.svelte";
+    import { fly,fade } from 'svelte/transition';
+
+    let showTop=false;
+    let showConnectorSelect=false;
+
+    function toggleConnectorSelect (visibililty:boolean) {
+        showTop=visibililty;
+		showConnectorSelect=visibililty;
+    };
+    
     import type {IMangaHost,IManga, IChapter } from '../../engine/MangaProvider';
 
     let isSideNavOpen = false;
@@ -100,17 +110,19 @@
         display: grid;
         padding:0.5em; 
         gap: 0.3em 1em;
-        grid-template-rows: 30fr fit-content(0.5em);
+        grid-template-rows: minmax(0, 1fr) 1000000fr fit-content(0.5em);
     }
     :global(.ui-mode-content)  { 
         grid-template-columns: 20em 20em 1fr;
         grid-template-areas:
+            "Top Top Top"
             "Manga Chapter Content"
             "Bottom Bottom Content";
     }
     :global(.ui-mode-download) {
         grid-template-columns: minmax(20em,1fr) minmax(20em,1fr);
         grid-template-areas:
+            "Top Top"
             "Manga Chapter"
             "Bottom Bottom";
     }
@@ -155,10 +167,16 @@
     .ChapterCount { grid-area: ChapterCount; margin:0.25em;}
     
     .Content { grid-area: Content; }
+
+    .Top{
+        grid-area: Top;
+        z-index: 999999;
+    }
     .Bottom {
         grid-area: Bottom;
         border-top: var(--manga-control-separator);
     }
+
 
     :global(.list) {
         border: var(--manga-list-border);
@@ -180,8 +198,6 @@
         display:table-cell;
         width:100%;
     }
-
-
 </style>
 <svelte:head>
     <link rel="stylesheet" href="css/theme/dark.css" >
@@ -225,7 +241,14 @@
     </SideNav>
 
     <Content id="hakunekoapp">
-        <div class="Manga">
+        {#if showTop}
+            <div class="Top" in:fly="{{ y: -200, duration: 1000 }}" out:fade>
+                {#if showConnectorSelect}
+                    <ConnectorSelect message="hiiiii" on:close={()=>toggleConnectorSelect(false)}/>
+                {/if}
+            </div>
+        {:else}
+        <div class="Manga" transition:fade>
             <div class="MangaTitle">
                 <h5 class="separator">Manga List</h5>
             </div>
@@ -238,7 +261,7 @@
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
                         iconDescription="Connector"
-                        
+                        on:click={()=>toggleConnectorSelect(true)}
                     />
                 </div>
                 <div class="inline-wide">
@@ -274,7 +297,7 @@
                 {/await}
             </div>
         </div>
-        <div class="Chapter">
+        <div class="Chapter" transition:fade>
             <div class="ChapterTitle">
                 <h5 class="separator">Chapter List</h5>
             </div>
@@ -323,14 +346,14 @@
             </div>
         </div>
         {#if uimode === 'ui-mode-content' }
-        <div class="Content">
+        <div class="Content" transition:fade>
             <SkeletonPlaceholder />
             <SkeletonPlaceholder />
             <SkeletonPlaceholder />
             <SkeletonPlaceholder />
         </div>
         {/if}
-        <div class="Bottom">
+        <div class="Bottom" transition:fade>
             <Accordion align="start" size="sm">
                 <AccordionItem title="Jobs">
                     <div slot="title"><InlineLoading status="active" description="Downloading..." /></div>
@@ -340,5 +363,6 @@
                 </AccordionItem>
             </Accordion>
         </div>
+        {/if}
     </Content>
 </Theme>
