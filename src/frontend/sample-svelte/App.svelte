@@ -41,9 +41,7 @@
     import type {IMangaHost,IManga, IChapter } from '../../engine/MangaProvider';
 
     let isSideNavOpen = false;
-    let isSideNavFixed=true;
     let isOpen = false;
-    let isHeaderExpandedByDefault = false;
 
     let theme = "g90";
     let uimode = 'ui-mode-content' // content, download;
@@ -191,7 +189,7 @@
     <link rel="stylesheet" href="css/theme/all.css">
 </svelte:head>
 <Theme persist bind:theme>
-    <Header expandedByDefault={isHeaderExpandedByDefault} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
+    <Header expandedByDefault={false} persistentHamburgerMenu={true} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
         <div slot="skip-to-content">
             <SkipToContent />
         </div>
@@ -213,7 +211,7 @@
         </HeaderUtilities>
     </Header>
 
-    <SideNav fixed={isSideNavFixed} bind:isOpen={isSideNavOpen}>
+    <SideNav bind:isOpen={isSideNavOpen}>
         <SideNavItems>
             <SideNavLink text="Link 1" />
             <SideNavLink text="Link 2" />
