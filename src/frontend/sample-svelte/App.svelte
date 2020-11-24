@@ -22,7 +22,6 @@
         Accordion, AccordionItem,
         InlineLoading,
         SkeletonPlaceholder,
-        Modal,
     } from "carbon-components-svelte";
     import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
     import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled16";
@@ -37,15 +36,15 @@
     import Manga from "./components/Manga.svelte";
     import Chapter from "./components/Chapter.svelte";
 
-    import ConnectorSelect from "./components/ConnectorSelect.svelte";
+    import PluginSelect from "./components/PluginSelect.svelte";
     import { fly,fade } from 'svelte/transition';
 
     let showTop=false;
-    let showConnectorSelect=false;
+    let showPluginSelect=false;
 
-    function toggleConnectorSelect (visibililty:boolean) {
+    function togglePluginSelect (visibililty:boolean) {
         showTop=visibililty;
-		showConnectorSelect=visibililty;
+		showPluginSelect=visibililty;
     };
     
     import type {IMangaHost,IManga, IChapter } from '../../engine/MangaProvider';
@@ -80,6 +79,14 @@
     $: pluginsCombo = Array.from(plugins,(plugin,key) => {return {id: key, text: plugin.Title}});
     let selectedPluginCombo = 1; //fucking combobox not handling object binding
     $: selectedPlugin = plugins[selectedPluginCombo];
+
+    function selectPlugin (event:any) {
+        const searchComboItem=pluginsCombo.find(item => item.text===event.detail.Title);
+        if (searchComboItem) {
+            selectedPluginCombo=searchComboItem.id;
+        }
+        togglePluginSelect(false)
+    }
 
     //On: PluginChange
     $: {
@@ -134,18 +141,18 @@
         gap: 0.3em 0.3em;
         grid-template-areas:
             "MangaTitle"
-            "Connector"
+            "Plugin"
             "MangaFilter"
             "MangaList"
             "MangaCount";
         grid-area: Manga;
     }
-    .Connector { grid-area: Connector; display: table; }
+    .Plugin { grid-area: Plugin; display: table; }
     .MangaFilter { grid-area: MangaFilter; display: table; }
     .MangaList { grid-area: MangaList; overflow-y: scroll; overflow-x: hidden }
     .MangaCount{grid-area: MangaCount; margin:0.25em;}
 
-    :global(#connector-combo) { 
+    :global(#Plugin-combo) { 
         display:table-cell;
         width:100%
     }
@@ -243,8 +250,12 @@
     <Content id="hakunekoapp">
         {#if showTop}
             <div class="Top" in:fly="{{ y: -200, duration: 1000 }}" out:fade>
-                {#if showConnectorSelect}
-                    <ConnectorSelect message="hiiiii" on:close={()=>toggleConnectorSelect(false)}/>
+                {#if showPluginSelect}
+                    <PluginSelect 
+                        pluginlist={plugins} 
+                        on:close={()=>togglePluginSelect(false)}
+                        on:select={selectPlugin}
+                    />
                 {/if}
             </div>
         {:else}
@@ -252,7 +263,7 @@
             <div class="MangaTitle">
                 <h5 class="separator">Manga List</h5>
             </div>
-            <div class="Connector">
+            <div class="Plugin">
                 <div class="inline">
                     <Button 
                         icon={PlugFilled16}
@@ -260,13 +271,14 @@
                         size="small"
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
-                        iconDescription="Connector"
-                        on:click={()=>toggleConnectorSelect(true)}
+                        iconDescription="Plugin"
+                        on:click={()=>togglePluginSelect(true)}
+                        on:select2d={e => {console.log('hey'+e); togglePluginSelect(false); selectedPlugin=e.detail;}}
                     />
                 </div>
                 <div class="inline-wide">
                     <ComboBox
-                        placeholder="Select a connector"
+                        placeholder="Select a Plugin"
                         bind:selectedIndex={selectedPluginCombo}
                         size="sm"
                         items={pluginsCombo}
@@ -309,7 +321,7 @@
                     size="small"
                     tooltipPosition="bottom"
                     tooltipAlignment="center"
-                    iconDescription="Connector"
+                    iconDescription="Plugin"
                 />
                 </div>
                 <div class="inline-wide">
