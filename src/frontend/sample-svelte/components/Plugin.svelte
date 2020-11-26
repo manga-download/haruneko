@@ -45,10 +45,11 @@
 {#if display==='AccordionItem'}
     <AccordionItem>
         <div slot="title" class="line">
-            <span class="icon"><Icon render={Image16} /></span>
-            <span class="select">
+            <div class="icon"><Icon render={Image16} /></div>
+            <div class="select">
                 <Button 
                     icon={NotebookReference16}
+                    kind="secondary"
                     size="small"
                     tooltipPosition="bottom"
                     tooltipAlignment="center"
@@ -57,10 +58,10 @@
                 >
                 Select
                 </Button>
-            </span>
-            <span class="title">{plugin.Title}</span>
-            <span class="identifier">{plugin.Identifier}</span>
-            <span class="language">{#if plugin.Language}<Tag type="cyan">{plugin.Language}</Tag>{/if}</span>
+            </div>
+            <div class="title">{plugin.Title}</div>
+            <div class="identifier">{plugin.Identifier}</div>
+            <div class="language">{#if plugin.Language}<Tag type="cyan">{plugin.Language}</Tag>{/if}</div>
         </div>
         <p>
             Bacon ipsum dolor amet bresaola sausage beef salami cupim picanha boudin meatball alcatra filet mignon beef 
