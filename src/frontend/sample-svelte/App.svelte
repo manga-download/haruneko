@@ -3,7 +3,7 @@
         Header,
         HeaderUtilities,
         HeaderAction,
-        HeaderActionSearch,
+        HeaderSearch,
         HeaderGlobalAction,
         HeaderPanelLinks,
         HeaderPanelDivider,
@@ -217,7 +217,7 @@
             <SkipToContent />
         </div>
         <HeaderUtilities>
-            <HeaderActionSearch />
+            <HeaderSearch />
             <HeaderGlobalAction on:click={changeUIMode} aria-label="Wide" icon={SettingsAdjust20} />
             <HeaderAction bind:isOpen>
             <HeaderPanelLinks>
