@@ -19,8 +19,8 @@ export default {
     ],
     plugins: [
         vue({
-            compileTemplate: true,
-            css: true
+            //compileTemplate: true,
+            //css: true
         }),
         css({
             output: 'build.web/css/sample-vue.css'

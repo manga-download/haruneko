@@ -6,6 +6,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import svelte from "rollup-plugin-svelte";
 import typescript from '@rollup/plugin-typescript';
 import livereload from "rollup-plugin-livereload";
+import postcss from 'rollup-plugin-postcss';
 
 const isProduction = process.env.ROLLUP_WATCH !== 'true';
 
@@ -22,9 +23,12 @@ export default {
     ],
     plugins: [
         svelte({
-            dev: !isProduction,
-            preprocess: preprocess(),
-            css: css => css.write('css/sample-svelte.css')
+            //dev: !isProduction,
+            preprocess: preprocess()
+            //css: css => css.write('css/sample-svelte.css')
+        }),
+        postcss({
+            extract: 'css/sample-svelte.css'
         }),
         copy({
             targets: [

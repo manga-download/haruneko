@@ -1,4 +1,4 @@
-module.exports = {
+const base = {
     rootDir: '../src',
     testMatch: [ '**/*[_.](spec|test).[jt]s(x)?' ],
     displayName: 'All Tests',
@@ -9,3 +9,5 @@ module.exports = {
         'jest-junit'
     ]
 };
+
+export default base;
