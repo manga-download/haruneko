@@ -11,7 +11,8 @@
     import Image16 from "carbon-icons-svelte/lib/Image16";
     import CloudDownload16 from "carbon-icons-svelte/lib/CloudDownload16";
 
-	import type {IChapter } from '../../../engine/MangaProvider';
+    import type {IChapter } from '../../../engine/MangaProvider';
+
 	export let chapter: IChapter;
 	export let selected: Boolean;
 	export let display = 'Row';

@@ -14,7 +14,7 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    import type {IMangaHost} from '../../engine/MangaProvider';
+    import type {IMangaHost} from '../../../engine/MangaProvider';
     import Plugin from "./Plugin.svelte";
 
     export let pluginlist:Array<IMangaHost>;
