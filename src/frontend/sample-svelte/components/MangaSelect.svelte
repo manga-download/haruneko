@@ -22,6 +22,7 @@
 
     let plugins: IMangaHost[] = window.HakuNeko.PluginController.WebsitePlugins as IMangaHost[];
     let mangas: Promise<IManga[]> = Promise.resolve([]);
+    let filteredmangas: IManga[] = [];
 
     let selectedPlugin: IMangaHost | null;
     let selectedManga: IManga| null;
@@ -33,9 +34,16 @@
 
     //On: PluginChange
     $: {
-        mangas = selectedPlugin ? selectedPlugin.GetMangas() : Promise.resolve([]);
+        mangas = selectedPlugin?.GetMangas() ?? Promise.resolve([]);
         selectedManga = null;
     }
+
+    let mangaNameFilter = '';
+    $:{
+        mangas.then((value) => filteredmangas=value.filter(item => {
+            return item.Title.toLowerCase().indexOf(mangaNameFilter.toLowerCase()) !== -1;
+        }));
+    } 
 
     let showPluginSelect=false;
 
@@ -116,7 +124,6 @@
                 tooltipAlignment="center"
                 iconDescription="Plugin"
                 on:click={()=>showPluginSelect=true}
-                on:select={e => {showPluginSelect=false; selectedPlugin=e.detail;}}
             />
         </div>
         <div class="inline-wide">
@@ -129,13 +136,13 @@
         </div>
     </div>
     <div class="MangaFilter">
-        <Search size="sm" />
+        <Search size="sm" bind:value={mangaNameFilter} />
     </div>
     <div class="MangaList list">
         {#await mangas}
             <InlineLoading status="active" description="Working..." />
         {:then mangas}
-            <VirtualList items={mangas} let:item>
+            <VirtualList items={filteredmangas} let:item>
                 <Manga manga={item} selected={selectedManga===item} on:select={e => {selectedManga = e.detail; dispatch('select', e.detail);}}/>
             </VirtualList>
         {:catch error}
@@ -146,7 +153,7 @@
         {#await mangas}
             Mangas : ?
         {:then mangas}
-            Mangas : {mangas.length}
+            Mangas : {filteredmangas.length}/{mangas.length}
         {:catch error}
             Mangas : ?
         {/await}

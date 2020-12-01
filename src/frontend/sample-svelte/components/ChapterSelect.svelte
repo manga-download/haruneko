@@ -14,15 +14,25 @@
     import type {IManga, IChapter} from '../../../engine/MangaProvider';
 
     let chapters: Promise<IChapter[]> = Promise.resolve([]);
+    let filteredChapters: IChapter[] = [];
 
     export let selectedManga: IManga| null;
     let selectedChapter: IChapter| null;
 
+
     //On: MangaChange
     $: {
-        chapters = selectedManga ? selectedManga.GetChapters() : Promise.resolve([]);
+        chapters = selectedManga?.GetChapters() ?? Promise.resolve([]);
         selectedChapter = null;
     } 
+
+    let chapterNameFilter = '';
+    $:{
+        chapters.then((value) => filteredChapters=value.filter(item => {
+            return item.Title.toLowerCase().indexOf(chapterNameFilter.toLowerCase()) !== -1;
+        }));
+    } 
+
 </script>
 <style>
     .Chapter {
@@ -68,7 +78,7 @@
             size="small"
             tooltipPosition="bottom"
             tooltipAlignment="center"
-            iconDescription="Plugin"
+            iconDescription="Languages"
         />
         </div>
         <div class="inline-wide">
@@ -81,13 +91,13 @@
         </div>
     </div>
     <div class="ChapterFilter">
-        <Search size="sm"/>
+        <Search size="sm" bind:value={chapterNameFilter}/>
     </div>
     <div class="ChapterList list">
         {#await chapters}
             <InlineLoading status="active" description="Working..." />
         {:then chapters}
-            {#each chapters as chapter, i}
+            {#each filteredChapters as chapter, i}
                 <Chapter chapter={chapter} selected={selectedChapter===chapter} on:select={e => selectedChapter = e.detail}/>
             {/each}
         {:catch error}
@@ -98,7 +108,7 @@
         {#await chapters}
             Chapters: ?
         {:then chapters}
-            Chapters: {chapters.length}
+            Chapters: {filteredChapters.length}/{chapters.length}
         {:catch error}
             Chapters: ?
         {/await}
