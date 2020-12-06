@@ -1,11 +1,9 @@
 <script lang="ts">
     import {
-        StructuredList,
-        StructuredListHead,
-        StructuredListRow,
-        StructuredListCell,
-        StructuredListBody,
+        InlineNotification 
     } from "carbon-components-svelte";
+
+    import { fade } from 'svelte/transition';
 
     interface ConsoleItem{
         type:string;
@@ -38,6 +36,13 @@
     console.error("console.error from code");
     console.warn("console.warn from code");
 
+    const consoleTypes:Map<string,any> = new Map([
+        ['log','info-square'],
+        ['info', 'info'],
+        ['error', 'error'],
+        ['warn', 'warning'],
+    ]);
+
 </script>
 <style>
     #console{
@@ -49,15 +54,32 @@
     :global(.info) {color:black;background-color: darkcyan;}
     :global(.error) {color:white;background-color: red;}
     :global(.warn) {color:black;background-color: yellow;}
-    .type{display:table-cell;width:3em;padding-left:0.2em;}
-    .text{display:table-cell;padding-left:0.2em;}
+    .consoleitem{margin:0;}
 
+    :global(.consoleitem .bx--inline-notification) {
+        margin:0;
+        padding: 0.5em 0 0.5em 0;
+        min-height: 0;
+    }
+    :global(.consoleitem .bx--inline-notification__details) {
+        margin:0;
+    }
+    :global(.consoleitem .bx--inline-notification__icon) {
+        margin:0 0.25em 0 0.25em;
+    }
+    
+    :global(.consoleitem .bx--inline-notification__text-wrapper) {
+        padding:0em;
+    }
+    :global(.consoleitem .bx--inline-notification__close-button) {
+        height:unset;
+    }
+        
 </style>
 <div id="console">
     {#each consoleitems as consoleitem}
-        <div class="consoleitem ">
-            <div class="type {consoleitem.type}">{consoleitem.type}</div>
-            <div class="text">{consoleitem.text}</div>
+        <div class="consoleitem" transition:fade>
+            <InlineNotification lowContrast kind="{consoleTypes.get(consoleitem.type)}" title="{consoleitem.type}" subtitle="{consoleitem.text}" />
         </div>
     {/each}
 </div>
