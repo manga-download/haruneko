@@ -7,6 +7,7 @@
     } from "carbon-components-svelte";
     import PlugFilled16 from "carbon-icons-svelte/lib/PlugFilled16";
 
+
     import { fly,fade } from 'svelte/transition';
 
     import Manga from "./Manga.svelte";
@@ -53,6 +54,11 @@
             selectedPluginCombo=searchComboItem.id;
         }
         showPluginSelect=false;
+    }
+
+    function shouldFilterPlugin(item:any, value:string) {
+        if (!value) return true;
+        return item.text.toLowerCase().includes(value.toLowerCase());
     }
 
 </script>
@@ -132,6 +138,7 @@
                 bind:selectedIndex={selectedPluginCombo}
                 size="sm"
                 items={pluginsCombo}
+                shouldFilterItem={shouldFilterPlugin}
             />
         </div>
     </div>
