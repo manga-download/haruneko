@@ -89,23 +89,11 @@
     }
     #BottomTabs{
         max-height:0;
+        transition: max-height 0.5s;
     }
-    #BottomTabs.fade-in {
+    #BottomTabs.open {
         max-height:10em;
-        animation: slide_in 0.5s ease-in-out;
 	}
-    #BottomTabs.fade-out {
-        max-height:0;
-        animation: slide_out 0.5s ease-in-out;
-	}
-    @keyframes slide_in {
-        from {max-height: 0;}
-        to {max-height: 10em;}
-    }
-    @keyframes slide_out {
-        from {max-height: 10em;}
-        to {max-height: 0;}
-    }
 
     .tabcontent{
         height:10em;
@@ -175,7 +163,7 @@
                 <Tab label="X" style="width:3em;" disabled={selectedBottomTab===0}/>
                 <Tab label="Jobs" />
                 <Tab label="Console" />
-                <div id="BottomTabs" slot="content" class:fade-in={selectedBottomTab!==0} class:fade-out={selectedBottomTab===0} >
+                <div id="BottomTabs" slot="content" class:open={selectedBottomTab!==0} >
                         <TabContent tabindex={0} style="padding:0;"><div class="tabcontent"></div></TabContent>
                         <TabContent tabindex={1} style="padding:0;"><div class="tabcontent"><Jobs/></div></TabContent>
                         <TabContent tabindex={2} style="padding:0;"><div class="tabcontent"><Console/></div></TabContent>
