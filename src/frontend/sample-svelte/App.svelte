@@ -1,23 +1,10 @@
 <script lang="ts">
     import {
-        Header,
-        HeaderUtilities,
-        HeaderAction,
-        HeaderSearch,
-        HeaderGlobalAction,
-        HeaderPanelLinks,
-        HeaderPanelDivider,
-        HeaderPanelLink,
-        SideNav,
-        SideNavItems,
-        SideNavMenu,
-        SideNavMenuItem,
-        SideNavLink,
-        SkipToContent,
-        Content,
-        Accordion, AccordionItem,
-        InlineLoading,
+        Header,HeaderUtilities,HeaderAction,HeaderSearch,HeaderGlobalAction,HeaderPanelLinks,HeaderPanelDivider,HeaderPanelLink,
+        SideNav,SideNavItems,SideNavMenu, SideNavMenuItem, SideNavLink,
+        SkipToContent,Content,
         SkeletonPlaceholder,
+        Tabs, Tab, TabContent
     } from "carbon-components-svelte";
     import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
 
@@ -26,21 +13,24 @@
     import Theme from "./components/Theme.svelte";
     import MangaSelect from "./components/MangaSelect.svelte";
     import ChapterSelect from "./components/ChapterSelect.svelte";
+    import Jobs from "./components/Jobs.svelte";
+    import Console from "./components/Console.svelte";
 
-    import { fly,fade } from 'svelte/transition';
+    import { fade } from 'svelte/transition';
 
-    import type {IMangaHost,IManga, IChapter } from '../../engine/MangaProvider';
+    import type {IManga, IChapter } from '../../engine/MangaProvider';
 
     let isSideNavOpen = false;
     let isOpen = false;
 
     let theme = "g90";
     let uimode = 'ui-mode-content' // content, download;
-    let app: HTMLElement;
 
+    let app: HTMLElement;
     onMount(async () => {
         app = document.getElementById("hakunekoapp")!;
         app.classList.add(uimode);
+
     });
 
     function changeUIMode() {
@@ -49,9 +39,9 @@
         app.classList.add(uimode);
     }
 
-    let selectedPlugin: IMangaHost | null;
     let selectedManga: IManga| null;
     let selectedChapter: IChapter| null;
+    let selectedBottomTab=0;
 
 </script>
 <style>
@@ -83,8 +73,8 @@
             "Bottom Bottom";
     }
 
-    .Content { grid-area: Content; }
-    .Bottom {
+    #Content { grid-area: Content; }
+    #Bottom {
         grid-area: Bottom;
         border-top: var(--manga-control-separator);
     }
@@ -96,6 +86,35 @@
         white-space: nowrap;
         list-style-type: none;
         padding: 0.25em;
+    }
+    #BottomTabs{
+        max-height:0;
+    }
+    #BottomTabs.fade-in {
+        max-height:10em;
+        animation: slide_in 0.5s ease-in-out;
+	}
+    #BottomTabs.fade-out {
+        max-height:0;
+        animation: slide_out 0.5s ease-in-out;
+	}
+    @keyframes slide_in {
+        from {max-height: 0;}
+        to {max-height: 10em;}
+    }
+    @keyframes slide_out {
+        from {max-height: 10em;}
+        to {max-height: 0;}
+    }
+
+    .tabcontent{
+        height:10em;
+        padding:0.2em;
+        background-color: var(--manga-list-background-color);
+    }
+
+    :global(.bx--tab--content){
+        padding:0;
     }
 
 </style>
@@ -144,22 +163,24 @@
             <MangaSelect on:select={e => selectedManga = e.detail} />
             <ChapterSelect selectedManga={selectedManga} />
         {#if uimode === 'ui-mode-content' }
-        <div class="Content" transition:fade>
+        <div id="Content" transition:fade>
             <SkeletonPlaceholder />
             <SkeletonPlaceholder />
             <SkeletonPlaceholder />
             <SkeletonPlaceholder />
         </div>
         {/if}
-        <div class="Bottom" transition:fade>
-            <Accordion align="start" size="sm">
-                <AccordionItem title="Jobs">
-                    <div slot="title"><InlineLoading status="active" description="Downloading..." /></div>
-                    <p>
-                        Bacon ipsum dolor amet chicken prosciutto brisket chislic. Turducken ham meatloaf ground round, jerky biltong salami chicken beef boudin. Andouille t-bone frankfurter pancetta. Flank andouille fatback, picanha buffalo hamburger short loin chislic cupim ham hock prosciutto biltong kielbasa meatloaf bresaola. Alcatra bresaola shank cupim filet mignon turducken. Pork belly shankle buffalo biltong sirloin. Cow meatloaf filet mignon, pork chop short ribs sirloin tri-tip brisket.
-                    </p>
-                </AccordionItem>
-            </Accordion>
+        <div id="Bottom" transition:fade>
+            <Tabs type="container" bind:selected={selectedBottomTab} >
+                <Tab label="X" style="width:3em;" disabled={selectedBottomTab===0}/>
+                <Tab label="Jobs" />
+                <Tab label="Console" />
+                <div id="BottomTabs" slot="content" class:fade-in={selectedBottomTab!==0} class:fade-out={selectedBottomTab===0} >
+                        <TabContent tabindex={0} style="padding:0;"><div class="tabcontent"></div></TabContent>
+                        <TabContent tabindex={1} style="padding:0;"><div class="tabcontent"><Jobs/></div></TabContent>
+                        <TabContent tabindex={2} style="padding:0;"><div class="tabcontent"><Console/></div></TabContent>
+                </div>
+            </Tabs>
         </div>
     </Content>
 </Theme>
