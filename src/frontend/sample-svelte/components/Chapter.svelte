@@ -3,7 +3,6 @@
     const dispatch = createEventDispatcher();
     
     import {
-        Row,Column,
         Icon
     } from "carbon-components-svelte";
     
@@ -31,9 +30,9 @@
 </style>
 {#if display==='Row'}
 <div class="listitem" class:selected={selected} >
-    <Icon render={CloudDownload16} />
-    <Icon render={Image16} on:click={e => dispatch('select',chapter) }/>
-    <Icon render={Bookmark16} />
+    <Icon class="download" render={CloudDownload16} on:click={e => dispatch('download',chapter) }/>
+    <Icon class="viewer" render={Image16} on:click={e => {console.log('send view');dispatch('view',chapter); }}/>
+    <Icon class="bookmark" render={Bookmark16} on:click={e => dispatch('bookmark',chapter) }/>
     {chapter.Title}
 </div>
 {/if}

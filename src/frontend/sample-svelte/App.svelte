@@ -15,6 +15,8 @@
     import ChapterSelect from "./components/ChapterSelect.svelte";
     import Jobs from "./components/Jobs.svelte";
     import Console from "./components/Console.svelte";
+    import Home from "./components/Home.svelte";
+    import Viewer from "./components/Viewer.svelte";
 
     import { fade } from 'svelte/transition';
 
@@ -42,7 +44,11 @@
     let selectedManga: IManga| null;
     let selectedChapter: IChapter| null;
     let selectedBottomTab=0;
+    let currentContent='home';
+    let showHome=true;
 
+    $:{currentContent=selectedChapter? 'viewer' : 'home';
+        console.log(currentContent)}
 </script>
 <style>
     :global(#hakuneko) {
@@ -149,13 +155,14 @@
 
     <Content id="hakunekoapp">
             <MangaSelect on:select={e => selectedManga = e.detail} />
-            <ChapterSelect selectedManga={selectedManga} />
+            <ChapterSelect selectedManga={selectedManga} on:view={e => selectedChapter = e.detail} />
         {#if uimode === 'ui-mode-content' }
         <div id="Content" transition:fade>
-            <SkeletonPlaceholder />
-            <SkeletonPlaceholder />
-            <SkeletonPlaceholder />
-            <SkeletonPlaceholder />
+            {#if currentContent==='home' && showHome}
+                <Home/>
+            {:else if currentContent==='viewer'}
+                <Viewer chapter={selectedChapter}/>
+            {/if}
         </div>
         {/if}
         <div id="Bottom" transition:fade>

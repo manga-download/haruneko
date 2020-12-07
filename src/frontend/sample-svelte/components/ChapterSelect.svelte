@@ -7,10 +7,14 @@
         InlineLoading,
     } from "carbon-components-svelte";
     import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled16";
+    
     import { fade } from 'svelte/transition';
 
-    import Chapter from "./Chapter.svelte";
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
 
+    import Chapter from "./Chapter.svelte";
+    
     import type {IManga, IChapter} from '../../../engine/MangaProvider';
 
     let chapters: Promise<IChapter[]> = Promise.resolve([]);
@@ -98,7 +102,7 @@
             <InlineLoading status="active" description="Working..." />
         {:then chapters}
             {#each filteredChapters as chapter, i}
-                <Chapter chapter={chapter} selected={selectedChapter===chapter} on:select={e => selectedChapter = e.detail}/>
+                <Chapter chapter={chapter} selected={selectedChapter===chapter} on:view={e => {selectedChapter = e.detail; dispatch('view',selectedChapter);} }/>
             {/each}
         {:catch error}
             <p style="color: red">{error.message}</p>
