@@ -1,16 +1,79 @@
+<script lang="ts">
+    import { 
+        InlineLoading,
+        StructuredList, StructuredListRow, StructuredListCell, StructuredListBody,
+        Icon,
+    } from "carbon-components-svelte";
+
+    import Delete20 from "carbon-icons-svelte/lib/Delete20";
+
+    interface Job{
+        type:string;
+        status:any;
+        context:string;
+        contextDetail:string;
+        text:string;
+    }
+    let jobs:Job[]=[];
+    jobs = [...jobs,{type:"Chapter",status:"active",context:"connector1",contextDetail:"Manga1",text:"4/32 images ..."}];
+    jobs = [...jobs,{type:"Chapter",status:"inactive",context:"connector2",contextDetail:"Manga1",text:"cancelled"}];
+    jobs = [...jobs,{type:"Chapter",status:"finished",context:"connector1",contextDetail:"Manga2",text:"32/32 images finished"}];
+    jobs = [...jobs,{type:"Chapter",status:"error",context:"connector1",contextDetail:"Manga1",text:"4/32 images error"}];
+    jobs = [...jobs,{type:"Chapter",status:"finished",context:"connector1",contextDetail:"Manga2",text:"32/32 images finished"}];
+    jobs = [...jobs,{type:"Chapter",status:"error",context:"connector1",contextDetail:"Manga1",text:"4/32 images error"}];
+    jobs = [...jobs,{type:"Chapter",status:"finished",context:"connector1",contextDetail:"Manga2",text:"32/32 images finished"}];
+    jobs = [...jobs,{type:"Chapter",status:"error",context:"connector1",contextDetail:"Manga1",text:"4/32 images error"}];
+    jobs = [...jobs,{type:"Chapter",status:"finished",context:"connector1",contextDetail:"Manga2",text:"32/32 images finished"}];
+    jobs = [...jobs,{type:"Chapter",status:"error",context:"connector1",contextDetail:"Manga1",text:"4/32 images error"}];
+</script>
 <style>
     #jobs{
         height:100%;
         overflow-y: scroll;
     }
+    :global(.job .bx--structured-list-td) {
+        padding:0;
+    }
+    :global(.job .type) {
+        max-width:3em;
+        margin-right:0.25em;
+    }
+    :global(.job .context) {
+        max-width:8em;
+        margin-right:0.25em;
+    }
+    :global(.job .contextDetail) {
+        max-width:8em;
+        margin-right:0.25em;
+    }
+    :global(.job .action) {
+        max-width:1em;
+    }
+    :global(.job .status .bx--inline-loading__animation) {
+        height:1em;
+    }
+
+    
 </style>
 
 <div id="jobs">
-    Bacon ipsum dolor amet pork chop jerky cupim drumstick landjaeger. Salami venison shankle buffalo sausage. Leberkas pork loin drumstick brisket frankfurter tongue corned beef ham hock rump strip steak shoulder filet mignon jowl flank. Picanha tongue chuck short ribs tri-tip meatloaf flank prosciutto bresaola pork turkey.
-
-    Cupim bacon prosciutto turducken venison pork shank. Hamburger pork turkey filet mignon pork chop jowl capicola chicken tenderloin ham sirloin short ribs bacon swine. Pancetta meatloaf boudin swine picanha turducken flank capicola. Ball tip tenderloin chicken sirloin. Tongue salami frankfurter doner turducken, hamburger chicken beef ribs pork prosciutto kevin alcatra. Hamburger pig filet mignon strip steak pancetta sausage turducken.
-    
-    Bacon burgdoggen chuck spare ribs, ball tip boudin flank turkey cow. Pork loin sirloin frankfurter sausage. Jowl ham shank ground round spare ribs. Ham shoulder frankfurter, jowl andouille meatball pig sausage boudin.
-    
-    Sausage brisket shankle rump burgdoggen. Meatball ribeye beef swine, ground round t-bone shankle burgdoggen pork loin venison pork biltong tongue tri-tip pork belly. Beef ribs kevin hamburger picanha rump swine, spare ribs landjaeger prosciutto pork loin ball tip shank meatloaf filet mignon corned beef. Tri-tip prosciutto cow buffalo. Frankfurter jerky pastrami, sausage pig meatball salami pork chop pork loin beef ribs boudin jowl cupim tail. Tail pork loin turkey tri-tip tongue, t-bone frankfurter pig swine pork drumstick pork chop porchetta shank pastrami.
+    <StructuredList>
+        <StructuredListBody>
+            {#each jobs as job}
+            <StructuredListRow class="job">
+                <StructuredListCell class="type">{job.type}</StructuredListCell>
+                <StructuredListCell class="context">{job.context}</StructuredListCell>
+                <StructuredListCell class="contextDetail">{job.contextDetail}</StructuredListCell>
+                <StructuredListCell class="status {job.type}" >
+                    <InlineLoading status="{job.status}" description="{job.text}" />
+                </StructuredListCell>
+                <StructuredListCell class="action">
+                    {#if job.status==="active"}
+                        <Icon render={Delete20} on:click={()=>alert("clicked")}/>
+                    {/if}
+                </StructuredListCell>
+            </StructuredListRow>
+            {/each}
+        </StructuredListBody>
+    </StructuredList>
 </div>
