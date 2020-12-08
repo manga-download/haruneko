@@ -61,11 +61,11 @@ export default class extends MediaContainer implements IMangaHost {
     // Images | HLS Playlist | MP4 Stream
     public async GetPages(chapter: IChapter): Promise<IPage[]> {
         return [
-            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page01.png', chapter),
-            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page02.png', chapter),
-            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page03.png', chapter),
-            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page04.png', chapter),
-            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page05.png', chapter),
+            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page01.png?raw=true', chapter),
+            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page02.png?raw=true', chapter),
+            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page03.png?raw=true', chapter),
+            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page04.png?raw=true', chapter),
+            new Page('https://github.com/manga-download/haruneko/blob/master/sample/MangaBySheep/Chapter1/Page05.png?raw=true', chapter),
         ];
     }
 }

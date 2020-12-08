@@ -5,6 +5,10 @@
     let pages: Promise<IPage[]> = chapter?.GetPages() ?? Promise.resolve([]);
 </script>
 <style>
+    #viewer{
+        height:100%;
+        overflow-y: scroll;
+    }
     .error {
         color: red;
     }
