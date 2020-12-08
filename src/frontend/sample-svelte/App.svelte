@@ -47,8 +47,8 @@
     let currentContent='home';
     let showHome=true;
 
-    $:{currentContent=selectedChapter? 'viewer' : 'home';
-        console.log(currentContent)}
+    $:currentContent=selectedChapter? 'viewer' : 'home';
+
 </script>
 <style>
     :global(#hakuneko) {

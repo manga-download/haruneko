@@ -31,7 +31,7 @@
 {#if display==='Row'}
 <div class="listitem" class:selected={selected} >
     <Icon class="download" render={CloudDownload16} on:click={e => dispatch('download',chapter) }/>
-    <Icon class="viewer" render={Image16} on:click={e => {console.log('send view');dispatch('view',chapter); }}/>
+    <Icon class="viewer" render={Image16} on:click={e => dispatch('view',chapter)}/>
     <Icon class="bookmark" render={Bookmark16} on:click={e => dispatch('bookmark',chapter) }/>
     {chapter.Title}
 </div>
