@@ -30,11 +30,11 @@
 </script>
 <style>
     #viewer{
-        width: calc(100% - 2em);
-        height: calc(100% - 2em);
-        padding: 1em;
+        width: calc(100%);
+        height: calc(100%);
+        padding: 0.5em;
         overflow-y: scroll;
-        background-image: var(--page-background-image);
+        background-image: none;
         background-size: cover;
         background-repeat: no-repeat;
         background-position: left top;
@@ -47,8 +47,8 @@
 
     .thumbnail {
         display: inline-block;
-        border: var(--page-thumbnail-border);
-        background-color: var(--page-thumbnail-background-color);
+        border: 2px solid var(--cds-ui-04);
+        background-color: var(--cds-ui-01);
         background-position: center;
         background-size: contain;
         background-repeat: no-repeat;
@@ -57,7 +57,7 @@
         width: 16em;
         height: 16em;
         cursor: pointer;
-        box-shadow: var(--page-thumbnail-shadow);
+        box-shadow: 1em 1em 2em var(--cds-ui-01)
     }
 
     #pagesWide{
@@ -81,9 +81,9 @@
         padding-right: 2.0em;
         opacity: 0.05;
         transition: opacity 0.25s;
-        background-color: var(--page-viewer-title-background-color);
+        background-color: var(--cds-ui-04);
         border-bottom-left-radius: 1em;
-        box-shadow: var(--page-viewer-title-shadow);
+        box-shadow: 0em 0em 1em var(--cds-ui-01);
         outline: none; /* disable focus border */
     }
     #buttons:hover {
@@ -97,7 +97,7 @@
         display: none;
         font-weight: bold;
         font-size: 1.25em;
-        color: var(--page-chapter-title-color);
+        color: var(--cds-text-01);
     }
     .button {
         cursor: pointer;
@@ -106,7 +106,7 @@
     #fullscreen {
         width: 100%;
         height: 100%;
-        background-color: var(--page-video-background-color);
+        background-color: var(--cds-ui-01);
     }
     #video {
         width: 100%;
@@ -118,8 +118,10 @@
         display: none;
     }
 
-    /* hack to allow video to expand size when wrapped in subtitle container */
-    .ASS-container, .ASS-container svg {
+    /* hack to allow video to expand size when wrapped in subtitle container 
+        .ASS-container,.ASS-container svg
+    */
+    .ASS-container  {
         width: 100% !important;
         height: 100% !important;
     }

@@ -39,11 +39,11 @@
 
 </script>
 <style>
-    .Chapter {
+    #Chapter {
         display: grid;
         min-height:0;
         height: 100%;
-        grid-template-rows: 2em 2em 2em 1fr;
+        grid-template-rows: 2em 2em 2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
             "ChapterTitle"
@@ -53,13 +53,17 @@
             "ChapterCount";
         grid-area: Chapter;
     }
-    .LanguageFilter { grid-area: LanguageFilter; display: table; }
-    .ChapterFilter {  grid-area: ChapterFilter; display: table; }
-    .ChapterList { grid-area: ChapterList; overflow-y: scroll; overflow-x:hidden}
-    .ChapterCount { grid-area: ChapterCount; margin:0.25em;}
-
+    #LanguageFilter { grid-area: LanguageFilter; display: table; }
+    #ChapterFilter {  grid-area: ChapterFilter; display: table; }
+    #ChapterList { grid-area: ChapterList; background-color: var(--cds-field-01); overflow-y: scroll; overflow-x:hidden}
+    #ChapterCount { grid-area: ChapterCount; margin:0.25em;}
+    :global(#ChapterList .list) {
+        white-space: nowrap;
+        list-style-type: none;
+        padding: 0.25em;
+    }
     .separator {
-        border-bottom: var(--manga-control-separator);
+        border-bottom: 1px groove var(--cds-button-separator);
     }
 
     .inline{
@@ -70,11 +74,11 @@
         width:100%;
     }
 </style>
-<div class="Chapter" transition:fade>
-    <div class="ChapterTitle">
+<div id="Chapter" transition:fade>
+    <div id="ChapterTitle">
         <h5 class="separator">Chapter List</h5>
     </div>
-    <div class="LanguageFilter">
+    <div id="LanguageFilter">
         <div class="inline">
         <Button 
             icon={EarthFilled16}
@@ -94,10 +98,10 @@
             />
         </div>
     </div>
-    <div class="ChapterFilter">
+    <div id="ChapterFilter">
         <Search size="sm" bind:value={chapterNameFilter}/>
     </div>
-    <div class="ChapterList list">
+    <div id="ChapterList" class="list">
         {#await chapters}
             <InlineLoading status="active" description="Working..." />
         {:then chapters}
@@ -108,7 +112,7 @@
             <p style="color: red">{error.message}</p>
         {/await}
     </div>
-    <div class="ChapterCount">
+    <div id="ChapterCount">
         {#await chapters}
             Chapters: ?
         {:then chapters}

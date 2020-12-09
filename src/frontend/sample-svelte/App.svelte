@@ -51,6 +51,16 @@
 
 </script>
 <style>
+    :global(::-webkit-scrollbar) {
+    width: 1em; /* Necessary so scrollbar changes from default*/
+    }
+    :global(::-webkit-scrollbar-track) {
+        background:var(--cds-ui-background); /* Background of scrollbar */
+    }
+    :global(::-webkit-scrollbar-thumb) {
+        background:var(--cds-active-ui); /* Scroll marker */
+        border-radius: 2em; /* So marker has rounded edges */
+    }
     :global(#hakuneko) {
         position: fixed; 
         overflow:hidden;
@@ -63,11 +73,11 @@
         max-height: calc(100vh - 3.5em);
         display: grid;
         padding:0.5em; 
-        gap: 0.3em 1em;
+        gap: 0.3em 0.3em;
         grid-template-rows: 1fr fit-content(0.5em);
     }
     :global(.ui-mode-content)  { 
-        grid-template-columns: 20em 20em 1fr;
+        grid-template-columns: 19em 19em 1fr;
         grid-template-areas:
             "Manga Chapter Content"
             "Bottom Bottom Content";
@@ -82,16 +92,7 @@
     #Content { grid-area: Content; }
     #Bottom {
         grid-area: Bottom;
-        border-top: var(--manga-control-separator);
-    }
-
-    :global(.list) {
-        border: var(--manga-list-border);
-        background-color: var(--manga-list-background-color);
-        overflow-y: scroll;
-        white-space: nowrap;
-        list-style-type: none;
-        padding: 0.25em;
+        border-top: 1px groove var(--cds-button-separator);
     }
     #BottomTabs{
         max-height:0;
@@ -104,16 +105,15 @@
     .tabcontent{
         height:10em;
         padding:0.2em;
-        background-color: var(--manga-list-background-color);
+        background-color: var(--cds-field-01);
     }
 
-    :global(.bx--tab--content){
+    :global(#BottomTabs .bx--tab--content){
         padding:0;
     }
 
 </style>
 <svelte:head>
-    <link rel="stylesheet" href="css/theme/dark.css" >
     <link rel="stylesheet" href="css/sample-svelte.css">
     <link rel="stylesheet" href="css/theme/all.css">
 </svelte:head>

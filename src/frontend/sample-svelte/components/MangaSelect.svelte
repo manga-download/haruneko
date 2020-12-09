@@ -63,7 +63,7 @@
 
 </script>
 <style>
-    .Manga {
+    #Manga {
         min-height: 0;
         height:100%;
         display: grid;
@@ -77,18 +77,21 @@
             "MangaCount";
         grid-area: Manga;
     }
-    .Plugin { grid-area: Plugin; display: table; }
-    .MangaFilter { grid-area: MangaFilter; display: table; }
-    .MangaList { grid-area: MangaList; height:100%; overflow-y: scroll; overflow-x: hidden }
-    .MangaCount{ grid-area: MangaCount; margin:0.25em;}
-
+    #Plugin { grid-area: Plugin; display: table; }
+    #MangaFilter { grid-area: MangaFilter; display: table; }
+    #MangaList { grid-area: MangaList; background-color: var(--cds-field-01); overflow:hidden; }
+    #MangaCount{ grid-area: MangaCount; display: table; margin:0.25em;}
+    :global(#MangaList .vlist) {
+        white-space: nowrap;
+        list-style-type: none;
+        padding: 0.25em;
+    }
     :global(#Plugin-combo) { 
         display:table-cell;
         width:100%
     }
-
     .separator {
-        border-bottom: var(--manga-control-separator);
+        border-bottom: 1px groove var(--cds-button-separator);
     }
 
     .inline{
@@ -116,11 +119,11 @@
         />
     </div>
 {/if}
-<div class="Manga" transition:fade>
-    <div class="MangaTitle">
+<div id="Manga" transition:fade>
+    <div id="MangaTitle">
         <h5 class="separator">Manga List</h5>
     </div>
-    <div class="Plugin">
+    <div id="Plugin">
         <div class="inline">
             <Button 
                 icon={PlugFilled16}
@@ -142,21 +145,21 @@
             />
         </div>
     </div>
-    <div class="MangaFilter">
+    <div id="MangaFilter">
         <Search size="sm" bind:value={mangaNameFilter} />
     </div>
-    <div class="MangaList list">
+    <div id="MangaList" class="list">
         {#await mangas}
             <InlineLoading status="active" description="Working..." />
         {:then mangas}
-            <VirtualList items={filteredmangas} let:item>
+            <VirtualList class="vlist" items={filteredmangas} let:item>
                 <Manga manga={item} selected={selectedManga===item} on:select={e => {selectedManga = e.detail; dispatch('select', e.detail);}}/>
             </VirtualList>
         {:catch error}
             <p style="color: red">{error.message}</p>
         {/await}
     </div>
-    <div class="MangaCount">
+    <div id="MangaCount">
         {#await mangas}
             Mangas : ?
         {:then mangas}

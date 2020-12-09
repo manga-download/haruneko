@@ -22,10 +22,10 @@
         cursor: pointer;
     }
     .listitem:hover{
-        background-color: var(--chapter-list-highlighted);
+        background-color: var(--cds-hover-ui);
     }
     .listitem.selected {
-        background-color: var(--chapter-list-selected);
+        background-color: var(--cds-active-ui);
     }
 </style>
 {#if display==='Row'}

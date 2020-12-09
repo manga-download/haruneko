@@ -16,10 +16,10 @@
         cursor: pointer;
     }
     .manga:hover{
-        background-color: var(--manga-list-highlighted);
+        background-color: var(--cds-hover-ui);
     }
     .manga.selected  {
-        background-color: var(--manga-list-selected);
+        background-color: var(--cds-active-ui);
     }
 </style>
 

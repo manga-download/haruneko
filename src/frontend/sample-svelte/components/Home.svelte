@@ -1,9 +1,11 @@
 <style>
+    #Home {
+        padding:0.5em;
+    }
     .border {
-        border: 2px solid #cdcdcd;
-        border-color: rgba(0, 0, 0, .14);
+        border: 2px solid var(--cds-ui-04);
         border-radius: 1em;
-        background-color: var(--chapter-list-background-color);
+        background-color: var(--cds-ui-01);
         padding: 1em;
     }
     .logo {
@@ -11,7 +13,7 @@
         border-radius: 10%;
     }
 </style>
-<div id="container">
+<div id="Home">
     <h2>Welcome to HakuNeko</h2>
     <div>
         <p class="border">
