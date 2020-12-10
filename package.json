@@ -30,6 +30,7 @@
     "jest-mock-extended": "latest",
     "jsdom": "latest",
     "nw": "0.49.1-sdk",
+    "postcss": "latest",
     "puppeteer-core": "latest",
     "react": "latest",
     "react-dom": "latest",
