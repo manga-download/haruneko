@@ -24,7 +24,7 @@
 
     let isSideNavOpen = false;
     let isOpen = false;
-    let theme = "g90";
+    let theme:string;
 
     let uimode = 'ui-mode-content' // content, download;
 
