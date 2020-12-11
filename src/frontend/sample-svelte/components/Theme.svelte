@@ -1,13 +1,27 @@
+<script context="module" lang="ts">
+    export type Theme={
+        id:string;
+        label:string;
+    }
+
+    export const themes :Theme[] = [
+        {id: "hakuneko", label:"Hakuneko"},
+        {id: "white", label:"Carbon White"},
+        {id: "g10", label:"Carbon g10 (light)"},
+        {id: "g90", label:"Carbon g90 (dark)"},
+        {id: "g100", label:"Carbon g100 (dark)"},
+    ]
+</script>
+
 <script lang="ts">
     export let persist = false;
     export let persistKey = "theme";
-    export let theme = "white";
-    export const themes = ["white", "g10", "g90", "g100"];
+    export let theme ='g90';
 
     import { onMount, afterUpdate, setContext } from "svelte";
     import { writable, derived } from "svelte/store";
 
-    const isValidTheme = (value: string) => themes.includes(value);
+    const isValidTheme = (value: string) => themes.find(element => element.id===value);;
     const isDark = (value: string) =>
         isValidTheme(value) && (value === "g90" || value === "g100");
 

@@ -10,7 +10,7 @@
 
     import { onMount } from 'svelte';
 
-    import Theme from "./components/Theme.svelte";
+    import InterfaceTheme,{themes} from "./components/Theme.svelte";
     import MangaSelect from "./components/MangaSelect.svelte";
     import ChapterSelect from "./components/ChapterSelect.svelte";
     import Jobs from "./components/Jobs.svelte";
@@ -24,8 +24,8 @@
 
     let isSideNavOpen = false;
     let isOpen = false;
-
     let theme = "g90";
+
     let uimode = 'ui-mode-content' // content, download;
 
     let app: HTMLElement;
@@ -116,8 +116,9 @@
 <svelte:head>
     <link rel="stylesheet" href="css/sample-svelte.css">
     <link rel="stylesheet" href="css/theme/all.css">
+    <link rel="stylesheet" href="css/theme/hakuneko.css">
 </svelte:head>
-<Theme persist bind:theme>
+<InterfaceTheme persist bind:theme>
     <Header expandedByDefault={false} persistentHamburgerMenu={true} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
         <div slot="skip-to-content">
             <SkipToContent />
@@ -129,12 +130,10 @@
             <HeaderPanelLinks>
                 <HeaderPanelDivider>Switcher subject 1</HeaderPanelDivider>
                 <HeaderPanelLink>Switcher item 1</HeaderPanelLink>
-                <HeaderPanelDivider>Switcher subject 2</HeaderPanelDivider>
-                <HeaderPanelLink>Switcher item 1</HeaderPanelLink>
-                <HeaderPanelLink>Switcher item 2</HeaderPanelLink>
-                <HeaderPanelLink>Switcher item 3</HeaderPanelLink>
-                <HeaderPanelLink>Switcher item 4</HeaderPanelLink>
-                <HeaderPanelLink>Switcher item 5</HeaderPanelLink>
+                <HeaderPanelDivider>Themes</HeaderPanelDivider>
+                {#each themes as item}
+                    <HeaderPanelLink on:click={() => theme=item.id}>{item.label}</HeaderPanelLink>
+                {/each}
             </HeaderPanelLinks>
             </HeaderAction>
         </HeaderUtilities>
@@ -178,4 +177,4 @@
             </Tabs>
         </div>
     </Content>
-</Theme>
+</InterfaceTheme>
