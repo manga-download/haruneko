@@ -26,10 +26,30 @@
     function decreaseImagePadding (){}
     function zoomIn(){}
     function zoomOut(){}
-    function hideViewer(){}
+    function toggleThumbnailViewer(){
+        mode='pagesThumbnail';
+        const contentdiv:any=document.getElementById('Content');
+        const pagesdiv:any=document.getElementById('Viewer');
+        contentdiv.appendChild(pagesdiv);
+    }
+    function toggleWideViewer() {
+        mode='pagesWide';
+        const pagesdiv:any=document.getElementById('Viewer');
+        document.body.appendChild(pagesdiv);
+
+    }
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+            document.exitFullscreen(); 
+            }
+        }
+    }
 </script>
 <style>
-    #viewer{
+    #Viewer{
         width: calc(100%);
         height: calc(100%);
         padding: 0.5em;
@@ -60,22 +80,23 @@
         box-shadow: 1em 1em 2em var(--cds-ui-01)
     }
 
-    #pagesWide{
-        /* full app width doesn't work ?
-        position:absolute;
-        background-color: var(--cds-ui-01);*/
-        width:100%;
-        height:100%;
-        z-index: 100;
+    :global(.pagesWide){
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        position: absolute;
+        z-index: 10000;
+        background-color: var(--cds-ui-01);
     }
     .image {
         display: block;
         margin-left: auto !important;
         margin-right: auto !important;
     }
-    #buttons {
+    :global(#Viewer #Buttons) {
         position: fixed;
-        top: 0;
+        top: 0; 
         right: 0;
         padding-left: 1em;
         padding-right: 2.0em;
@@ -86,29 +107,29 @@
         box-shadow: 0em 0em 1em var(--cds-ui-01);
         outline: none; /* disable focus border */
     }
-    #buttons:hover {
+    :global(#Viewer #Buttons:hover) {
         opacity: 1.0;
     }
-    #buttons:hover > .title {
+    :global(#Viewer #Buttons:hover > .title ){
         display: inline;
     }
 
-    .title {
+    :global(#Viewer .title) {
         display: none;
         font-weight: bold;
         font-size: 1.25em;
         color: var(--cds-text-01);
     }
-    .button {
+    :global(#Viewer .button) {
         cursor: pointer;
         margin: 0.25em;
     }
-    #fullscreen {
+    #FullScreen {
         width: 100%;
         height: 100%;
         background-color: var(--cds-ui-01);
     }
-    #video {
+    #Video {
         width: 100%;
         height: 100%;
         object-fit: contain;
@@ -130,14 +151,14 @@
         z-index: 2147483647;
     }
 </style>
-<div id="viewer">
+<div id="Viewer">
     {#if mode==='pagesThumbnail' || mode==='pagesWide'}
-        <div id="pages" class="{mode}">
+        <div id="Pages" class="{mode}">
             {#await pages}
                 <p>...loading chapter</p>
             {:then pages}
                 {#if mode==='pagesWide'}
-                    <div id="buttons" tabindex="0" on-blur="focus()" on-keydown="onKeyDown">
+                    <div id="Buttons" tabindex="0" on-blur="focus()" on-keydown="onKeyDown">
                         <span class="title">{chapter?.Title ?? 'unkown'}</span>
                         <Icon label="Chapter Down (ArrowLeft)" render={ChevronLeft24} on:click={e => dispatch('requestChapterDown',chapter) }/>
                         <Icon label="Chapter Up (ArrowRight)" render={ChevronRight24} on:click={e => dispatch('requestChapterUp',chapter) }/>
@@ -148,7 +169,7 @@
                         <Icon label="Zoom In (➕)" render={ZoomIn24} on:click={zoomIn}/>
                         <Icon label="Zoom Out (➖)" render={ZoomOut24} on:click={zoomOut}/>
                         &nbsp
-                        <Icon label="Close (ESC)" render={Misuse24} on:click={()=> mode='pagesThumbnail'}/>
+                        <Icon label="Close (ESC)" render={Misuse24} on:click={toggleThumbnailViewer}/>
                     </div>
                 {/if}
                 {#each pages as pagefetch,index}
@@ -156,7 +177,7 @@
                         <p>...loading image</p>
                     {:then page}
                         {#if mode==='pagesThumbnail'}
-                        <div class="thumbnail" style="background-image: url('{page}');" on:click={() => mode='pagesWide'} title="Page { index }"/>
+                        <div class="thumbnail" style="background-image: url('{page}');" on:click={toggleWideViewer} title="Page { index }"/>
                         {:else if mode==='pagesWide'}
                         <img id="page_{index}" alt="page_{index}" class="image" src="{page}" style="width: {imageWidth}%; margin: {imagePadding}em;" on-error="imgError(this)"/>
                         {/if}
@@ -170,9 +191,9 @@
         </div>
     {:else if mode==='video'}
         <!-- WIP nothing to see here -->
-        <div id="fullscreen" on-dblclick="toggleFullscreen">
+        <div id="FullScreen" on-dblclick="toggleFullscreen">
             <!-- disablePictureInPicture controlsList="nodownload nofullscreen" -->
-            <video id="video" controls >
+            <video id="Video" controls >
                 <!-- dummy tracks to show subtitle menu in video player -->
                 <template is="dom-repeat" items="[[ media.subtitles ]]">
                     <!-- dummy tracks to show subtitle menu in video player -->
