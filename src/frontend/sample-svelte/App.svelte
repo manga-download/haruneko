@@ -10,13 +10,15 @@
 
     import { onMount } from 'svelte';
 
-    import InterfaceTheme,{themes} from "./components/Theme.svelte";
+    import Theme,{themes} from "./components/Theme.svelte";
     import MangaSelect from "./components/MangaSelect.svelte";
     import ChapterSelect from "./components/ChapterSelect.svelte";
     import Jobs from "./components/Jobs.svelte";
     import Console from "./components/Console.svelte";
+    import Network from "./components/Network.svelte";
     import Home from "./components/Home.svelte";
     import Viewer from "./components/Viewer.svelte";
+
 
     import { fade } from 'svelte/transition';
 
@@ -118,7 +120,7 @@
     <link rel="stylesheet" href="css/theme/all.css">
     <link rel="stylesheet" href="css/theme/hakuneko.css">
 </svelte:head>
-<InterfaceTheme persist bind:theme>
+<Theme persist bind:theme>
     <Header expandedByDefault={false} persistentHamburgerMenu={true} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
         <div slot="skip-to-content">
             <SkipToContent />
@@ -169,12 +171,14 @@
                 <Tab label="X" style="width:3em;" disabled={selectedBottomTab===0}/>
                 <Tab label="Jobs" />
                 <Tab label="Console" />
+                <Tab label="Network" />
                 <div id="BottomTabs" slot="content" class:open={selectedBottomTab!==0} >
                         <TabContent tabindex={0} style="padding:0;"><div class="tabcontent"></div></TabContent>
                         <TabContent tabindex={1} style="padding:0;"><div class="tabcontent"><Jobs/></div></TabContent>
                         <TabContent tabindex={2} style="padding:0;"><div class="tabcontent"><Console/></div></TabContent>
+                        <TabContent tabindex={3} style="padding:0;"><div class="tabcontent"><Network/></div></TabContent>
                 </div>
             </Tabs>
         </div>
     </Content>
-</InterfaceTheme>
+</Theme>

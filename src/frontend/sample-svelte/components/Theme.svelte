@@ -2,14 +2,16 @@
     export type Theme={
         id:string;
         label:string;
+        kind:string;
     }
 
     export const themes :Theme[] = [
-        {id: "hakuneko", label:"Hakuneko"},
-        {id: "white", label:"Carbon White"},
-        {id: "g10", label:"Carbon g10 (light)"},
-        {id: "g90", label:"Carbon g90 (dark)"},
-        {id: "g100", label:"Carbon g100 (dark)"},
+        {id: "hakuneko", label:"Hakuneko", kind:"dark"},
+        {id: "white", label:"Carbon White", kind:"light"},
+        {id: "g10", label:"Carbon g10 (light)", kind:"light"},
+        {id: "g90", label:"Carbon g90 (dark)", kind:"dark"},
+        {id: "g100", label:"Carbon g100 (dark)", kind:"dark"},
+        {id: "sheepyneko", label:"sheepyneko", kind:"light"},
     ]
 </script>
 
