@@ -49,11 +49,10 @@
     }
 </script>
 <style>
-    #Viewer{
-        width: calc(100%);
-        height: calc(100%);
+    :global(#Viewer){
+        width: 100%;
+        height: 100%;
         padding: 0.5em;
-        overflow-y: scroll;
         background-image: none;
         background-size: cover;
         background-repeat: no-repeat;
@@ -80,12 +79,19 @@
         box-shadow: 1em 1em 2em var(--cds-ui-01)
     }
 
-    :global(.pagesWide){
+    :global(#Viewer>#Pages.pagesThumbnail){
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    :global(#Viewer>#Pages.pagesWide){
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
         position: absolute;
+        overflow-y: scroll;
         z-index: 10000;
         background-color: var(--cds-ui-01);
     }
