@@ -18,13 +18,16 @@
             nw.Window.open('http://localhost:5000/splash.html', newWindowOptions,function(new_win) {
                 splash=new_win;
             });
+            
             window.addEventListener('appready',  function(){
                 if (!loading){ 
+                    console.log('lets go');
                     splash.close();
                     nw.Window.get().show();
                 }
             }, false);
         }
+        else { nw.Window.get().show(); }
     </script>
     <head>
         <title>HakuNeko - Manga, Anime & Novel Downloader</title>
