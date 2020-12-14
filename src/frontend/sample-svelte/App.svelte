@@ -9,8 +9,6 @@
 
     import { onMount } from 'svelte';
 
-    import * as socketio from "socket.io";
-
     import Theme,{themes} from "./components/Theme.svelte";
     import MangaSelect from "./components/MangaSelect.svelte";
     import ChapterSelect from "./components/ChapterSelect.svelte";
@@ -122,7 +120,7 @@
     :global(#BottomTabs .bx--tab--content){
         padding:0;
     }
-    :global (header){
+    :global(#Header){
         -webkit-app-region:drag;
     }
 </style>
