@@ -1,3 +1,8 @@
+<svelte:head>
+    <link rel="stylesheet" href="css/sample-svelte.css">
+    <link rel="stylesheet" href="css/theme/all.css">
+    <link rel="stylesheet" href="css/theme/hakuneko.css">
+</svelte:head>
 <script lang="ts">
     import {
         Header,HeaderUtilities,HeaderAction,HeaderSearch,HeaderGlobalAction,HeaderPanelLinks,HeaderPanelDivider,HeaderPanelLink,
@@ -32,16 +37,8 @@
     onMount(async () => {
         app = document.getElementById("hakunekoapp")!;
         app.classList.add(uimode);
-        //Tell the splash that we're ready
-        const net = require('net');
-        const client = new net.Socket();
-        client.on('error', function(){
-            console.info('App probably started without splash');
-        });
-        //TODO: hardcoded should be changed
-        client.connect(5001, 'localhost');
-        client.write('loaded');
-        nw.Window.get().show();
+        // some delay for pre-rendering
+        setTimeout(function(){ nw.Window.get().window.dispatchEvent(new Event('appready'));}, 2500);
     });
 
     function changeUIMode() {
@@ -124,11 +121,6 @@
         -webkit-app-region:drag;
     }
 </style>
-<svelte:head>
-    <link rel="stylesheet" href="css/sample-svelte.css">
-    <link rel="stylesheet" href="css/theme/all.css">
-    <link rel="stylesheet" href="css/theme/hakuneko.css">
-</svelte:head>
 <Theme persist bind:theme>
     <Header id="Header" expandedByDefault={false} persistentHamburgerMenu={true} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
         <div slot="skip-to-content">

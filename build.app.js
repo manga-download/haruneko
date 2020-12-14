@@ -39,16 +39,9 @@ async function getManifest() {
             //toolbar: true,
             //frame: false,
             position: 'center',
-            //main mode
             width: 1280,
             height: 720,
-            /*
-            //splash mode
-            "width": 310,
-            "height": 400,
-            "resizable": false,
-            "frame": false,
-            "transparent": true*/
+            show: false,
         },
         dependencies: config.dependencies
     };

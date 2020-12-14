@@ -1,5 +1,31 @@
 <!DOCTYPE html>
 <html>
+    <script>
+        newWindowOptions = {
+            new_instance : true,
+            show : true,
+            width: 310,
+            height: 400,
+            position: 'center',
+            resizable: false,
+            frame: false,
+            transparent: true
+        };
+        let splash=false;
+        //use to stop the loading event if you still check something
+        let loading=false;
+        if (splash) {
+            nw.Window.open('http://localhost:5000/splash.html', newWindowOptions,function(new_win) {
+                splash=new_win;
+            });
+            window.addEventListener('appready',  function(){
+                if (!loading){ 
+                    splash.close();
+                    nw.Window.get().show();
+                }
+            }, false);
+        }
+    </script>
     <head>
         <title>HakuNeko - Manga, Anime & Novel Downloader</title>
         <link rel="icon" href="./img/logo.png" />

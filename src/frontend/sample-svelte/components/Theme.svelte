@@ -11,7 +11,7 @@
         {id: "g10", label:"Carbon g10 (light)", kind:"light"},
         {id: "g90", label:"Carbon g90 (dark)", kind:"dark"},
         {id: "g100", label:"Carbon g100 (dark)", kind:"dark"},
-        {id: "sheepyneko", label:"sheepyneko", kind:"light"},
+        {id: "sheepyneko", label:"SheepyNeko", kind:"light"},
     ]
 </script>
 

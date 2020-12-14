@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Splash Screen</title>
+    <title>HakuNeko ... loading</title>
 
   </head>
   <style>
@@ -68,36 +68,6 @@
         animation: spin 4s ease 0s infinite normal;
     }
   </style>
-  <script>
-    function loadAppWindowInBackground () {
-      newWindowOptions = {
-        new_instance : true,
-        show : true,
-        width: 1280,
-        height: 720
-      };
-
-      const net = require('net');
-      const server = net.createServer(function (socket) {
-        socket.write('Echo server');
-        socket.pipe(socket);
-
-        // Handle incoming messages app window
-        socket.on('data', function (data) {
-          if (data.toString() === 'loaded') {
-            server.close();
-            nw.Window.get().close(true);
-          }
-        });
-      });
-      server.listen(5001, 'localhost');
-      // Launch hidden app window and wait for it to signal to close the splasher window
-      //TODO: tempory hardcoded should be changed to reflect build.app.js
-      nw.Window.open("http://localhost:5000/index.html", newWindowOptions);
-    }
-
-    
-  </script>
   <body class="drag-enable">
     <div class="wrapper">
       <div class="close drag-disable" onclick="nw.Window.get().close(true)">&times;</div>
@@ -105,8 +75,5 @@
       <div class="spinner"></div>
       Smooth animation plays while the app window is locked up and hidden from view.
     </div>
-    <script>
-      loadAppWindowInBackground();
-    </script>
   </body>
 </html>
