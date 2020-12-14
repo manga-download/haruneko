@@ -18,7 +18,10 @@ async function getManifest() {
         name: config.name,
         description: config.description,
         'chromium-args': '--ignore-certificate-errors',
+        //main mode
         main: baseURL + '/index.html',
+        //splash mode
+        //main: baseURL + '/splash.html',
         //main: config.main,
         //url: baseURL + '/index.html',
         'node-remote': [
@@ -36,8 +39,16 @@ async function getManifest() {
             //toolbar: true,
             //frame: false,
             position: 'center',
+            //main mode
             width: 1280,
-            height: 720
+            height: 720,
+            /*
+            //splash mode
+            "width": 310,
+            "height": 400,
+            "resizable": false,
+            "frame": false,
+            "transparent": true*/
         },
         dependencies: config.dependencies
     };

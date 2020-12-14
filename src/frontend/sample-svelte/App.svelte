@@ -3,12 +3,13 @@
         Header,HeaderUtilities,HeaderAction,HeaderSearch,HeaderGlobalAction,HeaderPanelLinks,HeaderPanelDivider,HeaderPanelLink,
         SideNav,SideNavItems,SideNavMenu, SideNavMenuItem, SideNavLink,
         SkipToContent,Content,
-        SkeletonPlaceholder,
         Tabs, Tab, TabContent
     } from "carbon-components-svelte";
     import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
 
     import { onMount } from 'svelte';
+
+    import * as socketio from "socket.io";
 
     import Theme,{themes} from "./components/Theme.svelte";
     import MangaSelect from "./components/MangaSelect.svelte";
@@ -18,7 +19,6 @@
     import Network from "./components/Network.svelte";
     import Home from "./components/Home.svelte";
     import Viewer from "./components/Viewer.svelte";
-
 
     import { fade } from 'svelte/transition';
 
@@ -34,7 +34,16 @@
     onMount(async () => {
         app = document.getElementById("hakunekoapp")!;
         app.classList.add(uimode);
-
+        //Tell the splash that we're ready
+        const net = require('net');
+        const client = new net.Socket();
+        client.on('error', function(){
+            console.info('App probably started without splash');
+        });
+        //TODO: hardcoded should be changed
+        client.connect(5001, 'localhost');
+        client.write('loaded');
+        nw.Window.get().show();
     });
 
     function changeUIMode() {
@@ -113,7 +122,9 @@
     :global(#BottomTabs .bx--tab--content){
         padding:0;
     }
-
+    :global (header){
+        -webkit-app-region:drag;
+    }
 </style>
 <svelte:head>
     <link rel="stylesheet" href="css/sample-svelte.css">
@@ -121,7 +132,7 @@
     <link rel="stylesheet" href="css/theme/hakuneko.css">
 </svelte:head>
 <Theme persist bind:theme>
-    <Header expandedByDefault={false} persistentHamburgerMenu={true} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
+    <Header id="Header" expandedByDefault={false} persistentHamburgerMenu={true} company="HakuNeko" platformName="Manga & Anime - Downloader" bind:isSideNavOpen>
         <div slot="skip-to-content">
             <SkipToContent />
         </div>
