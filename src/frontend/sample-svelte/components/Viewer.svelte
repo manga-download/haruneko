@@ -6,8 +6,8 @@
     import ChevronRight24 from "carbon-icons-svelte/lib/ChevronRight24";
     import ZoomIn24 from "carbon-icons-svelte/lib/ZoomIn24";
     import ZoomOut24 from "carbon-icons-svelte/lib/ZoomOut24";
-    import RowInsert24 from "carbon-icons-svelte/lib/RowInsert24";
-    import RowDelete24 from "carbon-icons-svelte/lib/RowDelete24";
+    import RowInsert24 from "carbon-icons-svelte/lib/RowExpand24";
+    import RowDelete24 from "carbon-icons-svelte/lib/RowCollapse24";
     import Misuse24 from "carbon-icons-svelte/lib/Misuse24";
 
     import { createEventDispatcher } from 'svelte';
