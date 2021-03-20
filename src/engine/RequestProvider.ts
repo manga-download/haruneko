@@ -104,7 +104,7 @@ export class RequestProvider implements IRequestProvider {
         if(clearIframettributes) {
             content = content.replace(/<iframe[^<]*?>/g, '<iframe>');
         }
-        let dom = document.createElement('html');
+        const dom = document.createElement('html');
         dom.innerHTML = content;
         return dom;
     }

@@ -14,7 +14,7 @@ export class CloudFlareMailDecryptor {
         if(element.dataset.cfemail) {
             element.textContent = this.Decrypt(element.dataset.cfemail);
         } else {
-            for(let span of element.querySelectorAll('span[data-cfemail]') as NodeListOf<HTMLSpanElement>) {
+            for(const span of element.querySelectorAll('span[data-cfemail]') as NodeListOf<HTMLSpanElement>) {
                 this.Transform(span);
             }
         }
