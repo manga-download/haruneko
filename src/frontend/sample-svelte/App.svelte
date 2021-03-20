@@ -5,7 +5,7 @@
 </svelte:head>
 <script lang="ts">
     import {
-        Header,HeaderUtilities,HeaderAction,HeaderSearch,HeaderGlobalAction,HeaderPanelLinks,HeaderPanelDivider,HeaderPanelLink,
+        Header,HeaderUtilities,HeaderAction,HeaderGlobalAction,HeaderPanelLinks,HeaderPanelDivider,HeaderPanelLink,
         SideNav,SideNavItems,SideNavMenu, SideNavMenuItem, SideNavLink,
         SkipToContent,Content,
         Tabs, Tab, TabContent
@@ -127,7 +127,9 @@
             <SkipToContent />
         </div>
         <HeaderUtilities>
+            <!--
             <HeaderSearch />
+            -->
             <HeaderGlobalAction on:click={changeUIMode} aria-label="Wide" icon={SettingsAdjust20} />
             <HeaderAction bind:isOpen>
             <HeaderPanelLinks>
