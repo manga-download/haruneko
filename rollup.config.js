@@ -29,7 +29,7 @@ function launch(options) {
 
 const configApp = {
     input: {
-        'index': 'src/Index.ts'
+        'index': 'src/index.ts'
     },
     output: [
         {
