@@ -1,4 +1,5 @@
 import { IMediaContainer } from '../../engine/providers/MediaPlugin';
+import { FetchJSON } from '../../engine/RequestProvider';
 
 export default class App {
 
@@ -62,7 +63,7 @@ export default class App {
                     'X-Foo': 'bar'
                 }
             });
-            const data = await window.HakuNeko.RequestProvider.FetchJSON(request);
+            const data = await FetchJSON(request);
             console.log('FetchJSON:', data);
         };
         const itemFetchJSON = this.CreateElement('li');

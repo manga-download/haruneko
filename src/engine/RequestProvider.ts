@@ -9,14 +9,15 @@ const fetchApiUnsupportedHeaders = [
     'Host'
 ];
 
+/*
 export interface IFetchRequest extends Request {
-    new (input: RequestInfo, init?: RequestInit | undefined): Request;
-    //prototype: Request;
+new (input: RequestInfo, init?: RequestInit): FetchRequest;
 }
+*/
 
-export class FetchRequest extends window.Request {
+export class FetchRequest extends Request {
 
-    constructor(input: RequestInfo, init?: RequestInit | undefined) {
+    public constructor(input: RequestInfo, init?: RequestInit) {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         if(init && init.headers) {
             const headers = new Headers(init.headers);
@@ -49,79 +50,66 @@ export class FetchRequest extends window.Request {
     }
 }
 
-export interface IRequestProvider {
-    Fetch(request: Request): Promise<Response>;
-    //FetchDOM: () => Promise<any>;
-    //FetchText: () => Promise<any>;
-    FetchJSON<TResult>(request: Request): Promise<TResult>;
-    //FetchRegex: () => Promise<any>;
-    //FetchBrowser: () => Promise<any>;
-    //FetchDebugger: () => Promise<any>;
+// NOTE: parameter extraInfoSpec:
+//       'blocking'       => sync request required for header modification
+//       'requestHeaders' => allow change request headers?
+//       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
+chrome.webRequest.onBeforeSendHeaders.addListener(BlockRequests, { urls: Blacklist }, [ 'blocking' ]);
+chrome.webRequest.onBeforeSendHeaders.addListener(ModifyFetchHeaders, { urls: [ '<all_urls>' /*window.location.origin*/ ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
+
+function BlockRequests() {
+    return {
+        cancel: true
+    };
 }
 
-export class RequestProvider implements IRequestProvider {
+function ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
+    // TODO: set cookies from chrome matching the details.url?
+    //const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
+    const headers = new HeadersView(details.requestHeaders || []);
+    headers.set('Referer', details.url);
+    FetchRequest.RevealFetchAPIHeaders(headers);
 
-    constructor() {
-        // NOTE: parameter extraInfoSpec:
-        //       'blocking'       => sync request required for header modification
-        //       'requestHeaders' => allow change request headers?
-        //       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
-        chrome.webRequest.onBeforeSendHeaders.addListener(this.BlockRequests, { urls: Blacklist }, [ 'blocking' ]);
-        chrome.webRequest.onBeforeSendHeaders.addListener(this.ModifyFetchHeaders, { urls: [ /*'<all_urls>'*/ window.location.origin ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
-    }
-
-    private BlockRequests() {
-        return {
-            cancel: true
-        };
-    }
-
-    private ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
-        // TODO: set cookies from chrome matching the details.url?
-        //const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
-        const headers = new HeadersView(details.requestHeaders || []);
-        headers.set('Referer', details.url);
-        FetchRequest.RevealFetchAPIHeaders(headers);
-
-        return {
-            requestHeaders: details.requestHeaders // headers.Values
-        };
-    }
-
-    public async Fetch(request: IFetchRequest): Promise<Response> {
-        return fetch(request);
-    }
-
-    private async FetchHTML(request: IFetchRequest, replaceImageTags = true, clearIframettributes = true): Promise<HTMLHtmlElement> {
-        const response = await this.Fetch(request);
-        let content = await response.text();
-        if(replaceImageTags) {
-            content = content.replace(/<img/g, '<source');
-            content = content.replace(/<\/img/g, '</source');
-            content = content.replace(/<use/g, '<source');
-            content = content.replace(/<\/use/g, '</source');
-        }
-        if(clearIframettributes) {
-            content = content.replace(/<iframe[^<]*?>/g, '<iframe>');
-        }
-        const dom = document.createElement('html');
-        dom.innerHTML = content;
-        return dom;
-    }
-
-    public async FetchJSON<TResult>(request: IFetchRequest): Promise<TResult> {
-        const response = await this.Fetch(request);
-        return response.json();
-    }
-
-    public async FetchCSS(request: IFetchRequest, query: string): Promise<Element[]> {
-        const dom = await this.FetchHTML(request);
-        return [...dom.querySelectorAll(query)];
-    }
-
-    public async FetchXPATH(request: IFetchRequest, xpath: string): Promise<Node[]> {
-        const dom = await this.FetchHTML(request);
-        const result = document.evaluate(xpath, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-        return new Array(result.snapshotLength).fill(null).map((_, index) => result.snapshotItem(index) as Node);
-    }
+    return {
+        requestHeaders: details.requestHeaders // headers.Values
+    };
 }
+
+export async function Fetch(request: FetchRequest): Promise<Response> {
+    return fetch(request);
+}
+
+async function FetchHTML(request: FetchRequest, replaceImageTags = true, clearIframettributes = true): Promise<HTMLHtmlElement> {
+    const response = await Fetch(request);
+    let content = await response.text();
+    if(replaceImageTags) {
+        content = content.replace(/<img/g, '<source');
+        content = content.replace(/<\/img/g, '</source');
+        content = content.replace(/<use/g, '<source');
+        content = content.replace(/<\/use/g, '</source');
+    }
+    if(clearIframettributes) {
+        content = content.replace(/<iframe[^<]*?>/g, '<iframe>');
+    }
+    const dom = document.createElement('html');
+    dom.innerHTML = content;
+    return dom;
+}
+
+export async function FetchJSON<TResult>(request: FetchRequest): Promise<TResult> {
+    const response = await Fetch(request);
+    return response.json();
+}
+
+export async function FetchCSS<T extends HTMLElement>(request: FetchRequest, query: string): Promise<T[]> {
+    const dom = await FetchHTML(request);
+    return [...dom.querySelectorAll(query)] as T[];
+}
+
+/*
+public async FetchXPATH(request: FetchRequest, xpath: string): Promise<Node[]> {
+    const dom = await this.FetchHTML(request);
+    const result = document.evaluate(xpath, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    return new Array(result.snapshotLength).fill(null).map((_, index) => result.snapshotItem(index) as Node);
+}
+*/

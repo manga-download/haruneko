@@ -1,5 +1,4 @@
 import { IHakuNeko } from './engine/HakuNeko';
-import { IFetchRequest } from './engine/RequestProvider';
 import { IFrontendController } from './frontend/FrontendController';
 
 /*
@@ -11,13 +10,11 @@ declare namespace NodeJS {
 */
 
 declare global {
-    var HakuNeko: IHakuNeko;
-    var Frontend: IFrontendController;
-    var FetchRequest: IFetchRequest;
+    const HakuNeko: IHakuNeko;
+    const Frontend: IFrontendController;
     interface Window {
         HakuNeko: IHakuNeko;
         Frontend: IFrontendController;
-        FetchRequest: IFetchRequest;
     }
     /*
     interface NodeJS {

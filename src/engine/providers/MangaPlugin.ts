@@ -18,8 +18,6 @@ export class MangaPlugin extends MediaContainer<Manga> {
     public constructor(scraper: MangaScraper) {
         super(scraper.Identifier, scraper.Title);
         this._scraper = scraper;
-        // try load manga list from file ...
-        this._items = [];
     }
 
     public async Initialize(): Promise<void> {
