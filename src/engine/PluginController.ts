@@ -1,4 +1,4 @@
-import { IMediaContainer, MediaScraper } from './providers/MediaPlugin';
+import { IMediaContainer } from './providers/MediaPlugin';
 
 export interface IPluginController {
     WebsitePlugins: IMediaContainer[];
