@@ -1,5 +1,5 @@
 import { IHakuNeko } from './engine/HakuNeko';
-import { IExploitedRequest } from './engine/RequestProvider';
+import { IFetchRequest } from './engine/RequestProvider';
 import { IFrontendController } from './frontend/FrontendController';
 
 /*
@@ -13,11 +13,11 @@ declare namespace NodeJS {
 declare global {
     var HakuNeko: IHakuNeko;
     var Frontend: IFrontendController;
-    var ExploitedRequest: IExploitedRequest;
+    var FetchRequest: IFetchRequest;
     interface Window {
         HakuNeko: IHakuNeko;
         Frontend: IFrontendController;
-        ExploitedRequest: IExploitedRequest;
+        FetchRequest: IFetchRequest;
     }
     /*
     interface NodeJS {
@@ -26,5 +26,5 @@ declare global {
         }
     }
     */
-    const nw: any
+    const nw: any;
 }

@@ -1,11 +1,11 @@
-import { IMangaHost } from '../../engine/MangaProvider'
+import { IMediaContainer } from '../../engine/providers/MediaPlugin';
 
 export default class App {
 
     constructor(root: HTMLElement) {
         // artificial delay to make loading screen visible
         //await new Promise(resolve => setTimeout(resolve, 2500));
-        let container = this.CreateContainer();
+        const container = this.CreateContainer();
         container.appendChild(this.CreateInfo());
         container.appendChild(this.CreateElement('hr'));
         container.appendChild(this.CreateFrontendButtonList());
@@ -17,7 +17,7 @@ export default class App {
     }
 
     private CreateElement(tag: string, html?: string): HTMLElement {
-        let element = document.createElement(tag);
+        const element = document.createElement(tag);
         if(html) {
             element.innerHTML = html;
         }
@@ -25,7 +25,7 @@ export default class App {
     }
 
     private CreateContainer(): HTMLElement {
-        let container = this.CreateElement('div');
+        const container = this.CreateElement('div');
         container.style.padding = '1em';
         return container;
     }
@@ -38,20 +38,20 @@ export default class App {
     }
 
     private CreateFrontendButtonList() {
-        let buttons = window.Frontend.AvailableFrontends
+        const buttons = window.Frontend.AvailableFrontends
             .filter(info => info.ID !== 'classic')
             .map(info => `<li><a href="#" onclick="Frontend.Load('${info.ID}')" title="${info.Description}">Load Frontend: ${info.Label}</a></li>`).join('');
         return this.CreateElement('ul', buttons);
     }
 
     private CreateRequestButtonList() {
-        let list = this.CreateElement('ul');
+        const list = this.CreateElement('ul');
 
-        let buttonFetchJSON = this.CreateElement('a', `FetchJSON`) as HTMLAnchorElement;
+        const buttonFetchJSON = this.CreateElement('a', `FetchJSON`) as HTMLAnchorElement;
         buttonFetchJSON.href = '#';
-        buttonFetchJSON.onclick = async event => {
-            let uri = new URL('https://postman-echo.com/get');
-            let request = new Request(uri.href, {
+        buttonFetchJSON.onclick = async () => {
+            const uri = new URL('https://postman-echo.com/get');
+            const request = new Request(uri.href, {
                 method: 'GET',
                 referrer: 'https://hakuneko.download',
                 headers: {
@@ -62,10 +62,10 @@ export default class App {
                     'X-Foo': 'bar'
                 }
             });
-            let data = await window.HakuNeko.RequestProvider.FetchJSON(request);
+            const data = await window.HakuNeko.RequestProvider.FetchJSON(request);
             console.log('FetchJSON:', data);
-        }
-        let itemFetchJSON = this.CreateElement('li');
+        };
+        const itemFetchJSON = this.CreateElement('li');
         itemFetchJSON.appendChild(buttonFetchJSON);
         list.appendChild(itemFetchJSON);
 
@@ -75,47 +75,50 @@ export default class App {
     }
 
     private CreateWebsiteButtonList() {
-        let list = this.CreateElement('ul');
+        const list = this.CreateElement('ul');
 
-        let getMangas = async () => {
-            let website = window.HakuNeko.PluginController.WebsitePlugins[0] as IMangaHost;
-            if(website) {
-                return website.GetMangas();
-            } else {
-               return []; 
-            }
-        };
-
-        let buttonGetMangas = this.CreateElement('a', `GetMangas`) as HTMLAnchorElement;
+        const buttonGetMangas = this.CreateElement('a', `GetMangas`) as HTMLAnchorElement;
         buttonGetMangas.href = '#';
-        buttonGetMangas.onclick = async event => {
-            let mangas = await getMangas();
-            console.log('GetMangas:', mangas);
+        buttonGetMangas.onclick = async () => {
+            const website = window.HakuNeko.PluginController.WebsitePlugins[0];
+            await website.Initialize();
+            await website.Update();
+            console.log('Mangas:', [...website]);
         };
-        let itemGetMangas = this.CreateElement('li');
+        const itemGetMangas = this.CreateElement('li');
         itemGetMangas.appendChild(buttonGetMangas);
         list.appendChild(itemGetMangas);
 
-        let buttonGetChapters = this.CreateElement('a', `GetChapters`) as HTMLAnchorElement;
+        const buttonGetChapters = this.CreateElement('a', `GetChapters`) as HTMLAnchorElement;
         buttonGetChapters.href = '#';
-        buttonGetChapters.onclick = async event => {
-            let mangas = await getMangas();
-            let chapters = await mangas[0].GetChapters();
-            console.log('GetChapters:', chapters);
-        }
-        let itemGetChapters = this.CreateElement('li');
+        buttonGetChapters.onclick = async () => {
+            const website = window.HakuNeko.PluginController.WebsitePlugins[0];
+            await website.Initialize();
+            await website.Update();
+            const manga = [...website][0] as IMediaContainer;
+            await manga.Initialize();
+            await manga.Update();
+            console.log('Chapters:', [...manga]);
+        };
+        const itemGetChapters = this.CreateElement('li');
         itemGetChapters.appendChild(buttonGetChapters);
         list.appendChild(itemGetChapters);
 
-        let buttonGetPages = this.CreateElement('a', `GetPages`) as HTMLAnchorElement;
+        const buttonGetPages = this.CreateElement('a', `GetPages`) as HTMLAnchorElement;
         buttonGetPages.href = '#';
-        buttonGetPages.onclick = async event => {
-            let mangas = await getMangas();
-            let chapters = await mangas[0].GetChapters();
-            let pages = await chapters[0].GetPages();
-            console.log('GetPages:', pages);
-        }
-        let itemGetPages = this.CreateElement('li');
+        buttonGetPages.onclick = async () => {
+            const website = window.HakuNeko.PluginController.WebsitePlugins[0];
+            await website.Initialize();
+            await website.Update();
+            const manga = [...website][0] as IMediaContainer;
+            await manga.Initialize();
+            await manga.Update();
+            const chapter = [...manga][0] as IMediaContainer;
+            await chapter.Initialize();
+            await chapter.Update();
+            console.log('Pages:', [...chapter]);
+        };
+        const itemGetPages = this.CreateElement('li');
         itemGetPages.appendChild(buttonGetPages);
         list.appendChild(itemGetPages);
 

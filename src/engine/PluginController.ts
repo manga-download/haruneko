@@ -1,6 +1,4 @@
-import DynastyScans from './websites/DynastyScans';
-import SampleMangaProvider from './websites/SampleManga';
-import { IMediaContainer } from './MediaContainer';
+import { IMediaContainer } from './providers/MediaPlugin';
 
 export interface IPluginController {
     WebsitePlugins: IMediaContainer[];
@@ -12,12 +10,13 @@ export class PluginController implements IPluginController {
 
     constructor() {
         // TODO: register all website plugins ...
-        this.RegisterWebsitePlugin(new DynastyScans());
-        this.RegisterWebsitePlugin(new SampleMangaProvider());
+        this.RegisterWebsitePlugins();
     }
 
-    public RegisterWebsitePlugin(plugin: IMediaContainer): void {
-        this._websites.push(plugin);
+    public async RegisterWebsitePlugins(): Promise<void> {
+        const plugin = await import('./websites/SheepManga');
+        const scraper = new plugin.default();
+        this._websites.push(scraper.CreatePlugin());
     }
 
     public get WebsitePlugins(): IMediaContainer[] {

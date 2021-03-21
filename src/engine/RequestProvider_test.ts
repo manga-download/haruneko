@@ -1,8 +1,8 @@
 import { mock } from 'jest-mock-extended';
 import { HeadersView } from './transformers/HeadersView';
-import { ExploitedRequest, RequestProvider } from './RequestProvider';
+import { FetchRequest, RequestProvider } from './RequestProvider';
 
-describe('ExploitedRequest', () => {
+describe('FetchRequest', () => {
 
     describe('constructor()', () => {
 
@@ -21,7 +21,7 @@ describe('ExploitedRequest', () => {
             headersMock.get.calledWith('Host').mockReturnValue('domain');
             headersMock.get.calledWith('Origin').mockReturnValue(null);
 
-            ExploitedRequest.ConcealFetchAPIHeaders(headersMock);
+            FetchRequest.ConcealFetchAPIHeaders(headersMock);
 
             expect(headersMock.get).toHaveBeenCalledTimes(4);
             expect(headersMock.get).toHaveBeenCalledWith('User-Agent');
@@ -49,7 +49,7 @@ describe('ExploitedRequest', () => {
                 { name: 'Referer', value: 'protocol://domain' }
             ];
             const testee = new HeadersView(headers);
-            ExploitedRequest.RevealFetchAPIHeaders(testee);
+            FetchRequest.RevealFetchAPIHeaders(testee);
             throw new Error('Not Implemented!');
         });
     });
