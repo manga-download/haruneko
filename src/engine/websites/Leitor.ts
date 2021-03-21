@@ -12,6 +12,18 @@ export default class extends MangaScraper {
     ];
     */
 
+    public async Initialize(): Promise<void> {
+        // TODO: Bypass CloudFlare before chapter page can be accessed ...
+        /*
+        const paths = [ '/', '/manga/_/_/capitulo-' ];
+        for(let path of paths) {
+            const uri = new URL(path, this.URI);
+            const request = new FetchRequest(uri.href);
+            await FetchBrowser(request, '', 30000, true);
+        }
+        */
+    }
+
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for(let page = 1, run = true; run; page++) {
@@ -59,8 +71,6 @@ export default class extends MangaScraper {
             return accumulator.concat(releases);
         }, []);
     }
-
-    // TODO: Bypass CloudFlare before chapter page can be accessed ...
 
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(chapter.Identifier, this.URI);
