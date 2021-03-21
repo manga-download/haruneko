@@ -74,7 +74,7 @@ export default class extends MangaScraper {
     }
 
     private async FetchImageLinks(release: string, token: string): Promise<string[]> {
-        const uri = new URL(`/leitor/pages/${release}.json`, this.url);
+        const uri = new URL(`/leitor/pages/${release}.json`, this.URI);
         uri.searchParams.set('key', token);
         const request = new FetchRequest(uri.href);
         request.headers.set('X-Requested-With', 'XMLHttpRequest');
