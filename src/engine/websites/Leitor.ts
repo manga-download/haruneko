@@ -60,6 +60,8 @@ export default class extends MangaScraper {
         }, []);
     }
 
+    // TODO: Bypass CloudFlare before chapter page can be accessed ...
+
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(chapter.Identifier, this.URI);
         const request = new FetchRequest(uri.href);
