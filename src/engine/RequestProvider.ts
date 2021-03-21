@@ -79,21 +79,11 @@ export async function Fetch(request: FetchRequest): Promise<Response> {
     return fetch(request);
 }
 
-async function FetchHTML(request: FetchRequest, replaceImageTags = true, clearIframettributes = true): Promise<HTMLHtmlElement> {
+async function FetchHTML(request: FetchRequest): Promise<Document> {
     const response = await Fetch(request);
-    let content = await response.text();
-    if(replaceImageTags) {
-        content = content.replace(/<img/g, '<source');
-        content = content.replace(/<\/img/g, '</source');
-        content = content.replace(/<use/g, '<source');
-        content = content.replace(/<\/use/g, '</source');
-    }
-    if(clearIframettributes) {
-        content = content.replace(/<iframe[^<]*?>/g, '<iframe>');
-    }
-    const dom = document.createElement('html');
-    dom.innerHTML = content;
-    return dom;
+    const content = await response.text();
+    const mime = 'text/html'; // response.headers.get('content-type')
+    return new DOMParser().parseFromString(content, mime);
 }
 
 export async function FetchJSON<TResult>(request: FetchRequest): Promise<TResult> {
