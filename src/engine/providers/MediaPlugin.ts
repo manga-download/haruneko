@@ -65,4 +65,8 @@ export abstract class MediaScraper {
     public abstract get URI(): URL;
     //readonly Icon: Image;
     //readonly Tags: object[];
+
+    public async Initialize(): Promise<void> {
+        return;
+    }
 }

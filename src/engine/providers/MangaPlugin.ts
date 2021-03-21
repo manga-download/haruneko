@@ -21,6 +21,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
     }
 
     public async Initialize(): Promise<void> {
+        await this._scraper.Initialize();
         // try load manga items from file ...
         this._items = [];
         super.Initialize();
