@@ -9,11 +9,30 @@ const fetchApiUnsupportedHeaders = [
     'Host'
 ];
 
-/*
-export interface IFetchRequest extends Request {
-new (input: RequestInfo, init?: RequestInit): FetchRequest;
+// NOTE: parameter extraInfoSpec:
+//       'blocking'       => sync request required for header modification
+//       'requestHeaders' => allow change request headers?
+//       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
+chrome.webRequest.onBeforeSendHeaders.addListener(BlockRequests, { urls: Blacklist }, [ 'blocking' ]);
+chrome.webRequest.onBeforeSendHeaders.addListener(ModifyFetchHeaders, { urls: [ '<all_urls>' /*window.location.origin*/ ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
+
+function BlockRequests() {
+    return {
+        cancel: true
+    };
 }
-*/
+
+function ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
+    // TODO: set cookies from chrome matching the details.url?
+    //const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
+    const headers = new HeadersView(details.requestHeaders || []);
+    headers.set('Referer', details.url);
+    FetchRequest.RevealFetchAPIHeaders(headers);
+
+    return {
+        requestHeaders: details.requestHeaders // headers.Values
+    };
+}
 
 export class FetchRequest extends Request {
 
@@ -48,31 +67,6 @@ export class FetchRequest extends Request {
             }
         }
     }
-}
-
-// NOTE: parameter extraInfoSpec:
-//       'blocking'       => sync request required for header modification
-//       'requestHeaders' => allow change request headers?
-//       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
-chrome.webRequest.onBeforeSendHeaders.addListener(BlockRequests, { urls: Blacklist }, [ 'blocking' ]);
-chrome.webRequest.onBeforeSendHeaders.addListener(ModifyFetchHeaders, { urls: [ '<all_urls>' /*window.location.origin*/ ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
-
-function BlockRequests() {
-    return {
-        cancel: true
-    };
-}
-
-function ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
-    // TODO: set cookies from chrome matching the details.url?
-    //const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
-    const headers = new HeadersView(details.requestHeaders || []);
-    headers.set('Referer', details.url);
-    FetchRequest.RevealFetchAPIHeaders(headers);
-
-    return {
-        requestHeaders: details.requestHeaders // headers.Values
-    };
 }
 
 export async function Fetch(request: FetchRequest): Promise<Response> {
