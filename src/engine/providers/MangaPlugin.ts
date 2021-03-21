@@ -63,10 +63,10 @@ export class Page extends MediaItem {
 
     private readonly _scraper: MangaScraper;
     private _controller?: AbortController;
-    private _request: RequestInit;
+    private _request?: RequestInit;
     private _url: string;
 
-    public constructor(scraper: MangaScraper, parent: MediaContainer<Page>, url: string, request: RequestInit) {
+    public constructor(scraper: MangaScraper, parent: MediaContainer<Page>, url: string, request?: RequestInit) {
         super(parent);
         this._scraper = scraper;
         this._request = request;
