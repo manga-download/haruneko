@@ -1,3 +1,5 @@
+import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+
 type IMediaChild = IMediaContainer | IMediaItem;
 
 export interface IMediaItem {
@@ -67,6 +69,7 @@ export abstract class MediaScraper {
     //readonly Tags: object[];
 
     public async Initialize(): Promise<void> {
-        return;
+        const request = new FetchRequest(this.URI.href);
+        return FetchWindowScript(request, '');
     }
 }
