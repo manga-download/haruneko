@@ -1,5 +1,5 @@
 import { IMediaContainer } from '../../engine/providers/MediaPlugin';
-import { FetchJSON } from '../../engine/RequestProvider';
+import { FetchJSON } from '../../engine/FetchProvider';
 
 export default class App {
 

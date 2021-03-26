@@ -1,6 +1,6 @@
 import { mock } from 'jest-mock-extended';
 import { HeadersView } from './transformers/HeadersView';
-import { FetchRequest, RequestProvider } from './RequestProvider';
+import { FetchRequest, FetchCSS } from './FetchProvider';
 
 describe('FetchRequest', () => {
 
