@@ -35,62 +35,6 @@ function ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails)
     };
 }
 
-/*
-const antiScrapingDetectionScript = `
-    new Promise(async (resolve, reject) => {
-
-        function handleError(message) {
-            reject(new Error(message));
-        }
-
-        function handleNoRedirect() {
-            resolve('none');
-        }
-
-        function handleAutomaticRedirect() {
-            resolve('automatic');
-        }
-
-        function handleUserInteractionRequired() {
-            resolve('interactive');
-        }
-
-        // Common Checks
-        if(document.querySelector('meta[http-equiv="refresh"][content*="="]')) {
-            return handleAutomaticRedirect();
-        }
-
-        // CloudFlare Checks
-        let cfCode = document.querySelector('.cf-error-code');
-        if(cfCode) {
-            return handleError('CloudFlare Error ' + cfCode.innerText);
-        }
-        if(document.querySelector('form#challenge-form[action*="_jschl_"]')) { // __cf_chl_jschl_tk__
-            return handleAutomaticRedirect();
-        }
-        if(document.querySelector('form#challenge-form[action*="_captcha_"]')) { // __cf_chl_captcha_tk__
-            return handleUserInteractionRequired();
-        }
-
-        // DDoS Guard Checks
-        if(document.querySelector('div#link-ddg a[href*="ddos-guard"]')) { // Sample => https://manga-tr.com
-            return handleAutomaticRedirect();
-        }
-
-        // 9anime WAF re-captcha
-        if(window.location.hostname.includes('9anime')) {
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            if(document.querySelector('div#episodes form[action*="waf-verify"]')) {
-                return handleUserInteractionRequired();
-            }
-        }
-
-        // Default
-        handleNoRedirect();
-    });
-`;
-*/
-
 enum FetchRedirection {
     None,
     Automatic,
@@ -200,7 +144,7 @@ async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any
     const options = {
         new_instance: false,
         mixed_context: false,
-        show: true,
+        show: false,
         position: 'center',
         width: 1280,
         height: 720,
@@ -218,7 +162,6 @@ async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any
         };
         let cancellation = setTimeout(destroy, timeout || 30_000);
 
-        // TODO: cookies from the window seems not to be stored for next request :(
         win.on('loaded', async () => {
             const redirect = await checkAntiScrapingDetection(win.window.document); // await win.eval(null, antiScrapingDetectionScript);
             switch (redirect) {
@@ -258,6 +201,3 @@ export async function FetchWindowScript<T>(request: FetchRequest, script: string
         win.close();
     }
 }
-
-//window['FetchWindowCSS'] = FetchWindowCSS;
-//window['FetchWindowScript'] = FetchWindowScript;
