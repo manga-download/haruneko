@@ -106,7 +106,7 @@ async function checkAntiScrapingDetection(document: Document): Promise<FetchRedi
     // CloudFlare Checks
     const cfCode = document.querySelector('.cf-error-code');
     if(cfCode) {
-        throw new Error('CloudFlare Error ' + cfCode.textContent?.trim());
+        throw new Error(i18n('FetchProvider.FetchWindow.CloudFlareError', cfCode.textContent?.trim() || 'unknown'));
     }
     if(document.querySelector('form#challenge-form[action*="_jschl_"]')) { // __cf_chl_jschl_tk__
         return FetchRedirection.Automatic;
@@ -195,7 +195,7 @@ public async FetchXPATH(request: FetchRequest, xpath: string): Promise<Node[]> {
 }
 */
 
-async function FetchWindow(request: FetchRequest, timeout: number): Promise<any> {
+async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any> {
 
     const options = {
         new_instance: false,
@@ -218,20 +218,18 @@ async function FetchWindow(request: FetchRequest, timeout: number): Promise<any>
         };
         let cancellation = setTimeout(destroy, timeout || 30_000);
 
+        // TODO: cookies from the window seems not to be stored for next request :(
         win.on('loaded', async () => {
-            console.log('LOADED');
-            // TODO: wait until all redirects are done and page does not contain CLoudFlare script ...
             const redirect = await checkAntiScrapingDetection(win.window.document); // await win.eval(null, antiScrapingDetectionScript);
             switch (redirect) {
                 case FetchRedirection.Interactive:
                     // NOTE: Allow the user to solve the captcha within 2 minutes before rejcting the request with an error
                     clearTimeout(cancellation);
                     cancellation = setTimeout(destroy, 120_000);
-                    win.eval(null, `alert('Please solve the Captcha and then wait for the application to continue!');`);
+                    win.eval(null, `alert('${i18n('FetchProvider.FetchWindow.AlertCaptcha')}');`);
                     win.show();
                     break;
                 case FetchRedirection.Automatic:
-                    console.log('> Redirect:', redirect, 'Wait for automatic redirect calling next loaded event...');
                     break;
                 default:
                     clearTimeout(cancellation);
@@ -242,7 +240,7 @@ async function FetchWindow(request: FetchRequest, timeout: number): Promise<any>
     });
 }
 
-export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, timeout: number): Promise<T[]> {
+export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, timeout?: number): Promise<T[]> {
     const win = await FetchWindow(request, timeout);
     try {
         const dom = win.window.document as Document;
@@ -252,7 +250,7 @@ export async function FetchWindowCSS<T extends HTMLElement>(request: FetchReques
     }
 }
 
-export async function FetchWindowScript<T>(request: FetchRequest, script: string, timeout: number): Promise<T> {
+export async function FetchWindowScript<T>(request: FetchRequest, script: string, timeout?: number): Promise<T> {
     const win = await FetchWindow(request, timeout);
     try {
         return win.eval(null, script) as T;

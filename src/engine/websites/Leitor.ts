@@ -1,5 +1,5 @@
 import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
-import { FetchRequest, FetchCSS, FetchJSON } from '../RequestProvider';
+import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchProvider';
 
 export default class extends MangaScraper {
 
@@ -14,14 +14,12 @@ export default class extends MangaScraper {
 
     public async Initialize(): Promise<void> {
         // TODO: Bypass CloudFlare before chapter page can be accessed ...
-        /*
         const paths = [ '/', '/manga/_/_/capitulo-' ];
-        for(let path of paths) {
+        for(const path of paths) {
             const uri = new URL(path, this.URI);
             const request = new FetchRequest(uri.href);
-            await FetchBrowser(request, '', 30000, true);
+            await FetchWindowScript(request, '');
         }
-        */
     }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {

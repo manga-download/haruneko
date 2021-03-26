@@ -2,6 +2,8 @@ export abstract class Locale {
     public abstract readonly Code: string = 'und';
     public abstract readonly Title: string = 'Undefined (XX)';
     public abstract readonly Resources = {
-        'RequestProvider.FetchWindow.TimeoutError': '【 RequestProvider.FetchWindow.TimeoutError 】'
+        'FetchProvider.FetchWindow.TimeoutError': '【 FetchProvider.FetchWindow.TimeoutError 】',
+        'FetchProvider.FetchWindow.CloudFlareError': '【 FetchProvider.FetchWindow.CloudFlareError 】\n{0}',
+        'FetchProvider.FetchWindow.AlertCaptcha': '【 FetchProvider.FetchWindow.AlertCaptcha 】'
     }
 }
