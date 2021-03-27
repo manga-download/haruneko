@@ -82,7 +82,6 @@ export default class App {
         buttonGetMangas.href = '#';
         buttonGetMangas.onclick = async () => {
             const website = window.HakuNeko.PluginController.WebsitePlugins[0];
-            await website.Initialize();
             await website.Update();
             console.log('Mangas:', [...website]);
         };
@@ -94,10 +93,8 @@ export default class App {
         buttonGetChapters.href = '#';
         buttonGetChapters.onclick = async () => {
             const website = window.HakuNeko.PluginController.WebsitePlugins[0];
-            await website.Initialize();
             await website.Update();
             const manga = [...website][0] as IMediaContainer;
-            await manga.Initialize();
             await manga.Update();
             console.log('Chapters:', [...manga]);
         };
@@ -109,13 +106,10 @@ export default class App {
         buttonGetPages.href = '#';
         buttonGetPages.onclick = async () => {
             const website = window.HakuNeko.PluginController.WebsitePlugins[0];
-            await website.Initialize();
             await website.Update();
             const manga = [...website][0] as IMediaContainer;
-            await manga.Initialize();
             await manga.Update();
             const chapter = [...manga][0] as IMediaContainer;
-            await chapter.Initialize();
             await chapter.Update();
             console.log('Pages:', [...chapter]);
         };
