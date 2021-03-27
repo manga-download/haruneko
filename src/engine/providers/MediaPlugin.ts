@@ -28,7 +28,6 @@ export interface IMediaContainer {
     //readonly Language: string;
     readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
-    Initialize(): Promise<void>;
     Update(): Promise<void>;
 }
 
@@ -52,12 +51,15 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
     }
 
     public *[Symbol.iterator](): Iterator<T> {
-        for(const entry of this._entries) {
+        for(const entry of this.Entries) {
             yield entry;
         }
     }
 
-    public async Initialize(): Promise<void> {
+    protected async Initialize(): Promise<void> {
+        if(this.Parent) {
+            await (this.Parent as MediaContainer<IMediaContainer>).Initialize();
+        }
         // NOTE: nonce method, disable after called once
         this.Initialize = () => Promise.resolve();
     }
