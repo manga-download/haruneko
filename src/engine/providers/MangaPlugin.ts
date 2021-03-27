@@ -20,10 +20,16 @@ export class MangaPlugin extends MediaContainer<Manga> {
         this._scraper = scraper;
     }
 
+    private get EntriesKey() {
+        return `mangas.${this.Identifier}`;
+    }
+
     public get Entries(): Manga[] {
         if(this._entries.length === 0) {
             // TODO: load entries from cache ...
-            const content = localStorage.getItem(`mangas.${this.Identifier}`) || '[]';
+            const content = localStorage.getItem(this.EntriesKey) || '[]';
+            // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
+            //                  chrome.storage.local.get(this.EntriesKey, data => data[this.EntriesKey]);
             const mangas = JSON.parse(content) as { id: string, title: string }[];
             this._entries = mangas.map(manga => new Manga(this._scraper, this, manga.id, manga.title));
         }
@@ -45,8 +51,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
                 title: entry.Title
             };
         });
+        // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
+        //                  chrome.storage.local.set({ this.EntriesKey: mangas }, () => {});
         const content = JSON.stringify(mangas);
-        localStorage.setItem(`mangas.${this.Identifier}`, content);
+        localStorage.setItem(this.EntriesKey, content);
     }
 }
 

@@ -20,10 +20,16 @@ export class AnimePlugin extends MediaContainer<Anime> {
         this._scraper = scraper;
     }
 
+    private get EntriesKey() {
+        return `animes.${this.Identifier}`;
+    }
+
     public get Entries(): Anime[] {
         if(this._entries.length === 0) {
             // TODO: load entries from cache ...
-            const content = localStorage.getItem(`animes.${this.Identifier}`) || '[]';
+            const content = localStorage.getItem(this.EntriesKey) || '[]';
+            // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
+            //                  chrome.storage.local.get(this.EntriesKey, data => data[this.EntriesKey]);
             const animes = JSON.parse(content) as { id: string, title: string }[];
             this._entries = animes.map(anime => new Anime(this._scraper, this, anime.id, anime.title));
         }
@@ -45,8 +51,10 @@ export class AnimePlugin extends MediaContainer<Anime> {
                 title: entry.Title
             };
         });
+        // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
+        //                  chrome.storage.local.set({ this.EntriesKey: animes }, () => {});
         const content = JSON.stringify(animes);
-        localStorage.setItem(`animes.${this.Identifier}`, content);
+        localStorage.setItem(this.EntriesKey, content);
     }
 }
 
