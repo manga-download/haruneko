@@ -26,6 +26,7 @@ export interface IMediaContainer {
     readonly Identifier: string;
     readonly Title: string;
     //readonly Language: string;
+    readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
     Initialize(): Promise<void>;
     Update(): Promise<void>;
@@ -33,22 +34,26 @@ export interface IMediaContainer {
 
 export abstract class MediaContainer<T extends IMediaChild> implements IMediaContainer {
 
-    protected _items: T[];
+    protected _entries: T[];
 
     constructor(identifier: string, title: string, parent?: IMediaContainer) {
         this.Parent = parent;
         this.Identifier = identifier;
         this.Title = title;
-        this._items = [];
+        this._entries = [];
     }
 
     public readonly Parent?: IMediaContainer;
     public readonly Identifier: string;
     public readonly Title: string;
 
+    public get Entries(): T[] {
+        return this._entries;
+    }
+
     public *[Symbol.iterator](): Iterator<T> {
-        for(const item of this._items) {
-            yield item;
+        for(const entry of this._entries) {
+            yield entry;
         }
     }
 
