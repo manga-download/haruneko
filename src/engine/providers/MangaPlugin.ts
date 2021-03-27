@@ -23,12 +23,12 @@ export class MangaPlugin extends MediaContainer<Manga> {
     public async Initialize(): Promise<void> {
         await this._scraper.Initialize();
         // try load manga items from file ...
-        this._items = [];
+        this._entries = [];
         super.Initialize();
     }
 
     public async Update(): Promise<void> {
-        this._items = await this._scraper.FetchMangas(this);
+        this._entries = await this._scraper.FetchMangas(this);
     }
 }
 
@@ -42,7 +42,7 @@ export class Manga extends MediaContainer<Chapter> {
     }
 
     public async Update(): Promise<void> {
-        this._items = await this._scraper.FetchChapters(this);
+        this._entries = await this._scraper.FetchChapters(this);
     }
 }
 
@@ -56,7 +56,7 @@ export class Chapter extends MediaContainer<Page> {
     }
 
     public async Update(): Promise<void> {
-        this._items = await this._scraper.FetchPages(this);
+        this._entries = await this._scraper.FetchPages(this);
     }
 }
 

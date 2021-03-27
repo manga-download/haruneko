@@ -22,12 +22,12 @@ export class AnimePlugin extends MediaContainer<Anime> {
 
     public async Initialize(): Promise<void> {
         // try load anime items from file ...
-        this._items = [];
+        this._entries = [];
         super.Initialize();
     }
 
     public async Update(): Promise<void> {
-        this._items = await this._scraper.FetchAnimes(this);
+        this._entries = await this._scraper.FetchAnimes(this);
     }
 }
 
@@ -41,7 +41,7 @@ export class Anime extends MediaContainer<Episode> {
     }
 
     public async Update(): Promise<void> {
-        this._items = await this._scraper.FetchEpisodes(this);
+        this._entries = await this._scraper.FetchEpisodes(this);
     }
 }
 
@@ -55,7 +55,7 @@ export class Episode extends MediaContainer<Video> {
     }
 
     public async Update(): Promise<void> {
-        this._items = await this._scraper.FetchVideos(this);
+        this._entries = await this._scraper.FetchVideos(this);
     }
 }
 
