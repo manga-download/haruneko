@@ -1,79 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>HakuNeko ... loading</title>
-
-  </head>
-  <style>
-    html,
-    body,
-    .wrapper {
-        height: 100%;
-        box-sizing: border-box;
-    }
-
-    body {
-        background: transparent;
-        border: 4px solid #222;
-        border-radius: 20px;
-        margin: 0px;
-        padding: 00px;
-        color: #DEDEDE;
-        font-family: sans-serif;
-        text-align: center;
-    }
-
-    .wrapper {
-        background: linear-gradient(300deg, hsla(0, 0%, 18%, 1), hsla(0, 0%, 22%, 0.3));
-        border-radius: 10px;
-        padding: 20px;
-    }
-
-    .drag-enable {
-        -webkit-app-region: drag;
-    }
-
-    .drag-disable {
-        -webkit-app-region: no-drag;
-    }
-
-    .close {
-        position: absolute;
-        top: 3px;
-        right: 12px;
-        font-size: 30px;
-        cursor: pointer;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotateZ(0deg);
-        }
-        45% {
-            background-color: rgba(168, 225, 136, 0.95)
-        }
-        100% {
-            transform: rotateZ(719deg);
-        }
-    }
-
-    .spinner {
-        display: block;
-        width: 100px;
-        height: 100px;
-        background: rgba(168, 180, 136, 0.95);
-        border-radius: 10px;
-        margin: 50px auto;
-        animation: spin 4s ease 0s infinite normal;
-    }
-  </style>
-  <body class="drag-enable">
-    <div class="wrapper">
-      <div class="close drag-disable" onclick="nw.Window.get().close(true)">&times;</div>
-      <h1>HakuNeko is loading</h1>
-      <div class="spinner"></div>
-      Smooth animation plays while the app window is locked up and hidden from view.
+﻿<link rel="stylesheet" type="text/css" href="./css/cubeloader.css" />
+<div class="container">
+    <div class="cube">
+        <div class="sides">
+            <div class="top"></div>
+            <div class="right"></div>
+            <div class="bottom"></div>
+            <div class="left"></div>
+            <div class="front"></div>
+            <div class="back"></div>
+        </div>
     </div>
-  </body>
-</html>
+    <div class="text">Checking for Update...</div>
+</div>
