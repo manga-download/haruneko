@@ -78,15 +78,15 @@ export default class extends MangaScraper {
         const release = source.searchParams.get('id_release') || '';
         const token = source.searchParams.get('token') || '';
         const links = await this.FetchImageLinks(release, token);
-        return links.map((link: string) => new Page(this, chapter, link, {}));
+        return links.map((link: URL) => new Page(this, chapter, link));
     }
 
-    private async FetchImageLinks(release: string, token: string): Promise<string[]> {
+    private async FetchImageLinks(release: string, token: string): Promise<URL[]> {
         const uri = new URL(`/leitor/pages/${release}.json`, this.URI);
         uri.searchParams.set('key', token);
         const request = new FetchRequest(uri.href);
         request.headers.set('X-Requested-With', 'XMLHttpRequest');
         const data = await FetchJSON<any>(request);
-        return data.images;
+        return data.images.map((image: string) => new URL(image));
     }
 }

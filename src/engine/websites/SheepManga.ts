@@ -65,13 +65,12 @@ export default class extends MangaScraper {
     }
 
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const init = {};
         return [
-            new Page(this, chapter, this.URI.origin + '/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page01.png', init),
-            new Page(this, chapter, this.URI.origin + '/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page02.png', init),
-            new Page(this, chapter, this.URI.origin + '/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page03.png', init),
-            new Page(this, chapter, this.URI.origin + '/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page04.png', init),
-            new Page(this, chapter, this.URI.origin + '/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page05.png', init)
+            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page01.png', this.URI)),
+            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page02.png', this.URI)),
+            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page03.png', this.URI)),
+            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page04.png', this.URI)),
+            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page05.png', this.URI))
         ];
     }
 }

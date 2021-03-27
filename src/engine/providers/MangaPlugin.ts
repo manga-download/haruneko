@@ -93,17 +93,17 @@ export class Page extends MediaItem {
     private readonly _scraper: MangaScraper;
     private _controller?: AbortController;
     private _request?: RequestInit;
-    private _url: string;
+    private _uri: URL;
 
-    public constructor(scraper: MangaScraper, parent: MediaContainer<Page>, url: string, request?: RequestInit) {
+    public constructor(scraper: MangaScraper, parent: MediaContainer<Page>, uri: URL, request?: RequestInit) {
         super(parent);
         this._scraper = scraper;
         this._request = request;
-        this._url = url;
+        this._uri = uri;
     }
 
     public get SourceURL(): string {
-        return this._url;
+        return this._uri.href;
     }
 
     public async Download(/*IStorageStream out // file: string*/): Promise<void> {
