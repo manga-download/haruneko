@@ -20,15 +20,33 @@ export class MangaPlugin extends MediaContainer<Manga> {
         this._scraper = scraper;
     }
 
+    public get Entries(): Manga[] {
+        if(this._entries.length === 0) {
+            // TODO: load entries from cache ...
+            const content = localStorage.getItem(`mangas.${this.Identifier}`) || '[]';
+            const mangas = JSON.parse(content) as { id: string, title: string }[];
+            this._entries = mangas.map(manga => new Manga(this._scraper, this, manga.id, manga.title));
+        }
+        return this._entries;
+    }
+
     public async Initialize(): Promise<void> {
         await this._scraper.Initialize();
-        // try load manga items from file ...
-        this._entries = [];
-        super.Initialize();
+        return super.Initialize();
     }
 
     public async Update(): Promise<void> {
+        await this.Initialize();
         this._entries = await this._scraper.FetchMangas(this);
+        // TODO: store entries in cache ...
+        const mangas = this._entries.map(entry => {
+            return {
+                id: entry.Identifier,
+                title: entry.Title
+            };
+        });
+        const content = JSON.stringify(mangas);
+        localStorage.setItem(`mangas.${this.Identifier}`, content);
     }
 }
 
@@ -42,6 +60,7 @@ export class Manga extends MediaContainer<Chapter> {
     }
 
     public async Update(): Promise<void> {
+        await this.Initialize();
         this._entries = await this._scraper.FetchChapters(this);
     }
 }
@@ -56,6 +75,7 @@ export class Chapter extends MediaContainer<Page> {
     }
 
     public async Update(): Promise<void> {
+        await this.Initialize();
         this._entries = await this._scraper.FetchPages(this);
     }
 }

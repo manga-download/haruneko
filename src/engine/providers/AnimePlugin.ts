@@ -20,14 +20,33 @@ export class AnimePlugin extends MediaContainer<Anime> {
         this._scraper = scraper;
     }
 
+    public get Entries(): Anime[] {
+        if(this._entries.length === 0) {
+            // TODO: load entries from cache ...
+            const content = localStorage.getItem(`animes.${this.Identifier}`) || '[]';
+            const animes = JSON.parse(content) as { id: string, title: string }[];
+            this._entries = animes.map(anime => new Anime(this._scraper, this, anime.id, anime.title));
+        }
+        return this._entries;
+    }
+
     public async Initialize(): Promise<void> {
-        // try load anime items from file ...
-        this._entries = [];
-        super.Initialize();
+        await this._scraper.Initialize();
+        return super.Initialize();
     }
 
     public async Update(): Promise<void> {
+        await this.Initialize();
         this._entries = await this._scraper.FetchAnimes(this);
+        // TODO: store entries in cache ...
+        const animes = this._entries.map(entry => {
+            return {
+                id: entry.Identifier,
+                title: entry.Title
+            };
+        });
+        const content = JSON.stringify(animes);
+        localStorage.setItem(`animes.${this.Identifier}`, content);
     }
 }
 
@@ -41,6 +60,7 @@ export class Anime extends MediaContainer<Episode> {
     }
 
     public async Update(): Promise<void> {
+        await this.Initialize();
         this._entries = await this._scraper.FetchEpisodes(this);
     }
 }
@@ -55,6 +75,7 @@ export class Episode extends MediaContainer<Video> {
     }
 
     public async Update(): Promise<void> {
+        await this.Initialize();
         this._entries = await this._scraper.FetchVideos(this);
     }
 }
