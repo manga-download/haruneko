@@ -17,8 +17,8 @@ export default class extends MangaScraper {
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
-            new Manga(this, provider, '/onepiece', 'One Piece'),
-            new Manga(this, provider, '/naruto', 'Naruto'),
+            new Manga(this, provider, '/hn1', 'HaruNeko is'),
+            new Manga(this, provider, '/hn2', 'Awesome'),
             new Manga(this, provider, '/fake1', 'Fake1'),
             new Manga(this, provider, '/fake2', 'Fake2ButThisOneIsSuperLongAndIDontWantToSeeMoreOfThis'),
             new Manga(this, provider, '/fake3', 'Fake3'),
