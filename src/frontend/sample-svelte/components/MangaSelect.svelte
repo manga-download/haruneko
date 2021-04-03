@@ -25,8 +25,17 @@
     import { Manga } from "../../../engine/providers/MangaPlugin";
     import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox";
 
-    let plugins: IMediaContainer[] = HakuNeko.PluginController
-        .WebsitePlugins as IMediaContainer[];
+    let plugins: IMediaContainer[] = [];
+
+    window.addEventListener(
+        "plugins-loaded",
+        function () {
+            console.log("All plugins loaded");
+            plugins = HakuNeko.PluginController.WebsitePlugins;
+        },
+        false
+    );
+
     let mangas: IMediaChild[] = [];
     let filteredmangas: IMediaChild[] = [];
 

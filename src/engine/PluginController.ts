@@ -16,6 +16,7 @@ export class PluginController implements IPluginController {
         // TODO: find better solution to bundle dynamic imports with rollup
         this._websites.push(new (await import('./websites/Leitor')).default().CreatePlugin());
         this._websites.push(new (await import('./websites/SheepManga')).default().CreatePlugin());
+        window.dispatchEvent(new Event('plugins-loaded'));
     }
 
     public get WebsitePlugins(): IMediaContainer[] {
