@@ -1,6 +1,6 @@
 import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 
-type IMediaChild = IMediaContainer | IMediaItem;
+export type IMediaChild = IMediaContainer | IMediaItem;
 
 export interface IMediaItem {
     readonly Parent: IMediaContainer;
