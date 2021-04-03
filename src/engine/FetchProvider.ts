@@ -139,6 +139,10 @@ public async FetchXPATH(request: FetchRequest, xpath: string): Promise<Node[]> {
 }
 */
 
+async function Wait(delay: number) {
+    return new Promise(resolve => setTimeout(resolve, delay));
+}
+
 async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any> {
 
     const options = {
@@ -183,9 +187,10 @@ async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any
     });
 }
 
-export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, timeout?: number): Promise<T[]> {
+export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay?: number, timeout?: number): Promise<T[]> {
     const win = await FetchWindow(request, timeout);
     try {
+        await Wait(delay || 0);
         const dom = win.window.document as Document;
         return [...dom.querySelectorAll(query)] as T[];
     } finally{
@@ -193,9 +198,10 @@ export async function FetchWindowCSS<T extends HTMLElement>(request: FetchReques
     }
 }
 
-export async function FetchWindowScript<T>(request: FetchRequest, script: string, timeout?: number): Promise<T> {
+export async function FetchWindowScript<T>(request: FetchRequest, script: string, delay?: number, timeout?: number): Promise<T> {
     const win = await FetchWindow(request, timeout);
     try {
+        await Wait(delay || 0);
         return win.eval(null, script) as T;
     } finally{
         win.close();
