@@ -24,7 +24,7 @@ export default {
     plugins: [
         svelte({
             //dev: !isProduction,
-            preprocess: preprocess()
+            preprocess: preprocess({ sourceMap: !isProduction })
             //css: css => css.write('css/sample-svelte.css')
         }),
         postcss({

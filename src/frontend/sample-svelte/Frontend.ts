@@ -1,4 +1,4 @@
-import { IFrontendModule } from '../IFrontend'
+import { IFrontendModule } from '../IFrontend';
 import App from './App.svelte';
 
 class SampleSvelte implements IFrontendModule {
