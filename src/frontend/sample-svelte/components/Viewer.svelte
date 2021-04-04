@@ -10,13 +10,14 @@
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
 
-    import type { IMediaChild } from "../../../engine/providers/MediaPlugin";
+    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
-    export let item: IMediaChild | undefined;
-    let update: Promise<void>;
+    export let item: IMediaContainer;
+    let update: Promise<void> | undefined;
     $: update = item?.Update();
 
-    export let mode = "pagesThumbnail"; //'pagesThumbnail','pagesWide','video'
+    type Mode = "Thumbnail" | "Wide" | "Video";
+    export let mode: Mode = "Thumbnail";
 
     let imageWidth = 75;
     let imagePadding = 2;
@@ -26,15 +27,15 @@
     function zoomIn() {}
     function zoomOut() {}
     function toggleThumbnailViewer() {
-        mode = "pagesThumbnail";
-        const contentdiv: any = document.getElementById("Content");
-        const pagesdiv: any = document.getElementById("Viewer");
-        contentdiv.appendChild(pagesdiv);
+        mode = "Thumbnail";
+        const rootdiv: any = document.getElementById("Content");
+        const contentdiv: any = document.getElementById("Viewer");
+        rootdiv.appendChild(contentdiv);
     }
     function toggleWideViewer() {
-        mode = "pagesWide";
-        const pagesdiv: any = document.getElementById("Viewer");
-        document.body.appendChild(pagesdiv);
+        mode = "Wide";
+        const contentdiv: any = document.getElementById("Viewer");
+        document.body.appendChild(contentdiv);
     }
     function toggleFullScreen() {
         if (!document.fullscreenElement) {
@@ -48,12 +49,12 @@
 </script>
 
 <div id="Viewer">
-    {#if mode === "pagesThumbnail" || mode === "pagesWide"}
-        <div id="Pages" class={mode}>
+    {#if mode === "Thumbnail" || mode === "Wide"}
+        <div id="Contents" class={mode}>
             {#await update}
                 <p>...loading items</p>
             {:then}
-                {#if mode === "pagesWide"}
+                {#if mode === "Wide"}
                     <div
                         id="Buttons"
                         tabindex="0"
@@ -90,23 +91,23 @@
                         />
                     </div>
                 {/if}
-                {#each item.Entries as page, index}
-                    <!--{#await pagefetch.GetImage()}
+                {#each item.Entries as content, index}
+                    <!--{#await contentfetch.GetImage()}
                         <p>...loading image</p>
-                    {:then page}-->
-                    {#if mode === "pagesThumbnail"}
+                    {:then content}-->
+                    {#if mode === "Thumbnail"}
                         <div
                             class="thumbnail"
-                            style="background-image: url('{page.SourceURL}');"
+                            style="background-image: url('{content.SourceURL}');"
                             on:click={toggleWideViewer}
                             title="Page {index}"
                         />
-                    {:else if mode === "pagesWide"}
+                    {:else if mode === "Wide"}
                         <img
-                            id="page_{index}"
-                            alt="page_{index}"
+                            id="content_{index}"
+                            alt="content_{index}"
                             class="image"
-                            src={page.SourceURL}
+                            src={content.SourceURL}
                             style="width: {imageWidth}%; margin: {imagePadding}em;"
                             on-error="imgError(this)"
                         />
@@ -120,7 +121,7 @@
                 <p class="error">Unable to load item : {error}</p>
             {/await}
         </div>
-    {:else if mode === "video"}
+    {:else if mode === "Video"}
         <!-- WIP nothing to see here -->
         <div id="FullScreen" on-dblclick="toggleFullscreen">
             <!-- disablePictureInPicture controlsList="nodownload nofullscreen" -->
@@ -173,13 +174,13 @@
         box-shadow: 1em 1em 2em var(--cds-ui-01);
     }
 
-    :global(#Viewer > #Pages.pagesThumbnail) {
+    :global(#Viewer > #Contents.Thumbnail) {
         width: 100%;
         height: 100%;
         overflow-y: auto;
     }
 
-    :global(#Viewer > #Pages.pagesWide) {
+    :global(#Viewer > #Contents.Wide) {
         top: 0;
         left: 0;
         right: 0;

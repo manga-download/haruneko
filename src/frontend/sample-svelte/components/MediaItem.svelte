@@ -6,9 +6,9 @@
     import Image16 from "carbon-icons-svelte/lib/Image16";
     import CloudDownload16 from "carbon-icons-svelte/lib/CloudDownload16";
 
-    import type { IMediaChild } from "../../../engine/providers/MediaPlugin";
+    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
-    export let item: IMediaChild;
+    export let item: IMediaContainer;
     export let selected: Boolean;
     export let display = "Row";
 </script>

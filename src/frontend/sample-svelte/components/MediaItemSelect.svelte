@@ -14,21 +14,18 @@
 
     import MediaItem from "./MediaItem.svelte";
 
-    import type {
-        IMediaContainer,
-        IMediaChild,
-    } from "../../../engine/providers/MediaPlugin";
+    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
-    let items: IMediaChild[] = [];
-    let filteredItems: IMediaChild[] = [];
+    let items: IMediaContainer[] = [];
+    let filteredItems: IMediaContainer[] = [];
 
     export let media: IMediaContainer | null;
-    let selectedItem: IMediaChild | null;
+    let selectedItem: IMediaContainer | null;
 
     //On: MangaChange
     $: {
         media?.Update().then(() => {
-            items = media?.Entries ?? [];
+            items = (media?.Entries as IMediaContainer[]) ?? [];
             selectedItem = null;
         });
     }

@@ -18,10 +18,7 @@
     // Meh ?
     import VirtualList from "@sveltejs/svelte-virtual-list";
 
-    import type {
-        IMediaContainer,
-        IMediaChild,
-    } from "../../../engine/providers/MediaPlugin";
+    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
     import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox";
 
@@ -36,11 +33,11 @@
         false
     );
 
-    let medias: IMediaChild[] = [];
-    let filteredmedias: IMediaChild[] = [];
+    let medias: IMediaContainer[] = [];
+    let filteredmedias: IMediaContainer[] = [];
 
     let selectedPlugin: IMediaContainer | undefined;
-    let selectedMedia: Media | undefined;
+    let selectedMedia: IMediaContainer | undefined;
     let update: Promise<void> | undefined;
 
     let pluginsCombo: Array<ComboBoxItem>;
@@ -54,7 +51,7 @@
 
     //On: PluginChange
     $: {
-        medias = selectedPlugin?.Entries ?? [];
+        medias = (selectedPlugin?.Entries as IMediaContainer[]) ?? [];
         selectedMedia = undefined;
         update = selectedPlugin?.Update();
     }
