@@ -68,12 +68,21 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
 }
 
 export abstract class MediaScraper {
-    public abstract CreatePlugin(): MediaContainer<IMediaContainer>;
-    public abstract get Identifier(): string;
-    public abstract get Title(): string;
-    public abstract get URI(): URL;
+
+    public readonly Identifier: string;
+    public readonly Title: string;
+    public readonly URI: URL;
+
+    public constructor(identifier: string, title: string, url: string) {
+        this.Identifier = identifier;
+        this.Title = title;
+        this.URI = new URL(url);
+    }
+
     //readonly Icon: Image;
     //readonly Tags: object[];
+
+    public abstract CreatePlugin(): MediaContainer<IMediaContainer>;
 
     public async Initialize(): Promise<void> {
         const request = new FetchRequest(this.URI.href);

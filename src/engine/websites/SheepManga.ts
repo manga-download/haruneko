@@ -2,18 +2,15 @@ import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/Ma
 
 export default class extends MangaScraper {
 
-    public readonly Identifier = `sheepmanga`;
-    public readonly Title = `Sheep's Awesome Mangas`;
-    public readonly URI = new URL('https://raw.githubusercontent.com');
+    public constructor() {
+        super('sheepmanga', 'Sheep\'s Awesome Mangas', 'https://raw.githubusercontent.com');
+    }
+
     /*
     public const Tags = [
         new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
     ];
     */
-
-    public constructor() {
-        super();
-    }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
