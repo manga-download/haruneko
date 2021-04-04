@@ -3,14 +3,14 @@ import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchPr
 
 export default class extends MangaScraper {
 
-    public readonly Identifier = `leitor`;
-    public readonly Title = `Leitor`;
-    public readonly URI = new URL('https://leitor.net');
     /*
     public const Tags = [
         new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
     ];
     */
+    public constructor() {
+        super('leitor', 'Leitor', 'https://leitor.net');
+    }
 
     public async Initialize(): Promise<void> {
         // TODO: Bypass CloudFlare before chapter page can be accessed ...

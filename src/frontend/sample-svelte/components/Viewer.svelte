@@ -10,10 +10,12 @@
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
 
-    import type { IChapter, IPage } from "../../../engine/MangaProvider";
+    import type { IMediaChild } from "../../../engine/providers/MediaPlugin";
 
-    export let chapter: IChapter | null;
-    let pages: Promise<IPage[]> = chapter?.GetPages() ?? Promise.resolve([]);
+    export let item: IMediaChild | undefined;
+    let update: Promise<void>;
+    $: update = item?.Update();
+
     export let mode = "pagesThumbnail"; //'pagesThumbnail','pagesWide','video'
 
     let imageWidth = 75;
@@ -48,9 +50,9 @@
 <div id="Viewer">
     {#if mode === "pagesThumbnail" || mode === "pagesWide"}
         <div id="Pages" class={mode}>
-            {#await pages}
-                <p>...loading chapter</p>
-            {:then pages}
+            {#await update}
+                <p>...loading items</p>
+            {:then}
                 {#if mode === "pagesWide"}
                     <div
                         id="Buttons"
@@ -58,17 +60,16 @@
                         on-blur="focus()"
                         on-keydown="onKeyDown"
                     >
-                        <span class="title">{chapter?.Title ?? "unkown"}</span>
+                        <span class="title"
+                            >{item?.Parent?.Title ?? "unkown"}</span
+                        >
                         <ChevronLeft24
-                            label="Chapter Down (ArrowLeft)"
-                            on:click={(e) =>
-                                dispatch("requestChapterDown", chapter)}
+                            label="Item Down (ArrowLeft)"
+                            on:click={(e) => dispatch("requestItemDown", item)}
                         />
                         <ChevronRight24
-                            label="Chapter Up (ArrowRight)"
-                            render={ChevronRight24}
-                            on:click={(e) =>
-                                dispatch("requestChapterUp", chapter)}
+                            label="Item Up (ArrowRight)"
+                            on:click={(e) => dispatch("requestItemUp", item)}
                         />
                         &nbsp;
                         <RowDelete24
@@ -89,33 +90,34 @@
                         />
                     </div>
                 {/if}
-                {#each pages as pagefetch, index}
-                    {#await pagefetch.GetImage()}
+                {#each item.Entries as page, index}
+                    <!--{#await pagefetch.GetImage()}
                         <p>...loading image</p>
-                    {:then page}
-                        {#if mode === "pagesThumbnail"}
-                            <div
-                                class="thumbnail"
-                                style="background-image: url('{page}');"
-                                on:click={toggleWideViewer}
-                                title="Page {index}"
-                            />
-                        {:else if mode === "pagesWide"}
-                            <img
-                                id="page_{index}"
-                                alt="page_{index}"
-                                class="image"
-                                src={page}
-                                style="width: {imageWidth}%; margin: {imagePadding}em;"
-                                on-error="imgError(this)"
-                            />
-                        {/if}
+                    {:then page}-->
+                    {#if mode === "pagesThumbnail"}
+                        <div
+                            class="thumbnail"
+                            style="background-image: url('{page.SourceURL}');"
+                            on:click={toggleWideViewer}
+                            title="Page {index}"
+                        />
+                    {:else if mode === "pagesWide"}
+                        <img
+                            id="page_{index}"
+                            alt="page_{index}"
+                            class="image"
+                            src={page.SourceURL}
+                            style="width: {imageWidth}%; margin: {imagePadding}em;"
+                            on-error="imgError(this)"
+                        />
+                    {/if}
+                    <!--
                     {:catch error}
                         <p class="error">{error.message}</p>
-                    {/await}
+                    {/await}-->
                 {/each}
             {:catch error}
-                <p class="error">Unable to load chapter : {error.message}</p>
+                <p class="error">Unable to load item : {error}</p>
             {/await}
         </div>
     {:else if mode === "video"}

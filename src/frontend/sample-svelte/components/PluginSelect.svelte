@@ -9,10 +9,10 @@
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
 
-    import type { IMangaHost } from "../../../engine/MangaProvider";
+    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
     import Plugin from "./Plugin.svelte";
 
-    export let pluginlist: Array<IMangaHost>;
+    export let pluginlist: Array<IMediaContainer>;
 
     //quickly inline because of dangerous lazyness
     interface ITag {
@@ -59,7 +59,7 @@
     }
     addTagFilter({ category: "lang", label: "French" });
 
-    let filteredpluginlist: Array<IMangaHost> = pluginlist;
+    let filteredpluginlist: Array<IMediaContainer> = pluginlist;
     $: filteredPluginlist = pluginlist.filter((item) => {
         let conditions: Array<boolean> = [];
         if (pluginNameFilter !== "") {
@@ -73,11 +73,14 @@
             // Quick test tag filtering using language property
             // Should be a test if all selected tags are in the tags of plugin
             conditions.push(
-                item.Language !== undefined
+                true
+                /* TODO: resurect language tags later
+                item. !== undefined
                     ? pluginTagsFilter.find(
-                          (element) => element.label === item.Language
-                      ) !== undefined
+                        (element) => element.label === item.Language
+                    ) !== undefined
                     : true
+                */
             );
         }
         return !conditions.includes(false);
@@ -93,7 +96,7 @@
             on:mouseleave={() => {
                 iconClose = CloseOutline32;
             }}
-            on:click={(e) => dispatch("close")}
+            on:click={() => dispatch("close")}
         />
     </div>
     <h2 class="title">Plugin Selection</h2>
