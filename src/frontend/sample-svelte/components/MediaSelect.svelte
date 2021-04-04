@@ -9,7 +9,7 @@
 
     import { fly, fade } from "svelte/transition";
 
-    import UIManga from "./Manga.svelte";
+    import Media from "./Media.svelte";
     import PluginSelect from "./PluginSelect.svelte";
 
     import { createEventDispatcher } from "svelte";
@@ -18,11 +18,11 @@
     // Meh ?
     import VirtualList from "@sveltejs/svelte-virtual-list";
 
-    import {
+    import type {
         IMediaContainer,
         IMediaChild,
     } from "../../../engine/providers/MediaPlugin";
-    import { Manga } from "../../../engine/providers/MangaPlugin";
+
     import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox";
 
     let plugins: IMediaContainer[] = [];
@@ -36,11 +36,12 @@
         false
     );
 
-    let mangas: IMediaChild[] = [];
-    let filteredmangas: IMediaChild[] = [];
+    let medias: IMediaChild[] = [];
+    let filteredmedias: IMediaChild[] = [];
 
-    let selectedPlugin: IMediaContainer | null;
-    let selectedManga: Manga | null;
+    let selectedPlugin: IMediaContainer | undefined;
+    let selectedMedia: Media | undefined;
+    let update: Promise<void> | undefined;
 
     let pluginsCombo: Array<ComboBoxItem>;
 
@@ -53,16 +54,17 @@
 
     //On: PluginChange
     $: {
-        mangas = selectedPlugin?.Entries ?? [];
-        selectedManga = null;
+        medias = selectedPlugin?.Entries ?? [];
+        selectedMedia = undefined;
+        update = selectedPlugin?.Update();
     }
 
-    let mangaNameFilter = "";
+    let mediaNameFilter = "";
     $: {
-        filteredmangas = mangas.filter((item) => {
+        filteredmedias = medias.filter((item) => {
             return (
                 item?.Parent?.Title?.toLowerCase().indexOf(
-                    mangaNameFilter.toLowerCase()
+                    mediaNameFilter.toLowerCase()
                 ) !== -1
             );
         });
@@ -95,9 +97,9 @@
         />
     </div>
 {/if}
-<div id="Manga" transition:fade>
-    <div id="MangaTitle">
-        <h5 class="separator">Manga List</h5>
+<div id="Media" transition:fade>
+    <div id="MediaTitle">
+        <h5 class="separator">Media List (Manga, Anime etc..)</h5>
     </div>
     <div id="Plugin">
         <div class="inline">
@@ -122,19 +124,19 @@
             />
         </div>
     </div>
-    <div id="MangaFilter">
-        <Search size="sm" bind:value={mangaNameFilter} />
+    <div id="MediaFilter">
+        <Search size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MangaList" class="list">
-        {#await mangas}
+    <div id="MediaList" class="list">
+        {#await update}
             <InlineLoading status="active" description="Working..." />
-        {:then mangas}
-            <VirtualList class="vlist" items={filteredmangas} let:item>
-                <UIManga
-                    manga={item}
-                    selected={selectedManga === item}
+        {:then}
+            <VirtualList class="vlist" items={filteredmedias} let:item>
+                <Media
+                    media={item}
+                    selected={selectedMedia === item}
                     on:select={(e) => {
-                        selectedManga = e.detail;
+                        selectedMedia = e.detail;
                         dispatch("select", e.detail);
                     }}
                 />
@@ -143,51 +145,51 @@
             <p style="color: red">{error}</p>
         {/await}
     </div>
-    <div id="MangaCount">
-        {#await mangas}
-            Mangas : ?
-        {:then mangas}
-            Mangas : {filteredmangas.length}/{mangas.length}
+    <div id="MediaCount">
+        {#await medias}
+            Medias : ?
+        {:then medias}
+            Medias : {filteredmedias.length}/{medias.length}
         {:catch error}
-            Mangas : ?
+            Medias : ?
         {/await}
     </div>
 </div>
 
 <style>
-    #Manga {
+    #Media {
         min-height: 0;
         height: 100%;
         display: grid;
         grid-template-rows: 2em 2em 2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
-            "MangaTitle"
+            "MediaTitle"
             "Plugin"
-            "MangaFilter"
-            "MangaList"
-            "MangaCount";
-        grid-area: Manga;
+            "MediaFilter"
+            "MediaList"
+            "MediaCount";
+        grid-area: Media;
     }
     #Plugin {
         grid-area: Plugin;
         display: table;
     }
-    #MangaFilter {
-        grid-area: MangaFilter;
+    #MediaFilter {
+        grid-area: MediaFilter;
         display: table;
     }
-    #MangaList {
-        grid-area: MangaList;
+    #MediaList {
+        grid-area: MediaList;
         background-color: var(--cds-field-01);
         overflow: hidden;
     }
-    #MangaCount {
-        grid-area: MangaCount;
+    #MediaCount {
+        grid-area: MediaCount;
         display: table;
         margin: 0.25em;
     }
-    :global(#MangaList .vlist) {
+    :global(#MediaList .vlist) {
         white-space: nowrap;
         list-style-type: none;
         padding: 0.25em;

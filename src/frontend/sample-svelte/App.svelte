@@ -23,8 +23,8 @@
     import { onMount } from "svelte";
 
     import Theme, { themes } from "./components/Theme.svelte";
-    import MangaSelect from "./components/MangaSelect.svelte";
-    import ChapterSelect from "./components/ChapterSelect.svelte";
+    import MediaSelect from "./components/MediaSelect.svelte";
+    import MediaItemSelect from "./components/MediaItemSelect.svelte";
     import Jobs from "./components/Jobs.svelte";
     import Console from "./components/Console.svelte";
     import Network from "./components/Network.svelte";
@@ -33,7 +33,10 @@
 
     import { fade } from "svelte/transition";
 
-    import type { IManga, IChapter } from "../../engine/MangaProvider";
+    import type {
+        IMediaContainer,
+        IMediaItem,
+    } from "../../engine/providers/MediaPlugin";
 
     let isSideNavOpen = false;
     let isOpen = false;
@@ -60,13 +63,13 @@
         app.classList.add(uimode);
     }
 
-    let selectedManga: IManga | null;
-    let selectedChapter: IChapter | null;
+    let selectedMedia: IMediaContainer | null;
+    let selectedItem: IMediaItem | null;
     let selectedBottomTab = 0;
     let currentContent = "home";
     let showHome = true;
 
-    $: currentContent = selectedChapter ? "viewer" : "home";
+    $: currentContent = selectedItem ? "viewer" : "home";
 </script>
 
 <svelte:head>
@@ -80,7 +83,7 @@
         expandedByDefault={false}
         persistentHamburgerMenu={true}
         company="HakuNeko"
-        platformName="Manga & Anime - Downloader"
+        platformName="Media & Anime - Downloader"
         bind:isSideNavOpen
     >
         <div slot="skip-to-content">
@@ -124,17 +127,17 @@
     </SideNav>
 
     <Content id="hakunekoapp">
-        <MangaSelect on:select={(e) => (selectedManga = e.detail)} />
-        <ChapterSelect
-            {selectedManga}
-            on:view={(e) => (selectedChapter = e.detail)}
+        <MediaSelect on:select={(e) => (selectedMedia = e.detail)} />
+        <MediaItemSelect
+            media={selectedMedia}
+            on:view={(e) => (selectedItem = e.detail)}
         />
         {#if uimode === "ui-mode-content"}
             <div id="Content" transition:fade>
                 {#if currentContent === "home" && showHome}
                     <Home />
                 {:else if currentContent === "viewer"}
-                    <Viewer chapter={selectedChapter} />
+                    <Viewer item={selectedItem} />
                 {/if}
             </div>
         {/if}
@@ -200,13 +203,13 @@
     :global(.ui-mode-content) {
         grid-template-columns: 19em 19em 1fr;
         grid-template-areas:
-            "Manga Chapter Content"
+            "Media Item Content"
             "Bottom Bottom Content";
     }
     :global(.ui-mode-download) {
         grid-template-columns: minmax(20em, 1fr) minmax(20em, 1fr);
         grid-template-areas:
-            "Manga Chapter"
+            "Media Item"
             "Bottom Bottom";
     }
 
