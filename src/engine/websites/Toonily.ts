@@ -2,7 +2,7 @@ import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/Ma
 import { FetchMangasMultiPageHTML, FetchChaptersSinglePageHTML, FetchPagesSinglePageHTML } from './decorators/WordPressMadara';
 
 // TODO: Use decorators instead of method call forwarding ...
-//@MangasMultiPageHTML('/page/{page}/')
+//@MangasMultiPageHTML(undefined, '/page/{page}/')
 //@ChaptersSinglePageHTML()
 //@PagesSinglePageHTML()
 export default class extends MangaScraper {
