@@ -63,8 +63,8 @@
         app.classList.add(uimode);
     }
 
-    let selectedMedia: IMediaContainer | null;
-    let selectedItem: IMediaItem | null;
+    let selectedMedia: IMediaContainer | undefined;
+    let selectedItem: IMediaContainer | undefined;
     let selectedBottomTab = 0;
     let currentContent = "home";
     let showHome = true;

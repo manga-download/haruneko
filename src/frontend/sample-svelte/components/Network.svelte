@@ -10,8 +10,8 @@
 
     interface Request {
         type: string;
-        status: string | null | undefined;
-        url: URL | null | undefined;
+        status: string | undefined;
+        url: URL | undefined;
         details: string;
     }
 

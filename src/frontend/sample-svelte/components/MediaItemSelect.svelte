@@ -19,8 +19,8 @@
     let items: IMediaContainer[] = [];
     let filteredItems: IMediaContainer[] = [];
 
-    export let media: IMediaContainer | null;
-    let selectedItem: IMediaContainer | null;
+    export let media: IMediaContainer | undefined;
+    let selectedItem: IMediaContainer | undefined;
 
     //On: MangaChange
     $: {
