@@ -57,17 +57,34 @@ export default class extends MangaScraper {
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {
         return [
             new Chapter(this, manga, '/001', 'Chapter 1 - Beginning'),
-            new Chapter(this, manga, '/999', 'Ch. 999 - The End')
+            new Chapter(this, manga, '/999', 'Ch. 999 - The End'),
+            new Chapter(this, manga, '/meh', 'The lost chapter')
         ];
     }
 
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
-        return [
-            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page01.png', this.URI)),
-            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page02.png', this.URI)),
-            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page03.png', this.URI)),
-            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page04.png', this.URI)),
-            new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page05.png', this.URI))
-        ];
+        if (chapter.Identifier === '/001') {
+            return [
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page01.png', this.URI)),
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page02.png', this.URI)),
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page03.png', this.URI)),
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page04.png', this.URI)),
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter1/Page05.png', this.URI))
+            ];
+        }
+        else if (chapter.Identifier === '/999') {
+            return [
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter2/Page01.png', this.URI)),
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter2/Page02.png', this.URI)),
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/Chapter2/Page03.png', this.URI))
+            ];
+        }
+        else {
+            return [
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/404.png', this.URI)),
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/404.png', this.URI)),
+                new Page(this, chapter, new URL('/manga-download/haruneko/master/sample/MangaBySheep/404.png', this.URI)),
+            ];
+        }
     }
 }
