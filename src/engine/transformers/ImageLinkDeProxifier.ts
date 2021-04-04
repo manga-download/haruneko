@@ -1,31 +1,32 @@
-export class ImageLinkDeProxifier {
+function DeProxifyGoogle(uri: URL): URL {
+    const source = uri.searchParams.get('url') || '';
+    return new URL(source);
+}
 
-    private DeProxifyGoogle(uri: URL): string {
-        const source = uri.searchParams.get('url');
-        if(source) {
-            return source;
-        }
-        throw new Error(`Missing parameter <url> in '${uri.href}' for Google proxy!`);
+function DeProxifyPhoton(uri: URL): URL {
+    let url = uri.searchParams.get('ssl') ? 'https://' : 'http://';
+    url += uri.pathname.slice(1);
+    const search = uri.searchParams.get('q');
+    if(search) {
+        url += '?' + search;
     }
+    return new URL(url);
+}
 
-    private DeProxifyPhoton(uri: URL): string {
-        let url = uri.searchParams.get('ssl') ? 'https://' : 'http://';
-        url += uri.pathname.slice(1);
-        const search = uri.searchParams.get('q');
-        if(search) {
-            url += '?' + search;
-        }
-        return url;
-    }
+function DeProxifyWordPressPassthru(uri: URL): URL {
+    const url = uri.searchParams.get('src') || '';
+    return new URL(url);
+}
 
-    public Convert(url: string): string {
-        const uri = new URL(url);
-        if(/googleusercontent\.com$/.test(uri.hostname) && /\/proxy$/.test(uri.pathname)) {
-            return this.DeProxifyGoogle(uri);
-        }
-        if(/i\d+\.wp\.com$/.test(uri.hostname)) {
-            return this.DeProxifyPhoton(uri);
-        }
-        return url;
+export default function DeProxify(uri: URL): URL {
+    if(/googleusercontent\.com$/.test(uri.hostname) && /\/proxy$/.test(uri.pathname)) {
+        return DeProxifyGoogle(uri);
     }
+    if(/i\d+\.wp\.com$/.test(uri.hostname)) {
+        return DeProxifyPhoton(uri);
+    }
+    if(/webpc-passthru\.php/.test(uri.pathname)) {
+        return DeProxifyWordPressPassthru(uri);
+    }
+    return uri;
 }
