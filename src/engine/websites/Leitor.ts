@@ -1,19 +1,21 @@
-import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { MangaScraper, Manga, Chapter, Page, MangaPlugin } from '../providers/MangaPlugin';
 import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchProvider';
+import { FetchMangasMultiPageHTML } from './decorators/Common';
 
 export default class extends MangaScraper {
 
-    /*
-    public const Tags = [
-        new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
-    ];
-    */
     public constructor() {
         super('leitor', 'Leitor', 'https://leitor.net');
     }
 
+    /*
+    // [ 'manga', 'webtoon', 'portuguese' ]
+    public const Tags = [
+        new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
+    ];
+    */
+
     public async Initialize(): Promise<void> {
-        // TODO: Bypass CloudFlare before chapter page can be accessed ...
         const paths = [ '/', '/manga/_/_/capitulo-' ];
         for(const path of paths) {
             const uri = new URL(path, this.URI);
@@ -23,23 +25,7 @@ export default class extends MangaScraper {
     }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
-        for(let page = 1, run = true; run; page++) {
-            const mangas = await this.FetchMangasFromPage(provider, page);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async FetchMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
-        const uri = new URL(`/series/index/?page=${page}`, this.URI);
-        const request = new FetchRequest(uri.href);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.seriesList li > a.link-block');
-        return data.map(element => {
-            const id = element.pathname;
-            const title = element.title.replace(/(?:^\s*ler\s+|\s+online\s*$)/gi, '').trim();
-            return new Manga(this, provider, id, title);
-        });
+        return FetchMangasMultiPageHTML.call(this, provider, '/series/index/?page={page}', 'ul.seriesList li > a.link-block');
     }
 
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {
