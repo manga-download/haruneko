@@ -3,17 +3,10 @@ const fs = require('fs-extra');
 const config = require('./package.json');
 const argv = require('yargs').argv;
 
-const source = path.join(__dirname, 'src');
-const target = path.join(__dirname, 'build.app');
-const files = [ /*'main.js'*/ ];
-
-async function getBranch() {
-    return 'master';
-}
+const target = path.join(__dirname, 'build.app', 'package.json');
 
 async function getManifest() {
-    let branch = await getBranch();
-    const baseURL = argv.url || `${config.url}/${branch}`;
+    const baseURL = argv.url;
     return {
         name: config.name,
         description: config.description,
@@ -38,6 +31,7 @@ async function getManifest() {
             //icon: 'link.png',
             //toolbar: true,
             //frame: false,
+            //transparent: false,
             position: 'center',
             width: 1280,
             height: 720,
@@ -47,33 +41,7 @@ async function getManifest() {
     };
 }
 
-async function installModules() {
-
-    let modules = path.join(__dirname, target, 'node_modules');
-
-    try {
-        await fs.remove(modules);
-    } catch(error) {
-        //
-    }
-
-    if(argv.modules) {
-        // `cd $target` && `npm install --only=production`
-    }
-}
-
 (async function main() {
-    await fs.ensureDir(target);
-
-    // copy files
-    for(let file of files) {
-        fs.copy(path.join(source, file), path.join(target, file));
-    }
-
-    // write application manifest
     let manifest = await getManifest();
-    fs.writeJSON(path.join(target, 'package.json'), manifest, { spaces: 4 });
-
-    // install node modules for deployment
-    await installModules();
+    fs.writeJSON(target, manifest, { spaces: 4 });
 })();
