@@ -1,6 +1,6 @@
 const base = {
     rootDir: '../src',
-    testMatch: [ '**/*[_.](spec|test).[jt]s(x)?' ],
+    testMatch: [ '**/*[_.](test|spec|e2e).[jt]s(x)?' ],
     displayName: 'All Tests',
     preset: 'ts-jest',
     testEnvironment: 'node',
