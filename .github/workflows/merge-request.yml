@@ -33,7 +33,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Build (web)
-        run: npm run build:web
+        run: npm run build:web:prod
       - name: Test
         env:
           DISPLAY: ':99'

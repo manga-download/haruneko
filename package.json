@@ -7,10 +7,7 @@
   "homepage": "https://git.io/hakuneko",
   "engines": {
     "node": ">=14.16.0",
-    "npm": ">=7.6.3"
-  },
-  "dependencies": {
-    "fs-extra": "9.0.1"
+    "npm": ">=7.6.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "latest",
@@ -22,6 +19,7 @@
     "@types/jest": "latest",
     "@types/jsdom": "latest",
     "@types/node": "latest",
+    "@types/puppeteer-core": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
@@ -58,13 +56,13 @@
   },
   "scripts": {
     "lint": "eslint ./src/**/*.ts --ignore-path .gitignore",
-    "build:dev": "node ./build.app.js --url=http://localhost:5000",
-    "build:app": "node ./build.app.js --url=https://hakuneko.download/haruneko --modules && cd build.app && npm install --only=production",
-    "build:web": "rm -r -f build.web docs && rollup --config --compact && cp -r -f build.web/ docs/",
-    "test": "cd test && jest --color --config=jest.ts",
-    "test:engine": "cd test && jest --color --config=jest-engine.ts",
-    "test:frontend": "cd test && jest --color --config=jest-frontend.ts",
+    "build:app:dev": "rm -r -f build.app && mkdir build.app && node ./build.app.js --url=http://localhost:5000 && cd build.app && npm install --only=production",
+    "build:app:prod": "rm -r -f build.app && mkdir build.app && node ./build.app.js --url=https://haruneko.pages.dev && cd build.app && npm install --only=production",
+    "build:web:prod": "rm -r -f build.web docs && rollup --config --compact && cp -r -f build.web/ docs/",
+    "test": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest.ts",
+    "test:engine": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest-engine.ts",
+    "test:frontend": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest-frontend.ts",
     "serve": "rollup --config --watch",
-    "start": "npm run build:dev && nw ./build.app/"
+    "start": "npm run build:app:dev && nw ./build.app/"
   }
 }
