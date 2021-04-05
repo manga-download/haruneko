@@ -27,7 +27,9 @@
         "node_modules",
         "**/*_test.ts",
         "**/*_spec.ts",
+        "**/*_e2e.ts",
         "**/*.test.ts",
-        "**/*.spec.ts"
+        "**/*.spec.ts",
+        "**/*.e2e.ts"
     ]
 }

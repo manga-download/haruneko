@@ -27,6 +27,7 @@
     "@vue/compiler-sfc": "latest",
     "carbon-components-svelte": "latest",
     "eslint": "latest",
+    "http-server": "latest",
     "jest": "latest",
     "jest-junit": "latest",
     "jest-mock-extended": "latest",
@@ -62,6 +63,7 @@
     "test": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest.ts",
     "test:engine": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest-engine.ts",
     "test:frontend": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest-frontend.ts",
+    "test:e2e": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest-e2e.ts",
     "serve": "rollup --config --watch",
     "start": "npm run build:app:dev && nw ./build.app/"
   }
