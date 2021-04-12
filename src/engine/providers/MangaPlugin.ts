@@ -1,5 +1,10 @@
 import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
+/**
+ * The abstract base class that any custom manga scraper must implement.
+ * This should be used for any custom manga scraper implementation that is not going to utilize the decorator pattern.
+ * Custom manga scrapers that are going to utilize decorators must extend the `DecoratableMangaScraper` instead.
+ */
 export abstract class MangaScraper extends MediaScraper {
 
     public CreatePlugin(): MangaPlugin {
@@ -9,6 +14,25 @@ export abstract class MangaScraper extends MediaScraper {
     public abstract FetchMangas(provider: MangaPlugin): Promise<Manga[]>;
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
     public abstract FetchPages(chapter: Chapter): Promise<Page[]>;
+}
+
+/**
+ * An empty implementation of the `MangaScraper` class.
+ * Since decorators do not (yet) work well with the abstract classes, this base class can be used when applying the decorator pattern to customize manga scrapers.
+ */
+export class DecoratableMangaScraper extends MangaScraper {
+
+    public FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        throw new Error();
+    }
+
+    public FetchChapters(manga: Manga): Promise<Chapter[]> {
+        throw new Error();
+    }
+
+    public FetchPages(chapter: Chapter): Promise<Page[]> {
+        throw new Error();
+    }
 }
 
 export class MangaPlugin extends MediaContainer<Manga> {
