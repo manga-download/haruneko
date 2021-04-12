@@ -1,11 +1,10 @@
-import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
-import { FetchMangasMultiPageAJAX, FetchChaptersSinglePageAJAX, FetchPagesSinglePageHTML } from './decorators/WordPressMadara';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { MangasMultiPageAJAX, ChaptersSinglePageAJAX, PagesSinglePageCSS } from './decorators/WordPressMadara';
 
-// TODO: Use decorators instead of method call forwarding ...
-//@MangasMultiPageHTML()
-//@ChaptersSinglePageHTML()
-//@PagesSinglePageHTML()
-export default class extends MangaScraper {
+@MangasMultiPageAJAX()
+@ChaptersSinglePageAJAX()
+@PagesSinglePageCSS()
+export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('hiperdex', 'Hiperdex', 'https://hiperdex.com');
@@ -17,16 +16,4 @@ export default class extends MangaScraper {
         new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
     ];
     */
-
-    public FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return FetchMangasMultiPageAJAX.call(this, provider);
-    }
-
-    public FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FetchChaptersSinglePageAJAX.call(this, manga);
-    }
-
-    public FetchPages(chapter: Chapter): Promise<Page[]> {
-        return FetchPagesSinglePageHTML.call(this, chapter);
-    }
 }
