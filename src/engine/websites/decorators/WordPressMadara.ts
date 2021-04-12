@@ -58,7 +58,7 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
 export function MangasMultiPageCSS(query = queryMangaListLinks, path = pathpaged) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
-            public async FetchMangas(this: DecoratableMangaScraper, provider: MangaPlugin): Promise<Manga[]> {
+            public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageCSS.call(this, provider, query, path);
             }
         };
@@ -96,7 +96,7 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
 export function MangasMultiPageAJAX(query = queryMangaListLinks, path = pathname) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
-            public async FetchMangas(this: DecoratableMangaScraper, provider: MangaPlugin): Promise<Manga[]> {
+            public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageAJAX.call(this, provider, query, path);
             }
         };
@@ -132,7 +132,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
 export function ChaptersSinglePageCSS(query = queryChapterListLinks) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
-            public async FetchChapters(this: DecoratableMangaScraper, manga: Manga): Promise<Chapter[]> {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query);
             }
         };
@@ -160,7 +160,7 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
 export function ChaptersSinglePageAJAX(query = queryChapterListLinks, path = pathname) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
-            public async FetchChapters(this: DecoratableMangaScraper, manga: Manga): Promise<Chapter[]> {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageAJAX.call(this, manga, query, path);
             }
         };
@@ -190,7 +190,7 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
 export function PagesSinglePageCSS(query = queryPageListLinks) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
-            public async FetchPages(this: DecoratableMangaScraper, chapter: Chapter): Promise<Page[]> {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageCSS.call(this, chapter, query);
             }
         };
