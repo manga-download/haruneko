@@ -1,6 +1,6 @@
 import { MangaScraper, Manga, Chapter, Page, MangaPlugin } from '../providers/MangaPlugin';
 import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchProvider';
-import { FetchMangasMultiPageHTML } from './decorators/Common';
+import { FetchMangasMultiPageCSS } from './decorators/Common';
 
 export default class extends MangaScraper {
 
@@ -25,7 +25,7 @@ export default class extends MangaScraper {
     }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return FetchMangasMultiPageHTML.call(this, provider, '/series/index/?page={page}', 'ul.seriesList li > a.link-block');
+        return FetchMangasMultiPageCSS.call(this, provider, '/series/index/?page={page}', 'ul.seriesList li > a.link-block');
     }
 
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {
