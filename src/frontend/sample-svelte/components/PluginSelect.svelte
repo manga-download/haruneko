@@ -93,6 +93,8 @@
     on:click:button--secondary={() => (myPluginModalOpen = false)}
     on:open
     on:close
+    hasScrollingContent
+    hasForm
 >
 <div class="content">
     <div class="tags">
@@ -164,14 +166,8 @@
 <style>
     .content {
         text-align: center;
-        overflow-y: scroll;
+        /* overflow-y: scroll; */
         overflow-x: hidden;
-        /* height: calc(100vh - 7.5em); */
-    }
-    .topleft {
-        position: relative;
-        display: flex;
-        align-items: center;
     }
     .close {
         display: inline-block;
