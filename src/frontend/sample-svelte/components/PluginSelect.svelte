@@ -4,7 +4,7 @@
 
     import CloseOutline32 from "carbon-icons-svelte/lib/CloseOutline32";
     import CloseFilled32 from "carbon-icons-svelte/lib/CloseFilled32";
-    let iconClose: any = CloseOutline32;
+    let hoverCloseIcon = false;
 
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
@@ -88,16 +88,13 @@
 </script>
 
 <div class="topleft">
-    <div class="close">
-        <iconClose
-            on:mouseover={() => {
-                iconClose = CloseFilled32;
-            }}
-            on:mouseleave={() => {
-                iconClose = CloseOutline32;
-            }}
-            on:click={() => dispatch("close")}
-        />
+    <div class="close" 
+        on:click={() => dispatch("close")}>        
+        {#if hoverCloseIcon}
+            <CloseFilled32  on:mouseleave={() => {hoverCloseIcon = false}}/>
+        {:else}
+            <CloseOutline32 on:mouseover={() =>  {hoverCloseIcon = true}}/>
+        {/if}
     </div>
     <h2 class="title">Plugin Selection</h2>
 </div>
@@ -176,6 +173,8 @@
     }
     .topleft {
         position: relative;
+        display: flex;
+        align-items: center;
     }
     .close {
         display: inline-block;
