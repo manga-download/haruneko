@@ -1,10 +1,6 @@
 <script lang="ts">
-    import { Accordion, Tile, Search } from "carbon-components-svelte";
+    import { Accordion, Tile, Search, Modal } from "carbon-components-svelte";
     import Tag from "./Tag.svelte";
-
-    import CloseOutline32 from "carbon-icons-svelte/lib/CloseOutline32";
-    import CloseFilled32 from "carbon-icons-svelte/lib/CloseFilled32";
-    let hoverCloseIcon = false;
 
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
@@ -13,6 +9,7 @@
     import Plugin from "./Plugin.svelte";
 
     export let pluginlist: Array<IMediaContainer>;
+    export let myPluginModalOpen = false;
 
     //quickly inline because of dangerous lazyness
     interface ITag {
@@ -87,17 +84,16 @@
     });
 </script>
 
-<div class="topleft">
-    <div class="close" 
-        on:click={() => dispatch("close")}>        
-        {#if hoverCloseIcon}
-            <CloseFilled32  on:mouseleave={() => {hoverCloseIcon = false}}/>
-        {:else}
-            <CloseOutline32 on:mouseover={() =>  {hoverCloseIcon = true}}/>
-        {/if}
-    </div>
-    <h2 class="title">Plugin Selection</h2>
-</div>
+
+<Modal
+    size="lg"
+    bind:open={myPluginModalOpen}
+    passiveModal
+    modalHeading="Plugin Selection"
+    on:click:button--secondary={() => (myPluginModalOpen = false)}
+    on:open
+    on:close
+>
 <div class="content">
     <div class="tags">
         <Tile>
@@ -163,13 +159,14 @@
         </Accordion>
     </Tile>
 </div>
+</Modal>
 
 <style>
     .content {
         text-align: center;
         overflow-y: scroll;
         overflow-x: hidden;
-        height: calc(100vh - 7.5em);
+        /* height: calc(100vh - 7.5em); */
     }
     .topleft {
         position: relative;

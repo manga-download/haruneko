@@ -7,7 +7,7 @@
     } from "carbon-components-svelte";
     import PlugFilled16 from "carbon-icons-svelte/lib/PlugFilled16";
 
-    import { fly, fade } from "svelte/transition";
+    import { fade } from "svelte/transition";
 
     import Media from "./Media.svelte";
     import PluginSelect from "./PluginSelect.svelte";
@@ -67,7 +67,7 @@
         });
     }
 
-    let showPluginSelect = false;
+    let myPluginModalOpen = false;
 
     function selectPlugin(event: any) {
         const searchComboItem = pluginsCombo.findIndex(
@@ -76,7 +76,7 @@
         if (searchComboItem) {
             selectedPluginIndex = searchComboItem;
         }
-        showPluginSelect = false;
+        myPluginModalOpen = false;
     }
 
     function shouldFilterPlugin(item: any, value: string) {
@@ -85,15 +85,17 @@
     }
 </script>
 
-{#if showPluginSelect}
-    <div class="PluginSelect" in:fly={{ y: -200, duration: 1000 }} out:fade>
-        <PluginSelect
-            pluginlist={plugins}
-            on:close={() => (showPluginSelect = false)}
-            on:select={selectPlugin}
-        />
-    </div>
+{#if myPluginModalOpen}
+<div>
+    <PluginSelect
+        myPluginModalOpen={myPluginModalOpen}
+        pluginlist={plugins}
+        on:close={() => (myPluginModalOpen = false)}
+        on:select={selectPlugin}
+    />
+</div>
 {/if}
+
 <div id="Media" transition:fade>
     <div id="MediaTitle">
         <h5 class="separator">Media List (Manga, Anime etc..)</h5>
@@ -107,7 +109,7 @@
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
                 iconDescription="Plugin"
-                on:click={() => (showPluginSelect = true)}
+                on:click={() => (myPluginModalOpen = true)}
             />
         </div>
 
@@ -121,6 +123,7 @@
             />
         </div>
     </div>
+
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
     </div>
@@ -206,11 +209,5 @@
         display: table-cell;
         width: 100%;
     }
-    .PluginSelect {
-        position: absolute;
-        background-color: var(--cds-ui-01);
-        width: 100%;
-        height: 100%;
-        z-index: 100;
-    }
+
 </style>
