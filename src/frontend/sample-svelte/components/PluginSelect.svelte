@@ -1,5 +1,13 @@
 <script lang="ts">
-    import { Button, Tile, Modal, DataTable, Toolbar, ToolbarContent, ToolbarSearch } from "carbon-components-svelte";
+    import {
+        Button,
+        Tile,
+        Modal,
+        DataTable,
+        Toolbar,
+        ToolbarContent,
+        ToolbarSearch,
+    } from "carbon-components-svelte";
     import Add16 from "carbon-icons-svelte/lib/Add16";
     import ArrowUpRight24 from "carbon-icons-svelte/lib/ArrowUpRight24";
     import Image16 from "carbon-icons-svelte/lib/Image16";
@@ -31,11 +39,11 @@
 
     //quickly inline because of dangerous lazyness
     let pluginsHeaders = [
-        { key: "action", value: "Action"},
-        { key: "image", empty: true},
-        { key: "name", value: "Name"},
-        { key: "tags", value: "Tags"},
-        { key: "overflow", empty: true},
+        { key: "action", value: "Action" },
+        { key: "image", empty: true },
+        { key: "name", value: "Name" },
+        { key: "tags", value: "Tags" },
+        { key: "overflow", empty: true },
     ];
 
     //because hardccoding values is da way (Do You Know Da Wae?)
@@ -76,31 +84,33 @@
     }
     addTagFilter({ category: "lang", label: "French" });
 
-    $: filteredPluginlist = pluginlist.filter((item) => {
-        let conditions: Array<boolean> = [];
-        if (pluginNameFilter !== "") {
-            conditions.push(
-                item.Title.toLowerCase().indexOf(
-                    pluginNameFilter.toLowerCase()
-                ) !== -1
-            );
-        }
-        if (pluginTagsFilter.length > 0) {
-            // Quick test tag filtering using language property
-            // Should be a test if all selected tags are in the tags of plugin
-            conditions.push(
-                true
-                /* TODO: resurect language tags later
+    $: filteredPluginlist = pluginlist
+        .filter((item) => {
+            let conditions: Array<boolean> = [];
+            if (pluginNameFilter !== "") {
+                conditions.push(
+                    item.Title.toLowerCase().indexOf(
+                        pluginNameFilter.toLowerCase()
+                    ) !== -1
+                );
+            }
+            if (pluginTagsFilter.length > 0) {
+                // Quick test tag filtering using language property
+                // Should be a test if all selected tags are in the tags of plugin
+                conditions.push(
+                    true
+                    /* TODO: resurect language tags later
                 item. !== undefined
                     ? pluginTagsFilter.find(
                         (element) => element.label === item.Language
                     ) !== undefined
                     : true
                 */
-            );
-        }
-        return !conditions.includes(false);
-    }).map(item => new PluginRow(item));
+                );
+            }
+            return !conditions.includes(false);
+        })
+        .map((item) => new PluginRow(item));
 </script>
 
 <Modal
@@ -113,9 +123,9 @@
     on:close
     hasScrollingContent
     hasForm
-    >
-    <div class="content">
-        <div class="tags">
+>
+    <div>
+        <div class="content tags">
             <Tile>
                 <div class="lang">
                     <div>Language</div>
@@ -149,31 +159,37 @@
                 </div>
             </Tile>
         </div>
-        <div class="search">
-            <div class="selectedtags">
-                <Tile light>
-                    <span>Tags:</span>
-                    {#each pluginTagsFilter as item}
-                        <Tag
-                            filter
-                            category={item.category}
-                            label={item.label}
-                            on:click={() => removeTagFilter(item)}
-                        />
-                    {/each}
-                </Tile>
-            </div>
+        <div>
+            <Tile id="pluginTabTile">
+                <span>Tags:</span>
+                {#each pluginTagsFilter as item}
+                    <Tag
+                        filter
+                        category={item.category}
+                        label={item.label}
+                        on:click={() => removeTagFilter(item)}
+                    />
+                {/each}
+            </Tile>
         </div>
-        <DataTable zebra bind:headers={pluginsHeaders} bind:rows={filteredPluginlist}>
+        <DataTable
+            zebra
+            bind:headers={pluginsHeaders}
+            bind:rows={filteredPluginlist}
+        >
             <Toolbar>
                 <ToolbarContent>
-                    <ToolbarSearch persistent expanded bind:value={pluginNameFilter} />
+                    <ToolbarSearch
+                        persistent
+                        expanded
+                        bind:value={pluginNameFilter}
+                    />
                 </ToolbarContent>
             </Toolbar>
             <span slot="cell" let:cell let:row>
-                {#if cell.key === 'image' }
+                {#if cell.key === "image"}
                     <Image16 />
-                {:else if cell.key === 'action'}
+                {:else if cell.key === "action"}
                     <Button
                         kind="secondary"
                         size="small"
@@ -181,12 +197,16 @@
                         tooltipAlignment="center"
                         icon={Add16}
                         on:click={(e) => dispatch("select", row.mediaContainer)}
-                        >
+                    >
                         Select
                     </Button>
-                {:else if cell.key === 'overflow'}
-                    <Button size="small" kind="ghost" icon={ArrowUpRight24}
-                    iconDescription="Open link"></Button>
+                {:else if cell.key === "overflow"}
+                    <Button
+                        size="small"
+                        kind="ghost"
+                        icon={ArrowUpRight24}
+                        iconDescription="Open link"
+                    />
                 {:else}{cell.value}{/if}
             </span>
         </DataTable>
@@ -194,6 +214,9 @@
 </Modal>
 
 <style>
+    :global(#pluginTabTile) {
+        padding: 1rem 1rem 0 0;
+    }
     .content {
         text-align: center;
         /* overflow-y: scroll; */
@@ -214,7 +237,7 @@
         display: inline-block;
         width: 33%;
     }
-    .selectedtags {
+    /* .selectedtags {
         display: inline-block;
-    }
+    } */
 </style>
