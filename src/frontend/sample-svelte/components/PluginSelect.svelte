@@ -122,75 +122,74 @@
     on:close
     hasScrollingContent
     hasForm
+    id="pluginModal"
 >
-    <div>
-        <div class="content tags">
-            <Tile>
-                <div class="lang">
-                    <div>Language</div>
-                    {#each langTags as item}
-                        <Tag
-                            category={item.category}
-                            label={item.label}
-                            on:click={() => addTagFilter(item)}
-                        />
-                    {/each}
-                </div>
-                <div class="type">
-                    <div>Type</div>
-                    {#each typeTags as item}
-                        <Tag
-                            category={item.category}
-                            label={item.label}
-                            on:click={() => addTagFilter(item)}
-                        />
-                    {/each}
-                </div>
-                <div class="other">
-                    <div>Other</div>
-                    {#each otherTags as item}
-                        <Tag
-                            category={item.category}
-                            label={item.label}
-                            on:click={() => addTagFilter(item)}
-                        />
-                    {/each}
-                </div>
-            </Tile>
-        </div>
-        <div>
-            <Tile id="pluginTabTile">
-                <span>Tags:</span>
-                {#each pluginTagsFilter as item}
+    <div class="content tags">
+        <Tile>
+            <div class="lang">
+                <div>Language</div>
+                {#each langTags as item}
                     <Tag
-                        filter
                         category={item.category}
                         label={item.label}
-                        on:click={() => removeTagFilter(item)}
+                        on:click={() => addTagFilter(item)}
                     />
                 {/each}
-            </Tile>
-        </div>
-        <DataTable
-            zebra
-            bind:headers={pluginsHeaders}
-            bind:rows={filteredPluginlist}
-            on:click:row={(event) =>
-                dispatch("select", event.detail.mediaContainer)}
-        >
-            <Toolbar>
-                <ToolbarContent>
-                    <ToolbarSearch
-                        persistent
-                        expanded
-                        bind:value={pluginNameFilter}
+            </div>
+            <div class="type">
+                <div>Type</div>
+                {#each typeTags as item}
+                    <Tag
+                        category={item.category}
+                        label={item.label}
+                        on:click={() => addTagFilter(item)}
                     />
-                </ToolbarContent>
-            </Toolbar>
-            <span slot="cell" let:cell let:row>
-                {#if cell.key === "image"}
-                    <Image16 />
-                {:else if cell.key === "overflow"}
+                {/each}
+            </div>
+            <div class="other">
+                <div>Other</div>
+                {#each otherTags as item}
+                    <Tag
+                        category={item.category}
+                        label={item.label}
+                        on:click={() => addTagFilter(item)}
+                    />
+                {/each}
+            </div>
+        </Tile>
+    </div>
+    <Tile id="selectedTags">
+        <span>Tags:</span>
+        {#each pluginTagsFilter as item}
+            <Tag
+                filter
+                category={item.category}
+                label={item.label}
+                on:click={() => removeTagFilter(item)}
+            />
+        {/each}
+    </Tile>
+    <DataTable
+        zebra
+        bind:headers={pluginsHeaders}
+        bind:rows={filteredPluginlist}
+        on:click:row={(event) =>
+            dispatch("select", event.detail.mediaContainer)}
+    >
+        <Toolbar>
+            <ToolbarContent>
+                <ToolbarSearch
+                    persistent
+                    expanded
+                    bind:value={pluginNameFilter}
+                />
+            </ToolbarContent>
+        </Toolbar>
+        <span slot="cell" let:cell let:row>
+            {#if cell.key === "image"}
+                <Image16 />
+            {:else if cell.key === "overflow"}
+                <div class="action-cell">
                     <Button
                         kind="ghost"
                         size="small"
@@ -210,16 +209,23 @@
                         icon={ArrowUpRight24}
                         iconDescription="Open link"
                     />
-                {:else}{cell.value}{/if}
-            </span>
-        </DataTable>
-    </div>
+                </div>
+            {:else}{cell.value}{/if}
+        </span>
+    </DataTable>
 </Modal>
 
 <style>
-    :global(#pluginTabTile) {
+    :global(#selectedTags) {
         padding: 1rem 1rem 0 0;
     }
+    .action-cell {
+        text-align: right;
+    }
+    :global(#pluginModal .bx--modal-content) {
+        margin-bottom: 0;
+    }
+
     .content {
         text-align: center;
         /* overflow-y: scroll; */
