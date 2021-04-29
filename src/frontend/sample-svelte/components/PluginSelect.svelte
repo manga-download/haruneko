@@ -8,7 +8,7 @@
         ToolbarContent,
         ToolbarSearch,
     } from "carbon-components-svelte";
-    import Add16 from "carbon-icons-svelte/lib/Add16";
+    import PlayFilledAlt24 from "carbon-icons-svelte/lib/PlayFilledAlt24";
     import ArrowUpRight24 from "carbon-icons-svelte/lib/ArrowUpRight24";
     import Image16 from "carbon-icons-svelte/lib/Image16";
     import { createEventDispatcher } from "svelte";
@@ -39,7 +39,6 @@
 
     //quickly inline because of dangerous lazyness
     let pluginsHeaders = [
-        { key: "action", value: "Action" },
         { key: "image", empty: true },
         { key: "name", value: "Name" },
         { key: "tags", value: "Tags" },
@@ -176,6 +175,8 @@
             zebra
             bind:headers={pluginsHeaders}
             bind:rows={filteredPluginlist}
+            on:click:row={(event) =>
+                dispatch("select", event.detail.mediaContainer)}
         >
             <Toolbar>
                 <ToolbarContent>
@@ -189,18 +190,20 @@
             <span slot="cell" let:cell let:row>
                 {#if cell.key === "image"}
                     <Image16 />
-                {:else if cell.key === "action"}
+                {:else if cell.key === "overflow"}
                     <Button
-                        kind="secondary"
+                        kind="ghost"
                         size="small"
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
-                        icon={Add16}
-                        on:click={(e) => dispatch("select", row.mediaContainer)}
+                        icon={PlayFilledAlt24}
+                        on:click={(e) => {
+                            alert("fff");
+                            e.stopPropagation();
+                        }}
                     >
-                        Select
+                        Run Test
                     </Button>
-                {:else if cell.key === "overflow"}
                     <Button
                         size="small"
                         kind="ghost"
@@ -237,7 +240,4 @@
         display: inline-block;
         width: 33%;
     }
-    /* .selectedtags {
-        display: inline-block;
-    } */
 </style>
