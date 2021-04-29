@@ -185,11 +185,11 @@
                 />
             </ToolbarContent>
         </Toolbar>
-        <span slot="cell" let:cell let:row>
+        <div class="plugin-row" slot="cell" let:cell let:row>
             {#if cell.key === "image"}
                 <Image16 />
             {:else if cell.key === "overflow"}
-                <div class="action-cell">
+                <div class=" action-cell">
                     <Button
                         kind="ghost"
                         size="small"
@@ -197,7 +197,7 @@
                         tooltipAlignment="center"
                         icon={PlayFilledAlt24}
                         on:click={(e) => {
-                            alert("fff");
+                            alert("Run test");
                             e.stopPropagation();
                         }}
                     >
@@ -211,7 +211,7 @@
                     />
                 </div>
             {:else}{cell.value}{/if}
-        </span>
+        </div>
     </DataTable>
 </Modal>
 
@@ -221,6 +221,9 @@
     }
     .action-cell {
         text-align: right;
+    }
+    .plugin-row {
+        cursor: pointer;
     }
     :global(#pluginModal .bx--modal-content) {
         margin-bottom: 0;
