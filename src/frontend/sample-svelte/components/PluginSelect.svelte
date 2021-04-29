@@ -1,28 +1,36 @@
-
 <script lang="ts">
-    import { Button, Tile, Search, Modal, DataTable, OverflowMenu, OverflowMenuItem, Toolbar,
-    ToolbarContent,ToolbarSearch } from "carbon-components-svelte";
-    import ArrowUpRight24 from "carbon-icons-svelte/lib/ArrowUpRight24";
-    import Tag from "./Tag.svelte";
+    import { Button, Tile, Modal, DataTable, Toolbar, ToolbarContent, ToolbarSearch } from "carbon-components-svelte";
     import Add16 from "carbon-icons-svelte/lib/Add16";
+    import ArrowUpRight24 from "carbon-icons-svelte/lib/ArrowUpRight24";
     import Image16 from "carbon-icons-svelte/lib/Image16";
-
     import { createEventDispatcher } from "svelte";
-    const dispatch = createEventDispatcher();
 
+    import Tag from "./Tag.svelte";
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
-    export let pluginlist: Array<IMediaContainer>;
-    export let myPluginModalOpen = false;
-
-    //quickly inline because of dangerous lazyness
     interface ITag {
         category: string;
         label: string;
     }
 
-    // DataTable
-    const headers = [
+    class PluginRow {
+        id: string;
+        name: string;
+        mediaContainer: IMediaContainer;
+
+        constructor(item: IMediaContainer) {
+            this.id = item.Identifier;
+            this.name = item.Title;
+            this.mediaContainer = item;
+        }
+    }
+
+    const dispatch = createEventDispatcher();
+    export let pluginlist: Array<IMediaContainer>;
+    export let myPluginModalOpen = false;
+
+    //quickly inline because of dangerous lazyness
+    let pluginsHeaders = [
         { key: "action", value: "Action"},
         { key: "image", empty: true},
         { key: "name", value: "Name"},
@@ -51,7 +59,6 @@
     ];
 
     let pluginNameFilter = "";
-
     let pluginTagsFilter: Array<ITag> = [];
 
     function addTagFilter(tag: ITag) {
@@ -68,18 +75,6 @@
         });
     }
     addTagFilter({ category: "lang", label: "French" });
-
-    class PluginRow {
-        id: string;
-        name: string;
-        mediaContainer: IMediaContainer;
-
-        constructor(item: IMediaContainer) {
-            this.id = item.Identifier;
-            this.name = item.Title;
-            this.mediaContainer = item;
-        }
-    }
 
     $: filteredPluginlist = pluginlist.filter((item) => {
         let conditions: Array<boolean> = [];
@@ -106,9 +101,7 @@
         }
         return !conditions.includes(false);
     }).map(item => new PluginRow(item));
-    
 </script>
-
 
 <Modal
     size="lg"
@@ -171,13 +164,12 @@
                 </Tile>
             </div>
         </div>
-        <DataTable zebra {headers} bind:rows={filteredPluginlist}>
+        <DataTable zebra bind:headers={pluginsHeaders} bind:rows={filteredPluginlist}>
             <Toolbar>
                 <ToolbarContent>
                     <ToolbarSearch persistent expanded bind:value={pluginNameFilter} />
                 </ToolbarContent>
             </Toolbar>
-
             <span slot="cell" let:cell let:row>
                 {#if cell.key === 'image' }
                     <Image16 />
@@ -205,7 +197,7 @@
     .content {
         text-align: center;
         /* overflow-y: scroll; */
-        overflow-x: hidden;
+        /* overflow-x: hidden; */
     }
     .tags {
         width: 100%;
@@ -221,9 +213,6 @@
     .other {
         display: inline-block;
         width: 33%;
-    }
-    .filter {
-        display: inline-block;
     }
     .selectedtags {
         display: inline-block;
