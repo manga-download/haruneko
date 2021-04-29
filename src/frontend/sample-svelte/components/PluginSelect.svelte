@@ -1,14 +1,16 @@
+
 <script lang="ts">
-    import { Accordion, Button, Tile, Search, Modal, DataTable, OverflowMenu, OverflowMenuItem } from "carbon-components-svelte";
+    import { Button, Tile, Search, Modal, DataTable, OverflowMenu, OverflowMenuItem, Toolbar,
+    ToolbarContent,ToolbarSearch } from "carbon-components-svelte";
+    import ArrowUpRight24 from "carbon-icons-svelte/lib/ArrowUpRight24";
     import Tag from "./Tag.svelte";
-    import NotebookReference16 from "carbon-icons-svelte/lib/NotebookReference16";
+    import Add16 from "carbon-icons-svelte/lib/Add16";
+    import Image16 from "carbon-icons-svelte/lib/Image16";
 
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
 
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
-    import Plugin from "./Plugin.svelte";
-import { bind } from "svelte/internal";
 
     export let pluginlist: Array<IMediaContainer>;
     export let myPluginModalOpen = false;
@@ -21,15 +23,11 @@ import { bind } from "svelte/internal";
 
     // DataTable
     const headers = [
-        { key: "action", value: "Action" }, 
-        { key: "name", value: "Name" }, 
-        { key: "tags", value: "Tags" }, 
-        { key: "overflow", empty: true },
-    ];
-    const rows = [
-        { id: "a", name: "Load Balancer 3", tags: 3000},
-        { id: "b", name: "Load Balancer 1", tags: 443},
-        { id: "c", name: "Load Balancer 2", tags: 80},
+        { key: "action", value: "Action"},
+        { key: "image", empty: true},
+        { key: "name", value: "Name"},
+        { key: "tags", value: "Tags"},
+        { key: "overflow", empty: true},
     ];
 
     //because hardccoding values is da way (Do You Know Da Wae?)
@@ -71,7 +69,18 @@ import { bind } from "svelte/internal";
     }
     addTagFilter({ category: "lang", label: "French" });
 
-    let filteredpluginlist: Array<IMediaContainer> = pluginlist;
+    class PluginRow {
+        id: string;
+        name: string;
+        mediaContainer: IMediaContainer;
+
+        constructor(item: IMediaContainer) {
+            this.id = item.Identifier;
+            this.name = item.Title;
+            this.mediaContainer = item;
+        }
+    }
+
     $: filteredPluginlist = pluginlist.filter((item) => {
         let conditions: Array<boolean> = [];
         if (pluginNameFilter !== "") {
@@ -96,7 +105,8 @@ import { bind } from "svelte/internal";
             );
         }
         return !conditions.includes(false);
-    });
+    }).map(item => new PluginRow(item));
+    
 </script>
 
 
@@ -110,99 +120,85 @@ import { bind } from "svelte/internal";
     on:close
     hasScrollingContent
     hasForm
->
-<div class="content">
-    <div class="tags">
-        <Tile>
-            <div class="lang">
-                <div>Language</div>
-                {#each langTags as item}
-                    <Tag
-                        category={item.category}
-                        label={item.label}
-                        on:click={() => addTagFilter(item)}
-                    />
-                {/each}
-            </div>
-            <div class="type">
-                <div>Type</div>
-                {#each typeTags as item}
-                    <Tag
-                        category={item.category}
-                        label={item.label}
-                        on:click={() => addTagFilter(item)}
-                    />
-                {/each}
-            </div>
-            <div class="other">
-                <div>Other</div>
-                {#each otherTags as item}
-                    <Tag
-                        category={item.category}
-                        label={item.label}
-                        on:click={() => addTagFilter(item)}
-                    />
-                {/each}
-            </div>
-        </Tile>
-    </div>
-    <div class="search">
-        <div class="filter">
-            <Search
-                bind:value={pluginNameFilter}
-                placeholder="Search plugin by name ..."
-                size="sm"
-            />
-        </div>
-        <div class="selectedtags">
-            <Tile light>
-                <span>Tags:</span>
-                {#each pluginTagsFilter as item}
-                    <Tag
-                        filter
-                        category={item.category}
-                        label={item.label}
-                        on:click={() => removeTagFilter(item)}
-                    />
-                {/each}
+    >
+    <div class="content">
+        <div class="tags">
+            <Tile>
+                <div class="lang">
+                    <div>Language</div>
+                    {#each langTags as item}
+                        <Tag
+                            category={item.category}
+                            label={item.label}
+                            on:click={() => addTagFilter(item)}
+                        />
+                    {/each}
+                </div>
+                <div class="type">
+                    <div>Type</div>
+                    {#each typeTags as item}
+                        <Tag
+                            category={item.category}
+                            label={item.label}
+                            on:click={() => addTagFilter(item)}
+                        />
+                    {/each}
+                </div>
+                <div class="other">
+                    <div>Other</div>
+                    {#each otherTags as item}
+                        <Tag
+                            category={item.category}
+                            label={item.label}
+                            on:click={() => addTagFilter(item)}
+                        />
+                    {/each}
+                </div>
             </Tile>
         </div>
-    </div>
-    <Tile>
-        <Accordion align="start" size="sm">
-            {#each filteredPluginlist as item}
-                <Plugin plugin={item} display="AccordionItem" on:select />
-            {/each}
-        </Accordion>
-    </Tile>
+        <div class="search">
+            <div class="selectedtags">
+                <Tile light>
+                    <span>Tags:</span>
+                    {#each pluginTagsFilter as item}
+                        <Tag
+                            filter
+                            category={item.category}
+                            label={item.label}
+                            on:click={() => removeTagFilter(item)}
+                        />
+                    {/each}
+                </Tile>
+            </div>
+        </div>
+        <DataTable zebra {headers} bind:rows={filteredPluginlist}>
+            <Toolbar>
+                <ToolbarContent>
+                    <ToolbarSearch persistent expanded bind:value={pluginNameFilter} />
+                </ToolbarContent>
+            </Toolbar>
 
-    <DataTable zebra {headers} {rows}>
-        <span slot="cell" let:cell>
-            {#if cell.key === 'action'}
-            <Button
-            icon={NotebookReference16}
-            kind="secondary"
-            size="small"
-            tooltipPosition="bottom"
-            tooltipAlignment="center"
-            iconDescription="Connector"
-            on:click={(e) => dispatch("select", plugin)}
-        >
-            Select
-        </Button>
-            {:else if cell.key === 'overflow'}
-              <OverflowMenu flipped>
-                <OverflowMenuItem text="Restart" />
-                <OverflowMenuItem
-                  href="https://cloud.ibm.com/docs/loadbalancer-service"
-                  text="API documentation"
-                />
-                <OverflowMenuItem danger text="Stop" />
-              </OverflowMenu>
-            {:else}{cell.value}{/if}
-          </span>
-    </DataTable>
-</div>
+            <span slot="cell" let:cell let:row>
+                {#if cell.key === 'image' }
+                    <Image16 />
+                {:else if cell.key === 'action'}
+                    <Button
+                        kind="secondary"
+                        size="small"
+                        tooltipPosition="bottom"
+                        tooltipAlignment="center"
+                        icon={Add16}
+                        on:click={(e) => dispatch("select", row.mediaContainer)}
+                        >
+                        Select
+                    </Button>
+                {:else if cell.key === 'overflow'}
+                    <Button size="small" kind="ghost" icon={ArrowUpRight24}
+                    iconDescription="Open link"></Button>
+                {:else}{cell.value}{/if}
+            </span>
+        </DataTable>
+    </div>
 </Modal>
 
 <style>
