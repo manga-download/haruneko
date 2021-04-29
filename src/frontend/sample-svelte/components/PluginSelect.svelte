@@ -113,16 +113,16 @@
 </script>
 
 <Modal
+    id="pluginModal"
     size="lg"
+    hasScrollingContent
     bind:open={myPluginModalOpen}
     passiveModal
     modalHeading="Plugin Selection"
     on:click:button--secondary={() => (myPluginModalOpen = false)}
     on:open
     on:close
-    hasScrollingContent
     hasForm
-    id="pluginModal"
 >
     <div class="content tags">
         <Tile>
