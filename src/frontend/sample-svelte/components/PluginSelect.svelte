@@ -1,12 +1,14 @@
 <script lang="ts">
-    import { Accordion, Tile, Search, Modal } from "carbon-components-svelte";
+    import { Accordion, Button, Tile, Search, Modal, DataTable, OverflowMenu, OverflowMenuItem } from "carbon-components-svelte";
     import Tag from "./Tag.svelte";
+    import NotebookReference16 from "carbon-icons-svelte/lib/NotebookReference16";
 
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
 
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
     import Plugin from "./Plugin.svelte";
+import { bind } from "svelte/internal";
 
     export let pluginlist: Array<IMediaContainer>;
     export let myPluginModalOpen = false;
@@ -16,6 +18,19 @@
         category: string;
         label: string;
     }
+
+    // DataTable
+    const headers = [
+        { key: "action", value: "Action" }, 
+        { key: "name", value: "Name" }, 
+        { key: "tags", value: "Tags" }, 
+        { key: "overflow", empty: true },
+    ];
+    const rows = [
+        { id: "a", name: "Load Balancer 3", tags: 3000},
+        { id: "b", name: "Load Balancer 1", tags: 443},
+        { id: "c", name: "Load Balancer 2", tags: 80},
+    ];
 
     //because hardccoding values is da way (Do You Know Da Wae?)
     //will fuse in a single main array with dispatch
@@ -160,6 +175,33 @@
             {/each}
         </Accordion>
     </Tile>
+
+    <DataTable zebra {headers} {rows}>
+        <span slot="cell" let:cell>
+            {#if cell.key === 'action'}
+            <Button
+            icon={NotebookReference16}
+            kind="secondary"
+            size="small"
+            tooltipPosition="bottom"
+            tooltipAlignment="center"
+            iconDescription="Connector"
+            on:click={(e) => dispatch("select", plugin)}
+        >
+            Select
+        </Button>
+            {:else if cell.key === 'overflow'}
+              <OverflowMenu flipped>
+                <OverflowMenuItem text="Restart" />
+                <OverflowMenuItem
+                  href="https://cloud.ibm.com/docs/loadbalancer-service"
+                  text="API documentation"
+                />
+                <OverflowMenuItem danger text="Stop" />
+              </OverflowMenu>
+            {:else}{cell.value}{/if}
+          </span>
+    </DataTable>
 </div>
 </Modal>
 
@@ -168,12 +210,6 @@
         text-align: center;
         /* overflow-y: scroll; */
         overflow-x: hidden;
-    }
-    .close {
-        display: inline-block;
-    }
-    .title {
-        display: inline-block;
     }
     .tags {
         width: 100%;
