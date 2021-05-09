@@ -35,7 +35,7 @@
 
     const dispatch = createEventDispatcher();
     export let pluginlist: Array<IMediaContainer>;
-    export let myPluginModalOpen = false;
+    export let isPluginModalOpen = false;
 
     //quickly inline because of dangerous lazyness
     let pluginsHeaders = [
@@ -116,10 +116,10 @@
     id="pluginModal"
     size="lg"
     hasScrollingContent
-    bind:open={myPluginModalOpen}
+    bind:open={isPluginModalOpen}
     passiveModal
     modalHeading="Plugin Selection"
-    on:click:button--secondary={() => (myPluginModalOpen = false)}
+    on:click:button--secondary={() => (isPluginModalOpen = false)}
     on:open
     on:close
     hasForm
