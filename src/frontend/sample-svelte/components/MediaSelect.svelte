@@ -67,7 +67,7 @@
         });
     }
 
-    let myPluginModalOpen = false;
+    let isPluginModalOpen = false;
 
     function selectPlugin(event: any) {
         const searchComboItem = pluginsCombo.findIndex(
@@ -76,7 +76,7 @@
         if (searchComboItem) {
             selectedPluginIndex = searchComboItem;
         }
-        myPluginModalOpen = false;
+        isPluginModalOpen = false;
     }
 
     function shouldFilterPlugin(item: any, value: string) {
@@ -85,15 +85,15 @@
     }
 </script>
 
-{#if myPluginModalOpen}
-<div>
-    <PluginSelect
-        myPluginModalOpen={myPluginModalOpen}
-        pluginlist={plugins}
-        on:close={() => (myPluginModalOpen = false)}
-        on:select={selectPlugin}
-    />
-</div>
+{#if isPluginModalOpen}
+    <div>
+        <PluginSelect
+            {isPluginModalOpen}
+            pluginlist={plugins}
+            on:close={() => (isPluginModalOpen = false)}
+            on:select={selectPlugin}
+        />
+    </div>
 {/if}
 
 <div id="Media" transition:fade>
@@ -109,7 +109,7 @@
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
                 iconDescription="Plugin"
-                on:click={() => (myPluginModalOpen = true)}
+                on:click={() => (isPluginModalOpen = true)}
             />
         </div>
 
@@ -209,5 +209,4 @@
         display: table-cell;
         width: 100%;
     }
-
 </style>
