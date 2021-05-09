@@ -51,13 +51,13 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
     }
 
     public *[Symbol.iterator](): Iterator<T> {
-        for(const entry of this.Entries) {
+        for (const entry of this.Entries) {
             yield entry;
         }
     }
 
     protected async Initialize(): Promise<void> {
-        if(this.Parent) {
+        if (this.Parent) {
             await (this.Parent as MediaContainer<IMediaContainer>).Initialize();
         }
         // NOTE: nonce method, disable after called once

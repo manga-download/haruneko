@@ -1,24 +1,49 @@
 <script lang="ts">
-    import { Accordion, Tile, Search } from "carbon-components-svelte";
-    import Tag from "./Tag.svelte";
-
-    import CloseOutline32 from "carbon-icons-svelte/lib/CloseOutline32";
-    import CloseFilled32 from "carbon-icons-svelte/lib/CloseFilled32";
-    let hoverCloseIcon = false;
-
+    import {
+        Button,
+        Tile,
+        Modal,
+        DataTable,
+        Toolbar,
+        ToolbarContent,
+        ToolbarSearch,
+    } from "carbon-components-svelte";
+    import PlayFilledAlt24 from "carbon-icons-svelte/lib/PlayFilledAlt24";
+    import ArrowUpRight24 from "carbon-icons-svelte/lib/ArrowUpRight24";
+    import Image16 from "carbon-icons-svelte/lib/Image16";
     import { createEventDispatcher } from "svelte";
-    const dispatch = createEventDispatcher();
 
+    import Tag from "./Tag.svelte";
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
-    import Plugin from "./Plugin.svelte";
 
-    export let pluginlist: Array<IMediaContainer>;
-
-    //quickly inline because of dangerous lazyness
     interface ITag {
         category: string;
         label: string;
     }
+
+    class PluginRow {
+        id: string;
+        name: string;
+        mediaContainer: IMediaContainer;
+
+        constructor(item: IMediaContainer) {
+            this.id = item.Identifier;
+            this.name = item.Title;
+            this.mediaContainer = item;
+        }
+    }
+
+    const dispatch = createEventDispatcher();
+    export let pluginlist: Array<IMediaContainer>;
+    export let isPluginModalOpen = false;
+
+    //quickly inline because of dangerous lazyness
+    let pluginsHeaders = [
+        { key: "image", empty: true },
+        { key: "name", value: "Name" },
+        { key: "tags", value: "Tags" },
+        { key: "overflow", empty: true },
+    ];
 
     //because hardccoding values is da way (Do You Know Da Wae?)
     //will fuse in a single main array with dispatch
@@ -41,7 +66,6 @@
     ];
 
     let pluginNameFilter = "";
-
     let pluginTagsFilter: Array<ITag> = [];
 
     function addTagFilter(tag: ITag) {
@@ -59,47 +83,48 @@
     }
     addTagFilter({ category: "lang", label: "French" });
 
-    let filteredpluginlist: Array<IMediaContainer> = pluginlist;
-    $: filteredPluginlist = pluginlist.filter((item) => {
-        let conditions: Array<boolean> = [];
-        if (pluginNameFilter !== "") {
-            conditions.push(
-                item.Title.toLowerCase().indexOf(
-                    pluginNameFilter.toLowerCase()
-                ) !== -1
-            );
-        }
-        if (pluginTagsFilter.length > 0) {
-            // Quick test tag filtering using language property
-            // Should be a test if all selected tags are in the tags of plugin
-            conditions.push(
-                true
-                /* TODO: resurect language tags later
+    $: filteredPluginlist = pluginlist
+        .filter((item) => {
+            let conditions: Array<boolean> = [];
+            if (pluginNameFilter !== "") {
+                conditions.push(
+                    item.Title.toLowerCase().indexOf(
+                        pluginNameFilter.toLowerCase()
+                    ) !== -1
+                );
+            }
+            if (pluginTagsFilter.length > 0) {
+                // Quick test tag filtering using language property
+                // Should be a test if all selected tags are in the tags of plugin
+                conditions.push(
+                    true
+                    /* TODO: resurect language tags later
                 item. !== undefined
                     ? pluginTagsFilter.find(
                         (element) => element.label === item.Language
                     ) !== undefined
                     : true
                 */
-            );
-        }
-        return !conditions.includes(false);
-    });
+                );
+            }
+            return !conditions.includes(false);
+        })
+        .map((item) => new PluginRow(item));
 </script>
 
-<div class="topleft">
-    <div class="close" 
-        on:click={() => dispatch("close")}>        
-        {#if hoverCloseIcon}
-            <CloseFilled32  on:mouseleave={() => {hoverCloseIcon = false}}/>
-        {:else}
-            <CloseOutline32 on:mouseover={() =>  {hoverCloseIcon = true}}/>
-        {/if}
-    </div>
-    <h2 class="title">Plugin Selection</h2>
-</div>
-<div class="content">
-    <div class="tags">
+<Modal
+    id="pluginModal"
+    size="lg"
+    hasScrollingContent
+    bind:open={isPluginModalOpen}
+    passiveModal
+    modalHeading="Plugin Selection"
+    on:click:button--secondary={() => (isPluginModalOpen = false)}
+    on:open
+    on:close
+    hasForm
+>
+    <div class="content tags">
         <Tile>
             <div class="lang">
                 <div>Language</div>
@@ -133,54 +158,81 @@
             </div>
         </Tile>
     </div>
-    <div class="search">
-        <div class="filter">
-            <Search
-                bind:value={pluginNameFilter}
-                placeholder="Search plugin by name ..."
-                size="sm"
+    <Tile id="selectedTags">
+        <span>Tags:</span>
+        {#each pluginTagsFilter as item}
+            <Tag
+                filter
+                category={item.category}
+                label={item.label}
+                on:click={() => removeTagFilter(item)}
             />
-        </div>
-        <div class="selectedtags">
-            <Tile light>
-                <span>Tags:</span>
-                {#each pluginTagsFilter as item}
-                    <Tag
-                        filter
-                        category={item.category}
-                        label={item.label}
-                        on:click={() => removeTagFilter(item)}
-                    />
-                {/each}
-            </Tile>
-        </div>
-    </div>
-    <Tile>
-        <Accordion align="start" size="sm">
-            {#each filteredPluginlist as item}
-                <Plugin plugin={item} display="AccordionItem" on:select />
-            {/each}
-        </Accordion>
+        {/each}
     </Tile>
-</div>
+    <DataTable
+        zebra
+        bind:headers={pluginsHeaders}
+        bind:rows={filteredPluginlist}
+        on:click:row={(event) =>
+            dispatch("select", event.detail.mediaContainer)}
+    >
+        <Toolbar>
+            <ToolbarContent>
+                <ToolbarSearch
+                    persistent
+                    expanded
+                    bind:value={pluginNameFilter}
+                />
+            </ToolbarContent>
+        </Toolbar>
+        <div class="plugin-row" slot="cell" let:cell let:row>
+            {#if cell.key === "image"}
+                <Image16 />
+            {:else if cell.key === "overflow"}
+                <div class=" action-cell">
+                    <Button
+                        kind="ghost"
+                        size="small"
+                        tooltipPosition="bottom"
+                        tooltipAlignment="center"
+                        icon={PlayFilledAlt24}
+                        on:click={(e) => {
+                            alert("Run test");
+                            e.stopPropagation();
+                        }}
+                    >
+                        Run Test
+                    </Button>
+                    <Button
+                        size="small"
+                        kind="ghost"
+                        icon={ArrowUpRight24}
+                        iconDescription="Open link"
+                    />
+                </div>
+            {:else}{cell.value}{/if}
+        </div>
+    </DataTable>
+</Modal>
 
 <style>
+    :global(#selectedTags) {
+        padding: 1rem 1rem 0 0;
+    }
+    .action-cell {
+        text-align: right;
+    }
+    .plugin-row {
+        cursor: pointer;
+    }
+    :global(#pluginModal .bx--modal-content) {
+        margin-bottom: 0;
+    }
+
     .content {
         text-align: center;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        height: calc(100vh - 7.5em);
-    }
-    .topleft {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-    .close {
-        display: inline-block;
-    }
-    .title {
-        display: inline-block;
+        /* overflow-y: scroll; */
+        /* overflow-x: hidden; */
     }
     .tags {
         width: 100%;
@@ -196,11 +248,5 @@
     .other {
         display: inline-block;
         width: 33%;
-    }
-    .filter {
-        display: inline-block;
-    }
-    .selectedtags {
-        display: inline-block;
     }
 </style>
