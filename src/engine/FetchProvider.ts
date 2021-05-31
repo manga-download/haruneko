@@ -171,9 +171,9 @@ async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any
             const redirect = await checkAntiScrapingDetection(win.window.document); // await win.eval(null, antiScrapingDetectionScript);
             switch (redirect) {
                 case FetchRedirection.Interactive:
-                    // NOTE: Allow the user to solve the captcha within 2 minutes before rejcting the request with an error
+                    // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejcting the request with an error
                     clearTimeout(cancellation);
-                    cancellation = setTimeout(destroy, 120_000);
+                    cancellation = setTimeout(destroy, 150_000);
                     win.eval(null, `alert('${i18n('FetchProvider.FetchWindow.AlertCaptcha')}');`);
                     win.show();
                     break;
@@ -208,3 +208,41 @@ export async function FetchWindowScript<T>(request: FetchRequest, script: string
         win.close();
     }
 }
+
+(async function() {
+    const url = 'https://postman-echo.com/get';
+    const headers = {
+        'User-Agent': 'my.ua',
+        'Referer': 'my.referer',
+        'Origin': 'my.origin',
+        'Host': 'my.host'
+    };
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    {
+        const response = await fetch(new Request(url, { headers }));
+        const data = await response.json();
+        console.log('Fetch:', data.headers);
+    }
+    {
+        const response = await fetch(new FetchRequest(url, { headers }));
+        const data = await response.json();
+        console.log('FetchRequest:', data.headers);
+    }
+})();
+
+/*
+// Testing chrome.downloads API
+(async function() {
+    const id = await new Promise((resolve, reject) => {
+        chrome.downloads.download({
+            url: 'https://hakuneko.download/assets/images/logo_64.png',
+            filename: 'download.png'
+        }, id => id ? resolve(id) : reject());
+    });
+    console.log('Download ID:', id);
+    const items = await new Promise((resolve, reject) => {
+        chrome.downloads.search({ id: id }, items => items ? resolve(items) : reject());
+    });
+    console.log('Download Items:', items);
+})();
+*/
