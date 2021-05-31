@@ -20,9 +20,18 @@
 </script>
 
 <Tag filter={filter} type="{color}" on:click>
+    <div class="tagContent">
     {#if category === 'lang' && flag !== ''}
         <img style="height:1.5em" alt="{label}" src="{flag}"/>{label}
     {:else}
         {label}
     {/if}
+</div>
 </Tag>
+
+<style>
+    .tagContent {
+        display: flex;
+        align-items: center;
+    }
+</style>

@@ -17,6 +17,8 @@
         padding-top: 2px;
         padding-bottom: 2px;
         cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .media:hover {
         background-color: var(--cds-hover-ui);
