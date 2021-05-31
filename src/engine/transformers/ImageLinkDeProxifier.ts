@@ -18,6 +18,13 @@ function DeProxifyWordPressPassthru(uri: URL): URL {
     return new URL(url);
 }
 
+function DeProxifyStatically(uri: URL): URL {
+    const url = uri.href
+        .replace(/cdn\.statically\.io\/img\//, '')
+        .replace(/\/(w=\d+|h=\d+|q=\d+|f=auto)(,(w=\d+|h=\d+|q=\d+|f=auto))*\//, '/');
+    return new URL(url);
+}
+
 export default function DeProxify(uri: URL): URL {
     if(/googleusercontent\.com$/.test(uri.hostname) && /\/proxy$/.test(uri.pathname)) {
         return DeProxifyGoogle(uri);
@@ -27,6 +34,9 @@ export default function DeProxify(uri: URL): URL {
     }
     if(/webpc-passthru\.php/.test(uri.pathname)) {
         return DeProxifyWordPressPassthru(uri);
+    }
+    if(/cdn\.statically\.io\/img\//.test(uri.href)) {
+        return DeProxifyStatically(uri);
     }
     return uri;
 }
