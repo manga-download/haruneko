@@ -57,8 +57,8 @@
   },
   "scripts": {
     "lint": "eslint ./src/**/*.ts --ignore-path .gitignore",
-    "build:app:dev": "rm -r -f build.app && mkdir build.app && node ./build.app.js --url=http://localhost:5000 && cd build.app && npm install --only=production",
-    "build:app:prod": "rm -r -f build.app && mkdir build.app && node ./build.app.js --url=https://haruneko.pages.dev && cd build.app && npm install --only=production",
+    "build:app:dev": "rm -r -f build.app && mkdir build.app && node ./build.app.mjs --url=http://localhost:5000 && cd build.app && npm install --only=production",
+    "build:app:prod": "rm -r -f build.app && mkdir build.app && node ./build.app.mjs --url=https://haruneko.pages.dev && cd build.app && npm install --only=production",
     "build:web:prod": "rm -r -f build.web docs && rollup --config --compact && cp -r -f build.web/ docs/",
     "test": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest.ts",
     "test:engine": "npm run build:app:dev && npm run build:web:prod && cd test && jest --color --config=jest-engine.ts",
