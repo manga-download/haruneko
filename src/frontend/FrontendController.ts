@@ -5,7 +5,7 @@ import { Info as InfoReact } from './sample-react/FrontendInfo';
 import { Info as InfoSvelte } from './sample-svelte/FrontendInfo';
 import { Info as InfoVue } from './sample-vue/FrontendInfo';
 
-const frontendSelector = '#hakuneko';
+const frontendSelector = '#app';
 const frontendList: IFrontendInfo[] = [
     InfoClassic,
     InfoJS,

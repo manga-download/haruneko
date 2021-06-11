@@ -1,58 +1,66 @@
 <!DOCTYPE html>
 <html>
-    <script>
-        const win = nw.Window.get();
-        newWindowOptions = {
-            new_instance : true,
-            show : true,
-            width: 310,
-            height: 400,
-            position: 'center',
-            resizable: false,
-            frame: false,
-            transparent: true
-        };
-        let splash=false;
-        //use to stop the loading event if you still check something
-        let loading=false;
-        if (splash) {
-            nw.Window.open('/splash.html', newWindowOptions,function(new_win) {
-                splash=new_win;
-            });
-            
-            window.addEventListener('appready',  function(){
-                if (!loading){ 
-                    console.log('lets go');
-                    splash.close();
-                    win.show();
-                }
-            }, false);
-        }
-        else {
-            win.show();
-        }
-    </script>
     <head>
         <title>HakuNeko - Manga, Anime & Novel Downloader</title>
         <link rel="icon" href="/img/logo.png" />
         <script type="module" src="/index.js"></script>
         <style>
-            html, body, #hakuneko {
+            html, body, #app {
                 margin: 0;
                 padding: 0;
                 width: 100%;
                 height: 100%;
+                position: fixed;
+                overflow: hidden;
+                background: transparent;
             }
-            #loader {
-                padding: 2em;
+            #splash {
+                position: absolute;
+                z-index: 2147483647;
+                margin: auto;
+                padding: 1.5em;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                font-family: sans-serif;
                 text-align: center;
+                color: lightgray;
+                background: linear-gradient(300deg, #080808, #808080);
+                border-radius: 8px;
+            }
+            .spinner {
+                display: block;
+                width: 100px;
+                height: 100px;
+                background: rgba(168, 180, 136, 0.95);
+                border-radius: 10px;
+                margin: 50px auto;
+                animation: spin 4s ease 0s infinite normal;
+            }
+            @keyframes spin {
+                0% {
+                    transform: rotateZ(0deg);
+                }
+                45% {
+                    background-color: rgba(168, 225, 136, 0.95)
+                }
+                100% {
+                    transform: rotateZ(719deg);
+                }
             }
         </style>
     </head>
-    <body id="hakuneko">
-        <div id="loader">
-            <h3>Loading...</h3>
-            <progress></progress>
+    <body>
+        <div id="app" style="display: none;">
+            <div style="text-align: center; margin: 2em;">
+                HakuNeko must be run from within the <a href="https://github.com/manga-download/haruneko/releases">Desktop Client</a>
+            </div>
+        </div>
+        <div id="splash">
+            <h1>Loading &hellip;</h1>
+            <div class="spinner"></div>
+            Smooth animation plays while the app content is loading hidden from view.
         </div>
     </body>
 </html>

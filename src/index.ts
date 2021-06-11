@@ -3,12 +3,36 @@ import { Initialize as InitFetchProvider } from './engine/FetchProvider';
 import { HakuNeko } from './engine/HakuNeko';
 import { FrontendController } from './frontend/FrontendController';
 
-//const gui = require('nw.gui');
-//gui.Window.get().
-const win = nw.Window.get();
-win.showDevTools();
+const timerHideSplashScreen = setTimeout(HideSplashScreen, 7500);
+window.addEventListener('appready', HideSplashScreen);
 
-InitBlacklist();
-InitFetchProvider();
-window.HakuNeko = new HakuNeko();
-window.Frontend = new FrontendController();
+if(nw) {
+    //const gui = require('nw.gui');
+    //gui.Window.get().
+    const win = nw.Window.get();
+    win.show();
+    InitializeWindowMenu(/*win*/);
+    InitBlacklist();
+    InitFetchProvider();
+    window.HakuNeko = new HakuNeko();
+    window.Frontend = new FrontendController();
+}
+
+function InitializeWindowMenu(/*win*/) {
+    /*
+    const menu = new nw.Menu({type: 'menubar'});
+    const submenu = new nw.Menu();
+    submenu.append(new nw.MenuItem({ label: 'Quit' }));
+    menu.append(new nw.MenuItem({
+        label: 'HakuNeko',
+        submenu: submenu
+    }));
+    win.menu = menu;
+    */
+}
+
+function HideSplashScreen() {
+    clearTimeout(timerHideSplashScreen);
+    document.querySelector('#splash')?.remove();
+    (document.querySelector('#app') as HTMLDivElement).style.display = 'initial';
+}
