@@ -8,7 +8,7 @@ const target = path.join('.', 'build.app', pkg);
 async function getManifest(config) {
     const baseURL = argv.url;
     return {
-        name: 'HakuNeko', // config.name,
+        name: config.title,
         description: config.description,
         'chromium-args': '--ignore-certificate-errors',
         main: baseURL + '/index.html',
