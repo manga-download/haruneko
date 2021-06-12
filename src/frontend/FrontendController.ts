@@ -64,6 +64,7 @@ export class FrontendController implements IFrontendController {
             const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';
             frontend.Render(hook);
+            frontend.SetWindowMenu();
             this.SetStoredFrontendID(frontendID);
         } catch(error) {
             console.error(`Failed to load frontend with id '${frontendID}'!`, error);

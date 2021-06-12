@@ -7,5 +7,6 @@ export interface IFrontendInfo {
 }
 
 export interface IFrontendModule {
-    Render: (root: HTMLElement) => Promise<void>;
+    SetWindowMenu(): void;
+    Render(root: HTMLElement): Promise<void>;
 }
