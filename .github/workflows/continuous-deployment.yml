@@ -7,8 +7,11 @@ on: release
 
 jobs:
   continuous-integration:
-    name: Ubuntu (Latest)
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macOS-latest]
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
         uses: actions/checkout@v2
@@ -17,9 +20,14 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 14.x
       - name: Deploy
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run deploy
+        run: npm run deploy:app:prod
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Build Artifacts
+          path: deploy

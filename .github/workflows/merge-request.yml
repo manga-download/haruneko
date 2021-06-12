@@ -27,13 +27,11 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 14.x
       - name: Install NPM Packages
         run: npm install
       - name: Lint
         run: npm run lint
-      - name: Build (web)
-        run: npm run build:web:prod
       - name: Test
         env:
           DISPLAY: ':99'
