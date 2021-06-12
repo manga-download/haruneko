@@ -3,7 +3,9 @@
 
 name: Continuous Deployment
 
-on: release
+on:
+  release:
+    type: [created]
 
 jobs:
   continuous-integration:
