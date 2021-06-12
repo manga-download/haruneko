@@ -24,6 +24,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
+      - name: Install NPM Packages
+        run: npm install
       - name: Deploy (dry)
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
