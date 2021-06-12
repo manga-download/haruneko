@@ -6,7 +6,7 @@ import { FrontendController } from './frontend/FrontendController';
 const timerHideSplashScreen = setTimeout(HideSplashScreen, 7500);
 window.addEventListener('appready', HideSplashScreen);
 
-if(nw) {
+if(Object.keys(window).includes('nw')) {
     const win = nw.Window.get();
     win.show();
     InitBlacklist();
