@@ -53,10 +53,6 @@ async function cleanupNW(dirNW) {
     try {
         await fs.unlink(dirNW + '.dmg');
     } catch(error) {/**/}
-    try {
-        const artifact = path.join('.', 'deploy', dirNW.split('/').pop().replace(/^nwjs(-sdk)?/i, 'hakuneko') + '.dmg');
-        await fs.unlink(artifact);
-    } catch(error) {/**/}
     await fs.move(path.join(dirNW, 'nwjs.app'), path.join(dirNW, product + '.app'));
 }
 
@@ -73,5 +69,8 @@ async function createDiskImage(dirNW) {
     await run(`hdiutil detach '/Volumes/${product}'`);
     await wait(5000);
     const artifact = path.join('.', 'deploy', dirNW.split('/').pop().replace(/^nwjs(-sdk)?/i, 'hakuneko') + '.dmg');
+    try {
+        await fs.unlink(artifact);
+    } catch(error) {/**/}
     await run(`hdiutil convert '${dirNW}.dmg' -format 'UDZO' -imagekey zlib-level=9 -o '${artifact}'`);
 }
