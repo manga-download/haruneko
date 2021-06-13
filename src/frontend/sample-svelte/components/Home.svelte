@@ -17,7 +17,7 @@
     <h2>Welcome to HakuNeko</h2>
     <div>
         <p class="border">
-                <img alt="hakuneko logo" class="logo" src="./img/logo_s.png"  align="left"/>
+                <img alt="hakuneko logo" class="logo" src="./img/logo.png"  align="left"/>
             <strong>HakuNeko</strong> was made to help users who download media for circumstances that requires offline usage. <br/>
             The philosophy is <u>ad-hoc consumption</u>, get it when you want to read/watch it.<br/>
             Read the "how to use" documentation at hakuneko.download
