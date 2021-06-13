@@ -11,7 +11,7 @@ jobs:
   continuous-integration:
     strategy:
       matrix:
-        os: [macOS-latest]
+        os: [windows-latest, macOS-latest]
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -32,7 +32,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run deploy:app:prod
-      - name: Upload Build Artifacts
+      - name: Deploy Build Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: Build Artifacts

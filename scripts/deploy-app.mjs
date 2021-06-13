@@ -27,16 +27,19 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     const sourceFile = `https://dl.nwjs.io/v${nwVersion}/${archive}`;
     const tmpFile = path.join(os.tmpdir(), archive);
     const tmpDir = path.join(os.tmpdir(), base);
+    const nwDir = path.join(os.tmpdir(), base.replace(/^nwjs(-sdk)?/i, 'hakuneko'));
     try {
         await fs.access(tmpFile);
     } catch(error) {
         console.log('Downloading:', sourceFile, '=>', '$TMP/' + path.basename(tmpFile));
         await download(sourceFile, tmpFile);
     }
+    console.log('Extracting:', '$TMP/' + path.basename(tmpFile), '=>', '$TMP/' + path.basename(nwDir));
     await fs.rmdir(tmpDir, { recursive: true });
-    console.log('Extracting:', '$TMP/' + path.basename(tmpFile), '=>', '$TMP/' + path.basename(tmpDir));
+    await fs.rmdir(nwDir, { recursive: true });
     await decompress(tmpFile, os.tmpdir());
-    return tmpDir;
+    await fs.move(tmpDir, nwDir);
+    return nwDir;
 }
 
 let dirNW;
@@ -45,28 +48,32 @@ await fs.mkdir(dirDeploy, { recursive: true });
 if(process.platform === 'darwin') {
     dirNW = await redist(nwVersion, nwBuildType, 'osx', 'x64');
     await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirNW);
-    //dirNW = await redist(nwVersion, '', 'osx', 'x64');
-    //await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirNW);
 }
 
 if(process.platform === 'win32') {
     dirNW = await redist(nwVersion, nwBuildType, 'win', 'ia32');
-    await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirNW);
     await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirNW);
+    //dirNW = await redist(nwVersion, nwBuildType, 'win', 'ia32');
+    //await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirNW);
     dirNW = await redist(nwVersion, nwBuildType, 'win', 'x64');
-    await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirNW);
     await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirNW);
+    //dirNW = await redist(nwVersion, nwBuildType, 'win', 'x64');
+    //await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirNW);
 }
 
 if(process.platform === 'linux') {
+    /*
     dirNW = await redist(nwVersion, nwBuildType, 'linux', 'ia32');
     await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirNW);
+    dirNW = await redist(nwVersion, nwBuildType, 'linux', 'ia32');
     await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirNW);
+    dirNW = await redist(nwVersion, nwBuildType, 'linux', 'ia32');
     await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirNW);
     dirNW = await redist(nwVersion, nwBuildType, 'linux', 'x64');
     await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirNW);
+    dirNW = await redist(nwVersion, nwBuildType, 'linux', 'x64');
     await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirNW);
+    dirNW = await redist(nwVersion, nwBuildType, 'linux', 'x64');
     await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirNW);
+    */
 }
-
-console.log('[TODO] Deploy Artifacts:', './deploy/*.*');
