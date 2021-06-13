@@ -68,7 +68,7 @@ async function createDiskImage(dirNW) {
     await wait(5000);
     await run(`hdiutil detach '/Volumes/${product}'`);
     await wait(5000);
-    const artifact = path.join('.', 'deploy', dirNW.split('/').pop().replace(/^nwjs(-sdk)?/i, 'hakuneko') + '.dmg');
+    const artifact = path.join('.', 'deploy', path.basename(dirNW).replace(/^nwjs(-sdk)?/i, 'hakuneko') + '.dmg');
     try {
         await fs.unlink(artifact);
     } catch(error) {/**/}
