@@ -15,6 +15,7 @@
                 height: 100%;
                 position: fixed;
                 overflow: hidden;
+                transition: fadein 1s;
             }
             #splash {
                 position: absolute;
@@ -49,6 +50,16 @@
                 }
                 100% {
                     transform: rotateZ(719deg);
+                }
+            }
+
+            @keyframes fadein {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
                 }
             }
         </style>

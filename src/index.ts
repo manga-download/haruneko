@@ -30,6 +30,6 @@ function HideSplashScreen() {
     clearTimeout(timerHideSplashScreen);
     document.querySelector('#splash')?.remove();
     (document.querySelector('#app') as HTMLDivElement).style.display = 'initial';
-    // TODO: may set window based on last stored position and size
+    // TODO: may set window based on last stored position and size Issue:#18
     AdjustWindowSize(0.80 * screen.width, 0.80 * screen.height);
 }
