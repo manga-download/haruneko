@@ -18,7 +18,7 @@ nw.Window.open(window.location.origin+'/splash.html',
     },
     function(new_win:any) {
         nwSplash=new_win;
-        new_win.focus;
+        new_win.focus();
     }
 );
 const timerHideSplashScreen = setTimeout(HideSplashScreen, 7500);
