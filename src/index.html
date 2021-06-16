@@ -5,9 +5,7 @@
         <link rel="icon" href="/img/logo.png" />
         <script type="module" src="/index.js"></script>
         <style>
-            html, body {
-                background: transparent !important;
-            }
+
             html, body, #app {
                 margin: 0;
                 padding: 0;
@@ -15,65 +13,14 @@
                 height: 100%;
                 position: fixed;
                 overflow: hidden;
-                transition: fadein 1s;
-            }
-            #splash {
-                position: absolute;
-                z-index: 2147483647;
-                margin: auto;
-                padding: 1.5em;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                font-family: sans-serif;
-                text-align: center;
-                color: lightgray;
-                background: linear-gradient(300deg, #080808, #808080);
-                border-radius: 8px;
-            }
-            .spinner {
-                display: block;
-                width: 100px;
-                height: 100px;
-                background: rgba(168, 180, 136, 0.95);
-                border-radius: 10px;
-                margin: 50px auto;
-                animation: spin 4s ease 0s infinite normal;
-            }
-            @keyframes spin {
-                0% {
-                    transform: rotateZ(0deg);
-                }
-                45% {
-                    background-color: rgba(168, 225, 136, 0.95)
-                }
-                100% {
-                    transform: rotateZ(719deg);
-                }
-            }
-
-            @keyframes fadein {
-                from {
-                    opacity: 0;
-                }
-
-                to {
-                    opacity: 1;
-                }
             }
         </style>
     </head>
     <body>
-        <div id="app" style="display: none;">
+        <div id="app">
             <div style="text-align: center; margin: 2em;">
                 HakuNeko must be run from within the <a href="https://github.com/manga-download/haruneko/releases">Desktop Client</a>
             </div>
-        </div>
-        <div id="splash">
-            <h1>Loading &hellip;</h1>
-            <div class="spinner"></div>
-            Smooth animation plays while the app content is loading hidden from view.
         </div>
     </body>
 </html>

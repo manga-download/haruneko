@@ -186,7 +186,7 @@
         border-radius: 2em; /* So marker has rounded edges */
     }
     :global(#app) {
-        background: var(--cds-ui-background, #ffffff);
+        background: var(--cds-ui-background);
     }
     :global(#hakunekoapp) {
         height: calc(100vh - 3.5em);
