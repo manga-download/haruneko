@@ -185,6 +185,9 @@
         background: var(--cds-active-ui); /* Scroll marker */
         border-radius: 2em; /* So marker has rounded edges */
     }
+    :global(#app) {
+        background: var(--cds-ui-background, #ffffff);
+    }
     :global(#hakunekoapp) {
         height: calc(100vh - 3.5em);
         max-height: calc(100vh - 3.5em);
