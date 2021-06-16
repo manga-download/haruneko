@@ -58,7 +58,8 @@ const configApp = {
             watch: outputDirectory
         }),*/
         //isDevelopment && launch({})
-    ]
+    ],
+    preserveEntrySignatures: 'strict'
 };
 
 export default [
