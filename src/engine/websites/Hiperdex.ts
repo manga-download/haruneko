@@ -7,7 +7,7 @@ import { MangasMultiPageAJAX, ChaptersSinglePageAJAX, PagesSinglePageCSS } from 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hiperdex', 'Hiperdex', 'https://hiperdex.com');
+        super('hiperdex', 'Hiperdex', 'https://hiperdex2.com');
     }
 
     /*
