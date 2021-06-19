@@ -58,9 +58,9 @@ jobs:
       - name: Tag Release
         run: |
           echo { > ./body.json
-          echo \"tag_name\":\"$TAG\" >> ./body.json
-          echo \"name\":\"canary • $DATE\" >> ./body.json
-          echo \"body\":\"Description...\" >> ./body.json
+          echo \"tag_name\":\"$TAG\", >> ./body.json
+          echo \"name\":\"canary • $DATE\", >> ./body.json
+          echo \"body\":\"Description...\", >> ./body.json
           echo \"prerelease\":false >> ./body.json
           echo } >> ./body.json
           cat ./body.json
