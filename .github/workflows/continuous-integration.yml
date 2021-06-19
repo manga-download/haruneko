@@ -1,6 +1,3 @@
-# https://help.github.com/en/articles/workflow-syntax-for-github-actions
-# https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions
-
 name: Continuous Integration
 
 on:
@@ -9,12 +6,9 @@ on:
       - master
 
 jobs:
-  continuous-integration:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest]
-    name: ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+  tests:
+    name: Testing Web-Application
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
         uses: actions/checkout@v2
@@ -28,8 +22,9 @@ jobs:
         run: npm install -g npm@7 --registry=https://registry.npmjs.org
       - name: Install NPM Packages
         run: npm install
-      - name: Deploy (dry)
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Web-Application
         run: npm run build:web:prod
+#      - name: Testing Web-Application (Engine)
+#        run: npm run test:engine
+#      - name: Testing Web-Application (Frontend)
+#        run: npm run test:frontend

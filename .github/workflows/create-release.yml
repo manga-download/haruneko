@@ -1,7 +1,4 @@
-# https://help.github.com/en/articles/workflow-syntax-for-github-actions
-# https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions
-
-name: Create (Pre-)Release
+name: Create GitHub Release
 
 on: workflow_dispatch
 
@@ -28,9 +25,6 @@ jobs:
 #      - name: Install NPM Packages
 #        run: npm install
 #      - name: Build Application
-#        env:
-#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #        run: npm run deploy:app:prod
       - name: Build Application (Dummy)
         run: mkdir ./deploy && touch ./deploy/hakuneko-win-x64.zip && touch ./deploy/hakuneko-osx-x64.dmg
@@ -51,15 +45,19 @@ jobs:
     name: Publish Release
     runs-on: ubuntu-latest
     steps:
+      - name: Setup Environment
+        run: |
+          echo "DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+          echo "TAG=$(date -u +"%y%m%dT%H%M")" >> $GITHUB_ENV
       - name: Download Artifacts
         uses: actions/download-artifact@v2
-      - name: Dump Builds
-        run: ls -l ./release-builds
-      - name: Dump Templates
-        run: ls -l ./release-templates
       - name: Dump Variables
         run: echo ${{ github.repository }}, ${{ github.ref }}
-      - name: Dump Release Template
-        run: cat ./release-templates/release.md
       - name: Dump Pre-Release Template
         run: cat ./release-templates/pre-release.md
+      - name: Tag Release
+        run: |
+          echo $TAG
+          curl -X POST -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${{ github.repository }}/releases" -d '{"tag_name":"$TAG", "name":"canary • $DATE", "body":"Description..."}'
+      - name: Upload Assets
+        run: echo "$TAG • $DATE"
