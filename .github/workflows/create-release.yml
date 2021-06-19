@@ -6,17 +6,19 @@ name: Create Pre-Release
 on: workflow_dispatch
 
 jobs:
-#  build:
-#    strategy:
-#      matrix:
-#        os: [windows-latest, macOS-latest]
-#    name: Build (${{ matrix.os }})
-#    runs-on: ${{ matrix.os }}
-#    steps:
-#      - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
-#        uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 1
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macOS-latest]
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref }}
+          fetch-depth: 1
 #      - name: Install NodeJS
 #        uses: actions/setup-node@v1
 #        with:
@@ -30,17 +32,33 @@ jobs:
 #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #        run: npm run deploy:app:prod
-#      - name: Deploy Build Artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: Build Artifacts
-#          retention-days: 3
-#          path: deploy
-  build:
-    name: Publish Build Artifacts
+      - name: Dummy Build
+        run: mkdir ./deploy && touch ./deploy/hakuneko-win-x64.zip && touch ./deploy/hakuneko-osx-x64.dmg
+      - name: Upload Release Builds
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-builds
+          retention-days: 3
+          path: deploy
+      - name: Upload Release Templates
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-templates
+          retention-days: 3
+          path: .github/RELEASE_TEMPLATE/*.md
+  publish:
+    name: Publish Release
     runs-on: ubuntu-latest
     steps:
-       - name: Dump Variables
-         run: echo {{ github.repository }}, {{ github.ref }}
-       - name: Dump Template
-         run: cat .github/RELEASE_TEMPLATE/pre-release.md
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+      - name: Dump Builds
+        run: ls -l ./release-builds
+      - name: Dump Templates
+        run: ls -l ./release-templates
+      - name: Dump Variables
+        run: echo {{ github.repository }}, {{ github.ref }}
+      - name: Dump Release Template
+        run: cat release.md
+      - name: Dump Pre-Release Template
+        run: cat pre-release.md
