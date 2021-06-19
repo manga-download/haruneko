@@ -5,7 +5,7 @@ name: Continuous Deployment
 
 on:
   release:
-    type: [created]
+    types: [created]
 
 jobs:
   continuous-integration:
