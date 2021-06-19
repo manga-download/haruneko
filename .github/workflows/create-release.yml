@@ -47,6 +47,7 @@ jobs:
           retention-days: 3
           path: .github/RELEASE_TEMPLATE/*.md
   publish:
+    needs: build
     name: Publish Release
     runs-on: ubuntu-latest
     steps:
