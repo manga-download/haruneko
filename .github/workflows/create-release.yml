@@ -39,6 +39,7 @@ jobs:
   build:
     name: Publish Build Artifacts
     steps:
-       - name: Dump Content
+       - name: Dump Variables
          run: echo {{ github.repository }}, {{ github.ref }}
+       - name: Dump Template
          run: cat .github/RELEASE_TEMPLATE/pre-release.md
