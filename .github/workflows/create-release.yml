@@ -57,7 +57,7 @@ jobs:
           echo \"prerelease\":true, >> ./body.json
           echo \"tag_name\":\"$RELEASE_TAG\", >> ./body.json
           echo \"name\":\"canary • $RELEASE_DATE\", >> ./body.json
-          echo \"body\":\"$(cat -e ./release-templates/pre-release.md | tr '$\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)\" >> ./body.json
+          echo \"body\":\"$(cat -e ./release-templates/pre-release.md | tr '$\r\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)\" >> ./body.json
           echo } >> ./body.json
           echo +++ REQUEST +++
           cat ./body.json
@@ -66,7 +66,8 @@ jobs:
             -X POST \
             -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             'https://api.github.com/repos/${{ github.repository }}/releases' \
-            --data @./body.json > ./response.json
+            --data @./body.json \
+            --silent > ./response.json
           echo +++ RESPONSE +++
           cat ./response.json
           cat ./response.json | grep '"upload_url"' | cut -d'/' -f8 >> $GITHUB_ENV
