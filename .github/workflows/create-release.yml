@@ -53,12 +53,11 @@ jobs:
         uses: actions/download-artifact@v2
       - name: Create Release Tag
         run: |
-          cat -e ./release-templates/pre-release.md
           echo { > ./body.json
           echo \"prerelease\":true, >> ./body.json
           echo \"tag_name\":\"$RELEASE_TAG\", >> ./body.json
           echo \"name\":\"canary • $RELEASE_DATE\", >> ./body.json
-          echo \"body\":\"$(cat -e ./release-templates/pre-release.md | tr '$\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)\" >> ./body.json
+          echo \"body\":\"$(cat ./release-templates/pre-release.md | tr '\r\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)\" >> ./body.json
           echo } >> ./body.json
           echo +++ REQUEST +++
           cat ./body.json
