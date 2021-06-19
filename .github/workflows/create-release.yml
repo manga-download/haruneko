@@ -38,6 +38,7 @@ jobs:
 #          path: deploy
   build:
     name: Publish Build Artifacts
+    runs-on: ubuntu-latest
     steps:
        - name: Dump Variables
          run: echo {{ github.repository }}, {{ github.ref }}
