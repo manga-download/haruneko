@@ -81,7 +81,7 @@ jobs:
           rm body.json response.json
       - name: Upload Release Assets
         run: |
-          for FILE in ./src/*; do \
+          for FILE in ./release-builds/*.*; do \
             curl \
               -X POST \
               -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
