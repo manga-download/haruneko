@@ -74,7 +74,6 @@ jobs:
           rm body.json response.json
       - name: Upload Release Assets
         run: |
-          echo Asset: hakuneko-v0.54.0-win-x64.zip
           curl \
             -X POST \
             -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
@@ -82,7 +81,7 @@ jobs:
             'https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets?name=hakuneko-v0.54.0-win-x64.zip' \
             --data-binary @./release-builds/hakuneko-v0.54.0-win-x64.zip \
             --silent
-          echo Asset: hakuneko-v0.54.0-win-ia32.zip
+          echo 
           curl \
             -X POST \
             -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
@@ -90,7 +89,7 @@ jobs:
             'https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets?name=hakuneko-v0.54.0-win-ia32.zip' \
             --data-binary @./release-builds/hakuneko-v0.54.0-win-ia32.zip \
             --silent
-          echo Asset: hakuneko-v0.54.0-osx-x64.dmg
+          echo 
           curl \
             -X POST \
             -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
@@ -98,4 +97,5 @@ jobs:
             'https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets?name=hakuneko-v0.54.0-osx-x64.dmg' \
             --data-binary @./release-builds/hakuneko-v0.54.0-osx-x64.dmg \
             --silent
+          echo 
 # TODO: Would be nice to wrap this in a loop that iterates over all build artifacts ...
