@@ -64,8 +64,8 @@ jobs:
             -X POST \
             -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             'https://api.github.com/repos/${{ github.repository }}/releases' \
-            --data @./body.json \
-            --silent | grep '"upload_url"' | cut -d'/' -f8 >> $GITHUB_ENV
+            --data @./body.json | grep '"upload_url"' | cut -d'/' -f8 >> $GITHUB_ENV
+          cat $GITHUB_ENV
       - name: Upload Release Assets
         run: |
           curl \
