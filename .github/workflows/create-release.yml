@@ -1,7 +1,7 @@
 # https://help.github.com/en/articles/workflow-syntax-for-github-actions
 # https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions
 
-name: Create Pre-Release
+name: Create (Pre-)Release
 
 on: workflow_dispatch
 
@@ -32,7 +32,7 @@ jobs:
 #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #        run: npm run deploy:app:prod
-      - name: Dummy Build
+      - name: Build Application (Dummy)
         run: mkdir ./deploy && touch ./deploy/hakuneko-win-x64.zip && touch ./deploy/hakuneko-osx-x64.dmg
       - name: Upload Release Builds
         uses: actions/upload-artifact@v2
@@ -58,8 +58,8 @@ jobs:
       - name: Dump Templates
         run: ls -l ./release-templates
       - name: Dump Variables
-        run: echo {{ github.repository }}, {{ github.ref }}
+        run: echo ${{ github.repository }}, ${{ github.ref }}
       - name: Dump Release Template
-        run: cat release.md
+        run: cat ./release-templates/release.md
       - name: Dump Pre-Release Template
-        run: cat pre-release.md
+        run: cat ./release-templates/pre-release.md
