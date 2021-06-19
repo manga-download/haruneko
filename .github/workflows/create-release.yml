@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, macOS-latest]
     name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
@@ -16,18 +16,16 @@ jobs:
           repository: ${{ github.repository }}
           ref: ${{ github.ref }}
           fetch-depth: 1
-#      - name: Install NodeJS
-#        uses: actions/setup-node@v1
-#        with:
-#          node-version: 14.x
-#      - name: Update NPM
-#        run: npm install -g npm@7 --registry=https://registry.npmjs.org
-#      - name: Install NPM Packages
-#        run: npm install
-#      - name: Build Application
-#        run: npm run deploy:app:prod
-      - name: Build Application (Dummy)
-        run: mkdir ./deploy && echo 'xxxx' > ./deploy/hakuneko-v0.54.0-win-x64.zip && echo 'xxxx' > ./deploy/hakuneko-v0.54.0-win-ia32.zip && echo '0000' > ./deploy/hakuneko-v0.54.0-osx-x64.dmg
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Update NPM
+        run: npm install -g npm@7 --registry=https://registry.npmjs.org
+      - name: Install NPM Packages
+        run: npm install
+      - name: Build Application
+        run: npm run deploy:app:prod
       - name: Upload Release Builds
         uses: actions/upload-artifact@v2
         with:
@@ -89,4 +87,5 @@ jobs:
               "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets?name=$(basename $FILE)" \
               --data-binary @"$FILE" \
               --silent \
+            && echo \
           ; done
