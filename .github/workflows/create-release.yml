@@ -27,7 +27,7 @@ jobs:
 #      - name: Build Application
 #        run: npm run deploy:app:prod
       - name: Build Application (Dummy)
-        run: mkdir ./deploy && touch ./deploy/hakuneko-win-x64.zip && touch ./deploy/hakuneko-osx-x64.dmg
+        run: mkdir ./deploy && echo 'xxxx' > ./deploy/hakuneko-v0.54.0-win-x64.zip && echo 'xxxx' > ./deploy/hakuneko-v0.54.0-win-ia32.zip && echo '0000' > ./deploy/hakuneko-v0.54.0-osx-x64.dmg
       - name: Upload Release Builds
         uses: actions/upload-artifact@v2
         with:
@@ -47,23 +47,46 @@ jobs:
     steps:
       - name: Setup Environment
         run: |
-          echo "DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
-          echo "TAG=$(date -u +"%y%m%dT%H%M")" >> $GITHUB_ENV
+          echo "RELEASE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+          echo "RELEASE_TAG=$(date -u +"%y%m%dT%H%M")" >> $GITHUB_ENV
       - name: Download Artifacts
         uses: actions/download-artifact@v2
-      - name: Dump Variables
-        run: echo ${{ github.repository }}, ${{ github.ref }}
-      - name: Dump Pre-Release Template
-        run: cat ./release-templates/pre-release.md
-      - name: Tag Release
+      - name: Create Release Tag
         run: |
           echo { > ./body.json
-          echo \"tag_name\":\"$TAG\", >> ./body.json
-          echo \"name\":\"canary • $DATE\", >> ./body.json
-          echo \"body\":\"Description...\", >> ./body.json
-          echo \"prerelease\":false >> ./body.json
+          echo \"prerelease\":true, >> ./body.json
+          echo \"tag_name\":\"$RELEASE_TAG\", >> ./body.json
+          echo \"name\":\"canary • $RELEASE_DATE\", >> ./body.json
+          echo \"body\":\"$(cat ./release-templates/pre-release.md | sed s/{TAG}/$RELEASE_TAG/g)\", >> ./body.json
           echo } >> ./body.json
-          cat ./body.json
-          curl -X POST -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3+json' 'https://api.github.com/repos/${{ github.repository }}/releases' -d @./body.json
-      - name: Upload Assets
-        run: echo "$TAG • $DATE"
+          echo -n "RELEASE_ID=" >> $GITHUB_ENV
+          curl \
+            -X POST \
+            -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            'https://api.github.com/repos/${{ github.repository }}/releases' \
+            --data @./body.json \
+            --silent | grep '"upload_url"' | cut -d'/' -f8 >> $GITHUB_ENV
+      - name: Upload Release Assets
+        run: |
+          curl \
+            -X POST \
+            -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            -H 'Content-Type: application/octet-stream' \
+            'https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets?name=hakuneko-v0.54.0-win-x64.zip' \
+            --data-binary @./release-builds/hakuneko-v0.54.0-win-x64.zip \
+            --silent
+          curl \
+            -X POST \
+            -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            -H 'Content-Type: application/octet-stream' \
+            'https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets?name=hakuneko-v0.54.0-win-ia32.zip' \
+            --data-binary @./release-builds/hakuneko-v0.54.0-win-ia32.zip \
+            --silent
+          curl \
+            -X POST \
+            -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            -H 'Content-Type: application/octet-stream' \
+            'https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets?name=hakuneko-v0.54.0-osx-x64.dmg' \
+            --data-binary @./release-builds/hakuneko-v0.54.0-osx-x64.dmg \
+            --silent
+# TODO: Would be nice to wrap this in a loop that iterates over all build artifacts ...
