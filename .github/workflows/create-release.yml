@@ -57,19 +57,20 @@ jobs:
           echo \"prerelease\":true, >> ./body.json
           echo \"tag_name\":\"$RELEASE_TAG\", >> ./body.json
           echo \"name\":\"canary • $RELEASE_DATE\", >> ./body.json
-          echo \"body\":\"$(cat ./release-templates/pre-release.md | sed s/{TAG}/$RELEASE_TAG/g)\", >> ./body.json
+          echo \"body\":\"$(cat -e .github/RELEASE_TEMPLATE/pre-release.md | tr '$\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)\", >> ./body.json
           echo } >> ./body.json
+          echo +++ REQUEST +++
+          cat ./body.json
           echo -n "RELEASE_ID=" >> $GITHUB_ENV
           curl \
             -X POST \
             -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             'https://api.github.com/repos/${{ github.repository }}/releases' \
-            --data @./body.json > ./debug.json
-          cat ./debug.json
-          cat ./debug.json | grep '"upload_url"'
-          cat ./debug.json | grep '"upload_url"' | cut -d'/' -f8
-          cat ./debug.json | grep '"upload_url"' | cut -d'/' -f8 >> $GITHUB_ENV
-          cat $GITHUB_ENV
+            --data @./body.json > ./response.json
+          echo +++ RESPONSE +++
+          cat ./response.json
+          cat ./response.json | grep '"upload_url"' | cut -d'/' -f8 >> $GITHUB_ENV
+          rm body.json response.json
       - name: Upload Release Assets
         run: |
           curl \
