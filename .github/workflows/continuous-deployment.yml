@@ -1,5 +1,5 @@
-# https://help.github.com/en/articles/workflow-syntax-for-github-actions
-# https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions
+ https://help.github.com/en/articles/workflow-syntax-for-github-actions
+ https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions
 
 name: Continuous Deployment
 
@@ -8,11 +8,11 @@ on:
     types: [created]
 
 jobs:
-  continuous-integration:
+  continuous-deployment:
     strategy:
       matrix:
         os: [windows-latest, macOS-latest]
-    name: ${{ matrix.os }}
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
@@ -36,4 +36,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Build Artifacts
+          retention-days: 3
           path: deploy
