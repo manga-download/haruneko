@@ -276,4 +276,12 @@
     :global(#Header) {
         -webkit-app-region: drag;
     }
+
+    :global(.bx--header__global) {
+        -webkit-app-region: drag;
+    }
+
+    :global(.bx--header__global > *) {
+        -webkit-app-region: no-drag;
+    }
 </style>
