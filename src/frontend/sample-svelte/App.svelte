@@ -17,8 +17,13 @@
         Tabs,
         Tab,
         TabContent,
+        Toggle,
     } from "carbon-components-svelte";
-    import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
+
+    import Maximize24 from "carbon-icons-svelte/lib/Maximize24";
+    import Minimize24 from "carbon-icons-svelte/lib/Minimize24";
+    import ChevronDown24 from "carbon-icons-svelte/lib/ChevronDown24";
+    import Close24 from "carbon-icons-svelte/lib/Close24";
 
     import { onMount } from "svelte";
 
@@ -38,6 +43,25 @@
         IMediaItem,
     } from "../../engine/providers/MediaPlugin";
 
+    // Window controls
+    let win = nw.Window.get();
+
+    function maximizeWindow() {
+        winMaximized ? win.restore() : win.maximize();
+    }
+    win.on("maximize", () => {
+        winMaximized = true;
+    });
+    win.on("restore", () => {
+        winMaximized = false;
+    });
+    let winMaximized =
+        win.x <= 0 &&
+        win.y <= 0 &&
+        win.width >= screen.availWidth &&
+        win.height >= screen.availHeight;
+
+    // UI
     let isSideNavOpen = false;
     let isOpen = false;
     let theme: string;
@@ -90,18 +114,34 @@
             <SkipToContent />
         </div>
         <HeaderUtilities>
-            <!--
-            <HeaderSearch />
-            -->
             <HeaderGlobalAction
-                on:click={changeUIMode}
-                aria-label="Wide"
-                icon={SettingsAdjust20}
+                on:click={() => win.minimize()}
+                aria-label="Minimize"
+                icon={ChevronDown24}
+            />
+            <HeaderGlobalAction
+                on:click={maximizeWindow}
+                aria-label="Maximize"
+                icon={winMaximized ? Minimize24 : Maximize24}
+            />
+            <HeaderGlobalAction
+                on:click={() => win.close()}
+                aria-label="Maximize"
+                icon={Close24}
             />
             <HeaderAction bind:isOpen>
                 <HeaderPanelLinks>
-                    <HeaderPanelDivider>Switcher subject 1</HeaderPanelDivider>
-                    <HeaderPanelLink>Switcher item 1</HeaderPanelLink>
+                    <HeaderPanelDivider>Interface</HeaderPanelDivider>
+                    <HeaderPanelLink>
+                        <Toggle
+                            size="sm"
+                            labelText="Show content pannel :"
+                            labelA="Download Only"
+                            labelB="Content"
+                            toggled={uimode === "ui-mode-content"}
+                            on:toggle={changeUIMode}
+                        />
+                    </HeaderPanelLink>
                     <HeaderPanelDivider>Themes</HeaderPanelDivider>
                     {#each themes as item}
                         <HeaderPanelLink on:click={() => (theme = item.id)}
