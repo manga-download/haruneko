@@ -13,7 +13,7 @@
     export let alt = "";
     /**
      * Specify the aspect ratio for the image wrapper
-     * @type {"2x1" | "16x9" | "4x3" | "1x1" | "3x4" | "3x2" | "9x16" | "1x2"}
+     * @type {'2x1' | '16x9' | '4x3' | '1x1' | '3x4' | '3x2' | '9x16' | '1x2'}
      */
     export let ratio = undefined;
     /**
@@ -86,7 +86,7 @@
     import { fade } from "svelte/transition";
     import AspectRatio from "carbon-components-svelte/src/AspectRatio/AspectRatio.svelte";
     const dispatch = createEventDispatcher();
-    // "fast-02" duration (ms) from Carbon motion recommended for fading micro-interactions
+    // 'fast-02' duration (ms) from Carbon motion recommended for fading micro-interactions
     const fast02 = 110;
     let image = null;
     $: loading = !loaded && !error;

@@ -49,7 +49,7 @@ export class FrontendController implements IFrontendController {
             const module = await import(info.ModuleFile);
             return module.default as IFrontendModule;
         } else {
-            throw new Error(`The frontend could not be found in the list of available frontends!`);
+            throw new Error('The frontend could not be found in the list of available frontends!');
         }
     }
 

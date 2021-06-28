@@ -61,7 +61,7 @@
     "yargs": "latest"
   },
   "scripts": {
-    "lint": "eslint ./src/**/*.ts --ignore-path .gitignore",
+    "lint": "eslint ./src/**/*.ts --ignore-path .gitignore --fix",
     "build:web:prod": "rm -r -f build.web docs && rollup --config --compact",
     "build:app:dev": "node ./scripts/build-app.mjs --url=http://localhost:5000",
     "build:app:prod": "node ./scripts/build-app.mjs --url=https://haruneko.pages.dev",

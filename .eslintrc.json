@@ -38,6 +38,7 @@
         "indent": ["error", 4, { "SwitchCase": 1 }],
         "no-trailing-spaces": "error",
         "no-multiple-empty-lines": ["error", {"max": 1, "maxBOF": 0, "maxEOF": 0}],
-        "no-multi-spaces": "error"
+        "no-multi-spaces": "error",
+        "quotes": ["error","single"]
     }
 }

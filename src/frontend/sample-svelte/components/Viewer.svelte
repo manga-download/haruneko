@@ -6,7 +6,7 @@
     import RowInsert24 from "carbon-icons-svelte/lib/RowExpand24";
     import RowDelete24 from "carbon-icons-svelte/lib/RowCollapse24";
     import Misuse24 from "carbon-icons-svelte/lib/Misuse24";
-
+    import SmartImageLoader from "../lib/smartImageLoader.svelte";
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
 
@@ -103,7 +103,7 @@
                             title="Page {index}"
                         />
                     {:else if mode === "Wide"}
-                        <img
+                        <SmartImageLoader
                             id="content_{index}"
                             alt="content_{index}"
                             class="image"
