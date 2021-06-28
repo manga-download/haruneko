@@ -20,10 +20,10 @@
         Toggle,
     } from "carbon-components-svelte";
 
-    import Maximize24 from "carbon-icons-svelte/lib/Maximize24";
-    import Minimize24 from "carbon-icons-svelte/lib/Minimize24";
-    import ChevronDown24 from "carbon-icons-svelte/lib/ChevronDown24";
-    import Close24 from "carbon-icons-svelte/lib/Close24";
+    import MinimizeIcon from "carbon-icons-svelte/lib/Subtract24";
+    import MaximizeIcon from "carbon-icons-svelte/lib/Checkbox16";
+    import RestoreIcon from "carbon-icons-svelte/lib/Copy16";
+    import CloseIcon from "carbon-icons-svelte/lib/Close24";
 
     import { onMount } from "svelte";
 
@@ -46,9 +46,6 @@
     // Window controls
     let win = nw.Window.get();
 
-    function maximizeWindow() {
-        winMaximized ? win.restore() : win.maximize();
-    }
     win.on("maximize", () => {
         winMaximized = true;
     });
@@ -117,17 +114,17 @@
             <HeaderGlobalAction
                 on:click={() => win.minimize()}
                 aria-label="Minimize"
-                icon={ChevronDown24}
+                icon={MinimizeIcon}
             />
             <HeaderGlobalAction
-                on:click={maximizeWindow}
+                on:click={() => (winMaximized ? win.restore() : win.maximize())}
                 aria-label="Maximize"
-                icon={winMaximized ? Minimize24 : Maximize24}
+                icon={winMaximized ? RestoreIcon : MaximizeIcon}
             />
             <HeaderGlobalAction
                 on:click={() => win.close()}
-                aria-label="Maximize"
-                icon={Close24}
+                aria-label="Close"
+                icon={CloseIcon}
             />
             <HeaderAction bind:isOpen>
                 <HeaderPanelLinks>
