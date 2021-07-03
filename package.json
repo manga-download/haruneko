@@ -10,8 +10,7 @@
     "npm": ">=7.6.0"
   },
   "dependencies": {
-    "fs-extra": "9.0.1",
-    "svelte-awesome": "^2.3.2"
+    "fs-extra": "9.0.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "latest",
