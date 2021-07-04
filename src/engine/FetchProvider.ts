@@ -6,15 +6,37 @@ const fetchApiUnsupportedHeaders = [
     'User-Agent',
     'Referer',
     'Origin',
-    //'Host'
+    'Host'
 ];
+
+export function ConcealFetchAPIHeaders(headers: Headers): void {
+    for(const header of fetchApiUnsupportedHeaders) {
+        const prefixed = fetchApiSupportedPrefix + header;
+        const value = headers.get(header);
+        if(value !== null) {
+            headers.set(prefixed, value);
+            headers.delete(header);
+        }
+    }
+}
+
+export function RevealFetchAPIHeaders(headers: HeadersView): void {
+    for(const header of fetchApiUnsupportedHeaders) {
+        const prefixed = fetchApiSupportedPrefix + header;
+        const value = headers.get(prefixed);
+        if(value !== null) {
+            headers.set(header, value);
+            headers.delete(prefixed);
+        }
+    }
+}
 
 function ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
     // TODO: set cookies from chrome matching the details.url?
     //       const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
     const headers = new HeadersView(details.requestHeaders || []);
     headers.set('Referer', details.url);
-    FetchRequest.RevealFetchAPIHeaders(headers);
+    RevealFetchAPIHeaders(headers);
 
     return {
         requestHeaders: details.requestHeaders // headers.Values
@@ -42,7 +64,7 @@ enum FetchRedirection {
     Interactive
 }
 
-async function checkAntiScrapingDetection(document: Document): Promise<FetchRedirection> {
+async function CheckAntiScrapingDetection(document: Document): Promise<FetchRedirection> {
     // Common Checks
     if(document.querySelector('meta[http-equiv="refresh"][content*="="]')) {
         return FetchRedirection.Automatic;
@@ -76,38 +98,16 @@ async function checkAntiScrapingDetection(document: Document): Promise<FetchRedi
     return FetchRedirection.None;
 }
 
-export class FetchRequest extends Request {
+export class FetchRequest extends window.Request {
 
     public constructor(input: RequestInfo, init?: RequestInit) {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         if(init && init.headers) {
             const headers = new Headers(init.headers);
-            FetchRequest.ConcealFetchAPIHeaders(headers);
+            ConcealFetchAPIHeaders(headers);
             init.headers = headers;
         }
         super(input, init);
-    }
-
-    public static ConcealFetchAPIHeaders(headers: Headers): void {
-        for(const header of fetchApiUnsupportedHeaders) {
-            const prefixed = fetchApiSupportedPrefix + header;
-            const value = headers.get(header);
-            if(value !== null) {
-                headers.set(prefixed, value);
-                headers.delete(header);
-            }
-        }
-    }
-
-    public static RevealFetchAPIHeaders(headers: HeadersView): void {
-        for(const header of fetchApiUnsupportedHeaders) {
-            const prefixed = fetchApiSupportedPrefix + header;
-            const value = headers.get(prefixed);
-            if(value !== null) {
-                headers.set(header, value);
-                headers.delete(prefixed);
-            }
-        }
     }
 }
 
@@ -144,7 +144,7 @@ async function Wait(delay: number) {
     return new Promise(resolve => setTimeout(resolve, delay));
 }
 
-async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any> {
+async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<any> {
 
     const options = {
         new_instance: false,
@@ -165,13 +165,13 @@ async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any
             win.close();
             reject(new Error(i18n('RequestProvider.FetchWindow.TimeoutError')));
         };
-        let cancellation = setTimeout(destroy, timeout || 30_000);
+        let cancellation = setTimeout(destroy, timeout);
 
         win.on('loaded', async () => {
-            const redirect = await checkAntiScrapingDetection(win.window.document); // await win.eval(null, antiScrapingDetectionScript);
+            const redirect = await CheckAntiScrapingDetection(win.window.document); // await win.eval(null, antiScrapingDetectionScript);
             switch (redirect) {
                 case FetchRedirection.Interactive:
-                    // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejcting the request with an error
+                    // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
                     clearTimeout(cancellation);
                     cancellation = setTimeout(destroy, 150_000);
                     win.eval(null, `alert('${i18n('FetchProvider.FetchWindow.AlertCaptcha')}');`);
@@ -188,10 +188,10 @@ async function FetchWindow(request: FetchRequest, timeout?: number): Promise<any
     });
 }
 
-export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay?: number, timeout?: number): Promise<T[]> {
+export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay = 0, timeout?: number): Promise<T[]> {
     const win = await FetchWindow(request, timeout);
     try {
-        await Wait(delay || 0);
+        await Wait(delay);
         const dom = win.window.document as Document;
         return [...dom.querySelectorAll(query)] as T[];
     } finally{
@@ -199,10 +199,10 @@ export async function FetchWindowCSS<T extends HTMLElement>(request: FetchReques
     }
 }
 
-export async function FetchWindowScript<T>(request: FetchRequest, script: string, delay?: number, timeout?: number): Promise<T> {
+export async function FetchWindowScript<T>(request: FetchRequest, script: string, delay = 0, timeout?: number): Promise<T> {
     const win = await FetchWindow(request, timeout);
     try {
-        await Wait(delay || 0);
+        await Wait(delay);
         return win.eval(null, script) as T;
     } finally{
         win.close();

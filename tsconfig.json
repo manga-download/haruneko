@@ -9,7 +9,7 @@
             "react-dom",
             "jest"
         ],
-        "strict": true, // TODO: should be migrated to true
+        "strict": true,
         "jsx": "react",
         "target": "esnext",
         "module": "esnext",
@@ -19,7 +19,8 @@
         "inlineSources": true,
         "inlineSourceMap": false,
         "removeComments": true,
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "esModuleInterop": true
     },
     "include": [
         "src/**/*"
