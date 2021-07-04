@@ -1,9 +1,10 @@
 import base from './jest';
 
-const engine = Object.assign(base, {
+const endtoend = Object.assign(base, {
     rootDir: './',
+    testMatch: [ '**/*[_.](e2e).[jt]s(x)?' ],
     displayName: 'End-to-End Tests',
     reporters: [ 'default' ]
 });
 
-export default engine;
+export default endtoend;

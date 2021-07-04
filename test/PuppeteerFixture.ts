@@ -2,37 +2,48 @@ import * as os from 'os';
 import * as path from 'path';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import * as puppeteer from 'puppeteer-core';
-// const userData = path.join(os.tmpdir(), 'hakuneko-test', `user-data-${Date.now().toString(16)}`);
 
 let server: ChildProcessWithoutNullStreams;
 let browser: puppeteer.Browser;
 let page: puppeteer.Page;
 
-export async function Setup(headless = true): Promise<puppeteer.Page> {
-    server = spawn('node', [
+async function CloseSplashScreen(target: puppeteer.Target) {
+    const page = await target.page();
+    const url = await page.url();
+    if(/splash.html/i.test(url)) {
+        await page.close();
+    }
+}
+
+export async function Setup(/*headless = true*/): Promise<void> {
+    server = server || spawn('node', [
         path.join('..', 'node_modules', '.bin', 'http-server'),
         path.join('..', 'build.web'),
         '--port=5000'
     ]);
-    //server = spawn('node ../node_modules/.bin/http-server ../build.web --port=5000 2>&1 ./serve.log');
     browser = await puppeteer.launch({
-        headless: headless,
         ignoreDefaultArgs: true,
         executablePath: 'node',
         args: [
             path.join('..', 'node_modules', '.bin', 'nw'),
-            path.join('..', 'build.app')
+            path.join('..', 'build.app'),
+            '--user-data-dir=' + path.join(os.tmpdir(), 'hakuneko-test', `user-data-${(Date.now() + Math.random()).toString(16)}`)
         ]
     });
+    browser.on('targetcreated', CloseSplashScreen);
     [ page ] = await browser.pages();
-    // TODO: wait until application is loaded in NW.js
-    //await page.waitForTimeout(2500);
-    //await page.evaluate(() => nw.Window.get().hideDevTools());
+}
+
+export async function Reload(): Promise<puppeteer.Page> {
+    await page.reload();
     return page;
 }
 
 export async function Teardown(): Promise<void> {
-    await page.close();
+    const pages = await browser.pages();
+    for(const page of pages) {
+        await page.close();
+    }
     await browser.close();
     server.kill();
 }
