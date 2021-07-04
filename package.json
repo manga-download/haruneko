@@ -34,6 +34,7 @@
     "eslint": "latest",
     "http-server": "latest",
     "jest": "latest",
+    "jest-environment-jsdom": "latest",
     "jest-junit": "latest",
     "jest-mock-extended": "latest",
     "jsdom": "latest",

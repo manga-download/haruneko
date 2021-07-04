@@ -98,7 +98,7 @@ async function CheckAntiScrapingDetection(document: Document): Promise<FetchRedi
     return FetchRedirection.None;
 }
 
-export class FetchRequest extends window.Request {
+export class FetchRequest extends Request {
 
     public constructor(input: RequestInfo, init?: RequestInit) {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
