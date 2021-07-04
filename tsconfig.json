@@ -20,7 +20,8 @@
         "inlineSourceMap": false,
         "removeComments": true,
         "moduleResolution": "node",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "src/**/*"

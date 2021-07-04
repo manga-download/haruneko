@@ -1,6 +1,6 @@
-import * as React from 'react'
-import * as ReactDOM from 'react-dom'
-import { IFrontendModule } from '../IFrontend'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { IFrontendModule } from '../IFrontend';
 import App from './App';
 
 class SampleReact implements IFrontendModule {

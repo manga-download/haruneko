@@ -1,7 +1,7 @@
-import * as os from 'os';
-import * as path from 'path';
+import os from 'os';
+import path from 'path';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import * as puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer-core';
 
 let server: ChildProcessWithoutNullStreams;
 let browser: puppeteer.Browser;
