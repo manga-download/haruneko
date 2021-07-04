@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "svelte.svelte-vscode",
+        "dbaeumer.vscode-eslint",
+        "spmeesseman.vscode-taskexplorer",
+        "donjayamanne.git-extension-pack",
+        "oderwat.indent-rainbow",
+        "coenraads.bracket-pair-colorizer-2"
+    ]
+}

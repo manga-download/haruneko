@@ -17,8 +17,13 @@
         Tabs,
         Tab,
         TabContent,
+        Toggle,
     } from "carbon-components-svelte";
-    import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
+
+    import MinimizeIcon from "carbon-icons-svelte/lib/Subtract24";
+    import MaximizeIcon from "carbon-icons-svelte/lib/Checkbox16";
+    import RestoreIcon from "carbon-icons-svelte/lib/Copy16";
+    import CloseIcon from "carbon-icons-svelte/lib/Close24";
 
     import { onMount } from "svelte";
 
@@ -38,6 +43,22 @@
         IMediaItem,
     } from "../../engine/providers/MediaPlugin";
 
+    // Window controls
+    let win = nw.Window.get();
+
+    win.on("maximize", () => {
+        winMaximized = true;
+    });
+    win.on("restore", () => {
+        winMaximized = false;
+    });
+    let winMaximized =
+        win.x <= 0 &&
+        win.y <= 0 &&
+        win.width >= screen.availWidth &&
+        win.height >= screen.availHeight;
+
+    // UI
     let isSideNavOpen = false;
     let isOpen = false;
     let theme: string;
@@ -90,18 +111,34 @@
             <SkipToContent />
         </div>
         <HeaderUtilities>
-            <!--
-            <HeaderSearch />
-            -->
             <HeaderGlobalAction
-                on:click={changeUIMode}
-                aria-label="Wide"
-                icon={SettingsAdjust20}
+                on:click={() => win.minimize()}
+                aria-label="Minimize"
+                icon={MinimizeIcon}
+            />
+            <HeaderGlobalAction
+                on:click={() => (winMaximized ? win.restore() : win.maximize())}
+                aria-label="Maximize"
+                icon={winMaximized ? RestoreIcon : MaximizeIcon}
+            />
+            <HeaderGlobalAction
+                on:click={() => win.close()}
+                aria-label="Close"
+                icon={CloseIcon}
             />
             <HeaderAction bind:isOpen>
                 <HeaderPanelLinks>
-                    <HeaderPanelDivider>Switcher subject 1</HeaderPanelDivider>
-                    <HeaderPanelLink>Switcher item 1</HeaderPanelLink>
+                    <HeaderPanelDivider>Interface</HeaderPanelDivider>
+                    <HeaderPanelLink>
+                        <Toggle
+                            size="sm"
+                            labelText="Show content pannel :"
+                            labelA="Download Only"
+                            labelB="Content"
+                            toggled={uimode === "ui-mode-content"}
+                            on:toggle={changeUIMode}
+                        />
+                    </HeaderPanelLink>
                     <HeaderPanelDivider>Themes</HeaderPanelDivider>
                     {#each themes as item}
                         <HeaderPanelLink on:click={() => (theme = item.id)}
@@ -235,5 +272,13 @@
     }
     :global(#Header) {
         -webkit-app-region: drag;
+    }
+
+    :global(.bx--header__global) {
+        -webkit-app-region: drag;
+    }
+
+    :global(.bx--header__global > *) {
+        -webkit-app-region: no-drag;
     }
 </style>
