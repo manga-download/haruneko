@@ -3,8 +3,6 @@
     import Plug16 from "carbon-icons-svelte/lib/Plug16";
     import Language16 from "carbon-icons-svelte/lib/Language16";
     import Renew16 from "carbon-icons-svelte/lib/Renew16";
-
-    const iconsStyle = "margin-left: 5px; margin-right: 5px;";
 </script>
 
 <div id="Home">
@@ -33,19 +31,19 @@
             </p>
             <ol>
                 <li>
-                    <Plug16 style={iconsStyle} /> Select your connector (the website).
+                    <Plug16 class="home-icons" /> Select your connector (the website).
                     Use the filters
                 </li>
                 <li>
-                    <Renew16 style={iconsStyle} /> Click on the refresh button (can
+                    <Renew16 class="home-icons" /> Click on the refresh button (can
                     take minutes)
                 </li>
-                <li><Search16 style={iconsStyle} /> Find a manga</li>
+                <li><Search16 class="home-icons" /> Find a manga</li>
                 <li>
-                    <Language16 style={iconsStyle} /> Filter chapters by language
+                    <Language16 class="home-icons" /> Filter chapters by language
                     (optional)
                 </li>
-                <li><Search16 style={iconsStyle} /> Select a chapter</li>
+                <li><Search16 class="home-icons" /> Select a chapter</li>
             </ol>
             <p>
                 The connector you are looking for is not in the list ?<br />
@@ -89,5 +87,10 @@
 
     li {
         margin-top: 5px;
+    }
+
+    :global(svg.home-icons) {
+        margin-left: 5px;
+        margin-right: 5px;
     }
 </style>
