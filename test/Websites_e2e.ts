@@ -1,6 +1,8 @@
 import { Setup, Teardown } from './PuppeteerFixture';
-import HiperdexTests from '../src/engine/websites/Hiperdex_e2e';
-import LeitorTests from '../src/engine/websites/Leitor_e2e';
+import Hiperdex from '../src/engine/websites/Hiperdex_e2e';
+import Leitor from '../src/engine/websites/Leitor_e2e';
+import ScansMangas from '../src/engine/websites/ScansMangas_e2e';
+import Toonily from '../src/engine/websites/Toonily_e2e';
 
 describe('End-to-End Test Suite for all Websites', () => {
 
@@ -14,6 +16,8 @@ describe('End-to-End Test Suite for all Websites', () => {
         await Teardown();
     });
 
-    describe('Hiperdex', HiperdexTests);
-    describe('Leitor', LeitorTests);
+    describe('Hiperdex', Hiperdex);
+    describe('Leitor', Leitor);
+    describe('ScansMangas', ScansMangas);
+    describe('Toonily', Toonily);
 });

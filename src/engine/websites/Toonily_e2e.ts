@@ -15,7 +15,7 @@ export default (): void => {
 
         const remotePlugin = await page.evaluateHandle<JSHandle<IMediaContainer>>((id: string) => {
             return window.HakuNeko.PluginController.WebsitePlugins.find(connector => connector.Identifier === id);
-        }, 'leitor');
-        expect(await page.evaluate((plugin: IMediaContainer) => plugin.Title, remotePlugin)).toEqual('Leitor');
+        }, 'toonily');
+        expect(await page.evaluate((plugin: IMediaContainer) => plugin.Title, remotePlugin)).toEqual('Toonily');
     });
 };
