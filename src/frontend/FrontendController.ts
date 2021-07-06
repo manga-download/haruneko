@@ -16,27 +16,34 @@ const frontendList: IFrontendInfo[] = [
 
 export interface IFrontendController {
     AvailableFrontends: IFrontendInfo[];
-    Load(frontendID?: string): Promise<void>;
 }
 
 export class FrontendController implements IFrontendController {
 
     constructor() {
-        document.addEventListener('DOMContentLoaded', () => this.Load());
-        // TODO: listen to settings controller when the frontend is changed
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', this.Load);
+        } else {
+            this.Load();
+        }
+        // TODO: listen to settings controller when the frontend is changed => Reload(...)
     }
 
     public get AvailableFrontends(): IFrontendInfo[] {
         return frontendList;
     }
 
-    private async GetStoredFrontendID(): Promise<string> {
-        // TODO: get selected frontend from settings controller or return default
-        return this.AvailableFrontends[0].ID;
+    private async GetStoredFrontendID(): Promise<string | null> {
+        // TODO: get selected frontend through settings engine
+        const frontendID = window.localStorage.getItem('hakuneko.frontend');
+        return frontendList.some(frontend => frontend.ID === frontendID) ? frontendID : null;
     }
 
-    private async SetStoredFrontendID(frontendID: string): Promise<void> {
-        // TODO: set selected frontend in settings controller
+    private async SetStoredFrontendID(frontendID: string | null): Promise<void> {
+        if(frontendID && frontendList.some(frontend => frontend.ID === frontendID)) {
+            // TODO: set selected frontend through settings engine
+            window.localStorage.setItem('hakuneko.frontend', frontendID);
+        }
     }
 
     private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
@@ -49,21 +56,24 @@ export class FrontendController implements IFrontendController {
         }
     }
 
-    public async Load(frontendID?: string): Promise<void> {
+    private async Load(): Promise<void> {
         try {
-            const storedFrontendID = await this.GetStoredFrontendID();
-            if(frontendID === storedFrontendID) {
-                return;
-            }
-            frontendID = frontendID || storedFrontendID || this.AvailableFrontends[0].ID;
+            const frontendID = await this.GetStoredFrontendID() || this.AvailableFrontends[0].ID;
             const frontend = await this.GetFrontendModuleByID(frontendID);
             const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';
             frontend.Render(hook);
             frontend.SetWindowMenu();
-            this.SetStoredFrontendID(frontendID);
         } catch(error) {
-            console.error(`Failed to load frontend with id '${frontendID}'!`, error);
+            console.error(`Failed to load frontend!`, error);
+        }
+    }
+
+    // Apply new frontend assigned by settings and ask to reload application ...
+    public async Reload(frontendID: string): Promise<void> {
+        await this.SetStoredFrontendID(frontendID);
+        if(confirm('Restart application with new Frontend now?')) {
+            window.location.reload();
         }
     }
 }

@@ -6,7 +6,7 @@
         <script type="module" src="/index.js"></script>
         <style>
 
-            html, body, #app {
+            html, body, #app, #hakuneko-notice {
                 margin: 0;
                 padding: 0;
                 width: 100%;
@@ -14,12 +14,19 @@
                 position: fixed;
                 overflow: hidden;
             }
+
+            #hakuneko-notice {
+                background: lightgrey;
+                text-align: center;
+                padding: 2em;
+            }
+
         </style>
     </head>
     <body>
         <div id="app">
-            <div style="text-align: center; margin: 2em;">
-                HakuNeko must be run from within the <a href="https://github.com/manga-download/haruneko/releases">Desktop Client</a>
+            <div id="hakuneko-notice">
+                HakuNeko must be run with the <a href="https://github.com/manga-download/haruneko/releases">Desktop Client</a>
             </div>
         </div>
     </body>
