@@ -21,8 +21,6 @@ export interface IFrontendController {
 
 export class FrontendController implements IFrontendController {
 
-    private _mockStorageFrontendID = 'sample-svelte';
-
     constructor() {
         document.addEventListener('DOMContentLoaded', () => this.Load());
         // TODO: listen to settings controller when the frontend is changed
@@ -34,13 +32,11 @@ export class FrontendController implements IFrontendController {
 
     private async GetStoredFrontendID(): Promise<string> {
         // TODO: get selected frontend from settings controller or return default
-        const defaultFrontendID = this.AvailableFrontends[0].ID;
-        return this._mockStorageFrontendID || defaultFrontendID;
+        return this.AvailableFrontends[0].ID;
     }
 
     private async SetStoredFrontendID(frontendID: string): Promise<void> {
         // TODO: set selected frontend in settings controller
-        this._mockStorageFrontendID = frontendID;
     }
 
     private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
@@ -59,7 +55,7 @@ export class FrontendController implements IFrontendController {
             if(frontendID === storedFrontendID) {
                 return;
             }
-            frontendID = frontendID || storedFrontendID;
+            frontendID = frontendID || storedFrontendID || this.AvailableFrontends[0].ID;
             const frontend = await this.GetFrontendModuleByID(frontendID);
             const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';

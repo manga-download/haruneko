@@ -30,6 +30,7 @@ if(nwWindow) {
     window.HakuNeko = new HakuNeko();
     window.Frontend = new FrontendController();
 }
+
 function HideSplashScreen() {
     clearTimeout(timerHideSplashScreen);
     nwSplash.close();
