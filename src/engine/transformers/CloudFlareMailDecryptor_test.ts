@@ -1,5 +1,6 @@
 import { JSDOM, ResourceLoader, FetchOptions, AbortablePromise } from 'jsdom';
 import { CloudFlareMailDecryptor } from './CloudFlareMailDecryptor';
+import fetch from 'node-fetch';
 
 const jsdomResourceLoader = new class BypassResourceLoader extends ResourceLoader {
     fetch(url: string, options: FetchOptions): AbortablePromise<Buffer> | null {
@@ -15,6 +16,18 @@ const jsdomResourceLoader = new class BypassResourceLoader extends ResourceLoade
 describe('CloudFlareMailDecryptor', () => {
 
     describe('Transform()', () => {
+
+        it('Should work on GitHub Actions', async () => {
+            try {
+                const response = await fetch('https://test.cloudscraper.cf/mail');
+                const data = await response.text();
+                console.log('Response Text:', response.status, response.statusText, data);
+                const dom = await JSDOM.fromURL('https://test.cloudscraper.cf/mail', { resources: jsdomResourceLoader });
+                console.log('DOM', dom);
+            } catch(error) {
+                console.warn('Fetch Error:', error);
+            }
+        });
 
         it('Should transform anchor without link and with mail text', async () => {
             const dom = await JSDOM.fromURL('https://test.cloudscraper.cf/mail', { resources: jsdomResourceLoader });
