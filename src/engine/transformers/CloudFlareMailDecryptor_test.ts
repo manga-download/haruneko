@@ -1,4 +1,4 @@
-import { JSDOM, ResourceLoader, FetchOptions, AbortablePromise } from 'jsdom';
+import { JSDOM } from 'jsdom';
 import { CloudFlareMailDecryptor } from './CloudFlareMailDecryptor';
 
 describe('CloudFlareMailDecryptor', () => {
