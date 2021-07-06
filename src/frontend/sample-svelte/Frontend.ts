@@ -9,6 +9,9 @@ class SampleSvelte implements IFrontendModule {
 
     async Render(root: HTMLElement): Promise<void> {
         new App({ target: root, props: {} });
+        setTimeout(function () {
+            window.dispatchEvent(new Event('appready'));
+        }, 2500);
     }
 }
 
