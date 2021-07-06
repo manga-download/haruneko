@@ -9,7 +9,7 @@ import FrontendClassic from './src/frontend/classic/rollup.config.ts';
 import FrontendJS from './src/frontend/sample-js/rollup.config.ts';
 import FrontendReact from './src/frontend/sample-react/rollup.config.ts';
 import FrontendSvelte from './src/frontend/sample-svelte/rollup.config.ts';
-import FrontendVue from './src/frontend/sample-vue/rollup.config.ts';
+//import FrontendVue from './src/frontend/sample-vue/rollup.config.ts';
 
 const outputDirectory = 'build.web';
 
@@ -68,5 +68,5 @@ export default [
     FrontendJS,
     FrontendReact,
     FrontendSvelte,
-    FrontendVue
+    //FrontendVue
 ];
