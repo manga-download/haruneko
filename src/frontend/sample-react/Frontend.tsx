@@ -11,6 +11,9 @@ class SampleReact implements IFrontendModule {
 
     async Render(root: HTMLElement): Promise<void> {
         ReactDOM.render(<App />, root);
+        setTimeout(function () {
+            window.dispatchEvent(new Event('appready'));
+        }, 2500);
     }
 }
 

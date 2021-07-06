@@ -1,4 +1,4 @@
-import { IFrontendInfo } from '../IFrontend'
+import { IFrontendInfo } from '../IFrontend';
 
 export const Info: IFrontendInfo = {
     ID: 'sample-vue',

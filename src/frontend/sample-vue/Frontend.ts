@@ -10,6 +10,9 @@ class SampleVue implements IFrontendModule {
 
     async Render(root: HTMLElement): Promise<void> {
         createApp(App).mount(root);
+        setTimeout(function () {
+            window.dispatchEvent(new Event('appready'));
+        }, 2500);
     }
 }
 

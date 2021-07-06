@@ -1,5 +1,5 @@
-import { IFrontendModule } from '../IFrontend'
-import App from './App'
+import { IFrontendModule } from '../IFrontend';
+import App from './App.svelte';
 
 class Classic implements IFrontendModule {
 
@@ -8,7 +8,7 @@ class Classic implements IFrontendModule {
     }
 
     async Render(root: HTMLElement): Promise<void> {
-        new App(root);
+        new App({ target: root, props: {} });
     }
 }
 

@@ -4,6 +4,7 @@ export abstract class Locale {
     public abstract readonly Resources = {
         'FetchProvider.FetchWindow.TimeoutError': '【 FetchProvider.FetchWindow.TimeoutError 】',
         'FetchProvider.FetchWindow.CloudFlareError': '【 FetchProvider.FetchWindow.CloudFlareError 】\n{0}',
-        'FetchProvider.FetchWindow.AlertCaptcha': '【 FetchProvider.FetchWindow.AlertCaptcha 】'
+        'FetchProvider.FetchWindow.AlertCaptcha': '【 FetchProvider.FetchWindow.AlertCaptcha 】',
+        'FrontendController.Reload.ConfirmNotice': '【 FrontendController.Reload.ConfirmNotice 】'
     }
 }

@@ -1,5 +1,5 @@
-import { IFrontendModule } from '../IFrontend'
-import App from './App'
+import { IFrontendModule } from '../IFrontend';
+import App from './App';
 
 class SampleJS implements IFrontendModule {
 
@@ -9,6 +9,9 @@ class SampleJS implements IFrontendModule {
 
     async Render(root: HTMLElement): Promise<void> {
         new App(root);
+        setTimeout(function () {
+            window.dispatchEvent(new Event('appready'));
+        }, 2500);
     }
 }
 

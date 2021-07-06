@@ -5,11 +5,11 @@ import typescript from '@rollup/plugin-typescript';
 import serve from 'rollup-plugin-serve';
 //import reload from 'rollup-plugin-livereload'
 
-//import FrontendClassic from './src/frontend/classic/rollup.config.ts';
-//import FrontendJS from './src/frontend/sample-js/rollup.config.ts';
-//import FrontendReact from './src/frontend/sample-react/rollup.config.ts';
+import FrontendClassic from './src/frontend/classic/rollup.config.ts';
+import FrontendJS from './src/frontend/sample-js/rollup.config.ts';
+import FrontendReact from './src/frontend/sample-react/rollup.config.ts';
 import FrontendSvelte from './src/frontend/sample-svelte/rollup.config.ts';
-//import FrontendVue from './src/frontend/sample-vue/rollup.config.ts';
+import FrontendVue from './src/frontend/sample-vue/rollup.config.ts';
 
 const outputDirectory = 'build.web';
 
@@ -64,9 +64,9 @@ const configApp = {
 
 export default [
     configApp,
-    //FrontendClassic,
+    FrontendClassic,
     //FrontendJS,
     //FrontendReact,
-    FrontendSvelte,
+    //FrontendSvelte,
     //FrontendVue
 ];

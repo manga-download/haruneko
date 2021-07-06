@@ -2,13 +2,15 @@ import React from 'react';
 
 const styles = {
     container: {
+        height: '100%',
         padding: '2em',
-        textAlign: 'center' as const
+        textAlign: 'center' as const,
+        backgroundColor: 'lightgrey'
     },
     button: {
         padding: '0.5em'
     }
-}
+};
 
 export default function App() {
 
