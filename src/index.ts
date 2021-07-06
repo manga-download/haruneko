@@ -13,7 +13,7 @@ const splashOptions = {
     height: 520
 };
 
-async function Initialze() {
+async function Initialize() {
 
     const nwWindow = nw.Window.get();
     nwWindow.hide();
@@ -41,7 +41,7 @@ async function Initialze() {
 }
 
 if(Object.keys(window).includes('nw')) {
-    Initialze();
+    Initialize();
 } else {
     console.error('Cannot run HakuNeko outside of NW.js!');
 }
