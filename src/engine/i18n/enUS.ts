@@ -6,7 +6,8 @@ class EnglishUS extends Locale {
     public readonly Resources = {
         'FetchProvider.FetchWindow.TimeoutError': 'The request could not be fulfilled within the given timeout!',
         'FetchProvider.FetchWindow.CloudFlareError': 'The request failed due to the following CloudFlare Error: "{0}"',
-        'FetchProvider.FetchWindow.AlertCaptcha': 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!'
+        'FetchProvider.FetchWindow.AlertCaptcha': 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
+        'FrontendController.Reload.ConfirmNotice': 'The frontend was changed. Restart now to switch to the new frontend?'
     };
 }
 

@@ -1,3 +1,4 @@
+import { i18n } from '../engine/i18n/Localization';
 import { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
 import { Info as InfoJS } from './sample-js/FrontendInfo';
@@ -15,10 +16,13 @@ const frontendList: IFrontendInfo[] = [
 ];
 
 export interface IFrontendController {
+    readonly ActiveFrontendID: string;
     AvailableFrontends: IFrontendInfo[];
 }
 
 export class FrontendController implements IFrontendController {
+
+    private activeFrontendID = '';
 
     constructor() {
         if (document.readyState === 'loading') {
@@ -27,6 +31,10 @@ export class FrontendController implements IFrontendController {
             this.Load();
         }
         // TODO: listen to settings controller when the frontend is changed => Reload(...)
+    }
+
+    public get ActiveFrontendID(): string {
+        return this.activeFrontendID;
     }
 
     public get AvailableFrontends(): IFrontendInfo[] {
@@ -64,6 +72,7 @@ export class FrontendController implements IFrontendController {
             hook.innerHTML = '';
             frontend.Render(hook);
             frontend.SetWindowMenu();
+            this.activeFrontendID = frontendID;
         } catch(error) {
             console.error(`Failed to load frontend!`, error);
         }
@@ -72,7 +81,7 @@ export class FrontendController implements IFrontendController {
     // Apply new frontend assigned by settings and ask to reload application ...
     public async Reload(frontendID: string): Promise<void> {
         await this.SetStoredFrontendID(frontendID);
-        if(confirm('Restart application with new Frontend now?')) {
+        if(frontendID !== this.ActiveFrontendID && confirm(i18n('FrontendController.Reload.ConfirmNotice'))) {
             window.location.reload();
         }
     }
