@@ -7,8 +7,10 @@
 
 <style>
     #container {
+        height: 100%;
         padding: 2em;
         text-align: center;
+        background-color: lightgrey;
     }
     button{
         padding: 0.5em;
