@@ -2,7 +2,7 @@ import vue from 'rollup-plugin-vue';
 import resolve from '@rollup/plugin-node-resolve';
 import { terser as minify } from 'rollup-plugin-terser';
 import typescript from '@rollup/plugin-typescript';
-import css from 'rollup-plugin-css-only';
+import postcss from 'rollup-plugin-postcss';
 
 const isProduction = process.env.ROLLUP_WATCH !== 'true';
 
@@ -22,9 +22,7 @@ export default {
             //compileTemplate: true,
             //css: true
         }),
-        css({
-            output: 'build.web/css/sample-vue.css'
-        }),
+        postcss(),
         resolve({
             browser: true,
             dedupe: module => /^vue(\/|$)/.test(module)
