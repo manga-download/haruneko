@@ -11,9 +11,8 @@ class SampleReact implements IFrontendModule {
 
     async Render(root: HTMLElement): Promise<void> {
         ReactDOM.render(<App />, root);
-        setTimeout(function () {
-            window.dispatchEvent(new Event('appready'));
-        }, 2500);
+        // wait for frontend to be loaded and rendered
+        await new Promise(resolve => setTimeout(resolve, 2500));
     }
 }
 

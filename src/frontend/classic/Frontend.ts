@@ -8,7 +8,8 @@ class Classic implements IFrontendModule {
     }
 
     async Render(root: HTMLElement): Promise<void> {
-        new App({ target: root, props: {} });
+        const app = new App({ target: root, props: {} });
+        await app.FinishLoading;
     }
 }
 

@@ -43,6 +43,9 @@
         IMediaItem,
     } from "../../engine/providers/MediaPlugin";
 
+    let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
+    export const FinishLoading = new Promise<void>(resolve => resolveFinishLoading = resolve);
+
     // Window controls
     let win = nw.Window.get();
 
@@ -70,9 +73,7 @@
         app = document.getElementById("hakunekoapp")!;
         app.classList.add(uimode);
         // some delay for pre-rendering
-        setTimeout(function () {
-            nw.Window.get().window.dispatchEvent(new Event("appready"));
-        }, 2500);
+        setTimeout(resolveFinishLoading, 2500);
     });
 
     function changeUIMode() {
