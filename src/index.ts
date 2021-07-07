@@ -24,20 +24,20 @@ async function Initialize() {
         });
     });
 
+    InitBlacklist();
+    InitFetchProvider();
+    window.HakuNeko = new HakuNeko();
+    window.HakuNeko.EventManager.FrontendLoaded.Subscribe(HideSplashScreen);
     const timerHideSplashScreen = setTimeout(HideSplashScreen, 7500);
-    window.addEventListener('appready', HideSplashScreen);
+    window.Frontend = new FrontendController();
 
     function HideSplashScreen() {
+        window.HakuNeko.EventManager.FrontendLoaded.Unsubscribe(HideSplashScreen);
         clearTimeout(timerHideSplashScreen);
         nwSplash.close();
         nwWindow.show();
         nwWindow.focus();
     }
-
-    InitBlacklist();
-    InitFetchProvider();
-    window.HakuNeko = new HakuNeko();
-    window.Frontend = new FrontendController();
 }
 
 if(Object.keys(window).includes('nw')) {

@@ -54,6 +54,15 @@ export class FrontendController implements IFrontendController {
         }
     }
 
+    private GetFrontendInfoByID(id: string): IFrontendInfo {
+        const info = frontendList.find(item => item.ID === id);
+        if(info) {
+            return info;
+        } else {
+            throw new Error(`The frontend information could not be found in the list of available frontends!`);
+        }
+    }
+
     private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
         const info = frontendList.find(item => item.ID === id);
         if(info) {
@@ -70,9 +79,10 @@ export class FrontendController implements IFrontendController {
             const frontend = await this.GetFrontendModuleByID(frontendID);
             const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';
-            frontend.Render(hook);
             frontend.SetWindowMenu();
+            await frontend.Render(hook);
             this.activeFrontendID = frontendID;
+            HakuNeko.EventManager.FrontendLoaded.Dispatch(frontend, this.GetFrontendInfoByID(frontendID));
         } catch(error) {
             console.error(`Failed to load frontend!`, error);
         }
