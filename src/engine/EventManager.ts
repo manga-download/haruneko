@@ -1,3 +1,5 @@
+import { IFrontendInfo, IFrontendModule } from '../frontend/IFrontend';
+
 export interface IEvent<TSender, TArgs> {
     Dispatch(sender: TSender, args: TArgs): void;
     Subscribe(callback: (sender: TSender, args: TArgs) => void): void;
@@ -9,7 +11,6 @@ class Event<TSender, TArgs> {
     private readonly _subscriptions = new Set<(sender: TSender, args: TArgs) => void>();
 
     public Dispatch(sender: TSender, args: TArgs): void {
-        // callback all subscribers
         for(const subscription of this._subscriptions) {
             subscription(sender, args);
         }
@@ -24,15 +25,10 @@ class Event<TSender, TArgs> {
     }
 }
 
-export interface IEventEmitter {
-    OnFooBar: IEvent<number, string>;
+export interface IEventManager {
+    readonly FrontendLoaded: IEvent<IFrontendModule, IFrontendInfo>;
 }
 
-export class EventEmitter implements IEventEmitter {
-
-    private readonly _onFooBar = new Event<number, string>();
-
-    public get OnFooBar(): IEvent<number, string> {
-        return this._onFooBar;
-    }
+export class EventManager implements IEventManager {
+    public readonly FrontendLoaded: IEvent<IFrontendModule, IFrontendInfo> = new Event<IFrontendModule, IFrontendInfo>();
 }
