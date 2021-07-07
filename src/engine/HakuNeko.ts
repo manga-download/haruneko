@@ -1,18 +1,18 @@
-import { IEventEmitter, EventEmitter } from './EventEmitter';
+import { IEventManager, EventManager } from './EventManager';
 import { IPluginController, PluginController } from './PluginController';
 
 export interface IHakuNeko {
-    EventEmitter: IEventEmitter;
-    PluginController: IPluginController;
+    readonly EventManager: IEventManager;
+    readonly PluginController: IPluginController;
 }
 
 export class HakuNeko implements IHakuNeko {
 
-    private readonly _eventEmitter: IEventEmitter = new EventEmitter();
+    private readonly _eventManager: IEventManager = new EventManager();
     private readonly _pluginController: IPluginController = new PluginController();
 
-    public get EventEmitter(): IEventEmitter {
-        return this._eventEmitter;
+    public get EventManager(): IEventManager {
+        return this._eventManager;
     }
 
     public get PluginController(): IPluginController {
