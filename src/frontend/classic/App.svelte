@@ -7,11 +7,6 @@
         HeaderPanelLinks,
         HeaderPanelDivider,
         HeaderPanelLink,
-        SideNav,
-        SideNavItems,
-        SideNavMenu,
-        SideNavMenuItem,
-        SideNavLink,
         SkipToContent,
         Content,
         Tabs,
@@ -19,14 +14,12 @@
         TabContent,
         Toggle,
     } from "carbon-components-svelte";
-
     import MinimizeIcon from "carbon-icons-svelte/lib/Subtract24";
     import MaximizeIcon from "carbon-icons-svelte/lib/Checkbox16";
     import RestoreIcon from "carbon-icons-svelte/lib/Copy16";
     import CloseIcon from "carbon-icons-svelte/lib/Close24";
-
+    import { fade } from "svelte/transition";
     import { onMount } from "svelte";
-
     import Theme, { themes } from "./components/Theme.svelte";
     import MediaSelect from "./components/MediaSelect.svelte";
     import MediaItemSelect from "./components/MediaItemSelect.svelte";
@@ -35,16 +28,13 @@
     import Network from "./components/Network.svelte";
     import Home from "./components/Home.svelte";
     import Viewer from "./components/Viewer.svelte";
-
-    import { fade } from "svelte/transition";
-
-    import type {
-        IMediaContainer,
-        IMediaItem,
-    } from "../../engine/providers/MediaPlugin";
+    import MenuLeftPanel from "./components/MenuLeftPanel.svelte";
+    import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
-    export const FinishLoading = new Promise<void>(resolve => resolveFinishLoading = resolve);
+    export const FinishLoading = new Promise<void>(
+        (resolve) => (resolveFinishLoading = resolve)
+    );
 
     // Window controls
     let win = nw.Window.get();
@@ -151,18 +141,7 @@
         </HeaderUtilities>
     </Header>
 
-    <SideNav bind:isOpen={isSideNavOpen}>
-        <SideNavItems>
-            <SideNavLink text="Link 1" />
-            <SideNavLink text="Link 2" />
-            <SideNavLink text="Link 3" />
-            <SideNavMenu text="Menu">
-                <SideNavMenuItem href="/" text="Link 1" />
-                <SideNavMenuItem href="/" text="Link 2" />
-                <SideNavMenuItem href="/" text="Link 3" />
-            </SideNavMenu>
-        </SideNavItems>
-    </SideNav>
+    <MenuLeftPanel {isSideNavOpen} />
 
     <Content id="hakunekoapp">
         <MediaSelect on:select={(e) => (selectedMedia = e.detail)} />
