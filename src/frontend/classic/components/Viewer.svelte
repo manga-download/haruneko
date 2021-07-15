@@ -16,7 +16,7 @@
     export let throttlingDelay: number = 1000;
 
     const dispatch = createEventDispatcher();
-    const placeholderImage = "https://via.placeholder.com/150.jpg";
+    const placeholderImage = "./img/placeholder-image.jpg";
 
     let update: Promise<void> | undefined;
     $: update = item?.Update();
