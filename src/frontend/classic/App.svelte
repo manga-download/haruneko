@@ -75,6 +75,10 @@
         app.classList.add(uimode);
     }
 
+    function changeTheme(themeId: string) {
+        theme = themeId;
+    }
+
     let selectedMedia: IMediaContainer | undefined;
     let selectedItem: IMediaContainer | undefined;
     let selectedBottomTab = 0;
@@ -141,7 +145,12 @@
         </HeaderUtilities>
     </Header>
 
-    <MenuLeftPanel {isSideNavOpen} />
+    <MenuLeftPanel
+        {isSideNavOpen}
+        onToggle={changeUIMode}
+        {uimode}
+        {changeTheme}
+    />
 
     <Content id="hakunekoapp">
         <MediaSelect on:select={(e) => (selectedMedia = e.detail)} />

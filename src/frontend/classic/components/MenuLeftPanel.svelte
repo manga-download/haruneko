@@ -4,6 +4,11 @@
         SideNavItems,
         SideNavMenu,
         SideNavLink,
+        SideNavMenuItem,
+        Checkbox,
+        Select,
+        SelectItem,
+        TextInput,
     } from "carbon-components-svelte";
     import LogoDiscord16 from "carbon-icons-svelte/lib/LogoDiscord16";
     import Home16 from "carbon-icons-svelte/lib/Home16";
@@ -15,23 +20,67 @@
     import Debug16 from "carbon-icons-svelte/lib/Debug16";
     import Image16 from "carbon-icons-svelte/lib/Image16";
     import Location16 from "carbon-icons-svelte/lib/Location16";
+    import { themes } from "./Theme.svelte";
 
     export let isSideNavOpen = false;
+    export let onToggle: () => void;
+    export let uimode: string;
+    export let changeTheme: (themeId: string) => void;
 
     function openExternalLink(uri: string) {
         nw.Shell.openExternal(uri);
     }
+
+    // Select a dir doesn't exist in Carbon :(
 </script>
 
 <SideNav bind:isOpen={isSideNavOpen}>
     <SideNavItems>
-        <SideNavMenu text="General" />
-        <SideNavMenu text="UI" />
+        <SideNavMenu text="General">
+            <SideNavMenuItem>
+                <Checkbox labelText="Enable Reader" />
+            </SideNavMenuItem>
+            <SideNavMenuItem>
+                <Select inline labelText="Carbon theme" selected="g10">
+                    <SelectItem value="white" text="White" />
+                    <SelectItem value="g10" text="Gray 10" />
+                    <SelectItem value="g80" text="Gray 80" />
+                    <SelectItem value="g90" text="Gray 90" />
+                    <SelectItem value="g100" text="Gray 100" />
+                </Select>
+            </SideNavMenuItem>
+            <SideNavMenuItem>
+                <TextInput
+                    inline
+                    labelText="User name"
+                    placeholder="Enter user name..."
+                />
+            </SideNavMenuItem>
+        </SideNavMenu>
+        <SideNavMenu text="UI">
+            <SideNavMenuItem>
+                <Checkbox
+                    labelText="Show content panel"
+                    checked={uimode === "ui-mode-content"}
+                    on:check={onToggle}
+                />
+            </SideNavMenuItem>
+            <SideNavMenu text="Themes">
+                {#each themes as item}
+                    <SideNavMenuItem
+                        class="clik-item"
+                        on:click={() => changeTheme(item.id)}
+                        >{item.label}</SideNavMenuItem
+                    >
+                {/each}
+            </SideNavMenu>
+        </SideNavMenu>
+
         <SideNavMenu text="Help">
             <SideNavLink
                 text="Documentation"
                 icon={Doc16}
-                class="external-link"
+                class="clik-item"
                 on:click={() =>
                     openExternalLink(
                         "https://hakuneko.download/docs/interface/"
@@ -40,14 +89,14 @@
             <SideNavLink
                 text="Discord"
                 icon={LogoDiscord16}
-                class="external-link"
+                class="clik-item"
                 on:click={() =>
                     openExternalLink("https://discordapp.com/invite/A5d3NDf")}
             />
             <SideNavLink
                 text="Open a ticket"
                 icon={Debug16}
-                class="external-link"
+                class="clik-item"
                 on:click={() =>
                     openExternalLink(
                         "https://hakuneko.download/docs/troubleshoot/"
@@ -56,13 +105,13 @@
             <SideNavLink
                 text="Home page"
                 icon={Home16}
-                class="external-link"
+                class="clik-item"
                 on:click={() => openExternalLink("https://hakuneko.download")}
             />
             <SideNavLink
                 text="Show IP and localisation"
                 icon={Location16}
-                class="external-link"
+                class="clik-item"
                 on:click={() => openExternalLink("https://ipinfo.io/jso")}
             />
         </SideNavMenu>
@@ -70,7 +119,7 @@
             <SideNavLink
                 text="Code source"
                 icon={LogoGithub16}
-                class="external-link"
+                class="clik-item"
                 on:click={() =>
                     openExternalLink(
                         "https://hakuneko.download/docs/interface/"
@@ -79,20 +128,20 @@
             <SideNavLink
                 text="Using version X.X.X"
                 icon={App16}
-                class="external-link"
+                class="clik-item"
                 on:click={() => openExternalLink("https://todo.com")}
             />
             <SideNavLink
                 text="Maintainers"
                 icon={Events16}
-                class="external-link"
+                class="clik-item"
                 on:click={() =>
                     openExternalLink("https://discordapp.com/invite/A5d3NDf")}
             />
             <SideNavLink
                 text="Contributors"
                 icon={EventsAlt16}
-                class="external-link"
+                class="clik-item"
                 on:click={() =>
                     openExternalLink(
                         "https://hakuneko.download/docs/troubleshoot/"
@@ -101,7 +150,7 @@
             <SideNavLink
                 text="Artwork"
                 icon={Image16}
-                class="external-link"
+                class="clik-item"
                 on:click={() =>
                     openExternalLink(
                         "https://www.deviantart.com/hakuneko3kune"
@@ -112,7 +161,7 @@
 </SideNav>
 
 <style>
-    :global(a.external-link) {
+    :global(a.clik-item) {
         cursor: pointer;
     }
 </style>
