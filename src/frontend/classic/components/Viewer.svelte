@@ -85,27 +85,24 @@
         }, throttlingDelay);
     }
 
-    function isImagesToLoadFull(): boolean {
-        return imagesToLoad.length === item.Entries.length;
-    }
-
     function addElement(el: Element | null) {
         if (el && el.getAttribute("data-index")) {
             const index = Number(el.getAttribute("data-index"));
             imagesToLoad[index] = el;
         }
 
+        const isImagesToLoadFull = (): boolean =>
+            imagesToLoad.length === item.Entries.length;
         if (isImagesToLoadFull()) {
             loadImages(0);
         }
     }
 
-    function isThumbnailImageUtil(el: HTMLElement): boolean {
-        return el.classList.contains("thumbnail-image-util");
-    }
-
     function processImage(el: HTMLElement, i: number) {
-        const onLoad = () => {
+        const handler = () => {
+            const isThumbnailImageUtil = (el: HTMLElement): boolean =>
+                el.classList.contains("thumbnail-image-util");
+
             if (isThumbnailImageUtil(el)) {
                 const thumbnailImageUtil = document.querySelector(
                     `div[data-index="${i}"]`
@@ -114,11 +111,10 @@
             } else {
                 addElement(el);
             }
-
-            el.removeEventListener("load", onLoad);
         };
 
-        el.addEventListener("load", onLoad);
+        handler();
+        el.removeEventListener("load", handler);
     }
 </script>
 
@@ -174,7 +170,8 @@
                             src={placeholderImage}
                             alt=""
                             class="thumbnail-image-util"
-                            use:processImage={index}
+                            on:load={(e) =>
+                                processImage(e.currentTarget, index)}
                         />
                         <div
                             data-index={index}
@@ -196,7 +193,8 @@
                             src={placeholderImage}
                             style="width: {imageWidth}%; margin: {imagePadding}em;"
                             on-error="imgError(this)"
-                            use:processImage={index}
+                            on:load={(e) =>
+                                processImage(e.currentTarget, index)}
                         />
                     {/if}
                     <!--
