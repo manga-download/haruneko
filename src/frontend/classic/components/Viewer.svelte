@@ -7,24 +7,23 @@
     import RowDelete24 from "carbon-icons-svelte/lib/RowCollapse24";
     import Misuse24 from "carbon-icons-svelte/lib/Misuse24";
     import { createEventDispatcher } from "svelte";
+    import ViewerThumbnailImage from "./ViewerThumbnailImage.svelte";
+    import ViewerImageWide from "./ViewerImageWide.svelte";
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
     type Mode = "Thumbnail" | "Wide" | "Video";
 
     export let item: IMediaContainer;
     export let mode: Mode = "Thumbnail";
-    export let throttlingDelay: number = 1000;
+    let throttlingDelay = 1000;
 
     const dispatch = createEventDispatcher();
-    const placeholderImage = "./img/placeholder-image.jpg";
 
     let update: Promise<void> | undefined;
     $: update = item?.Update();
 
     let imageWidth = 75;
     let imagePadding = 2;
-
-    let imagesToLoad: Element[] = [];
 
     function increaseImagePadding() {}
     function decreaseImagePadding() {}
@@ -47,74 +46,6 @@
         } else if (document.exitFullscreen) {
             document.exitFullscreen();
         }
-    }
-
-    function loadThumbnail(el: Element) {
-        const div = el as HTMLDivElement;
-        const src = div.getAttribute("data-image");
-
-        if (src) {
-            div.style.backgroundImage = `url('${src}')`;
-        }
-    }
-
-    function loadWide(el: Element) {
-        const img = el as HTMLImageElement;
-        const src = img.getAttribute("data-image");
-
-        if (src) {
-            img.src = src;
-        }
-    }
-
-    function loadImages(currentIndex: number): void {
-        const image = imagesToLoad[currentIndex];
-
-        setTimeout(() => {
-            if (image && image.getAttribute("data-mode") === "thumbnail") {
-                loadThumbnail(image);
-            } else if (image) {
-                loadWide(image);
-            }
-
-            if (currentIndex + 1 < imagesToLoad.length) {
-                loadImages(currentIndex + 1);
-            } else {
-                imagesToLoad = [];
-            }
-        }, throttlingDelay);
-    }
-
-    function addElement(el: Element | null) {
-        if (el && el.getAttribute("data-index")) {
-            const index = Number(el.getAttribute("data-index"));
-            imagesToLoad[index] = el;
-        }
-
-        const isImagesToLoadFull = (): boolean =>
-            imagesToLoad.length === item.Entries.length;
-        if (isImagesToLoadFull()) {
-            loadImages(0);
-        }
-    }
-
-    function processImage(el: HTMLElement, i: number) {
-        const handler = () => {
-            const isThumbnailImageUtil = (el: HTMLElement): boolean =>
-                el.classList.contains("thumbnail-image-util");
-
-            if (isThumbnailImageUtil(el)) {
-                const thumbnailImageUtil = document.querySelector(
-                    `div[data-index="${i}"]`
-                );
-                addElement(thumbnailImageUtil);
-            } else {
-                addElement(el);
-            }
-        };
-
-        handler();
-        el.removeEventListener("load", handler);
     }
 </script>
 
@@ -166,35 +97,19 @@
                         <p>...loading image</p>
                     {:then content}-->
                     {#if mode === "Thumbnail"}
-                        <img
-                            src={placeholderImage}
-                            alt=""
-                            class="thumbnail-image-util"
-                            on:load={(e) =>
-                                processImage(e.currentTarget, index)}
-                        />
-                        <div
-                            data-index={index}
-                            data-mode="thumbnail"
-                            data-image={content.SourceURL}
-                            class="thumbnail"
-                            style="background-image: url('{placeholderImage}');"
-                            on:click={toggleWideViewer}
+                        <ViewerThumbnailImage
+                            src={content.SourceURL}
+                            throttlingDelay={throttlingDelay * index + 1}
+                            handleClick={toggleWideViewer}
                             title="Page {index}"
                         />
                     {:else if mode === "Wide"}
-                        <img
-                            data-index={index}
-                            data-mode="wide"
-                            data-image={content.SourceURL}
-                            id="content_{index}"
+                        <ViewerImageWide
                             alt="content_{index}"
-                            class="image to-load"
-                            src={placeholderImage}
-                            style="width: {imageWidth}%; margin: {imagePadding}em;"
-                            on-error="imgError(this)"
-                            on:load={(e) =>
-                                processImage(e.currentTarget, index)}
+                            src={content.SourceURL}
+                            {imagePadding}
+                            {imageWidth}
+                            throttlingDelay={throttlingDelay * index}
                         />
                     {/if}
                     <!--
@@ -244,21 +159,6 @@
         color: red;
     }
 
-    .thumbnail {
-        display: inline-block;
-        border: 2px solid var(--cds-ui-04);
-        background-color: var(--cds-ui-01);
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-        border-radius: 1em;
-        margin: 0.5em;
-        width: 16em;
-        height: 16em;
-        cursor: pointer;
-        box-shadow: 1em 1em 2em var(--cds-ui-01);
-    }
-
     .thumbnail-image-util {
         display: none;
     }
@@ -267,6 +167,7 @@
         width: 100%;
         height: 100%;
         overflow-y: auto;
+        text-align: center;
     }
 
     :global(#Viewer > #Contents.Wide) {
