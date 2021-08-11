@@ -25,8 +25,7 @@
     export let changeUIMode: () => void;
     export let changeTheme: (themeId: string) => void;
 
-    // Window controls
-    let win = nw.Window.get();
+    const win = nw.Window.get();
 </script>
 
 <Header
@@ -36,7 +35,6 @@
     company="HakuNeko"
     platformName="Media & Anime - Downloader"
     bind:isSideNavOpen
-    expansionBreakpoint={1584}
 >
     <div slot="skip-to-content">
         <SkipToContent />

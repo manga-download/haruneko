@@ -31,10 +31,14 @@
         nw.Shell.openExternal(uri);
     }
 
+    const win = nw.Window.get();
+
+    $: sideNavStyle = isSideNavOpen ? `min-width: ${win.width / 2}px;` : "";
+
     // Select a dir doesn't exist in Carbon :(
 </script>
 
-<SideNav bind:isOpen={isSideNavOpen}>
+<SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
     <SideNavItems>
         <SideNavMenu text="General">
             <SideNavMenuItem>
