@@ -1,4 +1,7 @@
 <script lang="ts">
+    import "carbon-components-svelte/css/all.css";
+    import "./theme/hakuneko.css";
+
     import {
         Header,
         HeaderUtilities,
@@ -38,13 +41,12 @@
 
     import { fade } from "svelte/transition";
 
-    import type {
-        IMediaContainer,
-        IMediaItem,
-    } from "../../engine/providers/MediaPlugin";
+    import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
-    export const FinishLoading = new Promise<void>(resolve => resolveFinishLoading = resolve);
+    export const FinishLoading = new Promise<void>(
+        (resolve) => (resolveFinishLoading = resolve)
+    );
 
     // Window controls
     let win = nw.Window.get();
@@ -94,11 +96,6 @@
     $: currentContent = selectedItem ? "viewer" : "home";
 </script>
 
-<svelte:head>
-    <!--<link rel="stylesheet" href="css/classic.css">-->
-    <link rel="stylesheet" href="css/theme/all.css" />
-    <link rel="stylesheet" href="css/theme/hakuneko.css" />
-</svelte:head>
 <Theme persist bind:theme>
     <Header
         id="Header"
