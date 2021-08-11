@@ -1,23 +1,5 @@
 <script lang="ts">
-    import {
-        Header,
-        HeaderUtilities,
-        HeaderAction,
-        HeaderGlobalAction,
-        HeaderPanelLinks,
-        HeaderPanelDivider,
-        HeaderPanelLink,
-        SkipToContent,
-        Content,
-        Tabs,
-        Tab,
-        TabContent,
-        Toggle,
-    } from "carbon-components-svelte";
-    import MinimizeIcon from "carbon-icons-svelte/lib/Subtract24";
-    import MaximizeIcon from "carbon-icons-svelte/lib/Checkbox16";
-    import RestoreIcon from "carbon-icons-svelte/lib/Copy16";
-    import CloseIcon from "carbon-icons-svelte/lib/Close24";
+    import { Content, Tabs, Tab, TabContent } from "carbon-components-svelte";
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
     import Theme, { themes } from "./components/Theme.svelte";
@@ -28,7 +10,7 @@
     import Network from "./components/Network.svelte";
     import Home from "./components/Home.svelte";
     import Viewer from "./components/Viewer.svelte";
-    import MenuLeftPanel from "./components/MenuLeftPanel.svelte";
+    import AppMenu from "./components/AppMenu.svelte";
     import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
@@ -94,61 +76,12 @@
     <link rel="stylesheet" href="css/theme/hakuneko.css" />
 </svelte:head>
 <Theme persist bind:theme>
-    <Header
-        id="Header"
-        expandedByDefault={false}
-        persistentHamburgerMenu={true}
-        company="HakuNeko"
-        platformName="Media & Anime - Downloader"
-        bind:isSideNavOpen
-    >
-        <div slot="skip-to-content">
-            <SkipToContent />
-        </div>
-        <HeaderUtilities>
-            <HeaderGlobalAction
-                on:click={() => win.minimize()}
-                aria-label="Minimize"
-                icon={MinimizeIcon}
-            />
-            <HeaderGlobalAction
-                on:click={() => (winMaximized ? win.restore() : win.maximize())}
-                aria-label="Maximize"
-                icon={winMaximized ? RestoreIcon : MaximizeIcon}
-            />
-            <HeaderGlobalAction
-                on:click={() => win.close()}
-                aria-label="Close"
-                icon={CloseIcon}
-            />
-            <HeaderAction bind:isOpen>
-                <HeaderPanelLinks>
-                    <HeaderPanelDivider>Interface</HeaderPanelDivider>
-                    <HeaderPanelLink>
-                        <Toggle
-                            size="sm"
-                            labelText="Show content pannel :"
-                            labelA="Download Only"
-                            labelB="Content"
-                            toggled={uimode === "ui-mode-content"}
-                            on:toggle={changeUIMode}
-                        />
-                    </HeaderPanelLink>
-                    <HeaderPanelDivider>Themes</HeaderPanelDivider>
-                    {#each themes as item}
-                        <HeaderPanelLink on:click={() => (theme = item.id)}
-                            >{item.label}</HeaderPanelLink
-                        >
-                    {/each}
-                </HeaderPanelLinks>
-            </HeaderAction>
-        </HeaderUtilities>
-    </Header>
-
-    <MenuLeftPanel
+    <AppMenu
         {isSideNavOpen}
-        onToggle={changeUIMode}
+        {isOpen}
+        {winMaximized}
         {uimode}
+        {changeUIMode}
         {changeTheme}
     />
 
