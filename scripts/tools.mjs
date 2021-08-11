@@ -15,7 +15,7 @@ export async function wait(time) {
  * Clear all content within the given directory.
  */
 export async function purge(directory) {
-    await fs.rmdir(directory, { recursive: true });
+    await fs.rm(directory, { recursive: true });
     await fs.mkdir(directory);
 }
 
