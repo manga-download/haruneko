@@ -1,7 +1,6 @@
 import preprocess from 'svelte-preprocess';
 import { terser as minify } from "rollup-plugin-terser";
 import commonjs from "@rollup/plugin-commonjs";
-import copy from 'rollup-plugin-copy';
 import resolve from "@rollup/plugin-node-resolve";
 import svelte from "rollup-plugin-svelte";
 import typescript from '@rollup/plugin-typescript';
@@ -25,17 +24,8 @@ export default {
         svelte({
             //dev: !isProduction,
             preprocess: preprocess({ sourceMap: !isProduction })
-            //css: css => css.write('css/classic.css')
         }),
-        postcss({
-            extract: 'css/classic.css'
-        }),
-        copy({
-            targets: [
-                { src: 'src/frontend/classic/theme', dest: 'build.web/css' },
-                { src: 'node_modules/carbon-components-svelte/css/all.css', dest: 'build.web/css/theme' },
-            ]
-        }),
+        postcss(),
         resolve({
             browser: true,
             dedupe: ["svelte"]

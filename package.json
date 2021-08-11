@@ -10,7 +10,7 @@
     "npm": ">=7.6.0"
   },
   "dependencies": {
-    "fs-extra": "9.0.1"
+    "fs-extra": "latest"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "latest",
@@ -39,7 +39,7 @@
     "jest-mock-extended": "latest",
     "jsdom": "latest",
     "node-fetch": "latest",
-    "nw": "0.54.0-sdk",
+    "nw": "^0.55.0-sdk",
     "plist": "latest",
     "postcss": "latest",
     "puppeteer-core": "latest",
@@ -51,7 +51,7 @@
     "rollup-plugin-livereload": "latest",
     "rollup-plugin-postcss": "latest",
     "rollup-plugin-serve": "latest",
-    "rollup-plugin-svelte": "6.1.1",
+    "rollup-plugin-svelte": "latest",
     "rollup-plugin-terser": "latest",
     "rollup-plugin-vue": "latest",
     "svelte": "latest",
