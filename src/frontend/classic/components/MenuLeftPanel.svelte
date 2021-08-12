@@ -20,6 +20,8 @@
     import { themes } from "./Theme.svelte";
     import MenuLeftPanelItem from "./MenuLeftPanelItem.svelte";
     import MenuLeftPanelSelectItem from "./MenuLeftPanelSelectItem.svelte";
+    import MenuLeftPanelTextInputItem from "./MenuLeftPanelTextInputItem.svelte";
+
     export let isSideNavOpen = false;
     export let onToggle: () => void;
     export let uimode: string;
@@ -42,7 +44,6 @@
     ];
 
     // TODO
-    // InputItem
     // CheckboxItem
     // FileSystemItem
     // NumberItem
@@ -64,6 +65,13 @@
                     helperText="This is an example of helper text"
                     selected={demoSelectItems[0].value}
                     items={demoSelectItems}
+                />
+            </MenuLeftPanelItem>
+            <MenuLeftPanelItem>
+                <MenuLeftPanelTextInputItem
+                    labelText="Demo TextInput"
+                    placeholder="Type something"
+                    helperText="This is an example of helper text"
                 />
             </MenuLeftPanelItem>
         </SideNavMenu>
