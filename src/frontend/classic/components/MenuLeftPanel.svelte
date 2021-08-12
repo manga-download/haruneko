@@ -19,8 +19,8 @@
     import Location16 from "carbon-icons-svelte/lib/Location16";
     import { themes } from "./Theme.svelte";
     import MenuLeftPanelItem from "./MenuLeftPanelItem.svelte";
-    import MenuLeftPanelSelectItem from "./MenuLeftPanelSelectItem.svelte";
-    import MenuLeftPanelTextInputItem from "./MenuLeftPanelTextInputItem.svelte";
+    import MenuLeftPanelSelect from "./MenuLeftPanelSelect.svelte";
+    import MenuLeftPanelTextInput from "./MenuLeftPanelTextInput.svelte";
 
     export let isSideNavOpen = false;
     export let onToggle: () => void;
@@ -53,14 +53,14 @@
     <SideNavItems>
         <SideNavMenu text="General">
             <MenuLeftPanelItem>
-                <MenuLeftPanelSelectItem
+                <MenuLeftPanelSelect
                     labelText="Demo Select"
                     selected={demoSelectItems[0].value}
                     items={demoSelectItems}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem>
-                <MenuLeftPanelSelectItem
+                <MenuLeftPanelSelect
                     labelText="Demo Select"
                     helperText="This is an example of helper text"
                     selected={demoSelectItems[0].value}
@@ -68,7 +68,7 @@
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem>
-                <MenuLeftPanelTextInputItem
+                <MenuLeftPanelTextInput
                     labelText="Demo TextInput"
                     placeholder="Type something"
                     helperText="This is an example of helper text"
