@@ -20,7 +20,7 @@
     import { themes } from "./Theme.svelte";
     import MenuLeftPanelItem from "./MenuLeftPanelItem.svelte";
     import MenuLeftPanelSelect from "./MenuLeftPanelSelect.svelte";
-    import MenuLeftPanelTextInput from "./MenuLeftPanelTextInput.svelte";
+    import MenuLeftPanelInput from "./MenuLeftPanelInput.svelte";
     import MenuLeftPanelToggle from "./MenuLeftPanelToggle.svelte";
 
     export let isSideNavOpen = false;
@@ -46,7 +46,6 @@
 
     // TODO
     // FileSystemItem
-    // NumberItem
 </script>
 
 <SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
@@ -74,13 +73,24 @@
                 labelText="Demo TextInput"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelTextInput placeholder="Type something" />
+                <MenuLeftPanelInput placeholder="Type something" />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
                 labelText="Demo toggle"
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelToggle defaultValue={true} />
+            </MenuLeftPanelItem>
+            <MenuLeftPanelItem
+                labelText="Demo Number input"
+                helperText="This is an example of helper text"
+            >
+                <MenuLeftPanelInput
+                    type="number"
+                    min={3}
+                    max={5}
+                    defaultValue={4}
+                />
             </MenuLeftPanelItem>
         </SideNavMenu>
         <SideNavMenu text="UI">
