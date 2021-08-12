@@ -52,33 +52,35 @@
 <SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
     <SideNavItems>
         <SideNavMenu text="General">
-            <MenuLeftPanelItem>
+            <MenuLeftPanelItem
+                labelText="Demo Select"
+                helperText="This is an example of helper text"
+            >
                 <MenuLeftPanelSelect
-                    labelText="Demo Select"
                     selected={demoSelectItems[0].value}
                     items={demoSelectItems}
                 />
             </MenuLeftPanelItem>
-            <MenuLeftPanelItem>
+            <MenuLeftPanelItem
+                labelText="Demo Select"
+                helperText="This is an example of helper text"
+            >
                 <MenuLeftPanelSelect
-                    labelText="Demo Select"
-                    helperText="This is an example of helper text"
                     selected={demoSelectItems[0].value}
                     items={demoSelectItems}
                 />
             </MenuLeftPanelItem>
-            <MenuLeftPanelItem>
-                <MenuLeftPanelTextInput
-                    labelText="Demo TextInput"
-                    placeholder="Type something"
-                    helperText="This is an example of helper text"
-                />
+            <MenuLeftPanelItem
+                labelText="Demo TextInput"
+                helperText="This is an example of helper text"
+            >
+                <MenuLeftPanelTextInput placeholder="Type something" />
             </MenuLeftPanelItem>
-            <MenuLeftPanelItem>
-                <MenuLeftPanelToggle
-                    labelText="Demo toggle"
-                    defaultValue={true}
-                />
+            <MenuLeftPanelItem
+                labelText="Demo toggle"
+                helperText="This is an example of helper text"
+            >
+                <MenuLeftPanelToggle defaultValue={true} />
             </MenuLeftPanelItem>
         </SideNavMenu>
         <SideNavMenu text="UI">
