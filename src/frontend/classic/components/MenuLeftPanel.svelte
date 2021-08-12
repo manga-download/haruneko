@@ -43,23 +43,11 @@
         { value: "g90", text: "Gray 90" },
         { value: "g100", text: "Gray 100" },
     ];
-
-    // TODO
-    // FileSystemItem
 </script>
 
 <SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
     <SideNavItems>
         <SideNavMenu text="General">
-            <MenuLeftPanelItem
-                labelText="Demo Select"
-                helperText="This is an example of helper text"
-            >
-                <MenuLeftPanelSelect
-                    selected={demoSelectItems[0].value}
-                    items={demoSelectItems}
-                />
-            </MenuLeftPanelItem>
             <MenuLeftPanelItem
                 labelText="Demo Select"
                 helperText="This is an example of helper text"
@@ -91,6 +79,12 @@
                     max={5}
                     defaultValue={4}
                 />
+            </MenuLeftPanelItem>
+            <MenuLeftPanelItem
+                labelText="Demo File input"
+                helperText="This is an example of helper text"
+            >
+                <MenuLeftPanelInput type="file" />
             </MenuLeftPanelItem>
         </SideNavMenu>
         <SideNavMenu text="UI">
