@@ -6,9 +6,6 @@
         SideNavLink,
         SideNavMenuItem,
         Checkbox,
-        Select,
-        SelectItem,
-        TextInput,
     } from "carbon-components-svelte";
     import LogoDiscord16 from "carbon-icons-svelte/lib/LogoDiscord16";
     import Home16 from "carbon-icons-svelte/lib/Home16";
@@ -21,7 +18,8 @@
     import Image16 from "carbon-icons-svelte/lib/Image16";
     import Location16 from "carbon-icons-svelte/lib/Location16";
     import { themes } from "./Theme.svelte";
-
+    import MenuLeftPanelItem from "./MenuLeftPanelItem.svelte";
+    import MenuLeftPanelSelectItem from "./MenuLeftPanelSelectItem.svelte";
     export let isSideNavOpen = false;
     export let onToggle: () => void;
     export let uimode: string;
@@ -35,31 +33,39 @@
 
     $: sideNavStyle = isSideNavOpen ? `min-width: ${win.width / 2}px;` : "";
 
-    // Select a dir doesn't exist in Carbon :(
+    const demoSelectItems = [
+        { value: "white", text: "White" },
+        { value: "g10", text: "Gray 10" },
+        { value: "g80", text: "Gray 80" },
+        { value: "g90", text: "Gray 90" },
+        { value: "g100", text: "Gray 100" },
+    ];
+
+    // TODO
+    // InputItem
+    // CheckboxItem
+    // FileSystemItem
+    // NumberItem
 </script>
 
 <SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
     <SideNavItems>
         <SideNavMenu text="General">
-            <SideNavMenuItem>
-                <Checkbox labelText="Enable Reader" />
-            </SideNavMenuItem>
-            <SideNavMenuItem>
-                <Select inline labelText="Carbon theme" selected="g10">
-                    <SelectItem value="white" text="White" />
-                    <SelectItem value="g10" text="Gray 10" />
-                    <SelectItem value="g80" text="Gray 80" />
-                    <SelectItem value="g90" text="Gray 90" />
-                    <SelectItem value="g100" text="Gray 100" />
-                </Select>
-            </SideNavMenuItem>
-            <SideNavMenuItem>
-                <TextInput
-                    inline
-                    labelText="User name"
-                    placeholder="Enter user name..."
+            <MenuLeftPanelItem>
+                <MenuLeftPanelSelectItem
+                    labelText="Demo Select"
+                    selected={demoSelectItems[0].value}
+                    items={demoSelectItems}
                 />
-            </SideNavMenuItem>
+            </MenuLeftPanelItem>
+            <MenuLeftPanelItem>
+                <MenuLeftPanelSelectItem
+                    labelText="Demo Select"
+                    helperText="This is an example of helper text"
+                    selected={demoSelectItems[0].value}
+                    items={demoSelectItems}
+                />
+            </MenuLeftPanelItem>
         </SideNavMenu>
         <SideNavMenu text="UI">
             <SideNavMenuItem>
