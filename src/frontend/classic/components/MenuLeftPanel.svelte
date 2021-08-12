@@ -21,6 +21,7 @@
     import MenuLeftPanelItem from "./MenuLeftPanelItem.svelte";
     import MenuLeftPanelSelect from "./MenuLeftPanelSelect.svelte";
     import MenuLeftPanelTextInput from "./MenuLeftPanelTextInput.svelte";
+    import MenuLeftPanelToggle from "./MenuLeftPanelToggle.svelte";
 
     export let isSideNavOpen = false;
     export let onToggle: () => void;
@@ -44,7 +45,6 @@
     ];
 
     // TODO
-    // CheckboxItem
     // FileSystemItem
     // NumberItem
 </script>
@@ -72,6 +72,12 @@
                     labelText="Demo TextInput"
                     placeholder="Type something"
                     helperText="This is an example of helper text"
+                />
+            </MenuLeftPanelItem>
+            <MenuLeftPanelItem>
+                <MenuLeftPanelToggle
+                    labelText="Demo toggle"
+                    defaultValue={true}
                 />
             </MenuLeftPanelItem>
         </SideNavMenu>
