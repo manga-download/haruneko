@@ -1,12 +1,20 @@
 <script lang="ts">
     import { Select, SelectItem } from "carbon-components-svelte";
+    import { Theme } from "./Theme.svelte";
+
     export let selected: string | undefined;
-    export let items: { value: string; text: string }[];
+    export let items: Theme[];
+    export let onChange: (value: string | undefined) => void;
 </script>
 
-<Select {selected}>
+<Select
+    {selected}
+    on:change={(e) => {
+        onChange(e.detail);
+    }}
+>
     {#each items as item}
-        <SelectItem value={item.value} text={item.text} />
+        <SelectItem value={item.id} text={item.label} />
     {/each}
 </Select>
 

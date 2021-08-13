@@ -4,8 +4,6 @@
         SideNavItems,
         SideNavMenu,
         SideNavLink,
-        SideNavMenuItem,
-        Checkbox,
     } from "carbon-components-svelte";
     import LogoDiscord16 from "carbon-icons-svelte/lib/LogoDiscord16";
     import Home16 from "carbon-icons-svelte/lib/Home16";
@@ -37,24 +35,27 @@
     $: sideNavStyle = isSideNavOpen ? `min-width: ${win.width / 2}px;` : "";
 
     const demoSelectItems = [
-        { value: "white", text: "White" },
-        { value: "g10", text: "Gray 10" },
-        { value: "g80", text: "Gray 80" },
-        { value: "g90", text: "Gray 90" },
-        { value: "g100", text: "Gray 100" },
+        { id: "white", label: "White", kind: "dont care" },
+        { id: "g10", label: "Gray 10", kind: "dont care" },
+        { id: "g80", label: "Gray 80", kind: "dont care" },
+        { id: "g90", label: "Gray 90", kind: "dont care" },
+        { id: "g100", label: "Gray 100", kind: "dont care" },
     ];
+
+    let currentTheme = "hakuneko";
 </script>
 
 <SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
     <SideNavItems>
-        <SideNavMenu text="General">
+        <SideNavMenu text="Demo">
             <MenuLeftPanelItem
                 labelText="Demo Select"
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelSelect
-                    selected={demoSelectItems[0].value}
+                    selected={demoSelectItems[0].id}
                     items={demoSelectItems}
+                    onChange={(newValue) => console.log(newValue)}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
@@ -67,7 +68,10 @@
                 labelText="Demo toggle"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelToggle defaultValue={true} />
+                <MenuLeftPanelToggle
+                    defaultValue={true}
+                    onToggle={() => console.log("toggle change")}
+                />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
                 labelText="Demo Number input"
@@ -87,25 +91,33 @@
                 <MenuLeftPanelInput type="file" />
             </MenuLeftPanelItem>
         </SideNavMenu>
+        <SideNavMenu text="General" />
         <SideNavMenu text="UI">
-            <SideNavMenuItem>
-                <Checkbox
-                    labelText="Show content panel"
-                    checked={uimode === "ui-mode-content"}
-                    on:check={onToggle}
+            <MenuLeftPanelItem
+                labelText="Show content panel"
+                helperText="Display or not the hakuneko tutorial"
+            >
+                <MenuLeftPanelToggle
+                    defaultValue={uimode === "ui-mode-content"}
+                    {onToggle}
                 />
-            </SideNavMenuItem>
-            <SideNavMenu text="Themes">
-                {#each themes as item}
-                    <SideNavMenuItem
-                        class="clik-item"
-                        on:click={() => changeTheme(item.id)}
-                        >{item.label}</SideNavMenuItem
-                    >
-                {/each}
-            </SideNavMenu>
+            </MenuLeftPanelItem>
+            <MenuLeftPanelItem
+                labelText="Themes"
+                helperText="You can select the theme of the hakuneko app"
+            >
+                <MenuLeftPanelSelect
+                    selected={currentTheme}
+                    items={themes}
+                    onChange={(newValue) =>
+                        newValue
+                            ? changeTheme(newValue)
+                            : console.error(
+                                  `can't set theme to value : ${newValue}`
+                              )}
+                />
+            </MenuLeftPanelItem>
         </SideNavMenu>
-
         <SideNavMenu text="Help">
             <SideNavLink
                 text="Documentation"

@@ -55,35 +55,7 @@
             aria-label="Close"
             icon={CloseIcon}
         />
-        <HeaderAction bind:isOpen>
-            <HeaderPanelLinks>
-                <HeaderPanelDivider>Interface</HeaderPanelDivider>
-                <HeaderPanelLink>
-                    <Toggle
-                        size="sm"
-                        labelText="Show content pannel :"
-                        labelA="Download Only"
-                        labelB="Content"
-                        toggled={uimode === "ui-mode-content"}
-                        on:toggle={changeUIMode}
-                    />
-                </HeaderPanelLink>
-                <HeaderPanelDivider>Interface</HeaderPanelDivider>
-                <HeaderPanelLink>
-                    <TextInput
-                        inline
-                        labelText="User name"
-                        placeholder="Enter user name..."
-                    />
-                </HeaderPanelLink>
-                <HeaderPanelDivider>Themes</HeaderPanelDivider>
-                {#each themes as item}
-                    <HeaderPanelLink on:click={() => changeTheme(item.id)}
-                        >{item.label}</HeaderPanelLink
-                    >
-                {/each}
-            </HeaderPanelLinks>
-        </HeaderAction>
+        <HeaderAction bind:isOpen />
     </HeaderUtilities>
 </Header>
 
