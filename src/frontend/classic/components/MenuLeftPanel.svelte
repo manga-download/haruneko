@@ -22,7 +22,7 @@
     import MenuLeftPanelToggle from "./MenuLeftPanelToggle.svelte";
 
     export let isSideNavOpen = false;
-    export let onToggle: () => void;
+    export let changeUIMode: () => void;
     export let uimode: string;
     export let changeTheme: (themeId: string) => void;
 
@@ -125,7 +125,7 @@
             >
                 <MenuLeftPanelToggle
                     defaultValue={uimode === "ui-mode-content"}
-                    {onToggle}
+                    onToggle={changeUIMode}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem

@@ -6,7 +6,7 @@
     import { Content, Tabs, Tab, TabContent } from "carbon-components-svelte";
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
-    import Theme, { themes } from "./components/Theme.svelte";
+    import Theme from "./components/Theme.svelte";
     import MediaSelect from "./components/MediaSelect.svelte";
     import MediaItemSelect from "./components/MediaItemSelect.svelte";
     import Jobs from "./components/Jobs.svelte";
@@ -14,7 +14,7 @@
     import Network from "./components/Network.svelte";
     import Home from "./components/Home.svelte";
     import Viewer from "./components/Viewer.svelte";
-    import AppMenu from "./components/AppMenu.svelte";
+    import AppBar from "./components/AppBar.svelte";
     import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
@@ -75,7 +75,7 @@
 </script>
 
 <Theme persist bind:theme>
-    <AppMenu
+    <AppBar
         {isSideNavOpen}
         {isOpen}
         {winMaximized}

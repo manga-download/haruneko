@@ -59,4 +59,4 @@
     </HeaderUtilities>
 </Header>
 
-<MenuLeftPanel {isSideNavOpen} onToggle={changeUIMode} {uimode} {changeTheme} />
+<MenuLeftPanel {isSideNavOpen} {changeUIMode} {uimode} {changeTheme} />
