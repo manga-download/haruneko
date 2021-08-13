@@ -73,6 +73,7 @@
 <svelte:head>
     <!--<link rel="stylesheet" href="css/classic.css">-->
     <link rel="stylesheet" href="css/theme/all.css" />
+    <link rel="stylesheet" href="css/theme/sidenav-hack.css" />
     <link rel="stylesheet" href="css/theme/hakuneko.css" />
 </svelte:head>
 <Theme persist bind:theme>
