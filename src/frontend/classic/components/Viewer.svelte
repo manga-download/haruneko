@@ -6,18 +6,21 @@
     import RowInsert24 from "carbon-icons-svelte/lib/RowExpand24";
     import RowDelete24 from "carbon-icons-svelte/lib/RowCollapse24";
     import Misuse24 from "carbon-icons-svelte/lib/Misuse24";
-
     import { createEventDispatcher } from "svelte";
-    const dispatch = createEventDispatcher();
-
+    import ViewerThumbnailImage from "./ViewerThumbnailImage.svelte";
+    import ViewerImageWide from "./ViewerImageWide.svelte";
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
+    type Mode = "Thumbnail" | "Wide" | "Video";
+
     export let item: IMediaContainer;
+    export let mode: Mode = "Thumbnail";
+    let throttlingDelay = 1000;
+
+    const dispatch = createEventDispatcher();
+
     let update: Promise<void> | undefined;
     $: update = item?.Update();
-
-    type Mode = "Thumbnail" | "Wide" | "Video";
-    export let mode: Mode = "Thumbnail";
 
     let imageWidth = 75;
     let imagePadding = 2;
@@ -40,10 +43,8 @@
     function toggleFullScreen() {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
+        } else if (document.exitFullscreen) {
+            document.exitFullscreen();
         }
     }
 </script>
@@ -96,20 +97,19 @@
                         <p>...loading image</p>
                     {:then content}-->
                     {#if mode === "Thumbnail"}
-                        <div
-                            class="thumbnail"
-                            style="background-image: url('{content.SourceURL}');"
-                            on:click={toggleWideViewer}
+                        <ViewerThumbnailImage
+                            src={content.SourceURL}
+                            throttlingDelay={throttlingDelay * index + 1}
+                            handleClick={toggleWideViewer}
                             title="Page {index}"
                         />
                     {:else if mode === "Wide"}
-                        <img
-                            id="content_{index}"
+                        <ViewerImageWide
                             alt="content_{index}"
-                            class="image"
                             src={content.SourceURL}
-                            style="width: {imageWidth}%; margin: {imagePadding}em;"
-                            on-error="imgError(this)"
+                            {imagePadding}
+                            {imageWidth}
+                            throttlingDelay={throttlingDelay * index}
                         />
                     {/if}
                     <!--
@@ -159,25 +159,15 @@
         color: red;
     }
 
-    .thumbnail {
-        display: inline-block;
-        border: 2px solid var(--cds-ui-04);
-        background-color: var(--cds-ui-01);
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-        border-radius: 1em;
-        margin: 0.5em;
-        width: 16em;
-        height: 16em;
-        cursor: pointer;
-        box-shadow: 1em 1em 2em var(--cds-ui-01);
+    .thumbnail-image-util {
+        display: none;
     }
 
     :global(#Viewer > #Contents.Thumbnail) {
         width: 100%;
         height: 100%;
         overflow-y: auto;
+        text-align: center;
     }
 
     :global(#Viewer > #Contents.Wide) {

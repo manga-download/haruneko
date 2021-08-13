@@ -30,13 +30,13 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     const nwDir = path.join(os.tmpdir(), base.replace(/^nwjs(-sdk)?/i, 'hakuneko'));
     try {
         await fs.access(tmpFile);
-    } catch(error) {
+    } catch (error) {
         console.log('Downloading:', sourceFile, '=>', '$TMP/' + path.basename(tmpFile));
         await download(sourceFile, tmpFile);
     }
     console.log('Extracting:', '$TMP/' + path.basename(tmpFile), '=>', '$TMP/' + path.basename(nwDir));
-    await fs.rmdir(tmpDir, { recursive: true });
-    await fs.rmdir(nwDir, { recursive: true });
+    await fs.rm(tmpDir, { recursive: true });
+    await fs.rm(nwDir, { recursive: true });
     await decompress(tmpFile, os.tmpdir());
     await fs.move(tmpDir, nwDir);
     return nwDir;
@@ -45,12 +45,12 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
 let dirNW;
 await fs.mkdir(dirDeploy, { recursive: true });
 
-if(process.platform === 'darwin') {
+if (process.platform === 'darwin') {
     dirNW = await redist(nwVersion, nwBuildType, 'osx', 'x64');
     await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirNW);
 }
 
-if(process.platform === 'win32') {
+if (process.platform === 'win32') {
     dirNW = await redist(nwVersion, nwBuildType, 'win', 'ia32');
     await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirNW);
     //dirNW = await redist(nwVersion, nwBuildType, 'win', 'ia32');
@@ -61,7 +61,7 @@ if(process.platform === 'win32') {
     //await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirNW);
 }
 
-if(process.platform === 'linux') {
+if (process.platform === 'linux') {
     /*
     dirNW = await redist(nwVersion, nwBuildType, 'linux', 'ia32');
     await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirNW);
