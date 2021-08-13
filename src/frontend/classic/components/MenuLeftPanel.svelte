@@ -43,6 +43,8 @@
     ];
 
     let currentTheme = "hakuneko";
+    // TODO add password field
+    // TODO fix the multiple file input issue
 </script>
 
 <SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
@@ -94,7 +96,20 @@
         <SideNavMenu text="General" />
         <SideNavMenu text="Websites">
             <MenuLeftPanelItem type="sub-menu">
-                <SideNavMenu text="Website1" />
+                <SideNavMenu text="Website1">
+                    <MenuLeftPanelItem
+                        labelText="Username"
+                        helperText="This is an example of helper text"
+                    >
+                        <MenuLeftPanelInput placeholder="Username" />
+                    </MenuLeftPanelItem>
+                    <MenuLeftPanelItem
+                        labelText="Password"
+                        helperText="This is an example of helper text"
+                    >
+                        <MenuLeftPanelInput placeholder="Password" />
+                    </MenuLeftPanelItem>
+                </SideNavMenu>
             </MenuLeftPanelItem>
             <MenuLeftPanelItem type="sub-menu">
                 <SideNavMenu text="Website2" />

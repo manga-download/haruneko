@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { TextInput, Button } from "carbon-components-svelte";
+    import { TextInput } from "carbon-components-svelte";
 
     export let labelText = "Select directory";
     let path: string = "";

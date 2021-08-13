@@ -41,6 +41,7 @@ a.bx--side-nav__link--current .bx--side-nav__link-text {
     a.bx--side-nav__link:not(.bx--side-nav__link--current):not([aria-current="page"]):hover {
     color: var(--cds-text-01);
     background-color: var(--cds-hover-ui);
+
 }
 .bx--side-nav__item:not(.bx--side-nav__item--active)
     > .bx--side-nav__link:hover
@@ -52,6 +53,6 @@ a.bx--side-nav__link--current .bx--side-nav__link-text {
     color: var(--cds-text-01);
 }
 .bx--side-nav__submenu:hover {
-    color: var(--cds-text-01);
-    background-color: var(--cds-hover-ui);
+    color: var(--cds-text-01) !important;
+    background-color: var(--cds-hover-ui) !important;
 }
