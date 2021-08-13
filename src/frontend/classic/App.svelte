@@ -1,4 +1,8 @@
 <script lang="ts">
+    import "carbon-components-svelte/css/all.css";
+    import "./theme/hakuneko.css";
+    import "./theme/sidenav-hack.css";
+
     import { Content, Tabs, Tab, TabContent } from "carbon-components-svelte";
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
@@ -70,12 +74,6 @@
     $: currentContent = selectedItem ? "viewer" : "home";
 </script>
 
-<svelte:head>
-    <!--<link rel="stylesheet" href="css/classic.css">-->
-    <link rel="stylesheet" href="css/theme/all.css" />
-    <link rel="stylesheet" href="css/theme/sidenav-hack.css" />
-    <link rel="stylesheet" href="css/theme/hakuneko.css" />
-</svelte:head>
 <Theme persist bind:theme>
     <AppMenu
         {isSideNavOpen}

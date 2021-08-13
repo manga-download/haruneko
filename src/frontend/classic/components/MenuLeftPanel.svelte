@@ -47,7 +47,7 @@
 
 <SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
     <SideNavItems>
-        <SideNavMenu text="Demo">
+        <SideNavMenu text="Input Demo">
             <MenuLeftPanelItem
                 labelText="Demo Select"
                 helperText="This is an example of helper text"
@@ -92,6 +92,17 @@
             </MenuLeftPanelItem>
         </SideNavMenu>
         <SideNavMenu text="General" />
+        <SideNavMenu text="Websites">
+            <MenuLeftPanelItem type="sub-menu">
+                <SideNavMenu text="Website1" />
+            </MenuLeftPanelItem>
+            <MenuLeftPanelItem type="sub-menu">
+                <SideNavMenu text="Website2" />
+            </MenuLeftPanelItem>
+            <MenuLeftPanelItem type="sub-menu">
+                <SideNavMenu text="Website3" />
+            </MenuLeftPanelItem>
+        </SideNavMenu>
         <SideNavMenu text="UI">
             <MenuLeftPanelItem
                 labelText="Show content panel"
