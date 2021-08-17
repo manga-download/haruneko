@@ -1,9 +1,13 @@
 <script lang="ts">
-    import { TextInput, NumberInput } from "carbon-components-svelte";
+    import {
+        TextInput,
+        NumberInput,
+        PasswordInput,
+    } from "carbon-components-svelte";
     import FolderSelectorInput from "./FolderSelectorInput.svelte";
     export let placeholder: string = "";
     export let defaultValue: string | number = "";
-    export let type: "number" | "text" | "file" = "text";
+    export let type: "number" | "text" | "file" | "password" = "text";
     export let min: number | undefined = undefined;
     export let max: number | undefined = undefined;
 </script>
@@ -15,6 +19,8 @@
         <NumberInput value={defaultValue} {min} {max} />
     {:else if type === "file"}
         <FolderSelectorInput />
+    {:else if type === "password"}
+        <PasswordInput hideLabel value={defaultValue} placeholder="Password" />
     {/if}
 </div>
 
