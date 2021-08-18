@@ -61,7 +61,14 @@
                 labelText="Demo TextInput"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelInput placeholder="Type something" />
+                <MenuLeftPanelInput
+                    placeholder="Type something"
+                    storageKey={storageKeys.DEMO_TEXT_INPUT}
+                    defaultValue={getSettingDefaultValue(
+                        storageKeys.DEMO_TEXT_INPUT,
+                        ""
+                    )}
+                />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
                 labelText="Demo toggle"
@@ -80,23 +87,41 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelInput
+                    storageKey={storageKeys.DEMO_NUMBER_INPUT}
+                    defaultValue={getSettingDefaultValue(
+                        storageKeys.DEMO_NUMBER_INPUT,
+                        ""
+                    )}
                     type="number"
                     min={3}
                     max={5}
-                    defaultValue={4}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
                 labelText="Demo File input"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelInput type="file" />
+                <MenuLeftPanelInput
+                    type="file"
+                    storageKey={storageKeys.DEMO_FILE_INPUT}
+                    defaultValue={getSettingDefaultValue(
+                        storageKeys.DEMO_FILE_INPUT,
+                        ""
+                    )}
+                />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
                 labelText="Demo PasswordInput"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelInput type="password" />
+                <MenuLeftPanelInput
+                    type="password"
+                    storageKey={storageKeys.DEMO_PASSWORD_INPUT}
+                    defaultValue={getSettingDefaultValue(
+                        storageKeys.DEMO_PASSWORD_INPUT,
+                        ""
+                    )}
+                />
             </MenuLeftPanelItem>
         </SideNavMenu>
         <SideNavMenu text="General" />
@@ -107,13 +132,28 @@
                         labelText="Username"
                         helperText="This is an example of helper text"
                     >
-                        <MenuLeftPanelInput placeholder="Username" />
+                        <MenuLeftPanelInput
+                            placeholder="Username"
+                            storageKey={storageKeys.WEBSITE_1_USERNAME}
+                            defaultValue={getSettingDefaultValue(
+                                storageKeys.WEBSITE_1_USERNAME,
+                                ""
+                            )}
+                        />
                     </MenuLeftPanelItem>
                     <MenuLeftPanelItem
                         labelText="Password"
                         helperText="This is an example of helper text"
                     >
-                        <MenuLeftPanelInput placeholder="Password" />
+                        <MenuLeftPanelInput
+                            type="password"
+                            placeholder="Password"
+                            storageKey={storageKeys.WEBSITE_1_PASSWORD}
+                            defaultValue={getSettingDefaultValue(
+                                storageKeys.WEBSITE_1_PASSWORD,
+                                ""
+                            )}
+                        />
                     </MenuLeftPanelItem>
                 </SideNavMenu>
             </MenuLeftPanelItem>

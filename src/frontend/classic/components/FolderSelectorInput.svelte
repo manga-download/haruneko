@@ -1,11 +1,16 @@
 <script lang="ts">
     import { TextInput } from "carbon-components-svelte";
+    import { onSettingChange } from "../utils/storage";
+    import type { SettingExtras, SettingValidator } from "../utils/storage";
     import { v4 as uuidv4 } from "uuid";
 
-    const uuid = uuidv4();
-
     export let labelText = "Select directory";
-    let path: string = "";
+    export let storageKey: string | undefined = undefined;
+    export let extras: SettingExtras = undefined;
+    export let validator: SettingValidator = undefined;
+    export let path: string = "";
+
+    const uuid = uuidv4();
 </script>
 
 <div>
@@ -16,6 +21,11 @@
         type="file"
         nwdirectory
         bind:value={path}
+        on:change={() => {
+            if (storageKey) {
+                onSettingChange(storageKey, path, extras, validator);
+            }
+        }}
     />
 </div>
 

@@ -29,6 +29,12 @@ export const getSettingDefaultValue = (key: string, defaultValue: SettingValue) 
 export const castBooleanSetting = (settingValue: SettingValue): boolean => settingValue === "true" || settingValue === true;
 
 export const storageKeys = {
+    DEMO_TEXT_INPUT: "DEMO_TEXT_INPUT",
     DEMO_TOGGLE: "DEMO_TOGGLE",
+    DEMO_NUMBER_INPUT: "DEMO_NUMBER_INPUT",
+    DEMO_FILE_INPUT: "DEMO_FILE_INPUT",
+    DEMO_PASSWORD_INPUT: "DEMO_PASSWORD_INPUT",
+    WEBSITE_1_USERNAME: "WEBSITE_1_USERNAME",
+    WEBSITE_1_PASSWORD: "WEBSITE_1_PASSWORD",
     SHOW_CONTENT_PANEL: "SHOW_CONTENT_PANEL"
 }
