@@ -4,12 +4,7 @@
         HeaderUtilities,
         HeaderAction,
         HeaderGlobalAction,
-        HeaderPanelLinks,
-        HeaderPanelDivider,
-        HeaderPanelLink,
         SkipToContent,
-        Toggle,
-        TextInput,
     } from "carbon-components-svelte";
     import MinimizeIcon from "carbon-icons-svelte/lib/Subtract24";
     import MaximizeIcon from "carbon-icons-svelte/lib/Checkbox16";
@@ -21,7 +16,6 @@
     export let isSideNavOpen: boolean;
     export let winMaximized: boolean;
     export let isOpen: boolean;
-    export let uimode: string;
     export let changeUIMode: () => void;
     export let changeTheme: (themeId: string) => void;
 
@@ -59,4 +53,4 @@
     </HeaderUtilities>
 </Header>
 
-<MenuLeftPanel {isSideNavOpen} {changeUIMode} {uimode} {changeTheme} />
+<MenuLeftPanel {isSideNavOpen} {changeUIMode} {changeTheme} />

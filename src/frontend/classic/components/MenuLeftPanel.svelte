@@ -20,10 +20,9 @@
     import MenuLeftPanelSelect from "./MenuLeftPanelSelect.svelte";
     import MenuLeftPanelInput from "./MenuLeftPanelInput.svelte";
     import MenuLeftPanelToggle from "./MenuLeftPanelToggle.svelte";
-
+    import { getSettingDefaultValue, storageKeys } from "../utils/storage";
     export let isSideNavOpen = false;
     export let changeUIMode: () => void;
-    export let uimode: string;
     export let changeTheme: (themeId: string) => void;
 
     function openExternalLink(uri: string) {
@@ -69,8 +68,11 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelToggle
-                    defaultValue={true}
-                    onToggle={() => console.log("toggle change")}
+                    defaultValue={getSettingDefaultValue(
+                        storageKeys.DEMO_TOGGLE,
+                        true
+                    )}
+                    storageKey={storageKeys.DEMO_TOGGLE}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
@@ -128,8 +130,12 @@
                 helperText="Display or not the hakuneko tutorial"
             >
                 <MenuLeftPanelToggle
-                    defaultValue={uimode === "ui-mode-content"}
-                    onToggle={changeUIMode}
+                    storageKey={storageKeys.SHOW_CONTENT_PANEL}
+                    defaultValue={getSettingDefaultValue(
+                        storageKeys.SHOW_CONTENT_PANEL,
+                        true
+                    )}
+                    extras={changeUIMode}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem

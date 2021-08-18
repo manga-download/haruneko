@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Select, SelectItem } from "carbon-components-svelte";
-    import { Theme } from "./Theme.svelte";
+    import type { Theme } from "./Theme.svelte";
 
     export let selected: string | undefined;
     export let items: Theme[];

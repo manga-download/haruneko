@@ -1,7 +1,25 @@
 <script lang="ts">
     import { Toggle } from "carbon-components-svelte";
-    export let defaultValue: boolean;
-    export let onToggle: () => void;
+    import type {
+        SettingExtras,
+        SettingValidator,
+        SettingValue,
+    } from "../utils/storage";
+    import { onSettingChange, castBooleanSetting } from "../utils/storage";
+
+    export let defaultValue: SettingValue;
+    export let storageKey: string;
+    export let extras: SettingExtras = undefined;
+
+    let toggled: boolean = castBooleanSetting(defaultValue);
+    const validator: SettingValidator = undefined;
 </script>
 
-<Toggle toggled={defaultValue} on:toggle={() => onToggle()} />
+<Toggle
+    {toggled}
+    on:toggle={({ detail }) => {
+        const newValue = detail.toggled;
+        onSettingChange(storageKey, newValue, extras, validator);
+        toggled = newValue;
+    }}
+/>

@@ -16,7 +16,11 @@
     import Viewer from "./components/Viewer.svelte";
     import AppBar from "./components/AppBar.svelte";
     import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
-
+    import {
+        getSettingDefaultValue,
+        storageKeys,
+        castBooleanSetting,
+    } from "./utils/storage";
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
     export const FinishLoading = new Promise<void>(
         (resolve) => (resolveFinishLoading = resolve)
@@ -42,7 +46,11 @@
     let isOpen = false;
     let theme: string;
 
-    let uimode = "ui-mode-content"; // content, download;
+    let uimode = castBooleanSetting(
+        getSettingDefaultValue(storageKeys.SHOW_CONTENT_PANEL, true)
+    )
+        ? "ui-mode-content"
+        : "ui-mode-download";
 
     let app: HTMLElement;
     onMount(async () => {
@@ -79,7 +87,6 @@
         {isSideNavOpen}
         {isOpen}
         {winMaximized}
-        {uimode}
         {changeUIMode}
         {changeTheme}
     />
