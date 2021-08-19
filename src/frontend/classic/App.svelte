@@ -44,7 +44,7 @@
     // UI
     let isSideNavOpen = false;
     let isOpen = false;
-    let theme: string;
+    let theme = getSettingDefaultValue(storageKeys.THEME, "hakuneko") as string;
 
     let uimode = castBooleanSetting(
         getSettingDefaultValue(storageKeys.SHOW_CONTENT_PANEL, true)
@@ -82,7 +82,7 @@
     $: currentContent = selectedItem ? "viewer" : "home";
 </script>
 
-<Theme persist bind:theme>
+<Theme bind:theme>
     <AppBar
         {isSideNavOpen}
         {isOpen}

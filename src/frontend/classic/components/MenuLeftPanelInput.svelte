@@ -15,7 +15,7 @@
     export let storageKey: string;
     export let extras: SettingExtras = undefined;
     export let validator: SettingValidator = undefined;
-
+    export let passNewValueToExtras: boolean = false;
     export let placeholder: string = "";
     export let defaultValue: SettingValue;
     export let type: "number" | "text" | "file" | "password" = "text";
@@ -31,7 +31,14 @@
             {placeholder}
             bind:value
             on:change={() => {
-                onSettingChange(storageKey, value, extras, validator);
+                const extrasArg = passNewValueToExtras ? value : undefined;
+                onSettingChange(
+                    storageKey,
+                    value,
+                    validator,
+                    extras,
+                    extrasArg
+                );
             }}
         />
     {:else if type === "number"}
@@ -40,7 +47,14 @@
             {min}
             {max}
             on:change={() => {
-                onSettingChange(storageKey, value, extras, validator);
+                const extrasArg = passNewValueToExtras ? value : undefined;
+                onSettingChange(
+                    storageKey,
+                    value,
+                    validator,
+                    extras,
+                    extrasArg
+                );
             }}
         />
     {:else if type === "file"}
@@ -51,7 +65,14 @@
             bind:value
             placeholder="Password"
             on:change={() => {
-                onSettingChange(storageKey, value, extras, validator);
+                const extrasArg = passNewValueToExtras ? value : undefined;
+                onSettingChange(
+                    storageKey,
+                    value,
+                    validator,
+                    extras,
+                    extrasArg
+                );
             }}
         />
     {/if}

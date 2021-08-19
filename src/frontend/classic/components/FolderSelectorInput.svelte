@@ -8,6 +8,7 @@
     export let storageKey: string | undefined = undefined;
     export let extras: SettingExtras = undefined;
     export let validator: SettingValidator = undefined;
+    export let passNewValueToExtras: boolean = false;
     export let path: string = "";
 
     const uuid = uuidv4();
@@ -23,7 +24,8 @@
         bind:value={path}
         on:change={() => {
             if (storageKey) {
-                onSettingChange(storageKey, path, extras, validator);
+                const extrasArg = passNewValueToExtras ? path : undefined;
+                onSettingChange(storageKey, path, validator, extras, extrasArg);
             }
         }}
     />

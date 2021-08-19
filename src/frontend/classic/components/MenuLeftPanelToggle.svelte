@@ -10,6 +10,7 @@
     export let defaultValue: SettingValue;
     export let storageKey: string;
     export let extras: SettingExtras = undefined;
+    export let passNewValueToExtras: boolean = false;
 
     let toggled: boolean = castBooleanSetting(defaultValue);
     const validator: SettingValidator = undefined;
@@ -19,7 +20,8 @@
     {toggled}
     on:toggle={({ detail }) => {
         const newValue = detail.toggled;
-        onSettingChange(storageKey, newValue, extras, validator);
+        const extrasArg = passNewValueToExtras ? newValue : undefined;
+        onSettingChange(storageKey, newValue, validator, extras, extrasArg);
         toggled = newValue;
     }}
 />

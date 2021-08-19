@@ -40,8 +40,6 @@
         { id: "g90", label: "Gray 90", kind: "dont care" },
         { id: "g100", label: "Gray 100", kind: "dont care" },
     ];
-
-    let currentTheme = "hakuneko";
 </script>
 
 <SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
@@ -52,9 +50,9 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelSelect
-                    selected={demoSelectItems[0].id}
+                    storageKey={storageKeys.DEMO_SELECT}
+                    defaultValue={demoSelectItems[0].id}
                     items={demoSelectItems}
-                    onChange={(newValue) => console.log(newValue)}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
@@ -183,14 +181,14 @@
                 helperText="You can select the theme of the hakuneko app"
             >
                 <MenuLeftPanelSelect
-                    selected={currentTheme}
+                    storageKey={storageKeys.THEME}
+                    defaultValue={getSettingDefaultValue(
+                        storageKeys.THEME,
+                        "hakuneko"
+                    )}
                     items={themes}
-                    onChange={(newValue) =>
-                        newValue
-                            ? changeTheme(newValue)
-                            : console.error(
-                                  `can't set theme to value : ${newValue}`
-                              )}
+                    extras={(newValue) => changeTheme(String(newValue))}
+                    passNewValueToExtras={true}
                 />
             </MenuLeftPanelItem>
         </SideNavMenu>

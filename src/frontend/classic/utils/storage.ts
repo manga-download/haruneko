@@ -1,17 +1,21 @@
-export type SettingExtras = (() => void) | undefined
-export type SettingValidator = ((value: any) => boolean) | undefined
 export type SettingValue = string | number | boolean;
+export type SettingExtras = ((extrasArg?: SettingValue) => void) | undefined
+export type SettingValidator = ((value: SettingValue) => boolean) | undefined
 
 export const onSettingChange = (
     key: string,
     value: SettingValue,
+    validator: SettingValidator,
     extras: SettingExtras,
-    validator: SettingValidator
+    extrasArg: SettingValue | undefined
 ): boolean => {
     if (!validator || (validator && validator(value))) {
         localStorage.setItem(key, value.toString());
-        if (extras) {
-            extras();
+
+        if (extras && extrasArg) {
+            extras(extrasArg);
+        } else if (extras) {
+            extras()
         }
 
         return true
@@ -29,6 +33,7 @@ export const getSettingDefaultValue = (key: string, defaultValue: SettingValue) 
 export const castBooleanSetting = (settingValue: SettingValue): boolean => settingValue === "true" || settingValue === true;
 
 export const storageKeys = {
+    DEMO_SELECT: "DEMO_SELECT",
     DEMO_TEXT_INPUT: "DEMO_TEXT_INPUT",
     DEMO_TOGGLE: "DEMO_TOGGLE",
     DEMO_NUMBER_INPUT: "DEMO_NUMBER_INPUT",
@@ -36,5 +41,6 @@ export const storageKeys = {
     DEMO_PASSWORD_INPUT: "DEMO_PASSWORD_INPUT",
     WEBSITE_1_USERNAME: "WEBSITE_1_USERNAME",
     WEBSITE_1_PASSWORD: "WEBSITE_1_PASSWORD",
-    SHOW_CONTENT_PANEL: "SHOW_CONTENT_PANEL"
+    SHOW_CONTENT_PANEL: "SHOW_CONTENT_PANEL",
+    THEME: "THEME"
 }
