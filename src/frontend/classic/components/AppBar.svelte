@@ -10,7 +10,6 @@
     import MaximizeIcon from "carbon-icons-svelte/lib/Checkbox16";
     import RestoreIcon from "carbon-icons-svelte/lib/Copy16";
     import CloseIcon from "carbon-icons-svelte/lib/Close24";
-    import { themes } from "./Theme.svelte";
     import MenuLeftPanel from "./MenuLeftPanel.svelte";
 
     export let isSideNavOpen: boolean;

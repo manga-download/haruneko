@@ -20,8 +20,8 @@
 
 <Select
     {selected}
-    on:change={(e) => {
-        const newValue = e.detail;
+    on:change={(evt) => {
+        const newValue = evt.detail;
         const extrasArg = passNewValueToExtras ? newValue : undefined;
         onSettingChange(storageKey, newValue, validator, extras, extrasArg);
     }}

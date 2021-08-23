@@ -92,10 +92,10 @@
     />
 
     <Content id="hakunekoapp">
-        <MediaSelect on:select={(e) => (selectedMedia = e.detail)} />
+        <MediaSelect on:select={(evt) => (selectedMedia = evt.detail)} />
         <MediaItemSelect
             media={selectedMedia}
-            on:view={(e) => (selectedItem = e.detail)}
+            on:view={(evt) => (selectedItem = evt.detail)}
         />
         {#if uimode === "ui-mode-content"}
             <div id="Content" transition:fade>
