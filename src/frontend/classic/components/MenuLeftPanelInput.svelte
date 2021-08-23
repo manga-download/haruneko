@@ -58,7 +58,11 @@
             }}
         />
     {:else if type === "file"}
-        <FolderSelectorInput {storageKey} path={value} />
+        <FolderSelectorInput
+            {storageKey}
+            path={value}
+            componentId={storageKey}
+        />
     {:else if type === "password"}
         <PasswordInput
             hideLabel

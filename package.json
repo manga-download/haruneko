@@ -10,8 +10,7 @@
     "npm": ">=7.6.0"
   },
   "dependencies": {
-    "fs-extra": "latest",
-    "uuid": "^8.3.2"
+    "fs-extra": "latest"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "latest",

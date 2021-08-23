@@ -10,15 +10,14 @@
     export let validator: SettingValidator = undefined;
     export let passNewValueToExtras: boolean = false;
     export let path: string = "";
-
-    const uuid = uuidv4();
+    export let componentId: string;
 </script>
 
 <div>
     <TextInput readonly value={path} />
-    <label for={`folder-selector-${uuid}`}>{labelText}</label>
+    <label for={`folder-selector-${componentId}`}>{labelText}</label>
     <input
-        id={`folder-selector-${uuid}`}
+        id={`folder-selector-${componentId}`}
         type="file"
         nwdirectory
         bind:value={path}
