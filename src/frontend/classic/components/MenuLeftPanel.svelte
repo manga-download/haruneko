@@ -29,10 +29,6 @@
         nw.Shell.openExternal(uri);
     }
 
-    const win = nw.Window.get();
-
-    $: sideNavStyle = isSideNavOpen ? `min-width: ${win.width / 2}px;` : "";
-
     const demoSelectItems = [
         { id: "white", label: "White", kind: "dont care" },
         { id: "g10", label: "Gray 10", kind: "dont care" },
@@ -42,7 +38,7 @@
     ];
 </script>
 
-<SideNav bind:isOpen={isSideNavOpen} style={sideNavStyle}>
+<SideNav bind:isOpen={isSideNavOpen}>
     <SideNavItems>
         <SideNavMenu text="Input Demo">
             <MenuLeftPanelItem
