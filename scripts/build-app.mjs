@@ -12,9 +12,6 @@ async function createApplicationManifest() {
     const manifest = {
         name: pkgConfig.title,
         description: pkgConfig.description,
-        // --enable-automation is use to disable password saving bubble
-        // https://github.com/GoogleChrome/chrome-launcher/issues/32
-        'chromium-args': '--ignore-certificate-errors --enable-automation',
         main: argv.url + '/index.html',
         'node-remote': [
             argv.url + '/*'
