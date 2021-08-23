@@ -1,83 +1,50 @@
 <script lang="ts">
+    import type { Writable } from "svelte/store";
+    import type { SettingValidator } from "../utils/storage";
     import {
         TextInput,
         NumberInput,
         PasswordInput,
     } from "carbon-components-svelte";
-    import type {
-        SettingExtras,
-        SettingValidator,
-        SettingValue,
-    } from "../utils/storage";
-    import { onSettingChange } from "../utils/storage";
+    import { updateStoreValue } from "../utils/storage";
     import FolderSelectorInput from "./FolderSelectorInput.svelte";
 
+    export let store: Writable<string | number>;
     export let storageKey: string;
-    export let extras: SettingExtras = undefined;
     export let validator: SettingValidator = undefined;
-    export let passNewValueToExtras: boolean = false;
     export let placeholder: string = "";
-    export let defaultValue: SettingValue;
     export let type: "number" | "text" | "file" | "password" = "text";
     export let min: number | undefined = undefined;
     export let max: number | undefined = undefined;
 
-    let value = defaultValue as string;
+    let storeValue = $store;
 </script>
 
 <div class="text-input-wrapper">
     {#if type === "text"}
         <TextInput
             {placeholder}
-            bind:value
-            on:change={() => {
-                const extrasArg = passNewValueToExtras ? value : undefined;
-                onSettingChange(
-                    storageKey,
-                    value,
-                    validator,
-                    extras,
-                    extrasArg
-                );
-            }}
+            bind:value={storeValue}
+            on:change={() =>
+                updateStoreValue(store, storageKey, storeValue, validator)}
         />
     {:else if type === "number"}
         <NumberInput
-            bind:value
+            bind:value={storeValue}
             {min}
             {max}
-            on:change={() => {
-                const extrasArg = passNewValueToExtras ? value : undefined;
-                onSettingChange(
-                    storageKey,
-                    value,
-                    validator,
-                    extras,
-                    extrasArg
-                );
-            }}
+            on:change={() =>
+                updateStoreValue(store, storageKey, storeValue, validator)}
         />
     {:else if type === "file"}
-        <FolderSelectorInput
-            {storageKey}
-            path={value}
-            componentId={storageKey}
-        />
+        <FolderSelectorInput {storageKey} {store} componentId={storageKey} />
     {:else if type === "password"}
         <PasswordInput
             hideLabel
-            bind:value
+            bind:value={storeValue}
             placeholder="Password"
-            on:change={() => {
-                const extrasArg = passNewValueToExtras ? value : undefined;
-                onSettingChange(
-                    storageKey,
-                    value,
-                    validator,
-                    extras,
-                    extrasArg
-                );
-            }}
+            on:change={() =>
+                updateStoreValue(store, storageKey, storeValue, validator)}
         />
     {/if}
 </div>

@@ -20,10 +20,20 @@
     import MenuLeftPanelSelect from "./MenuLeftPanelSelect.svelte";
     import MenuLeftPanelInput from "./MenuLeftPanelInput.svelte";
     import MenuLeftPanelToggle from "./MenuLeftPanelToggle.svelte";
-    import { getSettingDefaultValue, storageKeys } from "../utils/storage";
+    import {
+        settings,
+        demoTextInput,
+        demoNumberInput,
+        demoFileInput,
+        demoPasswordInput,
+        demoToggle,
+        website1Username,
+        website1Password,
+        demoSelect,
+        theme,
+        showContentPanel,
+    } from "../utils/storage";
     export let isSideNavOpen = false;
-    export let changeUIMode: () => void;
-    export let changeTheme: (themeId: string) => void;
 
     function openExternalLink(uri: string) {
         nw.Shell.openExternal(uri);
@@ -46,8 +56,8 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelSelect
-                    storageKey={storageKeys.DEMO_SELECT}
-                    defaultValue={demoSelectItems[0].id}
+                    store={demoSelect}
+                    storageKey={settings.DEMO_SELECT.KEY}
                     items={demoSelectItems}
                 />
             </MenuLeftPanelItem>
@@ -56,12 +66,9 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelInput
+                    storageKey={settings.DEMO_TEXT_INPUT.KEY}
+                    store={demoTextInput}
                     placeholder="Type something"
-                    storageKey={storageKeys.DEMO_TEXT_INPUT}
-                    defaultValue={getSettingDefaultValue(
-                        storageKeys.DEMO_TEXT_INPUT,
-                        ""
-                    )}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
@@ -69,11 +76,8 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelToggle
-                    defaultValue={getSettingDefaultValue(
-                        storageKeys.DEMO_TOGGLE,
-                        true
-                    )}
-                    storageKey={storageKeys.DEMO_TOGGLE}
+                    store={demoToggle}
+                    storageKey={settings.DEMO_TOGGLE.KEY}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
@@ -81,11 +85,8 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelInput
-                    storageKey={storageKeys.DEMO_NUMBER_INPUT}
-                    defaultValue={getSettingDefaultValue(
-                        storageKeys.DEMO_NUMBER_INPUT,
-                        ""
-                    )}
+                    store={demoNumberInput}
+                    storageKey={settings.DEMO_NUMBER_INPUT.KEY}
                     type="number"
                     min={3}
                     max={5}
@@ -96,12 +97,9 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelInput
+                    store={demoFileInput}
+                    storageKey={settings.DEMO_FILE_INPUT.KEY}
                     type="file"
-                    storageKey={storageKeys.DEMO_FILE_INPUT}
-                    defaultValue={getSettingDefaultValue(
-                        storageKeys.DEMO_FILE_INPUT,
-                        ""
-                    )}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
@@ -109,12 +107,9 @@
                 helperText="This is an example of helper text"
             >
                 <MenuLeftPanelInput
+                    store={demoPasswordInput}
+                    storageKey={settings.DEMO_PASSWORD_INPUT.KEY}
                     type="password"
-                    storageKey={storageKeys.DEMO_PASSWORD_INPUT}
-                    defaultValue={getSettingDefaultValue(
-                        storageKeys.DEMO_PASSWORD_INPUT,
-                        ""
-                    )}
                 />
             </MenuLeftPanelItem>
         </SideNavMenu>
@@ -127,12 +122,9 @@
                         helperText="This is an example of helper text"
                     >
                         <MenuLeftPanelInput
+                            store={website1Username}
+                            storageKey={settings.WEBSITE_1_USERNAME.KEY}
                             placeholder="Username"
-                            storageKey={storageKeys.WEBSITE_1_USERNAME}
-                            defaultValue={getSettingDefaultValue(
-                                storageKeys.WEBSITE_1_USERNAME,
-                                ""
-                            )}
                         />
                     </MenuLeftPanelItem>
                     <MenuLeftPanelItem
@@ -140,13 +132,10 @@
                         helperText="This is an example of helper text"
                     >
                         <MenuLeftPanelInput
+                            store={website1Password}
+                            storageKey={settings.WEBSITE_1_PASSWORD.KEY}
                             type="password"
                             placeholder="Password"
-                            storageKey={storageKeys.WEBSITE_1_PASSWORD}
-                            defaultValue={getSettingDefaultValue(
-                                storageKeys.WEBSITE_1_PASSWORD,
-                                ""
-                            )}
                         />
                     </MenuLeftPanelItem>
                 </SideNavMenu>
@@ -164,12 +153,8 @@
                 helperText="Display or not the hakuneko tutorial"
             >
                 <MenuLeftPanelToggle
-                    storageKey={storageKeys.SHOW_CONTENT_PANEL}
-                    defaultValue={getSettingDefaultValue(
-                        storageKeys.SHOW_CONTENT_PANEL,
-                        true
-                    )}
-                    extras={changeUIMode}
+                    store={showContentPanel}
+                    storageKey={settings.SHOW_CONTENT_PANEL.KEY}
                 />
             </MenuLeftPanelItem>
             <MenuLeftPanelItem
@@ -177,14 +162,9 @@
                 helperText="You can select the theme of the hakuneko app"
             >
                 <MenuLeftPanelSelect
-                    storageKey={storageKeys.THEME}
-                    defaultValue={getSettingDefaultValue(
-                        storageKeys.THEME,
-                        "hakuneko"
-                    )}
+                    store={theme}
+                    storageKey={settings.THEME.KEY}
                     items={themes}
-                    extras={(newValue) => changeTheme(String(newValue))}
-                    passNewValueToExtras={true}
                 />
             </MenuLeftPanelItem>
         </SideNavMenu>

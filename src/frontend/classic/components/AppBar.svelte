@@ -15,8 +15,6 @@
     export let isSideNavOpen: boolean;
     export let winMaximized: boolean;
     export let isOpen: boolean;
-    export let changeUIMode: () => void;
-    export let changeTheme: (themeId: string) => void;
 
     const win = nw.Window.get();
 </script>
@@ -52,4 +50,4 @@
     </HeaderUtilities>
 </Header>
 
-<MenuLeftPanel {isSideNavOpen} {changeUIMode} {changeTheme} />
+<MenuLeftPanel {isSideNavOpen} />

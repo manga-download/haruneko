@@ -1,30 +1,29 @@
 <script lang="ts">
+    import type { SettingValidator } from "../utils/storage";
+    import type { Writable } from "svelte/store";
     import { TextInput } from "carbon-components-svelte";
-    import { onSettingChange } from "../utils/storage";
-    import type { SettingExtras, SettingValidator } from "../utils/storage";
-    import { v4 as uuidv4 } from "uuid";
+    import { updateStoreValue } from "../utils/storage";
 
     export let labelText = "Select directory";
     export let storageKey: string | undefined = undefined;
-    export let extras: SettingExtras = undefined;
     export let validator: SettingValidator = undefined;
-    export let passNewValueToExtras: boolean = false;
-    export let path: string = "";
     export let componentId: string;
+    export let store: Writable<string | number>;
+
+    let storeValue = String($store);
 </script>
 
 <div>
-    <TextInput readonly value={path} />
+    <TextInput readonly value={storeValue} />
     <label for={`folder-selector-${componentId}`}>{labelText}</label>
     <input
         id={`folder-selector-${componentId}`}
         type="file"
         nwdirectory
-        bind:value={path}
+        bind:value={storeValue}
         on:change={() => {
             if (storageKey) {
-                const extrasArg = passNewValueToExtras ? path : undefined;
-                onSettingChange(storageKey, path, validator, extras, extrasArg);
+                updateStoreValue(store, storageKey, storeValue, validator);
             }
         }}
     />

@@ -2,7 +2,6 @@
     import "carbon-components-svelte/css/all.css";
     import "./theme/hakuneko.css";
     import "./theme/sidenav-hack.css";
-
     import { Content, Tabs, Tab, TabContent } from "carbon-components-svelte";
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
@@ -16,11 +15,8 @@
     import Viewer from "./components/Viewer.svelte";
     import AppBar from "./components/AppBar.svelte";
     import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
-    import {
-        getSettingDefaultValue,
-        storageKeys,
-        castBooleanSetting,
-    } from "./utils/storage";
+    import { showContentPanel, theme } from "./utils/storage";
+
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
     export const FinishLoading = new Promise<void>(
         (resolve) => (resolveFinishLoading = resolve)
@@ -44,15 +40,9 @@
     // UI
     let isSideNavOpen = false;
     let isOpen = false;
-    let theme = getSettingDefaultValue(storageKeys.THEME, "hakuneko") as string;
-
-    let uimode = castBooleanSetting(
-        getSettingDefaultValue(storageKeys.SHOW_CONTENT_PANEL, true)
-    )
-        ? "ui-mode-content"
-        : "ui-mode-download";
 
     let app: HTMLElement;
+
     onMount(async () => {
         app = document.getElementById("hakunekoapp")!;
         app.classList.add(uimode);
@@ -60,37 +50,28 @@
         setTimeout(resolveFinishLoading, 2500);
     });
 
-    function changeUIMode() {
-        app.classList.remove(uimode);
-        uimode =
-            uimode === "ui-mode-content"
-                ? "ui-mode-download"
-                : "ui-mode-content";
-        app.classList.add(uimode);
-    }
-
-    function changeTheme(themeId: string) {
-        theme = themeId;
-    }
-
     let selectedMedia: IMediaContainer | undefined;
     let selectedItem: IMediaContainer | undefined;
     let selectedBottomTab = 0;
     let currentContent = "home";
     let showHome = true;
 
+    $: uimode = $showContentPanel ? "ui-mode-content" : "ui-mode-download";
+
+    $: if (app) {
+        const oldUimode =
+            uimode === "ui-mode-content"
+                ? "ui-mode-download"
+                : "ui-mode-content";
+        app.classList.remove(oldUimode);
+        app.classList.add(uimode);
+    }
+
     $: currentContent = selectedItem ? "viewer" : "home";
 </script>
 
-<Theme bind:theme>
-    <AppBar
-        {isSideNavOpen}
-        {isOpen}
-        {winMaximized}
-        {changeUIMode}
-        {changeTheme}
-    />
-
+<Theme bind:theme={$theme}>
+    <AppBar {isSideNavOpen} {isOpen} {winMaximized} />
     <Content id="hakunekoapp">
         <MediaSelect on:select={(evt) => (selectedMedia = evt.detail)} />
         <MediaItemSelect

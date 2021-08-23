@@ -1,30 +1,24 @@
 <script lang="ts">
+    import type { SettingValidator } from "../utils/storage";
+    import type { Writable } from "svelte/store";
+    import { updateStoreValue } from "../utils/storage";
     import { Select, SelectItem } from "carbon-components-svelte";
-    import type {
-        SettingExtras,
-        SettingValidator,
-        SettingValue,
-    } from "../utils/storage";
-    import { onSettingChange } from "../utils/storage";
-    import type { Theme } from "./Theme.svelte";
 
-    export let defaultValue: SettingValue;
+    type SelectItem = {
+        id: string;
+        label: string;
+    };
+
+    export let store: Writable<string>;
     export let storageKey: string;
-    export let extras: SettingExtras = undefined;
     export let validator: SettingValidator = undefined;
-    export let passNewValueToExtras: boolean = false;
-    export let items: Theme[];
-
-    let selected: string = defaultValue as string;
+    export let items: SelectItem[];
 </script>
 
 <Select
-    {selected}
-    on:change={(evt) => {
-        const newValue = evt.detail;
-        const extrasArg = passNewValueToExtras ? newValue : undefined;
-        onSettingChange(storageKey, newValue, validator, extras, extrasArg);
-    }}
+    selected={$store}
+    on:change={(evt) =>
+        updateStoreValue(store, storageKey, evt.detail, validator)}
 >
     {#each items as item}
         <SelectItem value={item.id} text={item.label} />
