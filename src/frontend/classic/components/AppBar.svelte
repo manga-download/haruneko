@@ -11,6 +11,11 @@
     import RestoreIcon from "carbon-icons-svelte/lib/Copy16";
     import CloseIcon from "carbon-icons-svelte/lib/Close24";
     import MenuLeftPanel from "./MenuLeftPanel.svelte";
+    import { themes } from "./Theme.svelte";
+    import SettingItem from "./SettingItem.svelte";
+    import SettingSelect from "./SettingSelect.svelte";
+    import SettingToggle from "./SettingToggle.svelte";
+    import { settings, theme, showContentPanel } from "../utils/storage";
 
     export let isSideNavOpen: boolean;
     export let winMaximized: boolean;
@@ -46,7 +51,27 @@
             aria-label="Close"
             icon={CloseIcon}
         />
-        <HeaderAction bind:isOpen />
+        <HeaderAction bind:isOpen>
+            <SettingItem
+                labelText="Show content panel"
+                helperText="Display or not the hakuneko tutorial"
+            >
+                <SettingToggle
+                    store={showContentPanel}
+                    storageKey={settings.SHOW_CONTENT_PANEL.KEY}
+                />
+            </SettingItem>
+            <SettingItem
+                labelText="Themes"
+                helperText="You can select the theme of the hakuneko app"
+            >
+                <SettingSelect
+                    store={theme}
+                    storageKey={settings.THEME.KEY}
+                    items={themes}
+                />
+            </SettingItem>
+        </HeaderAction>
     </HeaderUtilities>
 </Header>
 

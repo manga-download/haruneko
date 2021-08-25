@@ -16,10 +16,10 @@
     import Image16 from "carbon-icons-svelte/lib/Image16";
     import Location16 from "carbon-icons-svelte/lib/Location16";
     import { themes } from "./Theme.svelte";
-    import MenuLeftPanelItem from "./MenuLeftPanelItem.svelte";
-    import MenuLeftPanelSelect from "./MenuLeftPanelSelect.svelte";
-    import MenuLeftPanelInput from "./MenuLeftPanelInput.svelte";
-    import MenuLeftPanelToggle from "./MenuLeftPanelToggle.svelte";
+    import SettingItem from "./SettingItem.svelte";
+    import SettingSelect from "./SettingSelect.svelte";
+    import SettingInput from "./SettingInput.svelte";
+    import SettingToggle from "./SettingToggle.svelte";
     import {
         settings,
         demoTextInput,
@@ -51,122 +51,122 @@
 <SideNav bind:isOpen={isSideNavOpen}>
     <SideNavItems>
         <SideNavMenu text="Input Demo">
-            <MenuLeftPanelItem
+            <SettingItem
                 labelText="Demo Select"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelSelect
+                <SettingSelect
                     store={demoSelect}
                     storageKey={settings.DEMO_SELECT.KEY}
                     items={demoSelectItems}
                 />
-            </MenuLeftPanelItem>
-            <MenuLeftPanelItem
+            </SettingItem>
+            <SettingItem
                 labelText="Demo TextInput"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelInput
+                <SettingInput
                     storageKey={settings.DEMO_TEXT_INPUT.KEY}
                     store={demoTextInput}
                     placeholder="Type something"
                 />
-            </MenuLeftPanelItem>
-            <MenuLeftPanelItem
+            </SettingItem>
+            <SettingItem
                 labelText="Demo toggle"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelToggle
+                <SettingToggle
                     store={demoToggle}
                     storageKey={settings.DEMO_TOGGLE.KEY}
                 />
-            </MenuLeftPanelItem>
-            <MenuLeftPanelItem
+            </SettingItem>
+            <SettingItem
                 labelText="Demo Number input"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelInput
+                <SettingInput
                     store={demoNumberInput}
                     storageKey={settings.DEMO_NUMBER_INPUT.KEY}
                     type="number"
                     min={3}
                     max={5}
                 />
-            </MenuLeftPanelItem>
-            <MenuLeftPanelItem
+            </SettingItem>
+            <SettingItem
                 labelText="Demo File input"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelInput
+                <SettingInput
                     store={demoFileInput}
                     storageKey={settings.DEMO_FILE_INPUT.KEY}
                     type="file"
                 />
-            </MenuLeftPanelItem>
-            <MenuLeftPanelItem
+            </SettingItem>
+            <SettingItem
                 labelText="Demo PasswordInput"
                 helperText="This is an example of helper text"
             >
-                <MenuLeftPanelInput
+                <SettingInput
                     store={demoPasswordInput}
                     storageKey={settings.DEMO_PASSWORD_INPUT.KEY}
                     type="password"
                 />
-            </MenuLeftPanelItem>
+            </SettingItem>
         </SideNavMenu>
         <SideNavMenu text="General" />
         <SideNavMenu text="Websites">
-            <MenuLeftPanelItem type="sub-menu">
+            <SettingItem type="sub-menu">
                 <SideNavMenu text="Website1">
-                    <MenuLeftPanelItem
+                    <SettingItem
                         labelText="Username"
                         helperText="This is an example of helper text"
                     >
-                        <MenuLeftPanelInput
+                        <SettingInput
                             store={website1Username}
                             storageKey={settings.WEBSITE_1_USERNAME.KEY}
                             placeholder="Username"
                         />
-                    </MenuLeftPanelItem>
-                    <MenuLeftPanelItem
+                    </SettingItem>
+                    <SettingItem
                         labelText="Password"
                         helperText="This is an example of helper text"
                     >
-                        <MenuLeftPanelInput
+                        <SettingInput
                             store={website1Password}
                             storageKey={settings.WEBSITE_1_PASSWORD.KEY}
                             type="password"
                             placeholder="Password"
                         />
-                    </MenuLeftPanelItem>
+                    </SettingItem>
                 </SideNavMenu>
-            </MenuLeftPanelItem>
-            <MenuLeftPanelItem type="sub-menu">
+            </SettingItem>
+            <SettingItem type="sub-menu">
                 <SideNavMenu text="Website2" />
-            </MenuLeftPanelItem>
-            <MenuLeftPanelItem type="sub-menu">
+            </SettingItem>
+            <SettingItem type="sub-menu">
                 <SideNavMenu text="Website3" />
-            </MenuLeftPanelItem>
+            </SettingItem>
         </SideNavMenu>
         <SideNavMenu text="UI">
-            <MenuLeftPanelItem
+            <SettingItem
                 labelText="Show content panel"
                 helperText="Display or not the hakuneko tutorial"
             >
-                <MenuLeftPanelToggle
+                <SettingToggle
                     store={showContentPanel}
                     storageKey={settings.SHOW_CONTENT_PANEL.KEY}
                 />
-            </MenuLeftPanelItem>
-            <MenuLeftPanelItem
+            </SettingItem>
+            <SettingItem
                 labelText="Themes"
                 helperText="You can select the theme of the hakuneko app"
             >
-                <MenuLeftPanelSelect
+                <SettingSelect
                     store={theme}
                     storageKey={settings.THEME.KEY}
                     items={themes}
                 />
-            </MenuLeftPanelItem>
+            </SettingItem>
         </SideNavMenu>
         <SideNavMenu text="Help">
             <SideNavLink
