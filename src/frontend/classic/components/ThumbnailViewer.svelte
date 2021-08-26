@@ -4,7 +4,7 @@
 
     export let item: IMediaContainer;
     export let throttlingDelay: number;
-    export let toggleWideViewer: () => void;
+    export let toggleWideViewer: (currentImage: number) => void;
 </script>
 
 {#each item.Entries as content, index}
@@ -12,6 +12,6 @@
         src={content.SourceURL}
         throttlingDelay={throttlingDelay * index + 1}
         title="Page {index}"
-        handleClick={toggleWideViewer}
+        handleClick={() => toggleWideViewer(index)}
     />
 {/each}

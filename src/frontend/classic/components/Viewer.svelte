@@ -1,13 +1,14 @@
 <script lang="ts">
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
     import ThumbnailViewer from "./ThumbnailViewer.svelte";
-    import WideViewer from "./WIdeViewer.svelte";
+    import WideViewer from "./WideViewer.svelte";
     import VideoViewer from "./VideoViewer.svelte";
 
     type Mode = "Thumbnail" | "Wide" | "Video";
 
     export let item: IMediaContainer;
     export let mode: Mode = "Thumbnail";
+    let currentImage: number = 0;
     let throttlingDelay = 1000;
 
     let update: Promise<void> | undefined;
@@ -16,7 +17,8 @@
     function toggleThumbnailViewer() {
         mode = "Thumbnail";
     }
-    function toggleWideViewer() {
+    function toggleWideViewer(imageIndex: number) {
+        currentImage = imageIndex;
         mode = "Wide";
     }
 </script>
@@ -29,7 +31,12 @@
             {#if mode === "Thumbnail"}
                 <ThumbnailViewer {item} {throttlingDelay} {toggleWideViewer} />
             {:else if mode === "Wide"}
-                <WideViewer {item} {throttlingDelay} {toggleThumbnailViewer} />
+                <WideViewer
+                    {item}
+                    {currentImage}
+                    {throttlingDelay}
+                    {toggleThumbnailViewer}
+                />
             {:else if mode === "Video"}
                 <VideoViewer />
             {:else}
