@@ -15,12 +15,19 @@
     const maxImageWidth = 100;
     let imageWidth: number;
 
-    let isDoublePage = true;
+    let isDoublePage = false;
+    let isInversed = false;
 
     const handleKeyDown = (evt: KeyboardEvent) => {
-        if (evt.key === "ArrowRight") {
+        if (
+            (!isInversed && evt.key === "ArrowRight") ||
+            (isInversed && evt.key === "ArrowLeft")
+        ) {
             incrementCurrentImage();
-        } else if (evt.key === "ArrowLeft") {
+        } else if (
+            (!isInversed && evt.key === "ArrowLeft") ||
+            (isInversed && evt.key === "ArrowRight")
+        ) {
             decrementCurrentImage();
         }
     };
@@ -72,22 +79,24 @@
     on:resize={() => setImageWidth()}
 />
 {#if isDoublePage}
-    <WideViewerImage
-        alt="content_{currentImage}"
-        src={getImageUrl(currentImage)}
-        class="manga-image double-page-image"
-        style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-left: {imagePadding}em; padding-right: {imagePadding /
-            2}em;"
-        {throttlingDelay}
-    />
-    <WideViewerImage
-        alt="content_{currentImage}"
-        src={getImageUrl(nextImage)}
-        class="manga-image double-page-image"
-        style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-right: {imagePadding}em; padding-left: {imagePadding /
-            2}em;"
-        {throttlingDelay}
-    />
+    <div class={isInversed ? "is-inversed" : ""}>
+        <WideViewerImage
+            alt="content_{currentImage}"
+            src={getImageUrl(currentImage)}
+            class="manga-image double-page-image"
+            style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-left: {imagePadding}em; padding-right: {imagePadding /
+                2}em;"
+            {throttlingDelay}
+        />
+        <WideViewerImage
+            alt="content_{currentImage}"
+            src={getImageUrl(nextImage)}
+            class="manga-image double-page-image"
+            style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-right: {imagePadding}em; padding-left: {imagePadding /
+                2}em;"
+            {throttlingDelay}
+        />
+    </div>
 {:else}
     <WideViewerImage
         alt="content_{currentImage}"
@@ -99,4 +108,12 @@
 {/if}
 
 <style>
+    div {
+        display: flex;
+        width: 100%;
+    }
+
+    .is-inversed {
+        flex-flow: row-reverse;
+    }
 </style>
