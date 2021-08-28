@@ -39,4 +39,16 @@
     video::-webkit-media-controls-fullscreen-button {
         display: none;
     }
+
+    /* hack to allow video to expand size when wrapped in subtitle container 
+        .ASS-container,.ASS-container svg
+    */
+    /* .ASS-container {
+        width: 100% !important;
+        height: 100% !important;
+    } */
+    /* hack to show subtitles when video is in fullscreen mode */
+    /* .ASS-stage {
+        z-index: 2147483647;
+    } */
 </style>

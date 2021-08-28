@@ -5,15 +5,17 @@
     export let item: IMediaContainer;
     export let throttlingDelay: number;
     export let imagePadding: number;
-    export let imageWidth: number;
+    let imageWidth = 75;
 </script>
 
 {#each item.Entries as content, index}
     <WideViewerImage
         alt="content_{index}"
         src={content.SourceURL}
-        {imagePadding}
-        {imageWidth}
+        style="padding: {imagePadding}em; width: {imageWidth}%"
         throttlingDelay={throttlingDelay * index}
     />
 {/each}
+
+<style>
+</style>

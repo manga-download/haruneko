@@ -10,20 +10,33 @@
     export let currentImage: number;
 
     let wideMode: "webtoon" | "manga" = "manga";
-    let imageWidth = 75;
     let imagePadding = 2;
     const title = item?.Parent?.Title ?? "unkown";
 </script>
 
-<WideViewerSetting {title} {toggleThumbnailViewer} />
-{#if wideMode === "webtoon"}
-    <WebtoonViewer {item} {throttlingDelay} {imagePadding} {imageWidth} />
-{:else if wideMode === "manga"}
-    <MangaViewer
-        {item}
-        {currentImage}
-        {throttlingDelay}
-        {imagePadding}
-        {imageWidth}
-    />
-{/if}
+<div class={wideMode}>
+    <WideViewerSetting {title} {toggleThumbnailViewer} />
+    {#if wideMode === "webtoon"}
+        <WebtoonViewer {item} {throttlingDelay} {imagePadding} />
+    {:else if wideMode === "manga"}
+        <MangaViewer {item} {currentImage} {throttlingDelay} {imagePadding} />
+    {/if}
+</div>
+
+<style>
+    div {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        position: absolute;
+        overflow-y: scroll;
+        z-index: 9000;
+        background-color: var(--cds-ui-01);
+    }
+
+    .manga {
+        display: flex;
+        align-items: center;
+    }
+</style>
