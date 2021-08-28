@@ -14,6 +14,8 @@
     const maxImageWidth = 100;
     let imageWidth: number;
 
+    let isDoblePage = true;
+
     const handleKeyDown = (evt: KeyboardEvent) => {
         if (evt.key === "ArrowRight") {
             incrementCurrentImage();
@@ -60,10 +62,26 @@
     on:keydown={(evt) => handleKeyDown(evt)}
     on:resize={() => setImageWidth()}
 />
-
-<WideViewerImage
-    alt="content_{currentImage}"
-    src={item.Entries[currentImage].SourceURL}
-    style="padding: {imagePadding}em; width: {imageWidth}%; max-height: 100%;"
-    {throttlingDelay}
-/>
+{#if isDoblePage}
+    <WideViewerImage
+        alt="content_{currentImage}"
+        src={item.Entries[currentImage].SourceURL}
+        style="padding: {imagePadding}em; width: {imageWidth /
+            2}%; max-height: 100%;"
+        {throttlingDelay}
+    />
+    <WideViewerImage
+        alt="content_{currentImage}"
+        src={item.Entries[currentImage + 1].SourceURL1}
+        style="padding: {imagePadding}em; width: {imageWidth /
+            2}%; max-height: 100%;"
+        {throttlingDelay}
+    />
+{:else}
+    <WideViewerImage
+        alt="content_{currentImage}"
+        src={item.Entries[currentImage].SourceURL}
+        style="padding: {imagePadding}em; width: {imageWidth}%; max-height: 100%;"
+        {throttlingDelay}
+    />
+{/if}
