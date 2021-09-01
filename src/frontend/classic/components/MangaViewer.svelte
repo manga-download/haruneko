@@ -1,22 +1,28 @@
 <script lang="ts">
-    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
+    import type {
+        IMediaContainer,
+        IMediaChild,
+    } from "../../../engine/providers/MediaPlugin";
     import WideViewerImage from "./WideViewerImage.svelte";
     import { onMount } from "svelte";
+    import { preloadImage } from "../utils/image";
+    import { Chapter } from "../../../engine/providers/MangaPlugin";
+
+    type ChapterImages = { src: string; nextSrc: string | undefined };
 
     export let item: IMediaContainer;
     export let throttlingDelay: number;
     export let imagePadding: number;
-    export let currentImage: number;
-    $: nextImage = currentImage + 1;
+    export let currentImageIndex: number;
 
+    let chapterImages: ChapterImages[] | undefined = undefined;
     const carbonLgBreakpoint = 1056;
     const carbonMaxBreakpoint = 1584;
     const minImageWidth = 50;
     const maxImageWidth = 100;
     let imageWidth: number;
-
-    let isDoublePage = false;
-    let isInversed = false;
+    let isDoublePageModeActive = true;
+    let isInversed = true;
 
     const handleKeyDown = (evt: KeyboardEvent) => {
         if (
@@ -33,17 +39,14 @@
     };
 
     const incrementCurrentImage = () => {
-        if (
-            (!isDoublePage && currentImage < item.Entries.length - 1) ||
-            (isDoublePage && nextImage < item.Entries.length - 1)
-        ) {
-            currentImage = isDoublePage ? currentImage + 2 : currentImage + 1;
+        if (chapterImages && currentImageIndex < chapterImages.length - 1) {
+            currentImageIndex += 1;
         }
     };
 
     const decrementCurrentImage = () => {
-        if (currentImage > 0) {
-            currentImage = isDoublePage ? currentImage - 2 : currentImage - 1;
+        if (currentImageIndex > 0) {
+            currentImageIndex -= 1;
         }
     };
 
@@ -64,13 +67,82 @@
         }
     };
 
-    const getImageUrl = (imageNumber: number) =>
-        imageNumber <= item.Entries.length - 1
-            ? item.Entries[imageNumber].SourceURL
-            : "";
+    const getPromiseImages = (
+        entries: IMediaChild[]
+    ): Promise<HTMLImageElement>[] => {
+        return entries.map(async (entrie, index) => {
+            const delay = throttlingDelay * index;
+            await preloadImage(entrie.SourceURL, delay);
 
-    onMount(() => {
+            const img = new Image();
+            img.src = entrie.SourceURL;
+
+            return img;
+        });
+    };
+
+    const awaitPromiseImages = async (
+        promiseImages: Promise<HTMLImageElement>[]
+    ): Promise<HTMLImageElement[]> => {
+        const images: HTMLImageElement[] = [];
+
+        for (const promiseImage of promiseImages) {
+            const image = await promiseImage;
+            images.push(image);
+        }
+
+        return images;
+    };
+
+    const convertImagesToChapterImages = (
+        images: HTMLImageElement[]
+    ): ChapterImages[] => {
+        const chapterImages: ChapterImages[] = [];
+        let i = 0;
+
+        while (i < images.length) {
+            let nextSrc: string | undefined = undefined;
+
+            // should display two image
+            if (
+                isDoublePageModeActive &&
+                images[i].width < images[i].height &&
+                images[i + 1].width < images[i + 1].height
+            ) {
+                nextSrc = images[i + 1].src;
+            }
+
+            const chapterImage = {
+                src: images[i].src,
+                nextSrc,
+            };
+
+            chapterImages.push(chapterImage);
+
+            if (chapterImage.nextSrc) {
+                // because we already process the i+1 image
+                i += 2;
+            } else {
+                i++;
+            }
+        }
+
+        return chapterImages;
+    };
+
+    // Convert URLs to a useful data structure
+    const getChapterImages = async (): Promise<ChapterImages[]> => {
+        const promiseImages = getPromiseImages(item.Entries);
+
+        // We await all promises to have an HTMLImageElement[] instead of Promise<HTMLImageElement>[]
+        const images = await awaitPromiseImages(promiseImages);
+
+        return convertImagesToChapterImages(images);
+    };
+
+    onMount(async () => {
         setImageWidth();
+        chapterImages = await getChapterImages();
     });
 </script>
 
@@ -78,42 +150,60 @@
     on:keydown={(evt) => handleKeyDown(evt)}
     on:resize={() => setImageWidth()}
 />
-{#if isDoublePage}
-    <div class={isInversed ? "is-inversed" : ""}>
-        <WideViewerImage
-            alt="content_{currentImage}"
-            src={getImageUrl(currentImage)}
-            class="manga-image double-page-image"
-            style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-left: {imagePadding}em; padding-right: {imagePadding /
-                2}em;"
-            {throttlingDelay}
-        />
-        <WideViewerImage
-            alt="content_{currentImage}"
-            src={getImageUrl(nextImage)}
-            class="manga-image double-page-image"
-            style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-right: {imagePadding}em; padding-left: {imagePadding /
-                2}em;"
-            {throttlingDelay}
-        />
-    </div>
-{:else}
-    <WideViewerImage
-        alt="content_{currentImage}"
-        src={getImageUrl(currentImage)}
-        class="manga-image"
-        style="padding: {imagePadding}em; width: {imageWidth}%; ;"
-        {throttlingDelay}
-    />
+
+{#if chapterImages}
+    {#each chapterImages as chapterImage, index}
+        {#if chapterImage.nextSrc !== undefined}
+            <div
+                class={currentImageIndex === index && isInversed
+                    ? "current is-inversed"
+                    : currentImageIndex === index
+                    ? "current"
+                    : ""}
+            >
+                <WideViewerImage
+                    alt="content_{currentImageIndex}"
+                    src={chapterImage.src}
+                    class="manga-image double-page-image"
+                    style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-left: {imagePadding}em; padding-right: {imagePadding /
+                        2}em;"
+                    {throttlingDelay}
+                />
+                <WideViewerImage
+                    alt="content_{currentImageIndex}"
+                    src={chapterImage.nextSrc}
+                    class="manga-image double-page-image"
+                    style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-right: {imagePadding}em; padding-left: {imagePadding /
+                        2}em;"
+                    {throttlingDelay}
+                />
+            </div>
+        {:else}
+            <div class={currentImageIndex === index ? "current" : ""}>
+                <WideViewerImage
+                    alt="content_{currentImageIndex}"
+                    src={chapterImage.src}
+                    class="manga-image"
+                    style="padding: {imagePadding}em; width: {imageWidth}%; ;"
+                    {throttlingDelay}
+                />
+            </div>
+        {/if}
+    {/each}
 {/if}
 
 <style>
     div {
-        display: flex;
         width: 100%;
+        max-height: 100%;
+        display: none;
     }
 
     .is-inversed {
         flex-flow: row-reverse;
+    }
+
+    .current {
+        display: flex;
     }
 </style>

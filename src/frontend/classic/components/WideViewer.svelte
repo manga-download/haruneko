@@ -7,7 +7,7 @@
     export let item: IMediaContainer;
     export let throttlingDelay: number;
     export let toggleThumbnailViewer: () => void;
-    export let currentImage: number;
+    export let currentImageIndex: number;
 
     let wideMode: "webtoon" | "manga" = "manga";
     let imagePadding = 2;
@@ -19,7 +19,12 @@
     {#if wideMode === "webtoon"}
         <WebtoonViewer {item} {throttlingDelay} {imagePadding} />
     {:else if wideMode === "manga"}
-        <MangaViewer {item} {currentImage} {throttlingDelay} {imagePadding} />
+        <MangaViewer
+            {item}
+            {currentImageIndex}
+            {throttlingDelay}
+            {imagePadding}
+        />
     {/if}
 </div>
 

@@ -8,7 +8,7 @@
 
     export let item: IMediaContainer;
     export let mode: Mode = "Thumbnail";
-    let currentImage: number = 0;
+    let currentImageIndex: number = 0;
     let throttlingDelay = 1000;
 
     let update: Promise<void> | undefined;
@@ -18,7 +18,7 @@
         mode = "Thumbnail";
     }
     function toggleWideViewer(imageIndex: number) {
-        currentImage = imageIndex;
+        currentImageIndex = imageIndex;
         mode = "Wide";
     }
 </script>
@@ -33,7 +33,7 @@
             {:else if mode === "Wide"}
                 <WideViewer
                     {item}
-                    {currentImage}
+                    {currentImageIndex}
                     {throttlingDelay}
                     {toggleThumbnailViewer}
                 />
