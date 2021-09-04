@@ -20,13 +20,59 @@
     let filteredItems: IMediaContainer[] = [];
 
     export let media: IMediaContainer | undefined;
-    let selectedItem: IMediaContainer | undefined;
+    let selectedItems: IMediaContainer[] = [];
+    let multipleSelectionFrom: number = -1;
+    let multipleSelectionTo: number = -1;
+
+    async function onItemClick(item: IMediaContainer, event: any) {
+        if (event.shiftKey) {
+            //range mode
+            if (multipleSelectionFrom === -1) {
+                multipleSelectionFrom = filteredItems.indexOf(item);
+                multipleSelectionTo = multipleSelectionFrom;
+                selectedItems = [item];
+            } else {
+                multipleSelectionTo = filteredItems.indexOf(item);
+                if (multipleSelectionFrom > multipleSelectionTo) {
+                    const swap: number = multipleSelectionFrom;
+                    multipleSelectionFrom = multipleSelectionTo;
+                    multipleSelectionTo = swap;
+                }
+                selectedItems = filteredItems.slice(
+                    multipleSelectionFrom,
+                    multipleSelectionTo + 1
+                );
+            }
+        } else if (event.ctrlKey) {
+            //multiple mode
+            multipleSelectionFrom = filteredItems.indexOf(item);
+            multipleSelectionTo = -1;
+            const positionInSelectedItems = selectedItems.indexOf(item);
+            console.log("inSelected", positionInSelectedItems);
+            if (selectedItems.includes(item))
+                selectedItems = selectedItems.filter(search => search !== item);
+            else
+                selectedItems = [...selectedItems, item];
+        } else {
+            //single item
+            multipleSelectionFrom = filteredItems.indexOf(item);
+            multipleSelectionTo = multipleSelectionFrom;
+            selectedItems = [item];
+        }
+        console.log(
+            "Selected",
+            filteredItems.indexOf(item),
+            multipleSelectionFrom,
+            multipleSelectionTo,
+            selectedItems
+        );
+    }
 
     //On: MangaChange
     $: {
         media?.Update().then(() => {
             items = (media?.Entries as IMediaContainer[]) ?? [];
-            selectedItem = null;
+            selectedItems = [];
         });
     }
 
@@ -77,11 +123,12 @@
             {#each filteredItems as item, i}
                 <MediaItem
                     {item}
-                    selected={selectedItem === item}
+                    selected={selectedItems.includes(item)}
                     on:view={(e) => {
-                        selectedItem = e.detail;
-                        dispatch("view", selectedItem);
+                        selectedItems.push(e.detail);
+                        dispatch("view", item);
                     }}
+                    on:click={(e) => onItemClick(item, e.detail)}
                 />
             {/each}
         {:catch error}

@@ -73,6 +73,10 @@
         class="listitem"
         class:selected
         bind:this={itemdiv}
+        on:click={(e) => {
+            selected = true;
+            dispatch("click", e);
+        }}
         on:contextmenu|preventDefault={onRightClick}
     >
         <CloudDownload16
@@ -91,6 +95,7 @@
 <style>
     .listitem {
         cursor: pointer;
+        user-select: none;
     }
     .listitem:hover {
         background-color: var(--cds-hover-ui);
