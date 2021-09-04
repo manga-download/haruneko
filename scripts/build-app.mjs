@@ -12,7 +12,6 @@ async function createApplicationManifest() {
     const manifest = {
         name: pkgConfig.title,
         description: pkgConfig.description,
-        'chromium-args': '--ignore-certificate-errors',
         main: argv.url + '/index.html',
         'node-remote': [
             argv.url + '/*'

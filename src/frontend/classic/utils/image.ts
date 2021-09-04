@@ -6,4 +6,4 @@ export const preloadImage = async (src: string, throttlingDelay: number): Promis
             res();
         }, throttlingDelay);
     });
-}
+};

@@ -34,4 +34,4 @@ jobs:
       - name: Test
         env:
           DISPLAY: ':99'
-        run: npm run test
+        run: mkdir build.app && npm run test
