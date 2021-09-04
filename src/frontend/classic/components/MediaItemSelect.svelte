@@ -48,24 +48,17 @@
             multipleSelectionFrom = filteredItems.indexOf(item);
             multipleSelectionTo = -1;
             const positionInSelectedItems = selectedItems.indexOf(item);
-            console.log("inSelected", positionInSelectedItems);
             if (selectedItems.includes(item))
-                selectedItems = selectedItems.filter(search => search !== item);
-            else
-                selectedItems = [...selectedItems, item];
+                selectedItems = selectedItems.filter(
+                    (search) => search !== item
+                );
+            else selectedItems = [...selectedItems, item];
         } else {
             //single item
             multipleSelectionFrom = filteredItems.indexOf(item);
             multipleSelectionTo = multipleSelectionFrom;
             selectedItems = [item];
         }
-        console.log(
-            "Selected",
-            filteredItems.indexOf(item),
-            multipleSelectionFrom,
-            multipleSelectionTo,
-            selectedItems
-        );
     }
 
     //On: MangaChange
