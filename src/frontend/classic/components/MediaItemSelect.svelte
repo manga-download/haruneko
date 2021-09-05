@@ -92,7 +92,6 @@
             showMenu = false;
             await new Promise((res) => setTimeout(res, 100));
         }
-
         pos = { x: event.clientX, y: event.clientY };
         showMenu = true;
     }
@@ -100,17 +99,14 @@
     document.addEventListener(
         "contextmenu",
         function (event: any) {
-            event.preventDefault();
-            if (event.target === itemsdiv || itemsdiv.contains(event.target))
+            if (event.target === itemsdiv || itemsdiv.contains(event.target)) {
+                event.preventDefault();
                 return;
-            closeMenu();
+            }
+            showMenu = false;
         },
         true
     );
-
-    function closeMenu() {
-        showMenu = false;
-    }
 </script>
 
 {#if showMenu}
