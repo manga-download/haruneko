@@ -4,6 +4,10 @@
         Search,
         Dropdown,
         InlineLoading,
+        ContextMenu,
+        ContextMenuDivider,
+        ContextMenuGroup,
+        ContextMenuOption,
     } from "carbon-components-svelte";
     import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled16";
 
@@ -77,7 +81,65 @@
             ) !== -1
         );
     });
+
+    // Context Menu
+    let itemsdiv: HTMLElement;
+    let pos = { x: 0, y: 0 };
+    let showMenu = false;
+
+    async function onRightClick(event: any) {
+        if (showMenu) {
+            showMenu = false;
+            await new Promise((res) => setTimeout(res, 100));
+        }
+
+        pos = { x: event.clientX, y: event.clientY };
+        showMenu = true;
+    }
+
+    document.addEventListener(
+        "contextmenu",
+        function (event: any) {
+            event.preventDefault();
+            if (event.target === itemsdiv || itemsdiv.contains(event.target))
+                return;
+            closeMenu();
+        },
+        true
+    );
+
+    function closeMenu() {
+        showMenu = false;
+    }
 </script>
+
+{#if showMenu}
+    <ContextMenu open={showMenu} x={pos.x} y={pos.y}>
+        {#if selectedItems.length > 1}
+            <ContextMenuOption indented labelText="Download selecteds" />
+        {:else}
+            <ContextMenuOption
+                indented
+                labelText="Download"
+                shortcutText="⌘D"
+            />
+            <ContextMenuOption indented labelText="View" shortcutText="⌘V" />
+        {/if}
+        <ContextMenuDivider />
+        <ContextMenuOption indented labelText="Copy">
+            <ContextMenuGroup labelText="Copy options">
+                <ContextMenuOption id="url" labelText="URL" shortcutText="⌘C" />
+                <ContextMenuOption
+                    id="name"
+                    labelText="name"
+                    shortcutText="⌘N"
+                />
+            </ContextMenuGroup>
+        </ContextMenuOption>
+        <ContextMenuDivider />
+        <ContextMenuOption indented labelText="Bookmark" shortcutText="⌘B" />
+    </ContextMenu>
+{/if}
 
 <div id="Item" transition:fade>
     <div id="ItemTitle">
@@ -109,7 +171,7 @@
     <div id="ItemFilter">
         <Search size="sm" bind:value={itemNameFilter} />
     </div>
-    <div id="ItemList" class="list">
+    <div id="ItemList" class="list" bind:this={itemsdiv}>
         {#await items}
             <InlineLoading status="active" description="Working..." />
         {:then items}
@@ -121,7 +183,8 @@
                         selectedItems.push(e.detail);
                         dispatch("view", item);
                     }}
-                    on:click={(e) => onItemClick(item, e.detail)}
+                    on:click={(e) => onItemClick(item, e)}
+                    on:contextmenu={onRightClick}
                 />
             {/each}
         {:catch error}

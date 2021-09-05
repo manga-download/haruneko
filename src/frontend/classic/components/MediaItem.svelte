@@ -1,11 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import {
-        ContextMenu,
-        ContextMenuDivider,
-        ContextMenuGroup,
-        ContextMenuOption,
-    } from "carbon-components-svelte";
+
     const dispatch = createEventDispatcher();
 
     import Bookmark16 from "carbon-icons-svelte/lib/Bookmark16";
@@ -17,68 +12,10 @@
     export let item: IMediaContainer;
     export let selected: Boolean;
     export let display = "Row";
-
-    // Context Menu
-    let itemdiv: HTMLElement;
-    let pos = { x: 0, y: 0 };
-    let showMenu = false;
-
-    async function onRightClick(event: any) {
-        if (showMenu) {
-            showMenu = false;
-            await new Promise((res) => setTimeout(res, 100));
-        }
-
-        pos = { x: event.clientX, y: event.clientY };
-        showMenu = true;
-    }
-
-    document.addEventListener(
-        "contextmenu",
-        function (event: any) {
-            if (event.target === itemdiv || itemdiv.contains(event.target))
-                return;
-            closeMenu();
-        },
-        true
-    );
-
-    function closeMenu() {
-        showMenu = false;
-    }
 </script>
 
-{#if showMenu}
-    <ContextMenu open={showMenu} x={pos.x} y={pos.y}>
-        <ContextMenuOption indented labelText="Download" shortcutText="⌘D" />
-        <ContextMenuOption indented labelText="View" shortcutText="⌘V" />
-        <ContextMenuDivider />
-        <ContextMenuOption indented labelText="Copy">
-            <ContextMenuGroup labelText="Copy options">
-                <ContextMenuOption id="url" labelText="URL" shortcutText="⌘C" />
-                <ContextMenuOption
-                    id="name"
-                    labelText="name"
-                    shortcutText="⌘N"
-                />
-            </ContextMenuGroup>
-        </ContextMenuOption>
-        <ContextMenuDivider />
-        <ContextMenuOption indented labelText="Bookmark" shortcutText="⌘B" />
-    </ContextMenu>
-{/if}
-
 {#if display === "Row"}
-    <div
-        class="listitem"
-        class:selected
-        bind:this={itemdiv}
-        on:click={(e) => {
-            selected = true;
-            dispatch("click", e);
-        }}
-        on:contextmenu|preventDefault={onRightClick}
-    >
+    <div class="listitem" class:selected on:click on:contextmenu>
         <CloudDownload16
             class="download"
             on:click={(e) => dispatch("download", item)}
