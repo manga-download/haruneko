@@ -23,6 +23,9 @@
     import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox";
 
     let plugins: IMediaContainer[] = [];
+    try {
+        plugins = HakuNeko.PluginController.WebsitePlugins;
+    } catch (e) {}
 
     window.addEventListener(
         "plugins-loaded",
@@ -183,6 +186,7 @@
         grid-area: MediaList;
         background-color: var(--cds-field-01);
         overflow: hidden;
+        user-select: none;
     }
     #MediaCount {
         grid-area: MediaCount;
