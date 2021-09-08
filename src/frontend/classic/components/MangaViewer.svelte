@@ -120,6 +120,11 @@
             if (chapterImage.nextSrc) {
                 // because we already process the i+1 image
                 i += 2;
+
+                // make the currentImageIndex match the chapterImages data
+                if (currentImageIndex >= chapterImages.length) {
+                    currentImageIndex--;
+                }
             } else {
                 i++;
             }
