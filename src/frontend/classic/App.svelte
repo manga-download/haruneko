@@ -1,36 +1,11 @@
 <script lang="ts">
     import "carbon-components-svelte/css/all.css";
     import "./theme/hakuneko.css";
-
-    import {
-        Header,
-        HeaderUtilities,
-        HeaderAction,
-        HeaderGlobalAction,
-        HeaderPanelLinks,
-        HeaderPanelDivider,
-        HeaderPanelLink,
-        SideNav,
-        SideNavItems,
-        SideNavMenu,
-        SideNavMenuItem,
-        SideNavLink,
-        SkipToContent,
-        Content,
-        Tabs,
-        Tab,
-        TabContent,
-        Toggle,
-    } from "carbon-components-svelte";
-
-    import MinimizeIcon from "carbon-icons-svelte/lib/Subtract24";
-    import MaximizeIcon from "carbon-icons-svelte/lib/Checkbox16";
-    import RestoreIcon from "carbon-icons-svelte/lib/Copy16";
-    import CloseIcon from "carbon-icons-svelte/lib/Close24";
-
+    import "./theme/sidenav-hack.css";
+    import { Content, Tabs, Tab, TabContent } from "carbon-components-svelte";
+    import { fade } from "svelte/transition";
     import { onMount } from "svelte";
-
-    import Theme, { themes } from "./components/Theme.svelte";
+    import Theme from "./components/Theme.svelte";
     import MediaSelect from "./components/MediaSelect.svelte";
     import MediaItemSelect from "./components/MediaItemSelect.svelte";
     import Jobs from "./components/Jobs.svelte";
@@ -38,10 +13,9 @@
     import Network from "./components/Network.svelte";
     import Home from "./components/Home.svelte";
     import Viewer from "./components/Viewer.svelte";
-
-    import { fade } from "svelte/transition";
-
+    import AppBar from "./components/AppBar.svelte";
     import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
+    import { showContentPanel, theme } from "./utils/storage";
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
     export const FinishLoading = new Promise<void>(
@@ -66,11 +40,9 @@
     // UI
     let isSideNavOpen = false;
     let isOpen = false;
-    let theme: string;
-
-    let uimode = "ui-mode-content"; // content, download;
 
     let app: HTMLElement;
+
     onMount(async () => {
         app = document.getElementById("hakunekoapp")!;
         app.classList.add(uimode);
@@ -78,94 +50,33 @@
         setTimeout(resolveFinishLoading, 2500);
     });
 
-    function changeUIMode() {
-        app.classList.remove(uimode);
-        uimode =
-            uimode === "ui-mode-content"
-                ? "ui-mode-download"
-                : "ui-mode-content";
-        app.classList.add(uimode);
-    }
-
     let selectedMedia: IMediaContainer | undefined;
     let selectedItem: IMediaContainer | undefined;
     let selectedBottomTab = 0;
     let currentContent = "home";
     let showHome = true;
 
+    $: uimode = $showContentPanel ? "ui-mode-content" : "ui-mode-download";
+
+    $: if (app) {
+        const oldUimode =
+            uimode === "ui-mode-content"
+                ? "ui-mode-download"
+                : "ui-mode-content";
+        app.classList.remove(oldUimode);
+        app.classList.add(uimode);
+    }
+
     $: currentContent = selectedItem ? "viewer" : "home";
 </script>
 
-<Theme persist bind:theme>
-    <Header
-        id="Header"
-        expandedByDefault={false}
-        persistentHamburgerMenu={true}
-        company="HakuNeko"
-        platformName="Media & Anime - Downloader"
-        bind:isSideNavOpen
-    >
-        <div slot="skip-to-content">
-            <SkipToContent />
-        </div>
-        <HeaderUtilities>
-            <HeaderGlobalAction
-                on:click={() => win.minimize()}
-                aria-label="Minimize"
-                icon={MinimizeIcon}
-            />
-            <HeaderGlobalAction
-                on:click={() => (winMaximized ? win.restore() : win.maximize())}
-                aria-label="Maximize"
-                icon={winMaximized ? RestoreIcon : MaximizeIcon}
-            />
-            <HeaderGlobalAction
-                on:click={() => win.close()}
-                aria-label="Close"
-                icon={CloseIcon}
-            />
-            <HeaderAction bind:isOpen>
-                <HeaderPanelLinks>
-                    <HeaderPanelDivider>Interface</HeaderPanelDivider>
-                    <HeaderPanelLink>
-                        <Toggle
-                            size="sm"
-                            labelText="Show content pannel :"
-                            labelA="Download Only"
-                            labelB="Content"
-                            toggled={uimode === "ui-mode-content"}
-                            on:toggle={changeUIMode}
-                        />
-                    </HeaderPanelLink>
-                    <HeaderPanelDivider>Themes</HeaderPanelDivider>
-                    {#each themes as item}
-                        <HeaderPanelLink on:click={() => (theme = item.id)}
-                            >{item.label}</HeaderPanelLink
-                        >
-                    {/each}
-                </HeaderPanelLinks>
-            </HeaderAction>
-        </HeaderUtilities>
-    </Header>
-
-    <SideNav bind:isOpen={isSideNavOpen}>
-        <SideNavItems>
-            <SideNavLink text="Link 1" />
-            <SideNavLink text="Link 2" />
-            <SideNavLink text="Link 3" />
-            <SideNavMenu text="Menu">
-                <SideNavMenuItem href="/" text="Link 1" />
-                <SideNavMenuItem href="/" text="Link 2" />
-                <SideNavMenuItem href="/" text="Link 3" />
-            </SideNavMenu>
-        </SideNavItems>
-    </SideNav>
-
+<Theme bind:theme={$theme}>
+    <AppBar {isSideNavOpen} {isOpen} {winMaximized} />
     <Content id="hakunekoapp">
-        <MediaSelect on:select={(e) => (selectedMedia = e.detail)} />
+        <MediaSelect on:select={(evt) => (selectedMedia = evt.detail)} />
         <MediaItemSelect
             media={selectedMedia}
-            on:view={(e) => (selectedItem = e.detail)}
+            on:view={(evt) => (selectedItem = evt.detail)}
         />
         {#if uimode === "ui-mode-content"}
             <div id="Content" transition:fade>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+
     const dispatch = createEventDispatcher();
 
     import Bookmark16 from "carbon-icons-svelte/lib/Bookmark16";
@@ -14,7 +15,7 @@
 </script>
 
 {#if display === "Row"}
-    <div class="listitem" class:selected>
+    <div class="listitem" class:selected on:click on:contextmenu>
         <CloudDownload16
             class="download"
             on:click={(e) => dispatch("download", item)}
@@ -31,6 +32,7 @@
 <style>
     .listitem {
         cursor: pointer;
+        user-select: none;
     }
     .listitem:hover {
         background-color: var(--cds-hover-ui);
