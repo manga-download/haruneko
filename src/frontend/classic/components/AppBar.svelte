@@ -15,7 +15,15 @@
     import SettingItem from "./SettingItem.svelte";
     import SettingSelect from "./SettingSelect.svelte";
     import SettingToggle from "./SettingToggle.svelte";
-    import { settings, theme, showContentPanel } from "../utils/storage";
+    import {
+        settings,
+        theme,
+        showContentPanel,
+        viewerMode,
+        inversedReading,
+        doublePage,
+    } from "../utils/storage";
+    import { viewerModesSelect } from "../utils/viewerMode";
 
     export let isSideNavOpen: boolean;
     export let winMaximized: boolean;
@@ -71,6 +79,36 @@
                     items={themes}
                 />
             </SettingItem>
+            <SettingItem
+                labelText="Viewer mode"
+                helperText="You can change the viewer mode (webtoon or manga)"
+            >
+                <SettingSelect
+                    store={viewerMode}
+                    storageKey={settings.VIEWER_MODE.KEY}
+                    items={viewerModesSelect}
+                />
+            </SettingItem>
+            {#if $viewerMode === "manga"}
+                <SettingItem
+                    labelText="Inverse reading"
+                    helperText="Inverse the reading (like a real manga)"
+                >
+                    <SettingToggle
+                        store={inversedReading}
+                        storageKey={settings.INVERSED_READING.KEY}
+                    />
+                </SettingItem>
+                <SettingItem
+                    labelText="Double page"
+                    helperText="Display two page at a time (like a real manga)"
+                >
+                    <SettingToggle
+                        store={doublePage}
+                        storageKey={settings.DOUBLE_PAGE.KEY}
+                    />
+                </SettingItem>
+            {/if}
         </HeaderAction>
     </HeaderUtilities>
 </Header>
