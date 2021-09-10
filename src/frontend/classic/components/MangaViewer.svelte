@@ -3,6 +3,7 @@
         IMediaContainer,
         IMediaChild,
     } from "../../../engine/providers/MediaPlugin";
+    import { Loading } from "carbon-components-svelte";
     import WideViewerImage from "./WideViewerImage.svelte";
     import { onMount } from "svelte";
     import { preloadImage } from "../utils/image";
@@ -104,7 +105,9 @@
             // should display two image
             if (
                 $doublePage &&
+                images[i] &&
                 images[i].width < images[i].height &&
+                images[i + 1] &&
                 images[i + 1].width < images[i + 1].height
             ) {
                 nextSrc = images[i + 1].src;
@@ -168,7 +171,7 @@
                     alt="content_{currentImageIndex}"
                     src={chapterImage.src}
                     class="manga-image double-page-image"
-                    style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-left: {imagePadding}em; padding-right: {imagePadding /
+                    style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-right: {imagePadding}em; padding-left: {imagePadding /
                         2}em;"
                     {throttlingDelay}
                 />
@@ -176,7 +179,7 @@
                     alt="content_{currentImageIndex}"
                     src={chapterImage.nextSrc}
                     class="manga-image double-page-image"
-                    style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-right: {imagePadding}em; padding-left: {imagePadding /
+                    style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-left: {imagePadding}em; padding-right: {imagePadding /
                         2}em;"
                     {throttlingDelay}
                 />
@@ -187,18 +190,20 @@
                     alt="content_{currentImageIndex}"
                     src={chapterImage.src}
                     class="manga-image"
-                    style="padding: {imagePadding}em; width: {imageWidth}%; ;"
+                    style="padding: {imagePadding}em; max-width: 100%; ;"
                     {throttlingDelay}
                 />
             </div>
         {/if}
     {/each}
+{:else}
+    <Loading description="Loading images" />
 {/if}
 
 <style>
     div {
         width: 100%;
-        max-height: 100%;
+        height: 100%;
         display: none;
     }
 

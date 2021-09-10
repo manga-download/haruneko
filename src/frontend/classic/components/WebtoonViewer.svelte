@@ -12,7 +12,7 @@
     <WideViewerImage
         alt="content_{index}"
         src={content.SourceURL}
-        style="padding: {imagePadding}em; width: {imageWidth}%"
+        style="padding-left: {imagePadding}em; padding-right: {imagePadding}em; width: {imageWidth}%"
         throttlingDelay={throttlingDelay * index}
     />
 {/each}
