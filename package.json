@@ -10,7 +10,7 @@
     "npm": ">=7.6.0"
   },
   "dependencies": {
-    "fs-extra": "latest"
+    "fs-extra": "9.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "latest",
