@@ -7,7 +7,7 @@ export interface IPluginController {
 
 export class PluginController implements IPluginController {
 
-    private readonly _websites: IMediaContainer[] = [];
+    private readonly _websites: IMediaContainer[];
 
     constructor() {
         this._websites = Object.values(websites).map(website => new website().CreatePlugin() as IMediaContainer);

@@ -22,19 +22,7 @@
 
     import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox";
 
-    let plugins: IMediaContainer[] = [];
-    try {
-        plugins = HakuNeko.PluginController.WebsitePlugins;
-    } catch (e) {}
-
-    window.addEventListener(
-        "plugins-loaded",
-        function () {
-            console.log("All plugins loaded");
-            plugins = HakuNeko.PluginController.WebsitePlugins;
-        },
-        false
-    );
+    const plugins: IMediaContainer[] = HakuNeko.PluginController.WebsitePlugins;
 
     let medias: IMediaContainer[] = [];
     let filteredmedias: IMediaContainer[] = [];
