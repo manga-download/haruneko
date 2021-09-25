@@ -37,7 +37,7 @@ function launch(options) {
         .map(file => path.basename(file, '.ts'))
         .map(name => `export { default as ${name} } from './${name}';`)
         .join('\n');
-    fs.writeFileSync(path.join(directory, '_index.ts'), content);
+    fs.writeFileSync(path.join(directory, '_index.ts'), '// AUTO-GENERATED\n' + content);
 })();
 
 const configApp = {

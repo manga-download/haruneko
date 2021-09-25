@@ -1,6 +1,6 @@
-import { DecoratableMangaScraper } from "../providers/MangaPlugin";
-export class Website extends DecoratableMangaScraper {
-    public constructor() {
-        super('website', 'Wesbite', 'https://website');
-    }
-}
+// AUTO-GENERATED
+export { default as Hiperdex } from './Hiperdex';
+export { default as Leitor } from './Leitor';
+export { default as ScansMangas } from './ScansMangas';
+export { default as SheepManga } from './SheepManga';
+export { default as Toonily } from './Toonily';
