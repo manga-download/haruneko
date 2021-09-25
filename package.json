@@ -39,7 +39,7 @@
     "jest-mock-extended": "latest",
     "jsdom": "latest",
     "node-fetch": "latest",
-    "nw": "^0.55.0-sdk",
+    "nw": "0.56.1-sdk",
     "plist": "latest",
     "postcss": "latest",
     "puppeteer-core": "latest",
