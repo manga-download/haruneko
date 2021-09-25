@@ -1,3 +1,5 @@
+import path from 'path';
+import fs from 'fs-extra';
 import config from './package.json';
 import copy from 'rollup-plugin-copy';
 import { terser as minify } from 'rollup-plugin-terser';
@@ -26,6 +28,17 @@ function launch(options) {
     };
 }
 */
+
+(function buildWebsiteIndex() {
+    const directory = path.join('src', 'engine', 'websites');
+    const entries = fs.readdirSync(directory);
+    const content = entries
+        .filter(entry => /^[a-zA-Z0-9]+\.ts$/.test(entry))
+        .map(file => path.basename(file, '.ts'))
+        .map(name => `export { default as ${name} } from './${name}';`)
+        .join('\n');
+    fs.writeFileSync(path.join(directory, '_index.ts'), content);
+})();
 
 const configApp = {
     input: {
