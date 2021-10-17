@@ -1,3 +1,5 @@
+export const cacheStorageKey = "hakuneko"
+
 import { writable, Writable } from 'svelte/store';
 
 export type SettingValue = string | number | boolean;
@@ -74,6 +76,18 @@ export const settings = {
     THEME: {
         KEY: "THEME",
         DEFAULT_VALUE: "hakuneko"
+    },
+    VIEWER_MODE: {
+        KEY: "VIEWER_MODE",
+        DEFAULT_VALUE: "webtoon"
+    },
+    INVERSED_READING: {
+        KEY: "INVERSED_READING",
+        DEFAULT_VALUE: false
+    },
+    DOUBLE_PAGE: {
+        KEY: "DOUBLE_PAGE",
+        DEFAULT_VALUE: false
     }
 }
 
@@ -87,3 +101,6 @@ export const website1Username = writable(String(getSettingDefaultValue(settings.
 export const website1Password = writable(String(getSettingDefaultValue(settings.WEBSITE_1_PASSWORD.KEY, settings.WEBSITE_1_PASSWORD.DEFAULT_VALUE)));
 export const showContentPanel = writable(castBooleanSetting(getSettingDefaultValue(settings.SHOW_CONTENT_PANEL.KEY, settings.SHOW_CONTENT_PANEL.DEFAULT_VALUE)));
 export const theme = writable(String(getSettingDefaultValue(settings.THEME.KEY, settings.THEME.DEFAULT_VALUE)));
+export const viewerMode = writable(String(getSettingDefaultValue(settings.VIEWER_MODE.KEY, settings.VIEWER_MODE.DEFAULT_VALUE)));
+export const inversedReading = writable(castBooleanSetting(getSettingDefaultValue(settings.INVERSED_READING.KEY, settings.INVERSED_READING.DEFAULT_VALUE)));
+export const doublePage = writable(castBooleanSetting(getSettingDefaultValue(settings.DOUBLE_PAGE.KEY, settings.DOUBLE_PAGE.DEFAULT_VALUE)));
