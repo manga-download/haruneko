@@ -8,6 +8,7 @@ export default defineConfig({
     plugins: [ vue(), react(), svelte() ],
     publicDir: 'static',
     build: {
+        sourcemap: true,
         outDir: 'build.web',
         chunkSizeWarningLimit: 1024
     }
