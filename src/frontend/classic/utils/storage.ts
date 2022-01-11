@@ -1,6 +1,6 @@
 export const cacheStorageKey = "hakuneko"
 
-import { writable, Writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 
 export type SettingValue = string | number | boolean;
 export type SettingValidator = ((value: SettingValue) => boolean) | undefined

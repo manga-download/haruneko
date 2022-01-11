@@ -1,5 +1,5 @@
-import { IEventManager, EventManager } from './EventManager';
-import { IPluginController, PluginController } from './PluginController';
+import { type IEventManager, EventManager } from './EventManager';
+import { type IPluginController, PluginController } from './PluginController';
 
 export interface IHakuNeko {
     readonly EventManager: IEventManager;
