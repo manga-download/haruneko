@@ -3,6 +3,7 @@
     import Plug16 from "carbon-icons-svelte/lib/Plug16";
     import Language16 from "carbon-icons-svelte/lib/Language16";
     import Renew16 from "carbon-icons-svelte/lib/Renew16";
+    import Logo from '../../../img/logo.png';
 </script>
 
 <div id="Home">
@@ -12,7 +13,7 @@
             <img
                 alt="hakuneko logo"
                 class="logo"
-                src="./img/logo.png"
+                src={Logo}
                 align="left"
             />
             <strong>HakuNeko</strong> was made to help users who download media
