@@ -5,5 +5,5 @@ export const Info: IFrontendInfo = {
     Label: 'Sample (Svelte)',
     Description: 'A sample frontend based on Svelte ...',
     Screenshots: [],
-    ModuleFile: '/frontend/SampleSvelte.js'
+    LoadModule: async () => (await import('./Frontend')).default
 };

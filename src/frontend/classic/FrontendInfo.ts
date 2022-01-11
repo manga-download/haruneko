@@ -5,5 +5,5 @@ export const Info: IFrontendInfo = {
     Label: 'Classic',
     Description: 'The standard frontend, no bells no whistles ...',
     Screenshots: [],
-    ModuleFile: '/frontend/Classic.js'
+    LoadModule: async () => (await import('./Frontend')).default
 };

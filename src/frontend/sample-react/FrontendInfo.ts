@@ -5,5 +5,5 @@ export const Info: IFrontendInfo = {
     Label: 'Sample (React)',
     Description: 'A sample frontend based on React ...',
     Screenshots: [],
-    ModuleFile: '/frontend/SampleReact.js'
+    LoadModule: async () => (await import('./Frontend')).default
 };

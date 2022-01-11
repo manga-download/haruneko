@@ -5,5 +5,5 @@ export const Info: IFrontendInfo = {
     Label: 'Sample (Vue)',
     Description: 'A sample frontend based on Vue ...',
     Screenshots: [],
-    ModuleFile: '/frontend/SampleVue.js'
+    LoadModule: async () => (await import('./Frontend')).default
 };
