@@ -12,7 +12,8 @@
         "build:web": "tsc && vue-tsc --noEmit && vite build",
         "serve:web-dev": "vite",
         "serve:web-prod": "vite preview",
-        "launch:app-dev": "node ./scripts/build-app.mjs --url=http://localhost:3000 && nw ./build.app"
+        "launch:app-dev": "node ./scripts/build-app.mjs --url=http://localhost:3000 && nw ./build.app",
+        "launch:app-prod": "node ./scripts/build-app.mjs --url=http://localhost:5000 && nw ./build.app"
     },
     "engines": {
         "node": ">=16.13.0",
@@ -22,6 +23,7 @@
         "fs-extra": "9.1.0"
     },
     "devDependencies": {
+        "@sveltejs/svelte-virtual-list": "^3.0.1",
         "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
         "@tsconfig/svelte": "^2.0.1",
         "@types/chrome": "^0.0.176",
