@@ -1,10 +1,10 @@
-import React from 'react';
+import { CSSProperties, useState }  from 'react';
 
-const styles = {
+const styles: { [key: string]: CSSProperties } = {
     container: {
         height: '100%',
         padding: '2em',
-        textAlign: 'center' as const,
+        textAlign: 'center', // as const,
         backgroundColor: 'lightgrey'
     },
     button: {
@@ -14,12 +14,13 @@ const styles = {
 
 export default function App() {
 
-    const [ count, setCount ] = React.useState(0);
+    const [ count, setCount ] = useState(0);
 
+    /* @ts-ignore */
     return (
         <div style={styles.container}>
             <h3>Hello React Button</h3>
-            <button onClick={() => setCount(count + 1)} style={styles.button}>
+            <button style={styles.button} onClick={() => setCount(count + 1)}>
                 Clicked: {count}
             </button>
         </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+    /*
     function toggleFullScreen() {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen();
@@ -6,6 +7,7 @@
             document.exitFullscreen();
         }
     }
+    */
 </script>
 
 <div id="FullScreen" on-dblclick="toggleFullscreen">

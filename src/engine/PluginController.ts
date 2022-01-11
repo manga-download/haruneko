@@ -1,4 +1,4 @@
-import { IMediaContainer } from './providers/MediaPlugin';
+import type { IMediaContainer } from './providers/MediaPlugin';
 import * as websites from './websites/_index';
 
 export interface IPluginController {

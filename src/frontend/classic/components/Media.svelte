@@ -8,7 +8,7 @@
     export let selected: Boolean;
 </script>
 
-<div class="media" class:selected on:click={(e) => dispatch("select", media)}>
+<div class="media" class:selected on:click={() => dispatch("select", media)}>
     {media.Title}
 </div>
 

@@ -1,6 +1,6 @@
-import { JSHandle, Page } from 'puppeteer-core';
+import type { JSHandle, Page } from 'puppeteer-core';
 import { Reload } from '../../../test/PuppeteerFixture';
-import { IMediaContainer } from '../providers/MediaPlugin';
+import type { IMediaContainer } from '../providers/MediaPlugin';
 
 export default (): void => {
 

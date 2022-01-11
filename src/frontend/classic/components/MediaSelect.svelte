@@ -20,7 +20,7 @@
 
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
-    import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox";
+    import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox.svelte";
 
     const plugins: IMediaContainer[] = HakuNeko.PluginController.WebsitePlugins;
 
@@ -141,7 +141,7 @@
             Medias : ?
         {:then medias}
             Medias : {filteredmedias.length}/{medias.length}
-        {:catch error}
+        {:catch}
             Medias : ?
         {/await}
     </div>

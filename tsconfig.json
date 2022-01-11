@@ -1,38 +1,36 @@
 {
     "compilerOptions": {
-        "experimentalDecorators": true,
-        "types": [
-            "node",
-            "chrome",
-            "svelte",
-            "react",
-            "react-dom",
-            "jest"
-        ],
-        "strict": true,
-        "jsx": "react",
         "target": "esnext",
+        "useDefineForClassFields": true,
         "module": "esnext",
-        "outDir": "build.web",
-        "rootDir": "src",
-        "sourceMap": true,
-        "inlineSources": true,
-        "inlineSourceMap": false,
-        "removeComments": true,
         "moduleResolution": "node",
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true, // false
+        "lib": [
+            "esnext",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "baseUrl": ".",
+        "allowJs": false, // true
+        //"checkJs": true,
+        "importsNotUsedAsValues": "error",
+        "isolatedModules": true,
+        "strict": false, // true
+        "skipLibCheck": true, // false
+        "forceConsistentCasingInFileNames": true,
+        "allowSyntheticDefaultImports": true,
+        "noEmit": true,
+        "jsx": "react-jsx", // "preserve"
+        "experimentalDecorators": true
     },
     "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "**/*_test.ts",
-        "**/*_spec.ts",
-        "**/*_e2e.ts",
-        "**/*.test.ts",
-        "**/*.spec.ts",
-        "**/*.e2e.ts"
+        "src/**/*.d.ts",
+        "src/**/*.ts",
+        "src/**/*.js",
+        "src/**/*.vue",
+        "src/**/*.tsx",
+        "src/**/*.svelte"
     ]
 }

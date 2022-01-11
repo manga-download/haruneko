@@ -2,6 +2,7 @@
     import type {
         IMediaContainer,
         IMediaChild,
+        IMediaItem,
     } from "../../../engine/providers/MediaPlugin";
     import { Loading } from "carbon-components-svelte";
     import WideViewerImage from "./WideViewerImage.svelte";
@@ -21,7 +22,7 @@
     const carbonMaxBreakpoint = 1584;
     const minImageWidth = 50;
     const maxImageWidth = 100;
-    let imageWidth: number;
+    //let imageWidth: number;
 
     const handleKeyDown = (evt: KeyboardEvent) => {
         if (
@@ -50,6 +51,7 @@
     };
 
     const setImageWidth = () => {
+        /*
         const winWidth = nw.Window.get().width;
 
         if (winWidth < carbonLgBreakpoint) {
@@ -64,17 +66,19 @@
                     (winWidth - carbonLgBreakpoint) +
                 maxImageWidth;
         }
+        */
     };
 
     const getPromiseImages = (
         entries: IMediaChild[]
     ): Promise<HTMLImageElement>[] => {
-        return entries.map(async (entrie, index) => {
+        return entries.map(async (entry, index) => {
+            entry = entry as IMediaItem;
             const delay = throttlingDelay * index;
-            await preloadImage(entrie.SourceURL, delay);
+            await preloadImage(entry.SourceURL, delay);
 
             const img = new Image();
-            img.src = entrie.SourceURL;
+            img.src = entry.SourceURL;
 
             return img;
         });

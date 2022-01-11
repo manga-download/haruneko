@@ -8,14 +8,17 @@ The application consists of two ...
 
 ### Installation
 
-Make sure **git** and **NodeJS + NPM** are installed on your system.
+Make sure **git** with **lfs** and **NodeJS + NPM** are installed on your system.
 
 ```bash
 # clone the repository
 git clone https://github.com/manga-download/haruneko.git
 # change into the project directory
 cd harunkeo
-# install dependencies
+# ⚠️ NW.js is not yet available for Apple Silicon (M1/arm64) ⚠️
+# If you are developing on an Apple Silicon (M1/arm64) device, run
+export npm_config_nwjs_process_arch="x64" && npm install
+# Otherwise, run
 npm install
 ```
 

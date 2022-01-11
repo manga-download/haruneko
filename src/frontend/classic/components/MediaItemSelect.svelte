@@ -51,7 +51,7 @@
             //multiple mode
             multipleSelectionFrom = filteredItems.indexOf(item);
             multipleSelectionTo = -1;
-            const positionInSelectedItems = selectedItems.indexOf(item);
+            //const positionInSelectedItems = selectedItems.indexOf(item);
             if (selectedItems.includes(item))
                 selectedItems = selectedItems.filter(
                     (search) => search !== item
@@ -170,8 +170,8 @@
     <div id="ItemList" class="list" bind:this={itemsdiv}>
         {#await items}
             <InlineLoading status="active" description="Working..." />
-        {:then items}
-            {#each filteredItems as item, i}
+        {:then}
+            {#each filteredItems as item}
                 <MediaItem
                     {item}
                     selected={selectedItems.includes(item)}
@@ -192,7 +192,7 @@
             Items: ?
         {:then items}
             Items: {filteredItems.length}/{items.length}
-        {:catch error}
+        {:catch}
             Items: ?
         {/await}
     </div>

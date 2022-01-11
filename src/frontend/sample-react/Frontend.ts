@@ -1,6 +1,6 @@
-import React from 'react';
+import { createElement } from 'react';
 import ReactDOM from 'react-dom';
-import { IFrontendModule } from '../IFrontend';
+import type { IFrontendModule } from '../IFrontend';
 import App from './App';
 
 class SampleReact implements IFrontendModule {
@@ -10,7 +10,7 @@ class SampleReact implements IFrontendModule {
     }
 
     async Render(root: HTMLElement): Promise<void> {
-        ReactDOM.render(<App />, root);
+        ReactDOM.render(createElement(App as any/*FunctionComponent<DOMAttributes<never>>*/), root);
         // wait for frontend to be loaded and rendered
         await new Promise(resolve => setTimeout(resolve, 2500));
     }

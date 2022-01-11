@@ -19,12 +19,12 @@
     <span class="title">{title}</span>
     <ChevronLeft24
         label="Item Down (ArrowLeft)"
-        on:click={(e) =>
+        on:click={() =>
             console.log(`createEventDispatcher("requestItemDown", item)`)}
     />
     <ChevronRight24
         label="Item Up (ArrowRight)"
-        on:click={(e) =>
+        on:click={() =>
             console.log(`createEventDispatcher("requestItemUp", item)`)}
     />
     &nbsp;
