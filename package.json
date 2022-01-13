@@ -11,10 +11,12 @@
         "eslint": "eslint ./src/**/*.ts --ignore-path .gitignore",
         "build:app": "node ./scripts/build-app.mjs",
         "build:web": "tsc && vue-tsc --noEmit && vite build",
+        "test": "cd test && jest --config=jest.config.js",
+        "test:e2e": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --detectOpenHandles --config=test/jest.e2e.js",
         "serve:web-dev": "vite",
-        "serve:web-prod": "vite preview",
-        "launch:app-dev": "node ./scripts/build-app.mjs --url=http://localhost:3000 && nw ./build.app",
-        "launch:app-prod": "node ./scripts/build-app.mjs --url=http://localhost:5000 && nw ./build.app"
+        "serve:web-prod": "npm run build:web && vite preview",
+        "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw ./build.app",
+        "launch:app-prod": "npm run build:app -- --url=http://localhost:5000 && nw ./build.app"
     },
     "engines": {
         "node": ">=16.13.0",
@@ -28,6 +30,7 @@
         "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
         "@tsconfig/svelte": "^2.0.1",
         "@types/chrome": "^0.0.176",
+        "@types/fs-extra": "^9.0.13",
         "@types/jest": "^27.4.0",
         "@types/jsdom": "^16.2.14",
         "@types/react": "^17.0.33",
