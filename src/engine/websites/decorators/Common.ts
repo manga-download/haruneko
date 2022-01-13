@@ -49,8 +49,8 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
     const request = new FetchRequest(uri.href);
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
-        const info = extract(element);
-        return new Manga(this, provider, info.id, info.title);
+        const { id, title } = extract(element);
+        return new Manga(this, provider, id, title);
     });
 }
 
@@ -95,8 +95,8 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
     const request = new FetchRequest(uri.href);
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
-        const info = extract(element);
-        return new Chapter(this, manga, info.id, info.title);
+        const { id, title } = extract(element);
+        return new Chapter(this, manga, id, title);
     });
 }
 
