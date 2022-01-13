@@ -4,7 +4,7 @@ const styles: { [key: string]: CSSProperties } = {
     container: {
         height: '100%',
         padding: '2em',
-        textAlign: 'center', // as const,
+        textAlign: 'center',
         backgroundColor: 'lightgrey'
     },
     button: {
@@ -16,7 +16,6 @@ export default function App() {
 
     const [ count, setCount ] = useState(0);
 
-    /* @ts-ignore */
     return (
         <div style={styles.container}>
             <h3>Hello React Button</h3>
