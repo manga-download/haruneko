@@ -37,11 +37,11 @@ async function LaunchNW() {
         const pages = await browser.pages();
         const page = pages.find(p => p.url() === nwURL);
         if(page) {
-            console.log('> Using:', global.PAGE);
+            console.log(new Date().toISOString(), '=>', 'Using Page:', page.url());
             global.PAGE = page;
             return browser;
         } else {
-            console.log(new Date().toISOString(), 'Waiting for Page...', pages.map(p => p.url()));
+            console.log(new Date().toISOString(), '=>', 'Waiting for Page(s)', pages.map(p => p.url()));
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
@@ -49,6 +49,7 @@ async function LaunchNW() {
 }
 
 export default async function(config: Config.ConfigGlobals) {
+    console.log(/* line break */);
     if(!nwURL.includes('localhost:5000')) {
         throw new Error(`Invalid startup URL: '${nwURL}'`);
     }
