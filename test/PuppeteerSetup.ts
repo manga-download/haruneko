@@ -7,11 +7,11 @@ import type { Config } from '@jest/types';
 import { main } from '../build.app/package.json';
 
 const nwURL = main;
-const nwApp = path.resolve('.', 'build.app');
-const nwExe = path.resolve('.', 'node_modules', '.bin', 'nw');
-const viteExe = path.resolve('.', 'node_modules', '.bin', 'vite');
+const nwApp = path.resolve('build.app');
+const nwExe = path.resolve('node_modules', '.bin', 'nw');
+const viteExe = path.resolve('node_modules', '.bin', 'vite');
 const tempDir = path.join(os.tmpdir(), 'hakuneko-test', Date.now().toString(32));
-const userDir = '/Users/ronny/Desktop/testing/' + Date.now().toString(32); // path.resolve(tempDir, 'user-data');
+const userDir = path.resolve(tempDir, 'user-data');
 
 async function CloseSplashScreen(target: puppeteer.Target) {
     const page = await target.page();
@@ -27,7 +27,7 @@ async function LaunchNW() {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: 'node',
-        args: [ nwExe, nwApp ], // `--user-data-dir=${userDir}`
+        args: [ nwExe, nwApp ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
@@ -54,6 +54,7 @@ export default async function(config: Config.ConfigGlobals) {
     }
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
+    await fs.mkdir(userDir, { recursive: true });
     global.SERVER = spawn('node', [ viteExe, 'preview' ]);
     global.BROWSER = await LaunchNW();
 };
