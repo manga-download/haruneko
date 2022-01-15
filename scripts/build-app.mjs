@@ -6,7 +6,7 @@ import { purge, run } from './tools.mjs';
 const argv = yargs(process.argv).argv;
 const pkgFile = 'package.json';
 const pkgConfig = await fs.readJSON(pkgFile);
-const dirBuild = path.join('.', 'build.app');
+const dirBuild = path.resolve('build.app');
 const origin = (argv.url || pkgConfig.main);
 
 async function createApplicationManifest() {
@@ -35,7 +35,7 @@ async function createApplicationManifest() {
         },
         dependencies: pkgConfig.dependencies
     };
-    const file = path.join(dirBuild, pkgFile);
+    const file = path.resolve(dirBuild, pkgFile);
     await fs.writeJSON(file, manifest, { spaces: 4 });
 }
 
