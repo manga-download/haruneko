@@ -1,0 +1,137 @@
+# HakuNeko
+:toc:
+:numbered:
+:icons: font
+:linkattrs:
+:imagesdir: ./res
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+---
+
+Prototype of HakuNeko based on NW.js + TypeScript + Vite
+
+## Development
+
+Make sure **git** with **lfs** and **NodeJS + NPM** are installed on your system.
+
+### Installation
+
+First start by cloning the repository from https://github.com/manga-download/haruneko.git
+```bash
+git clone "https://github.com/manga-download/haruneko.git"
+```
+
+Then change into the project directory and install the dependencies +
+⚠️ NW.js is not yet available for Apple Silicon (M1/arm64)
+```bash
+# If you are developing on an Apple Silicon (M1/arm64) device, run:
+export npm_config_nwjs_process_arch="x64" && npm install
+
+# Otherwise, run:
+npm install
+```
+
+### Run
+
+HakuNeko consists of two parts, a web-application that needs to be hosted and an NW.js client running the web-application.
+
+As a developer you probably want to launch the application and also want changes made to the source code reflecting in the running application.
+This can be achieved by hosting the source code directly on http://localhost:3000
+```bash
+npm run serve:web-dev
+```
+Then launch the NW.js application to load the hosted web-application
+```bash
+npm run launch:app-dev
+```
+
+The same procedure can be applied to run a production build of both parts, but these can not be modified while running.
+Host the production web-application on http://localhost:5000
+```bash
+npm run serve:web-prod
+```
+And then start the production NW.js application
+```bash
+npm run launch:app-prod
+```
+
+////
+Use the console from the developer tools (F12) to investigate `HakuNeko` API, e.g.
+
+```javascript
+(async () => {
+    const website = HakuNeko.PluginController.WebsitePlugins[0];
+    console.log('Website:', website.Title);
+    if(website.Entries.length === 0) {
+        console.log('=>', 'Updating manga list (this may take some time ...)');
+        await website.Update();
+    } else {
+        console.log('=>', 'Using manga list from local cache');
+    }
+
+    async function getPages(mangaIndex, chapterIndex) {
+
+        const manga = website.Entries[mangaIndex]; // or with iterator: [...website][mangaIndex];
+        console.log(' '.repeat(4), 'Manga:', manga.Title);
+        if(manga.Entries.length === 0) {
+            console.log(' '.repeat(4), '=>', 'Updating chapter list');
+            await manga.Update();
+        } else {
+            console.log(' '.repeat(4), '=>', 'Use current chapter list');
+        }
+        
+        const chapter = manga.Entries[chapterIndex]; // or with iterator: [...manga][chapterIndex];
+        console.log(' '.repeat(8), 'Chapter:', chapter.Title);
+        if(chapter.Entries.length === 0) {
+            console.log(' '.repeat(8), '=>', 'Updating page list');
+            await chapter.Update();
+        } else {
+            console.log(' '.repeat(8), '=>', 'Use current page list');
+        }
+        
+        for(const page of chapter) {
+            console.log(' '.repeat(12), 'Page:', page.SourceURL);
+        }
+    }
+
+    await getPages(0, 0);
+    await getPages(13, 7);
+```
+////
+
+### Continuous Inspection
+
+After making changes to the source code, it is recommend to validate the code style, check for code smells and perform a static code analysis.
+```sh
+npm run check
+```
+
+### Testing
+
+To ensure the application behaves as expected, tests need to be added.
+The popular `jest` framework is used as test runner and for mocking.
+All tests are written side by side to their (logical) corresponding implementation directly in the source code directory.
+Overall, there are two test categories.
+
+#### Unit and Component Tests
+Unit tests (file extension `⋆.test.ts`) are very lightweight within a limited scope (e.g. single method of a class).
+Component tests (file extension `⋆.spec.ts`) can be more complex and test relations and coherences within a module (e.g. a composed UI control).
+To start these tests, simply run
+```sh
+npm run test
+```
+
+#### End-To-End Tests
+End-To-End tests (file extension `⋆.e2e.ts`) are performed by interacting with the (web-)application itself.
+This includes tests which are consuming the engine API as well as tests that run against the UI.
+The environment for these tests is a running instance of the NW.js production build, controlled by the tests through `puppeteer`.
+To start these tests, simply run
+```sh
+npm run test:e2e
+```
