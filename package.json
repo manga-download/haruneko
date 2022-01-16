@@ -7,15 +7,15 @@
     "type": "module",
     "main": "https://haruneko.pages.dev",
     "scripts": {
-        "check": "eslint ./src/**/*.ts && svelte-check --tsconfig ./tsconfig.json && vue-tsc --noEmit",
-        "build:app": "node ./scripts/build-app.mjs",
+        "check": "eslint ./src && svelte-check --tsconfig tsconfig.json && vue-tsc --noEmit",
         "build:web": "vite build",
-        "test": "cd test && jest --config=jest.config.js",
+        "build:app": "node scripts/build-app.mjs",
+        "test": "jest --config=test/jest.config.js",
         "test:e2e": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --config=test/jest.e2e.js",
         "serve:web-dev": "vite",
         "serve:web-prod": "npm run build:web && vite preview",
-        "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw ./build.app",
-        "launch:app-prod": "npm run build:app -- --url=http://localhost:5000 && nw ./build.app"
+        "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw build.app",
+        "launch:app-prod": "npm run build:app -- --url=http://localhost:5000 && nw build.app"
     },
     "engines": {
         "node": ">=16.13.0",

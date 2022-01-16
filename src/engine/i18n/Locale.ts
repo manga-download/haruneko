@@ -6,5 +6,5 @@ export abstract class Locale {
         'FetchProvider.FetchWindow.CloudFlareError': '【 FetchProvider.FetchWindow.CloudFlareError 】\n{0}',
         'FetchProvider.FetchWindow.AlertCaptcha': '【 FetchProvider.FetchWindow.AlertCaptcha 】',
         'FrontendController.Reload.ConfirmNotice': '【 FrontendController.Reload.ConfirmNotice 】'
-    }
+    };
 }

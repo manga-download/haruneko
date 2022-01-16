@@ -1,4 +1,4 @@
-import { CSSProperties, useState }  from 'react';
+import { CSSProperties, useState } from 'react';
 
 const styles: { [key: string]: CSSProperties } = {
     container: {

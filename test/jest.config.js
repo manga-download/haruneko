@@ -3,5 +3,12 @@ export default {
     rootDir: '../src',
     testMatch: [ '**/*[_.](test|spec).[jt]s(x)?' ],
     testEnvironment: 'jest-environment-jsdom',
-    reporters: [ 'default', 'jest-junit' ]
+    reporters: [ 'default', 'jest-junit' ],
+    globals: {
+        'ts-jest': {
+            tsconfig: {
+                esModuleInterop: true
+            }
+        }
+    }
 };

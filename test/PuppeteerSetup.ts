@@ -4,13 +4,12 @@ import fs from 'fs-extra';
 import { spawn } from 'child_process';
 import puppeteer from 'puppeteer-core';
 import type { Config } from '@jest/types';
-import { main } from '../build.app/package.json';
 
-const nwURL = main;
 const nwApp = path.resolve('build.app');
+const nwURL = fs.readJSONSync(path.resolve(nwApp, 'package.json')).main;
 const nwExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
 const viteExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
-const tempDir = path.join(os.tmpdir(), 'hakuneko-test', Date.now().toString(32));
+const tempDir = path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32));
 const userDir = path.resolve(tempDir, 'user-data');
 
 async function CloseSplashScreen(target: puppeteer.Target) {
