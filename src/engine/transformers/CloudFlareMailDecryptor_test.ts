@@ -5,14 +5,14 @@ global.TextDecoder = TextDecoder;
 
 import { JSDOM } from 'jsdom';
 import { CloudFlareMailDecryptor } from './CloudFlareMailDecryptor';
+const origin = 'https://test.cloudscraper.cf';
 
-// TODO: Website test-cloudscraper-cf.pages.dev has currently no CloudFlare protection enabled :(
 describe('CloudFlareMailDecryptor', () => {
 
     describe('Transform()', () => {
 
         it('Should transform anchor without link and with mail text', async () => {
-            const dom = await JSDOM.fromURL('https://test-cloudscraper-cf.pages.dev/mail');
+            const dom = await JSDOM.fromURL(origin + '/mail');
             const testee = new CloudFlareMailDecryptor();
             const element = dom.window.document.body.querySelector('#mail-text a') as HTMLAnchorElement;
             expect(element.text).toBe('[email\xa0protected]');
@@ -21,7 +21,7 @@ describe('CloudFlareMailDecryptor', () => {
         });
 
         it('Should transform anchor without link and  with mail text span', async () => {
-            const dom = await JSDOM.fromURL('https://test-cloudscraper-cf.pages.dev/mail');
+            const dom = await JSDOM.fromURL(origin + '/mail');
             const testee = new CloudFlareMailDecryptor();
             const element = dom.window.document.body.querySelector('#anchor_no-href_mail-text a') as HTMLAnchorElement;
             expect(element.text).toBe('[email\xa0protected]');
@@ -30,7 +30,7 @@ describe('CloudFlareMailDecryptor', () => {
         });
 
         it('Should not transform anchor with mail-link and plain text', async () => {
-            const dom = await JSDOM.fromURL('https://test-cloudscraper-cf.pages.dev/mail');
+            const dom = await JSDOM.fromURL(origin + '/mail');
             const testee = new CloudFlareMailDecryptor();
             const element = dom.window.document.body.querySelector('#anchor_mail-href_text a') as HTMLAnchorElement;
             expect(element.text).toBe('Contact');
@@ -39,7 +39,7 @@ describe('CloudFlareMailDecryptor', () => {
         });
 
         it('Should transform anchor with mail-link and mail text span', async () => {
-            const dom = await JSDOM.fromURL('https://test-cloudscraper-cf.pages.dev/mail');
+            const dom = await JSDOM.fromURL(origin + '/mail');
             const testee = new CloudFlareMailDecryptor();
             const element = dom.window.document.body.querySelector('#anchor_mail-href_mail-text a') as HTMLAnchorElement;
             expect(element.text).toBe('[email\xa0protected]');
@@ -48,7 +48,7 @@ describe('CloudFlareMailDecryptor', () => {
         });
 
         it('Should transform anchor with web-link and mail text span', async () => {
-            const dom = await JSDOM.fromURL('https://test-cloudscraper-cf.pages.dev/mail');
+            const dom = await JSDOM.fromURL(origin + '/mail');
             const testee = new CloudFlareMailDecryptor();
             const element = dom.window.document.body.querySelector('#anchor_href_mail-text a') as HTMLAnchorElement;
             expect(element.text).toBe('[email\xa0protected]');
