@@ -29,7 +29,28 @@
     export let winMaximized: boolean;
     export let isOpen: boolean;
 
-    const win = nw.Window.get();
+
+    // TODO: Frontend must not use framework globals such as `nw` or `chrome`
+    // => Such non-browser functionalities needs to be abstracted by the HakuNekp engine ...
+    //const win = nw.Window.get();
+
+    function close() {
+        window.close();
+    }
+
+    function restore() {
+        throw new Error('Not implemented!');
+    }
+
+    function minimize()
+    {
+        throw new Error('Not implemented!');
+    }
+
+    function maximize()
+    {
+        throw new Error('Not implemented!');
+    }
 </script>
 
 <Header
@@ -45,17 +66,17 @@
     </div>
     <HeaderUtilities>
         <HeaderGlobalAction
-            on:click={() => win.minimize()}
+            on:click={minimize}
             aria-label="Minimize"
             icon={MinimizeIcon}
         />
         <HeaderGlobalAction
-            on:click={() => (winMaximized ? win.restore() : win.maximize())}
+            on:click={() => (winMaximized ? restore() : maximize())}
             aria-label="Maximize"
             icon={winMaximized ? RestoreIcon : MaximizeIcon}
         />
         <HeaderGlobalAction
-            on:click={() => win.close()}
+            on:click={() => close()}
             aria-label="Close"
             icon={CloseIcon}
         />

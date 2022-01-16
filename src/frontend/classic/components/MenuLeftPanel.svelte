@@ -40,8 +40,11 @@
 
     export let isSideNavOpen = false;
 
-    function openExternalLink(uri: string) {
-        nw.Shell.openExternal(uri);
+    function openExternalLink(url: string) {
+        // TODO: Frontend must not use framework globals such as `nw` or `chrome`
+        // => Such non-browser functionalities needs to be abstracted by the HakuNekp engine ...
+        //nw.Shell.openExternal(uri);
+        window.open(url);
     }
 
     const demoSelectItems = [

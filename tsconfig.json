@@ -1,4 +1,4 @@
-// NOTE: This typescript configuration is used for code inspection, but not for building sources or tests
+// NOTE: This typescript configuration is used for code inspection (e.g. VS Code, eslint, ...), but not for building sources or tests
 {
     "compilerOptions": {
         "target": "esnext",
@@ -7,6 +7,7 @@
         "importsNotUsedAsValues": "error",
         "isolatedModules": true,
         "forceConsistentCasingInFileNames": true,
+        "jsx": "react",
         "noEmit": true,
         "experimentalDecorators": true
     },

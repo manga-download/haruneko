@@ -22,20 +22,22 @@
         (resolve) => (resolveFinishLoading = resolve)
     );
 
-    // Window controls
-    let win = nw.Window.get();
+    // TODO: Frontend must not use framework globals such as `nw` or `chrome`
+    // => Such non-browser functionalities needs to be abstracted by the HakuNekp engine ...
+    //const win = nw.Window.get();
 
-    win.on("maximize", () => {
-        winMaximized = true;
-    });
-    win.on("restore", () => {
-        winMaximized = false;
-    });
-    let winMaximized =
-        win.x <= 0 &&
-        win.y <= 0 &&
-        win.width >= screen.availWidth &&
-        win.height >= screen.availHeight;
+    let winMaximized = false;
+
+    function updateWindowState() {
+        winMaximized = window.outerWidth >= screen.availWidth
+            && window.outerHeight >= screen.availHeight
+            && screen['availTop'] === window.screenTop
+            && screen['availLeft'] === window.screenLeft;
+        //console.log('Maximized:', winMaximized);
+    }
+    updateWindowState();
+
+    window.addEventListener('resize', updateWindowState);
 
     // UI
     let isSideNavOpen = false;
