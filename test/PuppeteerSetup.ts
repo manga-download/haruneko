@@ -8,8 +8,8 @@ import { main } from '../build.app/package.json';
 
 const nwURL = main;
 const nwApp = path.resolve('build.app');
-const nwExe = path.resolve('node_modules', '.bin', 'nw');
-const viteExe = path.resolve('node_modules', '.bin', 'vite');
+const nwExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
+const viteExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
 const tempDir = path.join(os.tmpdir(), 'hakuneko-test', Date.now().toString(32));
 const userDir = path.resolve(tempDir, 'user-data');
 
@@ -26,8 +26,8 @@ async function LaunchNW() {
         headless: false,
         defaultViewport: null,
         ignoreDefaultArgs: true,
-        executablePath: 'node',
-        args: [ nwExe, nwApp ],
+        executablePath: nwExe,
+        args: [ nwApp ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
@@ -56,6 +56,6 @@ export default async function(config: Config.ConfigGlobals) {
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
-    global.SERVER = spawn('node', [ viteExe, 'preview' ]);
+    global.SERVER = spawn(viteExe, [ 'preview' ]);
     global.BROWSER = await LaunchNW();
 };

@@ -11,7 +11,7 @@
         "build:app": "node ./scripts/build-app.mjs",
         "build:web": "vite build",
         "test": "cd test && jest --config=jest.config.js",
-        "test:e2e": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --detectOpenHandles --config=test/jest.e2e.js",
+        "test:e2e": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --config=test/jest.e2e.js",
         "serve:web-dev": "vite",
         "serve:web-prod": "npm run build:web && vite preview",
         "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw ./build.app",

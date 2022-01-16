@@ -9,6 +9,7 @@ export default async function(config: Config.ConfigGlobals) {
     const pages = await browser.pages();
     for(const page of pages) await page.close();
     await browser.close();
-    server.kill();
+    server.kill('SIGINT') || server.kill('SIGTERM') || server.kill('SIGKILL');
     await fs.rm(global.TEMPDIR, { recursive: true });
+    process.exit();
 };
