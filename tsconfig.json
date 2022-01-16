@@ -1,4 +1,4 @@
-// NOTE: This typescript configuration is used for code inspection and test runner, but nor for the build itself
+// NOTE: This typescript configuration is used for code inspection, but not for building sources or tests
 {
     "compilerOptions": {
         "target": "esnext",
