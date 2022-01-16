@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   tests:
@@ -17,14 +18,12 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
-      - name: Update NPM
-        run: npm install -g npm@7 --registry=https://registry.npmjs.org
+          node-version: 16.x
       - name: Install NPM Packages
         run: npm install
+      - name: Code Inspection
+        run: npm run check
       - name: Build Web-Application
-        run: npm run build:web:prod
-#      - name: Testing Web-Application (Engine)
-#        run: npm run test:engine
-#      - name: Testing Web-Application (Frontend)
-#        run: npm run test:frontend
+        run: npm run build:web
+      - name: Unit & Component Tests
+        run: npm run test
