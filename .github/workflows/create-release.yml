@@ -19,13 +19,13 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 16.x
       - name: Update NPM
-        run: npm install -g npm@7 --registry=https://registry.npmjs.org
+        run: npm install -g npm@8 --registry=https://registry.npmjs.org
       - name: Install NPM Packages
         run: npm install
       - name: Build Application
-        run: npm run deploy:app:prod
+        run: npm run build:app && node ./scripts/deploy-app.mjs
       - name: Upload Release Builds
         uses: actions/upload-artifact@v2
         with:
