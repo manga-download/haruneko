@@ -7,7 +7,7 @@
     "type": "module",
     "main": "https://haruneko.pages.dev",
     "scripts": {
-        "check": "eslint ./src && svelte-check --workspace=src && vue-tsc --noEmit",
+        "check": "eslint ./src && svelte-check  --tsconfig=tsconfig.json && vue-tsc --skipLibCheck --noEmit",
         "build:web": "vite build",
         "build:app": "node scripts/build-app.mjs",
         "test": "jest --config=test/jest.config.js",
