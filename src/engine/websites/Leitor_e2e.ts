@@ -1,6 +1,10 @@
-import type { JSHandle, Page } from 'puppeteer-core';
-import type { IMediaContainer } from '../providers/MediaPlugin';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-describe('End-to-End: ...', () => {
-    it.skip('IGNORED ...', async () => false);
+describe('End-to-End Test: Leitor', () => {
+
+    it.skip('Should be registered as website', async () => {
+        const fixture = new TestFixture();
+        const remotePlugin = await fixture.GetRemoteWebsitePlugin('leitor');
+        expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual('Leitor');
+    });
 });
