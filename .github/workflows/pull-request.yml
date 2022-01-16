@@ -28,12 +28,15 @@ jobs:
       - name: Update NPM
         run: npm install -g npm@8 --registry=https://registry.npmjs.org
       - name: Install NPM Packages
-        run: npm install
+        run:  |
+          node --version
+          npm --version
+          npm install
       - name: Code Inspection
         run: npm run check
       - name: Unit & Component Tests
         run: npm run test
-      - name: Test
+      - name: End-To-End Tests
         env:
           DISPLAY: ':99'
         run: npm run test:e2e

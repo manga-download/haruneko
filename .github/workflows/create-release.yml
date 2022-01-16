@@ -23,7 +23,10 @@ jobs:
       - name: Update NPM
         run: npm install -g npm@8 --registry=https://registry.npmjs.org
       - name: Install NPM Packages
-        run: npm install
+        run: |
+          node --version
+          npm --version
+          npm install
       - name: Build Application
         run: npm run build:app && node ./scripts/deploy-app.mjs
       - name: Upload Release Builds
