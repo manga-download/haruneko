@@ -10,7 +10,7 @@
         "check": "eslint ./src && svelte-check  --tsconfig=tsconfig.json && vue-tsc --skipLibCheck --noEmit",
         "build:web": "vite build",
         "build:app": "node scripts/build-app.mjs",
-        "test": "jest --config=test/jest.config.js",
+        "test": "jest --detectOpenHandles --config=test/jest.config.js",
         "test:e2e": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --config=test/jest.e2e.js",
         "serve:web-dev": "vite",
         "serve:web-prod": "npm run build:web && vite preview",
