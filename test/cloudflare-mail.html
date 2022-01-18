@@ -1,0 +1,59 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Cloudflare: Email Obfuscation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+    <p>This page is protected by CloudFlare's <strong><i>Email Obfuscation</i></strong></p>
+    <hr>
+    <table cellpadding="4">
+        <tr>
+            <td>Plain mail:</td>
+            <td id="mail-text"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="11727e7f65707265516274726374653f7c70787d">[email&#160;protected]</a></td>
+        </tr>
+        <tr>
+            <td>Anchor without link:</td>
+            <td id="anchor_no-href_mail-text"><a><span class="__cf_email__" data-cfemail="2d4e4243594c4e596d5e484e5f485903404c4441">[email&#160;protected]</span></a></td>
+        </tr>
+        <tr>
+            <td>Anchor with mail link only:</td>
+            <td id="anchor_mail-href_text"><a href="/cdn-cgi/l/email-protection#2f4c40415b4e4c5b6f5c4a4c5d4a5b01424e4643">Contact</a></td>
+        </tr>
+        <tr>
+            <td>Anchor with mail link:</td>
+            <td id="anchor_mail-href_mail-text"><a href="/cdn-cgi/l/email-protection#7b1814150f1a180f3b081e18091e0f55161a1217"><span class="__cf_email__" data-cfemail="781b17160c191b0c380b1d1b0a1d0c5615191114">[email&#160;protected]</span></a></td>
+        </tr>
+        <tr>
+            <td>Anchor with web link:</td>
+            <td id="anchor_href_mail-text"><a href="index.html"><span class="__cf_email__" data-cfemail="7e1d11100a1f1d0a3e0d1b1d0c1b0a50131f1712">[email&#160;protected]</span></a></td>
+        </tr>
+    </table>
+    <hr>
+    <textarea rows="24" cols="96"><table cellpadding="4">
+    <tr>
+        <td>Plain mail:</td>
+        <td id="mail-text">contact@secret.mail</td>
+    </tr>
+    <tr>
+        <td>Anchor without link:</td>
+        <td id="anchor_no-href_mail-text"><a>contact@secret.mail</a></td>
+    </tr>
+    <tr>
+        <td>Anchor with mail link only:</td>
+        <td id="anchor_mail-href_text"><a href="mailto:contact@secret.mail">Contact</a></td>
+    </tr>
+    <tr>
+        <td>Anchor with mail link:</td>
+        <td id="anchor_mail-href_mail-text"><a href="mailto:contact@secret.mail">contact@secret.mail</a></td>
+    </tr>
+    <tr>
+        <td>Anchor with web link:</td>
+        <td id="anchor_href_mail-text"><a href="index.html">contact@secret.mail</a></td>
+    </tr>
+</table>
+    </textarea>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>
