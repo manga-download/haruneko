@@ -12,6 +12,7 @@ export default class PuppeteerEnvironment extends NodeEnvironment {
     // Run before each test ...
     async setup() {
         await super.setup();
+        jest.setTimeout(7500);
         const page = this.global.PAGE as Page;
         await page.reload();
         await page.waitForSelector('body div#app main#hakunekoapp', { timeout: 7500 });
