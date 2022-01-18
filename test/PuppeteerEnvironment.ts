@@ -14,7 +14,7 @@ export default class PuppeteerEnvironment extends NodeEnvironment {
         await super.setup();
         const page = this.global.PAGE as Page;
         await page.reload();
-        await page.waitForSelector('body div#app main#hakunekoapp', { timeout: 5000 });
+        await page.waitForSelector('body div#app main#hakunekoapp', { timeout: 7500 });
         this.global.PAGE = page;
     }
 
