@@ -1,10 +1,11 @@
 name: Pull Request
 
-on: pull_request
+on: [pull_request, workflow_dispatch]
 
 jobs:
-  pr-integration:
+  pull-request:
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     name: ${{ matrix.os }}
@@ -24,14 +25,14 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
-      - name: Update NPM
-        run: npm install -g npm@7 --registry=https://registry.npmjs.org
+          node-version: 16.x
       - name: Install NPM Packages
         run: npm install
-      - name: Lint
-        run: npm run lint
-      - name: Test
+      - name: Code Inspection
+        run: npm run check
+      - name: Unit & Component Tests
+        run: npm run test
+      - name: End-To-End Tests
         env:
           DISPLAY: ':99'
-        run: mkdir build.app && npm run test
+        run: npm run test:e2e

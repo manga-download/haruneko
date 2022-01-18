@@ -1,4 +1,4 @@
-import { IFrontendInfo, IFrontendModule } from '../frontend/IFrontend';
+import type { IFrontendInfo, IFrontendModule } from '../frontend/IFrontend';
 
 export interface IEvent<TSender, TArgs> {
     Dispatch(sender: TSender, args: TArgs): void;

@@ -3,7 +3,7 @@ export interface IFrontendInfo {
     Label: string;
     Description: string;
     Screenshots: string[];
-    ModuleFile: string;
+    LoadModule(): Promise<IFrontendModule>;
 }
 
 export interface IFrontendModule {

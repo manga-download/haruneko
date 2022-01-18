@@ -20,7 +20,7 @@
 
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
-    import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox";
+    import type { ComboBoxItem } from "carbon-components-svelte/types/ComboBox/ComboBox.svelte";
 
     const plugins: IMediaContainer[] = HakuNeko.PluginController.WebsitePlugins;
 
@@ -122,7 +122,7 @@
         {#await update}
             <InlineLoading status="active" description="Working..." />
         {:then}
-            <VirtualList class="vlist" items={filteredmedias} let:item>
+            <VirtualList items={filteredmedias} let:item>
                 <Media
                     media={item}
                     selected={selectedMedia === item}
@@ -141,7 +141,7 @@
             Medias : ?
         {:then medias}
             Medias : {filteredmedias.length}/{medias.length}
-        {:catch error}
+        {:catch}
             Medias : ?
         {/await}
     </div>
@@ -180,11 +180,6 @@
         grid-area: MediaCount;
         display: table;
         margin: 0.25em;
-    }
-    :global(#MediaList .vlist) {
-        white-space: nowrap;
-        list-style-type: none;
-        padding: 0.25em;
     }
     :global(#Plugin-combo) {
         display: table-cell;

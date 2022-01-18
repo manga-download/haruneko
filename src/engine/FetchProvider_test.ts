@@ -1,6 +1,7 @@
-import fetch, { Request } from 'node-fetch';
-Object.defineProperty(global, 'fetch', { value: fetch });
-Object.defineProperty(global, 'Request', { value: Request });
+import { Request as RequestMock } from 'node-fetch';
+import { mockClear, mockFn } from 'jest-mock-extended';
+global.Request = RequestMock;
+global.fetch = mockFn<(input: RequestInfo, init?: RequestInit) => Promise<Response>>();
 
 import { HeadersView } from './transformers/HeadersView';
 import { ConcealFetchAPIHeaders, RevealFetchAPIHeaders, FetchRequest, Fetch } from './FetchProvider';
@@ -101,6 +102,8 @@ describe('FetchProvider', () => {
 
     describe('Fetch', () => {
 
+        beforeEach(() => mockClear(global.fetch)); // mockReset(global.fetch)
+
         it('Should passthru GET to native fetch', async () => {
             const request = new FetchRequest('https://postman-echo.com/get', {
                 headers: {
@@ -109,14 +112,9 @@ describe('FetchProvider', () => {
                 }
             });
 
-            const response = await Fetch(request);
-            expect(response.ok).toBeTruthy();
-            expect(response.status).toBe(200);
-
-            const result = await response.json();
-            expect(result.url).toBe('https://postman-echo.com/get');
-            expect(result.headers['x-fetchapi-user-agent']).toBe('HakuNeko');
-            expect(result.headers['x-fetchapi-referer']).toBe('http://hakuneko.app/');
+            await Fetch(request);
+            expect(global.fetch).toBeCalledTimes(1);
+            expect(global.fetch).toHaveBeenCalledWith(request);
         });
 
         it('Should passthru POST to native fetch', async () => {
@@ -130,18 +128,9 @@ describe('FetchProvider', () => {
                 }
             });
 
-            const response = await Fetch(request);
-            expect(response.ok).toBeTruthy();
-            expect(response.status).toBe(200);
-
-            const result = await response.json();
-            expect(result.url).toBe('https://postman-echo.com/post');
-            expect(result.headers['content-type']).toBe('application/json');
-            expect(result.headers['x-fetchapi-user-agent']).toBe('HakuNeko');
-            expect(result.headers['x-fetchapi-referer']).toBe('http://hakuneko.app/');
-            expect(result.headers['content-length']).toBe('13');
-            expect(result.data.a).toBe(1);
-            expect(result.data.b).toBe(2);
+            await Fetch(request);
+            expect(global.fetch).toBeCalledTimes(1);
+            expect(global.fetch).toHaveBeenCalledWith(request);
         });
     });
 });

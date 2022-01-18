@@ -1,21 +1,10 @@
-import { JSHandle, Page } from 'puppeteer-core';
-import { Reload } from '../../../test/PuppeteerFixture';
-import { IMediaContainer } from '../providers/MediaPlugin';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-export default (): void => {
+describe('End-to-End Test: ScansMangas', () => {
 
-    let page: Page;
-
-    beforeEach(async () => {
-        page = await Reload();
-        await page.waitForSelector('body div#app * * *');
+    it.skip('Should be registered as website', async () => {
+        const fixture = new TestFixture();
+        const remotePlugin = await fixture.GetRemoteWebsitePlugin('scansmangas');
+        expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual('ScansMangas');
     });
-
-    it('Should find registered plugin', async () => {
-
-        const remotePlugin = await page.evaluateHandle<JSHandle<IMediaContainer>>((id: string) => {
-            return window.HakuNeko.PluginController.WebsitePlugins.find(connector => connector.Identifier === id);
-        }, 'scansmangas');
-        expect(await page.evaluate((plugin: IMediaContainer) => plugin.Title, remotePlugin)).toEqual('ScansMangas');
-    });
-};
+});

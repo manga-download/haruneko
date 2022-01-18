@@ -14,6 +14,9 @@ tell application "Finder"
         set position of item "Applications" of container window to {360, 390}
         set position of item ".fseventsd" of container window to {180, 620}
         set position of item ".images" of container window to {280, 620}
+        try
+            set position of item ".CacheDeleteDiscardedCaches" of container window to {230, 720}
+        end try
         update without registering applications
         delay 5
         close

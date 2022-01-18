@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { IFrontendModule } from '../IFrontend';
+import type { IFrontendModule } from '../IFrontend';
 import App from './App.vue';
 
 class SampleVue implements IFrontendModule {

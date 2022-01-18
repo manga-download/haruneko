@@ -21,16 +21,12 @@
         label: string;
     }
 
-    class PluginRow {
-        id: string;
-        name: string;
-        mediaContainer: IMediaContainer;
-
-        constructor(item: IMediaContainer) {
-            this.id = item.Identifier;
-            this.name = item.Title;
-            this.mediaContainer = item;
-        }
+    function createDataRow(item: IMediaContainer) {
+        return {
+            id: item.Identifier,
+            name: item.Title,
+            mediaContainer: item
+        };
     }
 
     const dispatch = createEventDispatcher();
@@ -73,13 +69,7 @@
         pluginTagsFilter = [...pluginTagsFilter, tag];
     }
     function removeTagFilter(tag: ITag) {
-        pluginTagsFilter = pluginTagsFilter.filter(function (
-            value: any,
-            index,
-            arr
-        ) {
-            return tag !== value;
-        });
+        pluginTagsFilter = pluginTagsFilter.filter(value => tag !== value);
     }
     addTagFilter({ category: "lang", label: "French" });
 
@@ -109,7 +99,7 @@
             }
             return !conditions.includes(false);
         })
-        .map((item) => new PluginRow(item));
+        .map(item => createDataRow(item));
 </script>
 
 <Modal
@@ -185,7 +175,7 @@
                 />
             </ToolbarContent>
         </Toolbar>
-        <div class="plugin-row" slot="cell" let:cell let:row>
+        <div class="plugin-row" slot="cell" let:cell>
             {#if cell.key === "image"}
                 <Image16 />
             {:else if cell.key === "overflow"}

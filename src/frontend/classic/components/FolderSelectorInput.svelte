@@ -19,7 +19,6 @@
     <input
         id={`folder-selector-${componentId}`}
         type="file"
-        nwdirectory
         bind:value={storeValue}
         on:change={() => {
             if (storageKey) {

@@ -25,9 +25,9 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     const base = `nwjs${nwBuildType}-v${nwVersion}-${nwPlatform}-${nwArchitecture}`;
     const archive = `${base}.${nwExtension}`;
     const sourceFile = `https://dl.nwjs.io/v${nwVersion}/${archive}`;
-    const tmpFile = path.join(os.tmpdir(), archive);
-    const tmpDir = path.join(os.tmpdir(), base);
-    const nwDir = path.join(os.tmpdir(), base.replace(/^nwjs(-sdk)?/i, 'hakuneko'));
+    const tmpFile = path.resolve(os.tmpdir(), archive);
+    const tmpDir = path.resolve(os.tmpdir(), base);
+    const nwDir = path.resolve(os.tmpdir(), base.replace(/^nwjs(-sdk)?/i, 'hakuneko'));
     try {
         await fs.access(tmpFile);
     } catch (error) {
@@ -35,8 +35,8 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
         await download(sourceFile, tmpFile);
     }
     console.log('Extracting:', '$TMP/' + path.basename(tmpFile), '=>', '$TMP/' + path.basename(nwDir));
-    await fs.rm(tmpDir, { recursive: true });
-    await fs.rm(nwDir, { recursive: true });
+    await fs.rm(tmpDir, { force: true, recursive: true });
+    await fs.rm(nwDir, { force: true, recursive: true });
     await decompress(tmpFile, os.tmpdir());
     await fs.move(tmpDir, nwDir);
     return nwDir;

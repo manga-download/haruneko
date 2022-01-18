@@ -1,5 +1,5 @@
 import { i18n } from '../engine/i18n/Localization';
-import { IFrontendInfo, IFrontendModule } from './IFrontend';
+import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
 import { Info as InfoJS } from './sample-js/FrontendInfo';
 import { Info as InfoReact } from './sample-react/FrontendInfo';
@@ -66,8 +66,7 @@ export class FrontendController implements IFrontendController {
     private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
         const info = frontendList.find(item => item.ID === id);
         if(info) {
-            const module = await import(info.ModuleFile);
-            return module.default as IFrontendModule;
+            return info.LoadModule();
         } else {
             throw new Error(`The frontend could not be found in the list of available frontends!`);
         }

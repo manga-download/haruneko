@@ -4,7 +4,6 @@
         StructuredListRow,
         StructuredListCell,
         StructuredListBody,
-        Icon,
     } from "carbon-components-svelte";
     import Image16 from "carbon-icons-svelte/lib/Image16";
 
@@ -78,7 +77,7 @@
 <div id="network">
     <StructuredList>
         <StructuredListBody>
-            {#each [...requests] as [key, request] (request)}
+            {#each [...requests] as [, request] (request)}
                 <StructuredListRow class="job">
                     <StructuredListCell class="type"
                         >{request.type}</StructuredListCell

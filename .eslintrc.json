@@ -35,6 +35,7 @@
         "semi": ["error", "always"],
         "no-extra-parens": "off",
         "@typescript-eslint/no-extra-parens": "error",
+        "@typescript-eslint/ban-ts-comment": "warn",
         "indent": ["error", 4, { "SwitchCase": 1 }],
         "no-trailing-spaces": "error",
         "no-multiple-empty-lines": ["error", {"max": 1, "maxBOF": 0, "maxEOF": 0}],

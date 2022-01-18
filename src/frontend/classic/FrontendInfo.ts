@@ -1,9 +1,9 @@
-import { IFrontendInfo } from '../IFrontend';
+import type { IFrontendInfo } from '../IFrontend';
 
 export const Info: IFrontendInfo = {
     ID: 'classic',
     Label: 'Classic',
     Description: 'The standard frontend, no bells no whistles ...',
     Screenshots: [],
-    ModuleFile: '/frontend/Classic.js'
+    LoadModule: async () => (await import('./Frontend')).default
 };

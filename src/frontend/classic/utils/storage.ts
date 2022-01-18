@@ -1,14 +1,14 @@
-export const cacheStorageKey = "hakuneko"
+export const cacheStorageKey = "hakuneko";
 
-import { writable, Writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 
 export type SettingValue = string | number | boolean;
 export type SettingValidator = ((value: SettingValue) => boolean) | undefined
 
 export const updateStoreValue = (store: Writable<SettingValue>, storageKey: string, storeValue: SettingValue, validator: SettingValidator) => {
     store.update((self) => {
-        if (!validator || (validator && validator(storeValue))) {
-            self = storeValue
+        if (!validator || validator && validator(storeValue)) {
+            self = storeValue;
             peristStoreValue(
                 storageKey,
                 storeValue
@@ -26,11 +26,11 @@ const peristStoreValue = (
 ): void => {
     localStorage.setItem(key, value.toString());
 
-}
+};
 
 export const getSettingDefaultValue = (key: string, defaultValue: SettingValue) => {
     return localStorage.getItem(key) ?? defaultValue;
-}
+};
 
 // We need to do this because the default value can be a regular boolean or boolean "as string" (if we get the value from localStorage)
 // The problem is we can't type cast localStorage (Ex: "false" as boolean = true) value easely so we need to do this
@@ -89,9 +89,9 @@ export const settings = {
         KEY: "DOUBLE_PAGE",
         DEFAULT_VALUE: false
     }
-}
+};
 
-export const demoSelect = writable(String(getSettingDefaultValue(settings.DEMO_SELECT.KEY, settings.DEMO_SELECT.DEFAULT_VALUE)))
+export const demoSelect = writable(String(getSettingDefaultValue(settings.DEMO_SELECT.KEY, settings.DEMO_SELECT.DEFAULT_VALUE)));
 export const demoTextInput = writable(String(getSettingDefaultValue(settings.DEMO_TEXT_INPUT.KEY, settings.DEMO_TEXT_INPUT.DEFAULT_VALUE)));
 export const demoToggle = writable(castBooleanSetting(getSettingDefaultValue(settings.DEMO_TOGGLE.KEY, settings.DEMO_TOGGLE.DEFAULT_VALUE)));
 export const demoNumberInput = writable(Number(getSettingDefaultValue(settings.DEMO_NUMBER_INPUT.KEY, settings.DEMO_NUMBER_INPUT.DEFAULT_VALUE)));

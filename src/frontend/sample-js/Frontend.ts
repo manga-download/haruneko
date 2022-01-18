@@ -1,4 +1,4 @@
-import { IFrontendModule } from '../IFrontend';
+import type { IFrontendModule } from '../IFrontend';
 import App from './App';
 
 class SampleJS implements IFrontendModule {

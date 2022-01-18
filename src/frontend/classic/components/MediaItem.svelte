@@ -18,12 +18,12 @@
     <div class="listitem" class:selected on:click on:contextmenu>
         <CloudDownload16
             class="download"
-            on:click={(e) => dispatch("download", item)}
+            on:click={() => dispatch("download", item)}
         />
-        <Image16 class="viewer" on:click={(e) => dispatch("view", item)} />
+        <Image16 class="viewer" on:click={() => dispatch("view", item)} />
         <Bookmark16
             class="bookmark"
-            on:click={(e) => dispatch("bookmark", item)}
+            on:click={() => dispatch("bookmark", item)}
         />
         {item.Title}
     </div>
