@@ -2,6 +2,7 @@ import { Initialize as InitBlacklist } from './engine/Blacklist';
 import { Initialize as InitFetchProvider } from './engine/FetchProvider';
 import { HakuNeko } from './engine/HakuNeko';
 import { FrontendController } from './frontend/FrontendController';
+import { WindowController } from './engine/WindowController';
 
 const splashOptions = {
     new_instance: true,
@@ -29,7 +30,7 @@ async function Initialize() {
     window.HakuNeko = new HakuNeko();
     window.HakuNeko.EventManager.FrontendLoaded.Subscribe(HideSplashScreen);
     const timerHideSplashScreen = setTimeout(HideSplashScreen, 7500);
-    window.Frontend = new FrontendController();
+    window.Frontend = new FrontendController(new WindowController(nwWindow));
 
     function HideSplashScreen() {
         window.HakuNeko.EventManager.FrontendLoaded.Unsubscribe(HideSplashScreen);

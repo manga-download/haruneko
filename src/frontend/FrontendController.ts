@@ -5,6 +5,7 @@ import { Info as InfoJS } from './sample-js/FrontendInfo';
 import { Info as InfoReact } from './sample-react/FrontendInfo';
 import { Info as InfoSvelte } from './sample-svelte/FrontendInfo';
 import { Info as InfoVue } from './sample-vue/FrontendInfo';
+import type { IWindowController } from '../engine/WindowController';
 
 const frontendSelector = '#app';
 const frontendList: IFrontendInfo[] = [
@@ -22,9 +23,11 @@ export interface IFrontendController {
 
 export class FrontendController implements IFrontendController {
 
+    private readonly windowController;
     private activeFrontendID = '';
 
-    constructor() {
+    constructor(windowController: IWindowController) {
+        this.windowController = windowController;
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', this.Load);
         } else {
@@ -78,8 +81,7 @@ export class FrontendController implements IFrontendController {
             const frontend = await this.GetFrontendModuleByID(frontendID);
             const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';
-            frontend.SetWindowMenu();
-            await frontend.Render(hook);
+            await frontend.Render(hook, this.windowController);
             this.activeFrontendID = frontendID;
             HakuNeko.EventManager.FrontendLoaded.Dispatch(frontend, this.GetFrontendInfoByID(frontendID));
         } catch(error) {

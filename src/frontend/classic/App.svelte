@@ -22,23 +22,6 @@
         (resolve) => (resolveFinishLoading = resolve)
     );
 
-    // TODO: Frontend must not use framework globals such as `nw` or `chrome`
-    // => Such non-browser functionalities needs to be abstracted by the HakuNekp engine ...
-    //const win = nw.Window.get();
-
-    let winMaximized = false;
-
-    function updateWindowState() {
-        winMaximized = window.outerWidth >= screen.availWidth
-            && window.outerHeight >= screen.availHeight
-            && screen['availTop'] === window.screenTop
-            && screen['availLeft'] === window.screenLeft;
-        //console.log('Maximized:', winMaximized);
-    }
-    updateWindowState();
-
-    window.addEventListener('resize', updateWindowState);
-
     // UI
     let isSideNavOpen = false;
     let isOpen = false;
@@ -73,7 +56,7 @@
 </script>
 
 <Theme bind:theme={$theme}>
-    <AppBar {isSideNavOpen} {isOpen} {winMaximized} />
+    <AppBar {isSideNavOpen} {isOpen} />
     <Content id="hakunekoapp">
         <MediaSelect on:select={(evt) => (selectedMedia = evt.detail)} />
         <MediaItemSelect

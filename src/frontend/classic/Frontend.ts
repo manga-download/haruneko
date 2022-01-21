@@ -1,15 +1,13 @@
+import type { IWindowController } from '../../engine/WindowController';
 import type { IFrontendModule } from '../IFrontend';
 import App from './App.svelte';
+import { WindowController } from './Stores';
 
 class Classic implements IFrontendModule {
-
-    SetWindowMenu(): void {
-        // optionally change the menu of the NW.js window
-    }
-
-    async Render(root: HTMLElement): Promise<void> {
+    async Render(root: HTMLElement, windowController: IWindowController): Promise<void> {
         const app = new App({ target: root, props: {} });
         await app.FinishLoading;
+        WindowController.set(windowController);
     }
 }
 

@@ -24,33 +24,34 @@
         doublePage,
     } from "../utils/storage";
     import { viewerModesSelect } from "../utils/viewerMode";
+    import { WindowController } from "../Stores";
 
     export let isSideNavOpen: boolean;
-    export let winMaximized: boolean;
     export let isOpen: boolean;
+    let winMaximized = false;
 
+    function updateWindowState() {
+        winMaximized = window.outerWidth >= screen.availWidth
+            && window.outerHeight >= screen.availHeight
+            && window.screenTop <= screen['availTop']
+            && window.screenLeft <= screen['availLeft'];
+    }
+    updateWindowState();
 
-    // TODO: Frontend must not use framework globals such as `nw` or `chrome`
-    // => Such non-browser functionalities needs to be abstracted by the HakuNekp engine ...
-    //const win = nw.Window.get();
+    window.addEventListener('resize', updateWindowState);
 
-    function close() {
-        window.close();
+    let minimize: () => void;
+    let maximize: () => void;
+    let restore: () => void;
+    let close: () => void;
+
+    $: if($WindowController) {
+        minimize = $WindowController.Minimize.bind($WindowController);
+        maximize = $WindowController.Maximize.bind($WindowController);
+        restore = $WindowController.Restore.bind($WindowController);
+        close = $WindowController.Close.bind($WindowController);
     }
 
-    function restore() {
-        throw new Error('Not implemented!');
-    }
-
-    function minimize()
-    {
-        throw new Error('Not implemented!');
-    }
-
-    function maximize()
-    {
-        throw new Error('Not implemented!');
-    }
 </script>
 
 <Header

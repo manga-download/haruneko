@@ -1,3 +1,5 @@
+import type { IWindowController } from '../engine/WindowController';
+
 export interface IFrontendInfo {
     ID: string;
     Label: string;
@@ -7,6 +9,5 @@ export interface IFrontendInfo {
 }
 
 export interface IFrontendModule {
-    SetWindowMenu(): void;
-    Render(root: HTMLElement): Promise<void>;
+    Render(root: HTMLElement, windowController: IWindowController): Promise<void>;
 }
