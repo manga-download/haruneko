@@ -28,6 +28,7 @@ export interface IMediaContainer {
     //readonly Language: string;
     readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
+    TryGetEntry(url: string): Promise<IMediaChild>;
     Update(): Promise<void>;
 }
 
@@ -64,6 +65,7 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
         this.Initialize = () => Promise.resolve();
     }
 
+    public abstract TryGetEntry(url: string): Promise<T>;
     public abstract Update(): Promise<void>;
 }
 
@@ -84,6 +86,7 @@ export abstract class MediaScraper {
 
     public abstract CreatePlugin(): MediaContainer<IMediaContainer>;
 
+    // TODO: Maybe only run once?
     public async Initialize(): Promise<void> {
         const request = new FetchRequest(this.URI.href);
         return FetchWindowScript(request, '');

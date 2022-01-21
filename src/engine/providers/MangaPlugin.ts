@@ -11,6 +11,7 @@ export abstract class MangaScraper extends MediaScraper {
         return new MangaPlugin(this);
     }
 
+    public abstract FetchManga(provider: MangaPlugin, url: string): Promise<Manga>;
     public abstract FetchMangas(provider: MangaPlugin): Promise<Manga[]>;
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
     public abstract FetchPages(chapter: Chapter): Promise<Page[]>;
@@ -21,6 +22,10 @@ export abstract class MangaScraper extends MediaScraper {
  * Since decorators do not (yet) work well with the abstract classes, this base class can be used when applying the decorator pattern to customize manga scrapers.
  */
 export class DecoratableMangaScraper extends MangaScraper {
+
+    public FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        throw new Error();
+    }
 
     public FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         throw new Error();
@@ -65,6 +70,11 @@ export class MangaPlugin extends MediaContainer<Manga> {
         return super.Initialize();
     }
 
+    public async TryGetEntry(url: string): Promise<Manga> {
+        await this.Initialize();
+        return this._scraper.FetchManga(this, url);
+    }
+
     public async Update(): Promise<void> {
         await this.Initialize();
         this._entries = await this._scraper.FetchMangas(this);
@@ -91,6 +101,10 @@ export class Manga extends MediaContainer<Chapter> {
         this._scraper = scraper;
     }
 
+    public TryGetEntry(url: string): Promise<Chapter> {
+        throw new Error(/* Not implemented! */);
+    }
+
     public async Update(): Promise<void> {
         await this.Initialize();
         this._entries = await this._scraper.FetchChapters(this);
@@ -104,6 +118,10 @@ export class Chapter extends MediaContainer<Page> {
     constructor(scraper: MangaScraper, parent: MediaContainer<Chapter>, identifier: string, title: string) {
         super(identifier, title, parent);
         this._scraper = scraper;
+    }
+
+    public TryGetEntry(url: string): Promise<Page> {
+        throw new Error(/* Not implemented! */);
     }
 
     public async Update(): Promise<void> {
