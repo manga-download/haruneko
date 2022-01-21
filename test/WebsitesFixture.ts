@@ -20,23 +20,21 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer = MangaPlugin, T
     async GetRemoteWebsitePlugin(pluginID: string) {
         const remoteEngine = await this.GetRemoteEngine();
         return remoteEngine.evaluateHandle<JSHandle<TWebsitePlugin>>(async (engine: HakuNeko, pluginID: string) => {
-            const plugin = engine.PluginController.WebsitePlugins.find(website => website.Identifier === pluginID);
-            await plugin.Update();
-            return plugin;
+            return engine.PluginController.WebsitePlugins.find(website => website.Identifier === pluginID);
         }, pluginID);
     }
 
-    async GetRemoteContainer(pluginID: string, containerID: string) {
+    async GetRemoteContainer(pluginID: string, containerURL: string) {
         const remotePlugin = await this.GetRemoteWebsitePlugin(pluginID);
-        return remotePlugin.evaluateHandle<JSHandle<TContainer>>(async (plugin: TWebsitePlugin, containerID: string) => {
-            const manga = (plugin.Entries as TContainer[]).find(manga => manga.Identifier === containerID);
+        return remotePlugin.evaluateHandle<JSHandle<TContainer>>(async (plugin: TWebsitePlugin, containerURL: string) => {
+            const manga = (await plugin.TryGetEntry(containerURL) as TContainer);
             await manga.Update();
             return manga;
-        }, containerID);
+        }, containerURL);
     }
 
-    async GetRemoteChild(pluginID: string, containerID: string, childID: string) {
-        const remoteManga = await this.GetRemoteContainer(pluginID, containerID);
+    async GetRemoteChild(pluginID: string, containerURL: string, childID: string) {
+        const remoteManga = await this.GetRemoteContainer(pluginID, containerURL);
         return remoteManga.evaluateHandle<JSHandle<TChild>>(async (manga: TContainer, childID: string) => {
             const chapter = (manga.Entries as TChild[]).find(chapter => chapter.Identifier === childID);
             await chapter.Update();
