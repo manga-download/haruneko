@@ -6,6 +6,7 @@ export abstract class AnimeScraper extends MediaScraper {
         return new AnimePlugin(this);
     }
 
+    public abstract FetchAnime(provider: AnimePlugin, url: string): Promise<Anime>;
     public abstract FetchAnimes(provider: AnimePlugin): Promise<Anime[]>;
     public abstract FetchEpisodes(anime: Anime): Promise<Episode[]>;
     public abstract FetchVideos(episode: Episode): Promise<Video[]>;
@@ -41,6 +42,11 @@ export class AnimePlugin extends MediaContainer<Anime> {
         return super.Initialize();
     }
 
+    public async TryGetEntry(url: string): Promise<Anime> {
+        await this.Initialize();
+        return this._scraper.FetchAnime(this, url);
+    }
+
     public async Update(): Promise<void> {
         await this.Initialize();
         this._entries = await this._scraper.FetchAnimes(this);
@@ -67,6 +73,10 @@ export class Anime extends MediaContainer<Episode> {
         this._scraper = scraper;
     }
 
+    public TryGetEntry(url: string): Promise<Episode> {
+        throw new Error(/* Not implemented! */);
+    }
+
     public async Update(): Promise<void> {
         await this.Initialize();
         this._entries = await this._scraper.FetchEpisodes(this);
@@ -80,6 +90,10 @@ export class Episode extends MediaContainer<Video> {
     constructor(scraper: AnimeScraper, parent: MediaContainer<Episode>, identifier: string, title: string) {
         super(identifier, title, parent);
         this._scraper = scraper;
+    }
+
+    public TryGetEntry(url: string): Promise<Video> {
+        throw new Error(/* Not implemented! */);
     }
 
     public async Update(): Promise<void> {

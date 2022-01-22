@@ -15,6 +15,11 @@ export default class extends MangaScraper {
     ];
     */
 
+    public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        // TODO: Implement decorator?
+        return;
+    }
+
     public async Initialize(): Promise<void> {
         const paths = [ '/', '/manga/_/_/capitulo-' ];
         for(const path of paths) {
