@@ -1,4 +1,4 @@
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, MangaPlugin } from '../providers/MangaPlugin';
 import { MangasMultiPageCSS, ChaptersSinglePageAJAX, PagesSinglePageCSS } from './decorators/WordPressMadara';
 
 @MangasMultiPageCSS(undefined, '/manga-list/page/{page}/')
@@ -16,4 +16,9 @@ export default class extends DecoratableMangaScraper {
         new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
     ];
     */
+
+    public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        // TODO: Implement decorator?
+        return;
+    }
 }
