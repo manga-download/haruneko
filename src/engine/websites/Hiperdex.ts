@@ -1,8 +1,9 @@
-import { DecoratableMangaScraper, Manga, MangaPlugin } from '../providers/MangaPlugin';
-import { MangasMultiPageCSS, ChaptersSinglePageAJAX, PagesSinglePageCSS } from './decorators/WordPressMadara';
+import { FetchRequest } from '../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
+import { MangaCSS, MangasMultiPageCSS, FetchChaptersCSS, PagesSinglePageCSS } from './decorators/WordPressMadara';
 
+@MangaCSS('meta[property="og:title"]:not([content*="Hiperdex"])')
 @MangasMultiPageCSS(undefined, '/manga-list/page/{page}/')
-@ChaptersSinglePageAJAX()
 @PagesSinglePageCSS()
 export default class extends DecoratableMangaScraper {
 
@@ -17,8 +18,10 @@ export default class extends DecoratableMangaScraper {
     ];
     */
 
-    public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        // TODO: Implement decorator?
-        return;
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const slug = JSON.parse(manga.Identifier).slug as string;
+        const uri = new URL((slug + '/ajax/chapters/').replace(/\/+/g, '/'), this.URI);
+        const request = new FetchRequest(uri.href, { method: 'POST' });
+        return FetchChaptersCSS.call(this, manga, request);
     }
 }
