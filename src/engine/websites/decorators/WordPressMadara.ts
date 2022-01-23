@@ -1,4 +1,4 @@
-import { FetchRequest, FetchCSS } from '../../FetchProvider';
+import { FetchRequest, FetchCSS, FetchHTML } from '../../FetchProvider';
 import { MangaScraper, DecoratableMangaScraper, MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 
@@ -14,18 +14,30 @@ const queryMangaListLinks = 'div.post-title h3 a, div.post-title h5 a';
 const queryChapterListLinks = 'ul li.wp-manga-chapter > a';
 const queryPageListLinks = 'div.page-break img';
 
-/******************************************
- ******** Manga Extraction Methods ********
- ******************************************/
+/***************************************************
+ ******** Manga from URL Extraction Methods ********
+ ***************************************************/
 
-async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, uri: URL, query = queryMangaTitle): Promise<Manga> {
+export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
+    const uri = new URL(url);
     const request = new FetchRequest(uri.href);
-    const data = await FetchCSS<HTMLBodyElement>(request, 'body');
-    const post = data[0].querySelector<HTMLElement>('...');
+    const data = await FetchHTML(request);
+    const post = data.querySelector<HTMLElement>('div#manga-chapters-holder')?.dataset?.id;
     const slug = uri.pathname;
-    const element = data[0].querySelector<HTMLMetaElement>(query);
-    const title = (element?.content || element?.textContent || '').trim();
+    const element = data.querySelector<HTMLElement>(query);
+    const title = (element instanceof HTMLMetaElement ? element.content : element.textContent).trim();
     return new Manga(this, provider, JSON.stringify({ post, slug }), title);
+}
+
+// Class Decorator
+export function MangaCSS(query: string = queryMangaTitle) {
+    return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
+        return class extends ctor {
+            public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
+                return FetchMangaCSS.call(this, provider, url, query);
+            }
+        };
+    };
 }
 
 /***********************************************
@@ -107,7 +119,7 @@ export function MangasMultiPageAJAX(query = queryMangaListLinks, path = pathname
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
-async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: FetchRequest, query = queryChapterListLinks): Promise<Chapter[]> {
+export async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: FetchRequest, query = queryChapterListLinks): Promise<Chapter[]> {
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const slug = element.pathname;

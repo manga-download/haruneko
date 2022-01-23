@@ -3,6 +3,10 @@ import { MangaScraper, DecoratableMangaScraper, MangaPlugin, Manga, Chapter, Pag
 
 type InfoExtractor<E extends HTMLElement> = (element: E) => { id: string, title: string };
 
+/**
+ * The pre-defined default info extractor that will parse the media id and media title from a given {@link HTMLAnchorElement}.
+ * The media title will be extracted from the `text` porperty of the element.
+ */
 function DefaultInfoExtractor<E extends HTMLAnchorElement>(element: E): { id: string, title: string } {
     const extract = AnchorInfoExtractor();
     return extract(element);
@@ -15,8 +19,8 @@ function DefaultImageExtractor<E extends HTMLImageElement>(element: E): string {
 }
 
 /**
- * Create a default info extractor that will parse the media id and media title from an `HTMLAnchorElement`.
- * @param useTitle If set to `true`, the media title will be extracted from the `title` attribute of the element, otherwise the `text` porperty of the element will be used as media title.
+ * Creates an info extractor that will parse the media id and media title from an {@link HTMLAnchorElement}.
+ * @param useTitleAttribute If set to `true`, the media title will be extracted from the `title` attribute of the element, otherwise the `text` porperty of the element will be used as media title.
  */
 export function AnchorInfoExtractor(useTitleAttribute = false): InfoExtractor<HTMLAnchorElement> {
     return function(element: HTMLAnchorElement) {
@@ -40,10 +44,42 @@ export function InnerAnchorInfoExtractor(query: string): InfoExtractor<HTMLAncho
     };
 }
 
+/***************************************************
+ ******** Manga from URL Extraction Methods ********
+ ***************************************************/
+
+/**
+ * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga from a given url.
+ * It will use the `pathname` of the url as manga id and the `content` attribute or `textContent` of the element found by the given CSS query as manga title.
+ */
+export async function FetchMangaCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, url: string, query: string): Promise<Manga> {
+    const uri = new URL(url);
+    const request = new FetchRequest(uri.href);
+    const data = (await FetchCSS<E>(request, query)).pop();
+    const title = data instanceof HTMLMetaElement ? data.content : data.textContent.trim();
+    return new Manga(this, provider, uri.pathname, title);
+}
+
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
+ */
+export function MangaCSS(query: string) {
+    return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
+        return class extends ctor {
+            public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
+                return FetchMangaCSS.call(this, provider, url, query);
+            }
+        };
+    };
+}
+
 /***********************************************
  ******** Manga List Extraction Methods ********
  ***********************************************/
 
+/**
+ * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga list by parsing a single URI of a webiste with the given CSS query.
+ */
 export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const uri = new URL(path, this.URI);
     const request = new FetchRequest(uri.href);
@@ -54,7 +90,9 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
     });
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasSinglePageCSS}.
+ */
 export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
@@ -65,6 +103,9 @@ export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: 
     };
 }
 
+/**
+ * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga list by parsing multiple URIs of a webiste with the given CSS query.
+ */
 export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const mangaList = [];
     for(let page = start, run = true; run; page++) {
@@ -75,7 +116,9 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
     return mangaList;
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasMultiPageCSS}.
+ */
 export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: string, start = 1, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
@@ -90,6 +133,9 @@ export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: s
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
+/**
+ * An extension method for a {@link MangaScraper} instance, that can be used to extract a chapter list by parsing a single URI of a webiste with the given CSS query.
+ */
 export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
     const request = new FetchRequest(uri.href);
@@ -100,7 +146,9 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
     });
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchChapters} method with {@link FetchChaptersSinglePageCSS}.
+ */
 export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
@@ -115,6 +163,9 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extr
  ******** Page List Extraction Methods ********
  **********************************************/
 
+/**
+ * An extension method for a {@link MangaScraper} instance, that can be used to extract a page list by parsing a single URI of a webiste with the given CSS query.
+ */
 export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, query: string, extract = DefaultImageExtractor as ImageExtractor<E>): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     const request = new FetchRequest(uri.href);
@@ -125,7 +176,9 @@ export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: Manga
     });
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchPages} method with {@link FetchPagesSinglePageCSS}.
+ */
 export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract = DefaultImageExtractor as ImageExtractor<E>) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
