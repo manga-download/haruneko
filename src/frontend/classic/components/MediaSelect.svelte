@@ -6,6 +6,7 @@
         InlineLoading,
     } from "carbon-components-svelte";
     import PlugFilled16 from "carbon-icons-svelte/lib/PlugFilled16";
+    var Fuse = require("fuse.js");
 
     import { fade } from "svelte/transition";
 
@@ -49,13 +50,16 @@
 
     let mediaNameFilter = "";
     $: {
-        filteredmedias = medias.filter((item) => {
-            return (
-                item?.Parent?.Title?.toLowerCase().indexOf(
-                    mediaNameFilter.toLowerCase()
-                ) !== -1
-            );
-        });
+        if (mediaNameFilter === "") filteredmedias = medias;
+        else {
+          const fuse = new Fuse(medias, {
+            keys: ["Title"],
+            findAllMatches: true,
+            ignoreLocation: true,
+            minMatchCharLength: 1,
+          });
+          filteredmedias = fuse.search(mediaNameFilter).map((item) => item.item);
+        }
     }
 
     let isPluginModalOpen = false;
