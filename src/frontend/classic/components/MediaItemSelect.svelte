@@ -82,60 +82,26 @@
         );
     });
 
-    // Context Menu
     let itemsdiv: HTMLElement;
-    let pos = { x: 0, y: 0 };
-    let showMenu = false;
-
-    async function onRightClick(event: any) {
-        if (showMenu) {
-            showMenu = false;
-            await new Promise((res) => setTimeout(res, 100));
-        }
-        pos = { x: event.clientX, y: event.clientY };
-        showMenu = true;
-    }
-
-    document.addEventListener(
-        "contextmenu",
-        function (event: any) {
-            if (event.target === itemsdiv || itemsdiv.contains(event.target)) {
-                event.preventDefault();
-                return;
-            }
-            showMenu = false;
-        },
-        true
-    );
 </script>
 
-{#if showMenu}
-    <ContextMenu open={showMenu} x={pos.x} y={pos.y}>
-        {#if selectedItems.length > 1}
-            <ContextMenuOption indented labelText="Download selecteds" />
-        {:else}
-            <ContextMenuOption
-                indented
-                labelText="Download"
-                shortcutText="⌘D"
-            />
-            <ContextMenuOption indented labelText="View" shortcutText="⌘V" />
-        {/if}
-        <ContextMenuDivider />
-        <ContextMenuOption indented labelText="Copy">
-            <ContextMenuGroup labelText="Copy options">
-                <ContextMenuOption id="url" labelText="URL" shortcutText="⌘C" />
-                <ContextMenuOption
-                    id="name"
-                    labelText="name"
-                    shortcutText="⌘N"
-                />
-            </ContextMenuGroup>
-        </ContextMenuOption>
-        <ContextMenuDivider />
-        <ContextMenuOption indented labelText="Bookmark" shortcutText="⌘B" />
-    </ContextMenu>
-{/if}
+<ContextMenu target={itemsdiv}>
+    {#if selectedItems.length > 1}
+        <ContextMenuOption indented labelText="Download selecteds" />
+    {:else}
+        <ContextMenuOption indented labelText="Download" shortcutText="⌘D" />
+        <ContextMenuOption indented labelText="View" shortcutText="⌘V" />
+    {/if}
+    <ContextMenuDivider />
+    <ContextMenuOption indented labelText="Copy">
+        <ContextMenuGroup labelText="Copy options">
+            <ContextMenuOption id="url" labelText="URL" shortcutText="⌘C" />
+            <ContextMenuOption id="name" labelText="name" shortcutText="⌘N" />
+        </ContextMenuGroup>
+    </ContextMenuOption>
+    <ContextMenuDivider />
+    <ContextMenuOption indented labelText="Bookmark" shortcutText="⌘B" />
+</ContextMenu>
 
 <div id="Item" transition:fade>
     <div id="ItemTitle">
@@ -154,7 +120,7 @@
         </div>
         <div class="inline-wide">
             <Dropdown
-                selectedIndex={0}
+                selectedId={0}
                 size="sm"
                 items={[
                     { id: "0", text: "*" },
@@ -180,7 +146,6 @@
                         dispatch("view", item);
                     }}
                     on:click={(e) => onItemClick(item, e)}
-                    on:contextmenu={onRightClick}
                 />
             {/each}
         {:catch error}

@@ -107,7 +107,7 @@
         <div class="inline-wide">
             <ComboBox
                 placeholder="Select a Plugin"
-                bind:selectedIndex={selectedPluginIndex}
+                bind:selectedId={selectedPluginIndex}
                 size="sm"
                 items={pluginsCombo}
                 shouldFilterItem={shouldFilterPlugin}
