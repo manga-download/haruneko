@@ -14,6 +14,7 @@
     import Home from "./components/Home.svelte";
     import Viewer from "./components/Viewer.svelte";
     import AppBar from "./components/AppBar.svelte";
+    import UserMessage from "./components/UserMessages.svelte";
     import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
     import { showContentPanel, theme } from "./utils/storage";
 
@@ -54,6 +55,8 @@
 
     $: currentContent = selectedItem ? "viewer" : "home";
 </script>
+
+<UserMessage />
 
 <Theme bind:theme={$theme}>
     <AppBar {isSideNavOpen} {isOpen} />
