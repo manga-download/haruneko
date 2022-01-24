@@ -120,7 +120,7 @@
         </div>
         <div class="inline-wide">
             <Dropdown
-                selectedId={0}
+                selectedId="0"
                 size="sm"
                 items={[
                     { id: "0", text: "*" },
