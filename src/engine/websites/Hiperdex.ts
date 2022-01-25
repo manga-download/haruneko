@@ -1,3 +1,4 @@
+import { Tags } from '../Tags';
 import { FetchRequest } from '../FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
 import { MangaCSS, MangasMultiPageCSS, FetchChaptersCSS, PagesSinglePageCSS } from './decorators/WordPressMadara';
@@ -8,15 +9,8 @@ import { MangaCSS, MangasMultiPageCSS, FetchChaptersCSS, PagesSinglePageCSS } fr
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hiperdex', 'Hiperdex', 'https://hiperdex.com');
+        super('hiperdex', 'Hiperdex', 'https://hiperdex.com', Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Rating.Erotica, Tags.Language.English);
     }
-
-    /*
-    // [ 'hentai', 'webtoon', 'english' ]
-    public const Tags = [
-        new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
-    ];
-    */
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const slug = JSON.parse(manga.Identifier).slug as string;

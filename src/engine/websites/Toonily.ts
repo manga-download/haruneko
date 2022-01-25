@@ -1,3 +1,4 @@
+import { Tags } from '../Tags';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { MangasMultiPageCSS, ChaptersSinglePageCSS, PagesSinglePageCSS } from './decorators/WordPressMadara';
 
@@ -7,13 +8,6 @@ import { MangasMultiPageCSS, ChaptersSinglePageCSS, PagesSinglePageCSS } from '.
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('toonily', 'Toonily', 'https://toonily.com');
+        super('toonily', 'Toonily', 'https://toonily.com', Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Rating.Erotica, Tags.Language.English);
     }
-
-    /*
-    // [ 'webtoon', 'hentai', 'english' ]
-    public const Tags = [
-        new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
-    ];
-    */
 }

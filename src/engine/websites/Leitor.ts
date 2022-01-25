@@ -1,3 +1,4 @@
+import { Tags } from '../Tags';
 import { MangaScraper, Manga, Chapter, Page, MangaPlugin } from '../providers/MangaPlugin';
 import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchProvider';
 import { FetchMangasMultiPageCSS } from './decorators/Common';
@@ -5,15 +6,8 @@ import { FetchMangasMultiPageCSS } from './decorators/Common';
 export default class extends MangaScraper {
 
     public constructor() {
-        super('leitor', 'Leitor', 'https://leitor.net');
+        super('leitor', 'Leitor', 'https://leitor.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese);
     }
-
-    /*
-    // [ 'manga', 'webtoon', 'portuguese' ]
-    public const Tags = [
-        new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
-    ];
-    */
 
     public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         // TODO: Implement decorator?

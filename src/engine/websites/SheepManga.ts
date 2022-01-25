@@ -1,3 +1,4 @@
+import { Tags } from '../Tags';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 
@@ -7,14 +8,8 @@ import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/Ma
 export default class extends MangaScraper {
 
     public constructor() {
-        super('sheep-scanlations', `Sheep's Awesome Mangas`, 'https://hakuneko.download/sample-websites/sheep-scanlations/');
+        super('sheep-scanlations', `Sheep's Awesome Mangas`, 'https://hakuneko.download/sample-websites/sheep-scanlations/', Tags.Media.Comic, Tags.Source.Official, Tags.Rating.Safe, Tags.Language.Multilingual);
     }
-
-    /*
-    public const Tags = [
-        new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
-    ];
-    */
 
     public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         if(/\/sheep-scanlations\/\d+\.json/.test(url)) {

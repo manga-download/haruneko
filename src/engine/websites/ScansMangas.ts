@@ -1,3 +1,4 @@
+import { Tags } from '../Tags';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { MangasSinglePageCSS, ChaptersSinglePageCSS, PagesSinglePageCSS } from './decorators/Common';
 
@@ -7,15 +8,8 @@ import { MangasSinglePageCSS, ChaptersSinglePageCSS, PagesSinglePageCSS } from '
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('scansmangas', 'ScansMangas', 'https://scans-mangas.com');
+        super('scansmangas', 'ScansMangas', 'https://scans-mangas.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.French);
     }
-
-    /*
-    // [ 'webtoon', 'hentai', 'english' ]
-    public const Tags = [
-        new Tag(Tags.Media, [ Media.Manga, Media.Manhua, Media.Novel ])
-    ];
-    */
 }
 
 /*
