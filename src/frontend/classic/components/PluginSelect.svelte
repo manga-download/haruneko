@@ -13,13 +13,9 @@
     import Image16 from "carbon-icons-svelte/lib/Image16";
     import { createEventDispatcher } from "svelte";
 
-    import Tag from "./Tag.svelte";
+    import Chip from "./Tag.svelte";
+    import type { Tag } from '../../../engine/Tags';
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
-
-    interface ITag {
-        category: string;
-        label: string;
-    }
 
     function createDataRow(item: IMediaContainer) {
         return {
@@ -43,35 +39,22 @@
 
     //because hardccoding values is da way (Do You Know Da Wae?)
     //will fuse in a single main array with dispatch
-    const langTags: Array<ITag> = [
-        { category: "lang", label: "English" },
-        { category: "lang", label: "French" },
-        { category: "lang", label: "multi-lingual" },
-    ];
-    const typeTags: Array<ITag> = [
-        { category: "type", label: "Anime" },
-        { category: "type", label: "Manga" },
-        { category: "type", label: "Novel" },
-        { category: "type", label: "Webtoon" },
-    ];
-    const otherTags: Array<ITag> = [
-        { category: "lang", label: "porn" },
-        { category: "lang", label: "raw" },
-        { category: "lang", label: "scanlation" },
-        { category: "lang", label: "subbed" },
-    ];
+    const langTags = HakuNeko.Tags.Language.toArray();
+    const typeTags = HakuNeko.Tags.Media.toArray();
+    const otherTags = [ ...HakuNeko.Tags.Source.toArray(), ...HakuNeko.Tags.Rating.toArray() ];
 
     let pluginNameFilter = "";
-    let pluginTagsFilter: Array<ITag> = [];
+    let pluginTagsFilter: Tag[] = [];
 
-    function addTagFilter(tag: ITag) {
-        //todo: check for duplicate
-        pluginTagsFilter = [...pluginTagsFilter, tag];
+    function addTagFilter(tag: Tag) {
+        if(!pluginTagsFilter.includes(tag)) {
+            pluginTagsFilter = [...pluginTagsFilter, tag];
+        }
     }
-    function removeTagFilter(tag: ITag) {
+    function removeTagFilter(tag: Tag) {
         pluginTagsFilter = pluginTagsFilter.filter(value => tag !== value);
     }
-    addTagFilter({ category: "lang", label: "French" });
+    addTagFilter(HakuNeko.Tags.Language.French);
 
     $: filteredPluginlist = pluginlist
         .filter((item) => {
@@ -117,21 +100,21 @@
     <div class="content tags">
         <Tile>
             <div class="lang">
-                <div>Language</div>
+                <div>{HakuNeko.Tags.Language}</div>
                 {#each langTags as item}
-                    <Tag
-                        category={item.category}
-                        label={item.label}
+                    <Chip
+                        category={item.Category}
+                        label={item.Title}
                         on:click={() => addTagFilter(item)}
                     />
                 {/each}
             </div>
             <div class="type">
-                <div>Type</div>
+                <div>{HakuNeko.Tags.Media}</div>
                 {#each typeTags as item}
-                    <Tag
-                        category={item.category}
-                        label={item.label}
+                    <Chip
+                        category={item.Category}
+                        label={item.Title}
                         on:click={() => addTagFilter(item)}
                     />
                 {/each}
@@ -139,9 +122,9 @@
             <div class="other">
                 <div>Other</div>
                 {#each otherTags as item}
-                    <Tag
-                        category={item.category}
-                        label={item.label}
+                    <Chip
+                        category={item.Category}
+                        label={item.Title}
                         on:click={() => addTagFilter(item)}
                     />
                 {/each}
@@ -151,10 +134,10 @@
     <Tile id="selectedTags">
         <span>Tags:</span>
         {#each pluginTagsFilter as item}
-            <Tag
+            <Chip
                 filter
-                category={item.category}
-                label={item.label}
+                category={item.Category}
+                label={item.toString('%C: %T')}
                 on:click={() => removeTagFilter(item)}
             />
         {/each}
