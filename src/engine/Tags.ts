@@ -58,9 +58,21 @@ export const Tags = {
     Media: {
         toString: () => i18n(i18nCategoryMedia),
         toArray: GetCategoryTags,
+        /**
+         * Keywords: Eastern, Japan, Black & White, Pagination
+         */
         Manga: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Manga`, `${i18nCategoryMedia}.MangaDescription`),
+        /**
+         * Keywords: Eastern, China, Colored, Longstrip, Martial Art Fantasy
+         */
         Manhua: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Manhua`, `${i18nCategoryMedia}.ManhuaDescription`),
+        /**
+         * Keywords: Eastern, South Korea, Colored, Longstrip, Pop Culture
+         */
         Manhwa: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Manhwa`, `${i18nCategoryMedia}.ManhwaDescription`),
+        /**
+         * Keywords: Western, America/Europe, Colored, Pagination
+         */
         Comic: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Comic`, `${i18nCategoryMedia}.ComicDescription`),
         Anime: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Anime`, `${i18nCategoryMedia}.AnimeDescription`),
         Cartoon: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Cartoon`, `${i18nCategoryMedia}.CartoonDescription`),
@@ -69,8 +81,17 @@ export const Tags = {
     Source: {
         toString: () => i18n(i18nCategorySource),
         toArray: GetCategoryTags,
+        /**
+         * Keywords: Licensed Publisher, Original Content
+         */
         Official: new Tag(i18nCategorySource, `${i18nCategorySource}.Official`),
+        /**
+         * Keywords: Fan Translated, Manipulated Original Content
+         */
         Scanlator: new Tag(i18nCategorySource, `${i18nCategorySource}.Scanlator`),
+        /**
+         * Keywords: Unlicensed Distribution, No Scanlator Attribution, Ripped/Watermarked Content, Huge Library
+         */
         Aggregator: new Tag(i18nCategorySource, `${i18nCategorySource}.Aggregator`),
     },
     Rating: {
