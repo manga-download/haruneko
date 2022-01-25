@@ -1,4 +1,5 @@
 import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import type { Tag } from '../Tags';
 
 export type IMediaChild = IMediaContainer | IMediaItem;
 
@@ -25,7 +26,7 @@ export interface IMediaContainer {
     readonly Parent?: IMediaContainer;
     readonly Identifier: string;
     readonly Title: string;
-    //readonly Language: string;
+    readonly Tags: Tag[];
     readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
     TryGetEntry(url: string): Promise<IMediaChild>;
@@ -34,18 +35,24 @@ export interface IMediaContainer {
 
 export abstract class MediaContainer<T extends IMediaChild> implements IMediaContainer {
 
+    protected _tags: Tag[];
     protected _entries: T[];
 
     constructor(identifier: string, title: string, parent?: IMediaContainer) {
         this.Parent = parent;
         this.Identifier = identifier;
         this.Title = title;
+        this._tags = [];
         this._entries = [];
     }
 
     public readonly Parent?: IMediaContainer;
     public readonly Identifier: string;
     public readonly Title: string;
+
+    public get Tags(): Tag[] {
+        return this._tags;
+    }
 
     public get Entries(): T[] {
         return this._entries;
@@ -69,24 +76,24 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
     public abstract Update(): Promise<void>;
 }
 
-export abstract class MediaScraper {
+export abstract class MediaScraper<T extends IMediaContainer> {
 
     public readonly Identifier: string;
     public readonly Title: string;
     public readonly URI: URL;
+    public readonly Tags: Tag[];
 
-    public constructor(identifier: string, title: string, url: string) {
+    public constructor(identifier: string, title: string, url: string, ...tags: Tag[]) {
         this.Identifier = identifier;
         this.Title = title;
         this.URI = new URL(url);
+        this.Tags = tags;
     }
 
     //readonly Icon: Image;
-    //readonly Tags: object[];
 
-    public abstract CreatePlugin(): MediaContainer<IMediaContainer>;
+    public abstract CreatePlugin(): T;
 
-    // TODO: Maybe only run once?
     public async Initialize(): Promise<void> {
         const request = new FetchRequest(this.URI.href);
         return FetchWindowScript(request, '');

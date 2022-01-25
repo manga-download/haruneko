@@ -1,6 +1,6 @@
 import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
-export abstract class AnimeScraper extends MediaScraper {
+export abstract class AnimeScraper extends MediaScraper<AnimePlugin> {
 
     public CreatePlugin(): AnimePlugin {
         return new AnimePlugin(this);
@@ -18,6 +18,7 @@ export class AnimePlugin extends MediaContainer<Anime> {
 
     public constructor(scraper: AnimeScraper) {
         super(scraper.Identifier, scraper.Title);
+        this._tags = scraper.Tags;
         this._scraper = scraper;
     }
 

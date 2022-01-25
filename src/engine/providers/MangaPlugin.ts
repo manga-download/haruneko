@@ -5,7 +5,7 @@ import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
  * This should be used for any custom manga scraper implementation that is not going to utilize the decorator pattern.
  * Custom manga scrapers that are going to utilize decorators must extend the `DecoratableMangaScraper` instead.
  */
-export abstract class MangaScraper extends MediaScraper {
+export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
 
     public CreatePlugin(): MangaPlugin {
         return new MangaPlugin(this);
@@ -46,6 +46,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
 
     public constructor(scraper: MangaScraper) {
         super(scraper.Identifier, scraper.Title);
+        this._tags = scraper.Tags;
         this._scraper = scraper;
     }
 
