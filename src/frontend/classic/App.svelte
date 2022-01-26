@@ -1,22 +1,22 @@
 <script lang="ts">
-    import "carbon-components-svelte/css/all.css";
-    import "./theme/hakuneko.css";
-    import "./theme/sidenav-hack.css";
-    import { Content, Tabs, Tab, TabContent } from "carbon-components-svelte";
-    import { fade } from "svelte/transition";
-    import { onMount } from "svelte";
-    import Theme from "./components/Theme.svelte";
-    import MediaSelect from "./components/MediaSelect.svelte";
-    import MediaItemSelect from "./components/MediaItemSelect.svelte";
-    import Jobs from "./components/Jobs.svelte";
-    import Console from "./components/Console.svelte";
-    import Network from "./components/Network.svelte";
-    import Home from "./components/Home.svelte";
-    import Viewer from "./components/Viewer.svelte";
-    import AppBar from "./components/AppBar.svelte";
-    import UserMessage from "./components/UserMessages.svelte";
-    import type { IMediaContainer } from "../../engine/providers/MediaPlugin";
-    import { showContentPanel, theme } from "./utils/storage";
+    import 'carbon-components-svelte/css/all.css';
+    import './theme/hakuneko.css';
+    import './theme/sidenav-hack.css';
+    import { Content, Tabs, Tab, TabContent } from 'carbon-components-svelte';
+    import { fade } from 'svelte/transition';
+    import { onMount } from 'svelte';
+    import Theme from './components/Theme.svelte';
+    import MediaSelect from './components/MediaSelect.svelte';
+    import MediaItemSelect from './components/MediaItemSelect.svelte';
+    import Jobs from './components/Jobs.svelte';
+    import Console from './components/Console.svelte';
+    import Network from './components/Network.svelte';
+    import Home from './components/Home.svelte';
+    import Viewer from './components/Viewer.svelte';
+    import AppBar from './components/AppBar.svelte';
+    import UserMessage from './components/UserMessages.svelte';
+    import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
+    import { showContentPanel, theme } from './utils/storage';
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
     export const FinishLoading = new Promise<void>(
@@ -30,7 +30,7 @@
     let app: HTMLElement;
 
     onMount(async () => {
-        app = document.getElementById("hakunekoapp")!;
+        app = document.getElementById('hakunekoapp')!;
         app.classList.add(uimode);
         // some delay for pre-rendering
         setTimeout(resolveFinishLoading, 2500);
@@ -39,21 +39,21 @@
     let selectedMedia: IMediaContainer | undefined;
     let selectedItem: IMediaContainer | undefined;
     let selectedBottomTab = 0;
-    let currentContent = "home";
+    let currentContent = 'home';
     let showHome = true;
 
-    $: uimode = $showContentPanel ? "ui-mode-content" : "ui-mode-download";
+    $: uimode = $showContentPanel ? 'ui-mode-content' : 'ui-mode-download';
 
     $: if (app) {
         const oldUimode =
-            uimode === "ui-mode-content"
-                ? "ui-mode-download"
-                : "ui-mode-content";
+            uimode === 'ui-mode-content'
+                ? 'ui-mode-download'
+                : 'ui-mode-content';
         app.classList.remove(oldUimode);
         app.classList.add(uimode);
     }
 
-    $: currentContent = selectedItem ? "viewer" : "home";
+    $: currentContent = selectedItem ? 'viewer' : 'home';
 </script>
 
 <UserMessage />
@@ -66,11 +66,11 @@
             media={selectedMedia}
             on:view={(evt) => (selectedItem = evt.detail)}
         />
-        {#if uimode === "ui-mode-content"}
+        {#if uimode === 'ui-mode-content'}
             <div id="Content" transition:fade>
-                {#if currentContent === "home" && showHome}
+                {#if currentContent === 'home' && showHome}
                     <Home />
-                {:else if currentContent === "viewer"}
+                {:else if currentContent === 'viewer'}
                     <Viewer item={selectedItem} />
                 {/if}
             </div>
@@ -109,6 +109,11 @@
 </Theme>
 
 <style>
+    @font-face {
+        font-family: 'BabelStoneFlags';
+        src: url('/static/BabelStoneFlags.woff2') format('woff');
+        font-style: normal;
+    }
     :global(::-webkit-scrollbar) {
         width: 1em; /* Necessary so scrollbar changes from default*/
     }
@@ -133,14 +138,14 @@
     :global(.ui-mode-content) {
         grid-template-columns: 19em 19em 1fr;
         grid-template-areas:
-            "Media Item Content"
-            "Bottom Bottom Content";
+            'Media Item Content'
+            'Bottom Bottom Content';
     }
     :global(.ui-mode-download) {
         grid-template-columns: minmax(20em, 1fr) minmax(20em, 1fr);
         grid-template-areas:
-            "Media Item"
-            "Bottom Bottom";
+            'Media Item'
+            'Bottom Bottom';
     }
 
     #Content {
