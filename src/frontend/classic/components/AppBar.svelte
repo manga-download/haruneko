@@ -25,6 +25,8 @@
     } from "../utils/storage";
     import { viewerModesSelect } from "../utils/viewerMode";
     import { WindowController } from "../Stores";
+    import { _L, Keys, CurrentLocale } from "../../../i18n/Localization";
+import LanguageSelect from "./LanguageSelect.svelte";
 
     export let isSideNavOpen: boolean;
     export let isOpen: boolean;
@@ -52,14 +54,17 @@
         close = $WindowController.Close.bind($WindowController);
     }
 
+    // NOTE: Sample for reactive localization, which reflects instantly without reloading the frontend
+    let locale = CurrentLocale().Code;
+    HakuNeko.EventManager.LocaleChanged.Subscribe((_, code) => locale = code);
 </script>
 
 <Header
     id="Header"
     expandedByDefault={false}
     persistentHamburgerMenu={true}
-    company="HakuNeko"
-    platformName="Media & Anime - Downloader"
+    company={_L(locale, Keys.Frontend_Product_Title)}
+    platformName={_L(locale, Keys.Frontend_Product_Description)}
     bind:isSideNavOpen
 >
     <div slot="skip-to-content">
@@ -82,6 +87,7 @@
             icon={CloseIcon}
         />
         <HeaderAction bind:isOpen>
+            <LanguageSelect></LanguageSelect>
             <SettingItem
                 labelText="Show content panel"
                 helperText="Display or not the hakuneko tutorial"

@@ -14,7 +14,8 @@ export const Locales: ILocale[] = [
 ];
 
 export function CurrentLocale(): ILocale {
-    // TODO: Determine user selected langauge code from settings ... ?
+    // TODO: Determine user selected langauge code from settings,
+    //       which may be changed by e.g. HakuNeko.EventManager.LocaleChanged
     return en_US;
 }
 
