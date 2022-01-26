@@ -10,6 +10,8 @@ export type ILocale = {
  * Pre-defined identifiers for localization resource strings.
  */
 export enum ResourceKeys {
+    Frontend_Product_Title = 'Frontend.Product.Title',
+    Frontend_Product_Description = 'Frontend.Product.Description',
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider.FetchWindow.TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider.FetchWindow.CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider.FetchWindow.AlertCaptcha',

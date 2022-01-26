@@ -1,21 +1,21 @@
 import { Tags } from './Tags';
-import { type IEventManager, EventManager } from './EventManager';
-import { type IPluginController, PluginController } from './PluginController';
+import { EventManager } from './EventManager';
+import { PluginController } from './PluginController';
 
 export class HakuNeko {
 
-    private readonly _eventManager: IEventManager = new EventManager();
-    private readonly _pluginController: IPluginController = new PluginController();
+    private readonly _eventManager: EventManager = new EventManager();
+    private readonly _pluginController: PluginController = new PluginController();
 
     public get Tags() {
         return Tags;
     }
 
-    public get EventManager(): IEventManager {
+    public get EventManager(): EventManager {
         return this._eventManager;
     }
 
-    public get PluginController(): IPluginController {
+    public get PluginController(): PluginController {
         return this._pluginController;
     }
 }

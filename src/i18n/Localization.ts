@@ -13,15 +13,18 @@ export const Locales: ILocale[] = [
     de_DE
 ];
 
+export function CurrentLocale(): ILocale {
+    // TODO: Determine user selected langauge code from settings ... ?
+    return en_US;
+}
+
 /**
  * Convenience function for {@link _L}, which automatically determines the user configured language code.
  * This method may be used in places where the text is generated on the fly (e.g. getter properties, error messages),
  * or must not immediately reflect when the user canges the language code configuration.
  */
 export function i18n(key: Keys, ...params: string[]): string {
-    // TODO: Determine user selected langauge code from settings or frontend ... ?
-    const code = 'en_US';
-    return _L(code, key, ...params);
+    return _L(CurrentLocale().Code, key, ...params);
 }
 
 /**

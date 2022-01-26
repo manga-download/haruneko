@@ -4,6 +4,8 @@ export const en_US: ILocale = {
     Code: 'en_US',
     Title: 'English (US)',
     Resources: {
+        [ResourceKeys.Frontend_Product_Title]: 'HakuNeko',
+        [ResourceKeys.Frontend_Product_Description]: 'Manga, Anime and Novel Downloader',
         [ResourceKeys.FetchProvider_FetchWindow_TimeoutError]: 'The request could not be fulfilled within the given timeout!',
         [ResourceKeys.FetchProvider_FetchWindow_CloudFlareError]: 'The request failed due to the following CloudFlare Error: "{0}"',
         [ResourceKeys.FetchProvider_FetchWindow_AlertCaptcha]: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',

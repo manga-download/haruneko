@@ -25,10 +25,7 @@ class Event<TSender, TArgs> {
     }
 }
 
-export interface IEventManager {
-    readonly FrontendLoaded: IEvent<IFrontendModule, IFrontendInfo>;
-}
-
-export class EventManager implements IEventManager {
+export class EventManager {
     public readonly FrontendLoaded: IEvent<IFrontendModule, IFrontendInfo> = new Event<IFrontendModule, IFrontendInfo>();
+    public readonly LocaleChanged: IEvent<void, string> = new Event<void, string>();
 }

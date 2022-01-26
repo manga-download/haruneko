@@ -1,4 +1,4 @@
-import { i18n, Keys } from './i18n/Localization';
+import { i18n, Keys } from '../i18n/Localization';
 
 class Tag extends Object {
 

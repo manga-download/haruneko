@@ -1,4 +1,4 @@
-import { i18n, Keys } from './i18n/Localization';
+import { i18n, Keys } from '../i18n/Localization';
 import { HeadersView } from './transformers/HeadersView';
 
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
