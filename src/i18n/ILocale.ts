@@ -1,62 +1,66 @@
-export type IResources = Record<ResourceKeys, string>;
+export type IResource = Record<ResourceKey, string>;
+export type ILocale = Record<ResourceKey, (...params: string[]) => string>;
 
-export type ILocale = {
-    readonly Code: string;
-    readonly Title: string;
-    readonly Resources: IResources;
+/**
+ * All supported langauage codes (must be unique).
+ */
+export enum Code {
+    en_US = 'en_US',
+    fr_FR = 'fr_FR',
+    de_DE = 'de_DE',
 }
 
 /**
- * Pre-defined identifiers for localization resource strings.
+ * All pre-defined identifiers that must be provided by any localization {@link IResource} implementation.
  */
-export enum ResourceKeys {
-    Frontend_Product_Title = 'Frontend.Product.Title',
-    Frontend_Product_Description = 'Frontend.Product.Description',
-    FetchProvider_FetchWindow_TimeoutError = 'FetchProvider.FetchWindow.TimeoutError',
-    FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider.FetchWindow.CloudFlareError',
-    FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider.FetchWindow.AlertCaptcha',
-    FrontendController_Reload_ConfirmNotice = 'FrontendController.Reload.ConfirmNotice',
-    Tags_Media = 'Tags.Media',
-    Tags_Media_Manga = 'Tags.Media.Manga',
-    Tags_Media_MangaDescription = 'Tags.Media.MangaDescription',
-    Tags_Media_Manhua = 'Tags.Media.Manhua',
-    Tags_Media_ManhuaDescription = 'Tags.Media.ManhuaDescription',
-    Tags_Media_Manhwa = 'Tags.Media.Manhwa',
-    Tags_Media_ManhwaDescription = 'Tags.Media.ManhwaDescription',
-    Tags_Media_Comic = 'Tags.Media.Comic',
-    Tags_Media_ComicDescription = 'Tags.Media.ComicDescription',
-    Tags_Media_Anime = 'Tags.Media.Anime',
-    Tags_Media_AnimeDescription = 'Tags.Media.AnimeDescription',
-    Tags_Media_Cartoon = 'Tags.Media.Cartoon',
-    Tags_Media_CartoonDescription = 'Tags.Media.CartoonDescription',
-    Tags_Media_Novel = 'Tags.Media.Novel',
-    Tags_Media_NovelDescription = 'Tags.Media.NovelDescription',
-    Tags_Source = 'Tags.Source',
-    Tags_Source_Official = 'Tags.Source.Official',
-    Tags_Source_Scanlator = 'Tags.Source.Scanlator',
-    Tags_Source_Aggregator = 'Tags.Source.Aggregator',
-    Tags_Rating = 'Tags.Rating',
-    Tags_Rating_Safe = 'Tags.Rating.Safe',
-    Tags_Rating_Suggestive = 'Tags.Rating.Suggestive',
-    Tags_Rating_Erotica = 'Tags.Rating.Erotica',
-    Tags_Rating_Pornographic = 'Tags.Rating.Pornographic',
+export enum ResourceKey {
+    Frontend_Product_Title = 'Frontend_Product_Title',
+    Frontend_Product_Description = 'Frontend_Product_Description',
+    FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
+    FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
+    FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
+    FrontendController_Reload_ConfirmNotice = 'FrontendController_Reload_ConfirmNotice',
+    Tags_Media = 'Tags_Media',
+    Tags_Media_Manga = 'Tags_Media_Manga',
+    Tags_Media_MangaDescription = 'Tags_Media_MangaDescription',
+    Tags_Media_Manhua = 'Tags_Media_Manhua',
+    Tags_Media_ManhuaDescription = 'Tags_Media_ManhuaDescription',
+    Tags_Media_Manhwa = 'Tags_Media_Manhwa',
+    Tags_Media_ManhwaDescription = 'Tags_Media_ManhwaDescription',
+    Tags_Media_Comic = 'Tags_Media_Comic',
+    Tags_Media_ComicDescription = 'Tags_Media_ComicDescription',
+    Tags_Media_Anime = 'Tags_Media_Anime',
+    Tags_Media_AnimeDescription = 'Tags_Media_AnimeDescription',
+    Tags_Media_Cartoon = 'Tags_Media_Cartoon',
+    Tags_Media_CartoonDescription = 'Tags_Media_CartoonDescription',
+    Tags_Media_Novel = 'Tags_Media_Novel',
+    Tags_Media_NovelDescription = 'Tags_Media_NovelDescription',
+    Tags_Source = 'Tags_Source',
+    Tags_Source_Official = 'Tags_Source_Official',
+    Tags_Source_Scanlator = 'Tags_Source_Scanlator',
+    Tags_Source_Aggregator = 'Tags_Source_Aggregator',
+    Tags_Rating = 'Tags_Rating',
+    Tags_Rating_Safe = 'Tags_Rating_Safe',
+    Tags_Rating_Suggestive = 'Tags_Rating_Suggestive',
+    Tags_Rating_Erotica = 'Tags_Rating_Erotica',
+    Tags_Rating_Pornographic = 'Tags_Rating_Pornographic',
     // See: https://emojipedia.org/flags/
-    Tags_Language = 'Tags.Language',
-    Tags_Language_Multilingual = 'Tags.Language.Multilingual',
-    Tags_Language_Arabic = 'Tags.Language.Arabic',
-    Tags_Language_Chinese = 'Tags.Language.Chinese',
-    Tags_Language_English = 'Tags.Language.English',
-    Tags_Language_French = 'Tags.Language.French',
-    Tags_Language_German = 'Tags.Language.German',
-    Tags_Language_Indonesian = 'Tags.Language.Indonesian',
-    Tags_Language_Italian = 'Tags.Language.Italian',
-    Tags_Language_Japanese = 'Tags.Language.Japanese',
-    Tags_Language_Korean = 'Tags.Language.Korean',
-    Tags_Language_Polish = 'Tags.Language.Polish',
-    Tags_Language_Portuguese = 'Tags.Language.Portuguese',
-    Tags_Language_Russian = 'Tags.Language.Russian',
-    Tags_Language_Spanish = 'Tags.Language.Spanish',
-    Tags_Language_Thai = 'Tags.Language.Thai',
-    Tags_Language_Turkish = 'Tags.Language.Turkish',
-    Tags_Language_Vietnamese = 'Tags.Language.Vietnamese'
+    Tags_Language = 'Tags_Language',
+    Tags_Language_Multilingual = 'Tags_Language_Multilingual',
+    Tags_Language_Arabic = 'Tags_Language_Arabic',
+    Tags_Language_Chinese = 'Tags_Language_Chinese',
+    Tags_Language_English = 'Tags_Language_English',
+    Tags_Language_French = 'Tags_Language_French',
+    Tags_Language_German = 'Tags_Language_German',
+    Tags_Language_Indonesian = 'Tags_Language_Indonesian',
+    Tags_Language_Italian = 'Tags_Language_Italian',
+    Tags_Language_Japanese = 'Tags_Language_Japanese',
+    Tags_Language_Korean = 'Tags_Language_Korean',
+    Tags_Language_Polish = 'Tags_Language_Polish',
+    Tags_Language_Portuguese = 'Tags_Language_Portuguese',
+    Tags_Language_Russian = 'Tags_Language_Russian',
+    Tags_Language_Spanish = 'Tags_Language_Spanish',
+    Tags_Language_Thai = 'Tags_Language_Thai',
+    Tags_Language_Turkish = 'Tags_Language_Turkish',
+    Tags_Language_Vietnamese = 'Tags_Language_Vietnamese',
 }

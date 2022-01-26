@@ -25,7 +25,7 @@
     } from "../utils/storage";
     import { viewerModesSelect } from "../utils/viewerMode";
     import { WindowController } from "../Stores";
-    import { _L, Keys, CurrentLocale } from "../../../i18n/Localization";
+    import { L, CurrentLocale } from "../../../i18n/Localization";
 import LanguageSelect from "./LanguageSelect.svelte";
 
     export let isSideNavOpen: boolean;
@@ -55,7 +55,7 @@ import LanguageSelect from "./LanguageSelect.svelte";
     }
 
     // NOTE: Sample for reactive localization, which reflects instantly without reloading the frontend
-    let locale = CurrentLocale().Code;
+    let locale = CurrentLocale();
     HakuNeko.EventManager.LocaleChanged.Subscribe((_, code) => locale = code);
 </script>
 
@@ -63,8 +63,8 @@ import LanguageSelect from "./LanguageSelect.svelte";
     id="Header"
     expandedByDefault={false}
     persistentHamburgerMenu={true}
-    company={_L(locale, Keys.Frontend_Product_Title)}
-    platformName={_L(locale, Keys.Frontend_Product_Description)}
+    company={L(locale).Frontend_Product_Title()}
+    platformName={L(locale).Frontend_Product_Description()}
     bind:isSideNavOpen
 >
     <div slot="skip-to-content">
