@@ -14,9 +14,17 @@
     }
 </script>
 
-<!-- May also dispatch directly from DevTools => HakuNeko.EventManager.LocaleChanged.Dispatch(null, 'de_DE') -->
-<Select selected={locale} on:change={dispatch}>
-    {#each [...Localizations] as localization}
-        <SelectItem value={localization.key} text={localization.name} />
-    {/each}
-</Select>
+<div class="lang">
+    <!-- May also dispatch directly from DevTools => HakuNeko.EventManager.LocaleChanged.Dispatch(null, 'de_DE') -->
+    <Select selected={locale} on:change={dispatch}>
+        {#each [...Localizations] as localization}
+            <SelectItem value={localization.key} text={localization.name} />
+        {/each}
+    </Select>
+</div>
+
+<style>
+    .lang {
+        font-family: BabelStoneFlags;
+    }
+</style>
