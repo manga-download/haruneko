@@ -1,7 +1,7 @@
-import type { ILocale } from './ILocale';
+import type { ILocale } from '../ILocale';
 
 export const de_DE: ILocale = {
-    Code: 'deDE',
+    Code: 'de_DE',
     Title: 'Deutsch (DE)',
     Resources: {
         'FetchProvider.FetchWindow.TimeoutError': 'Die Anfrage konnte nicht innerhalb der angegebenen Zeitbeschränkung verarbeitet werden!',

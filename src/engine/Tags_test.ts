@@ -1,5 +1,5 @@
 import { Tags } from './Tags';
-import { en_US } from './i18n/enUS';
+import { en_US } from './i18n/locales/en_US';
 import { ResourceKeys } from './i18n/ILocale';
 
 describe('Tags.Media', () => {

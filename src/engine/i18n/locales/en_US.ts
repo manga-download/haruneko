@@ -1,7 +1,7 @@
-import type { ILocale } from './ILocale';
+import type { ILocale } from '../ILocale';
 
 export const en_US: ILocale = {
-    Code: 'enUS',
+    Code: 'en_US',
     Title: 'English (US)',
     Resources: {
         'FetchProvider.FetchWindow.TimeoutError': 'The request could not be fulfilled within the given timeout!',
