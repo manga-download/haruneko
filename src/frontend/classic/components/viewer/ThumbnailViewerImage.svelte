@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
-    import { preloadImage } from "../utils/image";
+    import { fly } from 'svelte/transition';
+    import { preloadImage } from '../../utils/image';
     export let throttlingDelay: number;
     export let src: string;
     export let handleClick: () => void;

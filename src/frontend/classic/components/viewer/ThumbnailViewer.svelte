@@ -1,12 +1,15 @@
 <script lang="ts">
-    import type { IMediaContainer, IMediaItem } from "../../../engine/providers/MediaPlugin";
-    import ThumbnailViewerImage from "./ThumbnailViewerImage.svelte";
+    import type {
+        IMediaContainer,
+        IMediaItem,
+    } from '../../../../engine/providers/MediaPlugin';
+    import ThumbnailViewerImage from './ThumbnailViewerImage.svelte';
 
     export let item: IMediaContainer;
 
     // TODO: Implement correct filter/extraction of IMediaItem types ...
     let entries: IMediaItem[];
-    $: entries = item.Entries.map(entry => entry as IMediaItem);
+    $: entries = item.Entries.map((entry) => entry as IMediaItem);
 
     export let throttlingDelay: number;
     export let toggleWideViewer: (currentImage: number) => void;

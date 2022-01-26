@@ -4,22 +4,22 @@
         SideNavItems,
         SideNavMenu,
         SideNavLink,
-    } from "carbon-components-svelte";
-    import LogoDiscord16 from "carbon-icons-svelte/lib/LogoDiscord16";
-    import Home16 from "carbon-icons-svelte/lib/Home16";
-    import LogoGithub16 from "carbon-icons-svelte/lib/LogoGithub16";
-    import App16 from "carbon-icons-svelte/lib/App16";
-    import Doc16 from "carbon-icons-svelte/lib/Doc16";
-    import Events16 from "carbon-icons-svelte/lib/Events16"; // Maintainers
-    import EventsAlt16 from "carbon-icons-svelte/lib/EventsAlt16"; // contributors
-    import Debug16 from "carbon-icons-svelte/lib/Debug16";
-    import Image16 from "carbon-icons-svelte/lib/Image16";
-    import Location16 from "carbon-icons-svelte/lib/Location16";
-    import { themes } from "./Theme.svelte";
-    import SettingItem from "./SettingItem.svelte";
-    import SettingSelect from "./SettingSelect.svelte";
-    import SettingInput from "./SettingInput.svelte";
-    import SettingToggle from "./SettingToggle.svelte";
+    } from 'carbon-components-svelte';
+    import LogoDiscord16 from 'carbon-icons-svelte/lib/LogoDiscord16';
+    import Home16 from 'carbon-icons-svelte/lib/Home16';
+    import LogoGithub16 from 'carbon-icons-svelte/lib/LogoGithub16';
+    import App16 from 'carbon-icons-svelte/lib/App16';
+    import Doc16 from 'carbon-icons-svelte/lib/Doc16';
+    import Events16 from 'carbon-icons-svelte/lib/Events16'; // Maintainers
+    import EventsAlt16 from 'carbon-icons-svelte/lib/EventsAlt16'; // contributors
+    import Debug16 from 'carbon-icons-svelte/lib/Debug16';
+    import Image16 from 'carbon-icons-svelte/lib/Image16';
+    import Location16 from 'carbon-icons-svelte/lib/Location16';
+    import { themes } from './Theme.svelte';
+    import SettingItem from './settings/SettingItem.svelte';
+    import SettingSelect from './settings/SettingSelect.svelte';
+    import SettingInput from './settings/SettingInput.svelte';
+    import SettingToggle from './settings/SettingToggle.svelte';
     import {
         settings,
         demoTextInput,
@@ -35,8 +35,8 @@
         viewerMode,
         inversedReading,
         doublePage,
-    } from "../utils/storage";
-    import { viewerModesSelect } from "../utils/viewerMode";
+    } from '../utils/storage';
+    import { viewerModesSelect } from '../utils/viewerMode';
 
     export let isSideNavOpen = false;
 
@@ -48,11 +48,11 @@
     }
 
     const demoSelectItems = [
-        { id: "white", label: "White", kind: "dont care" },
-        { id: "g10", label: "Gray 10", kind: "dont care" },
-        { id: "g80", label: "Gray 80", kind: "dont care" },
-        { id: "g90", label: "Gray 90", kind: "dont care" },
-        { id: "g100", label: "Gray 100", kind: "dont care" },
+        { id: 'white', label: 'White', kind: 'dont care' },
+        { id: 'g10', label: 'Gray 10', kind: 'dont care' },
+        { id: 'g80', label: 'Gray 80', kind: 'dont care' },
+        { id: 'g90', label: 'Gray 90', kind: 'dont care' },
+        { id: 'g100', label: 'Gray 100', kind: 'dont care' },
     ];
 </script>
 
@@ -185,7 +185,7 @@
                     items={viewerModesSelect}
                 />
             </SettingItem>
-            {#if $viewerMode === "manga"}
+            {#if $viewerMode === 'manga'}
                 <SettingItem
                     labelText="Inverse reading"
                     helperText="Inverse the reading (like a real manga)"
@@ -213,7 +213,7 @@
                 class="clik-item"
                 on:click={() =>
                     openExternalLink(
-                        "https://hakuneko.download/docs/interface/"
+                        'https://hakuneko.download/docs/interface/'
                     )}
             />
             <SideNavLink
@@ -221,7 +221,7 @@
                 icon={LogoDiscord16}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink("https://discordapp.com/invite/A5d3NDf")}
+                    openExternalLink('https://discordapp.com/invite/A5d3NDf')}
             />
             <SideNavLink
                 text="Open a ticket"
@@ -229,20 +229,20 @@
                 class="clik-item"
                 on:click={() =>
                     openExternalLink(
-                        "https://hakuneko.download/docs/troubleshoot/"
+                        'https://hakuneko.download/docs/troubleshoot/'
                     )}
             />
             <SideNavLink
                 text="Home page"
                 icon={Home16}
                 class="clik-item"
-                on:click={() => openExternalLink("https://hakuneko.download")}
+                on:click={() => openExternalLink('https://hakuneko.download')}
             />
             <SideNavLink
                 text="Show IP and localisation"
                 icon={Location16}
                 class="clik-item"
-                on:click={() => openExternalLink("https://ipinfo.io/jso")}
+                on:click={() => openExternalLink('https://ipinfo.io/jso')}
             />
         </SideNavMenu>
         <SideNavMenu text="About">
@@ -252,21 +252,21 @@
                 class="clik-item"
                 on:click={() =>
                     openExternalLink(
-                        "https://hakuneko.download/docs/interface/"
+                        'https://hakuneko.download/docs/interface/'
                     )}
             />
             <SideNavLink
                 text="Using version X.X.X"
                 icon={App16}
                 class="clik-item"
-                on:click={() => openExternalLink("https://todo.com")}
+                on:click={() => openExternalLink('https://todo.com')}
             />
             <SideNavLink
                 text="Maintainers"
                 icon={Events16}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink("https://discordapp.com/invite/A5d3NDf")}
+                    openExternalLink('https://discordapp.com/invite/A5d3NDf')}
             />
             <SideNavLink
                 text="Contributors"
@@ -274,7 +274,7 @@
                 class="clik-item"
                 on:click={() =>
                     openExternalLink(
-                        "https://hakuneko.download/docs/troubleshoot/"
+                        'https://hakuneko.download/docs/troubleshoot/'
                     )}
             />
             <SideNavLink
@@ -283,7 +283,7 @@
                 class="clik-item"
                 on:click={() =>
                     openExternalLink(
-                        "https://www.deviantart.com/hakuneko3kune"
+                        'https://www.deviantart.com/hakuneko3kune'
                     )}
             />
         </SideNavMenu>

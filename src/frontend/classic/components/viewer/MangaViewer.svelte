@@ -3,12 +3,12 @@
         IMediaContainer,
         IMediaChild,
         IMediaItem,
-    } from "../../../engine/providers/MediaPlugin";
-    import { Loading } from "carbon-components-svelte";
-    import WideViewerImage from "./WideViewerImage.svelte";
-    import { onMount } from "svelte";
-    import { preloadImage } from "../utils/image";
-    import { inversedReading, doublePage } from "../utils/storage";
+    } from '../../../../engine/providers/MediaPlugin';
+    import { Loading } from 'carbon-components-svelte';
+    import WideViewerImage from './WideViewerImage.svelte';
+    import { onMount } from 'svelte';
+    import { preloadImage } from '../../utils/image';
+    import { inversedReading, doublePage } from '../../utils/storage';
 
     type ChapterImages = { src: string; nextSrc: string | undefined };
 
@@ -26,13 +26,13 @@
 
     const handleKeyDown = (evt: KeyboardEvent) => {
         if (
-            (!$inversedReading && evt.key === "ArrowRight") ||
-            ($inversedReading && evt.key === "ArrowLeft")
+            (!$inversedReading && evt.key === 'ArrowRight') ||
+            ($inversedReading && evt.key === 'ArrowLeft')
         ) {
             incrementCurrentImage();
         } else if (
-            (!$inversedReading && evt.key === "ArrowLeft") ||
-            ($inversedReading && evt.key === "ArrowRight")
+            (!$inversedReading && evt.key === 'ArrowLeft') ||
+            ($inversedReading && evt.key === 'ArrowRight')
         ) {
             decrementCurrentImage();
         }
@@ -166,10 +166,10 @@
         {#if chapterImage.nextSrc !== undefined}
             <div
                 class={currentImageIndex === index && $inversedReading
-                    ? "current is-inversed"
+                    ? 'current is-inversed'
                     : currentImageIndex === index
-                    ? "current"
-                    : ""}
+                    ? 'current'
+                    : ''}
             >
                 <WideViewerImage
                     alt="content_{currentImageIndex}"
@@ -189,7 +189,7 @@
                 />
             </div>
         {:else}
-            <div class={currentImageIndex === index ? "current" : ""}>
+            <div class={currentImageIndex === index ? 'current' : ''}>
                 <WideViewerImage
                     alt="content_{currentImageIndex}"
                     src={chapterImage.src}

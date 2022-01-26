@@ -12,7 +12,7 @@
     import Console from './components/Console.svelte';
     import Network from './components/Network.svelte';
     import Home from './components/Home.svelte';
-    import Viewer from './components/Viewer.svelte';
+    import Viewer from './components/viewer/Viewer.svelte';
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
     import type { IMediaContainer } from '../../engine/providers/MediaPlugin';

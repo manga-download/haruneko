@@ -1,13 +1,13 @@
 <script lang="ts">
-    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
-    import ThumbnailViewer from "./ThumbnailViewer.svelte";
-    import WideViewer from "./WideViewer.svelte";
-    import VideoViewer from "./VideoViewer.svelte";
+    import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
+    import ThumbnailViewer from './ThumbnailViewer.svelte';
+    import WideViewer from './WideViewer.svelte';
+    import VideoViewer from './VideoViewer.svelte';
 
-    type Mode = "Thumbnail" | "Wide" | "Video";
+    type Mode = 'Thumbnail' | 'Wide' | 'Video';
 
     export let item: IMediaContainer;
-    export let mode: Mode = "Thumbnail";
+    export let mode: Mode = 'Thumbnail';
     let currentImageIndex: number = 0;
     let throttlingDelay = 1000;
 
@@ -15,11 +15,11 @@
     $: update = item?.Update();
 
     function toggleThumbnailViewer() {
-        mode = "Thumbnail";
+        mode = 'Thumbnail';
     }
     function toggleWideViewer(imageIndex: number) {
         currentImageIndex = imageIndex;
-        mode = "Wide";
+        mode = 'Wide';
     }
 </script>
 
@@ -28,16 +28,16 @@
         {#await update}
             <p>...loading items</p>
         {:then}
-            {#if mode === "Thumbnail"}
+            {#if mode === 'Thumbnail'}
                 <ThumbnailViewer {item} {throttlingDelay} {toggleWideViewer} />
-            {:else if mode === "Wide"}
+            {:else if mode === 'Wide'}
                 <WideViewer
                     {item}
                     {currentImageIndex}
                     {throttlingDelay}
                     {toggleThumbnailViewer}
                 />
-            {:else if mode === "Video"}
+            {:else if mode === 'Video'}
                 <VideoViewer />
             {:else}
                 Unknown mode requested

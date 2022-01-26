@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { SettingValidator } from "../utils/storage";
-    import type { Writable } from "svelte/store";
-    import { updateStoreValue } from "../utils/storage";
-    import { Select, SelectItem } from "carbon-components-svelte";
+    import type { SettingValidator } from '../../utils/storage';
+    import type { Writable } from 'svelte/store';
+    import { updateStoreValue } from '../../utils/storage';
+    import { Select, SelectItem } from 'carbon-components-svelte';
 
     type SelectItem = {
         id: string;

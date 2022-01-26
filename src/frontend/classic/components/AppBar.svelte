@@ -5,16 +5,16 @@
         HeaderAction,
         HeaderGlobalAction,
         SkipToContent,
-    } from "carbon-components-svelte";
-    import MinimizeIcon from "carbon-icons-svelte/lib/Subtract24";
-    import MaximizeIcon from "carbon-icons-svelte/lib/Checkbox16";
-    import RestoreIcon from "carbon-icons-svelte/lib/Copy16";
-    import CloseIcon from "carbon-icons-svelte/lib/Close24";
-    import MenuLeftPanel from "./MenuLeftPanel.svelte";
-    import { themes } from "./Theme.svelte";
-    import SettingItem from "./SettingItem.svelte";
-    import SettingSelect from "./SettingSelect.svelte";
-    import SettingToggle from "./SettingToggle.svelte";
+    } from 'carbon-components-svelte';
+    import MinimizeIcon from 'carbon-icons-svelte/lib/Subtract24';
+    import MaximizeIcon from 'carbon-icons-svelte/lib/Checkbox16';
+    import RestoreIcon from 'carbon-icons-svelte/lib/Copy16';
+    import CloseIcon from 'carbon-icons-svelte/lib/Close24';
+    import MenuLeftPanel from './MenuLeftPanel.svelte';
+    import { themes } from './Theme.svelte';
+    import SettingItem from './settings/SettingItem.svelte';
+    import SettingSelect from './settings/SettingSelect.svelte';
+    import SettingToggle from './settings/SettingToggle.svelte';
     import {
         settings,
         theme,
@@ -22,21 +22,22 @@
         viewerMode,
         inversedReading,
         doublePage,
-    } from "../utils/storage";
-    import { viewerModesSelect } from "../utils/viewerMode";
-    import { WindowController } from "../Stores";
-    import { L, CurrentLocale } from "../../../i18n/Localization";
-import LanguageSelect from "./LanguageSelect.svelte";
+    } from '../utils/storage';
+    import { viewerModesSelect } from '../utils/viewerMode';
+    import { WindowController } from '../Stores';
+    import { L, CurrentLocale } from '../../../i18n/Localization';
+    import LanguageSelect from './settings/LanguageSelect.svelte';
 
     export let isSideNavOpen: boolean;
     export let isOpen: boolean;
     let winMaximized = false;
 
     function updateWindowState() {
-        winMaximized = window.outerWidth >= screen.availWidth
-            && window.outerHeight >= screen.availHeight
-            && window.screenTop <= screen['availTop']
-            && window.screenLeft <= screen['availLeft'];
+        winMaximized =
+            window.outerWidth >= screen.availWidth &&
+            window.outerHeight >= screen.availHeight &&
+            window.screenTop <= screen['availTop'] &&
+            window.screenLeft <= screen['availLeft'];
     }
     updateWindowState();
 
@@ -47,7 +48,7 @@ import LanguageSelect from "./LanguageSelect.svelte";
     let restore: () => void;
     let close: () => void;
 
-    $: if($WindowController) {
+    $: if ($WindowController) {
         minimize = $WindowController.Minimize.bind($WindowController);
         maximize = $WindowController.Maximize.bind($WindowController);
         restore = $WindowController.Restore.bind($WindowController);
@@ -56,7 +57,7 @@ import LanguageSelect from "./LanguageSelect.svelte";
 
     // NOTE: Sample for reactive localization, which reflects instantly without reloading the frontend
     let locale = CurrentLocale();
-    HakuNeko.EventManager.LocaleChanged.Subscribe((_, code) => locale = code);
+    HakuNeko.EventManager.LocaleChanged.Subscribe((_, code) => (locale = code));
 </script>
 
 <Header
@@ -87,7 +88,7 @@ import LanguageSelect from "./LanguageSelect.svelte";
             icon={CloseIcon}
         />
         <HeaderAction bind:isOpen>
-            <LanguageSelect></LanguageSelect>
+            <LanguageSelect />
             <SettingItem
                 labelText="Show content panel"
                 helperText="Display or not the hakuneko tutorial"
@@ -117,7 +118,7 @@ import LanguageSelect from "./LanguageSelect.svelte";
                     items={viewerModesSelect}
                 />
             </SettingItem>
-            {#if $viewerMode === "manga"}
+            {#if $viewerMode === 'manga'}
                 <SettingItem
                     labelText="Inverse reading"
                     helperText="Inverse the reading (like a real manga)"
