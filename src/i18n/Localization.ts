@@ -1,5 +1,6 @@
 import { type ILocale, ResourceKeys as Keys } from './ILocale';
 import { en_US } from './locales/en_US';
+import { fr_FR } from './locales/fr_FR';
 import { de_DE } from './locales/de_DE';
 
 export { Keys };
@@ -10,6 +11,7 @@ export { Keys };
  */
 export const Locales: ILocale[] = [
     en_US,
+    fr_FR,
     de_DE
 ];
 

@@ -2,7 +2,7 @@ import { type ILocale, ResourceKeys } from '../ILocale';
 
 export const de_DE: ILocale = {
     Code: 'de_DE',
-    Title: 'Deutsch (DE)',
+    Title: '🇩🇪 Deutsch (DE)',
     Resources: {
         [ResourceKeys.Frontend_Product_Title]: 'HakuNeko',
         [ResourceKeys.Frontend_Product_Description]: 'Manga, Anime und Novel Herunterlader',

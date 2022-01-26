@@ -1,11 +1,11 @@
 import { type ILocale, ResourceKeys } from '../ILocale';
 
-export const en_US: ILocale = {
-    Code: 'en_US',
-    Title: '🇺🇸 English (US)',
+export const fr_FR: ILocale = {
+    Code: 'fr_FR',
+    Title: '🇫🇷 Français (FR)',
     Resources: {
         [ResourceKeys.Frontend_Product_Title]: 'HakuNeko',
-        [ResourceKeys.Frontend_Product_Description]: 'Manga, Anime and Novel Downloader',
+        [ResourceKeys.Frontend_Product_Description]: 'Manga, Anime et Novel Téléchargeur',
         [ResourceKeys.FetchProvider_FetchWindow_TimeoutError]: 'The request could not be fulfilled within the given timeout!',
         [ResourceKeys.FetchProvider_FetchWindow_CloudFlareError]: 'The request failed due to the following CloudFlare Error: "{0}"',
         [ResourceKeys.FetchProvider_FetchWindow_AlertCaptcha]: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
