@@ -1,9 +1,9 @@
 import type { ILocale } from './ILocale';
 
-class GermanDE implements ILocale {
-    public readonly Code = 'deDE';
-    public readonly Title = 'Deutsch (DE)';
-    public readonly Resources = {
+export const de_DE: ILocale = {
+    Code: 'deDE',
+    Title: 'Deutsch (DE)',
+    Resources: {
         'FetchProvider.FetchWindow.TimeoutError': 'Die Anfrage konnte nicht innerhalb der angegebenen Zeitbeschränkung verarbeitet werden!',
         'FetchProvider.FetchWindow.CloudFlareError': 'Die Anfrage wurde aufgrund des folgenden CloudFlare Fehlers abgebrochen: "{0}"',
         'FetchProvider.FetchWindow.AlertCaptcha': 'Um automatisch fortzufahren ist es erforderlich den auf der Website angezeigten Captcha zu lösen (die Webseite darf nach der Lösung nicht geschlossen werde)!',
@@ -32,7 +32,6 @@ class GermanDE implements ILocale {
         'Tags.Rating.Suggestive': 'Unanständig',
         'Tags.Rating.Erotica': 'Erotisch',
         'Tags.Rating.Pornographic': 'Pornografisch',
-        // See: https://emojipedia.org/flags/
         'Tags.Language': 'Sprache',
         'Tags.Language.Multilingual': '🌐Multilingual',
         'Tags.Language.Arabic': '🇸🇦Arabisch',
@@ -51,8 +50,5 @@ class GermanDE implements ILocale {
         'Tags.Language.Thai': '🇹🇭Thailändisch',
         'Tags.Language.Turkish': '🇹🇷Türkisch',
         'Tags.Language.Vietnamese': '🇻🇳Vietnamesisch',
-    };
-}
-
-const deDE = new GermanDE();
-export { deDE };
+    }
+};

@@ -1,9 +1,9 @@
 import type { ILocale } from './ILocale';
 
-class EnglishUS implements ILocale {
-    public readonly Code = 'enUS';
-    public readonly Title = 'English (US)';
-    public readonly Resources = {
+export const en_US: ILocale = {
+    Code: 'enUS',
+    Title: 'English (US)',
+    Resources: {
         'FetchProvider.FetchWindow.TimeoutError': 'The request could not be fulfilled within the given timeout!',
         'FetchProvider.FetchWindow.CloudFlareError': 'The request failed due to the following CloudFlare Error: "{0}"',
         'FetchProvider.FetchWindow.AlertCaptcha': 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
@@ -32,7 +32,6 @@ class EnglishUS implements ILocale {
         'Tags.Rating.Suggestive': 'Suggestive',
         'Tags.Rating.Erotica': 'Erotica',
         'Tags.Rating.Pornographic': 'Pornographic',
-        // See: https://emojipedia.org/flags/
         'Tags.Language': 'Language',
         'Tags.Language.Multilingual': '🌐Multilingual',
         'Tags.Language.Arabic': '🇸🇦Arabic',
@@ -51,8 +50,5 @@ class EnglishUS implements ILocale {
         'Tags.Language.Thai': '🇹🇭Thai',
         'Tags.Language.Turkish': '🇹🇷Turkish',
         'Tags.Language.Vietnamese': '🇻🇳Vietnamese',
-    };
-}
-
-const enUS = new EnglishUS();
-export { enUS };
+    }
+};
