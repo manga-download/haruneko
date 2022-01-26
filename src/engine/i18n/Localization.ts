@@ -1,6 +1,8 @@
-import type { ILocale, ResourceKeys } from './ILocale';
+import { type ILocale, ResourceKeys as Keys } from './ILocale';
 import { en_US } from './locales/en_US';
 import { de_DE } from './locales/de_DE';
+
+export { Keys };
 
 /**
  * List of all available localizations in the application.
@@ -16,7 +18,7 @@ export const Locales: ILocale[] = [
  * This method may be used in places where the text is generated on the fly (e.g. getter properties, error messages),
  * or must not immediately reflect when the user canges the language code configuration.
  */
-export function i18n(key: ResourceKeys | string, ...params: string[]): string {
+export function i18n(key: Keys, ...params: string[]): string {
     // TODO: Determine user selected langauge code from settings or frontend ... ?
     const code = 'en_US';
     return _L(code, key, ...params);
@@ -27,7 +29,7 @@ export function i18n(key: ResourceKeys | string, ...params: string[]): string {
  * This method may be used in reactive statements depending on langauge code (e.g. frontend),
  * or in places where an explicit langauge code shall be used (e.g. error traces).
  */
-export function _L(code: string, key: ResourceKeys | string, ...params: string[]): string {
+export function _L(code: string, key: Keys, ...params: string[]): string {
     const resources = Locales.find(locale => locale.Code === code)?.Resources;
     let text: string = resources && resources[key] || `【 ${key} 】`;
     for(const index in params) {

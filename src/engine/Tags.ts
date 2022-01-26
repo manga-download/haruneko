@@ -1,26 +1,12 @@
-import { i18n } from './i18n/Localization';
-
-const i18nCategoryMedia = 'Tags.Media';
-const i18nCategorySource = 'Tags.Source';
-const i18nCategoryRating = 'Tags.Rating';
-const i18nCategoryLanguage = 'Tags.Language';
-
-/*
-export interface ITag {
-    toString(format?: string): string;
-    readonly Category: string;
-    readonly Title: string;
-    readonly Description: string;
-}
-*/
+import { i18n, Keys } from './i18n/Localization';
 
 class Tag extends Object {
 
-    public readonly categoryKey: string;
-    public readonly titleKey: string;
-    public readonly descriptionKey: string;
+    public readonly categoryKey: Keys;
+    public readonly titleKey: Keys;
+    public readonly descriptionKey: Keys;
 
-    public constructor(categoryKey: string, titleKey: string, descriptionKey: string = null) {
+    public constructor(categoryKey: Keys, titleKey: Keys, descriptionKey: Keys = null) {
         super();
         this.categoryKey = categoryKey;
         this.titleKey = titleKey;
@@ -56,71 +42,71 @@ function GetCategoryTags(): Tag[] {
 
 export const Tags = {
     Media: {
-        toString: () => i18n(i18nCategoryMedia),
+        toString: () => i18n(Keys.Tags_Media),
         toArray: GetCategoryTags,
         /**
          * Keywords: Eastern, Japan, Black & White, Pagination
          */
-        Manga: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Manga`, `${i18nCategoryMedia}.MangaDescription`),
+        Manga: new Tag(Keys.Tags_Media, Keys.Tags_Media_Manga, Keys.Tags_Media_MangaDescription),
         /**
          * Keywords: Eastern, China, Colored, Longstrip, Martial Art Fantasy
          */
-        Manhua: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Manhua`, `${i18nCategoryMedia}.ManhuaDescription`),
+        Manhua: new Tag(Keys.Tags_Media, Keys.Tags_Media_Manhua, Keys.Tags_Media_ManhuaDescription),
         /**
          * Keywords: Eastern, South Korea, Colored, Longstrip, Pop Culture
          */
-        Manhwa: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Manhwa`, `${i18nCategoryMedia}.ManhwaDescription`),
+        Manhwa: new Tag(Keys.Tags_Media, Keys.Tags_Media_Manhwa, Keys.Tags_Media_ManhwaDescription),
         /**
          * Keywords: Western, America/Europe, Colored, Pagination
          */
-        Comic: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Comic`, `${i18nCategoryMedia}.ComicDescription`),
-        Anime: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Anime`, `${i18nCategoryMedia}.AnimeDescription`),
-        Cartoon: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Cartoon`, `${i18nCategoryMedia}.CartoonDescription`),
-        Novel: new Tag(i18nCategoryMedia, `${i18nCategoryMedia}.Novel`, `${i18nCategoryMedia}.NovelDescription`),
+        Comic: new Tag(Keys.Tags_Media, Keys.Tags_Media_Comic, Keys.Tags_Media_ComicDescription),
+        Anime: new Tag(Keys.Tags_Media, Keys.Tags_Media_Anime, Keys.Tags_Media_AnimeDescription),
+        Cartoon: new Tag(Keys.Tags_Media, Keys.Tags_Media_Cartoon, Keys.Tags_Media_CartoonDescription),
+        Novel: new Tag(Keys.Tags_Media, Keys.Tags_Media_Novel, Keys.Tags_Media_NovelDescription),
     },
     Source: {
-        toString: () => i18n(i18nCategorySource),
+        toString: () => i18n(Keys.Tags_Source),
         toArray: GetCategoryTags,
         /**
          * Keywords: Licensed Publisher, Original Content
          */
-        Official: new Tag(i18nCategorySource, `${i18nCategorySource}.Official`),
+        Official: new Tag(Keys.Tags_Source, Keys.Tags_Source_Official),
         /**
          * Keywords: Fan Translated, Manipulated Original Content
          */
-        Scanlator: new Tag(i18nCategorySource, `${i18nCategorySource}.Scanlator`),
+        Scanlator: new Tag(Keys.Tags_Source, Keys.Tags_Source_Scanlator),
         /**
          * Keywords: Unlicensed Distribution, No Scanlator Attribution, Ripped/Watermarked Content, Huge Library
          */
-        Aggregator: new Tag(i18nCategorySource, `${i18nCategorySource}.Aggregator`),
+        Aggregator: new Tag(Keys.Tags_Source, Keys.Tags_Source_Aggregator),
     },
     Rating: {
-        toString: () => i18n(i18nCategoryRating),
+        toString: () => i18n(Keys.Tags_Rating),
         toArray: GetCategoryTags,
-        Safe: new Tag(i18nCategoryRating, `${i18nCategoryRating}.Safe`),
-        Suggestive: new Tag(i18nCategoryRating, `${i18nCategoryRating}.Suggestive`),
-        Erotica: new Tag(i18nCategoryRating, `${i18nCategoryRating}.Erotica`),
-        Pornographic: new Tag(i18nCategoryRating, `${i18nCategoryRating}.Pornographic`),
+        Safe: new Tag(Keys.Tags_Rating, Keys.Tags_Rating_Safe),
+        Suggestive: new Tag(Keys.Tags_Rating, Keys.Tags_Rating_Suggestive),
+        Erotica: new Tag(Keys.Tags_Rating, Keys.Tags_Rating_Erotica),
+        Pornographic: new Tag(Keys.Tags_Rating, Keys.Tags_Rating_Pornographic),
     },
     Language: {
-        toString: () => i18n(i18nCategoryLanguage),
+        toString: () => i18n(Keys.Tags_Language),
         toArray: GetCategoryTags,
-        Multilingual: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Multilingual`),
-        Arabic: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Arabic`),
-        Chinese: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Chinese`),
-        English: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.English`),
-        French: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.French`),
-        German: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.German`),
-        Indonesian: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Indonesian`),
-        Italian: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Italian`),
-        Japanese: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Japanese`),
-        Korean: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Korean`),
-        Polish: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Polish`),
-        Portuguese: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Portuguese`),
-        Russian: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Russian`),
-        Spanish: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Spanish`),
-        Thai: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Thai`),
-        Turkish: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Turkish`),
-        Vietnamese: new Tag(i18nCategoryLanguage, `${i18nCategoryLanguage}.Vietnamese`),
+        Multilingual: new Tag(Keys.Tags_Language, Keys.Tags_Language_Multilingual),
+        Arabic: new Tag(Keys.Tags_Language, Keys.Tags_Language_Arabic),
+        Chinese: new Tag(Keys.Tags_Language, Keys.Tags_Language_Chinese),
+        English: new Tag(Keys.Tags_Language, Keys.Tags_Language_English),
+        French: new Tag(Keys.Tags_Language, Keys.Tags_Language_French),
+        German: new Tag(Keys.Tags_Language, Keys.Tags_Language_German),
+        Indonesian: new Tag(Keys.Tags_Language, Keys.Tags_Language_Indonesian),
+        Italian: new Tag(Keys.Tags_Language, Keys.Tags_Language_Italian),
+        Japanese: new Tag(Keys.Tags_Language, Keys.Tags_Language_Japanese),
+        Korean: new Tag(Keys.Tags_Language, Keys.Tags_Language_Korean),
+        Polish: new Tag(Keys.Tags_Language, Keys.Tags_Language_Polish),
+        Portuguese: new Tag(Keys.Tags_Language, Keys.Tags_Language_Portuguese),
+        Russian: new Tag(Keys.Tags_Language, Keys.Tags_Language_Russian),
+        Spanish: new Tag(Keys.Tags_Language, Keys.Tags_Language_Spanish),
+        Thai: new Tag(Keys.Tags_Language, Keys.Tags_Language_Thai),
+        Turkish: new Tag(Keys.Tags_Language, Keys.Tags_Language_Turkish),
+        Vietnamese: new Tag(Keys.Tags_Language, Keys.Tags_Language_Vietnamese),
     },
 };

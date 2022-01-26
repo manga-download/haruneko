@@ -1,4 +1,4 @@
-import { i18n } from './i18n/Localization';
+import { i18n, Keys } from './i18n/Localization';
 import { HeadersView } from './transformers/HeadersView';
 
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -76,7 +76,7 @@ async function CheckAntiScrapingDetection(nwWindow: any): Promise<FetchRedirecti
     // CloudFlare Checks
     const cfCode = dom.querySelector('.cf-error-code');
     if(cfCode) {
-        throw new Error(i18n('FetchProvider.FetchWindow.CloudFlareError', cfCode.textContent?.trim() || 'unknown'));
+        throw new Error(i18n(Keys.FetchProvider_FetchWindow_CloudFlareError, cfCode.textContent?.trim() || 'unknown'));
     }
     if(dom.querySelector('form#challenge-form[action*="_chl_jschl_"]')) { // __cf_chl_jschl_tk__
         return FetchRedirection.Automatic;
@@ -179,7 +179,7 @@ async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<any
 
         const destroy = () => {
             win.close();
-            reject(new Error(i18n('RequestProvider.FetchWindow.TimeoutError')));
+            reject(new Error(i18n(Keys.FetchProvider_FetchWindow_TimeoutError)));
         };
         let cancellation = setTimeout(destroy, timeout);
 
@@ -190,7 +190,7 @@ async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<any
                     // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
                     clearTimeout(cancellation);
                     cancellation = setTimeout(destroy, 150_000);
-                    win.eval(null, `alert('${i18n('FetchProvider.FetchWindow.AlertCaptcha')}');`);
+                    win.eval(null, `alert('${i18n(Keys.FetchProvider_FetchWindow_AlertCaptcha)}');`);
                     win.show();
                     break;
                 case FetchRedirection.Automatic:

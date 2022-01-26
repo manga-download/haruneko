@@ -1,4 +1,4 @@
-import { i18n } from '../engine/i18n/Localization';
+import { i18n, Keys } from '../engine/i18n/Localization';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
 import { Info as InfoJS } from './sample-js/FrontendInfo';
@@ -92,7 +92,7 @@ export class FrontendController implements IFrontendController {
     // Apply new frontend assigned by settings and ask to reload application ...
     public async Reload(frontendID: string): Promise<void> {
         await this.SetStoredFrontendID(frontendID);
-        if(frontendID !== this.ActiveFrontendID && confirm(i18n('FrontendController.Reload.ConfirmNotice'))) {
+        if(frontendID !== this.ActiveFrontendID && confirm(i18n(Keys.FrontendController_Reload_ConfirmNotice))) {
             window.location.reload();
         }
     }
