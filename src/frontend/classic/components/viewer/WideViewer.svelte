@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
-    import { viewerMode } from "../utils/storage";
-    import WideViewerSetting from "./WideViewerSetting.svelte";
-    import WebtoonViewer from "./WebtoonViewer.svelte";
-    import MangaViewer from "./MangaViewer.svelte";
+    import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
+    import { viewerMode } from '../../utils/storage';
+    import WideViewerSetting from './WideViewerSetting.svelte';
+    import WebtoonViewer from './WebtoonViewer.svelte';
+    import MangaViewer from './MangaViewer.svelte';
 
     export let item: IMediaContainer;
     export let throttlingDelay: number;
@@ -11,14 +11,14 @@
     export let currentImageIndex: number;
 
     let imagePadding = 2;
-    const title = item?.Parent?.Title ?? "unkown";
+    const title = item?.Parent?.Title ?? 'unkown';
 </script>
 
 <div class={$viewerMode}>
     <WideViewerSetting {title} {toggleThumbnailViewer} />
-    {#if $viewerMode === "webtoon"}
+    {#if $viewerMode === 'webtoon'}
         <WebtoonViewer {item} {throttlingDelay} {imagePadding} />
-    {:else if $viewerMode === "manga"}
+    {:else if $viewerMode === 'manga'}
         <MangaViewer
             {item}
             {currentImageIndex}
