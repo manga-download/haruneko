@@ -23,7 +23,7 @@ export interface IFrontendController {
 
 export class FrontendController implements IFrontendController {
 
-    private readonly windowController;
+    private readonly windowController: IWindowController;
     private activeFrontendID = '';
 
     constructor(windowController: IWindowController) {

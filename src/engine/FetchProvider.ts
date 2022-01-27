@@ -64,7 +64,7 @@ enum FetchRedirection {
     Interactive
 }
 
-async function CheckAntiScrapingDetection(nwWindow: any): Promise<FetchRedirection> {
+async function CheckAntiScrapingDetection(nwWindow: NWJS_Helpers.win): Promise<FetchRedirection> {
 
     const dom = nwWindow.window.document as Document;
 
@@ -160,7 +160,7 @@ async function Wait(delay: number) {
     return new Promise(resolve => setTimeout(resolve, delay));
 }
 
-async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<any> {
+async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<NWJS_Helpers.win> {
 
     const options = {
         new_instance: false,
@@ -173,7 +173,7 @@ async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<any
         //inject_js_end: 'filename'
     };
 
-    const win: any = await new Promise(resolve => nw.Window.open(request.url, options, (win: any) => resolve(win)));
+    const win = await new Promise<NWJS_Helpers.win>(resolve => nw.Window.open(request.url, options, win => resolve(win)));
 
     return new Promise((resolve, reject) => {
 
@@ -219,7 +219,7 @@ export async function FetchWindowScript<T>(request: FetchRequest, script: string
     const win = await FetchWindow(request, timeout);
     try {
         await Wait(delay);
-        return win.eval(null, script) as T;
+        return win.eval(null, script) as unknown as T;
     } finally{
         win.close();
     }

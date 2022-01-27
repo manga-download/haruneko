@@ -100,7 +100,7 @@
     <div class="content tags">
         <Tile>
             <div class="lang">
-                <div>{HakuNeko.Tags.Language}</div>
+                <div>{window.HakuNeko.Tags.Language}</div>
                 {#each langTags as item}
                     <Chip
                         category={item.Category}
@@ -110,7 +110,7 @@
                 {/each}
             </div>
             <div class="type">
-                <div>{HakuNeko.Tags.Media}</div>
+                <div>{window.HakuNeko.Tags.Media}</div>
                 {#each typeTags as item}
                     <Chip
                         category={item.Category}

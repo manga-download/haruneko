@@ -126,11 +126,13 @@ export class Video extends MediaItem {
             return;
         }
         this._controller = new AbortController();
+        /*
         const request = new Request(this.SourceURL, {
             ...this._request,
             signal: this._controller.signal
         });
         const response = await fetch(request);
+        */
         if(this._controller.signal.aborted) {
             return;
         }
