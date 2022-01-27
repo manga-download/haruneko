@@ -18,11 +18,11 @@
     export let currentImageIndex: number;
 
     let chapterImages: ChapterImages[] | undefined = undefined;
-    const carbonLgBreakpoint = 1056;
+    /*const carbonLgBreakpoint = 1056;
     const carbonMaxBreakpoint = 1584;
     const minImageWidth = 50;
     const maxImageWidth = 100;
-    //let imageWidth: number;
+    let imageWidth: number;*/
 
     const handleKeyDown = (evt: KeyboardEvent) => {
         if (

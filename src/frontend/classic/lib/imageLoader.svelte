@@ -6,11 +6,11 @@
     /**
      * Specify the image source
      */
-    export let src = "";
+    export let src = '';
     /**
      * Specify the image alt text
      */
-    export let alt = "";
+    export let alt = '';
     /**
      * Specify the aspect ratio for the image wrapper
      * @type {"2x1" | "16x9" | "4x3" | "1x1" | "3x4" | "3x2" | "9x16" | "1x2"}
@@ -51,8 +51,8 @@
         let targetURL = url || src;
 
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", targetURL, true);
-        xhr.responseType = "arraybuffer";
+        xhr.open('GET', targetURL, true);
+        xhr.responseType = 'arraybuffer';
 
         xhr.onprogress = function (e) {
             if (e.lengthComputable) {
@@ -82,19 +82,19 @@
         xhr.send();
     };
 
-    import { onMount, createEventDispatcher } from "svelte";
-    import { fade } from "svelte/transition";
-    import AspectRatio from "carbon-components-svelte/src/AspectRatio/AspectRatio.svelte";
+    import { onMount, createEventDispatcher } from 'svelte';
+    import { fade } from 'svelte/transition';
+    import { AspectRatio } from 'carbon-components-svelte';
     const dispatch = createEventDispatcher();
     // "fast-02" duration (ms) from Carbon motion recommended for fading micro-interactions
     const fast02 = 110;
     let image = null;
     $: loading = !loaded && !error;
-    $: if (src && typeof window !== "undefined") loadImage();
-    $: if (loaded) dispatch("load");
-    $: if (error) dispatch("error");
-    $: if (sizeloaded) dispatch("sizeloaded");
-    $: if (sizetotal) dispatch("sizetotal");
+    $: if (src && typeof window !== 'undefined') loadImage();
+    $: if (loaded) dispatch('load');
+    $: if (error) dispatch('error');
+    $: if (sizeloaded) dispatch('sizeloaded');
+    $: if (sizetotal) dispatch('sizetotal');
     onMount(() => {
         return () => (image = null);
     });

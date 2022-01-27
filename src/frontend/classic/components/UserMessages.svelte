@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { Modal } from "carbon-components-svelte";
+    import { Modal } from 'carbon-components-svelte';
 
     //Todo: just a POC Changing alert with extra args should be set inside the engine
     let openAlertMessage = false;
-    let alertMessage = "";
-    let alertTitle = "";
-    let alertButton = "";
-    window.alert = function (message, title = "Alert", button = "OK") {
+    let alertMessage = '';
+    let alertTitle = '';
+    let alertButton = '';
+    window.alert = function (message, title = 'Alert', button = 'OK') {
         openAlertMessage = true;
         alertMessage = message;
         alertTitle = title;
@@ -14,11 +14,11 @@
     };
 
     let openInfoMessage = false;
-    let infoMessage = "";
-    let infoTitle = "";
-    let infoButton = "";
+    let infoMessage = '';
+    let infoTitle = '';
+    let infoButton = '';
     // @ts-ignore: temp test
-    window.info = function (message, title = "Info", button = "OK") {
+    window.info = function (message: string, title = 'Info', button = 'OK') {
         openInfoMessage = true;
         infoMessage = message;
         infoTitle = title;
