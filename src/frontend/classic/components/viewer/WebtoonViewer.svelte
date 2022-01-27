@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { IMediaContainer, IMediaItem } from "../../../engine/providers/MediaPlugin";
+    import type { IMediaContainer, IMediaItem } from "../../../../engine/providers/MediaPlugin";
     import WideViewerImage from "./WideViewerImage.svelte";
 
     export let item: IMediaContainer;
