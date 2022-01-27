@@ -29,6 +29,7 @@ export interface IMediaContainer {
     readonly Tags: Tag[];
     readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
+    CreateEntry(identifier: string, title: string): IMediaChild;
     TryGetEntry(url: string): Promise<IMediaChild>;
     Update(): Promise<void>;
 }
@@ -72,7 +73,14 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
         this.Initialize = () => Promise.resolve();
     }
 
-    public abstract TryGetEntry(url: string): Promise<T>;
+    public CreateEntry(identifier: string, title: string): T {
+        throw new Error(/* Not implemented! */);
+    }
+
+    public async TryGetEntry(url: string): Promise<T> {
+        throw new Error(/* Not implemented! */);
+    }
+
     public abstract Update(): Promise<void>;
 }
 

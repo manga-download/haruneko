@@ -33,7 +33,7 @@ export class AnimePlugin extends MediaContainer<Anime> {
             // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
             //                  chrome.storage.local.get(this.EntriesKey, data => data[this.EntriesKey]);
             const animes = JSON.parse(content) as { id: string, title: string }[];
-            this._entries = animes.map(anime => new Anime(this._scraper, this, anime.id, anime.title));
+            this._entries = animes.map(anime => this.CreateEntry(anime.id, anime.title));
         }
         return this._entries;
     }
@@ -41,6 +41,10 @@ export class AnimePlugin extends MediaContainer<Anime> {
     public async Initialize(): Promise<void> {
         await this._scraper.Initialize();
         return super.Initialize();
+    }
+
+    public CreateEntry(identifier: string, title: string): Anime {
+        return new Anime(this._scraper, this, identifier, title);
     }
 
     public async TryGetEntry(url: string): Promise<Anime> {
@@ -74,8 +78,8 @@ export class Anime extends MediaContainer<Episode> {
         this._scraper = scraper;
     }
 
-    public TryGetEntry(url: string): Promise<Episode> {
-        throw new Error(/* Not implemented! */);
+    public CreateEntry(identifier: string, title: string): Episode {
+        return new Episode(this._scraper, this, identifier, title);
     }
 
     public async Update(): Promise<void> {
@@ -91,10 +95,6 @@ export class Episode extends MediaContainer<Video> {
     constructor(scraper: AnimeScraper, parent: MediaContainer<Episode>, identifier: string, title: string) {
         super(identifier, title, parent);
         this._scraper = scraper;
-    }
-
-    public TryGetEntry(url: string): Promise<Video> {
-        throw new Error(/* Not implemented! */);
     }
 
     public async Update(): Promise<void> {

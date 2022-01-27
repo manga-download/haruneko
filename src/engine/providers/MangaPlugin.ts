@@ -61,7 +61,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
             // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
             //                  chrome.storage.local.get(this.EntriesKey, data => data[this.EntriesKey]);
             const mangas = JSON.parse(content) as { id: string, title: string }[];
-            this._entries = mangas.map(manga => new Manga(this._scraper, this, manga.id, manga.title));
+            this._entries = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
         }
         return this._entries;
     }
@@ -69,6 +69,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
     public async Initialize(): Promise<void> {
         await this._scraper.Initialize();
         return super.Initialize();
+    }
+
+    public CreateEntry(identifier: string, title: string): Manga {
+        return new Manga(this._scraper, this, identifier, title);
     }
 
     public async TryGetEntry(url: string): Promise<Manga> {
@@ -102,8 +106,8 @@ export class Manga extends MediaContainer<Chapter> {
         this._scraper = scraper;
     }
 
-    public TryGetEntry(url: string): Promise<Chapter> {
-        throw new Error(/* Not implemented! */);
+    public CreateEntry(identifier: string, title: string): Chapter {
+        return new Chapter(this._scraper, this, identifier, title);
     }
 
     public async Update(): Promise<void> {
@@ -119,10 +123,6 @@ export class Chapter extends MediaContainer<Page> {
     constructor(scraper: MangaScraper, parent: MediaContainer<Chapter>, identifier: string, title: string) {
         super(identifier, title, parent);
         this._scraper = scraper;
-    }
-
-    public TryGetEntry(url: string): Promise<Page> {
-        throw new Error(/* Not implemented! */);
     }
 
     public async Update(): Promise<void> {
