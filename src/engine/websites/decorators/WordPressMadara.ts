@@ -14,6 +14,10 @@ const queryMangaListLinks = 'div.post-title h3 a, div.post-title h5 a';
 const queryChapterListLinks = 'ul li.wp-manga-chapter > a';
 const queryPageListLinks = 'div.page-break img';
 
+async function delay(milliseconds: number) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
 /***************************************************
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
@@ -55,29 +59,30 @@ async function FetchMangasCSS(this: MangaScraper, provider: MangaPlugin, request
     });
 }
 
-export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, path = pathpaged): Promise<Manga[]> {
+export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, throttle = 0, path = pathpaged): Promise<Manga[]> {
     const mangaList = [];
     for(let page = 1, run = true; run; page++) {
         const uri = new URL(path.replace('{page}', `${page}`), this.URI);
         const request = new FetchRequest(uri.href);
         const mangas = await FetchMangasCSS.call(this, provider, request, query);
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        await delay(throttle);
     }
     return mangaList;
 }
 
 // Class Decorator
-export function MangasMultiPageCSS(query = queryMangaListLinks, path = pathpaged) {
+export function MangasMultiPageCSS(query = queryMangaListLinks, throttle = 0, path = pathpaged) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasMultiPageCSS.call(this, provider, query, path);
+                return FetchMangasMultiPageCSS.call(this, provider, query, throttle, path);
             }
         };
     };
 }
 
-export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, path = pathname): Promise<Manga[]> {
+export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, throttle = 0, path = pathname): Promise<Manga[]> {
     const mangaList = [];
     // inject `madara.query_vars` into any website using wp-madara to see full list of supported vars
     const form = new URLSearchParams({
@@ -100,16 +105,17 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
         });
         const mangas = await FetchMangasCSS.call(this, provider, request, query);
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        await delay(throttle);
     }
     return mangaList;
 }
 
 // Class Decorator
-export function MangasMultiPageAJAX(query = queryMangaListLinks, path = pathname) {
+export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, path = pathname) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasMultiPageAJAX.call(this, provider, query, path);
+                return FetchMangasMultiPageAJAX.call(this, provider, query, throttle, path);
             }
         };
     };
