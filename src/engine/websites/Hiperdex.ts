@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga } from '../providers/MangaPlugi
 import { MangaCSS, MangasMultiPageCSS, FetchChaptersCSS, PagesSinglePageCSS } from './decorators/WordPressMadara';
 
 @MangaCSS('meta[property="og:title"]:not([content*="Hiperdex"])')
-@MangasMultiPageCSS(undefined, '/manga-list/page/{page}/')
+@MangasMultiPageCSS(undefined, 1000, '/manga-list/page/{page}/')
 @PagesSinglePageCSS()
 export default class extends DecoratableMangaScraper {
 
