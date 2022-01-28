@@ -1,21 +1,50 @@
 import type { IResource } from '../ILocale';
 
 export const de_DE: IResource = {
+
+    // [SECTION]: FrontendController
+
+    FrontendController_Reload_ConfirmNotice: 'Das Frontend wurde geändert. Jetzt neu starten, um das Frontend zu wechseln?',
+
+    // [SECTION]: Frontend (Common/Shared)
+
     Frontend_Product_Title: 'HakuNeko',
     Frontend_Product_Description: 'Manga, Anime und Novel Herunterlader',
+
+    // [SECTION]: Frontend Classic
+
+    Frontend_Classic_Settings_Theme: 'Motiv',
+    Frontend_Classic_Settings_ThemeInfo: 'Legt das Farbschema der Benutzeroberfläche fest',
+    Frontend_Classic_Settings_Theme_HakuNeko: 'HakuNeko',
+    Frontend_Classic_Settings_Theme_CarbonWhite: 'Kohlenstoff Weiss',
+    Frontend_Classic_Settings_Theme_CarbonG10: 'Kohlenstoff 10% (hell)',
+    Frontend_Classic_Settings_Theme_CarbonG90: 'Kohlenstoff 90% (dunkel)',
+    Frontend_Classic_Settings_Theme_CarbonG100: 'Kohlenstoff 100% (dunkel)',
+    Frontend_Classic_Settings_Theme_SheepyNeko: 'SchäfchenKatze',
+    Frontend_Classic_Settings_ContentPanel: 'Inhalts Bereich',
+    Frontend_Classic_Settings_ContentPanelInfo: 'Bestimmt ob der Inhaltsbereich ein- oder ausgebelendet ist',
+    Frontend_Classic_Settings_ViewerMode: 'Lese Modus',
+    Frontend_Classic_Settings_ViewerModeInfo: 'Bestimmt wie die Seiten/Bilder angezeigt werden',
+    Frontend_Classic_Settings_ViewerMode_Paginated: 'Einzelseiten (Manga)',
+    Frontend_Classic_Settings_ViewerMode_Longstrip: 'Nahtlos (Webtoon)',
+
+    // [SECTION]: Engine
+
     FetchProvider_FetchWindow_TimeoutError: 'Die Anfrage konnte nicht innerhalb der angegebenen Zeitbeschränkung verarbeitet werden!',
     FetchProvider_FetchWindow_CloudFlareError: 'Die Anfrage wurde aufgrund des folgenden CloudFlare Fehlers abgebrochen: "{0}"',
     FetchProvider_FetchWindow_AlertCaptcha: 'Um automatisch fortzufahren ist es erforderlich den auf der Website angezeigten Captcha zu lösen (die Webseite darf nach der Lösung nicht geschlossen werde)!',
-    FrontendController_Reload_ConfirmNotice: 'Das Frontend wurde geändert. Jetzt neu starten, um das Frontend zu wechseln?',
+
+    // [SECTION]: Tags
+
     Tags_Media: 'Art',
     Tags_Media_Manga: 'Manga',
-    Tags_Media_MangaDescription: 'Manga, ...',
+    Tags_Media_MangaDescription: 'Japan, Schwarz & Weiss, Einzel-/Doppelseitig, ...',
     Tags_Media_Manhua: 'Manhua',
-    Tags_Media_ManhuaDescription: 'Manhua, ...',
+    Tags_Media_ManhuaDescription: 'China, Farbig, Nahtlos, ...',
     Tags_Media_Manhwa: 'Manhwa',
-    Tags_Media_ManhwaDescription: 'Manhwa, ...',
+    Tags_Media_ManhwaDescription: 'Süd Korea, Farbig, Nahtlos, ...',
     Tags_Media_Comic: 'Comic',
-    Tags_Media_ComicDescription: 'Comic, ...',
+    Tags_Media_ComicDescription: 'Westlich, Farbig, ...',
     Tags_Media_Anime: 'Anime',
     Tags_Media_AnimeDescription: 'Anime, ...',
     Tags_Media_Cartoon: 'Cartoon',

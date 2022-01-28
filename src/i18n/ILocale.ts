@@ -14,12 +14,41 @@ export enum Code {
  * All pre-defined identifiers that must be provided by any localization {@link IResource} implementation.
  */
 export enum ResourceKey {
+
+    // [SECTION]: FrontendController
+
+    FrontendController_Reload_ConfirmNotice = 'FrontendController_Reload_ConfirmNotice',
+
+    // [SECTION]: Frontend (Common/Shared)
+
     Frontend_Product_Title = 'Frontend_Product_Title',
     Frontend_Product_Description = 'Frontend_Product_Description',
+
+    // [SECTION]: Frontend Classic
+
+    Frontend_Classic_Settings_Theme = 'Frontend_Classic_Settings_Theme',
+    Frontend_Classic_Settings_ThemeInfo = 'Frontend_Classic_Settings_ThemeInfo',
+    Frontend_Classic_Settings_Theme_HakuNeko = 'Frontend_Classic_Settings_Theme_HakuNeko',
+    Frontend_Classic_Settings_Theme_CarbonWhite = 'Frontend_Classic_Settings_Theme_CarbonWhite',
+    Frontend_Classic_Settings_Theme_CarbonG10 = 'Frontend_Classic_Settings_Theme_CarbonG10',
+    Frontend_Classic_Settings_Theme_CarbonG90 = 'Frontend_Classic_Settings_Theme_CarbonG90',
+    Frontend_Classic_Settings_Theme_CarbonG100 = 'Frontend_Classic_Settings_Theme_CarbonG100',
+    Frontend_Classic_Settings_Theme_SheepyNeko = 'Frontend_Classic_Settings_Theme_SheepyNeko',
+    Frontend_Classic_Settings_ContentPanel = 'Frontend_Classic_Settings_ContentPanel',
+    Frontend_Classic_Settings_ContentPanelInfo = 'Frontend_Classic_Settings_ContentPanelInfo',
+    Frontend_Classic_Settings_ViewerMode = 'Frontend_Classic_Settings_ViewerMode',
+    Frontend_Classic_Settings_ViewerModeInfo = 'Frontend_Classic_Settings_ViewerModeInfo',
+    Frontend_Classic_Settings_ViewerMode_Paginated = 'Frontend_Classic_Settings_ViewerMode_Paginated',
+    Frontend_Classic_Settings_ViewerMode_Longstrip = 'Frontend_Classic_Settings_ViewerMode_Longstrip',
+
+    // [SECTION]: Engine
+
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
-    FrontendController_Reload_ConfirmNotice = 'FrontendController_Reload_ConfirmNotice',
+
+    // [SECTION]: Tags
+
     Tags_Media = 'Tags_Media',
     Tags_Media_Manga = 'Tags_Media_Manga',
     Tags_Media_MangaDescription = 'Tags_Media_MangaDescription',
@@ -44,7 +73,6 @@ export enum ResourceKey {
     Tags_Rating_Suggestive = 'Tags_Rating_Suggestive',
     Tags_Rating_Erotica = 'Tags_Rating_Erotica',
     Tags_Rating_Pornographic = 'Tags_Rating_Pornographic',
-    // See: https://emojipedia.org/flags/
     Tags_Language = 'Tags_Language',
     Tags_Language_Multilingual = 'Tags_Language_Multilingual',
     Tags_Language_Arabic = 'Tags_Language_Arabic',
