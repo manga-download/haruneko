@@ -16,7 +16,7 @@
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
     import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
-    import { showContentPanel, theme } from './utils/storage';
+    import { ContentPanelValue, ThemeValue } from './SettingsStore';
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
     export const FinishLoading = new Promise<void>(
@@ -42,7 +42,7 @@
     let currentContent = 'home';
     let showHome = true;
 
-    $: uimode = $showContentPanel ? 'ui-mode-content' : 'ui-mode-download';
+    $: uimode = $ContentPanelValue ? 'ui-mode-content' : 'ui-mode-download';
 
     $: if (app) {
         const oldUimode =
@@ -58,7 +58,7 @@
 
 <UserMessage />
 
-<Theme bind:theme={$theme}>
+<Theme theme={$ThemeValue}>
     <AppBar {isSideNavOpen} {isOpen} />
     <Content id="hakunekoapp">
         <MediaSelect on:select={(evt) => (selectedMedia = evt.detail)} />

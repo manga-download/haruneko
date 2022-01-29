@@ -15,28 +15,9 @@
     import Debug16 from 'carbon-icons-svelte/lib/Debug16';
     import Image16 from 'carbon-icons-svelte/lib/Image16';
     import Location16 from 'carbon-icons-svelte/lib/Location16';
-    import { themes } from './Theme.svelte';
     import SettingItem from './settings/SettingItem.svelte';
-    import SettingSelect from './settings/SettingSelect.svelte';
-    import SettingInput from './settings/SettingInput.svelte';
-    import SettingToggle from './settings/SettingToggle.svelte';
-    import {
-        settings,
-        demoTextInput,
-        demoNumberInput,
-        demoFileInput,
-        demoPasswordInput,
-        demoToggle,
-        website1Username,
-        website1Password,
-        demoSelect,
-        theme,
-        showContentPanel,
-        viewerMode,
-        inversedReading,
-        doublePage,
-    } from '../utils/storage';
-    import { viewerModesSelect } from '../utils/viewerMode';
+    import SettingsPanel from './settings/SettingsPanel.svelte';
+    import SettingsViewer from './settings/SettingsViewer.svelte';
 
     export let isSideNavOpen = false;
 
@@ -58,73 +39,34 @@
 
 <SideNav bind:isOpen={isSideNavOpen}>
     <SideNavItems>
-        <SideNavMenu text="Input Demo">
-            <SettingItem
-                labelText="Demo Select"
-                helperText="This is an example of helper text"
-            >
-                <SettingSelect
-                    store={demoSelect}
-                    storageKey={settings.DEMO_SELECT.KEY}
-                    items={demoSelectItems}
-                />
+        <SideNavMenu text="[RES:Input_Demo]">
+            <SettingsViewer scope="frontend.classic" />
+            <!--
+            <SettingItem labelText="Demo Select" helperText="This is an example of helper text">
+                <SettingSelect store={demoSelect} storageKey={settings.DEMO_SELECT.KEY} items={demoSelectItems} />
             </SettingItem>
-            <SettingItem
-                labelText="Demo TextInput"
-                helperText="This is an example of helper text"
-            >
-                <SettingInput
-                    storageKey={settings.DEMO_TEXT_INPUT.KEY}
-                    store={demoTextInput}
-                    placeholder="Type something"
-                />
+            <SettingItem labelText="Demo TextInput" helperText="This is an example of helper text">
+                <SettingInput storageKey={settings.DEMO_TEXT_INPUT.KEY} store={demoTextInput} placeholder="Type something" />
             </SettingItem>
-            <SettingItem
-                labelText="Demo toggle"
-                helperText="This is an example of helper text"
-            >
-                <SettingToggle
-                    store={demoToggle}
-                    storageKey={settings.DEMO_TOGGLE.KEY}
-                />
+            <SettingItem labelText="Demo toggle" helperText="This is an example of helper text">
+                <SettingToggle store={demoToggle} storageKey={settings.DEMO_TOGGLE.KEY} />
             </SettingItem>
-            <SettingItem
-                labelText="Demo Number input"
-                helperText="This is an example of helper text"
-            >
-                <SettingInput
-                    store={demoNumberInput}
-                    storageKey={settings.DEMO_NUMBER_INPUT.KEY}
-                    type="number"
-                    min={3}
-                    max={5}
-                />
+            <SettingItem labelText="Demo Number input" helperText="This is an example of helper text">
+                <SettingInput store={demoNumberInput} storageKey={settings.DEMO_NUMBER_INPUT.KEY} type="number" min={3} max={5} />
             </SettingItem>
-            <SettingItem
-                labelText="Demo File input"
-                helperText="This is an example of helper text"
-            >
-                <SettingInput
-                    store={demoFileInput}
-                    storageKey={settings.DEMO_FILE_INPUT.KEY}
-                    type="file"
-                />
+            <SettingItem labelText="Demo File input" helperText="This is an example of helper text">
+                <SettingInput store={demoFileInput} storageKey={settings.DEMO_FILE_INPUT.KEY} type="file" />
             </SettingItem>
-            <SettingItem
-                labelText="Demo PasswordInput"
-                helperText="This is an example of helper text"
-            >
-                <SettingInput
-                    store={demoPasswordInput}
-                    storageKey={settings.DEMO_PASSWORD_INPUT.KEY}
-                    type="password"
-                />
+            <SettingItem labelText="Demo PasswordInput" helperText="This is an example of helper text">
+                <SettingInput store={demoPasswordInput} storageKey={settings.DEMO_PASSWORD_INPUT.KEY} type="password" />
             </SettingItem>
+            -->
         </SideNavMenu>
-        <SideNavMenu text="General" />
-        <SideNavMenu text="Websites">
+        <SideNavMenu text="[RES:General]" />
+        <SideNavMenu text="[RES:Websites]">
             <SettingItem type="sub-menu">
                 <SideNavMenu text="Website1">
+                    <!--
                     <SettingItem
                         labelText="Username"
                         helperText="This is an example of helper text"
@@ -146,6 +88,7 @@
                             placeholder="Password"
                         />
                     </SettingItem>
+                    -->
                 </SideNavMenu>
             </SettingItem>
             <SettingItem type="sub-menu">
@@ -155,58 +98,10 @@
                 <SideNavMenu text="Website3" />
             </SettingItem>
         </SideNavMenu>
-        <SideNavMenu text="UI">
-            <SettingItem
-                labelText="Show content panel"
-                helperText="Display or not the hakuneko tutorial"
-            >
-                <SettingToggle
-                    store={showContentPanel}
-                    storageKey={settings.SHOW_CONTENT_PANEL.KEY}
-                />
-            </SettingItem>
-            <SettingItem
-                labelText="Themes"
-                helperText="You can select the theme of the hakuneko app"
-            >
-                <SettingSelect
-                    store={theme}
-                    storageKey={settings.THEME.KEY}
-                    items={themes}
-                />
-            </SettingItem>
-            <SettingItem
-                labelText="Viewer mode"
-                helperText="You can change the viewer mode (webtoon or manga)"
-            >
-                <SettingSelect
-                    store={viewerMode}
-                    storageKey={settings.VIEWER_MODE.KEY}
-                    items={viewerModesSelect}
-                />
-            </SettingItem>
-            {#if $viewerMode === 'manga'}
-                <SettingItem
-                    labelText="Inverse reading"
-                    helperText="Inverse the reading (like a real manga)"
-                >
-                    <SettingToggle
-                        store={inversedReading}
-                        storageKey={settings.INVERSED_READING.KEY}
-                    />
-                </SettingItem>
-                <SettingItem
-                    labelText="Double page"
-                    helperText="Display two page at a time (like a real manga)"
-                >
-                    <SettingToggle
-                        store={doublePage}
-                        storageKey={settings.DOUBLE_PAGE.KEY}
-                    />
-                </SettingItem>
-            {/if}
+        <SideNavMenu text="[RES:UI]">
+            <SettingsPanel />
         </SideNavMenu>
-        <SideNavMenu text="Help">
+        <SideNavMenu text="[RES:Help]">
             <SideNavLink
                 text="Documentation"
                 icon={Doc16}
@@ -242,10 +137,10 @@
                 text="Show IP and localisation"
                 icon={Location16}
                 class="clik-item"
-                on:click={() => openExternalLink('https://ipinfo.io/jso')}
+                on:click={() => openExternalLink('https://ipinfo.io/json')}
             />
         </SideNavMenu>
-        <SideNavMenu text="About">
+        <SideNavMenu text="[RES:About]">
             <SideNavLink
                 text="Code source"
                 icon={LogoGithub16}

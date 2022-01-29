@@ -8,7 +8,7 @@
     import WideViewerImage from './WideViewerImage.svelte';
     import { onMount } from 'svelte';
     import { preloadImage } from '../../utils/image';
-    import { inversedReading, doublePage } from '../../utils/storage';
+    import { ViewerDoublePageValue, ViewerReverseDirectionValue } from '../../SettingsStore';
 
     type ChapterImages = { src: string; nextSrc: string | undefined };
 
@@ -26,13 +26,13 @@
 
     const handleKeyDown = (evt: KeyboardEvent) => {
         if (
-            (!$inversedReading && evt.key === 'ArrowRight') ||
-            ($inversedReading && evt.key === 'ArrowLeft')
+            (!$ViewerReverseDirectionValue && evt.key === 'ArrowRight') ||
+            ($ViewerReverseDirectionValue && evt.key === 'ArrowLeft')
         ) {
             incrementCurrentImage();
         } else if (
-            (!$inversedReading && evt.key === 'ArrowLeft') ||
-            ($inversedReading && evt.key === 'ArrowRight')
+            (!$ViewerReverseDirectionValue && evt.key === 'ArrowLeft') ||
+            ($ViewerReverseDirectionValue && evt.key === 'ArrowRight')
         ) {
             decrementCurrentImage();
         }
@@ -108,7 +108,7 @@
 
             // should display two image
             if (
-                $doublePage &&
+                $ViewerDoublePageValue &&
                 images[i] &&
                 images[i].width < images[i].height &&
                 images[i + 1] &&
@@ -165,7 +165,7 @@
     {#each chapterImages as chapterImage, index}
         {#if chapterImage.nextSrc !== undefined}
             <div
-                class={currentImageIndex === index && $inversedReading
+                class={currentImageIndex === index && $ViewerReverseDirectionValue
                     ? 'current is-inversed'
                     : currentImageIndex === index
                     ? 'current'

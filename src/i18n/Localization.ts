@@ -34,7 +34,7 @@ export function CurrentLocale(): Code {
  * List of all available localizations in the application.
  * See: https://saimana.com/list-of-country-locale-code/
  */
-export const Localizations: Record<Code, ILocale> & Iterable<{ key: Code, name: string }> = {
+export const Localizations: Record<Code, ILocale> & Iterable<{ key: Code, label: ResourceKey }> = {
     [Code.en_US]: CreateLocale('🇺🇸 English (US)', en_US),
     [Code.fr_FR]: CreateLocale('🇫🇷 Français (FR)', fr_FR),
     [Code.de_DE]: CreateLocale('🇩🇪 Deutsch (DE)', de_DE),
@@ -42,7 +42,7 @@ export const Localizations: Record<Code, ILocale> & Iterable<{ key: Code, name: 
         for(const key in this) {
             yield {
                 key: key as Code,
-                name: this[key as Code].toString()
+                label: this[key as Code].toString() as ResourceKey
             };
         }
     }

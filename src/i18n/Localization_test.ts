@@ -7,9 +7,9 @@ describe('Localization', () => {
 
         it('Should contain expected resources', async () => {
             const expected = [
-                { key: Code.en_US, name: '🇺🇸 English (US)' },
-                { key: Code.fr_FR, name: '🇫🇷 Français (FR)' },
-                { key: Code.de_DE, name: '🇩🇪 Deutsch (DE)' },
+                { key: Code.en_US, label: '🇺🇸 English (US)' },
+                { key: Code.fr_FR, label: '🇫🇷 Français (FR)' },
+                { key: Code.de_DE, label: '🇩🇪 Deutsch (DE)' },
             ];
             expect([...Localizations]).toStrictEqual(expected);
         });
