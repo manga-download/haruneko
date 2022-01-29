@@ -51,6 +51,9 @@ class Setting<T extends IValue> {
         return this.value;
     }
 
+    /**
+     * Assign a new value and also dispatch the {@link ValueChanged} event to notify all subscribers.
+     */
     public set Value(value: T) {
         if(this.value !== value) {
             this.value = value;
@@ -225,7 +228,7 @@ export class SettingsManager {
     /**
      * Get the settings for the given scope, or creates new settings if the scope not yet exists.
      */
-    public OpenScope(scope: string): Settings {
+    public OpenScope(scope: string): ISettings {
         return this.scopes[scope] || (this.scopes[scope] = new Settings(scope, this.storage));
     }
 }
