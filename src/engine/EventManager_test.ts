@@ -1,7 +1,7 @@
 import { mock, mockFn } from 'jest-mock-extended';
-import { IEvent, EventManager } from './EventManager';
+import { Event, EventManager } from './EventManager';
 
-function AssertSubscribeOnce<TSender, TArgs>(testee: IEvent<TSender, TArgs>): void {
+function AssertSubscribeOnce<TSender, TArgs>(testee: Event<TSender, TArgs>): void {
     it('Should only subscribe once', async () => {
         const sender = mock<TSender>();
         const args = mock<TArgs>();
@@ -17,7 +17,7 @@ function AssertSubscribeOnce<TSender, TArgs>(testee: IEvent<TSender, TArgs>): vo
     });
 }
 
-function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: IEvent<TSender, TArgs>): void {
+function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: Event<TSender, TArgs>): void {
     it('Should invoke all subscribed callbacks', async () => {
         const sender = mock<TSender>();
         const args = mock<TArgs>();
@@ -38,7 +38,7 @@ function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: IEvent<TSender, TA
     });
 }
 
-function AssertUnsubscribe<TSender, TArgs>(testee: IEvent<TSender, TArgs>): void {
+function AssertUnsubscribe<TSender, TArgs>(testee: Event<TSender, TArgs>): void {
     it('Should no longer invoke unsubscribed callbacks', async () => {
         const sender = mock<TSender>();
         const args = mock<TArgs>();
@@ -58,12 +58,35 @@ function AssertUnsubscribe<TSender, TArgs>(testee: IEvent<TSender, TArgs>): void
     });
 }
 
+describe('Event', () => {
+
+    describe('Subsribe', () => {
+        const testee = new Event<string, number>();
+        AssertSubscribeOnce(testee);
+    });
+
+    describe('Dispatch', () => {
+        const testee = new Event<string, number>();
+        AssertInvokeAllSubscriptions(testee);
+    });
+
+    describe('Unsubsribe', () => {
+        const testee = new Event<string, number>();
+        AssertUnsubscribe(testee);
+    });
+});
+
 describe('EventManager', () => {
 
     describe('FrontendLoaded', () => {
-
         AssertSubscribeOnce(new EventManager().FrontendLoaded);
         AssertInvokeAllSubscriptions(new EventManager().FrontendLoaded);
         AssertUnsubscribe(new EventManager().FrontendLoaded);
+    });
+
+    describe('LocaleChanged', () => {
+        AssertSubscribeOnce(new EventManager().LocaleChanged);
+        AssertInvokeAllSubscriptions(new EventManager().LocaleChanged);
+        AssertUnsubscribe(new EventManager().LocaleChanged);
     });
 });

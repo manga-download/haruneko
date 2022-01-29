@@ -1,5 +1,3 @@
-import type { IEvent } from "./EventManager";
-
 export interface IWindowController {
     Minimize(): void;
     Maximize(): void;
@@ -9,9 +7,9 @@ export interface IWindowController {
 
 export class WindowController implements IWindowController {
 
-    private readonly _win: any; // NWWindow
+    private readonly _win: NWJS_Helpers.win;
 
-    constructor(nwWindow: any) {
+    constructor(nwWindow: NWJS_Helpers.win) {
         this._win = nwWindow;
     }
 
