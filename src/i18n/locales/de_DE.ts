@@ -25,8 +25,12 @@ export const de_DE: IResource = {
     Frontend_Classic_Settings_ContentPanelInfo: 'Bestimmt ob der Inhaltsbereich ein- oder ausgebelendet ist',
     Frontend_Classic_Settings_ViewerMode: 'Lese Modus',
     Frontend_Classic_Settings_ViewerModeInfo: 'Bestimmt wie die Seiten/Bilder angezeigt werden',
-    Frontend_Classic_Settings_ViewerMode_Paginated: 'Einzelseiten (Manga)',
+    Frontend_Classic_Settings_ViewerMode_Paginated: 'Seiten (Manga)',
     Frontend_Classic_Settings_ViewerMode_Longstrip: 'Nahtlos (Webtoon)',
+    Frontend_Classic_Settings_ViewerReverseDirection: 'Invertierte Leserichtung',
+    Frontend_Classic_Settings_ViewerReverseDirectionInfo: 'Zeigt die Seiten/Bilder in umgekehrter Reihenfolge an (wie in klassischen Mangas)',
+    Frontend_Classic_Settings_ViewerDoublePage: 'Doppelseitige Ansicht',
+    Frontend_Classic_Settings_ViewerDoublePageInfo: 'Zeigt die Seiten/Bilder paarweise an (wie in klassischen Mangas)',
 
     // [SECTION]: Engine
 

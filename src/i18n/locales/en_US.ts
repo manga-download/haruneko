@@ -27,6 +27,10 @@ export const en_US: IResource = {
     Frontend_Classic_Settings_ViewerModeInfo: 'Change how pages/images will be shown in the reader',
     Frontend_Classic_Settings_ViewerMode_Paginated: 'Paginated (Manga)',
     Frontend_Classic_Settings_ViewerMode_Longstrip: 'Longstrip (Webtoon)',
+    Frontend_Classic_Settings_ViewerReverseDirection: 'Invert Reading Direction',
+    Frontend_Classic_Settings_ViewerReverseDirectionInfo: 'Show pages/images in reverse order (like in tradional Manga)',
+    Frontend_Classic_Settings_ViewerDoublePage: 'Show Double Pages',
+    Frontend_Classic_Settings_ViewerDoublePageInfo: 'Show two pages/images at once (like in tradional Manga)',
 
     // [SECTION]: Engine
 
