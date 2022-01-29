@@ -2,6 +2,7 @@ import type { ResourceKey } from '../i18n/ILocale';
 import type { StorageController } from './StorageController';
 import { Event } from './EventManager';
 
+const prefix = 'settings.';
 const secret = 'E8463362D9B817D3956F054D01093EC6'; // MD5('simple.encryption.key.for.secret.settings')
 
 function Encrypt(decrypted: string) {
@@ -14,7 +15,7 @@ function Decrypt(encrypted: string) {
     return window.atob(encrypted.replace(secret, ''));
 }
 
-type IValue = string | boolean | number;
+export type IValue = string | boolean | number;
 
 class Setting<T extends IValue> {
 
@@ -61,6 +62,8 @@ class Setting<T extends IValue> {
         return this.initial;
     }
 }
+
+export type { Setting };
 
 export class Text extends Setting<string> {
 
@@ -142,8 +145,6 @@ export class Numeric extends Setting<number> {
 }
 
 type ISetting = Setting<IValue>;
-
-const prefix = 'settings.';
 
 class Settings implements Iterable<ISetting> {
 
