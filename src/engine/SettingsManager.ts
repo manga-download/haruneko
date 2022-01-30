@@ -3,23 +3,23 @@ import type { StorageController } from './StorageController';
 import { Event } from './EventManager';
 
 const prefix = 'settings.';
-const secret = 'E8463362D9B817D3956F054D01093EC6'; // MD5('simple.encryption.key.for.secret.settings')
+//const secret = 'E8463362D9B817D3956F054D01093EC6'; // MD5('simple.encryption.key.for.secret.settings')
 
 function Encrypt(decrypted: string) {
     // TODO: Use some real encryption 😉
-    return secret + window.btoa(decrypted);
+    return window.btoa(decrypted);
 }
 
 function Decrypt(encrypted: string) {
     // TODO: Use some real decryption 😉
-    return window.atob(encrypted.replace(secret, ''));
+    return window.atob(encrypted);
 }
 
 export type IValue = string | boolean | number;
 
 class Setting<T extends IValue> {
 
-    private value: T;
+    public value: T;
     private readonly initial: T;
     private readonly id: string;
     private readonly label: ResourceKey;
@@ -57,7 +57,7 @@ class Setting<T extends IValue> {
     public set Value(value: T) {
         if(this.value !== value) {
             this.value = value;
-            this.ValueChanged.Dispatch(this, this.value);
+            this.ValueChanged.Dispatch(this, this.Value);
         }
     }
 
@@ -78,7 +78,7 @@ export class Text extends Setting<string> {
 export class Secret extends Setting<string> {
 
     constructor(id: string, label: ResourceKey, description: ResourceKey, initial: string) {
-        super(id, label, description, initial);
+        super(id, label, description, Encrypt(initial));
     }
 
     public get Value(): string {
@@ -106,6 +106,14 @@ export class Choice extends Setting<string> {
         this.options = options;
     }
 
+    public get Value(): string {
+        return this.options.some(option => option.key === super.Value) ? super.Value : super.Default;
+    }
+
+    public set Value(value: string) {
+        super.Value = value;
+    }
+
     private readonly options: IOption[];
     public get Options(): IOption[] {
         return this.options;
@@ -121,29 +129,30 @@ export class Numeric extends Setting<number> {
     }
 
     public get Value(): number {
-        return super.Value;
+        // NOTE: Get the capped value considering min/max range
+        return Math.min(this.Max, Math.max(super.Value, this.Min));
     }
 
     public set Value(value: number) {
-        super.Value = Math.min(this.Max, Math.max(value, this.min));
+        // NOTE: Set the 'raw' value that may be outside the range of min/max
+        super.Value = value;
     }
 
     private min: number;
     public get Min(): number {
         return this.min;
     }
-    public set Min(min: number) {
-        super.Value = Math.max(min, super.Value);
-        this.min = min;
-    }
 
     private max: number;
     public get Max(): number {
         return this.max;
     }
-    public set Max(max: number) {
-        super.Value = Math.min(max, super.Value);
-        this.max = max;
+}
+
+export class Path extends Setting<string> {
+
+    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: string) {
+        super(id, label, description, initial);
     }
 }
 
@@ -169,7 +178,7 @@ class Settings implements Iterable<ISetting> {
         this.ValueChanged.Dispatch(sender, args);
         const data: Record<string, IValue> = {};
         for(const key in this.settings) {
-            data[key] = this.settings[key].Value;
+            data[key] = this.settings[key].value;
         }
         await this.storage.SavePersistent(this.scope, data);
     }
@@ -182,7 +191,7 @@ class Settings implements Iterable<ISetting> {
         const data = await this.storage.LoadPersistent<Record<string, IValue>>(this.scope);
         for(const setting of settings) {
             if(!this.settings[setting.ID]) {
-                setting.Value = data && data[setting.ID] ? data[setting.ID] : setting.Value;
+                setting.value = data && data[setting.ID] ? data[setting.ID] : setting.Value;
                 setting.ValueChanged.Subscribe(this.OnValueChangedCallback.bind(this));
                 this.settings[setting.ID] = setting;
             }
