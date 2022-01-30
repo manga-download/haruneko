@@ -22,8 +22,7 @@
         "npm": ">=8.1.0"
     },
     "dependencies": {
-        "fs-extra": "9.1.0",
-        "fuse.js": "^6.5.3"
+        "fs-extra": "9.1.0"
     },
     "devDependencies": {
         "@sveltejs/svelte-virtual-list": "^3.0.1",
@@ -42,6 +41,7 @@
         "carbon-components-svelte": "^0.51.2",
         "carbon-icons-svelte": "^10.44.3",
         "eslint": "^8.6.0",
+        "fuse.js": "^6.5.3",
         "jest": "^27.4.7",
         "jest-junit": "^13.0.0",
         "jest-mock-extended": "^2.0.4",
