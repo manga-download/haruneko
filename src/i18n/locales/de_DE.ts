@@ -34,6 +34,27 @@ export const de_DE: IResource = {
 
     // [SECTION]: Engine
 
+    Settings_Global_Language: 'Sprache',
+    Settings_Global_LanguageInfo: 'Select the language for the user interface',
+    Settings_Global_Language_enUS: '🇺🇸 English (US)', // This must not be localized (native speakers must be able to recognize their language option)!
+    Settings_Global_Language_frFR: '🇫🇷 Français (FR)', // This must not be localized (native speakers must be able to recognize their language option)!
+    Settings_Global_Language_deDE: '🇩🇪 Deutsch (DE)', // This must not be localized (native speakers must be able to recognize their language option)!
+    Settings_Global_MediaDirectory: 'Media Verzeichnis',
+    Settings_Global_MediaDirectoryInfo: 'Select the directory where HakuNeko store the downloads',
+    Settings_Global_WebsiteSubDirectory: 'Unterverzeichnisse',
+    Settings_Global_WebsiteSubDirectoryInfo: 'Set wether HakuNeko shall store media directly in the directory, or use sub-directories per website',
+    Settings_Global_DescramblingFormat: 'Arrangierungs-Format',
+    Settings_Global_DescramblingFormatInfo: 'Select the output image format for websites hosting puzzled images (this will NOT apply to wesites already providing valid images)',
+    Settings_Global_DescramblingFormat_PNG: 'PNG (*.png)',
+    Settings_Global_DescramblingFormat_JPEG: 'JPEG (*.jpg)',
+    Settings_Global_DescramblingFormat_WEBP: 'WEBP (*.webp)',
+    Settings_Global_DescramblingQuality: 'Arrangierungs-Qualität',
+    Settings_Global_DescramblingQualityInfo: 'Set the quality in which de-scrambled images shall be stored (this will NOT apply to PNG)',
+    Settings_Global_HCaptchaToken: 'H-Captcha Token',
+    Settings_Global_HCaptchaTokenInfo: `Set the accessibility token to automatically bypass websites which use CloudFlare's H-Captcha protection`,
+    Settings_Global_PostCommand: 'Post Command',
+    Settings_Global_PostCommandInfo: '...',
+
     FetchProvider_FetchWindow_TimeoutError: 'Die Anfrage konnte nicht innerhalb der angegebenen Zeitbeschränkung verarbeitet werden!',
     FetchProvider_FetchWindow_CloudFlareError: 'Die Anfrage wurde aufgrund des folgenden CloudFlare Fehlers abgebrochen: "{0}"',
     FetchProvider_FetchWindow_AlertCaptcha: 'Um automatisch fortzufahren ist es erforderlich den auf der Website angezeigten Captcha zu lösen (die Webseite darf nach der Lösung nicht geschlossen werde)!',

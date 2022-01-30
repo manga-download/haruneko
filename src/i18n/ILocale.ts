@@ -47,6 +47,27 @@ export enum ResourceKey {
 
     // [SECTION]: Engine
 
+    Settings_Global_Language = 'Settings_Global_Language',
+    Settings_Global_LanguageInfo = 'Settings_Global_LanguageInfo',
+    Settings_Global_Language_enUS = 'Settings_Global_Language_enUS',
+    Settings_Global_Language_frFR = 'Settings_Global_Language_frFR',
+    Settings_Global_Language_deDE = 'Settings_Global_Language_deDE',
+    Settings_Global_MediaDirectory = 'Settings_Global_MediaDirectory',
+    Settings_Global_MediaDirectoryInfo = 'Settings_Global_MediaDirectoryInfo',
+    Settings_Global_WebsiteSubDirectory = 'Settings_Global_WebsiteSubDirectory',
+    Settings_Global_WebsiteSubDirectoryInfo = 'Settings_Global_WebsiteSubDirectoryInfo',
+    Settings_Global_DescramblingFormat = 'Settings_Global_DescramblingFormat',
+    Settings_Global_DescramblingFormatInfo = 'Settings_Global_DescramblingFormatInfo',
+    Settings_Global_DescramblingFormat_PNG = 'Settings_Global_DescramblingFormat_PNG',
+    Settings_Global_DescramblingFormat_JPEG = 'Settings_Global_DescramblingFormat_JPEG',
+    Settings_Global_DescramblingFormat_WEBP = 'Settings_Global_DescramblingFormat_WEBP',
+    Settings_Global_DescramblingQuality = 'Settings_Global_DescramblingQuality',
+    Settings_Global_DescramblingQualityInfo = 'Settings_Global_DescramblingQualityInfo',
+    Settings_Global_HCaptchaToken = 'Settings_Global_HCaptchaToken',
+    Settings_Global_HCaptchaTokenInfo = 'Settings_Global_HCaptchaTokenInfo',
+    Settings_Global_PostCommand = 'Settings_Global_PostCommand',
+    Settings_Global_PostCommandInfo = 'Settings_Global_PostCommandInfo',
+
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
