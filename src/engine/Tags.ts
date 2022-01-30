@@ -1,5 +1,4 @@
 import { ResourceKey } from '../i18n/ILocale';
-import { I } from '../i18n/Localization';
 
 class Tag extends Object {
 
@@ -14,24 +13,16 @@ class Tag extends Object {
         this.descriptionKey = descriptionKey;
     }
 
-    public get Category(): string {
-        return I()[this.categoryKey]();
+    public get Category(): ResourceKey {
+        return this.categoryKey;
     }
 
-    public get Title(): string {
-        return I()[this.titleKey]();
+    public get Title(): ResourceKey {
+        return this.titleKey;
     }
 
-    public get Description(): string {
-        return this.descriptionKey ? I()[this.descriptionKey]() : this.Title;
-    }
-
-    /**
-     * Text representation of the tag
-     * @param format A template where `%C` is replaced by the category and `%T` by the title of the tag
-     */
-    public toString(format?: string): string {
-        return format ? format.replace(/%C/g, this.Category).replace(/%T/g, this.Title) : this.Title;
+    public get Description(): ResourceKey {
+        return this.descriptionKey ? this.descriptionKey : this.Title;
     }
 }
 
@@ -43,8 +34,8 @@ function GetCategoryTags(): Tag[] {
 
 export const Tags = {
     Media: {
-        toString: () => I().Tags_Media(),
         toArray: GetCategoryTags,
+        Title: ResourceKey.Tags_Media,
         /**
          * Keywords: Eastern, Japan, Black & White, Pagination
          */
@@ -66,8 +57,8 @@ export const Tags = {
         Novel: new Tag(ResourceKey.Tags_Media, ResourceKey.Tags_Media_Novel, ResourceKey.Tags_Media_NovelDescription),
     },
     Source: {
-        toString: () => I().Tags_Source(),
         toArray: GetCategoryTags,
+        Title: ResourceKey.Tags_Source,
         /**
          * Keywords: Licensed Publisher, Original Content
          */
@@ -82,16 +73,16 @@ export const Tags = {
         Aggregator: new Tag(ResourceKey.Tags_Source, ResourceKey.Tags_Source_Aggregator),
     },
     Rating: {
-        toString: () => I().Tags_Rating(),
         toArray: GetCategoryTags,
+        Title: ResourceKey.Tags_Rating,
         Safe: new Tag(ResourceKey.Tags_Rating, ResourceKey.Tags_Rating_Safe),
         Suggestive: new Tag(ResourceKey.Tags_Rating, ResourceKey.Tags_Rating_Suggestive),
         Erotica: new Tag(ResourceKey.Tags_Rating, ResourceKey.Tags_Rating_Erotica),
         Pornographic: new Tag(ResourceKey.Tags_Rating, ResourceKey.Tags_Rating_Pornographic),
     },
     Language: {
-        toString: () => I().Tags_Language(),
         toArray: GetCategoryTags,
+        Title: ResourceKey.Tags_Language,
         Multilingual: new Tag(ResourceKey.Tags_Language, ResourceKey.Tags_Language_Multilingual),
         Arabic: new Tag(ResourceKey.Tags_Language, ResourceKey.Tags_Language_Arabic),
         Chinese: new Tag(ResourceKey.Tags_Language, ResourceKey.Tags_Language_Chinese),

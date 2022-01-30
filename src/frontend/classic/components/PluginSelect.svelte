@@ -14,8 +14,10 @@
     import { createEventDispatcher } from "svelte";
 
     import Chip from "./Tag.svelte";
-    import type { Tag } from '../../../engine/Tags';
+    import { Tag, Tags } from '../../../engine/Tags';
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
+    import { LocaleValue } from "../SettingsStore";
+    import { ResourceKey } from "../../../i18n/ILocale";
 
     function createDataRow(item: IMediaContainer) {
         return {
@@ -39,9 +41,9 @@
 
     //because hardccoding values is da way (Do You Know Da Wae?)
     //will fuse in a single main array with dispatch
-    const langTags = HakuNeko.Tags.Language.toArray();
-    const typeTags = HakuNeko.Tags.Media.toArray();
-    const otherTags = [ ...HakuNeko.Tags.Source.toArray(), ...HakuNeko.Tags.Rating.toArray() ];
+    const langTags = Tags.Language.toArray();
+    const typeTags = Tags.Media.toArray();
+    const otherTags = [ ...Tags.Source.toArray(), ...Tags.Rating.toArray() ];
 
     let pluginNameFilter = "";
     let pluginTagsFilter: Tag[] = [];
@@ -54,7 +56,7 @@
     function removeTagFilter(tag: Tag) {
         pluginTagsFilter = pluginTagsFilter.filter(value => tag !== value);
     }
-    addTagFilter(HakuNeko.Tags.Language.French);
+    addTagFilter(Tags.Language.French);
 
     $: filteredPluginlist = pluginlist
         .filter((item) => {
@@ -100,7 +102,7 @@
     <div class="content tags">
         <Tile>
             <div class="lang">
-                <div>{window.HakuNeko.Tags.Language}</div>
+                <div>{$LocaleValue[Tags.Language.Title]()}</div>
                 {#each langTags as item}
                     <Chip
                         category={item.Category}
@@ -110,7 +112,7 @@
                 {/each}
             </div>
             <div class="type">
-                <div>{window.HakuNeko.Tags.Media}</div>
+                <div>{$LocaleValue[Tags.Media.Title]()}</div>
                 {#each typeTags as item}
                     <Chip
                         category={item.Category}
@@ -120,7 +122,7 @@
                 {/each}
             </div>
             <div class="other">
-                <div>Other</div>
+                <div>{$LocaleValue[ResourceKey.Tags_Others]()}</div>
                 {#each otherTags as item}
                     <Chip
                         category={item.Category}
@@ -137,7 +139,7 @@
             <Chip
                 filter
                 category={item.Category}
-                label={item.toString('%C: %T')}
+                label={item.Title}
                 on:click={() => removeTagFilter(item)}
             />
         {/each}

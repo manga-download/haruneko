@@ -82,4 +82,5 @@ export const en_US: IResource = {
     Tags_Language_Thai: '🇹🇭Thai',
     Tags_Language_Turkish: '🇹🇷Turkish',
     Tags_Language_Vietnamese: '🇻🇳Vietnamese',
+    Tags_Others: 'Others',
 };

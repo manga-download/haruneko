@@ -40,7 +40,7 @@ export const fr_FR: IResource = {
 
     // [SECTION]: Tags
 
-    Tags_Media: 'Media',
+    Tags_Media: 'Gentil',
     Tags_Media_Manga: 'Manga',
     Tags_Media_MangaDescription: 'Japan, Noir & Blanc, Single/Double Paged, ...',
     Tags_Media_Manhua: 'Manhua',
@@ -55,16 +55,16 @@ export const fr_FR: IResource = {
     Tags_Media_CartoonDescription: 'Cartoon, ...',
     Tags_Media_Novel: 'Novel',
     Tags_Media_NovelDescription: 'Novel, ...',
-    Tags_Source: 'Source',
+    Tags_Source: 'Fournisseur',
     Tags_Source_Official: 'Official',
     Tags_Source_Scanlator: 'Scanlator',
     Tags_Source_Aggregator: 'Aggregator',
-    Tags_Rating: 'Rating',
+    Tags_Rating: 'Notation',
     Tags_Rating_Safe: 'Safe',
     Tags_Rating_Suggestive: 'Suggestive',
     Tags_Rating_Erotica: 'Erotica',
     Tags_Rating_Pornographic: 'Pornographic',
-    Tags_Language: 'Language',
+    Tags_Language: 'Langauge',
     Tags_Language_Multilingual: '🌐Multilingual',
     Tags_Language_Arabic: '🇸🇦Arabic',
     Tags_Language_Chinese: '🇨🇳Chinese',
@@ -82,4 +82,5 @@ export const fr_FR: IResource = {
     Tags_Language_Thai: '🇹🇭Thai',
     Tags_Language_Turkish: '🇹🇷Turkish',
     Tags_Language_Vietnamese: '🇻🇳Vietnamese',
+    Tags_Others: 'Autrui',
 };

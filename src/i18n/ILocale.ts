@@ -95,4 +95,5 @@ export enum ResourceKey {
     Tags_Language_Thai = 'Tags_Language_Thai',
     Tags_Language_Turkish = 'Tags_Language_Turkish',
     Tags_Language_Vietnamese = 'Tags_Language_Vietnamese',
+    Tags_Others = 'Tags_Others',
 }
