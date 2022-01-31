@@ -108,6 +108,35 @@ describe('Settings', () => {
         });
     });
 
+    describe('Get', () => {
+
+        const settings = CreateSettings();
+
+        it.each([...settings])('Should get existing settings', async (setting) => {
+            const storage = mock<StorageController>();
+            const testee = new SettingsManager(storage).OpenScope('test-scope');
+
+            const stored = {};
+            for(const setting of settings) {
+                stored[setting.ID] = setting.value;
+            }
+            storage.LoadPersistent.mockReturnValue(Promise.resolve(stored));
+
+            await testee.Initialize(...settings);
+
+            expect(testee.Get(setting.ID).Value).toBe(setting.Value);
+        });
+
+        it('Should not get non-existing setting', async () => {
+            const storage = mock<StorageController>();
+            const testee = new SettingsManager(storage).OpenScope('test-scope');
+
+            await testee.Initialize(...settings);
+
+            expect(testee.Get('-')).toBeUndefined();
+        });
+    });
+
     describe('ValueChanged', () => {
 
         it('Should pass through notification for value changed when subscribed', async () => {

@@ -3,7 +3,7 @@
     import type { TagProps } from 'carbon-components-svelte/types/Tag/Tag.svelte';
     import { Tags } from '../../../engine/Tags';
     import type { ResourceKey } from '../../../i18n/ILocale';
-    import { LocaleValue } from '../SettingsStore';
+    import { Locale } from '../SettingsStore';
 
     export let label: ResourceKey;
     export let category: ResourceKey;
@@ -21,7 +21,7 @@
 </script>
 
 <Tag {filter} type={color} on:click>
-    <div class="tagContent {category}">{$LocaleValue[label]()}</div>
+    <div class="tagContent {category}">{$Locale[label]()}</div>
 </Tag>
 
 <style>

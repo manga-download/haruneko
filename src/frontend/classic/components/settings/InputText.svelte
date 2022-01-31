@@ -1,16 +1,16 @@
 <script lang="ts">
-    import { Select, SelectItem } from "carbon-components-svelte";
-    import type { Choice } from "../../../../engine/SettingsManager";
+    import { TextInput } from "carbon-components-svelte";
+    import type { Text } from "../../../../engine/SettingsManager";
     import { Locale } from "../../SettingsStore";
     import SettingItem from "./SettingItem.svelte";
 
-    export let setting: Choice;
-    let current: Choice;
+    export let setting: Text;
+    let current: Text;
     let value: string;
 
     $: Update(setting);
 
-    function Update(setting: Choice) {
+    function Update(setting: Text) {
         if(current === setting) {
             return;
         }
@@ -24,7 +24,7 @@
         current = setting;
     }
 
-    function OnValueChangedCallback(sender: Choice, args: string) {
+    function OnValueChangedCallback(sender: Text, args: string) {
         if(sender && sender !== current) {
             sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
         } else {
@@ -34,9 +34,5 @@
 </script>
 
 <SettingItem labelText={$Locale[setting.Label]()} helperText={$Locale[setting.Description]()}>
-    <Select selected={value} on:change={evt => setting.Value = evt.detail}>
-        {#each setting.Options as option}
-            <SelectItem value={option.key} text={$Locale[option.label]()} />
-        {/each}
-    </Select>
+    <TextInput value={value} on:change={event => setting.Value = event.currentTarget['value']} />
 </SettingItem>

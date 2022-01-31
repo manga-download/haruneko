@@ -16,7 +16,7 @@
     import Chip from "./Tag.svelte";
     import { Tag, Tags } from '../../../engine/Tags';
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
-    import { LocaleValue } from "../SettingsStore";
+    import { Locale } from "../SettingsStore";
     import { ResourceKey } from "../../../i18n/ILocale";
 
     function createDataRow(item: IMediaContainer) {
@@ -102,7 +102,7 @@
     <div class="content tags">
         <Tile>
             <div class="lang">
-                <div>{$LocaleValue[Tags.Language.Title]()}</div>
+                <div>{$Locale[Tags.Language.Title]()}</div>
                 {#each langTags as item}
                     <Chip
                         category={item.Category}
@@ -112,7 +112,7 @@
                 {/each}
             </div>
             <div class="type">
-                <div>{$LocaleValue[Tags.Media.Title]()}</div>
+                <div>{$Locale[Tags.Media.Title]()}</div>
                 {#each typeTags as item}
                     <Chip
                         category={item.Category}
@@ -122,7 +122,7 @@
                 {/each}
             </div>
             <div class="other">
-                <div>{$LocaleValue[ResourceKey.Tags_Others]()}</div>
+                <div>{$Locale[ResourceKey.Tags_Others]()}</div>
                 {#each otherTags as item}
                     <Chip
                         category={item.Category}

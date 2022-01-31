@@ -12,8 +12,8 @@
     import CloseIcon from 'carbon-icons-svelte/lib/Close24';
     import MenuLeftPanel from './MenuLeftPanel.svelte';
     import { WindowController } from '../Stores';
-    import { L, CurrentLocale } from '../../../i18n/Localization';
     import SettingsPanel from './settings/SettingsPanel.svelte';
+    import { Locale } from '../SettingsStore';
 
     export let isSideNavOpen: boolean;
     export let isOpen: boolean;
@@ -41,18 +41,14 @@
         restore = $WindowController.Restore.bind($WindowController);
         close = $WindowController.Close.bind($WindowController);
     }
-
-    // NOTE: Sample for reactive localization, which reflects instantly without reloading the frontend
-    let locale = CurrentLocale();
-    HakuNeko.EventManager.LocaleChanged.Subscribe((_, code) => (locale = code));
 </script>
 
 <Header
     id="Header"
     expandedByDefault={false}
     persistentHamburgerMenu={true}
-    company={L(locale).Frontend_Product_Title()}
-    platformName={L(locale).Frontend_Product_Description()}
+    company={$Locale.Frontend_Product_Title()}
+    platformName={$Locale.Frontend_Product_Description()}
     bind:isSideNavOpen
 >
     <div slot="skip-to-content">
@@ -75,6 +71,9 @@
             icon={CloseIcon}
         />
         <HeaderAction bind:isOpen>
+            <!-- Show global HakuNeko settings?
+            <SettingsViewer scope={Scope} />
+            -->
             <SettingsPanel />
         </HeaderAction>
     </HeaderUtilities>

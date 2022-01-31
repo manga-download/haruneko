@@ -18,6 +18,7 @@
     import SettingItem from './settings/SettingItem.svelte';
     import SettingsPanel from './settings/SettingsPanel.svelte';
     import SettingsViewer from './settings/SettingsViewer.svelte';
+    import { Scope } from '../../../engine/SettingsGlobal';
 
     export let isSideNavOpen = false;
 
@@ -27,68 +28,16 @@
         //nw.Shell.openExternal(uri);
         window.open(url);
     }
-
-    const demoSelectItems = [
-        { id: 'white', label: 'White', kind: 'dont care' },
-        { id: 'g10', label: 'Gray 10', kind: 'dont care' },
-        { id: 'g80', label: 'Gray 80', kind: 'dont care' },
-        { id: 'g90', label: 'Gray 90', kind: 'dont care' },
-        { id: 'g100', label: 'Gray 100', kind: 'dont care' },
-    ];
 </script>
 
 <SideNav bind:isOpen={isSideNavOpen}>
     <SideNavItems>
-        <SideNavMenu text="[RES:Input_Demo]">
-            <SettingsViewer scope="frontend.classic" />
-            <!--
-            <SettingItem labelText="Demo Select" helperText="This is an example of helper text">
-                <SettingSelect store={demoSelect} storageKey={settings.DEMO_SELECT.KEY} items={demoSelectItems} />
-            </SettingItem>
-            <SettingItem labelText="Demo TextInput" helperText="This is an example of helper text">
-                <SettingInput storageKey={settings.DEMO_TEXT_INPUT.KEY} store={demoTextInput} placeholder="Type something" />
-            </SettingItem>
-            <SettingItem labelText="Demo toggle" helperText="This is an example of helper text">
-                <SettingToggle store={demoToggle} storageKey={settings.DEMO_TOGGLE.KEY} />
-            </SettingItem>
-            <SettingItem labelText="Demo Number input" helperText="This is an example of helper text">
-                <SettingInput store={demoNumberInput} storageKey={settings.DEMO_NUMBER_INPUT.KEY} type="number" min={3} max={5} />
-            </SettingItem>
-            <SettingItem labelText="Demo File input" helperText="This is an example of helper text">
-                <SettingInput store={demoFileInput} storageKey={settings.DEMO_FILE_INPUT.KEY} type="file" />
-            </SettingItem>
-            <SettingItem labelText="Demo PasswordInput" helperText="This is an example of helper text">
-                <SettingInput store={demoPasswordInput} storageKey={settings.DEMO_PASSWORD_INPUT.KEY} type="password" />
-            </SettingItem>
-            -->
+        <SideNavMenu text="[RES:General]">
+            <SettingsViewer scope={Scope} />
         </SideNavMenu>
-        <SideNavMenu text="[RES:General]" />
         <SideNavMenu text="[RES:Websites]">
             <SettingItem type="sub-menu">
                 <SideNavMenu text="Website1">
-                    <!--
-                    <SettingItem
-                        labelText="Username"
-                        helperText="This is an example of helper text"
-                    >
-                        <SettingInput
-                            store={website1Username}
-                            storageKey={settings.WEBSITE_1_USERNAME.KEY}
-                            placeholder="Username"
-                        />
-                    </SettingItem>
-                    <SettingItem
-                        labelText="Password"
-                        helperText="This is an example of helper text"
-                    >
-                        <SettingInput
-                            store={website1Password}
-                            storageKey={settings.WEBSITE_1_PASSWORD.KEY}
-                            type="password"
-                            placeholder="Password"
-                        />
-                    </SettingItem>
-                    -->
                 </SideNavMenu>
             </SettingItem>
             <SettingItem type="sub-menu">

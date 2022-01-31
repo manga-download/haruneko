@@ -201,20 +201,9 @@ class Settings implements Iterable<ISetting> {
     /**
      * Get the setting for a certain key.
      */
-    /*
     public Get<T extends ISetting>(key: string): T {
         return this.settings[key] as T;
     }
-    */
-
-    /**
-     * Get the value for a certain key.
-     */
-    /*
-    public Value<T extends IValue>(key: string): T {
-        return this.Get<ISetting>(key).Value as T;
-    }
-    */
 
     *[Symbol.iterator]()/*: Iterator<ISetting>*/ {
         for(const key in this.settings) {

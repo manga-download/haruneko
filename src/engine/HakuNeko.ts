@@ -1,3 +1,6 @@
+import { Initialize as InitBlacklist } from './Blacklist';
+import { Initialize as InitFetchProvider } from './FetchProvider';
+import { Initialize as InitGlobalSettings } from './SettingsGlobal';
 import { Tags } from './Tags';
 import { EventManager } from './EventManager';
 import { PluginController } from './PluginController';
@@ -12,6 +15,12 @@ export class HakuNeko {
     private readonly _pluginController: PluginController = new PluginController();
     private readonly _settingsManager: SettingsManager = new SettingsManager(this._storageController);
     private readonly _bookmarkPlugin: BookmarkPlugin = new BookmarkPlugin(this._storageController, this._pluginController);
+
+    public async Initialze(): Promise<void> {
+        InitBlacklist();
+        InitFetchProvider();
+        await InitGlobalSettings(this.SettingsManager, this.EventManager);
+    }
 
     public get Tags() {
         return Tags;

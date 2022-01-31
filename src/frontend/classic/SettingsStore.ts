@@ -1,7 +1,7 @@
 import { type Readable, readable, writable } from 'svelte/store';
 import { type ILocale, ResourceKey as R } from '../../i18n/ILocale';
-import { CurrentLocale, L, Localizations } from '../../i18n/Localization';
-import { Check, Choice, Numeric, Secret, Text, type IValue, type Setting } from '../../engine/SettingsManager';
+import { GetLocale } from '../../i18n/Localization';
+import { Check, Choice, type IValue, type Setting } from '../../engine/SettingsManager';
 
 const scope = 'frontend.classic';
 
@@ -34,8 +34,7 @@ export const enum Key {
 export async function Initialize(): Promise<void> {
     const settings = HakuNeko.SettingsManager.OpenScope(scope);
     await settings.Initialize(Theme, ContentPanel, ViewerMode, ViewerReverseDirection, ViewerDoublePage);
-    // TODO: Implement global setting mechanism for locale ...
-    HakuNeko.EventManager.LocaleChanged.Subscribe((_, code) => LocaleValue.set(L(code)));
+    HakuNeko.EventManager.LocaleChanged.Subscribe((_, locale) => Locale.set(locale));
 }
 
 /**
@@ -51,15 +50,7 @@ function CreateStore<T extends IValue>(setting: Setting<T>): Readable<T> {
     });
 }
 
-// TODO: Implement global setting mechanism for locale ...
-export const Locale = new Choice(
-    'locale',
-    'Language' as R,
-    'Select Application Langauge' as R,
-    CurrentLocale(),
-    ...Localizations
-);
-export const LocaleValue = writable<ILocale>(L(CurrentLocale()));
+export const Locale = writable<ILocale>(GetLocale());
 
 export const Theme = new Choice(
     Key.Theme,
@@ -108,33 +99,3 @@ export const ViewerDoublePage = new Check(
     false
 );
 export const ViewerDoublePageValue = CreateStore(ViewerDoublePage);
-
-/*
-    Some settings which are not added to the SettingManager scope in Initialize()
-    => volatile, will not be stored in persitant storage
-    => just for palying around in the frontend
-*/
-
-const DemoText = new Text(
-    'demo-text',
-    'Demo Username' as R,
-    'This is a demo text field' as R,
-    'john.smith'
-);
-export const DemoTextValue = CreateStore(DemoText);
-
-const DemoSecret = new Secret(
-    'demo-secret',
-    'Demo Password' as R,
-    'This is a demo secret field' as R,
-    'abc123'
-);
-export const DemoSecretValue = CreateStore(DemoSecret);
-
-const DemoNumeric = new Numeric(
-    'demo-numeric',
-    'Demo Rating' as R,
-    'This is a demo numeric field' as R,
-    5, 0, 10
-);
-export const DemoNumericValue = CreateStore(DemoNumeric);

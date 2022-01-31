@@ -1,5 +1,5 @@
 import type { IFrontendInfo, IFrontendModule } from '../frontend/IFrontend';
-import type { Code } from '../i18n/ILocale';
+import type { ILocale } from '../i18n/ILocale';
 
 export class Event<TSender, TArgs> {
 
@@ -22,5 +22,5 @@ export class Event<TSender, TArgs> {
 
 export class EventManager {
     public readonly FrontendLoaded: Event<IFrontendModule, IFrontendInfo> = new Event<IFrontendModule, IFrontendInfo>();
-    public readonly LocaleChanged: Event<void, Code> = new Event<void, Code>();
+    public readonly LocaleChanged: Event<void, ILocale> = new Event<void, ILocale>();
 }

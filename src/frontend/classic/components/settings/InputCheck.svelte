@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Toggle } from "carbon-components-svelte";
     import type { Check } from "../../../../engine/SettingsManager";
-    import { LocaleValue } from "../../SettingsStore";
+    import { Locale } from "../../SettingsStore";
     import SettingItem from "./SettingItem.svelte";
 
     export let setting: Check;
@@ -33,6 +33,6 @@
     }
 </script>
 
-<SettingItem labelText={$LocaleValue[setting.Label]()} helperText={$LocaleValue[setting.Description]()}>
+<SettingItem labelText={$Locale[setting.Label]()} helperText={$Locale[setting.Description]()}>
     <Toggle toggled={value} on:toggle={evt => setting.Value = evt.detail.toggled} />
 </SettingItem>

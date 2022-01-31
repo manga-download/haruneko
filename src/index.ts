@@ -1,5 +1,3 @@
-import { Initialize as InitBlacklist } from './engine/Blacklist';
-import { Initialize as InitFetchProvider } from './engine/FetchProvider';
 import { HakuNeko } from './engine/HakuNeko';
 import { FrontendController } from './frontend/FrontendController';
 import { WindowController } from './engine/WindowController';
@@ -18,16 +16,15 @@ async function Initialize() {
 
     const nwWindow = nw.Window.get();
     nwWindow.hide();
-    const nwSplash = await new Promise<any>(resolve => {
-        nw.Window.open(window.location.origin + '/splash.html', splashOptions, (win: any) => {
+    const nwSplash = await new Promise<NWJS_Helpers.win>(resolve => {
+        nw.Window.open(window.location.origin + '/splash.html', splashOptions, (win: NWJS_Helpers.win) => {
             win.focus();
             resolve(win);
         });
     });
 
-    InitBlacklist();
-    InitFetchProvider();
     window.HakuNeko = new HakuNeko();
+    await window.HakuNeko.Initialze();
     window.HakuNeko.EventManager.FrontendLoaded.Subscribe(HideSplashScreen);
     const timerHideSplashScreen = setTimeout(HideSplashScreen, 7500);
     window.Frontend = new FrontendController(new WindowController(nwWindow));

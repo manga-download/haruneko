@@ -1,16 +1,16 @@
 <script lang="ts">
-    import { Select, SelectItem } from "carbon-components-svelte";
-    import type { Choice } from "../../../../engine/SettingsManager";
+    import { NumberInput } from "carbon-components-svelte";
+    import type { Numeric } from "../../../../engine/SettingsManager";
     import { Locale } from "../../SettingsStore";
     import SettingItem from "./SettingItem.svelte";
 
-    export let setting: Choice;
-    let current: Choice;
-    let value: string;
+    export let setting: Numeric;
+    let current: Numeric;
+    let value: number;
 
     $: Update(setting);
 
-    function Update(setting: Choice) {
+    function Update(setting: Numeric) {
         if(current === setting) {
             return;
         }
@@ -24,7 +24,7 @@
         current = setting;
     }
 
-    function OnValueChangedCallback(sender: Choice, args: string) {
+    function OnValueChangedCallback(sender: Numeric, args: number) {
         if(sender && sender !== current) {
             sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
         } else {
@@ -34,9 +34,5 @@
 </script>
 
 <SettingItem labelText={$Locale[setting.Label]()} helperText={$Locale[setting.Description]()}>
-    <Select selected={value} on:change={evt => setting.Value = evt.detail}>
-        {#each setting.Options as option}
-            <SelectItem value={option.key} text={$Locale[option.label]()} />
-        {/each}
-    </Select>
+    <NumberInput value={value} min={setting.Min} max={setting.Max} on:change={event => setting.Value = event.detail} />
 </SettingItem>
