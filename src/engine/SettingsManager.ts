@@ -1,6 +1,7 @@
 import type { ResourceKey } from '../i18n/ILocale';
 import type { StorageController } from './StorageController';
 import { Event } from './EventManager';
+import { GetLocale } from '../i18n/Localization';
 
 const prefix = 'settings.';
 //const secret = 'E8463362D9B817D3956F054D01093EC6'; // MD5('simple.encryption.key.for.secret.settings')
@@ -196,6 +197,7 @@ class Settings implements Iterable<ISetting> {
                 this.settings[setting.ID] = setting;
             }
         }
+        this.Initialize = () => Promise.reject(new Error(GetLocale().SettingsManager_Settings_AlreadyInitializedError(this.scope)));
     }
 
     /**

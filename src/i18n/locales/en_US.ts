@@ -55,6 +55,8 @@ export const en_US: IResource = {
     Settings_Global_PostCommand: 'Post Command',
     Settings_Global_PostCommandInfo: '...',
 
+    SettingsManager_Settings_AlreadyInitializedError: 'An internal application error occured: The settings scope <{0}> must only be initialized once!',
+
     FetchProvider_FetchWindow_TimeoutError: 'The request could not be fulfilled within the given timeout!',
     FetchProvider_FetchWindow_CloudFlareError: 'The request failed due to the following CloudFlare Error: "{0}"',
     FetchProvider_FetchWindow_AlertCaptcha: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',

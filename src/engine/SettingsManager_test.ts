@@ -1,8 +1,10 @@
 import { mock, mockClear, mockFn } from 'jest-mock-extended';
-import type { ResourceKey } from '../i18n/ILocale';
-import { Check, Text, Secret, Numeric, Choice, SettingsManager, Path, Setting, IValue } from './SettingsManager';
+import type { HakuNeko } from '../engine/HakuNeko';
+import { Code, ResourceKey } from '../i18n/ILocale';
+import { Check, Text, Secret, Numeric, Choice, SettingsManager, Path, Setting, IValue, ISettings } from './SettingsManager';
 import type { StorageController } from './StorageController';
 import type { Event } from './EventManager';
+import { Key } from './SettingsGlobal';
 
 window.atob = function(encoded: string): string {
     return Buffer.from(encoded, 'base64').toString('utf-8');
@@ -11,6 +13,19 @@ window.atob = function(encoded: string): string {
 window.btoa = function(decoded: string): string {
     return Buffer.from(decoded, 'utf-8').toString('base64');
 };
+
+// Mocking globals
+{
+    const mockChoice = mock<Choice>({ Value: Code.en_US });
+
+    const mockSettigns = mock<ISettings>();
+    mockSettigns.Get.calledWith(Key.Language).mockReturnValue(mockChoice);
+
+    const mockSettingsManager = mock<SettingsManager>();
+    mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
+
+    window.HakuNeko = mock<HakuNeko>({ SettingsManager: mockSettingsManager });
+}
 
 describe('SettingsManager', () => {
 
@@ -77,6 +92,15 @@ describe('Settings', () => {
             expect([...testee].find(setting => setting.ID === '[ID]:Choice').Value).toBe('{STORED-CHOICE}');
             expect([...testee].find(setting => setting.ID === '[ID]:Path').Value).toBe('{STORED-PATH}');
             expect([...testee].find(setting => setting.ID === '[ID]:INVALID')).toBeUndefined();
+        });
+
+        it('Should only be called once', async () => {
+            const testee = new SettingsManager(mock<StorageController>()).OpenScope('test-scope');
+
+            await testee.Initialize();
+            await expect(testee.Initialize(...CreateSettings())).rejects.toThrow(/<settings\.test-scope>/);
+
+            expect([...testee]).toHaveLength(0);
         });
 
         it('Should be iterable through all settings', async () => {

@@ -55,6 +55,8 @@ export const de_DE: IResource = {
     Settings_Global_PostCommand: 'Post Command',
     Settings_Global_PostCommandInfo: '...',
 
+    SettingsManager_Settings_AlreadyInitializedError: 'Es ist ein interner Fehler in der Anwendung aufgetreten: Die Einstellungen <{0}> dürfen nur einmalig initialisiert werden!',
+
     FetchProvider_FetchWindow_TimeoutError: 'Die Anfrage konnte nicht innerhalb der angegebenen Zeitbeschränkung verarbeitet werden!',
     FetchProvider_FetchWindow_CloudFlareError: 'Die Anfrage wurde aufgrund des folgenden CloudFlare Fehlers abgebrochen: "{0}"',
     FetchProvider_FetchWindow_AlertCaptcha: 'Um automatisch fortzufahren ist es erforderlich den auf der Website angezeigten Captcha zu lösen (die Webseite darf nach der Lösung nicht geschlossen werde)!',

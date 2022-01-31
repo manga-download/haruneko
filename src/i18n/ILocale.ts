@@ -68,6 +68,8 @@ export enum ResourceKey {
     Settings_Global_PostCommand = 'Settings_Global_PostCommand',
     Settings_Global_PostCommandInfo = 'Settings_Global_PostCommandInfo',
 
+    SettingsManager_Settings_AlreadyInitializedError = 'SettingsManager_Settings_AlreadyInitializedError',
+
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
