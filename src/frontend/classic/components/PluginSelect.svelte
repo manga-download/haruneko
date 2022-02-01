@@ -10,7 +10,6 @@
     } from "carbon-components-svelte";
     import PlayFilledAlt24 from "carbon-icons-svelte/lib/PlayFilledAlt24";
     import ArrowUpRight24 from "carbon-icons-svelte/lib/ArrowUpRight24";
-    import Image16 from "carbon-icons-svelte/lib/Image16";
     import { createEventDispatcher } from "svelte";
 
     import Chip from "./Tag.svelte";
@@ -23,6 +22,7 @@
         return {
             id: item.Identifier,
             name: item.Title,
+            image: item.Icon,
             mediaContainer: item
         };
     }
@@ -162,7 +162,7 @@
         </Toolbar>
         <div class="plugin-row" slot="cell" let:cell>
             {#if cell.key === "image"}
-                <Image16 />
+                <img src={cell.value} alt="Logo" height="24" />
             {:else if cell.key === "overflow"}
                 <div class=" action-cell">
                     <Button

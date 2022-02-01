@@ -71,6 +71,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
         return this._settingsManager.OpenScope(this._settingsKey);
     }
 
+    public override get Icon(): string {
+        return this._scraper.Icon;
+    }
+
     public override get Tags(): Tag[] {
         return this._scraper.Tags;
     }

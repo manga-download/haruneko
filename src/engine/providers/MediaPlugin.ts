@@ -1,6 +1,7 @@
 import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { ISetting, ISettings, SettingsManager } from '../SettingsManager';
 import type { StorageController } from '../StorageController';
+import icon from '../../img/media.png';
 import type { Tag } from '../Tags';
 
 export type IMediaChild = IMediaContainer | IMediaItem;
@@ -14,11 +15,9 @@ export interface IMediaItem {
 
 export abstract class MediaItem implements IMediaItem {
 
-    public constructor(parent: IMediaContainer) {
-        this.Parent = parent;
+    public constructor(public readonly Parent: IMediaContainer) {
     }
 
-    public readonly Parent: IMediaContainer;
     public abstract get SourceURL(): string;
     public abstract Download(): Promise<void>;
     public abstract Abort(): Promise<void>;
@@ -29,6 +28,7 @@ export interface IMediaContainer {
     readonly Identifier: string;
     readonly Title: string;
     readonly Settings: ISettings;
+    readonly Icon: string;
     readonly Tags: Tag[];
     readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
@@ -41,18 +41,15 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
 
     protected _entries: T[] = [];
 
-    constructor(identifier: string, title: string, parent?: IMediaContainer) {
-        this.Parent = parent;
-        this.Identifier = identifier;
-        this.Title = title;
+    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: IMediaContainer) {
     }
-
-    public readonly Parent?: IMediaContainer;
-    public readonly Identifier: string;
-    public readonly Title: string;
 
     public get Settings(): ISettings {
         return null;
+    }
+
+    public get Icon(): string {
+        return icon;
     }
 
     public get Tags(): Tag[] {
@@ -90,8 +87,6 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
 
 export abstract class MediaScraper<T extends IMediaContainer> {
 
-    public readonly Identifier: string;
-    public readonly Title: string;
     public readonly URI: URL;
     public readonly Tags: Tag[];
     public readonly Settings: Record<string, ISetting> & Iterable<ISetting> = {
@@ -102,19 +97,19 @@ export abstract class MediaScraper<T extends IMediaContainer> {
         }
     };
 
-    public constructor(identifier: string, title: string, url: string, ...tags: Tag[]) {
-        this.Identifier = identifier;
-        this.Title = title;
+    public constructor(public readonly Identifier: string, public readonly Title: string, url: string, ...tags: Tag[]) {
         this.URI = new URL(url);
         this.Tags = tags;
     }
-
-    //readonly Icon: Image;
 
     public abstract CreatePlugin(storageController: StorageController, settingsManager: SettingsManager): T;
 
     public async Initialize(): Promise<void> {
         const request = new FetchRequest(this.URI.href);
         return FetchWindowScript(request, '');
+    }
+
+    public get Icon(): string {
+        return icon;
     }
 }

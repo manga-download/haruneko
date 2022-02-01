@@ -1,4 +1,5 @@
 import { Tags } from '../Tags';
+import icon from '../../img/logo.png';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { Numeric, Secret, Text } from '../SettingsManager';
@@ -14,6 +15,10 @@ export default class extends MangaScraper {
         this.Settings.throttle = new Numeric('throttle', R.Plugin_Settings_Throttling, R.Plugin_Settings_ThrottlingInfo, 0, 250, 5000);
         this.Settings.username = new Text('username', R.Plugin_SheepScanlations_Settings_Username, R.Plugin_SheepScanlations_Settings_UsernameInfo, '');
         this.Settings.password = new Secret('password', R.Plugin_SheepScanlations_Settings_Password, R.Plugin_SheepScanlations_Settings_PasswordInfo, '');
+    }
+
+    public override get Icon() {
+        return icon;
     }
 
     public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

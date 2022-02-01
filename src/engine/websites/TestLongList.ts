@@ -11,6 +11,10 @@ export default class extends DecoratableMangaScraper {
         super('test-long-list', `Test - Long List`, 'https://hakuneko.download/sample-websites/long-title-list/', Tags.Media.Comic, Tags.Source.Official, Tags.Rating.Safe, Tags.Language.Multilingual);
     }
 
+    public override get Icon() {
+        return 'https://hakuneko.download/favicon.ico';
+    }
+
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const request = new FetchRequest(this.URI + '/mangadex.json');
         const data = await FetchJSON<{ id: string; title: string; }[]>(request);
