@@ -35,6 +35,15 @@
         <SideNavMenu text="[RES:General]">
             <SettingsViewer settings={window.HakuNeko.SettingsManager.OpenScope(Scope)} />
         </SideNavMenu>
+        <SideNavMenu text="[RES:Trackers]">
+            {#each [...window.HakuNeko.PluginController.InfoTrackers].filter(tracker => [...tracker.Settings].length > 0) as tracker}
+                <SettingItem type="sub-menu">
+                    <SideNavMenu text={tracker.Title}>
+                        <SettingsViewer settings={tracker.Settings} />
+                    </SideNavMenu>
+                </SettingItem>
+            {/each}
+        </SideNavMenu>
         <SideNavMenu text="[RES:Websites]">
             <!-- TODO:
             Showing the settings from all websites maybe a bad idea, this is just for prototyping

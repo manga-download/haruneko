@@ -1,21 +1,32 @@
+import type { IMediaInfoTracker } from './providers/IMediaInfoTracker';
 import type { IMediaContainer } from './providers/MediaPlugin';
 import type { SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 import * as websites from './websites/_index';
+import { Kitsu } from './trackers/Kitsu';
 
 export interface IPluginController {
-    WebsitePlugins: IMediaContainer[];
+    readonly WebsitePlugins: IMediaContainer[];
+    readonly InfoTrackers: IMediaInfoTracker[];
 }
 
 export class PluginController implements IPluginController {
 
     private readonly _websites: IMediaContainer[];
+    private readonly _trackers: IMediaInfoTracker[];
 
     constructor(storageController: StorageController, settingsManager: SettingsManager) {
+        this._trackers = [
+            new Kitsu(settingsManager)
+        ];
         this._websites = Object.values(websites).map(website => new website().CreatePlugin(storageController, settingsManager) as IMediaContainer);
     }
 
     public get WebsitePlugins(): IMediaContainer[] {
         return this._websites;
+    }
+
+    public get InfoTrackers(): IMediaInfoTracker[] {
+        return this._trackers;
     }
 }
