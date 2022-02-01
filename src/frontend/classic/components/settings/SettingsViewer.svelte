@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Check, Choice, Numeric, Path, Secret, Text } from '../../../../engine/SettingsManager';
+    import { ISettings, Check, Choice, Numeric, Path, Secret, Text } from '../../../../engine/SettingsManager';
     import InputCheck from './InputCheck.svelte';
     import InputChoice from './InputChoice.svelte';
     import InputNumeric from './InputNumeric.svelte';
@@ -7,8 +7,7 @@
     import InputSecret from './InputSecret.svelte';
     import InputText from './InputText.svelte';
 
-    export let scope: string;
-    $: settings = HakuNeko.SettingsManager.OpenScope(scope);
+    export let settings: ISettings;
 </script>
 
 {#each [...settings] as setting}

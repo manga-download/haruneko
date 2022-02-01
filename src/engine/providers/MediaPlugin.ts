@@ -1,4 +1,6 @@
 import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import type { ISetting, ISettings, SettingsManager } from '../SettingsManager';
+import type { StorageController } from '../StorageController';
 import type { Tag } from '../Tags';
 
 export type IMediaChild = IMediaContainer | IMediaItem;
@@ -26,6 +28,7 @@ export interface IMediaContainer {
     readonly Parent?: IMediaContainer;
     readonly Identifier: string;
     readonly Title: string;
+    readonly Settings: ISettings;
     readonly Tags: Tag[];
     readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
@@ -36,23 +39,24 @@ export interface IMediaContainer {
 
 export abstract class MediaContainer<T extends IMediaChild> implements IMediaContainer {
 
-    protected _tags: Tag[];
-    protected _entries: T[];
+    protected _entries: T[] = [];
 
     constructor(identifier: string, title: string, parent?: IMediaContainer) {
         this.Parent = parent;
         this.Identifier = identifier;
         this.Title = title;
-        this._tags = [];
-        this._entries = [];
     }
 
     public readonly Parent?: IMediaContainer;
     public readonly Identifier: string;
     public readonly Title: string;
 
+    public get Settings(): ISettings {
+        return null;
+    }
+
     public get Tags(): Tag[] {
-        return this._tags;
+        return [];
     }
 
     public get Entries(): T[] {
@@ -90,6 +94,13 @@ export abstract class MediaScraper<T extends IMediaContainer> {
     public readonly Title: string;
     public readonly URI: URL;
     public readonly Tags: Tag[];
+    public readonly Settings: Record<string, ISetting> & Iterable<ISetting> = {
+        *[Symbol.iterator](): Iterator<ISetting> {
+            for(const setting of Object.values<ISetting>(this)) {
+                yield setting;
+            }
+        }
+    }
 
     public constructor(identifier: string, title: string, url: string, ...tags: Tag[]) {
         this.Identifier = identifier;
@@ -100,7 +111,7 @@ export abstract class MediaScraper<T extends IMediaContainer> {
 
     //readonly Icon: Image;
 
-    public abstract CreatePlugin(): T;
+    public abstract CreatePlugin(storageController: StorageController, settingsManager: SettingsManager): T;
 
     public async Initialize(): Promise<void> {
         const request = new FetchRequest(this.URI.href);

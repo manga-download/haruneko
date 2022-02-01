@@ -157,7 +157,7 @@ export class Path extends Setting<string> {
     }
 }
 
-type ISetting = Setting<IValue>;
+export type ISetting = Setting<IValue>;
 
 class Settings implements Iterable<ISetting> {
 

@@ -106,4 +106,14 @@ export const en_US: IResource = {
     Tags_Language_Turkish: '🇹🇷Turkish',
     Tags_Language_Vietnamese: '🇻🇳Vietnamese',
     Tags_Others: 'Others',
+
+    // [SECTION]: Plugins
+
+    Plugin_Settings_Throttling: 'Throttle Downloads [ms]',
+    Plugin_Settings_ThrottlingInfo: '...',
+
+    Plugin_SheepScanlations_Settings_Username: 'Username',
+    Plugin_SheepScanlations_Settings_UsernameInfo: 'Username for automatic account login to Sheep-Scanlations 😉',
+    Plugin_SheepScanlations_Settings_Password: 'Password',
+    Plugin_SheepScanlations_Settings_PasswordInfo: 'Password for automatic account login to Sheep-Scanlations 😉',
 };

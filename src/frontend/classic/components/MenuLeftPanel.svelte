@@ -33,19 +33,20 @@
 <SideNav bind:isOpen={isSideNavOpen}>
     <SideNavItems>
         <SideNavMenu text="[RES:General]">
-            <SettingsViewer scope={Scope} />
+            <SettingsViewer settings={window.HakuNeko.SettingsManager.OpenScope(Scope)} />
         </SideNavMenu>
         <SideNavMenu text="[RES:Websites]">
-            <SettingItem type="sub-menu">
-                <SideNavMenu text="Website1">
-                </SideNavMenu>
-            </SettingItem>
-            <SettingItem type="sub-menu">
-                <SideNavMenu text="Website2" />
-            </SettingItem>
-            <SettingItem type="sub-menu">
-                <SideNavMenu text="Website3" />
-            </SettingItem>
+            <!-- TODO:
+            Showing the settings from all websites maybe a bad idea, this is just for prototyping
+            A better approach could be a gear icon for each website which open its settings
+            -->
+            {#each [...window.HakuNeko.PluginController.WebsitePlugins].filter(plugin => [...plugin.Settings].length > 0) as plugin}
+                <SettingItem type="sub-menu">
+                    <SideNavMenu text={plugin.Title}>
+                        <SettingsViewer settings={plugin.Settings} />
+                    </SideNavMenu>
+                </SettingItem>
+            {/each}
         </SideNavMenu>
         <SideNavMenu text="[RES:UI]">
             <SettingsPanel />

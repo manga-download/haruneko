@@ -1,3 +1,6 @@
+import type { ISettings, SettingsManager } from '../SettingsManager';
+import type { StorageController } from '../StorageController';
+import type { Tag } from '../Tags';
 import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
 /**
@@ -7,8 +10,8 @@ import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
  */
 export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
 
-    public CreatePlugin(): MangaPlugin {
-        return new MangaPlugin(this);
+    public CreatePlugin(storageController: StorageController, settingsManager: SettingsManager): MangaPlugin {
+        return new MangaPlugin(storageController, settingsManager, this);
     }
 
     public abstract FetchManga(provider: MangaPlugin, url: string): Promise<Manga>;
@@ -42,28 +45,34 @@ export class DecoratableMangaScraper extends MangaScraper {
 
 export class MangaPlugin extends MediaContainer<Manga> {
 
+    private readonly _storageKey: string;
+    private readonly _settingsKey: string;
+    private readonly _storageController: StorageController;
+    private readonly _settingsManager: SettingsManager;
     private readonly _scraper: MangaScraper;
 
-    public constructor(scraper: MangaScraper) {
+    public constructor(storageController: StorageController, settingsManager: SettingsManager, scraper: MangaScraper) {
         super(scraper.Identifier, scraper.Title);
-        this._tags = scraper.Tags;
+        this._settingsKey = `plugin.${this.Identifier}`;
+        this._storageKey = `mangas.${this.Identifier}`;
+        this._storageController = storageController;
+        this._settingsManager = settingsManager;
         this._scraper = scraper;
+        this.Prepare();
     }
 
-    private get EntriesKey() {
-        return `mangas.${this.Identifier}`;
+    private async Prepare() {
+        this._settingsManager.OpenScope(this._settingsKey).Initialize(...this._scraper.Settings);
+        const mangas = await this._storageController.LoadPersistent<{ id: string, title: string }[]>(this._storageKey) || [];
+        this._entries = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
     }
 
-    public get Entries(): Manga[] {
-        if(this._entries.length === 0) {
-            // TODO: load entries from cache ...
-            const content = localStorage.getItem(this.EntriesKey) || '[]';
-            // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
-            //                  chrome.storage.local.get(this.EntriesKey, data => data[this.EntriesKey]);
-            const mangas = JSON.parse(content) as { id: string, title: string }[];
-            this._entries = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
-        }
-        return this._entries;
+    public override get Settings(): ISettings {
+        return this._settingsManager.OpenScope(this._settingsKey);
+    }
+
+    public override get Tags(): Tag[] {
+        return this._scraper.Tags;
     }
 
     public async Initialize(): Promise<void> {
@@ -83,17 +92,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
     public async Update(): Promise<void> {
         await this.Initialize();
         this._entries = await this._scraper.FetchMangas(this);
-        // TODO: store entries in cache ...
         const mangas = this._entries.map(entry => {
-            return {
-                id: entry.Identifier,
-                title: entry.Title
-            };
+            return { id: entry.Identifier, title: entry.Title };
         });
-        // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
-        //                  chrome.storage.local.set({ this.EntriesKey: mangas }, () => {});
-        const content = JSON.stringify(mangas);
-        localStorage.setItem(this.EntriesKey, content);
+        await this._storageController.SavePersistent(this._storageKey, mangas)
     }
 }
 

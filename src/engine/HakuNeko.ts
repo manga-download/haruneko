@@ -10,10 +10,10 @@ import { SettingsManager } from './SettingsManager';
 
 export class HakuNeko {
 
-    private readonly _storageController: StorageController = new StorageController();
     private readonly _eventManager: EventManager = new EventManager();
-    private readonly _pluginController: PluginController = new PluginController();
+    private readonly _storageController: StorageController = new StorageController();
     private readonly _settingsManager: SettingsManager = new SettingsManager(this._storageController);
+    private readonly _pluginController: PluginController = new PluginController(this._storageController, this._settingsManager);
     private readonly _bookmarkPlugin: BookmarkPlugin = new BookmarkPlugin(this._storageController, this._pluginController);
 
     public async Initialze(): Promise<void> {

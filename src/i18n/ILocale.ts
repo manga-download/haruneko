@@ -119,4 +119,14 @@ export enum ResourceKey {
     Tags_Language_Turkish = 'Tags_Language_Turkish',
     Tags_Language_Vietnamese = 'Tags_Language_Vietnamese',
     Tags_Others = 'Tags_Others',
+
+    // [SECTION]: Plugins
+
+    Plugin_Settings_Throttling = 'Plugin_Settings_Throttling',
+    Plugin_Settings_ThrottlingInfo = 'Plugin_Settings_ThrottlingInfo',
+
+    Plugin_SheepScanlations_Settings_Username = 'Plugin_SheepScanlations_Settings_Username',
+    Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
+    Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
+    Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
 }

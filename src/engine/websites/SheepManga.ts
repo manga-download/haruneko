@@ -1,6 +1,8 @@
 import { Tags } from '../Tags';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { Numeric, Secret, Text } from '../SettingsManager';
+import { ResourceKey as R } from '../../i18n/ILocale';
 
 /**
  * Sample Website Implementation for Developer Testing
@@ -9,6 +11,9 @@ export default class extends MangaScraper {
 
     public constructor() {
         super('sheep-scanlations', `Sheep's Awesome Mangas`, 'https://hakuneko.download/sample-websites/sheep-scanlations/', Tags.Media.Comic, Tags.Source.Official, Tags.Rating.Safe, Tags.Language.Multilingual);
+        this.Settings.throttle = new Numeric('throttle', R.Plugin_Settings_Throttling, R.Plugin_Settings_ThrottlingInfo, 0, 250, 5000);
+        this.Settings.username = new Text('username', R.Plugin_SheepScanlations_Settings_Username, R.Plugin_SheepScanlations_Settings_UsernameInfo, '');
+        this.Settings.password = new Secret('password', R.Plugin_SheepScanlations_Settings_Password, R.Plugin_SheepScanlations_Settings_PasswordInfo, '');
     }
 
     public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
