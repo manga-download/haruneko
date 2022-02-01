@@ -1,73 +1,108 @@
 import type { PluginController } from '../PluginController';
 import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaPlugin';
 import type { StorageController } from '../StorageController';
+import { Event } from '../../engine/EventManager';
+import type { IMediaInfoTracker } from './IMediaInfoTracker';
 
-const uid = 'engine.bookmarks';
+const storageID = 'bookmarks';
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
-    private readonly storage: StorageController;
-    private readonly plugins: PluginController;
+    public readonly EntriesUpdated: Event<typeof this, Bookmark[]> = new Event<typeof this, Bookmark[]>();
 
-    constructor(storage: StorageController, plugins: PluginController) {
+    constructor(private readonly storage: StorageController, private readonly plugins: PluginController) {
         super(null, null);
-        this.storage = storage;
-        this.plugins = plugins;
+        this.Load();
     }
 
-    private Deserialize(bookmark: SerializedBookmark): Bookmark {
-        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === bookmark.PluginID);
-        return new Bookmark(parent, bookmark.MediaID, bookmark.Title);
+    private OnTrackerChangedCallback(): void {
+        this.EntriesUpdated.Dispatch(this, this.Entries);
+        this.Save();
+    }
+
+    private Deserialize(serialized: BookmarkSerialized): Bookmark {
+        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID);
+        const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
+        const bookmark = new Bookmark(new Date(serialized.Timestamp), parent, serialized.Media.EntryID, serialized.Title, tracker, serialized.Info.EntryID);
+        bookmark.TrackerChanged.Subscribe(this.OnTrackerChangedCallback.bind(this));
+        return bookmark;
     }
 
     private async Load() {
-        const bookmarks = await this.storage.LoadPersistent<SerializedBookmark[]>(uid);
+        const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(storageID);
         this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
+        this.EntriesUpdated.Dispatch(this, this.Entries);
     }
 
-    private Serialize(bookmark: IMediaContainer): SerializedBookmark {
+    private Serialize(bookmark: Bookmark): BookmarkSerialized {
         return {
-            PluginID: bookmark.Parent.Identifier,
-            MediaID: bookmark.Identifier,
-            Title: bookmark.Title
+            Timestamp: bookmark.Created.getTime(),
+            Title: bookmark.Title,
+            Media: {
+                ProviderID: bookmark.Parent.Identifier,
+                EntryID: bookmark.Identifier
+            },
+            Info: {
+                ProviderID: bookmark.Tracker?.Identifier,
+                EntryID: bookmark.InfoID
+            }
         };
     }
 
     private async Save(): Promise<void> {
         const bookmarks = this._entries.map(bookmark => this.Serialize(bookmark));
-        await this.storage.SavePersistent<SerializedBookmark[]>(uid, bookmarks);
+        await this.storage.SavePersistent<BookmarkSerialized[]>(storageID, bookmarks);
     }
 
     public async Add(entry: IMediaContainer) {
-        const bookmark = new Bookmark(entry.Parent, entry.Identifier, entry.Title);
-        this._entries.push(bookmark);
+        // TODO: prevent adding duplicates ...
+        const bookmark = new Bookmark(new Date(), entry.Parent, entry.Identifier, entry.Title);
+        bookmark.TrackerChanged.Subscribe(this.OnTrackerChangedCallback.bind(this));
+        this._entries.unshift(bookmark);
         // TODO: Sort bookmarks, or is this a frontend job?
-        // TODO: Dispatch event?
+        this.EntriesUpdated.Dispatch(this, this.Entries);
         await this.Save();
     }
 
     public async Remove(bookmark: Bookmark) {
         this._entries = this._entries.filter(entry => entry !== bookmark);
-        // TODO: Dispatch event?
+        this.EntriesUpdated.Dispatch(this, this.Entries);
         await this.Save();
     }
 
+    /*
     public override async Initialize(): Promise<void> {
         await super.Initialize();
         await this.Load();
-        // TODO: Dispatch event?
     }
+    */
 
     public async Update(): Promise<void> {
         await this.Load();
-        // TODO: Dispatch event?
     }
 }
 
 export class Bookmark extends MediaContainer<IMediaChild> {
 
-    constructor(parent: IMediaContainer, identifier: string, title: string) {
-        super(identifier, title, parent);
+    public readonly TrackerChanged: Event<typeof this, IMediaInfoTracker> = new Event<typeof this, IMediaInfoTracker>();
+
+    constructor(
+        public readonly Created: Date,
+        parent: IMediaContainer,
+        MediaID: string,
+        title: string,
+        private tracker?: IMediaInfoTracker,
+        private infoID?: string
+    ) {
+        super(MediaID, title, parent);
+    }
+
+    public get Tracker(): IMediaInfoTracker {
+        return this.tracker;
+    }
+
+    public get InfoID(): string {
+        return this.infoID;
     }
 
     public async Update(): Promise<void> {
@@ -75,10 +110,22 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         await entry.Update();
         this._entries = entry.Entries;
     }
+
+    public LinkTracker(tracker: IMediaInfoTracker, infoID: string) {
+        this.tracker = tracker;
+        this.infoID = infoID;
+        this.TrackerChanged.Dispatch(this, tracker);
+    }
 }
 
-type SerializedBookmark = {
-    PluginID: string;
-    MediaID: string;
-    Title: string;
+type BookmarkSerialized = {
+    Timestamp: number,
+    Title: string,
+    Media: Provider,
+    Info: Provider
 };
+
+type Provider = {
+    ProviderID: string,
+    EntryID: string
+}
