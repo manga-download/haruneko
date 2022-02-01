@@ -18,7 +18,6 @@ export class AnimePlugin extends MediaContainer<Anime> {
 
     public constructor(scraper: AnimeScraper) {
         super(scraper.Identifier, scraper.Title);
-        this._tags = scraper.Tags;
         this._scraper = scraper;
     }
 

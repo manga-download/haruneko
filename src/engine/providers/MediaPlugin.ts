@@ -100,7 +100,7 @@ export abstract class MediaScraper<T extends IMediaContainer> {
                 yield setting;
             }
         }
-    }
+    };
 
     public constructor(identifier: string, title: string, url: string, ...tags: Tag[]) {
         this.Identifier = identifier;

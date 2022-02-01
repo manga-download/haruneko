@@ -95,7 +95,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
         const mangas = this._entries.map(entry => {
             return { id: entry.Identifier, title: entry.Title };
         });
-        await this._storageController.SavePersistent(this._storageKey, mangas)
+        await this._storageController.SavePersistent(this._storageKey, mangas);
     }
 }
 
