@@ -6,6 +6,7 @@
         InlineLoading,
     } from "carbon-components-svelte";
     import PlugFilled16 from "carbon-icons-svelte/lib/PlugFilled16";
+    import Fuse from "fuse.js";
 
     import { fade } from "svelte/transition";
 
@@ -26,6 +27,12 @@
 
     let medias: IMediaContainer[] = [];
     let filteredmedias: IMediaContainer[] = [];
+    let fuse = new Fuse(medias, {
+      keys: ["Title"],
+      findAllMatches: true,
+      ignoreLocation: true,
+      minMatchCharLength: 1,
+    });
 
     let selectedPlugin: IMediaContainer | undefined;
     let selectedMedia: IMediaContainer | undefined;
@@ -43,20 +50,18 @@
     //On: PluginChange
     $: {
         medias = (selectedPlugin?.Entries as IMediaContainer[]) ?? [];
+        fuse = new Fuse(medias, {
+          keys: ["Title"],
+          findAllMatches: true,
+          ignoreLocation: true,
+          minMatchCharLength: 1,
+        });
         selectedMedia = undefined;
         update = selectedPlugin?.Update();
     }
 
     let mediaNameFilter = "";
-    $: {
-        filteredmedias = medias.filter((item) => {
-            return (
-                item?.Parent?.Title?.toLowerCase().indexOf(
-                    mediaNameFilter.toLowerCase()
-                ) !== -1
-            );
-        });
-    }
+    $: filteredmedias = (mediaNameFilter === "") ? medias : fuse.search(mediaNameFilter).map((item) => item.item);
 
     let isPluginModalOpen = false;
 
