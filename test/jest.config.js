@@ -4,6 +4,9 @@ export default {
     testMatch: [ '**/*[_.](test|spec).[jt]s(x)?' ],
     testEnvironment: 'jest-environment-jsdom',
     reporters: [ 'default', 'jest-junit' ],
+    moduleNameMapper: {
+        '\\.(png|jpg|webp|ico|gif)$': '<rootDir>/img/mock.ts'
+    },
     globals: {
         'ts-jest': {
             tsconfig: {
