@@ -111,7 +111,7 @@
 <style>
     @font-face {
         font-family: 'BabelStoneFlags';
-        src: url('/static/BabelStoneFlags.woff2') format('woff');
+        src: url('/BabelStoneFlags.woff2') format('woff');
         font-style: normal;
     }
     :global(::-webkit-scrollbar) {
