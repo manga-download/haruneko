@@ -1,9 +1,8 @@
 import type { ISettings, SettingsManager } from '../SettingsManager';
-import type { StorageController } from '../StorageController';
+import { StorageController, Store } from '../StorageController';
 import type { Tag } from '../Tags';
 import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
-const storageKeyPrefix = 'mangas.';
 const settingsKeyPrefix = 'plugin.';
 
 /**
@@ -58,7 +57,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
 
     private async Prepare() {
         this._settings.Initialize(...this.scraper.Settings);
-        const mangas = await this.storageController.LoadPersistent<{ id: string, title: string }[]>(storageKeyPrefix + this.Identifier) || [];
+        const mangas = await this.storageController.LoadPersistent<{ id: string, title: string }[]>(Store.MediaLists, this.Identifier) || [];
         this._entries = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
     }
 
@@ -94,7 +93,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
         const mangas = this._entries.map(entry => {
             return { id: entry.Identifier, title: entry.Title };
         });
-        await this.storageController.SavePersistent(storageKeyPrefix + this.Identifier, mangas);
+        await this.storageController.SavePersistent(mangas, Store.MediaLists, this.Identifier);
     }
 }
 

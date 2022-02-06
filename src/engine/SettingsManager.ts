@@ -1,9 +1,8 @@
 import type { ResourceKey } from '../i18n/ILocale';
-import type { StorageController } from './StorageController';
+import { StorageController, Store } from './StorageController';
 import { Event } from './EventManager';
 import { GetLocale } from '../i18n/Localization';
 
-const prefix = 'settings.';
 //const secret = 'E8463362D9B817D3956F054D01093EC6'; // MD5('simple.encryption.key.for.secret.settings')
 
 function Encrypt(decrypted: string) {
@@ -161,13 +160,9 @@ export type ISetting = Setting<IValue>;
 
 class Settings implements Iterable<ISetting> {
 
-    private readonly scope: string;
-    private readonly storage: StorageController;
     private readonly settings: Record<string, ISetting> = {};
 
-    constructor(scope: string, storage: StorageController) {
-        this.scope = prefix + scope;
-        this.storage = storage;
+    constructor(private readonly scope: string, private readonly storage: StorageController) {
     }
 
     public readonly ValueChanged: Event<ISetting, IValue> = new Event<ISetting, IValue>();
@@ -181,7 +176,7 @@ class Settings implements Iterable<ISetting> {
         for(const key in this.settings) {
             data[key] = this.settings[key].value;
         }
-        await this.storage.SavePersistent(this.scope, data);
+        await this.storage.SavePersistent(data, Store.Settings, this.scope);
     }
 
     /**
@@ -189,7 +184,7 @@ class Settings implements Iterable<ISetting> {
      */
     public async Initialize(...settings: ISetting[]): Promise<void> {
         // TODO: May disable Initialize() to prevent breaking existing settings?
-        const data = await this.storage.LoadPersistent<Record<string, IValue>>(this.scope);
+        const data = await this.storage.LoadPersistent<Record<string, IValue>>(Store.Settings, this.scope);
         for(const setting of settings) {
             if(!this.settings[setting.ID]) {
                 setting.value = data && data[setting.ID] ? data[setting.ID] : setting.Value;

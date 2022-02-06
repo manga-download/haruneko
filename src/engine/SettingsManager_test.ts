@@ -2,7 +2,7 @@ import { mock, mockClear, mockFn } from 'jest-mock-extended';
 import type { HakuNeko } from '../engine/HakuNeko';
 import { Code, ResourceKey } from '../i18n/ILocale';
 import { Check, Text, Secret, Numeric, Choice, SettingsManager, Path, Setting, IValue, ISettings } from './SettingsManager';
-import type { StorageController } from './StorageController';
+import { StorageController, Store } from './StorageController';
 import type { Event } from './EventManager';
 import { Key } from './SettingsGlobal';
 
@@ -98,7 +98,7 @@ describe('Settings', () => {
             const testee = new SettingsManager(mock<StorageController>()).OpenScope('test-scope');
 
             await testee.Initialize();
-            await expect(testee.Initialize(...CreateSettings())).rejects.toThrow(/<settings\.test-scope>/);
+            await expect(testee.Initialize(...CreateSettings())).rejects.toThrow(/<test-scope>/);
 
             expect([...testee]).toHaveLength(0);
         });
@@ -126,7 +126,7 @@ describe('Settings', () => {
             for(const setting of settings) {
                 setting.ValueChanged.Dispatch(setting as never, setting.Value as never);
                 expect(storage.SavePersistent).toBeCalledTimes(1);
-                expect(storage.SavePersistent).toBeCalledWith('settings.test-scope', expected);
+                expect(storage.SavePersistent).toBeCalledWith(expected, Store.Settings, 'test-scope');
                 mockClear(storage);
             }
         });
