@@ -1,5 +1,5 @@
 import type { IMediaInfoTracker } from './providers/IMediaInfoTracker';
-import type { IMediaContainer } from './providers/MediaPlugin';
+import type { IMediaContainer, MediaScraper } from './providers/MediaPlugin';
 import type { SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 import * as websites from './websites/_index';
@@ -19,7 +19,7 @@ export class PluginController implements IPluginController {
         this._trackers = [
             new Kitsu(settingsManager)
         ];
-        this._websites = Object.values(websites).map(website => new website().CreatePlugin(storageController, settingsManager) as IMediaContainer);
+        this._websites = Object.values(websites).map((website: new() => unknown) => (new website() as MediaScraper<IMediaContainer>).CreatePlugin(storageController, settingsManager) as IMediaContainer);
     }
 
     public get WebsitePlugins(): IMediaContainer[] {
