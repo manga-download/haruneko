@@ -1,10 +1,8 @@
 import type { PluginController } from '../PluginController';
 import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaPlugin';
-import type { StorageController } from '../StorageController';
+import { StorageController, Store } from '../StorageController';
 import { Event } from '../../engine/EventManager';
 import type { IMediaInfoTracker } from './IMediaInfoTracker';
-
-const storageID = 'bookmarks';
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
@@ -15,28 +13,38 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         this.Load();
     }
 
-    private OnTrackerChangedCallback(): void {
+    private OnBookmarkChangedCallback(sender: Bookmark): void {
         this.EntriesUpdated.Dispatch(this, this.Entries);
-        this.Save();
+        this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(sender), Store.Bookmarks, sender.StorageKey);
     }
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
         const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID);
         const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
-        const bookmark = new Bookmark(new Date(serialized.Timestamp), parent, serialized.Media.EntryID, serialized.Title, tracker, serialized.Info.EntryID);
-        bookmark.TrackerChanged.Subscribe(this.OnTrackerChangedCallback.bind(this));
+        const bookmark = new Bookmark(
+            new Date(serialized.Created),
+            new Date(serialized.Updated),
+            parent,
+            serialized.Media.EntryID,
+            serialized.Title,
+            serialized.LastKnownEntries,
+            tracker,
+            serialized.Info.EntryID
+        );
+        bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
         return bookmark;
     }
 
     private async Load() {
-        const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(storageID);
+        const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
         this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
         this.EntriesUpdated.Dispatch(this, this.Entries);
     }
 
     private Serialize(bookmark: Bookmark): BookmarkSerialized {
         return {
-            Timestamp: bookmark.Created.getTime(),
+            Created: bookmark.Created.getTime(),
+            Updated: bookmark.Updated.getTime(),
             Title: bookmark.Title,
             Media: {
                 ProviderID: bookmark.Parent.Identifier,
@@ -45,29 +53,27 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             Info: {
                 ProviderID: bookmark.Tracker?.Identifier,
                 EntryID: bookmark.InfoID
-            }
+            },
+            LastKnownEntries: bookmark.LastKnownEntries,
         };
     }
 
-    private async Save(): Promise<void> {
-        const bookmarks = this._entries.map(bookmark => this.Serialize(bookmark));
-        await this.storage.SavePersistent<BookmarkSerialized[]>(storageID, bookmarks);
-    }
-
     public async Add(entry: IMediaContainer) {
-        // TODO: prevent adding duplicates ...
-        const bookmark = new Bookmark(new Date(), entry.Parent, entry.Identifier, entry.Title);
-        bookmark.TrackerChanged.Subscribe(this.OnTrackerChangedCallback.bind(this));
+        if(this.Entries.some(bookmark => bookmark.Identifier === entry.Identifier)) {
+            // TODO: Keep duplicate bookmark, or replace with new one?
+            return;
+        }
+        const bookmark = new Bookmark(new Date(), new Date(), entry.Parent, entry.Identifier, entry.Title);
+        bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
         this._entries.unshift(bookmark);
-        // TODO: Sort bookmarks, or is this a frontend job?
         this.EntriesUpdated.Dispatch(this, this.Entries);
-        await this.Save();
+        await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
     }
 
     public async Remove(bookmark: Bookmark) {
         this._entries = this._entries.filter(entry => entry !== bookmark);
         this.EntriesUpdated.Dispatch(this, this.Entries);
-        await this.Save();
+        await this.storage.RemovePersistent(Store.Bookmarks, bookmark.StorageKey);
     }
 
     /*
@@ -82,19 +88,57 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 }
 
+/**
+ * A bookmark is more or less a proxy/facade for a media container.
+ */
 export class Bookmark extends MediaContainer<IMediaChild> {
 
-    public readonly TrackerChanged: Event<typeof this, IMediaInfoTracker> = new Event<typeof this, IMediaInfoTracker>();
+    public readonly Changed: Event<typeof this, void> = new Event<typeof this, void>();
 
     constructor(
         public readonly Created: Date,
+        public Updated: Date,
         parent: IMediaContainer,
         MediaID: string,
         title: string,
+        public readonly LastKnownEntries?: EntryHashes,
         private tracker?: IMediaInfoTracker,
         private infoID?: string
     ) {
         super(MediaID, title, parent);
+        this.LastKnownEntries = this.LastKnownEntries || {
+            IdentifierHashes: [],
+            TitleHashes: []
+        };
+    }
+
+    private Hash(text: string): string {
+        return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
+    }
+
+    public get StorageKey(): string {
+        return `${this.Parent.Identifier} :: ${this.Identifier}`;
+    }
+
+    /**
+     * Get the origin entry related to this bookmark from the shared parent.
+     * If the origin entry does not yet exist, it will be created and added to the entries of the parent for future access.
+     * NOTE: The parent may overwrite the added entry whenever its entries are updated (e.g. Update() call).
+     */
+    private get Origin(): IMediaContainer {
+        let entry = (this.Parent.Entries as IMediaContainer[]).find(entry => entry.Identifier === this.Identifier);
+        if(!entry) {
+            entry = this.Parent.CreateEntry(this.Identifier, this.Title) as IMediaContainer;
+            this.Parent.Entries.push(entry);
+        }
+        return entry;
+    }
+
+    /**
+     * Directly pass-through the entries from the shared parent.
+     */
+    public override get Entries(): IMediaContainer[] {
+        return this.Origin.Entries as IMediaContainer[];
     }
 
     public get Tracker(): IMediaInfoTracker {
@@ -105,25 +149,62 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         return this.infoID;
     }
 
+    /**
+     * Update the entries of the origin related to this bookmark.
+     */
     public async Update(): Promise<void> {
-        const entry = this.Parent.CreateEntry(this.Identifier, this.Title) as IMediaContainer;
-        await entry.Update();
-        this._entries = entry.Entries;
+        await this.Origin.Update();
+    }
+
+    /**
+     * Memorize the current list of entries as list of last known entries,
+     * so future requests with {@link GetNewEntries} will be based on these known entries.
+     */
+    public async ApplyEntriesAsKnownEntries(): Promise<void> {
+        const entries = this.Entries;
+        if(entries.length > 0) {
+            this.Updated = new Date();
+            this.LastKnownEntries.IdentifierHashes = entries.map(entry => this.Hash(entry.Identifier));
+            this.LastKnownEntries.TitleHashes = entries.map(entry => this.Hash(entry.Title));
+            this.Changed.Dispatch(this);
+        } else {
+            // TODO: No entries available, maybe website is broken or entries not yet updated?
+        }
     }
 
     public LinkTracker(tracker: IMediaInfoTracker, infoID: string) {
+        this.Updated = new Date();
         this.tracker = tracker;
         this.infoID = infoID;
-        this.TrackerChanged.Dispatch(this, tracker);
+        this.Changed.Dispatch(this);
+    }
+
+    /**
+     * {@link Update} the current list of entries from the website and determine which entries are not yet in the list of last known entries.
+     */
+    public async GetNewEntries(): Promise<IMediaContainer[]> {
+        await this.Update();
+        return this.Entries.filter(entry => {
+            const isIdentifierUnknown = !this.LastKnownEntries.IdentifierHashes.includes(this.Hash(entry.Identifier));
+            const isTitleUnknown = !this.LastKnownEntries.TitleHashes.includes(this.Hash(entry.Title));
+            return isIdentifierUnknown && isTitleUnknown;
+        });
     }
 }
 
 type BookmarkSerialized = {
-    Timestamp: number,
+    Created: number,
+    Updated: number,
     Title: string,
     Media: Provider,
-    Info: Provider
+    Info: Provider,
+    LastKnownEntries: EntryHashes,
 };
+
+type EntryHashes = {
+    IdentifierHashes: string[],
+    TitleHashes: string[]
+}
 
 type Provider = {
     ProviderID: string,
