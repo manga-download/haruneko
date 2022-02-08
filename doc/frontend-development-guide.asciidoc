@@ -106,11 +106,12 @@ At this point our frontend is added to HakuNeko, but currently it is still empty
 To build the UI there are various options from which one can be choosen:
 
 - Svelte
-- VUE
+- Vue
 - React
+- Web Components (e.g. Lit)
 - Vanilla JS (you will not doing this 😅)
 
-⚠ When choosing a framework, the whole frontend must be developed in this framework. It will not be possible to mix hybrid components (e.g. Svelte + VUE)!
+⚠ When choosing a framework, the whole frontend must be developed in this framework. It will not be possible to mix hybrid components (e.g. Svelte + Vue)!
 
 #### Using Svelte
 
@@ -134,7 +135,7 @@ Create a svelte component such as `/src/frontend/sheep-ui/App.svelte`, presentin
         text-align: center;
         background-color: lightgrey;
     }
-    button{
+    button {
         padding: 0.5em;
     }
 </style>
@@ -171,7 +172,7 @@ export default new SampleSvelte();
 ```
 ====
 
-#### Using VUE
+#### Using Vue
 
 Create a vue component such as `/src/frontend/sheep-ui/App.vue`, presenting the entry point for our frontend.
 
@@ -195,7 +196,7 @@ Create a vue component such as `/src/frontend/sheep-ui/App.vue`, presenting the 
         text-align: center;
         background-color: lightgrey;
     }
-    button{
+    button {
         padding: 0.5em;
     }
 </style>
@@ -303,6 +304,76 @@ class SampleReact implements IFrontendModule {
 }
 
 export default new SampleReact();
+```
+====
+
+#### Using Lit
+
+Create a web component such as `/src/frontend/sheep-ui/App.ts`, presenting the entry point for our frontend.
+
+.**App.ts**
+[%collapsible%]
+====
+```ts
+import { LitElement, html, css } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+
+@customElement('lit-app')
+export default class App extends LitElement {
+
+    static styles = [
+        css`
+            #container {
+                height: 100%;
+                padding: 2em;
+                text-align: center;
+                background-color: lightgrey;
+            }
+            button {
+                padding: 0.5em;
+            }
+        `
+    ];
+
+    @state()
+    private count = 0;
+
+    private increment(): void {
+        this.count++;
+    }
+
+    render() {
+        return html`
+            <div id="container">
+                <h3>Hello Lit Button</h3>
+                <button @click=${this.increment}>
+                    Clicked ${this.count} ${ this.count === 1 ? 'time' : 'times' }
+                </button>
+            </div>
+        `;
+    }
+}
+```
+====
+
+Modify the frontend to load the vue app component.
+
+.**Frontend.ts**
+[%collapsible%]
+====
+```typescript
+import type { IWindowController } from '../../engine/WindowController';
+import type { IFrontendModule } from '../IFrontend';
+import './App';
+
+class SampleLit implements IFrontendModule {
+    async Render(root: HTMLElement, windowController: IWindowController): Promise<void> {
+        const app = document.createElement('lit-app');
+        root.replaceWith(app);
+    }
+}
+
+export default new SampleLit();
 ```
 ====
 
