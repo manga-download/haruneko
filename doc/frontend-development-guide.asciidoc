@@ -356,7 +356,7 @@ export default class App extends LitElement {
 ```
 ====
 
-Modify the frontend to load the vue app component.
+Modify the frontend to load the web component.
 
 .**Frontend.ts**
 [%collapsible%]
