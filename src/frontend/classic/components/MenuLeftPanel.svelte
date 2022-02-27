@@ -15,12 +15,20 @@
     import Debug16 from 'carbon-icons-svelte/lib/Debug16';
     import Image16 from 'carbon-icons-svelte/lib/Image16';
     import Location16 from 'carbon-icons-svelte/lib/Location16';
-    import SettingItem from './settings/SettingItem.svelte';
-    import SettingsPanel from './settings/SettingsPanel.svelte';
-    import SettingsViewer from './settings/SettingsViewer.svelte';
-    import { Scope } from '../../../engine/SettingsGlobal';
+    import Settings24 from 'carbon-icons-svelte/lib/Settings24';
+    import SettingsAdjust20 from 'carbon-icons-svelte/lib/SettingsAdjust20';
+    import TaskSettings20 from 'carbon-icons-svelte/lib/TaskSettings20';
+    import SettingsView20 from 'carbon-icons-svelte/lib/SettingsView20';
+    import NetworkOverlay24 from 'carbon-icons-svelte/lib/NetworkOverlay24';
+    import ContentDeliveryNetwork24 from 'carbon-icons-svelte/lib/ContentDeliveryNetwork24';
+
+    import SettingsMenu from './settings/SettingsModal.svelte';
 
     export let isSideNavOpen = false;
+    //Settings Modal
+    let settingsSelectedTabs = 0;
+    let settingsPreselectedPlugin;
+    let isSettingsModalOpen = false;
 
     function openExternalLink(url: string) {
         // TODO: Frontend must not use framework globals such as `nw` or `chrome`
@@ -30,36 +38,74 @@
     }
 </script>
 
+<SettingsMenu
+    bind:isPluginModalOpen={isSettingsModalOpen}
+    selectedTab={settingsSelectedTabs}
+    preselectedPlugin={settingsPreselectedPlugin}
+/>
 <SideNav bind:isOpen={isSideNavOpen}>
     <SideNavItems>
-        <SideNavMenu text="[RES:General]">
-            <SettingsViewer settings={window.HakuNeko.SettingsManager.OpenScope(Scope)} />
+        <SideNavMenu text="[RES:Settings]" icon={Settings24}>
+            <SideNavLink
+                text="[RES:General]"
+                icon={SettingsAdjust20}
+                on:click={() => {
+                    settingsPreselectedPlugin = undefined;
+                    settingsSelectedTabs = 0;
+                    isSettingsModalOpen = true;
+                }}
+            />
+            <SideNavLink
+                text="[RES:UI]"
+                icon={SettingsView20}
+                on:click={() => {
+                    settingsPreselectedPlugin = undefined;
+                    settingsSelectedTabs = 1;
+                    isSettingsModalOpen = true;
+                }}
+            />
+            <SideNavLink
+                text="[RES:Trackers]"
+                icon={TaskSettings20}
+                on:click={() => {
+                    settingsPreselectedPlugin = undefined;
+                    settingsSelectedTabs = 2;
+                    isSettingsModalOpen = true;
+                }}
+            />
+            <SideNavLink
+                text="[RES:Network]"
+                icon={NetworkOverlay24}
+                on:click={() => {
+                    settingsPreselectedPlugin = undefined;
+                    settingsSelectedTabs = 3;
+                    isSettingsModalOpen = true;
+                }}
+            />
         </SideNavMenu>
-        <SideNavMenu text="[RES:Trackers]">
-            {#each [...window.HakuNeko.PluginController.InfoTrackers].filter(tracker => [...tracker.Settings].length > 0) as tracker}
-                <SettingItem type="sub-menu">
-                    <SideNavMenu text={tracker.Title}>
-                        <SettingsViewer settings={tracker.Settings} />
-                    </SideNavMenu>
-                </SettingItem>
-            {/each}
-        </SideNavMenu>
-        <SideNavMenu text="[RES:Websites]">
+        <SideNavMenu text="[RES:Websites]" icon={ContentDeliveryNetwork24}>
             <!-- TODO:
             Showing the settings from all websites maybe a bad idea, this is just for prototyping
             A better approach could be a gear icon for each website which open its settings
             -->
-            {#each [...window.HakuNeko.PluginController.WebsitePlugins].filter(plugin => [...plugin.Settings].length > 0) as plugin}
-                <SettingItem type="sub-menu">
+            {#each [...window.HakuNeko.PluginController.WebsitePlugins].filter((plugin) => [...plugin.Settings].length > 0) as plugin}
+                <SideNavLink
+                    text={plugin.Title}
+                    on:click={() => {
+                        settingsPreselectedPlugin = plugin;
+                        settingsSelectedTabs = 4;
+                        isSettingsModalOpen = true;
+                    }}
+                />
+                <!--<SettingItem type="sub-menu">
                     <SideNavMenu text={plugin.Title}>
                         <SettingsViewer settings={plugin.Settings} />
                     </SideNavMenu>
                 </SettingItem>
+                -->
             {/each}
         </SideNavMenu>
-        <SideNavMenu text="[RES:UI]">
-            <SettingsPanel />
-        </SideNavMenu>
+
         <SideNavMenu text="[RES:Help]">
             <SideNavLink
                 text="Documentation"

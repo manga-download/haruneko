@@ -183,4 +183,7 @@
     :global(.bx--header__global > *) {
         -webkit-app-region: no-drag;
     }
+    :global(.bx--modal-container) {
+        -webkit-app-region: no-drag;
+    }
 </style>
