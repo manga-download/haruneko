@@ -39,7 +39,7 @@
 </script>
 
 <SettingsMenu
-    bind:isPluginModalOpen={isSettingsModalOpen}
+    bind:isModalOpen={isSettingsModalOpen}
     selectedTab={settingsSelectedTabs}
     preselectedPlugin={settingsPreselectedPlugin}
 />

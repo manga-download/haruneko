@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { SideNavDivider, Tooltip } from "carbon-components-svelte";
-    export let labelText: string = "";
-    export let helperText: string = "";
-    export let type: "sub-menu" | "item" = "item";
+    import { SideNavDivider, Tooltip } from 'carbon-components-svelte';
+    export let labelText: string = '';
+    export let helperText: string = '';
+    export let type: 'sub-menu' | 'item' = 'item';
 </script>
 
 <div class={`menu-left-panel-${type}-container`}>
-    {#if type === "item"}
+    {#if type === 'item'}
         <Tooltip triggerText={labelText} align="start">
             <p>{helperText}</p>
         </Tooltip>
@@ -14,10 +14,6 @@
 
     <slot />
 </div>
-
-{#if type === "item"}
-    <SideNavDivider />
-{/if}
 
 <style>
     .menu-left-panel-item-container {

@@ -1,5 +1,15 @@
 <script lang="ts">
-    import { Modal, Tabs, Tab, TabContent } from 'carbon-components-svelte';
+    import {
+        Modal,
+        Tabs,
+        Tab,
+        TabContent,
+        FluidForm,
+        NumberInput,
+        TextInput,
+        Toggle,
+        InlineNotification,
+    } from 'carbon-components-svelte';
     import SettingsViewer from './SettingsViewer.svelte';
     import SettingsPanel from './SettingsPanel.svelte';
 
@@ -8,23 +18,19 @@
     import { ResourceKey } from '../../../../i18n/ILocale';
     import { Scope } from '../../../../engine/SettingsGlobal';
 
-    async function delay(milliseconds: number) {
-        return new Promise((resolve) => setTimeout(resolve, milliseconds));
-    }
-
-    export let isPluginModalOpen = false;
+    export let isModalOpen = false;
     export let selectedTab = 0;
     export let preselectedPlugin: IMediaContainer;
 </script>
 
 <Modal
-    id="pluginModal"
+    id="settingModal"
     size="lg"
     hasScrollingContent
-    bind:open={isPluginModalOpen}
+    bind:open={isModalOpen}
     passiveModal
     modalHeading="Settings"
-    on:click:button--secondary={() => (isPluginModalOpen = false)}
+    on:click:button--secondary={() => (isModalOpen = false)}
     on:open
     on:close
     hasForm
@@ -41,22 +47,65 @@
         />
 
         <svelte:fragment slot="content">
-            <TabContent>
+            <TabContent class="settingtab">
                 <SettingsViewer
                     settings={window.HakuNeko.SettingsManager.OpenScope(Scope)}
                 />
             </TabContent>
-            <TabContent>
+            <TabContent class="settingtab">
                 <SettingsPanel />
             </TabContent>
-            <TabContent>
+            <TabContent class="settingtab">
                 {#each [...window.HakuNeko.PluginController.InfoTrackers].filter((tracker) => [...tracker.Settings].length > 0) as tracker}
                     <h4>{tracker.Title}</h4>
                     <SettingsViewer settings={tracker.Settings} />
                 {/each}
             </TabContent>
-            <TabContent>Network & Throttling options</TabContent>
-            <TabContent>
+            <TabContent class="settingtab">
+                <div style="padding-bottom:2em;">
+                    <Toggle
+                        toggled
+                        labelText="Download mode"
+                        labelA="One by one"
+                        labelB="Conccurent"
+                    />
+                </div>
+                <div>
+                    <h4>Default global throttling (ms)</h4>
+                    <div style="width:15em;float:left;margin-right:2em;">
+                        <NumberInput
+                            label="per Media List Call"
+                            value={50}
+                            min={0}
+                            max={1000}
+                        />
+                    </div>
+                    <div style="width:15em;float:left;margin-right:2em;">
+                        <NumberInput
+                            label="per Item List Call"
+                            value={20}
+                            min={0}
+                            max={1000}
+                        />
+                    </div>
+                    <div style="width:15em;float:left;">
+                        <NumberInput
+                            label="per Item Call"
+                            value={20}
+                            min={0}
+                            max={1000}
+                        />
+                    </div>
+                    <InlineNotification
+                        hideCloseButton
+                        lowContrast
+                        style="margin-top:5em"
+                        kind="info"
+                        subtitle="per Plugin value in each plugin settings page"
+                    />
+                </div>
+            </TabContent>
+            <TabContent style="height:70vh">
                 {#if preselectedPlugin}
                     <SettingsViewer settings={preselectedPlugin.Settings} />
                 {:else}
@@ -68,10 +117,7 @@
 </Modal>
 
 <style>
-    :global(#selectedTags) {
-        padding: 1rem 1rem 0 0;
-    }
-    :global(#pluginModal .bx--modal-content) {
-        margin-bottom: 0;
+    :global(#settingModal .settingtab) {
+        height: 70vh;
     }
 </style>
