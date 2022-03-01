@@ -11,10 +11,10 @@
     import Jobs from './components/Jobs.svelte';
     import Console from './components/Console.svelte';
     import Network from './components/Network.svelte';
-    import Home from './components/Home.svelte';
     import Viewer from './components/viewer/Viewer.svelte';
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
+    import ContentPage from './components/content-pages/ContentRouter.svelte';
     import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
     import { ContentPanelValue, ThemeValue } from './SettingsStore';
 
@@ -68,10 +68,10 @@
         />
         {#if uimode === 'ui-mode-content'}
             <div id="Content" transition:fade>
-                {#if currentContent === 'home' && showHome}
-                    <Home />
-                {:else if currentContent === 'viewer'}
+                {#if currentContent === 'viewer'}
                     <Viewer item={selectedItem} />
+                {:else if currentContent && showHome}
+                    <ContentPage />
                 {/if}
             </div>
         {/if}
