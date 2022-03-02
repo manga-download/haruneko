@@ -1,4 +1,8 @@
-<div class="Flags">🇺🇦</div>
+<script>
+    import { fade } from 'svelte/transition';
+</script>
+
+<div class="Flags" in:fade>🇺🇦</div>
 
 <style>
     .Flags {

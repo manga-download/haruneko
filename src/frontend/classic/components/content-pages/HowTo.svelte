@@ -3,9 +3,10 @@
     import Plug16 from 'carbon-icons-svelte/lib/Plug16';
     import Language16 from 'carbon-icons-svelte/lib/Language16';
     import Renew16 from 'carbon-icons-svelte/lib/Renew16';
+    import { fade } from 'svelte/transition';
 </script>
 
-<div id="Home">
+<div id="howto" in:fade>
     <h2>QuickStart</h2>
     <h4>Find a site to get the content you want to view</h4>
     <div class="border">
@@ -42,7 +43,7 @@
 </div>
 
 <style>
-    #Home {
+    #howto {
         padding: 0.5em;
     }
     .border {

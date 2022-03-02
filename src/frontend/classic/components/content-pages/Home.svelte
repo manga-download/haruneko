@@ -2,12 +2,12 @@
     import Logo from '../../../../img/logo.png';
     import { ClickableTile } from 'carbon-components-svelte';
     import { useNavigate } from 'svelte-navigator';
+    import { fade } from 'svelte/transition';
 
     const navigate = useNavigate();
 </script>
 
-<div id="Home">
-    <h2>Welcome to HakuNeko</h2>
+<div id="Home" in:fade>
     <div>
         <p id="whatis" class="border">
             <img alt="hakuneko logo" class="logo" src={Logo} align="left" />
