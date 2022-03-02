@@ -148,12 +148,6 @@
             />
         {/each}
     </Tile>
-    <Pagination
-        bind:pageSize={pagination.pageSize}
-        bind:page={pagination.page}
-        totalItems={pagination.totalItems}
-        pageSizes={pagination.pageSizes}
-    />
     <DataTable
         zebra
         size="short"
@@ -206,6 +200,12 @@
             {:else}{cell.value}{/if}
         </div>
     </DataTable>
+    <Pagination
+        bind:pageSize={pagination.pageSize}
+        bind:page={pagination.page}
+        totalItems={pagination.totalItems}
+        pageSizes={pagination.pageSizes}
+    />
 </Modal>
 
 <style>
