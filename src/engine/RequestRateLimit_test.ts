@@ -36,4 +36,14 @@ describe('RequestRateLimit', () => {
             expect(testee.Throttle).toBe(700);
         });
     });
+
+    describe('Unlimited', () => {
+
+        it('Should provide pre-defined static value', async () => {
+            const testee = RequestRateLimit.Unlimited;
+            expect(testee.RequestCount).toBe(0);
+            expect(testee.TimeSpan).toBe(0);
+            expect(testee.Throttle).toBe(0);
+        });
+    });
 });

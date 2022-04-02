@@ -1,4 +1,7 @@
 export class RequestRateLimit {
+
+    public static readonly Unlimited = new RequestRateLimit(0, 0);
+
     /**
      * 
      * @param RequestCount Maximum number of requests within the given {@link TimeSpan}.
