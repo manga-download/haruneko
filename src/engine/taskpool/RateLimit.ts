@@ -9,7 +9,8 @@ export class RateLimit {
     }
 
     /**
-     * The minimal calculated delay [ms] between requests to comply with the rate limit.
+     * The minimal cycle time [ms] between each unit to prevent exceeding the given {@link amount} per {@link interval},
+     * e.g. a rate limit of 5 units per 1 second would require throttling of at least 200 milliseconds per unit.
      */
     public get Throttle() {
         return this.amount > 0 && this.interval > 0 ? (this.interval * 1000 / this.amount) : 0;
