@@ -18,29 +18,29 @@
 <div id="Buttons" tabindex="0" on-blur="focus()" on-keydown="onKeyDown">
     <span class="title">{title}</span>
     <ChevronLeft24
-        label="Item Down (ArrowLeft)"
+        title="Item Down (ArrowLeft)"
         on:click={() =>
             console.log(`createEventDispatcher("requestItemDown", item)`)}
     />
     <ChevronRight24
-        label="Item Up (ArrowRight)"
+        title="Item Up (ArrowRight)"
         on:click={() =>
             console.log(`createEventDispatcher("requestItemUp", item)`)}
     />
     &nbsp;
     <RowDelete24
-        label="Decrease spacing between images (CTRL ➖)"
+        title="Decrease spacing between images (CTRL ➖)"
         on:click={decreaseImagePadding}
     />
     <RowInsert24
-        label="Increase spacing between images (CTRL ➕)"
+        title="Increase spacing between images (CTRL ➕)"
         on:click={increaseImagePadding}
     />
     &nbsp;
-    <ZoomIn24 label="Zoom In (➕)" on:click={zoomIn} />
-    <ZoomOut24 label="Zoom Out (➖)" on:click={zoomOut} />
+    <ZoomIn24 title="Zoom In (➕)" on:click={zoomIn} />
+    <ZoomOut24 title="Zoom Out (➖)" on:click={zoomOut} />
     &nbsp
-    <Misuse24 label="Close (ESC)" on:click={toggleThumbnailViewer} />
+    <Misuse24 title="Close (ESC)" on:click={toggleThumbnailViewer} />
 </div>
 
 <style>
