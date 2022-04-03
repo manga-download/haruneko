@@ -7,7 +7,7 @@ export class TaskPool<T> {
     private running = false;
     private activeWorkersCount = 0;
     private delay = Promise.resolve();
-    private queueTransactionLock: boolean = false;
+    private queueTransactionLock = false;
     private readonly queue: DeferredTask<T>[] = [];
 
     /**
@@ -67,7 +67,7 @@ export class TaskPool<T> {
                 return queue.splice(index, 1)[0];
             } catch {
                 return undefined;
-            };
+            }
         });
     }
 
@@ -84,7 +84,7 @@ export class TaskPool<T> {
         this.running = true;
         try {
             let task: DeferredTask<T>;
-            while(task = await this.TakeNextTask()) {
+            while((task = await this.TakeNextTask()) !== undefined) {
                 await this.delay;
                 this.delay = new Promise(resolve => setTimeout(resolve, this.RateLimit.Throttle));
                 await this.ConcurrencySlotAvailable();

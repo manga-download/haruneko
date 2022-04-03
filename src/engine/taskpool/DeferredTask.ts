@@ -4,7 +4,7 @@ export const enum Priority {
      */
     Low = 2,
     /**
-     * 
+     * ...
      */
     Normal = 4,
     /**

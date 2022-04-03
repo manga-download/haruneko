@@ -16,7 +16,7 @@ class Result<T> {
 async function RunJobs<T>(testee: TaskPool<Result<T>>, ... jobs: MockJob<T>[]): Promise<Result<T>[]> {
     const promises: Promise<Result<T>>[] = [];
     for(const job of jobs) {
-        const task = testee.Add(() => new Promise<Result<T>>((resolve, reject) => {
+        const task = testee.Add(() => new Promise<Result<T>>(resolve => {
             setTimeout(() => resolve(new Result(Date.now(), '', job.Result)), job.Duration);
         }), job.Priority);
         promises.push(task);
@@ -133,7 +133,7 @@ describe('TaskPool', () => {
                 const averages = batches.map(batch => batch.reduce((accumulator, timestamp) => accumulator + timestamp, 0) / batch.length);
 
                 for(let i = 0; i < batches.length; i++) {
-                    for(let timestamp of batches[i]) {
+                    for(const timestamp of batches[i]) {
                         const difference = Math.abs(timestamp - averages[i]);
                         expect(difference).toBeLessThan(5);
                     }

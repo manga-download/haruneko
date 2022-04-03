@@ -13,7 +13,7 @@ export class RateLimit {
      * e.g. a rate limit of 5 units per 1 second would require throttling of at least 200 milliseconds per unit.
      */
     public get Throttle() {
-        return this.amount > 0 && this.interval > 0 ? (this.interval * 1000 / this.amount) : 0;
+        return this.amount > 0 && this.interval > 0 ? this.interval * 1000 / this.amount : 0;
     }
 }
 
