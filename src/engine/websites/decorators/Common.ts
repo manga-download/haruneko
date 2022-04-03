@@ -1,7 +1,9 @@
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Fetch, FetchCSS, FetchRequest } from '../../FetchProvider';
 import { MangaScraper, DecoratableMangaScraper, MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import type { Priority } from '../../taskpool/TaskPool';
 
 type Constructor = new (...args: any[]) => DecoratableMangaScraper;
+
 type InfoExtractor<E extends HTMLElement> = (element: E) => { id: string, title: string };
 
 /**
@@ -16,7 +18,7 @@ function DefaultInfoExtractor<E extends HTMLAnchorElement>(element: E): { id: st
 type ImageExtractor<E extends HTMLElement> = (element: E) => string;
 
 function DefaultImageExtractor<E extends HTMLImageElement>(element: E): string {
-    return element.dataset.src || element.getAttribute('src') || '';
+    return element.dataset.src || element.getAttribute('src') || ''; // TODO: Throw if none found?
 }
 
 /**
@@ -188,4 +190,64 @@ export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract
             }
         };
     };
+}
+
+/***********************************************
+ ******** Image Data Extraction Methods ********
+ ***********************************************/
+
+/**
+ * An extension method for a {@link MangaScraper} instance, that can be used to get the image data by requesting the raw binary data and optionally detect the mime type.
+ */
+export async function FetchImageDirect(this: MangaScraper, page: Page, priority: Priority, detectMimeType: boolean = false): Promise<Blob> {
+    return this.imageTaskPool.Add(async () => {
+        const request = new FetchRequest(page.Link.href, {
+            headers: {
+                Referer: page.Parameters && page.Parameters['Referer'] ? page.Parameters['Referer'] : page.Link.origin
+            }
+        });
+        const response = await Fetch(request);
+        return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
+    }, priority);
+}
+
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchImage} method with {@link FetchImageDirect}.
+ */
+export function ImageDirect(detectMimeType: boolean = false) {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
+        return class extends ctor {
+            public async FetchImage(this: MangaScraper, page: Page, priority: Priority): Promise<Blob> {
+                return FetchImageDirect.call(this, page, priority, detectMimeType);
+            }
+        };
+    };
+}
+
+/**
+ * A helper function to detect and get the mime typed image data of a buffer.
+ */
+export async function GetTypedData(buffer: ArrayBuffer): Promise<Blob> {
+    const bytes = new Uint8Array(buffer);
+    // WEBP [52 49 46 46 . . . . 57 45 42 50]
+    if(bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50 ) {
+        return new Blob([bytes], { type: 'image/webp' });
+    }
+    // JPEG [FF D8 FF]
+    if(bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF ) {
+        return new Blob([bytes], { type: 'image/jpeg' });
+    }
+    // PNG [. 50 4E 47]
+    if(bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47 ) {
+        return new Blob([bytes], { type: 'image/png' });
+    }
+    // GIF [47 49 46]
+    if(bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46 ) {
+        return new Blob([bytes], { type: 'image/gif' });
+    }
+    // BMP [42 4D]
+    if(bytes[0] === 0x42 && bytes[1] === 0x4D ) {
+        return new Blob([bytes], { type: 'image/bmp' });
+    }
+    return new Blob([bytes], { type: 'application/octet-stream' });
 }

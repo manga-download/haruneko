@@ -1,14 +1,16 @@
 import { Tags } from '../Tags';
 import icon from '../../img/logo.png';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
-import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { Numeric, Secret, Text } from '../SettingsManager';
 import { ResourceKey as R } from '../../i18n/ILocale';
+import { ImageDirect } from './decorators/Common';
 
 /**
  * Sample Website Implementation for Developer Testing
  */
-export default class extends MangaScraper {
+ @ImageDirect()
+export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('sheep-scanlations', `Sheep's Awesome Mangas`, 'https://hakuneko.download/sample-websites/sheep-scanlations/', Tags.Media.Comic, Tags.Source.Official, Tags.Rating.Safe, Tags.Language.Multilingual);

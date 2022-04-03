@@ -1,4 +1,5 @@
 import { DeferredTask, Priority } from './DeferredTask';
+export { Priority } from './DeferredTask';
 import { Unlimited } from './RateLimit';
 
 export class TaskPool<T> {

@@ -3,14 +3,15 @@ import type { ISetting, ISettings, SettingsManager } from '../SettingsManager';
 import type { StorageController } from '../StorageController';
 import icon from '../../img/media.png';
 import type { Tag } from '../Tags';
+import type { Priority } from '../taskpool/TaskPool';
 
 export type IMediaChild = IMediaContainer | IMediaItem;
 
 export interface IMediaItem {
     readonly Parent: IMediaContainer;
+    // TODO: Mark as obsolete ...
     readonly SourceURL: string;
-    Download(): Promise<void>;
-    Abort(): Promise<void>;
+    Fetch(priority: Priority): Promise<Blob>;
 }
 
 export abstract class MediaItem implements IMediaItem {
@@ -18,9 +19,9 @@ export abstract class MediaItem implements IMediaItem {
     public constructor(public readonly Parent: IMediaContainer) {
     }
 
+    // TODO: Mark as obsolete ...
     public abstract get SourceURL(): string;
-    public abstract Download(): Promise<void>;
-    public abstract Abort(): Promise<void>;
+    public abstract Fetch(priority: Priority): Promise<Blob>;
 }
 
 export interface IMediaContainer {

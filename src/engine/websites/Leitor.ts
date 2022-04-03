@@ -1,9 +1,10 @@
 import { Tags } from '../Tags';
-import { MangaScraper, Manga, Chapter, Page, MangaPlugin } from '../providers/MangaPlugin';
 import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchProvider';
-import { FetchMangasMultiPageCSS } from './decorators/Common';
+import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { FetchMangasMultiPageCSS, ImageDirect } from './decorators/Common';
 
-export default class extends MangaScraper {
+@ImageDirect()
+export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('leitor', 'Leitor', 'https://leitor.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese);

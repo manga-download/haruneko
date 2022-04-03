@@ -1,6 +1,7 @@
 import type { ISettings, SettingsManager } from '../SettingsManager';
 import { StorageController, Store } from '../StorageController';
 import type { Tag } from '../Tags';
+import { Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
 const settingsKeyPrefix = 'plugin.';
@@ -12,6 +13,8 @@ const settingsKeyPrefix = 'plugin.';
  */
 export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
 
+    protected readonly imageTaskPool = new TaskPool<Blob>();
+
     public CreatePlugin(storageController: StorageController, settingsManager: SettingsManager): MangaPlugin {
         return new MangaPlugin(storageController, settingsManager, this);
     }
@@ -20,6 +23,7 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
     public abstract FetchMangas(provider: MangaPlugin): Promise<Manga[]>;
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
     public abstract FetchPages(chapter: Chapter): Promise<Page[]>;
+    public abstract FetchImage(page: Page, priority: Priority): Promise<Blob>;
 }
 
 /**
@@ -41,6 +45,10 @@ export class DecoratableMangaScraper extends MangaScraper {
     }
 
     public FetchPages(chapter: Chapter): Promise<Page[]> {
+        throw new Error();
+    }
+
+    public FetchImage(page: Page, priority: Priority): Promise<Blob> {
         throw new Error();
     }
 }
@@ -127,37 +135,20 @@ export class Chapter extends MediaContainer<Page> {
 
 export class Page extends MediaItem {
 
-    private _controller?: AbortController;
-
-    public constructor(private readonly scraper: MangaScraper, parent: MediaContainer<Page>, private readonly uri: URL, private readonly request?: RequestInit) {
+    public constructor(
+        private readonly scraper: MangaScraper,
+        parent: MediaContainer<Page>,
+        public readonly Link: URL,
+        public readonly Parameters?: Record<string, any>) {
         super(parent);
     }
 
+    // TODO: Mark as obsolete ...
     public get SourceURL(): string {
-        return this.uri.href;
+        return this.Link.href;
     }
 
-    public async Download(/*IStorageStream out // file: string*/): Promise<void> {
-        if(this._controller) {
-            return;
-        }
-        this._controller = new AbortController();
-        /*
-        const request = new Request(this.SourceURL, {
-            ...this._request,
-            signal: this._controller.signal
-        });
-        const response = await fetch(request);
-        */
-        if(this._controller.signal.aborted) {
-            return;
-        }
-        // stream repsonse.body to file ...
-    }
-
-    public async Abort(): Promise<void> {
-        if(this._controller) {
-            this._controller.abort();
-        }
+    public async Fetch(priority: Priority): Promise<Blob> {
+        return this.scraper.FetchImage(this, priority);
     }
 }

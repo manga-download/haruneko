@@ -1,11 +1,13 @@
 import { Tags } from '../Tags';
 import { FetchRequest } from '../FetchProvider';
-import { Chapter, DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, Chapter } from '../providers/MangaPlugin';
 import { MangaCSS, MangasMultiPageCSS, FetchChaptersCSS, PagesSinglePageCSS } from './decorators/WordPressMadara';
+import { ImageDirect } from './decorators/Common';
 
 @MangaCSS('meta[property="og:title"]:not([content*="Hiperdex"])')
 @MangasMultiPageCSS(undefined, 1000, '/manga-list/page/{page}/')
 @PagesSinglePageCSS()
+@ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
