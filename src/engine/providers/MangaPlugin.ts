@@ -143,11 +143,6 @@ export class Page extends MediaItem {
         super(parent);
     }
 
-    // TODO: Mark as obsolete ...
-    public get SourceURL(): string {
-        return this.Link.href;
-    }
-
     public async Fetch(priority: Priority): Promise<Blob> {
         return this.scraper.FetchImage(this, priority);
     }

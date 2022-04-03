@@ -9,8 +9,6 @@ export type IMediaChild = IMediaContainer | IMediaItem;
 
 export interface IMediaItem {
     readonly Parent: IMediaContainer;
-    // TODO: Mark as obsolete ...
-    readonly SourceURL: string;
     Fetch(priority: Priority): Promise<Blob>;
 }
 
@@ -19,8 +17,6 @@ export abstract class MediaItem implements IMediaItem {
     public constructor(public readonly Parent: IMediaContainer) {
     }
 
-    // TODO: Mark as obsolete ...
-    public abstract get SourceURL(): string;
     public abstract Fetch(priority: Priority): Promise<Blob>;
 }
 

@@ -18,8 +18,7 @@
 <div>
     {#each entries as content, index}
         <ThumbnailViewerImage
-            src={content.SourceURL}
-            throttlingDelay={throttlingDelay * index + 1}
+            page={content}
             title="Page {index}"
             handleClick={() => toggleWideViewer(index)}
         />

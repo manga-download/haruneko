@@ -175,7 +175,7 @@ export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: Manga
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
         const link = new URL(extract(element), request.url);
-        return new Page(this, chapter, link, {});
+        return new Page(this, chapter, link, { Referer: uri.href });
     });
 }
 

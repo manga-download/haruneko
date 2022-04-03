@@ -200,7 +200,7 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
             return link;
         }
         */
-        return new Page(this, chapter, DeProxify(link), {});
+        return new Page(this, chapter, DeProxify(link), { Referer: uri.href });
     });
 }
 
