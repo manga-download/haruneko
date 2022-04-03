@@ -29,12 +29,11 @@
             <p>...loading items</p>
         {:then}
             {#if mode === 'Thumbnail'}
-                <ThumbnailViewer {item} {throttlingDelay} {toggleWideViewer} />
+                <ThumbnailViewer {item} {toggleWideViewer} />
             {:else if mode === 'Wide'}
                 <WideViewer
                     {item}
                     {currentImageIndex}
-                    {throttlingDelay}
                     {toggleThumbnailViewer}
                 />
             {:else if mode === 'Video'}

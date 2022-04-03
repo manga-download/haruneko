@@ -11,7 +11,6 @@
     let entries: IMediaItem[];
     $: entries = item.Entries.map((entry) => entry as IMediaItem);
 
-    export let throttlingDelay: number;
     export let toggleWideViewer: (currentImage: number) => void;
 </script>
 

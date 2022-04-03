@@ -1,3 +1,4 @@
+import type { Priority } from '../taskpool/DeferredTask';
 import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
 export abstract class AnimeScraper extends MediaScraper<AnimePlugin> {
@@ -120,7 +121,7 @@ export class Video extends MediaItem {
         return this._uri.href;
     }
 
-    public async Download(/*IStorageStream out // file: string*/): Promise<void> {
+    public async Fetch(/*IStorageStream out // file: string*/priority: Priority): Promise<Blob> {
         if(this._controller) {
             return;
         }

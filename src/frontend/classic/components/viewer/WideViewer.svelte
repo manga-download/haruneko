@@ -6,7 +6,6 @@
     import { Key, ViewerModeValue } from '../../SettingsStore';
 
     export let item: IMediaContainer;
-    export let throttlingDelay: number;
     export let toggleThumbnailViewer: () => void;
     export let currentImageIndex: number;
 
@@ -17,12 +16,11 @@
 <div class={$ViewerModeValue}>
     <WideViewerSetting {title} {toggleThumbnailViewer} />
     {#if $ViewerModeValue === Key.ViewerMode_Longstrip}
-        <WebtoonViewer {item} {throttlingDelay} {imagePadding} />
+        <WebtoonViewer {item} {imagePadding} />
     {:else if $ViewerModeValue === Key.ViewerMode_Paginated}
         <MangaViewer
             {item}
             {currentImageIndex}
-            {throttlingDelay}
             {imagePadding}
         />
     {/if}

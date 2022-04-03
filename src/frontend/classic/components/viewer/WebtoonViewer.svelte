@@ -8,7 +8,6 @@
     let entries: IMediaItem[];
     $: entries = item.Entries.map(entry => entry as IMediaItem);
 
-    export let throttlingDelay: number;
     export let imagePadding: number;
     let imageWidth = 75;
 </script>
@@ -16,9 +15,8 @@
 {#each entries as content, index}
     <WideViewerImage
         alt="content_{index}"
-        src={content .SourceURL}
+        page={content}
         style="padding-left: {imagePadding}em; padding-right: {imagePadding}em; width: {imageWidth}%"
-        throttlingDelay={throttlingDelay * index}
     />
 {/each}
 
