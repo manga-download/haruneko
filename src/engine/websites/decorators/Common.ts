@@ -1,6 +1,7 @@
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 import { MangaScraper, DecoratableMangaScraper, MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 
+type Constructor = new (...args: any[]) => DecoratableMangaScraper;
 type InfoExtractor<E extends HTMLElement> = (element: E) => { id: string, title: string };
 
 /**
@@ -64,7 +65,7 @@ export async function FetchMangaCSS<E extends HTMLElement>(this: MangaScraper, p
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
  */
 export function MangaCSS(query: string) {
-    return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query);
@@ -94,7 +95,7 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasSinglePageCSS}.
  */
 export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
-    return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasSinglePageCSS.call(this, provider, path, query, extract as InfoExtractor<HTMLElement>);
@@ -120,7 +121,7 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasMultiPageCSS}.
  */
 export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: string, start = 1, extract = DefaultInfoExtractor as InfoExtractor<E>) {
-    return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageCSS.call(this, provider, path, query, start, extract as InfoExtractor<HTMLElement>);
@@ -150,7 +151,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchChapters} method with {@link FetchChaptersSinglePageCSS}.
  */
 export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
-    return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query, extract as InfoExtractor<HTMLElement>);
@@ -180,7 +181,7 @@ export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: Manga
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchPages} method with {@link FetchPagesSinglePageCSS}.
  */
 export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract = DefaultImageExtractor as ImageExtractor<E>) {
-    return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageCSS.call(this, chapter, query, extract as ImageExtractor<HTMLElement>);
