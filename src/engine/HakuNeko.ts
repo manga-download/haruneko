@@ -7,6 +7,7 @@ import { PluginController } from './PluginController';
 import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { StorageController } from './StorageController';
 import { SettingsManager } from './SettingsManager';
+import { DownloadManager } from './DownloadManager';
 
 export class HakuNeko {
 
@@ -15,6 +16,7 @@ export class HakuNeko {
     private readonly _settingsManager: SettingsManager = new SettingsManager(this._storageController);
     private readonly _pluginController: PluginController = new PluginController(this._storageController, this._settingsManager);
     private readonly _bookmarkPlugin: BookmarkPlugin = new BookmarkPlugin(this._storageController, this._pluginController);
+    private readonly _downloadManager: DownloadManager = new DownloadManager(this._storageController, this._settingsManager);
 
     public async Initialze(): Promise<void> {
         InitBlacklist();
@@ -40,5 +42,9 @@ export class HakuNeko {
 
     public get BookmarkPlugin(): BookmarkPlugin {
         return this._bookmarkPlugin;
+    }
+
+    public get DownloadManager(): DownloadManager {
+        return this._downloadManager;
     }
 }
