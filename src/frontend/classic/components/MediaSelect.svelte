@@ -6,6 +6,7 @@
         InlineLoading,
     } from 'carbon-components-svelte';
     import PlugFilled16 from 'carbon-icons-svelte/lib/PlugFilled16';
+    import UpdateNow16 from 'carbon-icons-svelte/lib/UpdateNow16';
     import Fuse from 'fuse.js';
 
     import { fade } from 'svelte/transition';
@@ -36,7 +37,6 @@
 
     let selectedPlugin: IMediaContainer | undefined;
     let selectedMedia: IMediaContainer | undefined;
-    let update: Promise<void> | undefined;
 
     let pluginsFavorites = ['sheep-scanlations', 'test-long-list'];
     let pluginsCombo: Array<ComboBoxItem>;
@@ -77,7 +77,6 @@
             minMatchCharLength: 1,
         });
         selectedMedia = undefined;
-        update = selectedPlugin?.Update();
     }
 
     let mediaNameFilter = '';
@@ -101,6 +100,11 @@
     function shouldFilterPlugin(item: any, value: string) {
         if (!value) return true;
         return item.text.toLowerCase().includes(value.toLowerCase());
+    }
+
+    async function onUpdateMediaEntriesClick() {
+        await selectedPlugin?.Update();
+        medias = (selectedPlugin?.Entries as IMediaContainer[]) ?? [];
     }
 </script>
 
@@ -141,28 +145,34 @@
                 shouldFilterItem={shouldFilterPlugin}
             />
         </div>
+
+        <div class="inline">
+            <Button
+                icon={UpdateNow16}
+                hasIconOnly
+                size="small"
+                tooltipPosition="bottom"
+                tooltipAlignment="center"
+                iconDescription="Update"
+                on:click={onUpdateMediaEntriesClick}
+            />
+        </div>
     </div>
 
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
     </div>
     <div id="MediaList" class="list">
-        {#await update}
-            <InlineLoading status="active" description="Working..." />
-        {:then}
-            <VirtualList items={filteredmedias} let:item>
-                <Media
-                    media={item}
-                    selected={selectedMedia === item}
-                    on:select={(e) => {
-                        selectedMedia = e.detail;
-                        dispatch('select', e.detail);
-                    }}
-                />
-            </VirtualList>
-        {:catch error}
-            <p style="color: red">{error}</p>
-        {/await}
+        <VirtualList items={filteredmedias} let:item>
+            <Media
+                media={item}
+                selected={selectedMedia === item}
+                on:select={(e) => {
+                    selectedMedia = e.detail;
+                    dispatch('select', e.detail);
+                }}
+            />
+        </VirtualList>
     </div>
     <div id="MediaCount">
         {#await medias}
