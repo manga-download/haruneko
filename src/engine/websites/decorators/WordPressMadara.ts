@@ -22,6 +22,13 @@ async function delay(milliseconds: number) {
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
 
+/**
+ * ...
+ * @param this A reference to the {@link MangaScraper}
+ * @param provider A reference to the {@link MangaPlugin} which contains the manga
+ * @param url The URL for the manga from which the data shall be fetched
+ * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
+ */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     const uri = new URL(url);
     const request = new FetchRequest(uri.href);
@@ -33,7 +40,10 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
     return new Manga(this, provider, JSON.stringify({ post, slug }), title);
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
+ * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
+ */
 export function MangaCSS(query: string = queryMangaTitle) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
@@ -48,7 +58,7 @@ export function MangaCSS(query: string = queryMangaTitle) {
  ******** Manga List Extraction Methods ********
  ***********************************************/
 
-async function FetchMangasCSS(this: MangaScraper, provider: MangaPlugin, request: FetchRequest, query = queryMangaListLinks): Promise<Manga[]> {
+export async function FetchMangasCSS(this: MangaScraper, provider: MangaPlugin, request: FetchRequest, query = queryMangaListLinks): Promise<Manga[]> {
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const container = element.closest<HTMLElement>('div.page-item-detail, div.manga');
@@ -59,6 +69,16 @@ async function FetchMangasCSS(this: MangaScraper, provider: MangaPlugin, request
     });
 }
 
+/**
+ * Iterates through a range of HTML pages from which mangas are extracted and combined into a single list.
+ * The range starts at 1 and is incremented until no more new mangas can be extracted.
+ * This method utilizes the HTML pages which are targeted to be shown in the browser.
+ * @param this A reference to the {@link MangaScraper}
+ * @param provider A reference to the {@link MangaPlugin} which contains the mangas
+ * @param query A CSS query for all HTML anchor elements that are linked to a manga
+ * @param throttle A delay [ms] after each request (only required for rate-limited websites)
+ * @param path An URL path pattern where the placeholder `{page}` is replaced by an incrementing number
+ */
 export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, throttle = 0, path = pathpaged): Promise<Manga[]> {
     const mangaList = [];
     for(let page = 1, run = true; run; page++) {
@@ -71,7 +91,13 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
     return mangaList;
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasMultiPageCSS}.
+ * This decorator utilizes the HTML pages which are targeted to be shown in the browser to extract the mangas.
+ * @param query A CSS query for all HTML anchor elements that are linked to a manga
+ * @param throttle A delay [ms] after each request (only required for rate-limited websites)
+ * @param path An URL path pattern where the placeholder `{page}` is replaced by an incrementing number
+ */
 export function MangasMultiPageCSS(query = queryMangaListLinks, throttle = 0, path = pathpaged) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
@@ -82,6 +108,16 @@ export function MangasMultiPageCSS(query = queryMangaListLinks, throttle = 0, pa
     };
 }
 
+/**
+ * Iterates through a range of HTML pages from which mangas are extracted and combined into a single list.
+ * The range starts at 1 and is incremented until no more new mangas can be extracted.
+ * This method utilizes the HTML pages provided by the WordPress Admin AJAX endpoint.
+ * @param this A reference to the {@link MangaScraper}
+ * @param provider A reference to the {@link MangaPlugin} which contains the mangas
+ * @param query A CSS query for all HTML anchor elements that are linked to a manga
+ * @param throttle A delay [ms] after each request (only required for rate-limited websites)
+ * @param path ...
+ */
 export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, throttle = 0, path = pathname): Promise<Manga[]> {
     const mangaList = [];
     // inject `madara.query_vars` into any website using wp-madara to see full list of supported vars
@@ -110,7 +146,13 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
     return mangaList;
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasMultiPageAJAX}.
+ * This decorator utilizes the WordPress Admin AJAX endpoint to extract the mangas.
+ * @param query A CSS query for all HTML anchor elements that are linked to a manga
+ * @param throttle A delay [ms] after each request (only required for rate-limited websites)
+ * @param path ...
+ */
 export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, path = pathname) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
@@ -134,6 +176,13 @@ export async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request
     });
 }
 
+/**
+ * Extracts the chapters from the HTML page of the given {@link manga}.
+ * This method utilizes the HTML page which is targeted to be shown in the browser.
+ * @param this A reference to the {@link MangaScraper}
+ * @param manga A reference to the {@link Manga} which contains the chapters
+ * @param query A CSS query for all HTML anchor elements that are linked to a chapter
+ */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapterListLinks): Promise<Chapter[]> {
     const id = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL(id.slug, this.URI);
@@ -146,7 +195,11 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
     }
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchChapters} method with {@link FetchChaptersSinglePageCSS}.
+ * This decorator utilizes the HTML page which is targeted to be shown in the browser to extract the chapters.
+ * @param query A CSS query for all HTML anchor elements that are linked to a chapter
+ */
 export function ChaptersSinglePageCSS(query = queryChapterListLinks) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
@@ -157,7 +210,15 @@ export function ChaptersSinglePageCSS(query = queryChapterListLinks) {
     };
 }
 
-export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, query = queryChapterListLinks, path = pathname): Promise<Chapter[]> {
+/**
+ * Extracts the chapters from the HTML page of the given {@link manga}.
+ * This method utilizes the HTML page provided by the WordPress Admin AJAX endpoint.
+ * @param this A reference to the {@link MangaScraper}
+ * @param manga A reference to the {@link Manga} which contains the chapters
+ * @param query A CSS query for all HTML anchor elements that are linked to a chapter
+ * @param path ...
+ */
+export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: Manga, query = queryChapterListLinks, path = pathname): Promise<Chapter[]> {
     const id = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL(path + '/wp-admin/admin-ajax.php', this.URI);
     const request = new FetchRequest(uri.href, {
@@ -174,12 +235,51 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
     return FetchChaptersCSS.call(this, manga, request, query);
 }
 
-// Class Decorator
-export function ChaptersSinglePageAJAX(query = queryChapterListLinks, path = pathname) {
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchChapters} method with {@link FetchChaptersSinglePageAJAX}.
+ * This decorator utilizes the WordPress Admin AJAX endpoint to extract the chapters.
+ * @param query A CSS query for all HTML anchor elements that are linked to a chapter
+ * @param path ...
+ */
+export function ChaptersSinglePageAJAXv1(query = queryChapterListLinks, path = pathname) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageAJAX.call(this, manga, query, path);
+                return FetchChaptersSinglePageAJAXv1.call(this, manga, query, path);
+            }
+        };
+    };
+}
+
+/**
+ * Extracts the chapters from the HTML page of the given {@link manga}.
+ * This method utilizes the HTML page provided by the WordPress AJAX Chapter endpoint.
+ * @param this A reference to the {@link MangaScraper}
+ * @param manga A reference to the {@link Manga} which contains the chapters
+ * @param query A CSS query for all HTML anchor elements that are linked to a chapter
+ */
+export async function FetchChaptersSinglePageAJAXv2(this: MangaScraper, manga: Manga, query = queryChapterListLinks): Promise<Chapter[]> {
+    const id = JSON.parse(manga.Identifier) as MangaID;
+    const uri = new URL((id.slug + '/ajax/chapters/').replace(/\/+/g, '/'), this.URI);
+    const request = new FetchRequest(uri.href, {
+        method: 'POST',
+        headers: {
+            'Referer': this.URI.href
+        }
+    });
+    return FetchChaptersCSS.call(this, manga, request, query);
+}
+
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchChapters} method with {@link FetchChaptersSinglePageAJAX}.
+ * This decorator utilizes the WordPress AJAX Chapter endpoint to extract the chapters.
+ * @param query A CSS query for all HTML anchor elements that are linked to a chapter
+ */
+export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks) {
+    return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
+        return class extends ctor {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+                return FetchChaptersSinglePageAJAXv2.call(this, manga, query);
             }
         };
     };
@@ -189,6 +289,12 @@ export function ChaptersSinglePageAJAX(query = queryChapterListLinks, path = pat
  ******** Page List Extraction Methods ********
  **********************************************/
 
+/**
+ * Extracts the pages from the HTML page of the given {@link chapter}.
+ * @param this A reference to the {@link MangaScraper}
+ * @param chapter A reference to the {@link Chapter} which contains the pages
+ * @param query A CSS query for all HTML image elements
+ */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query = queryPageListLinks): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     const request = new FetchRequest(uri.href);
@@ -204,7 +310,10 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
     });
 }
 
-// Class Decorator
+/**
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchPages} method with {@link FetchPagesSinglePageCSS}.
+ * @param query A CSS query for all HTML image elements
+ */
 export function PagesSinglePageCSS(query = queryPageListLinks) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {

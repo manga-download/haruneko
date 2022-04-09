@@ -1,17 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './Toonily.webp';
+import icon from './EvaScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import { ImageDirect } from './decorators/Common';
 
-@Madara.MangasMultiPageCSS()
-@Madara.ChaptersSinglePageCSS()
+@Madara.MangaCSS('meta[property="og:title"]:not([content*="EvaScans"])')
+@Madara.MangasMultiPageAJAX()
+@Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('toonily', 'Toonily', 'https://toonily.com', Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Rating.Erotica, Tags.Language.English);
+        super('evascans', 'EvaScans', 'https://evascans.com', Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Language.Turkish);
     }
 
     public override get Icon() {

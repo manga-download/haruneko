@@ -1,16 +1,21 @@
 import { Tags } from '../Tags';
+import icon from './AkuManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import { ImageDirect } from './decorators/Common';
 
-@Madara.MangaCSS('meta[property="og:title"]:not([content*="Hiperdex"])')
-@Madara.MangasMultiPageCSS(undefined, 1000, '/manga-list/page/{page}/')
-@Madara.ChaptersSinglePageAJAXv2()
+@Madara.MangaCSS()
+@Madara.MangasMultiPageAJAX()
+@Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hiperdex', 'Hiperdex', 'https://hiperdex.com', Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Rating.Erotica, Tags.Language.English);
+        super('akumanga', 'AkuManga', 'https://akumanga.com', Tags.Media.Manhwa, Tags.Language.Arabic);
+    }
+
+    public override get Icon() {
+        return icon;
     }
 }
