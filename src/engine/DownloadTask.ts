@@ -10,12 +10,20 @@ export const enum Status {
     Failed = 'failed',
 }
 
-export class DownloadTask {
+export interface IDownloadTask {
+    readonly ID: symbol;
+    readonly Created: Date;
+    readonly StatusChanged: Event<typeof this, Status>;
+    readonly ProgressChanged: Event<typeof this, number>;
+    readonly Status: Status;
+}
+
+export class DownloadTask implements IDownloadTask {
 
     public readonly ID = Symbol();
     public readonly Created = new Date();
-    public readonly StatusChanged: Event<typeof this, Status> = new Event<typeof this, Status>();
-    public readonly ProgressChanged: Event<typeof this, number> = new Event<typeof this, number>();
+    public readonly StatusChanged: Event<IDownloadTask, Status> = new Event<IDownloadTask, Status>();
+    public readonly ProgressChanged: Event<IDownloadTask, number> = new Event<IDownloadTask, number>();
 
     constructor(private readonly media: IMediaContainer) {
     }
@@ -32,7 +40,7 @@ export class DownloadTask {
     }
 
     private completed = 0;
-    public get Completed(): number {
+    private get Completed(): number {
         return this.completed;
     }
     private set Completed(value: number) {
@@ -42,7 +50,7 @@ export class DownloadTask {
         }
     }
 
-    public async Run(/* Target Directory ? */): Promise<void> {
+    public async Run(/* Target Directory / Archive ? */): Promise<void> {
 
         // Determine type manga/anime/novel
 
@@ -51,12 +59,22 @@ export class DownloadTask {
             await this.media.Update();
             const promises = this.media.Entries.map(async (page: IMediaItem) => {
                 const data = await page.Fetch(Priority.Low);
+                // TODO: Save data to target directory / archive
                 this.Completed++;
+                return ''; // `DATA: ${data.size / 1024} KB | ${data.type}`; 
             });
             const results = await Promise.allSettled(promises);
+            let values = results.filter(promise => promise.status === 'fulfilled').map(promise => (promise as PromiseFulfilledResult<string>).value);
+            let errors = results.filter(promise => promise.status === 'rejected').map(promise => (promise as PromiseRejectedResult).reason);
+            this.Completed = values.length;
+            if(errors.length > 0) {
+                throw new Error(errors.join('\n\n'));
+            }
             this.Status = Status.Completed;
-        } catch {
+            //return values;
+        } catch(error) {
             this.Status = Status.Failed;
+            throw error;
         }
     }
 }
