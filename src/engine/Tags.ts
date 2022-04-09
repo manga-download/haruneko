@@ -72,6 +72,12 @@ export const Tags = {
          */
         Aggregator: new Tag(ResourceKey.Tags_Source, ResourceKey.Tags_Source_Aggregator),
     },
+    Accessibility: {
+        toArray: GetCategoryTags,
+        Title: ResourceKey.Tags_Accessibility,
+        RegionLocked: new Tag(ResourceKey.Tags_Accessibility, ResourceKey.Tags_Accessibility_RegionLock, ResourceKey.Tags_Accessibility_RegionLockDescription),
+        RateLimited: new Tag(ResourceKey.Tags_Accessibility, ResourceKey.Tags_Accessibility_RateLimit, ResourceKey.Tags_Accessibility_RateLimitDescription),
+    },
     Rating: {
         toArray: GetCategoryTags,
         Title: ResourceKey.Tags_Rating,
