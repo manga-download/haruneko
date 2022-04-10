@@ -3,7 +3,9 @@ import fs from 'fs-extra';
 import plist from 'plist';
 import { run, wait } from './tools.mjs';
 
-const product = 'HakuNeko';
+const pkgFile = 'package.json';
+const pkgConfig = await fs.readJSON(pkgFile);
+const product = pkgConfig.title;
 
 /**
  * Bundle AppleDisk Image for MacOS
@@ -32,17 +34,18 @@ async function replaceIcons(dirNW) {
 }
 
 async function replacePlist(dirNW) {
+    const binary = path.join(dirNW, 'nwjs.app', 'Contents', 'MacOS', 'nwjs');
     const file = path.join(dirNW, 'nwjs.app', 'Contents', 'Info.plist');
     const xml = await fs.readFile(file, 'utf8');
     const meta = plist.parse(xml);
-    console.log('PList Entries:',
-        meta.CFBundleExecutable, // nwjs => HakuNeko
-        meta.CFBundleName, // nwjs => HakuNeko Desktop
-        meta.CFBundleDisplayName, // nwjs => HakuNeko Desktop
-        meta.CFBundleIdentifier, // io.nwjs.nwjs => https://git.io/hakuneko
-        meta.CFBundleVersion, // 4472.77 => ???
-        meta.CFBundleShortVersionString // 91.0.4472.77 => ???
-    );
+    meta.CFBundleExecutable = pkgConfig.name;
+    meta.CFBundleName = pkgConfig.title;
+    meta.CFBundleDisplayName = pkgConfig.title;
+    meta.CFBundleIdentifier = pkgConfig.name;
+    //meta.CFBundleVersion = ''; // 4472.77 => ???
+    //meta.CFBundleShortVersionString = ''; // 91.0.4472.77 => ???
+    await fs.writeFile(file, plist.build(meta), 'utf8');
+    await fs.move(binary, binary.replace(/nwjs$/i, pkgConfig.name));
 }
 
 async function cleanupNW(dirNW) {
@@ -68,7 +71,7 @@ async function createDiskImage(dirNW) {
     await wait(5000);
     await run(`hdiutil detach '/Volumes/${product}'`);
     await wait(5000);
-    const artifact = path.join('.', 'deploy', path.basename(dirNW).replace(/^nwjs(-sdk)?/i, 'hakuneko') + '.dmg');
+    const artifact = path.join('.', 'deploy', path.basename(dirNW).replace(/^nwjs(-sdk)?/i, pkgConfig.name) + '.dmg');
     try {
         await fs.unlink(artifact);
     } catch(error) {/**/}

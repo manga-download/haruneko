@@ -24,7 +24,7 @@ async function createApplicationManifest() {
         },
         */
         window: {
-            id: 'hakuneko',
+            id: pkgConfig.name,
             show: false,
             frame: false,
             transparent: true,

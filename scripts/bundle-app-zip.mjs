@@ -2,6 +2,9 @@ import path from 'path';
 import fs from 'fs-extra';
 import { run } from './tools.mjs';
 
+const pkgFile = 'package.json';
+const pkgConfig = await fs.readJSON(pkgFile);
+
 /**
  * Bundle Portable Binary for Windows
  * See: https://docs.nwjs.io/en/latest/For%20Users/Package%20and%20Distribute/#platform-specific-steps
@@ -37,22 +40,22 @@ async function updateBinary(dirNW) {
     const command = [
         rcedit,
         `"${binary}"`,
-        `--set-version-string "ProductName" "HakuNeko"`,
+        `--set-version-string "ProductName" "${pkgConfig.title}"`,
         `--set-version-string "CompanyName" ""`,
         `--set-version-string "LegalCopyright" "${new Date().getFullYear()}"`,
-        `--set-version-string "FileDescription" "Manga, Anime & Novel Downloader"`,
+        `--set-version-string "FileDescription" "${pkgConfig.description}"`,
         `--set-version-string "InternalName" ""`,
-        `--set-version-string "OriginalFilename" "hakuneko.exe"`,
+        `--set-version-string "OriginalFilename" "${pkgConfig.name}.exe"`,
         //`--set-file-version "0.54.0"`,
         //`--set-product-version "0.54.0"`,
         `--set-icon "${icon}"`
     ].join(' ');
     await run(command);
-    await fs.move(binary, binary.replace(/nw\.exe$/i, 'hakuneko.exe'));
+    await fs.move(binary, binary.replace(/nw\.exe$/i, `${pkgConfig.name}.exe`));
 }
 
 async function createZipArchive(dirNW) {
-    const artifact = path.join('.', 'deploy', path.basename(dirNW).replace(/^nwjs(-sdk)?/i, 'hakuneko') + '.zip');
+    const artifact = path.join('.', 'deploy', path.basename(dirNW).replace(/^nwjs(-sdk)?/i, pkgConfig.name) + '.zip');
     try {
         await fs.unlink(artifact);
     } catch(error) {/**/}
