@@ -4,6 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import { ImageDirect } from './decorators/Common';
 
+@Madara.MangaCSS(/^https?:\/\/toonily.com\/webtoon\/[^/]+\/$/)
 @Madara.MangasMultiPageCSS()
 @Madara.ChaptersSinglePageCSS()
 @Madara.PagesSinglePageCSS()

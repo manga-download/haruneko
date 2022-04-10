@@ -23,13 +23,15 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public ValidateMangaURL(url: string): boolean {
+        return /\/sheep-scanlations\/\d+\.json/.test(url);
+    }
+
     public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        if(/\/sheep-scanlations\/\d+\.json/.test(url)) {
-            // TODO: May search through provider.Entries, in case the manga is already in the list ...
-            const mangas = await this.FetchMangas(provider);
-            const id = '/' + new URL(url).pathname.split('/').pop();
-            return mangas.find(manga => manga.Identifier === id);
-        }
+        // TODO: May search through provider.Entries, in case the manga is already in the list ...
+        const mangas = await this.FetchMangas(provider);
+        const id = '/' + new URL(url).pathname.split('/').pop();
+        return mangas.find(manga => manga.Identifier === id);
     }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {

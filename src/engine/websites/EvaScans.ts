@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import { ImageDirect } from './decorators/Common';
 
-@Madara.MangaCSS('meta[property="og:title"]:not([content*="EvaScans"])')
+@Madara.MangaCSS(/^https?:\/\/evascans.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="EvaScans"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()

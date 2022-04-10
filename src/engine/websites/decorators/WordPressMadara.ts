@@ -28,12 +28,16 @@ async function delay(milliseconds: number) {
  * @param provider A reference to the {@link MangaPlugin} which contains the manga
  * @param url The URL for the manga from which the data shall be fetched
  * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
+ * @returns A {@link Manga} on success, or `undefined` when validation with {@link matcher} fails
+ * @throws When validation with {@link matcher} succeeds, but extraction fails (e.g. wrong {@link query}, network connection error, ...)
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     const uri = new URL(url);
     const request = new FetchRequest(uri.href);
     const data = await FetchHTML(request);
-    const post = data.querySelector<HTMLElement>('div#manga-chapters-holder')?.dataset?.id;
+    const post = data.querySelector<HTMLElement>('div#manga-chapters-holder')?.dataset?.id
+        || data.querySelector<HTMLInputElement>('input.rating-post-id')?.value
+        || data.querySelector<HTMLElement>('a[data-post]')?.dataset?.post;
     const slug = uri.pathname;
     const element = data.querySelector<HTMLElement>(query);
     const title = (element instanceof HTMLMetaElement ? element.content : element.textContent).trim();
@@ -41,12 +45,18 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
 }
 
 /**
- * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will setup the {@link MangaScraper.ValidateMangaURL} method and overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
+ * @param matcher An expression to check if a given URL is a valid manga resource
  * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
+ * @returns A {@link Manga} on success, or `undefined` when validation with {@link matcher} fails
+ * @throws When validation with {@link matcher} succeeds, but extraction fails (e.g. wrong {@link query}, network connection error, ...)
  */
-export function MangaCSS(query: string = queryMangaTitle) {
+export function MangaCSS(matcher: RegExp, query: string = queryMangaTitle) {
     return function DecorateClass<T extends { new(...args: any[]) : DecoratableMangaScraper }>(ctor: T): T {
         return class extends ctor {
+            public ValidateMangaURL(this: MangaScraper, url: string): boolean {
+                return matcher.test(url);
+            }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query);
             }

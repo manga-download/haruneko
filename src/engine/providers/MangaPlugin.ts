@@ -9,7 +9,7 @@ const settingsKeyPrefix = 'plugin.';
 /**
  * The abstract base class that any custom manga scraper must implement.
  * This should be used for any custom manga scraper implementation that is not going to utilize the decorator pattern.
- * Custom manga scrapers that are going to utilize decorators must extend the `DecoratableMangaScraper` instead.
+ * Custom manga scrapers that are going to utilize decorators must extend the {@link DecoratableMangaScraper} instead.
  */
 export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
 
@@ -19,6 +19,7 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
         return new MangaPlugin(storageController, settingsManager, this);
     }
 
+    public abstract ValidateMangaURL(url: string): boolean;
     public abstract FetchManga(provider: MangaPlugin, url: string): Promise<Manga>;
     public abstract FetchMangas(provider: MangaPlugin): Promise<Manga[]>;
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
@@ -31,6 +32,10 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
  * Since decorators do not (yet) work well with the abstract classes, this base class can be used when applying the decorator pattern to customize manga scrapers.
  */
 export class DecoratableMangaScraper extends MangaScraper {
+
+    public ValidateMangaURL(url: string): boolean {
+        return false;
+    }
 
     public FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         throw new Error();
@@ -91,8 +96,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
     }
 
     public async TryGetEntry(url: string): Promise<Manga> {
-        await this.Initialize();
-        return this.scraper.FetchManga(this, url);
+        if(this.scraper.ValidateMangaURL(url)) {
+            await this.Initialize();
+            return this.scraper.FetchManga(this, url);
+        }
     }
 
     public async Update(): Promise<void> {
