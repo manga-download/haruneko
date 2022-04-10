@@ -61,11 +61,11 @@ export class DownloadTask implements IDownloadTask {
                 const data = await page.Fetch(Priority.Low);
                 // TODO: Save data to target directory / archive
                 this.Completed++;
-                return ''; // `DATA: ${data.size / 1024} KB | ${data.type}`; 
+                return ''; // `DATA: ${data.size / 1024} KB | ${data.type}`;
             });
             const results = await Promise.allSettled(promises);
-            let values = results.filter(promise => promise.status === 'fulfilled').map(promise => (promise as PromiseFulfilledResult<string>).value);
-            let errors = results.filter(promise => promise.status === 'rejected').map(promise => (promise as PromiseRejectedResult).reason);
+            const values = results.filter(promise => promise.status === 'fulfilled').map(promise => (promise as PromiseFulfilledResult<string>).value);
+            const errors = results.filter(promise => promise.status === 'rejected').map(promise => (promise as PromiseRejectedResult).reason);
             this.Completed = values.length;
             if(errors.length > 0) {
                 throw new Error(errors.join('\n\n'));
