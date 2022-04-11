@@ -34,13 +34,15 @@ describe('DownloadTask', () => {
     describe('Constructor', () => {
 
         it('Should correctly initialize', async () => {
-            const fixture = new TestFixture();
+            const fixture = new TestFixture().SetupMediaContainer([]);
             const testee = fixture.CreateTestee();
 
             expect(Date.now() - testee.Created.getTime()).toBeLessThan(5);
             await new Promise(resolve => setTimeout(resolve, 5));
+            expect(testee.Media).toBe(fixture.MediaContainerMock);
             expect(testee.Status).toBe(Status.Queued);
             expect(fixture.StatusChangedCallbackMock).not.toBeCalled();
+            expect(testee.Progress).toBe(0);
             expect(fixture.ProgressChangedCallbackMock).not.toBeCalled();
         });
     });
@@ -128,6 +130,37 @@ describe('DownloadTask', () => {
             expect(fixture.StatusChangedCallbackMock).toBeCalledTimes(2);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, testee, Status.Started);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, testee, Status.Failed);
+        });
+    });
+
+    describe('Progress', () => {
+
+        it('Should set expected value on progress', async () => {
+            const page = mock<IMediaItem>();
+            page.Fetch.mockReturnValue(new Promise(resolve => setTimeout(resolve, 5)));
+            const fixture = new TestFixture().SetupMediaContainer([ page ]);
+            const testee = fixture.CreateTestee();
+
+            expect(testee.Progress).toBe(0);
+            const promise = testee.Run();
+            expect(testee.Progress).toBe(0);
+            await promise;
+            expect(testee.Progress).toBe(1);
+        });
+
+        it('Should set expected value on error', async () => {
+            const pageS = mock<IMediaItem>();
+            pageS.Fetch.mockReturnValue(new Promise((resolve, _) => setTimeout(resolve, 5)));
+            const pageE = mock<IMediaItem>();
+            pageE.Fetch.mockReturnValue(new Promise((_, reject) => setTimeout(reject, 5)));
+            const fixture = new TestFixture().SetupMediaContainer([ pageS, pageE, pageS, pageE ]);
+            const testee = fixture.CreateTestee();
+
+            expect(testee.Progress).toBe(0);
+            const promise = testee.Run();
+            expect(testee.Progress).toBe(0);
+            await expect(promise).rejects.toThrow();
+            expect(testee.Progress).toBe(2/4);
         });
     });
 

@@ -13,9 +13,11 @@ export const enum Status {
 export interface IDownloadTask {
     readonly ID: symbol;
     readonly Created: Date;
-    readonly StatusChanged: Event<typeof this, Status>;
-    readonly ProgressChanged: Event<typeof this, number>;
+    readonly Media: IMediaContainer;
     readonly Status: Status;
+    readonly StatusChanged: Event<typeof this, Status>;
+    readonly Progress: number;
+    readonly ProgressChanged: Event<typeof this, number>;
 }
 
 export class DownloadTask implements IDownloadTask {
@@ -25,7 +27,7 @@ export class DownloadTask implements IDownloadTask {
     public readonly StatusChanged: Event<IDownloadTask, Status> = new Event<IDownloadTask, Status>();
     public readonly ProgressChanged: Event<IDownloadTask, number> = new Event<IDownloadTask, number>();
 
-    constructor(private readonly media: IMediaContainer) {
+    constructor(public readonly Media: IMediaContainer) {
     }
 
     private status: Status = Status.Queued;
@@ -39,6 +41,10 @@ export class DownloadTask implements IDownloadTask {
         }
     }
 
+    public get Progress(): number {
+        return this.Media.Entries.length ? this.completed / this.Media.Entries.length : 0
+    }
+
     private completed = 0;
     private get Completed(): number {
         return this.completed;
@@ -46,7 +52,7 @@ export class DownloadTask implements IDownloadTask {
     private set Completed(value: number) {
         if(this.completed !== value) {
             this.completed = value;
-            this.ProgressChanged.Dispatch(this, this.media.Entries.length ? this.completed / this.media.Entries.length : 0);
+            this.ProgressChanged.Dispatch(this, this.Progress);
         }
     }
 
@@ -56,8 +62,8 @@ export class DownloadTask implements IDownloadTask {
 
         this.Status = Status.Started;
         try {
-            await this.media.Update();
-            const promises = this.media.Entries.map(async (page: IMediaItem) => {
+            await this.Media.Update();
+            const promises = this.Media.Entries.map(async (page: IMediaItem) => {
                 const data = await page.Fetch(Priority.Low);
                 // TODO: Save data to target directory / archive
                 this.Completed++;
