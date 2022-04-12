@@ -203,7 +203,7 @@ export async function FetchImageDirect(this: MangaScraper, page: Page, priority:
     return this.imageTaskPool.Add(async () => {
         const request = new FetchRequest(page.Link.href, {
             headers: {
-                Referer: page.Parameters && page.Parameters['Referer'] ? page.Parameters['Referer'] : page.Link.origin
+                Referer: page.Parameters?.Referer || page.Link.origin
             }
         });
         const response = await Fetch(request);

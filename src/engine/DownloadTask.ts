@@ -42,7 +42,7 @@ export class DownloadTask implements IDownloadTask {
     }
 
     public get Progress(): number {
-        return this.Media.Entries.length ? this.completed / this.Media.Entries.length : 0
+        return this.Media.Entries.length ? this.completed / this.Media.Entries.length : 0;
     }
 
     private completed = 0;

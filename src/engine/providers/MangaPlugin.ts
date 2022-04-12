@@ -140,13 +140,18 @@ export class Chapter extends MediaContainer<Page> {
     }
 }
 
+type Parameters = {
+    readonly Referer?: string;
+    readonly [key: string]: string | number | ArrayBuffer;
+}
+
 export class Page extends MediaItem {
 
     public constructor(
         private readonly scraper: MangaScraper,
         parent: MediaContainer<Page>,
         public readonly Link: URL,
-        public readonly Parameters?: Record<string, any>) {
+        public readonly Parameters?: Parameters) {
         super(parent);
     }
 
