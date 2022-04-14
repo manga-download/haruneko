@@ -15,6 +15,7 @@ export interface IDownloadTask {
     readonly Created: Date;
     readonly Media: IMediaContainer;
     readonly Status: Status;
+    readonly StatusError: Error;
     readonly StatusChanged: Event<typeof this, Status>;
     readonly Progress: number;
     readonly ProgressChanged: Event<typeof this, number>;
@@ -34,9 +35,16 @@ export class DownloadTask implements IDownloadTask {
     public get Status(): Status {
         return this.status;
     }
-    private set Status(value: Status) {
-        if(this.status !== value) {
-            this.status = value;
+
+    private error: Error = null;
+    public get StatusError(): Error {
+        return this.Status === Status.Failed ? this.error : null;
+    }
+
+    private UpdateStatus(status: Status, error: Error = null) {
+        this.error = error;
+        if(this.status !== status) {
+            this.status = status;
             this.StatusChanged.Dispatch(this, this.status);
         }
     }
@@ -60,14 +68,21 @@ export class DownloadTask implements IDownloadTask {
 
         // Determine type manga/anime/novel
 
-        this.Status = Status.Started;
+        if(this.Status === Status.Started) {
+            return;
+        }
+        this.UpdateStatus(Status.Started);
+
         try {
+            const cancellator = new AbortController();
+            this.Abort = cancellator.abort.bind(cancellator);
             await this.Media.Update();
             const promises = this.Media.Entries.map(async (page: IMediaItem) => {
-                const data = await page.Fetch(Priority.Low);
+                const data = await page.Fetch(Priority.Low, cancellator.signal);
+                console.log(new Date().toISOString(), '=>', 'DATA:', (data?.size || 0) / 1024, 'KB', data?.type, '|', page['Link']);
                 // TODO: Save data to target directory / archive
                 this.Completed++;
-                return ''; // `DATA: ${data.size / 1024} KB | ${data.type}`;
+                return '';
             });
             const results = await Promise.allSettled(promises);
             const values = results.filter(promise => promise.status === 'fulfilled').map(promise => (promise as PromiseFulfilledResult<string>).value);
@@ -76,11 +91,17 @@ export class DownloadTask implements IDownloadTask {
             if(errors.length > 0) {
                 throw new Error(errors.join('\n\n'));
             }
-            this.Status = Status.Completed;
+            this.UpdateStatus(Status.Completed);
             //return values;
         } catch(error) {
-            this.Status = Status.Failed;
+            this.UpdateStatus(Status.Failed, error instanceof Error ? error : new Error(error?.toString()));
             throw error;
+        } finally {
+            this.Abort = this.DisabledAbort;
         }
     }
+
+    private DisabledAbort(_reason?: string) { /* NO-OP */ }
+
+    public Abort = this.DisabledAbort;
 }

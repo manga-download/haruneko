@@ -24,7 +24,7 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
     public abstract FetchMangas(provider: MangaPlugin): Promise<Manga[]>;
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
     public abstract FetchPages(chapter: Chapter): Promise<Page[]>;
-    public abstract FetchImage(page: Page, priority: Priority): Promise<Blob>;
+    public abstract FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
 }
 
 /**
@@ -53,7 +53,7 @@ export class DecoratableMangaScraper extends MangaScraper {
         throw new Error();
     }
 
-    public FetchImage(page: Page, priority: Priority): Promise<Blob> {
+    public FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         throw new Error();
     }
 }
@@ -155,7 +155,7 @@ export class Page extends MediaItem {
         super(parent);
     }
 
-    public async Fetch(priority: Priority): Promise<Blob> {
-        return this.scraper.FetchImage(this, priority);
+    public async Fetch(priority: Priority, signal: AbortSignal): Promise<Blob> {
+        return this.scraper.FetchImage(this, priority, signal);
     }
 }

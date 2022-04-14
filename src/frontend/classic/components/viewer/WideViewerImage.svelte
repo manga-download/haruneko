@@ -28,7 +28,7 @@
     async function updateImage(element: HTMLImageElement, page: IMediaItem) {
         try {
             unmountImage(element);
-            const data = await page.Fetch(Priority.High);
+            const data = await page.Fetch(Priority.High, new AbortController().signal);
             element.src = URL.createObjectURL(data);
         } catch {
             element.src = error;

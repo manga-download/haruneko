@@ -199,9 +199,10 @@ export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract
 /**
  * An extension method for a {@link MangaScraper} instance, that can be used to get the image data by requesting the raw binary data and optionally detect the mime type.
  */
-export async function FetchImageDirect(this: MangaScraper, page: Page, priority: Priority, detectMimeType = false): Promise<Blob> {
+export async function FetchImageDirect(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const request = new FetchRequest(page.Link.href, {
+            signal: signal,
             headers: {
                 Referer: page.Parameters?.Referer || page.Link.origin
             }
@@ -217,8 +218,8 @@ export async function FetchImageDirect(this: MangaScraper, page: Page, priority:
 export function ImageDirect(detectMimeType = false) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
-            public async FetchImage(this: MangaScraper, page: Page, priority: Priority): Promise<Blob> {
-                return FetchImageDirect.call(this, page, priority, detectMimeType);
+            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+                return FetchImageDirect.call(this, page, priority, signal, detectMimeType);
             }
         };
     };

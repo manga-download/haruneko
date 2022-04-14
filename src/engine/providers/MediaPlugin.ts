@@ -9,7 +9,7 @@ export type IMediaChild = IMediaContainer | IMediaItem;
 
 export interface IMediaItem {
     readonly Parent: IMediaContainer;
-    Fetch(priority: Priority): Promise<Blob>;
+    Fetch(priority: Priority, signal: AbortSignal): Promise<Blob>;
 }
 
 export abstract class MediaItem implements IMediaItem {
@@ -17,7 +17,7 @@ export abstract class MediaItem implements IMediaItem {
     public constructor(public readonly Parent: IMediaContainer) {
     }
 
-    public abstract Fetch(priority: Priority): Promise<Blob>;
+    public abstract Fetch(priority: Priority, signal: AbortSignal): Promise<Blob>;
 }
 
 export interface IMediaContainer {

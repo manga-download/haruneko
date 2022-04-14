@@ -28,7 +28,7 @@
     async function updateThumbnail(element: HTMLDivElement, page: IMediaItem) {
         try {
             unmountThumbnail(element);
-            const data = await page.Fetch(Priority.High);
+            const data = await page.Fetch(Priority.High, new AbortController().signal);
             element.style.backgroundImage = `url('${URL.createObjectURL(data)}')`;
         } catch {
             element.style.backgroundImage = `url('${error}')`;
