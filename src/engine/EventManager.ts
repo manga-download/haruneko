@@ -7,7 +7,9 @@ export class Event<TSender, TArgs> {
 
     public Dispatch(sender: TSender, args: TArgs): void {
         for(const subscription of this._subscriptions) {
-            subscription(sender, args);
+            try {
+                subscription(sender, args);
+            } catch { /* IGNORE SUBSCRIBER ERRORS */ }
         }
     }
 

@@ -13,7 +13,6 @@ function AssertSubscribeOnce<TSender, TArgs>(testee: Event<TSender, TArgs>): voi
 
         expect(callback).toBeCalledTimes(1);
         expect(callback).toBeCalledWith(sender, args);
-        //callback.calledWith(sender, args);
     });
 }
 
@@ -21,7 +20,10 @@ function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: Event<TSender, TAr
     it('Should invoke all subscribed callbacks', async () => {
         const sender = mock<TSender>();
         const args = mock<TArgs>();
+        const mockError = mockFn<(sender: TSender, args: TArgs) => void>();
+        mockError.mockImplementation((_sender, _args) => { throw new Error(); });
         const callbacks = [
+            mockError,
             mockFn<(sender: TSender, args: TArgs) => void>(),
             mockFn<(sender: TSender, args: TArgs) => void>(),
             mockFn<(sender: TSender, args: TArgs) => void>()
@@ -33,7 +35,6 @@ function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: Event<TSender, TAr
         for(const callback of callbacks) {
             expect(callback).toBeCalledTimes(1);
             expect(callback).toBeCalledWith(sender, args);
-            //callback.calledWith(sender, args);
         }
     });
 }
@@ -61,18 +62,15 @@ function AssertUnsubscribe<TSender, TArgs>(testee: Event<TSender, TArgs>): void 
 describe('Event', () => {
 
     describe('Subsribe', () => {
-        const testee = new Event<string, number>();
-        AssertSubscribeOnce(testee);
+        AssertSubscribeOnce(new Event<string, number>());
     });
 
     describe('Dispatch', () => {
-        const testee = new Event<string, number>();
-        AssertInvokeAllSubscriptions(testee);
+        AssertInvokeAllSubscriptions(new Event<string, number>());
     });
 
     describe('Unsubsribe', () => {
-        const testee = new Event<string, number>();
-        AssertUnsubscribe(testee);
+        AssertUnsubscribe(new Event<string, number>());
     });
 });
 
