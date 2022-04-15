@@ -1,10 +1,18 @@
+import type { IMediaContainer, IMediaItem } from "./providers/MediaPlugin";
+
 const DataBase = 'HakuNeko';
 
-export enum Store {
+export const enum Store {
     Settings = 'Settings',
     Bookmarks = 'Bookmarks',
     MediaLists = 'MediaLists',
 }
+
+const enum InternalStore {
+    TemporaryData = 'TemporaryData',
+}
+
+type UnitedStore = Store | InternalStore;
 
 const VersionUpgrades = [
     // V0 => V1
@@ -12,22 +20,22 @@ const VersionUpgrades = [
         db.createObjectStore(Store.Settings);
     },
     // V1 => V2
-    function V3(db: IDBDatabase) {
+    function V2(db: IDBDatabase) {
         db.createObjectStore(Store.Bookmarks);
     },
     // V2 => V3
-    function V2(db: IDBDatabase) {
+    function V3(db: IDBDatabase) {
         db.createObjectStore(Store.MediaLists);
+    },
+    // V3 => V4
+    function V4(db: IDBDatabase) {
+        db.createObjectStore(InternalStore.TemporaryData);
     },
 ];
 
 const Version = VersionUpgrades.length;
 
 export class StorageController {
-
-    constructor() {
-        //
-    }
 
     private async Connect(): Promise<IDBDatabase> {
         const connection = indexedDB.open(DataBase, Version);
@@ -43,7 +51,7 @@ export class StorageController {
         });
     }
 
-    private async SaveIDB<T>(value: T, store: Store, key?: string): Promise<void> {
+    private async SaveIDB<T>(value: T, store: UnitedStore, key?: string): Promise<void> {
         const db = await this.Connect();
         const tx = db.transaction(store, 'readwrite');
         const bucket = tx.objectStore(store);
@@ -57,7 +65,7 @@ export class StorageController {
         await Promise.all(promises);
     }
 
-    private async LoadIDB<T>(store: Store, key?: string): Promise<T> {
+    private async LoadIDB<T>(store: UnitedStore, key?: string): Promise<T> {
         const db = await this.Connect();
         const tx = db.transaction(store, 'readonly');
         const bucket = tx.objectStore(store);
@@ -71,18 +79,18 @@ export class StorageController {
         return promise;
     }
 
-    private async RemoveIDB(store: Store, key?: string): Promise<void> {
+    private async RemoveIDB(store: UnitedStore, ...keys: string[]): Promise<void> {
         const db = await this.Connect();
         const tx = db.transaction(store, 'readwrite');
         const bucket = tx.objectStore(store);
-        const query = key ? bucket.delete(key) : bucket.clear();
-        const promise = new Promise<void>((resolve, reject) => {
+        const queries = keys.length > 0 ? keys.map(key => bucket.delete(key)) : [ bucket.clear() ];
+        const promises = queries.map(query => new Promise<void>((resolve, reject) => {
             query.onsuccess = () => resolve(/*query.result*/);
             query.onerror = () => reject(query.error);
-        });
+        }));
         tx.oncomplete = () => db.close();
         tx.commit();
-        return promise;
+        await Promise.all(promises);
     }
 
     public async SavePersistent<T>(value: T, store: Store, key?: string): Promise<void> {
@@ -91,7 +99,6 @@ export class StorageController {
         //                  chrome.storage.local.set({ key: data }, () => {});
         //return localStorage.setItem(`${store}.${key}`, JSON.stringify(value));
         return this.SaveIDB(value, store, key);
-
     }
 
     public async LoadPersistent<T>(store: Store, key?: string): Promise<T> {
@@ -102,16 +109,58 @@ export class StorageController {
         return this.LoadIDB(store, key);
     }
 
-    public async RemovePersistent(store: Store, key?: string): Promise<void> {
+    public async RemovePersistent(store: Store, ...keys: string[]): Promise<void> {
         //console.warn('StorageController.RemovePersistent()', '=>', 'Not fully implemented!');
         // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
         //                  chrome.storage.local.remove(key, () => {});
         //return localStorage.removeItem(`${store}.${key}`);
-        return this.RemoveIDB(store, key);
+        return this.RemoveIDB(store, ...keys);
     }
 
-    public async SaveFile(): Promise<void> {
-        console.warn('StorageController.SaveFile()', '=>', 'Not fully implemented!');
+    public async SaveTemporary<T>(value: T): Promise<string> {
+        const key = Date.now().toString() + Math.random().toString();
+        await this.SaveIDB(value, InternalStore.TemporaryData, key);
+        return key;
+    }
+
+    public async LoadTemporary<T>(key: string): Promise<T> {
+        return this.LoadIDB(InternalStore.TemporaryData, key);
+    }
+
+    public async RemoveTemporary(...keys: string[]): Promise<void> {
+        return this.RemoveIDB(InternalStore.TemporaryData, ...keys);
+    }
+
+    private async SaveFile(): Promise<void> {
+        console.warn('StorageController.SaveFile()', '=>', 'Not implemented!');
+        throw new Error('Not implemented!');
+    }
+
+    public async SaveMedia(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
+        // TODO:
+        // - Detect media type (e.g. manga, anime, novel, ...)
+        // - Determine media format (e.g. images, cbz, hls, mp4, ...)
+        console.warn('StorageController.SaveMedia()', '=>', 'Not implemented!');
+        return this.SaveImages(container, resources);
+    }
+
+    private async SaveImages(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
+        console.warn('StorageController.SaveImages()', '=>', 'Not implemented!');
+        throw new Error('Not implemented!');
+    }
+
+    private async SaveCBZ(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
+        console.warn('StorageController.SaveCBZ()', '=>', 'Not implemented!');
+        throw new Error('Not implemented!');
+    }
+
+    private async SavePDF(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
+        console.warn('StorageController.SavePDF()', '=>', 'Not implemented!');
+        throw new Error('Not implemented!');
+    }
+
+    private async SaveEPUB(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
+        console.warn('StorageController.SaveEPUB()', '=>', 'Not implemented!');
         throw new Error('Not implemented!');
     }
 }
