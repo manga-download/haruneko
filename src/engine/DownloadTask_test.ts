@@ -80,7 +80,7 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            for(let item of items) {
+            for(const item of items) {
                 expect(item.Fetch).toBeCalledTimes(1);
             }
             expect(fixture.MediaContainerMock.Update).toBeCalledTimes(1);
@@ -96,7 +96,7 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            for(let item of items) {
+            for(const item of items) {
                 expect(item.Fetch).toBeCalledTimes(1);
             }
             expect(fixture.MediaContainerMock.Update).toBeCalledTimes(1);
@@ -113,7 +113,7 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            for(let item of items) {
+            for(const item of items) {
                 expect(item.Fetch).toBeCalledTimes(1);
             }
             expect(fixture.MediaContainerMock.Update).toBeCalledTimes(1);
@@ -158,7 +158,7 @@ describe('DownloadTask', () => {
             await promise;
 
             expect(signals.length).toBe(4);
-            for(let signal of signals) {
+            for(const signal of signals) {
                 expect(signal.aborted).toBeTruthy();
             }
         });
