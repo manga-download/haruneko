@@ -2,7 +2,7 @@ import type { ISettings, SettingsManager } from '../SettingsManager';
 import { StorageController, Store } from '../StorageController';
 import type { Tag } from '../Tags';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
-import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
+import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -128,7 +128,7 @@ export class Manga extends MediaContainer<Chapter> {
     }
 }
 
-export class Chapter extends MediaContainer<Page> {
+export class Chapter extends StoreableMediaContainer<Page> {
 
     constructor(private readonly scraper: MangaScraper, parent: MediaContainer<Chapter>, identifier: string, title: string) {
         super(identifier, title, parent);
@@ -137,6 +137,16 @@ export class Chapter extends MediaContainer<Page> {
     public async Update(): Promise<void> {
         await this.Initialize();
         this._entries = await this.scraper.FetchPages(this);
+    }
+
+    public get IsStored() {
+        return false;
+    }
+
+    public async Store(resources: Map<Page, string>): Promise<void> {
+        // TODO:
+        // - Save temporary resources to file system
+        // - Perform post processing (e.g. pdf, ffmpeg, ...)
     }
 }
 
