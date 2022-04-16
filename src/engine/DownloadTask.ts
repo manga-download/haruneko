@@ -79,6 +79,7 @@ export class DownloadTask implements IDownloadTask {
             const cancellator = new AbortController();
             this.Abort = cancellator.abort.bind(cancellator);
             await this.Media.Update();
+            // TODO: What if no entries?
             const promises = this.Media.Entries.map(async (item: IMediaItem) => {
                 try {
                     const data = await item.Fetch(Priority.Low, cancellator.signal);

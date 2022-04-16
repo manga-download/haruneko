@@ -29,6 +29,7 @@ export interface IMediaContainer {
     readonly Tags: Tag[];
     readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
+    IsSameAs(other: IMediaContainer): boolean;
     CreateEntry(identifier: string, title: string): IMediaChild;
     TryGetEntry(url: string): Promise<IMediaChild>;
     Update(): Promise<void>;
@@ -61,6 +62,19 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
         for (const entry of this.Entries) {
             yield entry;
         }
+    }
+
+    public IsSameAs(other: IMediaContainer): boolean {
+        if(!this.Identifier || !other?.Identifier) {
+            return false;
+        }
+        if(this.Identifier !== other.Identifier) {
+            return false;
+        }
+        if(this.Parent && other.Parent) {
+            return this.Parent.IsSameAs(other.Parent);
+        }
+        return true;
     }
 
     protected async Initialize(): Promise<void> {
