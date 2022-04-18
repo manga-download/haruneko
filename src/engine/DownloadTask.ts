@@ -74,17 +74,17 @@ export class DownloadTask implements IDownloadTask {
         this.UpdateProgress(0);
         this.errors = [];
 
-        const resourcemap = new Map<IMediaItem, string>();
+        const resourcemap = new Map<number, string>();
         try {
             const cancellator = new AbortController();
             this.Abort = cancellator.abort.bind(cancellator);
             await this.Media.Update();
             // TODO: What if no entries?
-            const promises = this.Media.Entries.map(async (item: IMediaItem) => {
+            const promises = this.Media.Entries.map(async (item: IMediaItem, index: number) => {
                 try {
                     const data = await item.Fetch(Priority.Low, cancellator.signal);
                     const resource = await this.storageController.SaveTemporary(data);
-                    resourcemap.set(item, resource);
+                    resourcemap.set(index, resource);
                     this.UpdateProgress(resourcemap.size);
                 } catch(error) {
                     this.errors.push(error instanceof Error ? error : new Error(error?.toString()));

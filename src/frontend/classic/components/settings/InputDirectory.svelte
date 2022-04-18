@@ -1,16 +1,16 @@
 <script lang="ts">
     import { TextInput } from "carbon-components-svelte";
-    import type { Path } from "../../../../engine/SettingsManager";
+    import type { Directory } from "../../../../engine/SettingsManager";
     import { Locale } from "../../SettingsStore";
     import SettingItem from "./SettingItem.svelte";
 
-    export let setting: Path;
-    let current: Path;
-    let value: string;
+    export let setting: Directory;
+    let current: Directory;
+    let value: FileSystemDirectoryHandle;
 
     $: Update(setting);
 
-    function Update(setting: Path) {
+    function Update(setting: Directory) {
         if(current === setting) {
             return;
         }
@@ -24,28 +24,24 @@
         current = setting;
     }
 
-    function OnValueChangedCallback(sender: Path, args: string) {
+    function OnValueChangedCallback(sender: Directory, args: FileSystemDirectoryHandle) {
         if(sender && sender !== current) {
             sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
         } else {
             value = args;
         }
     }
+
+    async function SelectFolder() {
+        const directory = await window['showDirectoryPicker']({
+            startIn: value ?? 'documents'
+        });
+        if(directory) {
+            setting.Value = directory;
+        }
+    }
 </script>
 
 <SettingItem labelText={$Locale[setting.Label]()} helperText={$Locale[setting.Description]()}>
-    <TextInput readonly value={value} />
-    <label for={`folder-selector-${setting.ID}`}>🗁</label>
-    <input id={`folder-selector-${setting.ID}`} type="file" on:change={event => setting.Value = event.currentTarget.value} />
+    <TextInput style="cursor: pointer;" readonly value={value?.name} on:click={SelectFolder} />
 </SettingItem>
-
-<style>
-    input[type="file"] {
-        display: none;
-    }
-    label {
-        display: inline-block;
-        margin-top: 1rem;
-        cursor: pointer;
-    }
-</style>

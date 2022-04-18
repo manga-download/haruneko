@@ -1,4 +1,4 @@
-import type { IWindowController } from '../engine/WindowController';
+import type { IWindowController } from './WindowController';
 
 export interface IFrontendInfo {
     ID: string;

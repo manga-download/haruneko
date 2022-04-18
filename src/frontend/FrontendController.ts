@@ -1,11 +1,12 @@
 import { GetLocale } from '../i18n/Localization';
+import { Event } from '../engine/EventManager';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
 import { Info as InfoJS } from './sample-js/FrontendInfo';
 import { Info as InfoReact } from './sample-react/FrontendInfo';
 import { Info as InfoSvelte } from './sample-svelte/FrontendInfo';
 import { Info as InfoVue } from './sample-vue/FrontendInfo';
-import type { IWindowController } from '../engine/WindowController';
+import { CreateWindowController } from './WindowController';
 
 const frontendSelector = '#app';
 const frontendList: IFrontendInfo[] = [
@@ -23,11 +24,10 @@ export interface IFrontendController {
 
 export class FrontendController implements IFrontendController {
 
-    private readonly windowController: IWindowController;
     private activeFrontendID = '';
+    public static readonly FrontendLoaded = new Event<IFrontendModule, IFrontendInfo>();
 
-    constructor(windowController: IWindowController) {
-        this.windowController = windowController;
+    constructor() {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', this.Load);
         } else {
@@ -81,9 +81,9 @@ export class FrontendController implements IFrontendController {
             const frontend = await this.GetFrontendModuleByID(frontendID);
             const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';
-            await frontend.Render(hook, this.windowController);
+            await frontend.Render(hook, CreateWindowController());
             this.activeFrontendID = frontendID;
-            HakuNeko.EventManager.FrontendLoaded.Dispatch(frontend, this.GetFrontendInfoByID(frontendID));
+            FrontendController.FrontendLoaded.Dispatch(frontend, this.GetFrontendInfoByID(frontendID));
         } catch(error) {
             console.error(`Failed to load frontend!`, error);
         }

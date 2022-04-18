@@ -3,9 +3,7 @@ import { IFrontendController } from './frontend/FrontendController';
 
 declare global {
     const HakuNeko: HakuNeko;
-    const Frontend: IFrontendController;
     interface Window {
         HakuNeko: HakuNeko;
-        Frontend: IFrontendController;
     }
 }

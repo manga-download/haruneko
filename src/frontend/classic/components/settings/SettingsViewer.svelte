@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { ISettings, Check, Choice, Numeric, Path, Secret, Text } from '../../../../engine/SettingsManager';
+    import { ISettings, Check, Choice, Numeric, Directory, Secret, Text } from '../../../../engine/SettingsManager';
     import InputCheck from './InputCheck.svelte';
     import InputChoice from './InputChoice.svelte';
     import InputNumeric from './InputNumeric.svelte';
-    import InputPath from './InputPath.svelte';
+    import InputDirectory from './InputDirectory.svelte';
     import InputSecret from './InputSecret.svelte';
     import InputText from './InputText.svelte';
 
@@ -26,7 +26,7 @@
     {#if setting instanceof Numeric}
         <InputNumeric setting={setting} />
     {/if}
-    {#if setting instanceof Path}
-        <InputPath setting={setting} />
+    {#if setting instanceof Directory}
+        <InputDirectory setting={setting} />
     {/if}
 {/each}

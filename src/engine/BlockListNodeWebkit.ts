@@ -1,20 +1,16 @@
-const blacklist = [
-    '*://*.google.com/*',
-];
-
 function BlockRequests() {
     return {
         cancel: true
     };
 }
 
-export function Initialize(): void {
+export function Initialize(patterns: string[]): void {
     // NOTE: parameter extraInfoSpec:
     //       'blocking'       => sync request required for header modification
     //       'requestHeaders' => allow change request headers?
     //       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
     if(!chrome.webRequest.onBeforeSendHeaders.hasListener(BlockRequests)) {
-        chrome.webRequest.onBeforeSendHeaders.addListener(BlockRequests, { urls: blacklist }, [ 'blocking' ]);
+        chrome.webRequest.onBeforeSendHeaders.addListener(BlockRequests, { urls: patterns }, [ 'blocking' ]);
     }
 
     // TODO: Swith to chrome.declarativeNetRequest

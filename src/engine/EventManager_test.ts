@@ -76,11 +76,13 @@ describe('Event', () => {
 
 describe('EventManager', () => {
 
+    /*
     describe('FrontendLoaded', () => {
         AssertSubscribeOnce(new EventManager().FrontendLoaded);
         AssertInvokeAllSubscriptions(new EventManager().FrontendLoaded);
         AssertUnsubscribe(new EventManager().FrontendLoaded);
     });
+    */
 
     describe('LocaleChanged', () => {
         AssertSubscribeOnce(new EventManager().LocaleChanged);

@@ -1,7 +1,7 @@
 import { mock, mockClear, mockFn } from 'jest-mock-extended';
 import type { HakuNeko } from '../engine/HakuNeko';
 import { Code, ResourceKey } from '../i18n/ILocale';
-import { Check, Text, Secret, Numeric, Choice, SettingsManager, Path, Setting, IValue, ISettings } from './SettingsManager';
+import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, Setting, IValue, ISettings } from './SettingsManager';
 import { StorageController, Store } from './StorageController';
 import type { Event } from './EventManager';
 import { Key } from './SettingsGlobal';
@@ -63,7 +63,7 @@ describe('Settings', () => {
                 { key: '{CHOICE}', label : null as ResourceKey },
                 { key: '{STORED-CHOICE}', label : null as ResourceKey }
             ]),
-            new Path('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '{FILE/DIRECTORY}'),
+            new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, null),
         ];
     }
 
@@ -579,14 +579,14 @@ describe('Choice', () => {
     });
 });
 
-describe('Path', () => {
+describe('Directory', () => {
 
     describe('Constructor', () => {
 
         it('Should construct with correct parameters', async () => {
-            const testee = new Path('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '/path/file');
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
-            expect(testee.Value).toBe('/path/file');
+            expect(testee.Value.name).toBe('/path/file');
             expect(testee.ID).toBe('[ID]:Path');
             expect(testee.Label).toBe('[RES]:Label');
             expect(testee.Description).toBe('[RES]:Description');
@@ -596,45 +596,46 @@ describe('Path', () => {
     describe('Value', () => {
 
         it('Should correctly set value', async () => {
-            const testee = new Path('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '/path/file');
-            testee.Value = '/path/directory';
-            expect(testee.Value).toBe('/path/directory');
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
+            testee.Value = { name: '/path/directory', kind: 'directory' } as FileSystemDirectoryHandle;
+            expect(testee.Value.name).toBe('/path/directory');
         });
     });
 
     describe('ValueChanged', () => {
 
         it('Should not notify on value unchanged when subscribed', async () => {
-            const testee = new Path('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '/path/file');
+            const directory = { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle;
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, directory);
 
-            const callback = mockFn<(sender: Path, args: string) => void>();
+            const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
             testee.ValueChanged.Subscribe(callback);
-            testee.Value = '/path/file';
+            testee.Value = directory;
 
             expect(callback).toBeCalledTimes(0);
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
-            const testee = new Path('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '/path/file');
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
-            const callback = mockFn<(sender: Path, args: string) => void>();
+            const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
             testee.ValueChanged.Subscribe(callback);
             testee.ValueChanged.Unsubscribe(callback);
-            testee.Value = '/path/directory';
+            testee.Value = { name: '/path/directory', kind: 'directory' } as FileSystemDirectoryHandle;
 
             expect(callback).toBeCalledTimes(0);
         });
 
         it('Should notify on value changed when subscribed', async () => {
-            const testee = new Path('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '/path/file');
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
-            const callback = mockFn<(sender: Path, args: string) => void>();
+            const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
             testee.ValueChanged.Subscribe(callback);
             testee.ValueChanged.Subscribe(callback);
-            testee.Value = '/path/directory';
+            testee.Value = { name: '/path/directory', kind: 'directory' } as FileSystemDirectoryHandle;
 
             expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, '/path/directory');
+            expect(callback).toBeCalledWith(testee, testee.Value);
         });
     });
 });

@@ -2,9 +2,7 @@ import { Request as RequestMock } from 'node-fetch';
 import { mockClear, mockFn } from 'jest-mock-extended';
 global.Request = RequestMock;
 global.fetch = mockFn<(input: RequestInfo, init?: RequestInit) => Promise<Response>>();
-
-import { HeadersView } from './transformers/HeadersView';
-import { ConcealFetchAPIHeaders, RevealFetchAPIHeaders, FetchRequest, Fetch } from './FetchProvider';
+import { ConcealFetchHeaders, RevealWebRequestHeaders, FetchRequest, Fetch } from './FetchProviderNodeWebkit';
 
 describe('FetchProvider', () => {
 
@@ -18,7 +16,7 @@ describe('FetchProvider', () => {
                 'Host': 'domain',
                 'Origin': 'protocol://origin'
             });
-            ConcealFetchAPIHeaders(headers);
+            ConcealFetchHeaders(headers);
 
             expect(headers.get('Content-Type')).toBe('application/json');
             expect(headers.has('X-FetchAPI-Content-Type')).toBeFalsy();
@@ -31,6 +29,8 @@ describe('FetchProvider', () => {
             expect(headers.has('Origin')).toBeFalsy();
             expect(headers.get('X-FetchAPI-Origin')).toBe('protocol://origin');
         });
+
+        // TODO: test case sensitivity
     });
 
     describe('RevealFetchAPIHeaders', () => {
@@ -43,20 +43,24 @@ describe('FetchProvider', () => {
                 { name: 'X-FetchAPI-Host', value: 'domain' },
                 { name: 'X-FetchAPI-Origin', value: 'protocol://origin' }
             ];
-            RevealFetchAPIHeaders(new HeadersView(headers));
+            const actual = RevealWebRequestHeaders(headers);
 
-            expect(headers.length).toBe(5);
-            expect(headers.find(h => h.name === 'X-FetchAPI-Content-Type')?.value).toBe('application/json');
-            expect(headers.find(h => h.name === 'Content-Type')).toBeUndefined();
-            expect(headers.find(h => h.name === 'X-FetchAPI-User-Agent')).toBeUndefined();
-            expect(headers.find(h => h.name === 'User-Agent')?.value).toBe('UserAgent');
-            expect(headers.find(h => h.name === 'X-FetchAPI-Referer')).toBeUndefined();
-            expect(headers.find(h => h.name === 'Referer')?.value).toBe('protocol://domain');
-            expect(headers.find(h => h.name === 'X-FetchAPI-Host')).toBeUndefined();
-            expect(headers.find(h => h.name === 'Host')?.value).toBe('domain');
-            expect(headers.find(h => h.name === 'X-FetchAPI-Origin')).toBeUndefined();
-            expect(headers.find(h => h.name === 'Origin')?.value).toBe('protocol://origin');
+            expect(actual.length).toBe(5);
+            expect(actual.find(h => h.name === 'X-FetchAPI-Content-Type')).toBeUndefined();
+            expect(actual.find(h => h.name === 'Content-Type')?.value).toBe('application/json');
+            expect(actual.find(h => h.name === 'X-FetchAPI-User-Agent')).toBeUndefined();
+            expect(actual.find(h => h.name === 'User-Agent')?.value).toBe('UserAgent');
+            expect(actual.find(h => h.name === 'X-FetchAPI-Referer')).toBeUndefined();
+            expect(actual.find(h => h.name === 'Referer')?.value).toBe('protocol://domain');
+            expect(actual.find(h => h.name === 'X-FetchAPI-Host')).toBeUndefined();
+            expect(actual.find(h => h.name === 'Host')?.value).toBe('domain');
+            expect(actual.find(h => h.name === 'X-FetchAPI-Origin')).toBeUndefined();
+            expect(actual.find(h => h.name === 'Origin')?.value).toBe('protocol://origin');
         });
+
+        // TODO: test replace existing headers, e.g. referer
+
+        // TODO: test case sensitivity
     });
 });
 

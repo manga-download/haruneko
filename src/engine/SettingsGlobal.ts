@@ -1,4 +1,4 @@
-import { SettingsManager, Check, Numeric, Text, Secret, Choice, Path } from './SettingsManager';
+import { SettingsManager, Check, Numeric, Text, Secret, Choice, Directory } from './SettingsManager';
 import { Code, ResourceKey as R } from '../i18n/ILocale';
 import { GetLocale } from '../i18n/Localization';
 import type { EventManager } from './EventManager';
@@ -27,11 +27,11 @@ export async function Initialize(settingsManager: SettingsManager, eventManager:
             { key: Code.fr_FR, label: R.Settings_Global_Language_frFR },
             { key: Code.de_DE, label: R.Settings_Global_Language_deDE },
         ),
-        new Path(
+        new Directory(
             Key.MediaDirectory,
             R.Settings_Global_MediaDirectory,
             R.Settings_Global_MediaDirectoryInfo,
-            ''
+            null
         ),
         new Check(
             Key.UseWebsiteSubDirectory,

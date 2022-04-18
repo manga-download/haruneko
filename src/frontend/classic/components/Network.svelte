@@ -16,11 +16,12 @@
 
     let requests: Map<string, Request> = new Map();
 
-    import { onMount } from "svelte";
     //var tabId:number = parseInt(window.location.search.substring(1));
     //console.log(tabId);
     var tab: any;
 
+    /*
+    Frontend should not access paltform specific interfaces such as `chrome` or `nw`
     onMount(async () => {
         chrome.tabs.query({}, function (tabs) {
             tab = tabs[0];
@@ -33,6 +34,7 @@
     window.addEventListener("unload", function () {
         chrome.debugger.detach({ tabId: tab.id });
     });
+    */
 
     function onEvent(debuggeeId: any, message: any, params: any) {
         if (tab.id != debuggeeId.tabId) return;

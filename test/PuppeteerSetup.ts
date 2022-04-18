@@ -36,11 +36,11 @@ async function LaunchNW() {
         const pages = await browser.pages();
         const page = pages.find(p => p.url() === nwURL);
         if(page) {
-            console.log(new Date().toISOString(), '=>', 'Using Page:', page.url());
+            console.log(new Date().toISOString(), '=>', 'Using Page:', [ page.url() ]);
             global.PAGE = page;
             return browser;
         } else {
-            console.log(new Date().toISOString(), '=>', 'Waiting for Page(s)', pages.map(p => p.url()));
+            console.log(new Date().toISOString(), '=>', 'Waiting for Page(s):', pages.map(p => p.url()));
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
@@ -55,6 +55,6 @@ export default async function(config: Config.ConfigGlobals) {
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
-    global.SERVER = spawn(viteExe, [ 'preview' ]);
+    global.SERVER = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { stdio: [ 'pipe', process.stdout, process.stderr ] });
     global.BROWSER = await LaunchNW();
 };

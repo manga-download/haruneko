@@ -1,6 +1,5 @@
-import type { IMediaContainer, IMediaItem } from "./providers/MediaPlugin";
-
-const DataBase = 'HakuNeko';
+import { type PlatformInfo, Runtime, CreateUnsupportedPlatformError, DetectPlatform } from './Platform';
+import { StorageControllerBrowser } from './StorageControllerBrowser';
 
 export const enum Store {
     Settings = 'Settings',
@@ -8,159 +7,53 @@ export const enum Store {
     MediaLists = 'MediaLists',
 }
 
-const enum InternalStore {
-    TemporaryData = 'TemporaryData',
+export interface StorageController {
+    SavePersistent<T>(value: T, store: Store, key?: string): Promise<void>;
+    LoadPersistent<T>(store: Store, key?: string): Promise<T>;
+    RemovePersistent(store: Store, ...keys: string[]): Promise<void>;
+    SaveTemporary<T>(value: T): Promise<string>;
+    LoadTemporary<T>(key: string): Promise<T>;
+    RemoveTemporary(...keys: string[]): Promise<void>;
 }
 
-type UnitedStore = Store | InternalStore;
+export function CreateStorageController(info?: PlatformInfo): StorageController {
 
-const VersionUpgrades = [
-    // V0 => V1
-    function V1(db: IDBDatabase) {
-        db.createObjectStore(Store.Settings);
-    },
-    // V1 => V2
-    function V2(db: IDBDatabase) {
-        db.createObjectStore(Store.Bookmarks);
-    },
-    // V2 => V3
-    function V3(db: IDBDatabase) {
-        db.createObjectStore(Store.MediaLists);
-    },
-    // V3 => V4
-    function V4(db: IDBDatabase) {
-        db.createObjectStore(InternalStore.TemporaryData);
-    },
-];
+    info = info ?? DetectPlatform();
 
-const Version = VersionUpgrades.length;
-
-export class StorageController {
-
-    private async Connect(): Promise<IDBDatabase> {
-        const connection = indexedDB.open(DataBase, Version);
-        return new Promise<IDBDatabase>((resolve, reject) => {
-            connection.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-                const db = connection.result; // => event.target.result
-                for(let version = event.oldVersion; version < event.newVersion; version++) {
-                    VersionUpgrades[version](db);
-                }
-            };
-            connection.onsuccess = () => resolve(connection.result);
-            connection.onerror = () => reject(connection.error);
-        });
+    if([ Runtime.Chrome, Runtime.Gecko, Runtime.WebKit ].includes(info.Runtime)) {
+        return new StorageControllerBrowser();
     }
 
-    private async SaveIDB<T>(value: T, store: UnitedStore, key?: string): Promise<void> {
-        const db = await this.Connect();
-        const tx = db.transaction(store, 'readwrite');
-        const bucket = tx.objectStore(store);
-        const queries = key ? [ bucket.put(value, key) ] : Object.keys(value).map(key => bucket.put(value[key], key));
-        const promises = queries.map(query => new Promise<void>((resolve, reject) => {
-            query.onsuccess = () => resolve(/*query.result*/);
-            query.onerror = () => reject(query.error);
-        }));
-        tx.oncomplete = () => db.close();
-        tx.commit();
-        await Promise.all(promises);
+    if(info.Runtime === Runtime.NodeWebkit) {
+        return new StorageControllerBrowser();
     }
 
-    private async LoadIDB<T>(store: UnitedStore, key?: string): Promise<T> {
-        const db = await this.Connect();
-        const tx = db.transaction(store, 'readonly');
-        const bucket = tx.objectStore(store);
-        const query = key ? bucket.get(key) : bucket.getAll();
-        const promise = new Promise<T>((resolve, reject) => {
-            query.onsuccess = () => resolve(query.result as T);
-            query.onerror = () => reject(query.error);
-        });
-        tx.oncomplete = () => db.close();
-        tx.commit();
-        return promise;
-    }
-
-    private async RemoveIDB(store: UnitedStore, ...keys: string[]): Promise<void> {
-        const db = await this.Connect();
-        const tx = db.transaction(store, 'readwrite');
-        const bucket = tx.objectStore(store);
-        const queries = keys.length > 0 ? keys.map(key => bucket.delete(key)) : [ bucket.clear() ];
-        const promises = queries.map(query => new Promise<void>((resolve, reject) => {
-            query.onsuccess = () => resolve(/*query.result*/);
-            query.onerror = () => reject(query.error);
-        }));
-        tx.oncomplete = () => db.close();
-        tx.commit();
-        await Promise.all(promises);
-    }
-
-    public async SavePersistent<T>(value: T, store: Store, key?: string): Promise<void> {
-        //console.warn('StorageController.SavePersistent()', '=>', 'Not fully implemented!');
-        // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
-        //                  chrome.storage.local.set({ key: data }, () => {});
-        //return localStorage.setItem(`${store}.${key}`, JSON.stringify(value));
-        return this.SaveIDB(value, store, key);
-    }
-
-    public async LoadPersistent<T>(store: Store, key?: string): Promise<T> {
-        //console.warn('StorageController.LoadPersistent()', '=>', 'Not fully implemented!');
-        // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
-        //                  chrome.storage.local.get(key, data => data[key]);
-        //return JSON.parse(localStorage.getItem(`${store}.${key}`)) as T;
-        return this.LoadIDB(store, key);
-    }
-
-    public async RemovePersistent(store: Store, ...keys: string[]): Promise<void> {
-        //console.warn('StorageController.RemovePersistent()', '=>', 'Not fully implemented!');
-        // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
-        //                  chrome.storage.local.remove(key, () => {});
-        //return localStorage.removeItem(`${store}.${key}`);
-        return this.RemoveIDB(store, ...keys);
-    }
-
-    public async SaveTemporary<T>(value: T): Promise<string> {
-        const key = Date.now().toString() + Math.random().toString();
-        await this.SaveIDB(value, InternalStore.TemporaryData, key);
-        return key;
-    }
-
-    public async LoadTemporary<T>(key: string): Promise<T> {
-        return this.LoadIDB(InternalStore.TemporaryData, key);
-    }
-
-    public async RemoveTemporary(...keys: string[]): Promise<void> {
-        return this.RemoveIDB(InternalStore.TemporaryData, ...keys);
-    }
-
-    private async SaveFile(): Promise<void> {
-        console.warn('StorageController.SaveFile()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
-
-    public async SaveMedia(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        // TODO:
-        // - Detect media type (e.g. manga, anime, novel, ...)
-        // - Determine media format (e.g. images, cbz, hls, mp4, ...)
-        console.warn('StorageController.SaveMedia()', '=>', 'Not implemented!');
-        return this.SaveImages(container, resources);
-    }
-
-    private async SaveImages(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        console.warn('StorageController.SaveImages()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
-
-    private async SaveCBZ(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        console.warn('StorageController.SaveCBZ()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
-
-    private async SavePDF(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        console.warn('StorageController.SavePDF()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
-
-    private async SaveEPUB(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        console.warn('StorageController.SaveEPUB()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
+    throw CreateUnsupportedPlatformError(info);
 }
+
+export function SanitizeFileName(name: string): string {
+    const lookup = {
+        '<' : '＜', // https://unicode-table.com/en/FF1C/
+        '>' : '＞', // https://unicode-table.com/en/FF1E/
+        ':' : '﹕', // https://unicode-table.com/en/FF1A/, https://unicode-table.com/en/FE55/
+        '"' : '＂', // https://unicode-table.com/en/FF02/
+        '/' : '／', // https://unicode-table.com/en/FF0F/
+        '\\': '＼', // https://unicode-table.com/en/FF3C/
+        '|' : '｜', // https://unicode-table.com/en/FF5C/
+        '?' : '？', // https://unicode-table.com/en/FF1F/, https://unicode-table.com/en/FE56/
+        '*' : '＊', // https://unicode-table.com/en/FF0A/
+    };
+    return name.replace(/./g, c => c.charCodeAt(0) < 32 ? '' : lookup[c] ?? c).replace(/[\s.]+$/, '').trim() || 'untitled';
+}
+
+/*
+// https://fjolt.com/article/javascript-new-file-system-api
+
+const dir = HakuNeko.SettingsManager.OpenScope('*').Get('media-directory').Value;
+console.log(dir.values());
+for(const entry of dir.values())
+
+//const file = await dir.getFileHandle(Date.now().toString(16).toUpperCase() + '.txt', { create: true });
+// file.write(blob);
+// file.close();
+*/

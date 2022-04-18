@@ -8,7 +8,12 @@ html, body, #app, #hakuneko-notice {
 }
 
 #hakuneko-notice {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: lightgrey;
     text-align: center;
     padding: 2em;
+}
+
+#hakuneko-notice a {
+    text-decoration: none;
 }

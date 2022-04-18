@@ -23,6 +23,5 @@ export class Event<TSender, TArgs> {
 }
 
 export class EventManager {
-    public readonly FrontendLoaded: Event<IFrontendModule, IFrontendInfo> = new Event<IFrontendModule, IFrontendInfo>();
     public readonly LocaleChanged: Event<void, ILocale> = new Event<void, ILocale>();
 }

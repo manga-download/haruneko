@@ -15,7 +15,7 @@ function Decrypt(encrypted: string) {
     return window.atob(encrypted);
 }
 
-export type IValue = string | boolean | number;
+export type IValue = string | boolean | number | FileSystemDirectoryHandle;
 
 class Setting<T extends IValue> {
 
@@ -149,9 +149,9 @@ export class Numeric extends Setting<number> {
     }
 }
 
-export class Path extends Setting<string> {
+export class Directory extends Setting<FileSystemDirectoryHandle> {
 
-    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: string) {
+    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: FileSystemDirectoryHandle) {
         super(id, label, description, initial);
     }
 }

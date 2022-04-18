@@ -1,0 +1,44 @@
+export function Initialize(): void {
+    //
+}
+
+export class FetchRequest extends Request {
+
+    public constructor(input: RequestInfo, init?: RequestInit) {
+        super(input, init);
+    }
+}
+
+async function Wait(delay: number) {
+    return new Promise(resolve => setTimeout(resolve, delay));
+}
+
+export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay = 0, timeout?: number): Promise<T[]> {
+    /*
+    const win = window.open(request.url);
+    win.blur();
+    window.focus();
+    try {
+        await Wait(delay || 1000);
+        return [];
+    } finally{
+        win.close();
+    }
+    */
+    return [];
+}
+
+export async function FetchWindowScript<T>(request: FetchRequest, script: string, delay = 0, timeout?: number): Promise<T> {
+    /*
+    const win = window.open(request.url);
+    win.blur();
+    window.focus();
+    try {
+        await Wait(delay || 1000);
+        return null;
+    } finally{
+        win.close();
+    }
+    */
+    return null;
+}

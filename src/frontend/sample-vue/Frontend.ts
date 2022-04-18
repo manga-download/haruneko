@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import type { IWindowController } from '../../engine/WindowController';
+import type { IWindowController } from '../WindowController';
 import type { IFrontendModule } from '../IFrontend';
 import App from './App.vue';
 

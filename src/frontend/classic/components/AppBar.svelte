@@ -30,12 +30,14 @@
 
     window.addEventListener('resize', updateWindowState);
 
+    let showWindowControls = false;
     let minimize: () => void;
     let maximize: () => void;
     let restore: () => void;
     let close: () => void;
 
     $: if ($WindowController) {
+        showWindowControls = $WindowController.HasControls;
         minimize = $WindowController.Minimize.bind($WindowController);
         maximize = $WindowController.Maximize.bind($WindowController);
         restore = $WindowController.Restore.bind($WindowController);
@@ -55,21 +57,23 @@
         <SkipToContent />
     </div>
     <HeaderUtilities>
-        <HeaderGlobalAction
-            on:click={minimize}
-            aria-label="Minimize"
-            icon={MinimizeIcon}
-        />
-        <HeaderGlobalAction
-            on:click={() => (winMaximized ? restore() : maximize())}
-            aria-label="Maximize"
-            icon={winMaximized ? RestoreIcon : MaximizeIcon}
-        />
-        <HeaderGlobalAction
-            on:click={() => close()}
-            aria-label="Close"
-            icon={CloseIcon}
-        />
+        {#if showWindowControls}
+            <HeaderGlobalAction
+                on:click={minimize}
+                aria-label="Minimize"
+                icon={MinimizeIcon}
+            />
+            <HeaderGlobalAction
+                on:click={() => (winMaximized ? restore() : maximize())}
+                aria-label="Maximize"
+                icon={winMaximized ? RestoreIcon : MaximizeIcon}
+            />
+            <HeaderGlobalAction
+                on:click={() => close()}
+                aria-label="Close"
+                icon={CloseIcon}
+            />
+        {/if}
         <HeaderAction bind:isOpen>
             <!-- Show global HakuNeko settings?
             <SettingsViewer scope={Scope} />

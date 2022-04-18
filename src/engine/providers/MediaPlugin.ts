@@ -99,7 +99,7 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
 export abstract class StoreableMediaContainer<T extends IMediaItem> extends MediaContainer<T> {
 
     public abstract get IsStored(): boolean;
-    public abstract Store(resources: Map<T, string>): Promise<void>;
+    public abstract Store(resources: Map<number, string>): Promise<void>;
 }
 
 export abstract class MediaScraper<T extends IMediaContainer> {

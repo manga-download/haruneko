@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { render } from 'react-dom';
-import type { IWindowController } from '../../engine/WindowController';
+import type { IWindowController } from '../WindowController';
 import type { IFrontendModule } from '../IFrontend';
 import App from './App';
 

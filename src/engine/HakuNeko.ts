@@ -1,26 +1,37 @@
-import { Initialize as InitBlacklist } from './Blacklist';
+import { DetectPlatform, type PlatformInfo } from './Platform';
+import { Initialize as InitBlockList } from './BlockList';
 import { Initialize as InitFetchProvider } from './FetchProvider';
 import { Initialize as InitGlobalSettings } from './SettingsGlobal';
 import { Tags } from './Tags';
 import { EventManager } from './EventManager';
 import { PluginController } from './PluginController';
 import { BookmarkPlugin } from './providers/BookmarkPlugin';
-import { StorageController } from './StorageController';
+import { CreateStorageController, type StorageController } from './StorageController';
 import { SettingsManager } from './SettingsManager';
 import { DownloadManager } from './DownloadManager';
 
 export class HakuNeko {
 
-    private readonly _eventManager: EventManager = new EventManager();
-    private readonly _storageController: StorageController = new StorageController();
-    private readonly _settingsManager: SettingsManager = new SettingsManager(this._storageController);
-    private readonly _pluginController: PluginController = new PluginController(this._storageController, this._settingsManager);
-    private readonly _bookmarkPlugin: BookmarkPlugin = new BookmarkPlugin(this._storageController, this._pluginController);
-    private readonly _downloadManager: DownloadManager = new DownloadManager(this._storageController, this._settingsManager);
+    readonly #eventManager: EventManager;
+    readonly #storageController: StorageController;
+    readonly #settingsManager: SettingsManager;
+    readonly #pluginController: PluginController;
+    readonly #bookmarkPlugin: BookmarkPlugin;
+    readonly #downloadManager: DownloadManager;
+
+    constructor(info?: PlatformInfo) {
+        info = info ?? DetectPlatform();
+        InitBlockList(info);
+        InitFetchProvider(info);
+        this.#eventManager = new EventManager();
+        this.#storageController = CreateStorageController(info);
+        this.#settingsManager = new SettingsManager(this.#storageController);
+        this.#pluginController = new PluginController(this.#storageController, this.#settingsManager);
+        this.#bookmarkPlugin = new BookmarkPlugin(this.#storageController, this.#pluginController);
+        this.#downloadManager = new DownloadManager(this.#storageController, this.#settingsManager);
+    }
 
     public async Initialze(): Promise<void> {
-        InitBlacklist();
-        InitFetchProvider();
         await InitGlobalSettings(this.SettingsManager, this.EventManager);
     }
 
@@ -29,22 +40,22 @@ export class HakuNeko {
     }
 
     public get EventManager(): EventManager {
-        return this._eventManager;
+        return this.#eventManager;
     }
 
     public get PluginController(): PluginController {
-        return this._pluginController;
+        return this.#pluginController;
     }
 
     public get SettingsManager(): SettingsManager {
-        return this._settingsManager;
+        return this.#settingsManager;
     }
 
     public get BookmarkPlugin(): BookmarkPlugin {
-        return this._bookmarkPlugin;
+        return this.#bookmarkPlugin;
     }
 
     public get DownloadManager(): DownloadManager {
-        return this._downloadManager;
+        return this.#downloadManager;
     }
 }

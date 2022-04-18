@@ -1,8 +1,9 @@
-import type { ISettings, SettingsManager } from '../SettingsManager';
-import { StorageController, Store } from '../StorageController';
+import { Key, Scope } from '../SettingsGlobal';
+import type { Check, Directory, ISettings, SettingsManager } from '../SettingsManager';
+import { SanitizeFileName, StorageController, Store } from '../StorageController';
 import type { Tag } from '../Tags';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
-import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
+import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper, IMediaContainer } from './MediaPlugin';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -143,10 +144,45 @@ export class Chapter extends StoreableMediaContainer<Page> {
         return false;
     }
 
-    public async Store(resources: Map<Page, string>): Promise<void> {
-        // TODO:
-        // - Save temporary resources to file system
-        // - Perform post processing (e.g. pdf, ffmpeg, ...)
+    public async Store(resources: Map<number, string>): Promise<void> {
+        // TODO: Inject settings manager and global scope identifier?
+        const settings = HakuNeko.SettingsManager.OpenScope(Scope);
+        let directory = settings.Get<Directory>(Key.MediaDirectory).Value;
+        if(!directory) {
+            throw new Error();
+        }
+        if(settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {
+            const website = SanitizeFileName(this.Parent?.Parent?.Title);
+            directory = await directory.getDirectoryHandle(website, { create: true });
+        }
+        if(this.Parent) {
+            const manga = SanitizeFileName(this.Parent?.Title);
+            directory = await directory.getDirectoryHandle(manga, { create: true });
+        }
+        //if(/* ouput format folder with images ... */) {
+        await this.StoreImageFolder(directory, resources);
+        //}
+    }
+
+    private async StoreImageFolder(directory: FileSystemDirectoryHandle, resources: Map<number, string>): Promise<void> {
+        const chapter = SanitizeFileName(this.Title);
+        directory = await directory.getDirectoryHandle(chapter, { create: true });
+        // TODO: delete all existing entries?
+        const digits = resources.size.toString().length;
+        for(const index of resources.keys()) {
+            // TODO: inject storage controller
+            const sc = this.Parent?.Parent['storageController'] as StorageController;
+            const data = await sc.LoadTemporary<Blob>(resources.get(index));
+            // TODO: determine file extension based on mime type
+            const extension = '.jpg';
+            const name = (index + 1).toString().padStart(digits, '0') + extension;
+            const file = await directory.getFileHandle(name, { create: true });
+            const stream = await file.createWritable();
+            await stream.write(data);
+            await stream.close();
+        } // TODO: Maybe parallelization of storing files?
+
+        // Perform post processing (e.g. pdf, ffmpeg, ...)
     }
 }
 

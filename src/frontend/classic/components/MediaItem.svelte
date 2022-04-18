@@ -18,7 +18,7 @@
     <div class="listitem" class:selected on:click on:contextmenu>
         <CloudDownload16
             class="download"
-            on:click={() => dispatch("download", item)}
+            on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
         />
         <Image16 class="viewer" on:click={() => dispatch("view", item)} />
         <Bookmark16
