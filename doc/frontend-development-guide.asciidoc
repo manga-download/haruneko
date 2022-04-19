@@ -249,8 +249,8 @@ Create a react component such as `/src/frontend/sheep-ui/App.tsx`, presenting th
 //       See: https://github.com/sveltejs/language-tools/blob/master/packages/svelte2tsx/svelte-jsx.d.ts
 //       As a result, svelte-check will report false positives when type checking real react TSX components ...
 //       Further reading: https://github.com/sveltejs/language-tools/issues/1256#issuecomment-983371138
-//       Temporary solution: ts-ignore the whole file
-// @ts-nocheck
+//       Temporary solution: use '--use-new-transformation' flag for svelte-check
+
 import * as React from 'react';
 import { CSSProperties, useState } from 'react';
 
@@ -289,16 +289,16 @@ Modify the frontend to load the react app component.
 ====
 ```typescript
 import { createElement } from 'react';
-import { render } from 'react-dom';
-import type { IWindowController } from '../../engine/WindowController';
+import { createRoot } from 'react-dom/client';
 import type { IFrontendModule } from '../IFrontend';
+//import type { IWindowController } from '../../engine/WindowController';
 import App from './App';
 
 class SampleReact implements IFrontendModule {
-    async Render(root: HTMLElement, windowController: IWindowController): Promise<void> {
-        // Mount react app
-        render(createElement(App as any), root);
-        // Wait for frontend to be loaded and rendered
+    async Render(root: HTMLElement/*, windowController: IWindowController*/): Promise<void> {
+        const app = createElement(App as React.FunctionComponent<JSX.Element>);
+        createRoot(root).render(app);
+        // wait for frontend to be loaded and rendered
         await new Promise(resolve => setTimeout(resolve, 2500));
     }
 }
