@@ -23,11 +23,12 @@
     import ContentDeliveryNetwork24 from 'carbon-icons-svelte/lib/ContentDeliveryNetwork24';
 
     import SettingsMenu from './settings/SettingsModal.svelte';
+    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
     export let isSideNavOpen = false;
     //Settings Modal
     let settingsSelectedTabs = 0;
-    let settingsPreselectedPlugin;
+    let settingsPreselectedPlugin: IMediaContainer;
     let isSettingsModalOpen = false;
 
     function openExternalLink(url: string) {

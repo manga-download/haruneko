@@ -9,7 +9,6 @@
     export let item: IMediaContainer;
     export let mode: Mode = 'Thumbnail';
     let currentImageIndex: number = 0;
-    let throttlingDelay = 1000;
 
     let update: Promise<void> | undefined;
     $: update = item?.Update();

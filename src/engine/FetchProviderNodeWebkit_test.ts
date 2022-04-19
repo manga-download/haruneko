@@ -1,6 +1,4 @@
-import { Request as RequestMock } from 'node-fetch';
 import { mockClear, mockFn } from 'jest-mock-extended';
-global.Request = RequestMock;
 global.fetch = mockFn<(input: RequestInfo, init?: RequestInit) => Promise<Response>>();
 import { ConcealFetchHeaders, RevealWebRequestHeaders, FetchRequest, Fetch } from './FetchProviderNodeWebkit';
 

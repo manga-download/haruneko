@@ -3,7 +3,6 @@
         Button,
         Search,
         Dropdown,
-        InlineLoading,
         ContextMenu,
         ContextMenuDivider,
         ContextMenuGroup,
@@ -134,32 +133,20 @@
         <Search size="sm" bind:value={itemNameFilter} />
     </div>
     <div id="ItemList" class="list" bind:this={itemsdiv}>
-        {#await items}
-            <InlineLoading status="active" description="Working..." />
-        {:then}
-            {#each filteredItems as item}
-                <MediaItem
-                    {item}
-                    selected={selectedItems.includes(item)}
-                    on:view={(e) => {
-                        selectedItems.push(e.detail);
-                        dispatch("view", item);
-                    }}
-                    on:click={(e) => onItemClick(item, e)}
-                />
-            {/each}
-        {:catch error}
-            <p style="color: red">{error}</p>
-        {/await}
+        {#each filteredItems as item}
+            <MediaItem
+                {item}
+                selected={selectedItems.includes(item)}
+                on:view={(e) => {
+                    selectedItems.push(e.detail);
+                    dispatch("view", item);
+                }}
+                on:click={(e) => onItemClick(item, e)}
+            />
+        {/each}
     </div>
     <div id="ItemCount">
-        {#await items}
-            Items: ?
-        {:then items}
-            Items: {filteredItems.length}/{items.length}
-        {:catch}
-            Items: ?
-        {/await}
+        Items: {filteredItems.length}/{items.length}
     </div>
 </div>
 

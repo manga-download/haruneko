@@ -1,4 +1,3 @@
-import type { IFrontendInfo, IFrontendModule } from '../frontend/IFrontend';
 import type { ILocale } from '../i18n/ILocale';
 
 export class Event<TSender, TArgs> {

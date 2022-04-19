@@ -3,7 +3,6 @@
         ComboBox,
         Button,
         Search,
-        InlineLoading,
     } from 'carbon-components-svelte';
     import PlugFilled16 from 'carbon-icons-svelte/lib/PlugFilled16';
     import UpdateNow16 from 'carbon-icons-svelte/lib/UpdateNow16';
@@ -175,13 +174,7 @@
         </VirtualList>
     </div>
     <div id="MediaCount">
-        {#await medias}
-            Medias : ?
-        {:then medias}
-            Medias : {filteredmedias.length}/{medias.length}
-        {:catch}
-            Medias : ?
-        {/await}
+        Medias : {filteredmedias.length}/{medias.length}
     </div>
 </div>
 

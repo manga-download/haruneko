@@ -108,7 +108,7 @@ export class DownloadTask implements IDownloadTask {
         }
     }
 
-    private DisabledAbort(_reason?: string) { /* NO-OP */ }
+    private DisabledAbort(/*_reason?: string*/) { /* NO-OP */ }
 
     public Abort = this.DisabledAbort;
 }

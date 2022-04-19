@@ -28,7 +28,7 @@ export class HakuNeko {
         this.#settingsManager = new SettingsManager(this.#storageController);
         this.#pluginController = new PluginController(this.#storageController, this.#settingsManager);
         this.#bookmarkPlugin = new BookmarkPlugin(this.#storageController, this.#pluginController);
-        this.#downloadManager = new DownloadManager(this.#storageController, this.#settingsManager);
+        this.#downloadManager = new DownloadManager(this.#storageController);
     }
 
     public async Initialze(): Promise<void> {

@@ -3,7 +3,7 @@ import type { Check, Directory, ISettings, SettingsManager } from '../SettingsMa
 import { SanitizeFileName, StorageController, Store } from '../StorageController';
 import type { Tag } from '../Tags';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
-import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper, IMediaContainer } from './MediaPlugin';
+import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -34,26 +34,32 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
  */
 export class DecoratableMangaScraper extends MangaScraper {
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public ValidateMangaURL(url: string): boolean {
         return false;
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         throw new Error();
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         throw new Error();
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchChapters(manga: Manga): Promise<Chapter[]> {
         throw new Error();
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchPages(chapter: Chapter): Promise<Page[]> {
         throw new Error();
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         throw new Error();
     }

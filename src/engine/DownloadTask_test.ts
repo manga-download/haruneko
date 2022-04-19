@@ -8,7 +8,7 @@ function MockItem(resolve: boolean, delay: number = undefined) {
     const item = mock<IMediaItem>();
     if(resolve) {
         if(delay) {
-            item.Fetch.mockReturnValue(new Promise((resolve, _) => setTimeout(resolve, 5)));
+            item.Fetch.mockReturnValue(new Promise(resolve => setTimeout(resolve, 5)));
         } else {
             item.Fetch.mockResolvedValue(null);
         }

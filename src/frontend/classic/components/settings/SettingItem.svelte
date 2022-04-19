@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SideNavDivider, Tooltip } from 'carbon-components-svelte';
+    import { Tooltip } from 'carbon-components-svelte';
     export let labelText: string = '';
     export let helperText: string = '';
     export let type: 'sub-menu' | 'item' = 'item';

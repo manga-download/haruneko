@@ -1,5 +1,3 @@
-import { Request as RequestMock } from 'node-fetch';
-global.Request = RequestMock;
 import { mock } from 'jest-mock-extended';
 import type { ISettings, SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';

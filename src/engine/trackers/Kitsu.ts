@@ -4,6 +4,21 @@ import type { IMediaInfoTracker, Info, Suggestion, TrackingStatus } from '../pro
 import { type SettingsManager, type ISettings , Text, Secret } from '../SettingsManager';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 
+type APIManga = {
+    data: {
+        attributes: {
+            canonicalTitle: string
+            titles: Record<string, string> // localized names
+            description: string
+            synopsis: string
+            startDate: string // ISO string
+            posterImage: {
+                medium: string // URL
+            }
+        }
+    }
+};
+
 export class Kitsu implements IMediaInfoTracker {
 
     private readonly endpoint = 'https://kitsu.io/api/edge';
@@ -33,12 +48,13 @@ export class Kitsu implements IMediaInfoTracker {
 
     public Search(title: string): Suggestion[] {
         // https://kitsu.io/api/edge/manga?filter[text]=${text}&page[limit]=20
+        console.log('Kitsu.Search()', title);
         return [];
     }
 
     public async GetInfo(identifier: string): Promise<Info> {
         identifier = '/manga/35';
-        const data = await FetchJSON<any>(new FetchRequest(this.endpoint + identifier));
+        const data = await FetchJSON<APIManga>(new FetchRequest(this.endpoint + identifier));
         const attributes = data.data.attributes;
         return {
             Identifier: identifier,
@@ -52,10 +68,12 @@ export class Kitsu implements IMediaInfoTracker {
     }
 
     public async GetStatus(identifier: string): Promise<TrackingStatus> {
+        console.log('Kitsu.GetStatus()', identifier);
         throw new Error('Method not implemented.');
     }
 
     public async SetStatus(identifier: string, status: TrackingStatus): Promise<void> {
+        console.log('Kitsu.SetStatus()', identifier, status);
         throw new Error('Method not implemented.');
     }
 }

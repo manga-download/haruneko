@@ -3,8 +3,8 @@
 //       See: https://github.com/sveltejs/language-tools/blob/master/packages/svelte2tsx/svelte-jsx.d.ts
 //       As a result, svelte-check will report false positives when type checking real react TSX components ...
 //       Further reading: https://github.com/sveltejs/language-tools/issues/1256#issuecomment-983371138
-//       Temporary solution: ts-ignore the whole file
-// @ts-nocheck
+//       Temporary solution: use '--use-new-transformation' flag for svelte-check
+
 import * as React from 'react';
 import { CSSProperties, useState } from 'react';
 

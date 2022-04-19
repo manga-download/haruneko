@@ -7,7 +7,7 @@
     "type": "module",
     "main": "https://haruneko.pages.dev",
     "scripts": {
-        "check": "eslint ./src && svelte-check  --tsconfig=tsconfig.json && vue-tsc --skipLibCheck --noEmit",
+        "check": "eslint ./src && svelte-check --tsconfig=tsconfig.json --use-new-transformation && vue-tsc --skipLibCheck --noEmit",
         "build:web": "vite build",
         "build:app": "node scripts/build-app.mjs",
         "test": "jest --detectOpenHandles --config=test/jest.config.js",
@@ -48,7 +48,7 @@
         "jest-junit": "^13.0.0",
         "jest-mock-extended": "^2.0.4",
         "jsdom": "^19.0.0",
-        "nw": "0.63.0-sdk",
+        "nw": "0.63.1-sdk",
         "plist": "^3.0.4",
         "puppeteer-core": "^13.0.1",
         "react": "^18.0.0",

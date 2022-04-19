@@ -85,11 +85,13 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
         this.Initialize = () => Promise.resolve();
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public CreateEntry(identifier: string, title: string): T {
         throw new Error(/* Not implemented! */);
     }
 
-    public async TryGetEntry(url: string): Promise<T> {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
+    public TryGetEntry(url: string): Promise<T> {
         throw new Error(/* Not implemented! */);
     }
 

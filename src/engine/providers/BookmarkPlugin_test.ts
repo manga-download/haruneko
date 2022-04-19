@@ -1,6 +1,4 @@
-import { Request as RequestMock } from 'node-fetch';
-global.Request = RequestMock;
-import { mock, mockFn } from 'jest-mock-extended';
+import { mock } from 'jest-mock-extended';
 import type { IMediaChild, IMediaContainer } from './MediaPlugin';
 import { Bookmark } from './BookmarkPlugin';
 import type { IMediaInfoTracker } from './IMediaInfoTracker';

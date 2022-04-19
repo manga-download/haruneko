@@ -15,7 +15,7 @@ export function Initialize(info?: PlatformInfo): void {
     }
 
     if([ Runtime.Chrome, Runtime.Gecko, Runtime.WebKit ].includes(info.Runtime)) {
-        return BlockListBrowser.Initialize(patterns);
+        return BlockListBrowser.Initialize(/*patterns*/);
     }
 
     throw CreateUnsupportedPlatformError(info);

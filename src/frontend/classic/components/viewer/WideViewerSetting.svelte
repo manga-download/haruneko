@@ -15,7 +15,7 @@
     function zoomOut() {}
 </script>
 
-<div id="Buttons" tabindex="0" on-blur="focus()" on-keydown="onKeyDown">
+<div id="Buttons" tabindex="0">
     <span class="title">{title}</span>
     <ChevronLeft24
         title="Item Down (ArrowLeft)"

@@ -1,5 +1,4 @@
 import { type StorageController, Store } from './StorageController';
-import type { IMediaContainer, IMediaItem } from './providers/MediaPlugin';
 
 const DataBase = 'HakuNeko';
 
@@ -128,38 +127,5 @@ export class StorageControllerBrowser implements StorageController {
 
     public async RemoveTemporary(...keys: string[]): Promise<void> {
         return this.RemoveIDB(InternalStore.TemporaryData, ...keys);
-    }
-
-    private async SaveFile(): Promise<void> {
-        console.warn('StorageController.SaveFile()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
-
-    public async SaveMedia(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        // TODO:
-        // - Detect media type (e.g. manga, anime, novel, ...)
-        // - Determine media format (e.g. images, cbz, hls, mp4, ...)
-        console.warn('StorageController.SaveMedia()', '=>', 'Not implemented!');
-        return this.SaveImages(container, resources);
-    }
-
-    private async SaveImages(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        console.warn('StorageController.SaveImages()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
-
-    private async SaveCBZ(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        console.warn('StorageController.SaveCBZ()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
-
-    private async SavePDF(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        console.warn('StorageController.SavePDF()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
-    }
-
-    private async SaveEPUB(container: IMediaContainer, resources: Map<IMediaItem, string>): Promise<void> {
-        console.warn('StorageController.SaveEPUB()', '=>', 'Not implemented!');
-        throw new Error('Not implemented!');
     }
 }

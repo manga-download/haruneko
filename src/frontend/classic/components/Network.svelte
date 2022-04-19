@@ -18,7 +18,7 @@
 
     //var tabId:number = parseInt(window.location.search.substring(1));
     //console.log(tabId);
-    var tab: any;
+    //var tab: any;
 
     /*
     Frontend should not access paltform specific interfaces such as `chrome` or `nw`
@@ -34,7 +34,6 @@
     window.addEventListener("unload", function () {
         chrome.debugger.detach({ tabId: tab.id });
     });
-    */
 
     function onEvent(debuggeeId: any, message: any, params: any) {
         if (tab.id != debuggeeId.tabId) return;
@@ -74,6 +73,7 @@
             requests = requests;
         }
     }
+    */
 </script>
 
 <div id="network">

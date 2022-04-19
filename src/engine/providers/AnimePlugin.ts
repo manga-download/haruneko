@@ -1,4 +1,3 @@
-import type { Priority } from '../taskpool/DeferredTask';
 import { MediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 
 export abstract class AnimeScraper extends MediaScraper<AnimePlugin> {
@@ -105,23 +104,17 @@ export class Episode extends MediaContainer<Video> {
 
 export class Video extends MediaItem {
 
-    private readonly _scraper: AnimeScraper;
     private _controller?: AbortController;
-    private _request: RequestInit;
-    private _uri: URL;
 
-    public constructor(scraper: AnimeScraper, parent: MediaContainer<Video>, uri: URL, request: RequestInit) {
+    public constructor(/*private readonly scraper: AnimeScraper, */private readonly parent: MediaContainer<Video>, private readonly uri: URL/*, private readonly request: RequestInit*/) {
         super(parent);
-        this._scraper = scraper;
-        this._request = request;
-        this._uri = uri;
     }
 
     public get SourceURL(): string {
-        return this._uri.href;
+        return this.uri.href;
     }
 
-    public async Fetch(/*IStorageStream out // file: string*/priority: Priority): Promise<Blob> {
+    public async Fetch(/*IStorageStream out // file: string priority: Priority*/): Promise<Blob> {
         if(this._controller) {
             return;
         }

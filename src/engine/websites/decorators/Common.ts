@@ -2,7 +2,8 @@ import { Fetch, FetchCSS, FetchRequest } from '../../FetchProvider';
 import { MangaScraper, DecoratableMangaScraper, MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 
-type Constructor = new (...args: any[]) => DecoratableMangaScraper;
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ //=> A mixin class must have a constructor with a single rest parameter of type 'any[]'
+export type Constructor = new (...args: any[]) => DecoratableMangaScraper;
 
 type InfoExtractor<E extends HTMLElement> = (element: E) => { id: string, title: string };
 

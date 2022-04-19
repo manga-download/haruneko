@@ -9,11 +9,7 @@ export class FetchRequest extends Request {
     }
 }
 
-async function Wait(delay: number) {
-    return new Promise(resolve => setTimeout(resolve, delay));
-}
-
-export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay = 0, timeout?: number): Promise<T[]> {
+export async function FetchWindowCSS<T extends HTMLElement>(/*request: FetchRequest, query: string, delay = 0, timeout?: number*/): Promise<T[]> {
     /*
     const win = window.open(request.url);
     win.blur();
@@ -28,7 +24,7 @@ export async function FetchWindowCSS<T extends HTMLElement>(request: FetchReques
     return [];
 }
 
-export async function FetchWindowScript<T>(request: FetchRequest, script: string, delay = 0, timeout?: number): Promise<T> {
+export async function FetchWindowScript<T>(/*request: FetchRequest, script: string, delay = 0, timeout?: number*/): Promise<T> {
     /*
     const win = window.open(request.url);
     win.blur();

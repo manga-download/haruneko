@@ -1,8 +1,6 @@
 import { mock, mockFn } from 'jest-mock-extended';
-import { Request as RequestMock } from 'node-fetch';
-global.Request = RequestMock;
 import { DownloadManager } from './DownloadManager';
-import type { IDownloadTask, DownloadTask } from './DownloadTask';
+import type { IDownloadTask } from './DownloadTask';
 import { type IMediaContainer, StoreableMediaContainer, type IMediaItem } from './providers/MediaPlugin';
 import type { SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
@@ -22,7 +20,7 @@ class TestFixture {
     public readonly SettingsManagerMock = mock<SettingsManager>();
 
     public CreateTestee() {
-        return new DownloadManager(this.StorageControllerMock, this.SettingsManagerMock);
+        return new DownloadManager(this.StorageControllerMock);
     }
 }
 

@@ -4,9 +4,7 @@
         Tabs,
         Tab,
         TabContent,
-        FluidForm,
         NumberInput,
-        TextInput,
         Toggle,
         InlineNotification,
     } from 'carbon-components-svelte';
@@ -14,8 +12,6 @@
     import SettingsPanel from './SettingsPanel.svelte';
 
     import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
-    import { Locale } from '../../SettingsStore';
-    import { ResourceKey } from '../../../../i18n/ILocale';
     import { Scope } from '../../../../engine/SettingsGlobal';
 
     export let isModalOpen = false;

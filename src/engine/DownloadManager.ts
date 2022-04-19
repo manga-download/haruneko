@@ -1,6 +1,5 @@
 import { DownloadTask, IDownloadTask, Status } from './DownloadTask';
 import type { IMediaContainer, StoreableMediaContainer, IMediaItem } from './providers/MediaPlugin';
-import type { SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 import { Event } from './EventManager';
 
@@ -12,7 +11,7 @@ export class DownloadManager {
     public readonly TasksAdded: Event<typeof this, IDownloadTask[]> = new Event<typeof this, IDownloadTask[]>();
     public readonly TasksRemoved: Event<typeof this, IDownloadTask[]> = new Event<typeof this, IDownloadTask[]>();
 
-    constructor(private readonly storageController: StorageController, private readonly settingsManager: SettingsManager) {
+    constructor(private readonly storageController: StorageController) {
     }
 
     /**

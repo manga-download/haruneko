@@ -10,7 +10,7 @@
     */
 </script>
 
-<div id="FullScreen" on-dblclick="toggleFullscreen">
+<div id="FullScreen">
     <!-- disablePictureInPicture controlsList="nodownload nofullscreen" -->
     <video id="Video" controls>
         <!-- dummy tracks to show subtitle menu in video player -->

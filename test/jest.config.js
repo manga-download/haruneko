@@ -1,3 +1,5 @@
+import { Request } from 'node-fetch';
+
 export default {
     preset: 'ts-jest',
     rootDir: '../src',
@@ -12,6 +14,7 @@ export default {
             tsconfig: {
                 esModuleInterop: true
             }
-        }
+        },
+        'Request': Request
     }
 };

@@ -1,3 +1,3 @@
-export function Initialize(_patterns: string[]): void {
+export function Initialize(/*patterns: string[]*/): void {
     //
 }

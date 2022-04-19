@@ -3,14 +3,42 @@ import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchPr
 import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { FetchMangasMultiPageCSS, ImageDirect } from './decorators/Common';
 
+type APIScanlator = {
+    name: string
+}
+
+type APIRelease = {
+    link: string
+    scanlators: APIScanlator[]
+}
+
+type APIChapter = {
+    chapter_name: string
+    number: string
+    releases: Record<string, APIRelease>
+};
+
+type APIChapters = {
+    chapters?: APIChapter[]
+};
+
+type APIPage = {
+    avif: string
+    legacy: string
+}
+
+type APIPages = {
+    images: APIPage[]
+};
+
 @ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('leitor', 'Leitor', 'https://leitor.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese);
+        super('leitor', 'Leitor', 'https://leitor.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
     }
 
-    public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+    public async FetchManga(/*provider: MangaPlugin, url: string*/): Promise<Manga> {
         // TODO: Implement decorator?
         return;
     }
@@ -44,12 +72,12 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('page', String(page));
         const request = new FetchRequest(uri.href);
         request.headers.set('X-Requested-With', 'XMLHttpRequest');
-        const data = await FetchJSON<any>(request);
-        return !data.chapters ? [] : data.chapters.reduce((accumulator: Chapter[], chapter: any) => {
+        const data = await FetchJSON<APIChapters>(request);
+        return !data.chapters ? [] : data.chapters.reduce((accumulator: Chapter[], chapter: APIChapter) => {
             //const id = chapter.id_chapter;
             const title = chapter.chapter_name ? `${chapter.number} - ${chapter.chapter_name}` : chapter.number;
-            const releases = Object.values(chapter.releases).map((release: any) => {
-                const scanlators = release.scanlators.map((scanlator: any) => scanlator.name).join(', ');
+            const releases = Object.values(chapter.releases).map(release => {
+                const scanlators = release.scanlators.map(scanlator => scanlator.name).join(', ');
                 return new Chapter(this, manga, release.link, `${title} [${scanlators}]`);
             });
             return accumulator.concat(releases);
@@ -59,6 +87,7 @@ export default class extends DecoratableMangaScraper {
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(chapter.Identifier, this.URI);
         const request = new FetchRequest(uri.href);
+        // TODO: token extraction seems broken ...
         const data = await FetchCSS<HTMLScriptElement>(request, 'script[src*="token="]');
         const source = new URL(data[0].src);
         const release = source.searchParams.get('id_release') || '';
@@ -72,7 +101,7 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('key', token);
         const request = new FetchRequest(uri.href);
         request.headers.set('X-Requested-With', 'XMLHttpRequest');
-        const data = await FetchJSON<any>(request);
-        return data.images.map((image: string) => new URL(image));
+        const data = await FetchJSON<APIPages>(request);
+        return data.images.map(image => new URL(image.legacy));
     }
 }

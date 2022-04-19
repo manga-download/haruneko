@@ -21,7 +21,7 @@ function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: Event<TSender, TAr
         const sender = mock<TSender>();
         const args = mock<TArgs>();
         const mockError = mockFn<(sender: TSender, args: TArgs) => void>();
-        mockError.mockImplementation((_sender, _args) => { throw new Error(); });
+        mockError.mockImplementation(() => { throw new Error(); });
         const callbacks = [
             mockError,
             mockFn<(sender: TSender, args: TArgs) => void>(),
