@@ -14,7 +14,7 @@ const settingsKeyPrefix = 'plugin.';
  */
 export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
 
-    protected readonly imageTaskPool = new TaskPool<Blob>();
+    protected readonly imageTaskPool = new TaskPool();
 
     public CreatePlugin(storageController: StorageController, settingsManager: SettingsManager): MangaPlugin {
         return new MangaPlugin(storageController, settingsManager, this);

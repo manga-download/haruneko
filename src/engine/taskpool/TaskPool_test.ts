@@ -13,11 +13,11 @@ class Result<T> {
     }
 }
 
-async function RunJobs<T>(testee: TaskPool<Result<T>>, ... jobs: MockJob<T>[]): Promise<Result<T>[]> {
+async function RunJobs<T>(testee: TaskPool, ... jobs: MockJob<T>[]): Promise<Result<T>[]> {
     const promises: Promise<Result<T>>[] = [];
     for(const job of jobs) {
         const task = testee.Add(() => new Promise<Result<T>>(resolve => {
-            setTimeout(() => resolve(new Result(Date.now(), '', job.Result)), job.Duration);
+            setTimeout(() => resolve(new Result(performance.now(), '', job.Result)), job.Duration);
         }), job.Priority);
         promises.push(task);
     }
@@ -33,7 +33,7 @@ describe('TaskPool', () => {
         it('Should initialize with parameters', async () => {
             const workers = 7;
             const limit = new RateLimit(5, 10);
-            const testee = new TaskPool<void>(workers, limit);
+            const testee = new TaskPool(workers, limit);
             expect(testee.Workers).toBe(workers);
             expect(testee.RateLimit).toBe(limit);
         });
@@ -43,7 +43,7 @@ describe('TaskPool', () => {
 
         it('Should correctly set value', async () => {
             const expected = 7;
-            const testee = new TaskPool<void>(1, Unlimited);
+            const testee = new TaskPool(1, Unlimited);
             testee.Workers = expected;
             expect(testee.Workers).toBe(expected);
         });
@@ -53,7 +53,7 @@ describe('TaskPool', () => {
 
         it('Should correctly set value', async () => {
             const expected = new RateLimit(5, 10);
-            const testee = new TaskPool<void>(1, Unlimited);
+            const testee = new TaskPool(1, Unlimited);
             testee.RateLimit = expected;
             expect(testee.RateLimit).toBe(expected);
         });
@@ -62,7 +62,7 @@ describe('TaskPool', () => {
     describe('Add', () => {
 
         it('Should automatically process added task', async () => {
-            const testee = new TaskPool<number>(1);
+            const testee = new TaskPool(1);
             const promise = testee.Add(() => Promise.resolve(7), Priority.Normal);
             expect(inspect(promise)).toContain('<pending>');
             await new Promise(resolve => setTimeout(resolve, 10));
@@ -70,7 +70,7 @@ describe('TaskPool', () => {
         });
 
         it('Should resolve queued tasks in order', async () => {
-            const testee = new TaskPool<Result<string>>(1, Unlimited);
+            const testee = new TaskPool(1, Unlimited);
             const results = await RunJobs(testee,
                 new MockJob(Priority.Normal, 1, '①'),
                 new MockJob(Priority.Normal, 10, '②'),
@@ -84,7 +84,7 @@ describe('TaskPool', () => {
         });
 
         it('Should correctly prioritize tasks', async () => {
-            const testee = new TaskPool<Result<string>>(1, Unlimited);
+            const testee = new TaskPool(1, Unlimited);
             const results = await RunJobs(testee,
                 new MockJob(Priority.Normal, 1, '①'),
                 new MockJob(Priority.Low, 1, '②'),
@@ -101,7 +101,7 @@ describe('TaskPool', () => {
         });
 
         it('Should process tasks added after break', async () => {
-            const testee = new TaskPool<Result<string>>(1, Unlimited);
+            const testee = new TaskPool(1, Unlimited);
             let actual = await RunJobs(testee, new MockJob(Priority.Normal, 1, '①'));
             expect(actual.map(r => r.Value)).toEqual([ '①' ]);
             await new Promise(resolve => setTimeout(resolve, 25));
@@ -113,7 +113,7 @@ describe('TaskPool', () => {
         });
 
         it('Should utilize workers for concurrent processing', async () => {
-            const testee = new TaskPool<Result<string>>(3, Unlimited);
+            const testee = new TaskPool(3, Unlimited);
             const results = await RunJobs(testee,
                 new MockJob(Priority.Normal, 10, '①'),
                 new MockJob(Priority.Normal, 11, '②'),

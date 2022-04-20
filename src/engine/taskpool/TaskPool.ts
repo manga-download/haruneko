@@ -2,13 +2,13 @@ import { DeferredTask, Priority } from './DeferredTask';
 export { Priority } from './DeferredTask';
 import { Unlimited } from './RateLimit';
 
-export class TaskPool<T> {
+export class TaskPool {
 
     private running = false;
     private activeWorkersCount = 0;
     private delay = Promise.resolve();
     private queueTransactionLock = false;
-    private readonly queue: DeferredTask<T>[] = [];
+    private readonly queue: DeferredTask<unknown>[] = [];
 
     /**
      * Create a new task pool.
@@ -23,13 +23,13 @@ export class TaskPool<T> {
      * Add a new (awaitable) {@link action} to this task pool and start processing the task pool (if not already started).
      * @returns A promise that will be completed with the final result of the {@link action} after it was processed.
      */
-    public Add(action: () => Promise<T>, priority: Priority): Promise<T> {
+    public Add<T>(action: () => Promise<T>, priority: Priority): Promise<T> {
         const task = new DeferredTask<T>(action, priority);
         this.AddTask(task);
         return task.Promise;
     }
 
-    private async AddTask(task: DeferredTask<T>) {
+    private async AddTask<T>(task: DeferredTask<T>) {
         await this.InvokeQueueTransaction(queue => queue.push(task));
         this.Process();
     }
@@ -54,7 +54,7 @@ export class TaskPool<T> {
      * Find and return the next task with highest priority in the {@link queue} and removes it.
      * @returns The found task, or `undefined` in case the {@link queue} is empty or an internal error occured.
      */
-    private async TakeNextTask(): Promise<DeferredTask<T>> {
+    private async TakeNextTask(): Promise<DeferredTask<unknown>> {
         return await this.InvokeQueueTransaction(queue => {
             try {
                 let index = 0;
@@ -83,7 +83,7 @@ export class TaskPool<T> {
         }
         this.running = true;
         try {
-            let task: DeferredTask<T>;
+            let task: DeferredTask<unknown>;
             while((task = await this.TakeNextTask()) !== undefined) {
                 await this.delay;
                 this.delay = new Promise(resolve => setTimeout(resolve, this.RateLimit.Throttle));
@@ -95,7 +95,7 @@ export class TaskPool<T> {
         }
     }
 
-    private async Run(task: DeferredTask<T>) {
+    private async Run(task: DeferredTask<unknown>) {
         try {
             this.activeWorkersCount++;
             await task.Run();
