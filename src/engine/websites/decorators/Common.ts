@@ -210,7 +210,7 @@ export async function FetchImageDirect(this: MangaScraper, page: Page, priority:
         });
         const response = await Fetch(request);
         return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
-    }, priority);
+    }, priority, signal);
 }
 
 /**

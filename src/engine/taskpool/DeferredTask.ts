@@ -19,16 +19,26 @@ export class DeferredTask<T> {
     private resolve: (value: T) => void;
     private reject: (error: Error) => void;
 
-    constructor(private readonly action: () => Promise<T>, public readonly Priority: Priority) {
+    constructor(private readonly action: () => Promise<T>, public readonly Priority: Priority, public readonly Signal?: AbortSignal) {
         this.Promise = new Promise<T>((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
         });
     }
 
+    public RejectWhenAborted(): boolean {
+        if(this.Signal?.aborted) {
+            this.reject(new DOMException(null, 'AbortError'));
+            return true;
+        }
+        return false;
+    }
+
     public async Run(): Promise<void> {
         try {
-            this.resolve(await this.action());
+            if(!this.RejectWhenAborted()) {
+                this.resolve(await this.action());
+            }
         } catch(error) {
             this.reject(error);
         }

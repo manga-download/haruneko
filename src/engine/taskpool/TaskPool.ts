@@ -23,8 +23,8 @@ export class TaskPool {
      * Add a new (awaitable) {@link action} to this task pool and start processing the task pool (if not already started).
      * @returns A promise that will be completed with the final result of the {@link action} after it was processed.
      */
-    public Add<T>(action: () => Promise<T>, priority: Priority): Promise<T> {
-        const task = new DeferredTask<T>(action, priority);
+    public Add<T>(action: () => Promise<T>, priority: Priority, signal?: AbortSignal): Promise<T> {
+        const task = new DeferredTask<T>(action, priority, signal);
         this.AddTask(task);
         return task.Promise;
     }
@@ -71,6 +71,11 @@ export class TaskPool {
         });
     }
 
+    private async Throttle() {
+        await this.delay;
+        this.delay = new Promise(resolve => setTimeout(resolve, this.RateLimit.Throttle));
+    }
+
     private async ConcurrencySlotAvailable() {
         while(this.activeWorkersCount >= this.Workers) {
             await new Promise(resolve => setTimeout(resolve, 50));
@@ -85,9 +90,17 @@ export class TaskPool {
         try {
             let task: DeferredTask<unknown>;
             while((task = await this.TakeNextTask()) !== undefined) {
-                await this.delay;
-                this.delay = new Promise(resolve => setTimeout(resolve, this.RateLimit.Throttle));
+                if(task.RejectWhenAborted()) {
+                    continue;
+                }
+                await this.Throttle();
+                if(task.RejectWhenAborted()) {
+                    continue;
+                }
                 await this.ConcurrencySlotAvailable();
+                if(task.RejectWhenAborted()) {
+                    continue;
+                }
                 this.Run(task);
             }
         } finally {
