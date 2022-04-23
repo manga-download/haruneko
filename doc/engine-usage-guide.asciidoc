@@ -39,7 +39,7 @@ console.log(today);
 ```javascript
 // Get the global settings
 const settings = HakuNeko.SettingsManager.OpenScope();
-// Optionally an identifier may provided to open a different setting scope
+// Optionally an identifier may be provided to open a different setting scope
 // e.g. HakuNeko.SettingsManager.OpenScope('frontend.classic')
 
 // Iterate through all available settings
@@ -96,7 +96,7 @@ for(const setting of website.Settings) {
 
 === Working with Mangas
 
-This section is focused on working with mangas, so lets start by getting a website known to contain mangas.
+This section is focused on working with mangas, so lets start by getting a website which is known to contain mangas.
 
 ```javascript
 // Find a specific manga website, e.g. by its `Identifier`
@@ -126,6 +126,24 @@ console.log('Manga Count:', toonily.Entries.length);
 // The next step would be to select a manga from the list, e.g. by its `Title`
 const leviathan = toonily.Entries.find(manga => manga.Title === 'Leviathan');
 console.log('Manga (Leviathan):', leviathan);
+```
+
+Another possibility is to get a manga by its url.
+This is done by trying to get it for each website.
+
+```javascript
+// Provide a valid manga url (an invalid url will obviously not be found)
+const url = 'https://toonily.com/webtoon/leviathan-0002/';
+// Iterate through each website
+for(const website of HakuNeko.PluginController.WebsitePlugins) {
+    // Try to get the manga
+    const manga = await website.TryGetEntry(url);
+    if(manga) {
+        // Success, we can break the search at this point
+        console.log('Manga:', manga);
+        break;
+    }
+}
 ```
 
 [#get-manga-chapter]
@@ -173,11 +191,11 @@ const controller = new AbortController();
 const blob = await page.Fetch('high', controller.signal);
 console.log('Raw Image Data:', blob);
 
-// It is likely the image should be used as a background image or as source of an `Image` element, therefore creating an object URL makes sense
-const imgURL = URL.createObjectURL(blob);
-console.log('Image Object URL:', imgURL);
+// It is likely that the image should be used as a background image or as source of an `Image` element, therefore creating an object URL makes sense
+const imageURL = URL.createObjectURL(blob);
+console.log('Image Object URL:', imageURL);
 // Don't forget to free the resources when done to prevent memory leaks
-URL.revokeObjectURL(imgURL);
+URL.revokeObjectURL(imageURL);
 ```
 
 === Working with Animes
@@ -194,7 +212,7 @@ URL.revokeObjectURL(imgURL);
 
 === Tracker Information
 
-Each bookmarks may be linked with a tracker (e.g. Kitsu) to get media information and optionally update the status in case the user has a corresponding account for the tracker.
+Each bookmark may be linked with a tracker (e.g. Kitsu) to get media information and optionally update the status (in case the user has a corresponding account for the tracker).
 
 == Performing Downloads
 
