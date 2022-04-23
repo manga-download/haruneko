@@ -2,6 +2,7 @@ import type { ResourceKey } from '../i18n/ILocale';
 import { StorageController, Store } from './StorageController';
 import { Event } from './EventManager';
 import { GetLocale } from '../i18n/Localization';
+import { Scope } from './SettingsGlobal';
 
 //const secret = 'E8463362D9B817D3956F054D01093EC6'; // MD5('simple.encryption.key.for.secret.settings')
 
@@ -222,8 +223,10 @@ export class SettingsManager {
 
     /**
      * Get the settings for the given scope, or creates new settings if the scope not yet exists.
+     * If no scope identifier is provided, the global settings will be returned.
      */
-    public OpenScope(scope: string): ISettings {
+    public OpenScope(scope?: string): ISettings {
+        scope = scope || Scope;
         return this.scopes[scope] || (this.scopes[scope] = new Settings(scope, this.storage));
     }
 }
