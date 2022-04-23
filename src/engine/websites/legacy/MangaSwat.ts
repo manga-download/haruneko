@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaswat', `SWAT Manga`, 'https://mangaswat.com' /*, Tags.Language.English, Tags ... */);
+        super('mangaswat', `SWAT Manga`, 'https://swatmanga.co' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -24,8 +24,8 @@ class MangaSwat extends WordPressMangastream {
         super();
         super.id = 'mangaswat';
         super.label = 'SWAT Manga';
-        this.tags = [ 'webtoon', 'arabic' ];
-        this.url = 'https://mangaswat.com';
+        this.tags = ['webtoon', 'arabic'];
+        this.url = 'https://swatmanga.co';
         this.path = '/manga/?list';
 
         this.queryChapters = 'div.bxcl ul li span.lchx a';

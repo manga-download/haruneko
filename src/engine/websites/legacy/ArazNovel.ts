@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('araznovel', `ArazNovel`, 'https://www.araznovel.com' /*, Tags.Language.English, Tags ... */);
+        super('araznovel', `ArazNovel`, 'https://araznovel.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -18,14 +18,14 @@ export default class extends DecoratableMangaScraper {
 
 // Original Source
 /*
-class ArazNovel extends WordPressMadara {
+class ArazNovel extends WordPressMadaraNovel {
 
     constructor() {
         super();
         super.id = 'araznovel';
         super.label = 'ArazNovel';
-        this.tags = [ 'webtoon', 'turkish' ];
-        this.url = 'https://www.araznovel.com';
+        this.tags = [ 'webtoon', 'novel', 'turkish' ];
+        this.url = 'https://araznovel.com';
     }
 }
 */

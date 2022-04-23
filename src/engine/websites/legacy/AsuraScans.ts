@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('asurascans', `Asura Scans`, 'https://asurascans.com' /*, Tags.Language.English, Tags ... */);
+        super('asurascans', `Asura Scans`, 'https://www.asurascans.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -25,7 +25,7 @@ class AsuraScans extends WordPressMangastream {
         super.id = 'asurascans';
         super.label = 'Asura Scans';
         this.tags = ['webtoon', 'english'];
-        this.url = 'https://asurascans.com';
+        this.url = 'https://www.asurascans.com';
         this.path = '/manga/list-mode/';
 
         this.queryPages = 'div#readerarea p img';

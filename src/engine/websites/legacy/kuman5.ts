@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kuman5', `酷漫屋 (Kuman57)`, 'http://www.kuman57.com' /*, Tags.Language.English, Tags ... */);
+        super('kuman5', `酷漫屋 (Kuman57)`, 'http://www.kmwu6.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -24,7 +24,7 @@ class kuman5 extends MH {
         super.id = 'kuman5';
         super.label = '酷漫屋 (Kuman57)';
         this.tags = [ 'manga', 'chinese' ];
-        this.url = 'http://www.kuman57.com';
+        this.url = 'http://www.kmwu6.com';
 
         this.queryChapter = 'div#chapterlistload ul#detail-list-select-1 li a';
         this.path = '/sort/1-%PAGE%.html';

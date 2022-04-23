@@ -18,14 +18,15 @@ export default class extends DecoratableMangaScraper {
 
 // Original Source
 /*
-class YugenMangas extends WordPressMadara {
+class YugenMangas extends WordPressMadaraNovel {
 
     constructor() {
         super();
         super.id = 'yugenmangas';
         super.label = 'YugenMangas';
-        this.tags = [ 'webtoon', 'spanish' ];
+        this.tags = [ 'webtoon', 'novel', 'spanish' ];
         this.url = 'https://yugenmangas.com';
+        this.queryChapters = 'div.chapter-link > a';
     }
 }
 */

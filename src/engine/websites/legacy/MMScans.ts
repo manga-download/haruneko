@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mmscans', `MMSCANS`, 'https://mm-scans.com' /*, Tags.Language.English, Tags ... */);
+        super('mmscans', `MMSCANS`, 'https://mm-scans.org' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -25,7 +25,7 @@ class MMScans extends WordPressMadara {
         super.id = 'mmscans';
         super.label = 'MMSCANS';
         this.tags = [ 'webtoon', 'english' ];
-        this.url = 'https://mm-scans.com';
+        this.url = 'https://mm-scans.org';
     }
 }
 */

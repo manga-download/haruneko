@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('asurascans-tr', `Asura Scans (TR)`, 'https://tr.asurascans.com' /*, Tags.Language.English, Tags ... */);
+        super('asurascans-tr', `Asura Scans (TR)`, 'https://asurascanstr.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -24,8 +24,8 @@ class AsuraScansTR extends AsuraScans {
         super();
         super.id = 'asurascans-tr';
         super.label = 'Asura Scans (TR)';
-        this.tags = [ 'webtoon', 'turkish' ];
-        this.url = 'https://tr.asurascans.com';
+        this.tags = ['webtoon', 'turkish'];
+        this.url = 'https://asurascanstr.com';
     }
 
     get icon() {

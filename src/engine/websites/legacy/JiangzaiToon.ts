@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('jiangzaitoon', `Jiangzaitoon`, 'https://jiangzaitoon.net' /*, Tags.Language.English, Tags ... */);
+        super('jiangzaitoon', `Jiangzaitoon`, 'https://jiangzaitoon.biz' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -25,7 +25,7 @@ class JiangzaiToon extends WordPressMadara {
         super.id = 'jiangzaitoon';
         super.label = 'Jiangzaitoon';
         this.tags = [ 'webtoon', 'hentai', 'turkish' ];
-        this.url = 'https://jiangzaitoon.net';
+        this.url = 'https://jiangzaitoon.biz';
     }
 }
 */
