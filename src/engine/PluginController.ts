@@ -1,4 +1,4 @@
-import type { IMediaInfoTracker } from './providers/IMediaInfoTracker';
+import type { IMediaInfoTracker } from './trackers/IMediaInfoTracker';
 import type { IMediaContainer, MediaScraper } from './providers/MediaPlugin';
 import type { SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';

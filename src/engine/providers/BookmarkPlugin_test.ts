@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 import type { IMediaChild, IMediaContainer } from './MediaPlugin';
 import { Bookmark } from './BookmarkPlugin';
-import type { IMediaInfoTracker } from './IMediaInfoTracker';
+import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 
 class TestFixture {
 

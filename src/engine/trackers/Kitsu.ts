@@ -1,6 +1,6 @@
 import logo from './Kitsu.png';
 import { ResourceKey } from '../../i18n/ILocale';
-import type { IMediaInfoTracker, Info, Suggestion, TrackingStatus } from '../providers/IMediaInfoTracker';
+import type { IMediaInfoTracker, Info, Suggestion, TrackingStatus } from './IMediaInfoTracker';
 import { type SettingsManager, type ISettings , Text, Secret } from '../SettingsManager';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 
