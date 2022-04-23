@@ -157,6 +157,9 @@ export class Chapter extends StoreableMediaContainer<Page> {
         if(!directory) {
             throw new Error();
         }
+        if(await directory.requestPermission() !== 'granted') {
+            throw new Error(); // user denied permission ...
+        }
         if(settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {
             const website = SanitizeFileName(this.Parent?.Parent?.Title);
             directory = await directory.getDirectoryHandle(website, { create: true });
