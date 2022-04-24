@@ -2,19 +2,11 @@ import { GetLocale } from '../i18n/Localization';
 import { Event } from '../engine/EventManager';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
-import { Info as InfoJS } from './sample-js/FrontendInfo';
-import { Info as InfoReact } from './sample-react/FrontendInfo';
-import { Info as InfoSvelte } from './sample-svelte/FrontendInfo';
-import { Info as InfoVue } from './sample-vue/FrontendInfo';
 import { CreateWindowController } from './WindowController';
 
 const frontendSelector = '#app';
 const frontendList: IFrontendInfo[] = [
-    InfoClassic,
-    InfoJS,
-    InfoReact,
-    InfoSvelte,
-    InfoVue
+    InfoClassic
 ];
 
 export interface IFrontendController {
