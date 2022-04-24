@@ -2,17 +2,17 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'sheep-scanlations',
-        title: `Sheep's Awesome Mangas`
+        id: 'ahstudios',
+        title: 'A.H Studio'
     },
     container: {
-        url: 'https://hakuneko.download/sample-websites/sheep-scanlations/012.json',
-        id: '/012.json',
-        title: 'Real ➉'
+        url: 'https://ahstudios.net/manga/magic-emperor/',
+        id: JSON.stringify({ post: '48', slug: '/manga/magic-emperor/' }),
+        title: 'Magic Emperor'
     },
     child: {
-        id: '/ch001',
-        title: 'Chapter 1 - Beginning'
+        id: '/manga/magic-emperor/capitulo-1/',
+        title: 'Capitulo 1'
     },
     entry: {
         index: 0,

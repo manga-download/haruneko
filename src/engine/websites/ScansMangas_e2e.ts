@@ -1,10 +1,28 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-describe('End-to-End Test: ScansMangas', () => {
+const config = {
+    plugin: {
+        id: 'scansmangas',
+        title: 'ScansMangas'
+    }
+    // Geo-blocked (Region: France?), or maybe website is broken
+    /*
+    container: {
+        url: '',
+        id: '',
+        title: ''
+    },
+    child: {
+        id: '',
+        title: ''
+    },
+    entry: {
+        index: 0,
+        size: -1,
+        type: ''
+    }
+    */
+};
 
-    it.skip('Should be registered as website', async () => {
-        const fixture = new TestFixture();
-        const remotePlugin = await fixture.GetRemoteWebsitePlugin('scansmangas');
-        expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual('ScansMangas');
-    });
-});
+const fixture = new TestFixture(config);
+describe(config.plugin.title, () => fixture.AssertWebsite());

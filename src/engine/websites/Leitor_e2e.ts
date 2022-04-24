@@ -1,10 +1,28 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-describe('End-to-End Test: Leitor', () => {
+const config = {
+    plugin: {
+        id: 'leitor',
+        title: 'Leitor'
+    },
+    // Geo-blocked (Region: Brazil)
+    /*
+    container: {
+        url: '',
+        id: '',
+        title: ''
+    },
+    child: {
+        id: '',
+        title: ''
+    },
+    entry: {
+        index: 0,
+        size: -1,
+        type: ''
+    }
+    */
+};
 
-    it.skip('Should be registered as website', async () => {
-        const fixture = new TestFixture();
-        const remotePlugin = await fixture.GetRemoteWebsitePlugin('leitor');
-        expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual('Leitor');
-    });
-});
+const fixture = new TestFixture(config);
+describe(config.plugin.title, () => fixture.AssertWebsite());

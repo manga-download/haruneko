@@ -1,10 +1,25 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-describe('End-to-End Test: Toonily', () => {
+const config = {
+    plugin: {
+        id: 'toonily',
+        title: 'Toonily'
+    },
+    container: {
+        url: 'https://toonily.com/webtoon/leviathan-0002/',
+        id: JSON.stringify({ post: '1892', slug: '/webtoon/leviathan-0002/' }),
+        title: 'Leviathan'
+    },
+    child: {
+        id: '/webtoon/leviathan-0002/chapter-0/',
+        title: 'Chapter 0 - Prologue'
+    },
+    entry: {
+        index: 0,
+        size: -1,
+        type: 'image/jpeg'
+    }
+};
 
-    it.skip('Should be registered as website', async () => {
-        const fixture = new TestFixture();
-        const remotePlugin = await fixture.GetRemoteWebsitePlugin('toonily');
-        expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual('Toonily');
-    });
-});
+const fixture = new TestFixture(config);
+describe(config.plugin.title, () => fixture.AssertWebsite());
