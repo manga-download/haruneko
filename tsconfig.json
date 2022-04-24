@@ -9,7 +9,8 @@
         "forceConsistentCasingInFileNames": true,
         "jsx": "react",
         "noEmit": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "useDefineForClassFields": false
     },
     "include": [
         "src/**/*.d.ts",

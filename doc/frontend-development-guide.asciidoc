@@ -63,7 +63,7 @@ Therefore HakuNeko will only load the active frontend during runtime and is not 
 [%collapsible%open]
 ====
 ```typescript
-import type { IWindowController } from '../../engine/WindowController';
+import type { IWindowController } from '../WindowController';
 import type { IFrontendModule } from '../IFrontend';
 
 class SheepUI implements IFrontendModule {
@@ -155,7 +155,7 @@ Modify the frontend to load the svelte app component.
 [%collapsible%]
 ====
 ```typescript
-import type { IWindowController } from '../../engine/WindowController';
+import type { IWindowController } from '../WindowController';
 import type { IFrontendModule } from '../IFrontend';
 import App from './App.svelte';
 
@@ -219,7 +219,7 @@ Modify the frontend to load the vue app component.
 ====
 ```typescript
 import { createApp } from 'vue';
-import type { IWindowController } from '../../engine/WindowController';
+import type { IWindowController } from '../WindowController';
 import type { IFrontendModule } from '../IFrontend';
 import App from './App.vue';
 
@@ -291,7 +291,7 @@ Modify the frontend to load the react app component.
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { IFrontendModule } from '../IFrontend';
-//import type { IWindowController } from '../../engine/WindowController';
+//import type { IWindowController } from '../WindowController';
 import App from './App';
 
 class SampleReact implements IFrontendModule {
@@ -311,6 +311,9 @@ export default new SampleReact();
 
 Create a web component such as `/src/frontend/sheep-ui/App.ts`, presenting the entry point for our frontend.
 
+[NOTE]
+Due to a link:https://github.com/lit/lit/issues/2716[bug] it might be required to set `useDefineForClassFields: false` in `tsconfig.json` for correct link:https://github.com/microsoft/TypeScript/issues/48814[field decorator handling].
+
 .**App.ts**
 [%collapsible%]
 ====
@@ -321,19 +324,20 @@ import { customElement, state } from 'lit/decorators.js';
 @customElement('lit-app')
 export default class App extends LitElement {
 
-    static styles = [
-        css`
-            #container {
-                height: 100%;
-                padding: 2em;
-                text-align: center;
-                background-color: lightgrey;
-            }
-            button {
-                padding: 0.5em;
-            }
-        `
-    ];
+    static styles = css`
+        :host {
+            display: block;
+            height: 100%;
+            background-color: lightgrey;
+        }
+        #container {
+            padding: 2em;
+            text-align: center;
+        }
+        button {
+            padding: 0.5em;
+        }
+    `;
 
     @state()
     private count = 0;
@@ -362,14 +366,13 @@ Modify the frontend to load the web component.
 [%collapsible%]
 ====
 ```typescript
-import type { IWindowController } from '../../engine/WindowController';
+import type { IWindowController } from '../WindowController';
 import type { IFrontendModule } from '../IFrontend';
-import './App';
+import App from './App';
 
 class SampleLit implements IFrontendModule {
     async Render(root: HTMLElement, windowController: IWindowController): Promise<void> {
-        const app = document.createElement('lit-app');
-        root.replaceWith(app);
+        root.appendChild(new App());
     }
 }
 

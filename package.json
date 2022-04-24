@@ -48,6 +48,7 @@
         "jest-junit": "^13.0.0",
         "jest-mock-extended": "^2.0.4",
         "jsdom": "^19.0.0",
+        "lit": "^2.2.2",
         "nw": "0.63.1-sdk",
         "plist": "^3.0.4",
         "puppeteer-core": "^13.0.1",
