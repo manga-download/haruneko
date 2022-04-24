@@ -1,7 +1,5 @@
 import { SettingsManager, Check, Numeric, Text, Secret, Choice, Directory } from './SettingsManager';
 import { Code, ResourceKey as R } from '../i18n/ILocale';
-import { GetLocale } from '../i18n/Localization';
-import type { EventManager } from './EventManager';
 
 export const Scope = '*';
 
@@ -15,7 +13,7 @@ export const enum Key {
     PostCommand = 'post-command',
 }
 
-export async function Initialize(settingsManager: SettingsManager, eventManager: EventManager): Promise<void> {
+export async function Initialize(settingsManager: SettingsManager): Promise<void> {
     const settings = settingsManager.OpenScope(Scope);
     await settings.Initialize(
         new Choice(
@@ -67,6 +65,4 @@ export async function Initialize(settingsManager: SettingsManager, eventManager:
             ''
         )
     );
-
-    settings.Get(Key.Language).ValueChanged.Subscribe((_, code: Code) => eventManager.LocaleChanged.Dispatch(null, GetLocale(code)));
 }

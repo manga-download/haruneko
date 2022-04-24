@@ -2,6 +2,7 @@ import { type Readable, readable, writable } from 'svelte/store';
 import { type ILocale, ResourceKey as R } from '../../i18n/ILocale';
 import { GetLocale } from '../../i18n/Localization';
 import { Check, Choice, type IValue, type Setting } from '../../engine/SettingsManager';
+import { Key as GlobalKey } from '../../engine/SettingsGlobal';
 
 const scope = 'frontend.classic';
 
@@ -34,7 +35,7 @@ export const enum Key {
 export async function Initialize(): Promise<void> {
     const settings = HakuNeko.SettingsManager.OpenScope(scope);
     await settings.Initialize(Theme, ContentPanel, ViewerMode, ViewerReverseDirection, ViewerDoublePage);
-    HakuNeko.EventManager.LocaleChanged.Subscribe((_, locale) => Locale.set(locale));
+    HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).ValueChanged.Subscribe(() => Locale.set(GetLocale()));
 }
 
 /**

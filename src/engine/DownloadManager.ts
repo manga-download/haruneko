@@ -1,7 +1,7 @@
 import { DownloadTask, IDownloadTask, Status } from './DownloadTask';
 import type { IMediaContainer, StoreableMediaContainer, IMediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
-import { Event } from './EventManager';
+import { Event } from './Event';
 
 export class DownloadManager {
 

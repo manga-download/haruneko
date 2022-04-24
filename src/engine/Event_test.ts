@@ -1,5 +1,5 @@
 import { mock, mockFn } from 'jest-mock-extended';
-import { Event, EventManager } from './EventManager';
+import { Event } from './Event';
 
 function AssertSubscribeOnce<TSender, TArgs>(testee: Event<TSender, TArgs>): void {
     it('Should only subscribe once', async () => {
@@ -71,22 +71,5 @@ describe('Event', () => {
 
     describe('Unsubsribe', () => {
         AssertUnsubscribe(new Event<string, number>());
-    });
-});
-
-describe('EventManager', () => {
-
-    /*
-    describe('FrontendLoaded', () => {
-        AssertSubscribeOnce(new EventManager().FrontendLoaded);
-        AssertInvokeAllSubscriptions(new EventManager().FrontendLoaded);
-        AssertUnsubscribe(new EventManager().FrontendLoaded);
-    });
-    */
-
-    describe('LocaleChanged', () => {
-        AssertSubscribeOnce(new EventManager().LocaleChanged);
-        AssertInvokeAllSubscriptions(new EventManager().LocaleChanged);
-        AssertUnsubscribe(new EventManager().LocaleChanged);
     });
 });

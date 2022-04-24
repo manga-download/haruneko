@@ -1,5 +1,5 @@
 import { GetLocale } from '../i18n/Localization';
-import { Event } from '../engine/EventManager';
+import { Event } from '../engine/Event';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
 import { CreateWindowController } from './WindowController';

@@ -3,7 +3,7 @@ import type { HakuNeko } from '../engine/HakuNeko';
 import { Code, ResourceKey } from '../i18n/ILocale';
 import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, Setting, IValue, ISettings } from './SettingsManager';
 import { StorageController, Store } from './StorageController';
-import type { Event } from './EventManager';
+import type { Event } from './Event';
 import { Key } from './SettingsGlobal';
 
 window.atob = function(encoded: string): string {

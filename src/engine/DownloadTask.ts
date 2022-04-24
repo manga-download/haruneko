@@ -1,5 +1,5 @@
 import type { IMediaContainer, StoreableMediaContainer, IMediaItem } from './providers/MediaPlugin';
-import { Event } from './EventManager';
+import { Event } from './Event';
 import { Priority } from './taskpool/DeferredTask';
 import type { StorageController } from './StorageController';
 

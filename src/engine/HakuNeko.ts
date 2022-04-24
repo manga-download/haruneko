@@ -3,7 +3,6 @@ import { Initialize as InitBlockList } from './BlockList';
 import { Initialize as InitFetchProvider } from './FetchProvider';
 import { Initialize as InitGlobalSettings } from './SettingsGlobal';
 import { Tags } from './Tags';
-import { EventManager } from './EventManager';
 import { PluginController } from './PluginController';
 import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { CreateStorageController, type StorageController } from './StorageController';
@@ -12,7 +11,6 @@ import { DownloadManager } from './DownloadManager';
 
 export class HakuNeko {
 
-    readonly #eventManager: EventManager;
     readonly #storageController: StorageController;
     readonly #settingsManager: SettingsManager;
     readonly #pluginController: PluginController;
@@ -23,7 +21,6 @@ export class HakuNeko {
         info = info ?? DetectPlatform();
         InitBlockList(info);
         InitFetchProvider(info);
-        this.#eventManager = new EventManager();
         this.#storageController = CreateStorageController(info);
         this.#settingsManager = new SettingsManager(this.#storageController);
         this.#pluginController = new PluginController(this.#storageController, this.#settingsManager);
@@ -32,15 +29,11 @@ export class HakuNeko {
     }
 
     public async Initialze(): Promise<void> {
-        await InitGlobalSettings(this.SettingsManager, this.EventManager);
+        await InitGlobalSettings(this.SettingsManager);
     }
 
     public get Tags() {
         return Tags;
-    }
-
-    public get EventManager(): EventManager {
-        return this.#eventManager;
     }
 
     public get PluginController(): PluginController {

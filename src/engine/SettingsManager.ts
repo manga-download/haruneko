@@ -1,6 +1,6 @@
 import type { ResourceKey } from '../i18n/ILocale';
 import { StorageController, Store } from './StorageController';
-import { Event } from './EventManager';
+import { Event } from './Event';
 import { GetLocale } from '../i18n/Localization';
 import { Scope } from './SettingsGlobal';
 

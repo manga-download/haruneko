@@ -1,7 +1,7 @@
 import type { PluginController } from '../PluginController';
 import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaPlugin';
 import { StorageController, Store } from '../StorageController';
-import { Event } from '../../engine/EventManager';
+import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {

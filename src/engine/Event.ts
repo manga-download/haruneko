@@ -1,5 +1,3 @@
-import type { ILocale } from '../i18n/ILocale';
-
 export class Event<TSender, TArgs> {
 
     private readonly _subscriptions = new Set<(sender: TSender, args: TArgs) => void>();
@@ -19,8 +17,4 @@ export class Event<TSender, TArgs> {
     public Unsubscribe(callback: (sender: TSender, args: TArgs) => void): void {
         this._subscriptions.delete(callback);
     }
-}
-
-export class EventManager {
-    public readonly LocaleChanged: Event<void, ILocale> = new Event<void, ILocale>();
 }
