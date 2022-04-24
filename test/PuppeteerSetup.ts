@@ -14,8 +14,8 @@ const userDir = path.resolve(tempDir, 'user-data');
 
 async function CloseSplashScreen(target: puppeteer.Target) {
     const page = await target.page();
-    const url = await page.url();
-    if(/splash.html/i.test(url)) {
+    const url = page?.url();
+    if(url && /splash.html/i.test(url)) {
         await page.close();
     }
 }
