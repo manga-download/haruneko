@@ -10,6 +10,10 @@ export default defineConfig({
     build: {
         sourcemap: true,
         outDir: 'build.web',
-        chunkSizeWarningLimit: 1024
+        rollupOptions: {
+            output: {
+                chunkFileNames: 'assets/[hash].js'
+            }
+        }
     }
 });
