@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import { ImageDirect } from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/akumanga.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/akumanga.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Akumanga"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
