@@ -1,6 +1,5 @@
 import type { JSHandle, Page } from 'puppeteer-core';
 import type { IMediaContainer, IMediaItem } from '../src/engine/providers/MediaPlugin';
-import type { HakuNeko } from '../src/engine/HakuNeko';
 
 export type Config = {
     plugin: {
@@ -33,68 +32,80 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
         this.config = config;
     }
 
-    private async GetRemoteInstances() {
-        const remoteEngine = await this.page.evaluateHandle<JSHandle<HakuNeko>>(() => {
-            return window['HakuNeko'];
-        });
+    private async GetRemotePlugin(pluginID: string) {
+        return this.page.evaluateHandle<JSHandle<TWebsitePlugin>>(async (id: string) => {
+            return window.HakuNeko.PluginController.WebsitePlugins.find(website => website.Identifier === id);
+        }, pluginID);
+    }
 
-        const remotePlugin = typeof this.config.plugin?.id === 'string' ? await remoteEngine.evaluateHandle<JSHandle<TWebsitePlugin>>(async (engine: HakuNeko, pluginID: string) => {
-            return engine.PluginController.WebsitePlugins.find(website => website.Identifier === pluginID);
-        }, this.config.plugin.id) : null;
-
-        const remoteContainer = typeof this.config.container?.url === 'string' ? await remotePlugin.evaluateHandle<JSHandle<TContainer>>(async (plugin: TWebsitePlugin, containerURL: string) => {
-            const container = await plugin.TryGetEntry(containerURL) as TContainer;
+    private async GetRemoteContainer(remotePlugin: JSHandle<TWebsitePlugin>, containerURL: string) {
+        return remotePlugin.evaluateHandle<JSHandle<TContainer>>(async (plugin: TWebsitePlugin, url: string) => {
+            const container = await plugin.TryGetEntry(url) as TContainer;
             await container.Update();
             return container;
-        }, this.config.container.url) : null;
+        }, containerURL);
+    }
 
-        const remoteChild = typeof this.config.child?.id === 'string' ? await remoteContainer.evaluateHandle<JSHandle<TChild>>(async (container: TContainer, childID: string) => {
-            const child = (container.Entries as TChild[]).find(child => child.Identifier === childID);
+    private async GetRemoteChild(remoteContainer: JSHandle<TContainer>, childID: string) {
+        return remoteContainer.evaluateHandle<JSHandle<TChild>>(async (container: TContainer, id: string) => {
+            const child = (container.Entries as TChild[]).find(child => child.Identifier === id);
             await child.Update();
             return child;
-        }, this.config.child.id) : null;
+        }, childID);
+    }
 
-        const remoteEntry = typeof this.config.entry?.index === 'number' ? await remoteChild.evaluateHandle<JSHandle<TEntry>>(async (child: TChild, index: number) => {
+    private async GetRemoteEntry(remoteChild: JSHandle<TChild>, entryIndex?: number) {
+        return remoteChild.evaluateHandle<JSHandle<TEntry>>(async (child: TChild, index: number) => {
             return child.Entries[index] as TEntry;
-        }, this.config.entry.index) : null;
+        }, entryIndex);
+    }
 
-        return {
-            plugin: remotePlugin,
-            container: remoteContainer,
-            child: remoteChild,
-            entry: remoteEntry
-        };
+    private async GetRemoteData(remoteEntry: JSHandle<TEntry>) {
+        return remoteEntry.evaluateHandle<JSHandle<Blob>>(async (entry: TEntry, priority: number) => {
+            return await entry.Fetch(priority, null);
+        }, 0);
     }
 
     public AssertWebsite() {
-        const remote = this.GetRemoteInstances();
+
+        let remotePlugin: JSHandle<TWebsitePlugin>;
 
         (this.config.plugin ? it : it.skip)('Should be registered as website', async () => {
-            const { plugin } = await remote;
-            expect(await plugin.evaluate(plugin => plugin.Identifier)).toEqual(this.config.plugin.id);
-            expect(await plugin.evaluate(plugin => plugin.Title)).toEqual(this.config.plugin.title);
+            remotePlugin = await this.GetRemotePlugin(this.config.plugin.id);
+            expect(await remotePlugin.evaluate(plugin => plugin.Identifier)).toEqual(this.config.plugin.id);
+            expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual(this.config.plugin.title);
         });
+
+        let remoteContainer: JSHandle<TContainer>;
 
         (this.config.container ? it : it.skip)('Should get specific manga', async () => {
-            const { container } = await remote;
-            expect(await container.evaluate(container => container.Identifier)).toEqual(this.config.container.id);
-            expect(await container.evaluate(container => container.Title)).toEqual(this.config.container.title);
+            remoteContainer = await this.GetRemoteContainer(remotePlugin, this.config.container.url);
+            expect(await remoteContainer.evaluate(container => container.Identifier)).toEqual(this.config.container.id);
+            expect(await remoteContainer.evaluate(container => container.Title)).toEqual(this.config.container.title);
         });
+
+        let remoteChild: JSHandle<TChild>;
 
         (this.config.child ? it : it.skip)('Should get specific chapter', async () => {
-            const { child } = await remote;
-            expect(await child.evaluate(child => child.Identifier)).toEqual(this.config.child.id);
-            expect(await child.evaluate(child => child.Title)).toEqual(this.config.child.title);
+            remoteChild = await this.GetRemoteChild(remoteContainer, this.config.child.id);
+            expect(await remoteChild.evaluate(child => child.Identifier)).toEqual(this.config.child.id);
+            expect(await remoteChild.evaluate(child => child.Title)).toEqual(this.config.child.title);
         });
 
-        // TODO: Fix bug with remote fetch (DeferredTask_1 is not defined)
-        /*(this.config.entry ? it : it.skip)*/it.skip('Should get specific page', async () => {
-            const { entry } = await remote;
-            expect(await entry.evaluate(page => page.Parent.Identifier)).toEqual(this.config.child.id);
-            expect(await entry.evaluate(page => page.Parent.Title)).toEqual(this.config.child.title);
-            //const blob = await entry.evaluate(page => page.Fetch(Priority.High, null));
-            //expect(blob.type).toEqual('image/jpeg');
-            //expect(blob.size).toEqual(544663);
+        let remoteEntry: JSHandle<TEntry>;
+
+        (this.config.entry ? it : it.skip)('Should get specific page', async () => {
+            remoteEntry = await this.GetRemoteEntry(remoteChild, this.config.entry.index);
+            expect(await remoteEntry.evaluate(page => page.Parent.Identifier)).toEqual(this.config.child.id);
+            expect(await remoteEntry.evaluate(page => page.Parent.Title)).toEqual(this.config.child.title);
+        });
+
+        let remoteData: JSHandle<Blob>;
+
+        (this.config.entry ? it : it.skip)('Should fetch valid data', async () => {
+            remoteData = await this.GetRemoteData(remoteEntry);
+            expect(await remoteData.evaluate(data => data.type)).toEqual(this.config.entry.type);
+            expect(await remoteData.evaluate(data => data.size)).toEqual(this.config.entry.size);
         });
     }
 }
