@@ -1,7 +1,7 @@
 import logo from './Kitsu.webp';
 import poster from '../../img/media.png';
 import { ResourceKey } from '../../i18n/ILocale';
-import { IMediaInfoTracker, Info, MediaType, TrackingStatus } from './IMediaInfoTracker';
+import { type IMediaInfoTracker, type Info, MediaType, type TrackingStatus } from './IMediaInfoTracker';
 import { type SettingsManager, type ISettings , Text, Secret } from '../SettingsManager';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 
