@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { spawn } from 'child_process';
 import puppeteer from 'puppeteer-core';
-import type { Config } from '@jest/types';
+//import type { Config } from '@jest/types';
 
 const nwApp = path.resolve('build.app');
 const nwURL = fs.readJSONSync(path.resolve(nwApp, 'package.json')).main;
@@ -47,7 +47,7 @@ async function LaunchNW() {
     throw new Error(`Could not find the web-application '${nwURL}' within the given timeout!`);
 }
 
-export default async function(config: Config.ConfigGlobals) {
+export default async function(/*config: Config.ConfigGlobals*/) {
     console.log(/* line break */);
     if(!nwURL.includes('localhost:5000')) {
         throw new Error(`Invalid startup URL: '${nwURL}'`);
@@ -57,4 +57,4 @@ export default async function(config: Config.ConfigGlobals) {
     await fs.mkdir(userDir, { recursive: true });
     global.SERVER = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { stdio: [ 'pipe', process.stdout, process.stderr ] });
     global.BROWSER = await LaunchNW();
-};
+}

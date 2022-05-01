@@ -43,7 +43,7 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
         }, this.config.plugin.id) : null;
 
         const remoteContainer = typeof this.config.container?.url === 'string' ? await remotePlugin.evaluateHandle<JSHandle<TContainer>>(async (plugin: TWebsitePlugin, containerURL: string) => {
-            const container = (await plugin.TryGetEntry(containerURL) as TContainer);
+            const container = await plugin.TryGetEntry(containerURL) as TContainer;
             await container.Update();
             return container;
         }, this.config.container.url) : null;
@@ -74,19 +74,19 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
             expect(await plugin.evaluate(plugin => plugin.Identifier)).toEqual(this.config.plugin.id);
             expect(await plugin.evaluate(plugin => plugin.Title)).toEqual(this.config.plugin.title);
         });
-    
+
         (this.config.container ? it : it.skip)('Should get specific manga', async () => {
             const { container } = await remote;
             expect(await container.evaluate(container => container.Identifier)).toEqual(this.config.container.id);
             expect(await container.evaluate(container => container.Title)).toEqual(this.config.container.title);
         });
-    
+
         (this.config.child ? it : it.skip)('Should get specific chapter', async () => {
             const { child } = await remote;
             expect(await child.evaluate(child => child.Identifier)).toEqual(this.config.child.id);
             expect(await child.evaluate(child => child.Title)).toEqual(this.config.child.title);
         });
-    
+
         // TODO: Fix bug with remote fetch (DeferredTask_1 is not defined)
         /*(this.config.entry ? it : it.skip)*/it.skip('Should get specific page', async () => {
             const { entry } = await remote;
