@@ -3,9 +3,9 @@
 
     const dispatch = createEventDispatcher();
 
-    import Bookmark16 from "carbon-icons-svelte/lib/Bookmark16";
-    import Image16 from "carbon-icons-svelte/lib/Image16";
-    import CloudDownload16 from "carbon-icons-svelte/lib/CloudDownload16";
+    import Bookmark16 from "carbon-icons-svelte/lib/Bookmark.svelte";
+    import Image16 from "carbon-icons-svelte/lib/Image.svelte";
+    import CloudDownload16 from "carbon-icons-svelte/lib/CloudDownload.svelte";
 
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
 
@@ -16,15 +16,9 @@
 
 {#if display === "Row"}
     <div class="listitem" class:selected on:click on:contextmenu>
-        <CloudDownload16
-            class="download"
-            on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
-        />
-        <Image16 class="viewer" on:click={() => dispatch("view", item)} />
-        <Bookmark16
-            class="bookmark"
-            on:click={() => dispatch("bookmark", item)}
-        />
+        <span on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}><CloudDownload16 class="download" /></span>
+        <span on:click={() => dispatch("view", item)} ><Image16 class="viewer" /></span>
+        <span on:click={() => dispatch("bookmark", item)}><Bookmark16 class="bookmark" /></span>
         {item.Title}
     </div>
 {/if}

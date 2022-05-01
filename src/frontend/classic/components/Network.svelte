@@ -5,7 +5,7 @@
         StructuredListCell,
         StructuredListBody,
     } from "carbon-components-svelte";
-    import Image16 from "carbon-icons-svelte/lib/Image16";
+    import Image16 from "carbon-icons-svelte/lib/Image.svelte";
 
     interface Request {
         type: string;
@@ -94,7 +94,7 @@
                         >{request.details}</StructuredListCell
                     >
                     <StructuredListCell class="action">
-                        <Image16 on:click={() => alert("clicked")} />
+                        <span on:click={() => alert("clicked")}><Image16 /></span>
                     </StructuredListCell>
                 </StructuredListRow>
             {/each}

@@ -9,8 +9,8 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import PlayFilledAlt24 from 'carbon-icons-svelte/lib/PlayFilledAlt24';
-    import ArrowUpRight24 from 'carbon-icons-svelte/lib/ArrowUpRight24';
+    import PlayFilledAlt24 from 'carbon-icons-svelte/lib/PlayFilledAlt.svelte';
+    import ArrowUpRight24 from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
     import { createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
 

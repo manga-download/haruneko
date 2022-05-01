@@ -5,22 +5,22 @@
         SideNavMenu,
         SideNavLink,
     } from 'carbon-components-svelte';
-    import LogoDiscord16 from 'carbon-icons-svelte/lib/LogoDiscord16';
-    import Home16 from 'carbon-icons-svelte/lib/Home16';
-    import LogoGithub16 from 'carbon-icons-svelte/lib/LogoGithub16';
-    import App16 from 'carbon-icons-svelte/lib/App16';
-    import Doc16 from 'carbon-icons-svelte/lib/Doc16';
-    import Events16 from 'carbon-icons-svelte/lib/Events16'; // Maintainers
-    import EventsAlt16 from 'carbon-icons-svelte/lib/EventsAlt16'; // contributors
-    import Debug16 from 'carbon-icons-svelte/lib/Debug16';
-    import Image16 from 'carbon-icons-svelte/lib/Image16';
-    import Location16 from 'carbon-icons-svelte/lib/Location16';
-    import Settings24 from 'carbon-icons-svelte/lib/Settings24';
-    import SettingsAdjust20 from 'carbon-icons-svelte/lib/SettingsAdjust20';
-    import TaskSettings20 from 'carbon-icons-svelte/lib/TaskSettings20';
-    import SettingsView20 from 'carbon-icons-svelte/lib/SettingsView20';
-    import NetworkOverlay24 from 'carbon-icons-svelte/lib/NetworkOverlay24';
-    import ContentDeliveryNetwork24 from 'carbon-icons-svelte/lib/ContentDeliveryNetwork24';
+    import LogoDiscord16 from 'carbon-icons-svelte/lib/LogoDiscord.svelte';
+    import Home16 from 'carbon-icons-svelte/lib/Home.svelte';
+    import LogoGithub16 from 'carbon-icons-svelte/lib/LogoGithub.svelte';
+    import App16 from 'carbon-icons-svelte/lib/App.svelte';
+    import Doc16 from 'carbon-icons-svelte/lib/Doc.svelte';
+    import Events16 from 'carbon-icons-svelte/lib/Events.svelte'; // Maintainers
+    import EventsAlt16 from 'carbon-icons-svelte/lib/EventsAlt.svelte'; // contributors
+    import Debug16 from 'carbon-icons-svelte/lib/Debug.svelte';
+    import Image16 from 'carbon-icons-svelte/lib/Image.svelte';
+    import Location16 from 'carbon-icons-svelte/lib/Location.svelte';
+    import Settings24 from 'carbon-icons-svelte/lib/Settings.svelte';
+    import SettingsAdjust20 from 'carbon-icons-svelte/lib/SettingsAdjust.svelte';
+    import TaskSettings20 from 'carbon-icons-svelte/lib/TaskSettings.svelte';
+    import SettingsView20 from 'carbon-icons-svelte/lib/SettingsView.svelte';
+    import NetworkOverlay24 from 'carbon-icons-svelte/lib/NetworkOverlay.svelte';
+    import ContentDeliveryNetwork24 from 'carbon-icons-svelte/lib/ContentDeliveryNetwork.svelte';
 
     import SettingsMenu from './settings/SettingsModal.svelte';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';

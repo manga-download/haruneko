@@ -6,10 +6,10 @@
         HeaderGlobalAction,
         SkipToContent,
     } from 'carbon-components-svelte';
-    import MinimizeIcon from 'carbon-icons-svelte/lib/Subtract24';
-    import MaximizeIcon from 'carbon-icons-svelte/lib/Checkbox16';
-    import RestoreIcon from 'carbon-icons-svelte/lib/Copy16';
-    import CloseIcon from 'carbon-icons-svelte/lib/Close24';
+    import MinimizeIcon from 'carbon-icons-svelte/lib/Subtract.svelte';
+    import MaximizeIcon from 'carbon-icons-svelte/lib/Checkbox.svelte';
+    import RestoreIcon from 'carbon-icons-svelte/lib/Copy.svelte';
+    import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
     import MenuLeftPanel from './MenuLeftPanel.svelte';
     import { WindowController } from '../Stores';
     import SettingsPanel from './settings/SettingsPanel.svelte';

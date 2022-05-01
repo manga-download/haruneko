@@ -8,7 +8,7 @@
         ContextMenuGroup,
         ContextMenuOption,
     } from "carbon-components-svelte";
-    import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled16";
+    import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled.svelte";
 
     import { fade } from "svelte/transition";
 
@@ -110,7 +110,6 @@
         <div class="inline">
             <Button
                 icon={EarthFilled16}
-                hasIconOnly
                 size="small"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"

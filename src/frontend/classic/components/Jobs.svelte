@@ -7,7 +7,7 @@
         StructuredListBody,
     } from "carbon-components-svelte";
 
-    import Delete20 from "carbon-icons-svelte/lib/Delete20";
+    import Delete20 from "carbon-icons-svelte/lib/TrashCan.svelte";
 
     interface Job {
         type: string;
@@ -141,7 +141,7 @@
                     </StructuredListCell>
                     <StructuredListCell class="action">
                         {#if job.status === "active"}
-                            <Delete20 on:click={() => alert("clicked")} />
+                            <span on:click={() => alert("clicked")}><Delete20 size={20} /></span>
                         {/if}
                     </StructuredListCell>
                 </StructuredListRow>

@@ -4,8 +4,8 @@
         Button,
         Search,
     } from 'carbon-components-svelte';
-    import PlugFilled16 from 'carbon-icons-svelte/lib/PlugFilled16';
-    import UpdateNow16 from 'carbon-icons-svelte/lib/UpdateNow16';
+    import PlugFilled16 from 'carbon-icons-svelte/lib/PlugFilled.svelte';
+    import UpdateNow16 from 'carbon-icons-svelte/lib/UpdateNow.svelte';
     import Fuse from 'fuse.js';
 
     import { fade } from 'svelte/transition';
@@ -126,7 +126,6 @@
         <div class="inline">
             <Button
                 icon={PlugFilled16}
-                hasIconOnly
                 size="small"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
@@ -148,7 +147,6 @@
         <div class="inline">
             <Button
                 icon={UpdateNow16}
-                hasIconOnly
                 size="small"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"

@@ -1,11 +1,11 @@
 <script lang="ts">
-    import ChevronLeft24 from "carbon-icons-svelte/lib/ChevronLeft24";
-    import ChevronRight24 from "carbon-icons-svelte/lib/ChevronRight24";
-    import ZoomIn24 from "carbon-icons-svelte/lib/ZoomIn24";
-    import ZoomOut24 from "carbon-icons-svelte/lib/ZoomOut24";
-    import RowInsert24 from "carbon-icons-svelte/lib/RowExpand24";
-    import RowDelete24 from "carbon-icons-svelte/lib/RowCollapse24";
-    import Misuse24 from "carbon-icons-svelte/lib/Misuse24";
+    import ChevronLeft24 from "carbon-icons-svelte/lib/ChevronLeft.svelte";
+    import ChevronRight24 from "carbon-icons-svelte/lib/ChevronRight.svelte";
+    import ZoomIn24 from "carbon-icons-svelte/lib/ZoomIn.svelte";
+    import ZoomOut24 from "carbon-icons-svelte/lib/ZoomOut.svelte";
+    import RowInsert24 from "carbon-icons-svelte/lib/RowExpand.svelte";
+    import RowDelete24 from "carbon-icons-svelte/lib/RowCollapse.svelte";
+    import Misuse24 from "carbon-icons-svelte/lib/Misuse.svelte";
 
     export let title: string;
     export let toggleThumbnailViewer: () => void;
@@ -17,30 +17,30 @@
 
 <div id="Buttons" tabindex="0">
     <span class="title">{title}</span>
-    <ChevronLeft24
-        title="Item Down (ArrowLeft)"
-        on:click={() =>
-            console.log(`createEventDispatcher("requestItemDown", item)`)}
-    />
-    <ChevronRight24
-        title="Item Up (ArrowRight)"
-        on:click={() =>
-            console.log(`createEventDispatcher("requestItemUp", item)`)}
-    />
+    <span on:click={() => console.log(`createEventDispatcher("requestItemDown", item)`)}>
+        <ChevronLeft24 size={24} title="Item Down (ArrowLeft)" />
+    </span>
+    <span on:click={() => console.log(`createEventDispatcher("requestItemUp", item)`)}>
+        <ChevronRight24 size={24} title="Item Up (ArrowRight)" />
+    </span>
     &nbsp;
-    <RowDelete24
-        title="Decrease spacing between images (CTRL ➖)"
-        on:click={decreaseImagePadding}
-    />
-    <RowInsert24
-        title="Increase spacing between images (CTRL ➕)"
-        on:click={increaseImagePadding}
-    />
+    <span on:click={decreaseImagePadding}>
+        <RowDelete24 size={24} title="Decrease spacing between images (CTRL ➖)" />
+    </span>
+    <span on:click={increaseImagePadding}>
+        <RowInsert24 size={24} title="Increase spacing between images (CTRL ➕)" />
+    </span>
     &nbsp;
-    <ZoomIn24 title="Zoom In (➕)" on:click={zoomIn} />
-    <ZoomOut24 title="Zoom Out (➖)" on:click={zoomOut} />
+    <span on:click={zoomIn}>
+        <ZoomIn24 size={24} title="Zoom In (➕)" />
+    </span>
+    <span on:click={zoomOut}>
+        <ZoomOut24 size={24} title="Zoom Out (➖)" />
+    </span>
     &nbsp
-    <Misuse24 title="Close (ESC)" on:click={toggleThumbnailViewer} />
+    <span on:click={toggleThumbnailViewer}>
+        <Misuse24 size={24} title="Close (ESC)" />
+    </span>
 </div>
 
 <style>

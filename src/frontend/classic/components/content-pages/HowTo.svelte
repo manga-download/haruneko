@@ -1,8 +1,8 @@
 <script>
-    import Search16 from 'carbon-icons-svelte/lib/Search16';
-    import Plug16 from 'carbon-icons-svelte/lib/Plug16';
-    import Language16 from 'carbon-icons-svelte/lib/Language16';
-    import Renew16 from 'carbon-icons-svelte/lib/Renew16';
+    import Search16 from 'carbon-icons-svelte/lib/Search.svelte';
+    import Plug16 from 'carbon-icons-svelte/lib/Plug.svelte';
+    import Language16 from 'carbon-icons-svelte/lib/Language.svelte';
+    import Renew16 from 'carbon-icons-svelte/lib/Renew.svelte';
     import { fade } from 'svelte/transition';
 </script>
 
