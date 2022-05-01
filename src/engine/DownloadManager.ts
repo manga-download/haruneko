@@ -1,4 +1,4 @@
-import { DownloadTask, IDownloadTask, Status } from './DownloadTask';
+import { DownloadTask, type IDownloadTask, Status } from './DownloadTask';
 import type { IMediaContainer, StoreableMediaContainer, IMediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
 import { Event } from './Event';

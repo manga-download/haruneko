@@ -1,6 +1,6 @@
 import { Key, Scope } from '../SettingsGlobal';
 import type { Check, Directory, ISettings, SettingsManager } from '../SettingsManager';
-import { SanitizeFileName, StorageController, Store } from '../StorageController';
+import { SanitizeFileName, type StorageController, Store } from '../StorageController';
 import type { Tag } from '../Tags';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';

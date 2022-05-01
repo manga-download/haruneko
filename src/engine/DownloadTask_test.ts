@@ -1,5 +1,5 @@
 import { mock, mockFn } from 'jest-mock-extended';
-import { DownloadTask, IDownloadTask, Status } from './DownloadTask';
+import { DownloadTask, type IDownloadTask, Status } from './DownloadTask';
 import type { StoreableMediaContainer, IMediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
 import { DeferredTask } from './taskpool/DeferredTask';

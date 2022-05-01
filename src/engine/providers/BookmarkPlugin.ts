@@ -1,6 +1,6 @@
 import type { PluginController } from '../PluginController';
 import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaPlugin';
-import { StorageController, Store } from '../StorageController';
+import { type StorageController, Store } from '../StorageController';
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 
