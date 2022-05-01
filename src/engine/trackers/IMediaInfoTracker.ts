@@ -1,5 +1,11 @@
 import type { ISettings } from '../SettingsManager';
 
+export const enum MediaType {
+    Manga = 'manga',
+    Anime = 'anime',
+    Novel = 'novel',
+}
+
 export const enum ReleaseStatus {
     TBA,
     Ongoing,
@@ -10,13 +16,14 @@ export const enum TrackingStatus {
     None,
     Wanted,
     Started,
-    Completed
+    Completed,
 }
 
 export type Suggestion = {
-    Identifier: string;
-    Title: string;
-    Titles: string[];
+    readonly Identifier: string;
+    readonly Type: MediaType;
+    readonly Title: string;
+    readonly Titles: string[];
 }
 
 export type Info = Suggestion & {
@@ -32,7 +39,7 @@ export interface IMediaInfoTracker {
     readonly Icon: string;
     readonly Settings: ISettings;
     Login(): Promise<boolean>;
-    Search(title: string): Suggestion[];
+    Search(title: string): Promise<Suggestion[]>;
     GetInfo(identifier: string): Promise<Info>;
     GetStatus(identifier: string): Promise<TrackingStatus>;
     SetStatus(identifier: string, status: TrackingStatus): Promise<void>;
