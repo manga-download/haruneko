@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchProvider';
-import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { type MangaPlugin, DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { FetchMangasMultiPageCSS, ImageDirect } from './decorators/Common';
 
 type APIScanlator = {

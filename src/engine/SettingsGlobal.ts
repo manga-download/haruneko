@@ -1,4 +1,4 @@
-import { SettingsManager, Check, Numeric, Text, Secret, Choice, Directory } from './SettingsManager';
+import { type SettingsManager, Check, Numeric, Text, Secret, Choice, Directory } from './SettingsManager';
 import { Code, ResourceKey as R } from '../i18n/ILocale';
 
 export const Scope = '*';

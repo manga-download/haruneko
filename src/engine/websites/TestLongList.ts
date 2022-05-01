@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
-import { MangaPlugin, Manga, DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { type MangaPlugin, Manga, DecoratableMangaScraper } from '../providers/MangaPlugin';
 
 /**
  * Sample Website Implementation for Developer Testing

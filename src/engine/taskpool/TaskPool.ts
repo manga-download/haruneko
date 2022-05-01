@@ -1,4 +1,4 @@
-import { DeferredTask, Priority } from './DeferredTask';
+import { DeferredTask, type Priority } from './DeferredTask';
 export { Priority } from './DeferredTask';
 import { Unlimited } from './RateLimit';
 

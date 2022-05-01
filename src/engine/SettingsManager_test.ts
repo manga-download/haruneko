@@ -1,8 +1,8 @@
 import { mock, mockClear, mockFn } from 'jest-mock-extended';
 import type { HakuNeko } from '../engine/HakuNeko';
-import { Code, ResourceKey } from '../i18n/ILocale';
-import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, Setting, IValue, ISettings } from './SettingsManager';
-import { StorageController, Store } from './StorageController';
+import { Code, type ResourceKey } from '../i18n/ILocale';
+import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type Setting, type IValue, type ISettings } from './SettingsManager';
+import { type StorageController, Store } from './StorageController';
 import type { Event } from './Event';
 import { Key } from './SettingsGlobal';
 

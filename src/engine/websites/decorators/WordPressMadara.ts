@@ -1,5 +1,5 @@
 import { FetchRequest, FetchCSS, FetchHTML } from '../../FetchProvider';
-import { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 import type { Constructor } from './Common';
 
