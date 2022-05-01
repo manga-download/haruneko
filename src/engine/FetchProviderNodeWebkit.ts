@@ -184,26 +184,41 @@ async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<NWJ
             win.close();
             reject(new Error(GetLocale().FetchProvider_FetchWindow_TimeoutError()));
         };
+
         let cancellation = setTimeout(destroy, timeout);
 
-        win.on('loaded', async () => {
-            const redirect = await CheckAntiScrapingDetection(win);
-            switch (redirect) {
-                case FetchRedirection.Interactive:
-                    // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
-                    clearTimeout(cancellation);
-                    cancellation = setTimeout(destroy, 150_000);
-                    win.eval(null, `alert('${GetLocale().FetchProvider_FetchWindow_AlertCaptcha()}');`);
-                    win.show();
-                    break;
-                case FetchRedirection.Automatic:
-                    break;
-                default:
-                    clearTimeout(cancellation);
-                    resolve(win);
-                    break;
+        const load = async () => {
+            try {
+                const redirect = await CheckAntiScrapingDetection(win);
+                switch (redirect) {
+                    case FetchRedirection.Interactive:
+                        // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
+                        clearTimeout(cancellation);
+                        cancellation = setTimeout(destroy, 150_000);
+                        win.eval(null, `alert('${GetLocale().FetchProvider_FetchWindow_AlertCaptcha()}');`);
+                        win.show();
+                        break;
+                    case FetchRedirection.Automatic:
+                        break;
+                    default:
+                        clearTimeout(cancellation);
+                        resolve(win);
+                        break;
+                }
+            } catch(error) {
+                clearTimeout(cancellation);
+                win.close();
+                reject(error);
             }
-        });
+        };
+
+        win.on('loaded', load);
+        // HACK: win.on('loaded', load) alone seems quite unreliable => inject additonal 'DOMContentLoaded' ...
+        if (win.window.document.readyState === 'loading') {
+            win.window.addEventListener('DOMContentLoaded', load);
+        } else {
+            load();
+        }
     });
 }
 
@@ -213,7 +228,7 @@ export async function FetchWindowCSS<T extends HTMLElement>(request: FetchReques
         await Wait(delay);
         const dom = win.window.document as Document;
         return [...dom.querySelectorAll(query)] as T[];
-    } finally{
+    } finally {
         win.close();
     }
 }
@@ -223,7 +238,7 @@ export async function FetchWindowScript<T>(request: FetchRequest, script: string
     try {
         await Wait(delay);
         return win.eval(null, script) as unknown as T;
-    } finally{
+    } finally {
         win.close();
     }
 }
