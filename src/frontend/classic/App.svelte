@@ -12,6 +12,7 @@
     import Console from './components/Console.svelte';
     import Network from './components/Network.svelte';
     import Viewer from './components/viewer/Viewer.svelte';
+    import Tracker from './components/Tracker.svelte';
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
@@ -54,6 +55,10 @@
     }
 
     $: currentContent = selectedItem ? 'viewer' : 'home';
+    
+    $: if (selectedMedia) {
+        currentContent = 'tracker'
+    }
 </script>
 
 <UserMessage />
@@ -61,7 +66,7 @@
 <Theme theme={$ThemeValue}>
     <AppBar {isSideNavOpen} {isOpen} />
     <Content id="hakunekoapp">
-        <MediaSelect on:select={(evt) => (selectedMedia = evt.detail)} />
+        <MediaSelect on:select={(evt) => (selectedMedia = evt.detail )} />
         <MediaItemSelect
             media={selectedMedia}
             on:view={(evt) => (selectedItem = evt.detail)}
@@ -70,6 +75,8 @@
             <div id="Content" transition:fade>
                 {#if currentContent === 'viewer'}
                     <Viewer item={selectedItem} />
+                {:else if currentContent === 'tracker'}
+                    <Tracker media={selectedMedia} />
                 {:else if currentContent && showHome}
                     <ContentPage />
                 {/if}
