@@ -368,23 +368,3 @@ export function PagesSinglePageCSS(query = queryPageListLinks) {
 /***********************************************
  ******** Image Data Extraction Methods ********
  ***********************************************/
-
-/*
-    async _handleConnectorURI(payload) {
-        let request = new Request(payload.url, this.requestOptions);
-        request.headers.set('x-referer', payload.referer);
-        let response = await fetch(request);
-        let data = await response.blob();
-        data = await this._blobToBuffer(data);
-        this._applyRealMime(data);
-        return data;
-    }
-
-    async _getMangaFromURI(uri) {
-        const request = new Request(new URL(uri), this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryTitleForURI);
-        const element = [...data].pop();
-        const title = (element.content || element.textContent).trim();
-        return new Manga(this, uri, title);
-    }
-*/
