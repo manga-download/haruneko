@@ -9,6 +9,12 @@ describe('ImageProxyTransformer', () => {
             expect(testee(uri)).toBe(uri);
         });
 
+        it('Should keep data URL', () => {
+            const url = 'data:image/png;base64,XXXXXXXX';
+            const uri = new URL(url);
+            expect(testee(uri).href).toBe(url);
+        });
+
         it('Should transform photon proxy', () => {
             const uri = new URL('https://i0.wp.com/cdn.image.host/picture.png');
             expect(testee(uri).href).toBe('http://cdn.image.host/picture.png');
