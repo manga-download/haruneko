@@ -66,6 +66,15 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
         }, 0);
     }
 
+    public get Name() {
+        return [
+            this.config.plugin.title,
+            this.config.container.title,
+            this.config.child.title,
+            `[${this.config.entry.index}]`
+        ].join(' › ');
+    }
+
     public AssertWebsite() {
 
         let remotePlugin: JSHandle<TWebsitePlugin>;
@@ -102,7 +111,7 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
 
         let remoteData: JSHandle<Blob>;
 
-        (this.config.entry ? it : it.skip)('Should fetch valid data', async () => {
+        (this.config.entry ? it : it.skip)('Should fetch valid blob', async () => {
             remoteData = await this.GetRemoteData(remoteEntry);
             expect(await remoteData.evaluate(data => data.type)).toEqual(this.config.entry.type);
             expect(await remoteData.evaluate(data => data.size)).toEqual(this.config.entry.size);
