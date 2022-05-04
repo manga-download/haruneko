@@ -32,6 +32,7 @@
         findAllMatches: true,
         ignoreLocation: true,
         minMatchCharLength: 1,
+        fieldNormWeight: 0
     });
 
     let selectedPlugin: IMediaContainer | undefined;
@@ -74,6 +75,7 @@
             findAllMatches: true,
             ignoreLocation: true,
             minMatchCharLength: 1,
+            fieldNormWeight: 0
         });
         selectedMedia = undefined;
     }

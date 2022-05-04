@@ -43,7 +43,7 @@
         "carbon-components-svelte": "^0.63.4",
         "carbon-icons-svelte": "^11.0.1",
         "eslint": "^8.14.0",
-        "fuse.js": "^6.5.3",
+        "fuse.js": "^6.6.0",
         "jest": "^27.5.1",
         "jest-environment-jsdom": "^27.5.1",
         "jest-junit": "^13.2.0",
