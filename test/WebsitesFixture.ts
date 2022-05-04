@@ -69,9 +69,9 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
     public get Name() {
         return [
             this.config.plugin.title,
-            this.config.container.title,
-            this.config.child.title,
-            `[${this.config.entry.index}]`
+            this.config.container?.title,
+            this.config.child?.title,
+            `[${this.config.entry?.index}]`
         ].join(' › ');
     }
 
