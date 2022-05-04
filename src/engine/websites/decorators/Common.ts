@@ -185,6 +185,8 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extr
 
 /**
  * An extension method for a {@link MangaScraper} instance, that can be used to extract a page list by parsing a single URI of a webiste with the given CSS query.
+ * The URI is composed from the base URL of {@link this} manga scraper and the given {@link chapter} identifier.
+ * The composed URI is also set as referer for each extracted page.
  */
 export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, query: string, extract = DefaultImageExtractor as ImageExtractor<E>): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
