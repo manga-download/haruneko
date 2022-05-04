@@ -1,4 +1,5 @@
 // Implemented Websites
+export { default as AceScans } from './AceScans';
 export { default as AHStudios } from './AHStudios';
 export { default as AiinScan } from './AiinScan';
 export { default as AkuManga } from './AkuManga';
@@ -13,7 +14,6 @@ export { default as TestLongList } from './TestLongList';
 export { default as Toonily } from './Toonily';
 // Legacy Websites
 export { default as AMAScan } from './legacy/AMAScan';
-export { default as AceScans } from './legacy/AceScans';
 export { default as AkaiYuhiMun } from './legacy/AkaiYuhiMun';
 export { default as AllHentai } from './legacy/AllHentai';
 export { default as AlphaScans } from './legacy/AlphaScans';
