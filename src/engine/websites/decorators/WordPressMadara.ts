@@ -26,13 +26,12 @@ async function delay(milliseconds: number) {
  ***************************************************/
 
 /**
- * ...
+ * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga from a given url.
+ * It will use the `pathname` of the url plus the `postID` as manga id and the `content` attribute or `textContent` of the first element found by the given CSS {@link query} as manga title.
  * @param this A reference to the {@link MangaScraper}
  * @param provider A reference to the {@link MangaPlugin} which contains the manga
  * @param url The URL for the manga from which the data shall be fetched
  * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
- * @returns A {@link Manga} on success, or `undefined` when validation with {@link matcher} fails
- * @throws When validation with {@link matcher} succeeds, but extraction fails (e.g. wrong {@link query}, network connection error, ...)
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     const uri = new URL(url);
@@ -51,8 +50,6 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will setup the {@link MangaScraper.ValidateMangaURL} method and overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
  * @param matcher An expression to check if a given URL is a valid manga resource
  * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
- * @returns A {@link Manga} on success, or `undefined` when validation with {@link matcher} fails
- * @throws When validation with {@link matcher} succeeds, but extraction fails (e.g. wrong {@link query}, network connection error, ...)
  */
 export function MangaCSS(matcher: RegExp, query: string = queryMangaTitle) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T): T {

@@ -54,22 +54,31 @@ export function InnerAnchorInfoExtractor(query: string): InfoExtractor<HTMLAncho
 
 /**
  * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga from a given url.
- * It will use the `pathname` of the url as manga id and the `content` attribute or `textContent` of the element found by the given CSS query as manga title.
+ * It will use the `pathname` of the url as manga id and the `content` attribute or `textContent` of the first element found by the given CSS {@link query} as manga title.
+ * @param this A reference to the {@link MangaScraper}
+ * @param provider A reference to the {@link MangaPlugin} which contains the manga
+ * @param url The URL for the manga from which the data shall be fetched
+ * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
  */
 export async function FetchMangaCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, url: string, query: string): Promise<Manga> {
     const uri = new URL(url);
     const request = new FetchRequest(uri.href);
-    const data = (await FetchCSS<E>(request, query)).pop();
+    const data = (await FetchCSS<E>(request, query)).shift();
     const title = data instanceof HTMLMetaElement ? data.content : data.textContent.trim();
     return new Manga(this, provider, uri.pathname, title);
 }
 
 /**
- * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
+ * A class decorator for any {@link DecoratableMangaScraper} implementation, that will setup the {@link MangaScraper.ValidateMangaURL} method and overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
+ * @param matcher An expression to check if a given URL is a valid manga resource
+ * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
  */
-export function MangaCSS(query: string) {
+export function MangaCSS(matcher: RegExp, query: string) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
+            public ValidateMangaURL(this: MangaScraper, url: string): boolean {
+                return matcher.test(url);
+            }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query);
             }
@@ -83,6 +92,11 @@ export function MangaCSS(query: string) {
 
 /**
  * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga list by parsing a single URI of a webiste with the given CSS query.
+ * @param this A reference to the {@link MangaScraper}
+ * @param provider A reference to the {@link MangaPlugin} which contains the mangas
+ * @param path An URL path providing a list of mangas
+ * @param query A CSS query to find all HTML elements that are linked to a manga
+ * @param extract A function to determine the `id` and the `title` for a manga from a given HTML element (which is found with the {@link query})
  */
 export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const uri = new URL(path, this.URI);
@@ -96,6 +110,8 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
 
 /**
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasSinglePageCSS}.
+ * @param path An URL path providing a list of mangas
+ * @param query A CSS query to find all HTML elements that are linked to a manga
  */
 export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
