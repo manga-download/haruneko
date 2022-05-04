@@ -2,13 +2,13 @@ import { Tags } from '../Tags';
 import icon from './AllPornComic.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
-import { ImageDirect } from './decorators/Common';
+import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/allporncomic.com\/porncomic\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageCSS()
 @Madara.PagesSinglePageCSS()
-@ImageDirect()
+@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

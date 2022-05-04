@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { MangasSinglePageCSS, ChaptersSinglePageCSS, PagesSinglePageCSS, ImageDirect } from './decorators/Common';
+import * as Common from './decorators/Common';
 
-@MangasSinglePageCSS('/mangas/', 'article.manga h2.entry-title a')
-@ChaptersSinglePageCSS('article.manga h2.entry-title a')
-@PagesSinglePageCSS('article.manga section.ft-entry img')
-@ImageDirect()
+@Common.MangasSinglePageCSS('/mangas/', 'article.manga h2.entry-title a')
+@Common.ChaptersSinglePageCSS('article.manga h2.entry-title a')
+@Common.PagesSinglePageCSS('article.manga section.ft-entry img')
+@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

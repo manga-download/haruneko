@@ -4,12 +4,12 @@ import { FetchJSON, FetchRequest } from '../FetchProvider';
 import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { Numeric, Secret, Text } from '../SettingsManager';
 import { ResourceKey as R } from '../../i18n/ILocale';
-import { ImageDirect } from './decorators/Common';
+import * as Common from './decorators/Common';
 
 /**
  * Sample Website Implementation for Developer Testing
  */
- @ImageDirect()
+ @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

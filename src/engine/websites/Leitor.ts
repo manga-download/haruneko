@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchProvider';
 import { type MangaPlugin, DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
-import { FetchMangasMultiPageCSS, ImageDirect } from './decorators/Common';
+import * as Common from './decorators/Common';
 
 type APIScanlator = {
     name: string
@@ -31,7 +31,7 @@ type APIPages = {
     images: APIPage[]
 };
 
-@ImageDirect()
+@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return FetchMangasMultiPageCSS.call(this, provider, '/series/index/?page={page}', 'ul.seriesList li > a.link-block');
+        return Common.FetchMangasMultiPageCSS.call(this, provider, '/series/index/?page={page}', 'ul.seriesList li > a.link-block');
     }
 
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {

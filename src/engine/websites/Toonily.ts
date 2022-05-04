@@ -2,13 +2,13 @@ import { Tags } from '../Tags';
 import icon from './Toonily.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
-import { ImageDirect } from './decorators/Common';
+import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/toonily.com\/webtoon\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageCSS()
 @Madara.ChaptersSinglePageCSS()
 @Madara.PagesSinglePageCSS()
-@ImageDirect()
+@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

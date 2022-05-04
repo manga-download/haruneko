@@ -2,13 +2,13 @@ import { Tags } from '../Tags';
 import icon from './AHStudios.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
-import { ImageDirect } from './decorators/Common';
+import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/ahstudios.net\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
-@ImageDirect()
+@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
