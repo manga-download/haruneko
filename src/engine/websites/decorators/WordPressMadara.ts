@@ -1,9 +1,9 @@
 // https://mangabooth.com/product/wp-manga-theme-madara/
 
 import { FetchRequest, FetchCSS, FetchHTML } from '../../FetchProvider';
-import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type MangaPlugin, Manga, Chapter, type Page } from '../../providers/MangaPlugin';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
-import type * as Common from './Common';
+import * as Common from './Common';
 
 interface MangaID {
     readonly post: string;
@@ -299,6 +299,14 @@ export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks) {
  ******** Page List Extraction Methods ********
  **********************************************/
 
+function CreateImageExtractor(this: MangaScraper) {
+    return (image: HTMLImageElement): string => {
+        const url = image.dataset?.src || image.srcset || image.src;
+        const uri = new URL(url.trim(), this.URI);
+        return DeProxify(uri).href;
+    };
+}
+
 /**
  * Extracts the pages from the HTML page of the given {@link chapter}.
  * @param this A reference to the {@link MangaScraper}
@@ -306,18 +314,7 @@ export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks) {
  * @param query A CSS query for all HTML image elements
  */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query = queryPageListLinks): Promise<Page[]> {
-    const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href);
-    const data = await FetchCSS<HTMLImageElement>(request, query);
-    return data.map(element => {
-        const link = new URL((element.dataset.src || element.srcset || element.src).trim(), uri);
-        /*
-        if(/data:image/.test(link.href)) {
-            return link;
-        }
-        */
-        return new Page(this, chapter, DeProxify(link), { Referer: uri.href });
-    });
+    return Common.FetchPagesSinglePageCSS.call(this, chapter, query, CreateImageExtractor.call(this));
 }
 
 /**
