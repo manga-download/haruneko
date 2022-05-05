@@ -50,7 +50,7 @@ async function LaunchNW() {
 export default async function(/*config: Config.ConfigGlobals*/) {
     console.log(/* line break */);
     if(!nwURL.includes('localhost:5000')) {
-        throw new Error(`Invalid startup URL: '${nwURL}'`);
+        throw new Error(`Invalid startup URL '${nwURL}', make sure the application was build for production mode!`);
     }
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
