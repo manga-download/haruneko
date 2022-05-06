@@ -1,35 +1,22 @@
-import { mockClear, mockFn } from 'jest-mock-extended';
+import { mock, mockClear, mockFn } from 'jest-mock-extended';
+import { RevealWebRequestHeaders, FetchRequest, Fetch } from './FetchProviderNodeWebkit';
 global.fetch = mockFn<(input: RequestInfo, init?: RequestInit) => Promise<Response>>();
-import { ConcealFetchHeaders, RevealWebRequestHeaders, FetchRequest, Fetch } from './FetchProviderNodeWebkit';
+const cookies = mock<typeof chrome.cookies>();
+global.chrome = { cookies: cookies } as unknown as typeof chrome;
+
+function CreateCookies(cookies: string): chrome.cookies.Cookie[] {
+    const result: chrome.cookies.Cookie[] = [];
+    for(const cookie of cookies.split(';')) {
+        const [ name, value ] = cookie.split('=').map(c => c.trim());
+        const c = mock<chrome.cookies.Cookie>();
+        c.name = name;
+        c.value = value;
+        result.push(c);
+    }
+    return result;
+}
 
 describe('FetchProvider', () => {
-
-    describe('ConcealFetchAPIHeaders', () => {
-
-        it('Should prefix unsupported fetch API headers', async () => {
-            const headers = new Headers({
-                'Content-Type': 'application/json',
-                'User-Agent': 'UserAgent',
-                'Referer': 'protocol://domain',
-                'Host': 'domain',
-                'Origin': 'protocol://origin'
-            });
-            ConcealFetchHeaders(headers);
-
-            expect(headers.get('Content-Type')).toBe('application/json');
-            expect(headers.has('X-FetchAPI-Content-Type')).toBeFalsy();
-            expect(headers.has('User-Agent')).toBeFalsy();
-            expect(headers.get('X-FetchAPI-User-Agent')).toBe('UserAgent');
-            expect(headers.has('Referer')).toBeFalsy();
-            expect(headers.get('X-FetchAPI-Referer')).toBe('protocol://domain');
-            expect(headers.has('Host')).toBeFalsy();
-            expect(headers.get('X-FetchAPI-Host')).toBe('domain');
-            expect(headers.has('Origin')).toBeFalsy();
-            expect(headers.get('X-FetchAPI-Origin')).toBe('protocol://origin');
-        });
-
-        // TODO: test case sensitivity
-    });
 
     describe('RevealFetchAPIHeaders', () => {
 
@@ -64,6 +51,8 @@ describe('FetchProvider', () => {
 
 describe('FetchRequest', () => {
 
+    beforeEach(() => mockClear(cookies));
+
     describe('constructor()', () => {
 
         it('Should initilize with expected values', async () => {
@@ -75,6 +64,9 @@ describe('FetchRequest', () => {
             expect(testee.method).toBe('POST');
             expect(await testee.text()).toBe('a=1&b=2');
         });
+    });
+
+    describe('ConcealFetchAPIHeaders', () => {
 
         it('Should prefix unsupported fetch API headers', async () => {
             const testee = new FetchRequest('http://hakuneko.app/', {
@@ -82,20 +74,134 @@ describe('FetchRequest', () => {
                     'Content-Type': 'application/json',
                     'User-Agent': 'UserAgent',
                     'Referer': 'protocol://domain',
+                    'Cookie': 'user=abc; pass=123',
                     'Origin': 'protocol://origin',
                     'Host': 'domain'
                 }
             });
+            testee.ConcealFetchHeaders();
 
             expect(testee.headers.get('Content-Type')).toBe('application/json');
+            expect(testee.headers.has('X-FetchAPI-Content-Type')).toBeFalsy();
             expect(testee.headers.has('User-Agent')).toBeFalsy();
             expect(testee.headers.get('X-FetchAPI-User-Agent')).toBe('UserAgent');
             expect(testee.headers.has('Referer')).toBeFalsy();
             expect(testee.headers.get('X-FetchAPI-Referer')).toBe('protocol://domain');
-            expect(testee.headers.has('Host')).toBeFalsy();
-            expect(testee.headers.get('X-FetchAPI-Host')).toBe('domain');
+            expect(testee.headers.has('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('user=abc; pass=123');
             expect(testee.headers.has('Origin')).toBeFalsy();
             expect(testee.headers.get('X-FetchAPI-Origin')).toBe('protocol://origin');
+            expect(testee.headers.has('Host')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Host')).toBe('domain');
+        });
+
+        // TODO: test case sensitivity
+    });
+
+    describe('UpdateCookieHeader()', () => {
+
+        it('Should work before concealed without request cookies and without browser cookies', async () => {
+            cookies.getAll.mockResolvedValue([]);
+            const testee = new FetchRequest('http://hakuneko.app/');
+            await testee.UpdateCookieHeader();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBeFalsy();
+            testee.ConcealFetchHeaders();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBeFalsy();
+        });
+
+        it('Should work before concealed without request cookies and with browser cookies', async () => {
+            cookies.getAll.mockResolvedValue(CreateCookies('b=3; c=4'));
+            const testee = new FetchRequest('http://hakuneko.app/');
+            await testee.UpdateCookieHeader();
+            expect(testee.headers.get('Cookie')).toBe('b=3; c=4');
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBeFalsy();
+            testee.ConcealFetchHeaders();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('b=3; c=4');
+        });
+
+        it('Should work before concealed with request cookies and without browser cookies', async () => {
+            cookies.getAll.mockResolvedValue([]);
+            const testee = new FetchRequest('http://hakuneko.app/', {
+                headers: {
+                    Cookie: 'a=1; b=2'
+                }
+            });
+            await testee.UpdateCookieHeader();
+            expect(testee.headers.get('Cookie')).toBe('a=1; b=2');
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBeFalsy();
+            testee.ConcealFetchHeaders();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('a=1; b=2');
+        });
+
+        it('Should work before concealed with request cookies and with browser cookies', async () => {
+            cookies.getAll.mockResolvedValue(CreateCookies('b=3; c=4'));
+            const testee = new FetchRequest('http://hakuneko.app/', {
+                headers: {
+                    Cookie: 'a=1; b=2'
+                }
+            });
+            await testee.UpdateCookieHeader();
+            expect(testee.headers.get('Cookie')).toBe('a=1; b=2; c=4');
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBeFalsy();
+            testee.ConcealFetchHeaders();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('a=1; b=2; c=4');
+        });
+
+        it('Should work after concealed without request cookies and without browser cookies', async () => {
+            cookies.getAll.mockResolvedValue([]);
+            const testee = new FetchRequest('http://hakuneko.app/');
+            testee.ConcealFetchHeaders();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBeFalsy();
+            await testee.UpdateCookieHeader();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBeFalsy();
+        });
+
+        it('Should work after concealed without request cookies and with browser cookies', async () => {
+            cookies.getAll.mockResolvedValue(CreateCookies('b=3; c=4'));
+            const testee = new FetchRequest('http://hakuneko.app/');
+            testee.ConcealFetchHeaders();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBeFalsy();
+            await testee.UpdateCookieHeader();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('b=3; c=4');
+        });
+
+        it('Should work after concealed with request cookies and without browser cookies', async () => {
+            cookies.getAll.mockResolvedValue([]);
+            const testee = new FetchRequest('http://hakuneko.app/', {
+                headers: {
+                    Cookie: 'a=1; b=2'
+                }
+            });
+            testee.ConcealFetchHeaders();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('a=1; b=2');
+            await testee.UpdateCookieHeader();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('a=1; b=2');
+        });
+
+        it('Should work after concealed with request cookies and with browser cookies', async () => {
+            cookies.getAll.mockResolvedValue(CreateCookies('b=3; c=4'));
+            const testee = new FetchRequest('http://hakuneko.app/', {
+                headers: {
+                    Cookie: 'a=1; b=2'
+                }
+            });
+            testee.ConcealFetchHeaders();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('a=1; b=2');
+            await testee.UpdateCookieHeader();
+            expect(testee.headers.get('Cookie')).toBeFalsy();
+            expect(testee.headers.get('X-FetchAPI-Cookie')).toBe('a=1; b=2; c=4');
         });
     });
 });
@@ -104,6 +210,7 @@ describe('FetchProvider', () => {
 
     describe('Fetch', () => {
 
+        beforeEach(() => mockClear(cookies));
         beforeEach(() => mockClear(global.fetch)); // mockReset(global.fetch)
 
         it('Should passthru GET to native fetch', async () => {

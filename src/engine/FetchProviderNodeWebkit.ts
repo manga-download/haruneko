@@ -5,19 +5,10 @@ const fetchApiSupportedPrefix = 'X-FetchAPI-';
 const fetchApiForbiddenHeaders = [
     'User-Agent',
     'Referer',
+    'Cookie',
     'Origin',
     'Host'
 ];
-
-export function ConcealFetchHeaders(headers: Headers): void {
-    for(const name of fetchApiForbiddenHeaders) {
-        const value = headers.get(name);
-        if(value) {
-            headers.set(fetchApiSupportedPrefix + name, value);
-            headers.delete(name);
-        }
-    }
-}
 
 export function RevealWebRequestHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webRequest.HttpHeader[] {
     function ContainsPrefixed(headers: chrome.webRequest.HttpHeader[], header: chrome.webRequest.HttpHeader): boolean {
@@ -119,18 +110,41 @@ async function CheckAntiScrapingDetection(nwWindow: NWJS_Helpers.win): Promise<F
 
 export class FetchRequest extends Request {
 
+    private concealed = false;
+
+    // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
     public constructor(input: RequestInfo, init?: RequestInit) {
-        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        if(init && init.headers) {
-            const headers = new Headers(init.headers);
-            ConcealFetchHeaders(headers);
-            init.headers = headers;
-        }
         super(input, init);
+    }
+
+    public ConcealFetchHeaders(): void {
+        for(const name of fetchApiForbiddenHeaders) {
+            const value = this.headers.get(name);
+            if(value) {
+                this.headers.set(fetchApiSupportedPrefix + name, value);
+                this.headers.delete(name);
+            }
+        }
+        this.concealed = true;
+    }
+
+    public async UpdateCookieHeader() {
+        const name = this.concealed ? fetchApiSupportedPrefix + 'Cookie' : 'Cookie';
+        const value = this.headers.get(name);
+        const cookies = value ? value.split(';').map(cookie => cookie.trim()) : [];
+        const browserCookies = await chrome.cookies.getAll({ url: this.url });
+        for(const browserCookie of browserCookies) {
+            if(!cookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
+                cookies.push(`${browserCookie.name}=${browserCookie.value}`);
+            }
+        }
+        this.headers.set(name, cookies.join('; '));
     }
 }
 
 export async function Fetch(request: FetchRequest): Promise<Response> {
+    await request.UpdateCookieHeader();
+    request.ConcealFetchHeaders();
     return fetch(request);
 }
 
