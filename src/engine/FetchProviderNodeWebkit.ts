@@ -117,26 +117,27 @@ async function CheckAntiScrapingDetection(nwWindow: NWJS_Helpers.win): Promise<F
 
 export class FetchRequest extends Request {
 
-    private concealed = false;
-
     // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
     public constructor(input: RequestInfo, init?: RequestInit) {
         super(input, init);
+        this.ConcealFetchHeaders(init?.headers);
     }
 
-    public ConcealFetchHeaders(): void {
-        for(const name of fetchApiForbiddenHeaders) {
-            const value = this.headers.get(name);
-            if(value) {
-                this.headers.set(fetchApiSupportedPrefix + name, value);
-                this.headers.delete(name);
+    private ConcealFetchHeaders(init?: HeadersInit): void {
+        if(init) {
+            const headers = new Headers(init);
+            for(const name of fetchApiForbiddenHeaders) {
+                const value = headers.get(name);
+                if(value) {
+                    this.headers.set(fetchApiSupportedPrefix + name, value);
+                    this.headers.delete(name);
+                }
             }
         }
-        this.concealed = true;
     }
 
     public async UpdateCookieHeader() {
-        const name = this.concealed ? fetchApiSupportedPrefix + 'Cookie' : 'Cookie';
+        const name = fetchApiSupportedPrefix + 'Cookie';
         const value = this.headers.get(name);
         const cookies = value ? value.split(';').map(cookie => cookie.trim()) : [];
         const browserCookies = await chrome.cookies.getAll({ url: this.url });
@@ -151,7 +152,6 @@ export class FetchRequest extends Request {
 
 export async function Fetch(request: FetchRequest): Promise<Response> {
     await request.UpdateCookieHeader();
-    request.ConcealFetchHeaders();
     return fetch(request);
 }
 
