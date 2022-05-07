@@ -11,22 +11,13 @@ type InfoExtractor<E extends HTMLElement> = (element: E) => { id: string, title:
  * The pre-defined default info extractor that will parse the media id and media title from a given {@link HTMLAnchorElement}.
  * The media title will be extracted from the `text` porperty of the element.
  */
-function DefaultInfoExtractor<E extends HTMLAnchorElement>(element: E): { id: string, title: string } {
-    const extract = AnchorInfoExtractor();
-    return extract(element);
-}
-
-type ImageExtractor<E extends HTMLElement> = (element: E) => string;
-
-function DefaultImageExtractor<E extends HTMLImageElement>(element: E): string {
-    return element.dataset.src || element.getAttribute('src') || ''; // TODO: Throw if none found?
-}
+const DefaultInfoExtractor = AnchorInfoExtractor();
 
 /**
  * Creates an info extractor that will parse the media id and media title from an {@link HTMLAnchorElement}.
  * @param useTitleAttribute If set to `true`, the media title will be extracted from the `title` attribute of the element, otherwise the `text` porperty of the element will be used as media title.
  */
-export function AnchorInfoExtractor(useTitleAttribute = false): InfoExtractor<HTMLAnchorElement> {
+export function AnchorInfoExtractor(useTitleAttribute = false): InfoExtractor<HTMLElement> {
     return function(element: HTMLAnchorElement) {
         return {
             id: element.pathname,
@@ -35,17 +26,10 @@ export function AnchorInfoExtractor(useTitleAttribute = false): InfoExtractor<HT
     };
 }
 
-export function InnerAnchorInfoExtractor(query: string): InfoExtractor<HTMLAnchorElement> {
-    return function(element: HTMLAnchorElement) {
-        const nested = element.querySelector(query);
-        if(!nested) {
-            throw new Error('TODO: localize error for "Failed to extract manga title!"');
-        }
-        return {
-            id: element.pathname,
-            title: nested.innerHTML.trim()
-        };
-    };
+type ImageExtractor<E extends HTMLElement> = (element: E) => string;
+
+function DefaultImageExtractor<E extends HTMLImageElement>(element: E): string {
+    return element.dataset.src || element.getAttribute('src') || ''; // TODO: Throw if none found?
 }
 
 /***************************************************
@@ -124,11 +108,22 @@ export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: 
 }
 
 /**
- * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga list by parsing multiple URIs of a webiste with the given CSS query.
+ * Iterates through a range of HTML pages from which mangas are extracted and combined into a single list.
+ * The range begins with {@link start} and is incremented until no more new mangas can be extracted.
+ * @param this A reference to the {@link MangaScraper}
+ * @param provider A reference to the {@link MangaPlugin} which contains the mangas
+ * @param path An URL path pattern where the placeholder `{page}` is replaced by an incrementing number
+ * @param query A CSS query for all HTML anchor elements that are linked to a manga
+ * @param start The start of the incremental number to be replaced in the given {@link path}
+ * @param throttle A delay [ms] for each request (only required for rate-limited websites)
+ * @param extract A function to determine the `id` and the `title` for a manga from a given HTML element (which is found with the {@link query})
  */
-export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
+export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const mangaList = [];
+    let reducer = Promise.resolve();
     for(let page = start, run = true; run; page++) {
+        await reducer;
+        reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract as InfoExtractor<HTMLElement>);
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
@@ -138,12 +133,17 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
 
 /**
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasMultiPageCSS}.
+ * @param path An URL path pattern where the placeholder `{page}` is replaced by an incrementing number
+ * @param query A CSS query for all HTML anchor elements that are linked to a manga
+ * @param start The start of the incremental number to be replaced in the given {@link path}
+ * @param throttle A delay [ms] for each request (only required for rate-limited websites)
+ * @param extract A function to determine the `id` and the `title` for a manga from a given HTML element (which is found with the {@link query})
  */
-export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: string, start = 1, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: string, start = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasMultiPageCSS.call(this, provider, path, query, start, extract as InfoExtractor<HTMLElement>);
+                return FetchMangasMultiPageCSS.call(this, provider, path, query, start, throttle, extract as InfoExtractor<HTMLElement>);
             }
         };
     };
@@ -162,7 +162,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
         const { id, title } = extract(element);
-        return new Chapter(this, manga, id, title);
+        return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }
 
