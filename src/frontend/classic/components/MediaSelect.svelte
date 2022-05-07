@@ -3,6 +3,10 @@
         ComboBox,
         Button,
         Search,
+        ContextMenu,
+        ContextMenuDivider,
+        ContextMenuGroup,
+        ContextMenuOption,
     } from 'carbon-components-svelte';
     import PlugFilled16 from 'carbon-icons-svelte/lib/PlugFilled.svelte';
     import UpdateNow16 from 'carbon-icons-svelte/lib/UpdateNow.svelte';
@@ -12,14 +16,15 @@
 
     import Media from './Media.svelte';
     import PluginSelect from './PluginSelect.svelte';
+    import Tracker from './Tracker.svelte';
 
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    // Meh ?
     import VirtualList from '@sveltejs/svelte-virtual-list';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import type { IMediaInfoTracker,Suggestion, Info} from '../../../engine/trackers/IMediaInfoTracker';
 
     import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
 
@@ -37,6 +42,7 @@
 
     let selectedPlugin: IMediaContainer | undefined;
     let selectedMedia: IMediaContainer | undefined;
+    let mediasdiv: HTMLElement;
 
     let pluginsFavorites = ['sheep-scanlations', 'test-long-list'];
     let pluginsCombo: Array<ComboBoxItem>;
@@ -87,6 +93,8 @@
             : fuse.search(mediaNameFilter).map((item) => item.item);
 
     let isPluginModalOpen = false;
+    let isTrackerModalOpen = false;
+    let selectedTracker: IMediaInfoTracker;
 
     function selectPlugin(event: any) {
         const searchComboItem = pluginsCombo.findIndex(
@@ -119,7 +127,28 @@
         />
     </div>
 {/if}
-
+{#if isTrackerModalOpen}
+    <div>
+        <Tracker
+            {isTrackerModalOpen}
+            media={selectedMedia}
+            tracker={selectedTracker}
+            on:close={() => (isTrackerModalOpen = false)}
+        />
+    </div>
+{/if}
+<ContextMenu target={mediasdiv}>
+    <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" />
+    <ContextMenuOption indented labelText="Add to Bookmarks" shortcutText="⌘F" />
+    <ContextMenuDivider />
+    <ContextMenuOption indented labelText="Trackers">
+        {#each window.HakuNeko.PluginController.InfoTrackers as tracker}
+            <ContextMenuOption labelText="{tracker.Title}" on:click={() => {selectedTracker=tracker; isTrackerModalOpen=true;}} />
+        {/each}
+    </ContextMenuOption>
+    <ContextMenuDivider />
+    <ContextMenuOption indented labelText="Bookmark" shortcutText="⌘B" />
+</ContextMenu>
 <div id="Media" transition:fade>
     <div id="MediaTitle">
         <h5 class="separator">Media List (Manga, Anime etc..)</h5>
@@ -161,7 +190,7 @@
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list">
+    <div id="MediaList" class="list" bind:this={mediasdiv}>
         <VirtualList items={filteredmedias} let:item>
             <Media
                 media={item}

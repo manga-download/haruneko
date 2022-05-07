@@ -56,9 +56,6 @@
 
     $: currentContent = selectedItem ? 'viewer' : 'home';
     
-    $: if (selectedMedia) {
-        currentContent = 'tracker'
-    }
 </script>
 
 <UserMessage />
@@ -75,8 +72,6 @@
             <div id="Content" transition:fade>
                 {#if currentContent === 'viewer'}
                     <Viewer item={selectedItem} />
-                {:else if currentContent === 'tracker'}
-                    <Tracker media={selectedMedia} />
                 {:else if currentContent && showHome}
                     <ContentPage />
                 {/if}
