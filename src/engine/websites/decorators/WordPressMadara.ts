@@ -68,21 +68,20 @@ export function MangaCSS(matcher: RegExp, query: string = queryMangaTitle) {
  ******** Manga List Extraction Methods ********
  ***********************************************/
 
-export async function FetchMangasCSS(this: MangaScraper, provider: MangaPlugin, request: FetchRequest, query = queryMangaListLinks): Promise<Manga[]> {
-    const data = await FetchCSS<HTMLAnchorElement>(request, query);
-    return data.map(element => {
-        const container = element.closest<HTMLElement>('div.page-item-detail, div.manga');
-        const post = container?.querySelector<HTMLElement>('div[data-post-id]')?.dataset?.postId || '';
-        const slug = element.pathname;
-        const title = element.text.trim();
-        return new Manga(this, provider, JSON.stringify({ post, slug }), title.trim());
-    });
+function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+    const container = anchor.closest<HTMLElement>('div.page-item-detail, div.manga');
+    const post = container?.querySelector<HTMLElement>('div[data-post-id]')?.dataset?.postId || '';
+    const slug = anchor.pathname;
+    const title = anchor.text.trim();
+    const id = JSON.stringify({ post, slug });
+    return { id, title };
 }
 
 /**
  * Iterates through a range of HTML pages from which mangas are extracted and combined into a single list.
  * The range starts at 1 and is incremented until no more new mangas can be extracted.
  * This method utilizes the HTML pages which are targeted to be shown in the browser.
+ * @NOTE Only use this function if {@link FetchMangasMultiPageAJAX} is blocked by the website
  * @param this A reference to the {@link MangaScraper}
  * @param provider A reference to the {@link MangaPlugin} which contains the mangas
  * @param query A CSS query for all HTML anchor elements that are linked to a manga
@@ -90,32 +89,19 @@ export async function FetchMangasCSS(this: MangaScraper, provider: MangaPlugin, 
  * @param path An URL path pattern where the placeholder `{page}` is replaced by an incrementing number
  */
 export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, throttle = 0, path = pathpaged): Promise<Manga[]> {
-    const mangaList = [];
-    for(let page = 1, run = true; run; page++) {
-        const uri = new URL(path.replace('{page}', `${page}`), this.URI);
-        const request = new FetchRequest(uri.href);
-        const mangas = await FetchMangasCSS.call(this, provider, request, query);
-        mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        await delay(throttle);
-    }
-    return mangaList;
+    return Common.FetchMangasMultiPageCSS.call(this, provider, path, query, 1, throttle, MangaInfoExtractor);
 }
 
 /**
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasMultiPageCSS}.
  * This decorator utilizes the HTML pages which are targeted to be shown in the browser to extract the mangas.
+ * @NOTE Only use this decorator if {@link MangasMultiPageAJAX} is blocked by the website
  * @param query A CSS query for all HTML anchor elements that are linked to a manga
- * @param throttle A delay [ms] after each request (only required for rate-limited websites)
+ * @param throttle A delay [ms] for each request (only required for rate-limited websites)
  * @param path An URL path pattern where the placeholder `{page}` is replaced by an incrementing number
  */
 export function MangasMultiPageCSS(query = queryMangaListLinks, throttle = 0, path = pathpaged) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
-        return class extends ctor {
-            public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasMultiPageCSS.call(this, provider, query, throttle, path);
-            }
-        };
-    };
+    return Common.MangasMultiPageCSS(path, query, 1, throttle, MangaInfoExtractor);
 }
 
 /**
@@ -149,7 +135,11 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
                 'Referer': this.URI.href
             }
         });
-        const mangas = await FetchMangasCSS.call(this, provider, request, query);
+        const data = await FetchCSS<HTMLAnchorElement>(request, query);
+        const mangas = data.map(element => {
+            const { id, title } = MangaInfoExtractor(element);
+            return new Manga(this, provider, id, title.trim());
+        });
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         await delay(throttle);
     }
@@ -177,7 +167,7 @@ export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, p
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
-export async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: FetchRequest, query = queryChapterListLinks): Promise<Chapter[]> {
+async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: FetchRequest, query = queryChapterListLinks): Promise<Chapter[]> {
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const slug = element.pathname;
@@ -194,8 +184,8 @@ export async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request
  * @param query A CSS query for all HTML anchor elements that are linked to a chapter
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapterListLinks): Promise<Chapter[]> {
-    const id = JSON.parse(manga.Identifier) as MangaID;
-    const uri = new URL(id.slug, this.URI);
+    const { slug } = JSON.parse(manga.Identifier) as MangaID;
+    const uri = new URL(slug, this.URI);
     const request = new FetchRequest(uri.href);
     const chapters = await FetchChaptersCSS.call(this, manga, request, query);
     if(!chapters.length) {
