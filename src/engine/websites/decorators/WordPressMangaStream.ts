@@ -17,24 +17,27 @@ const queryPageListLinks = 'div#readerarea img[src]:not([src=""])';
  ***************************************************/
 
 /**
- * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga from a given url.
- * It will use the `pathname` of the url as manga id and the `content` attribute or `textContent` of the first element found by the given CSS {@link query} as manga title.
- * @param this A reference to the {@link MangaScraper}
- * @param provider A reference to the {@link MangaPlugin} which contains the manga
- * @param url The URL for the manga from which the data shall be fetched
- * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
+ * An extension method for extracting a single manga from the given {@link url} using the given CSS {@link query}.
+ * The `pathname` of the given {@link url} will be used as identifier for the extracted manga.
+ * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
+ * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param provider A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted manga
+ * @param url The url from which the manga shall be extracted
+ * @param query A CSS query to locate the element from which the manga title shall be extracted
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     return Common.FetchMangaCSS.call(this, provider, url, query);
 }
 
 /**
- * A class decorator for any {@link DecoratableMangaScraper} implementation, that will setup the {@link MangaScraper.ValidateMangaURL} method and overwrite the {@link MangaScraper.FetchManga} method with {@link FetchMangaCSS}.
- * @param matcher An expression to check if a given URL is a valid manga resource
- * @param query A CSS query for an HTML element that holds the title of the manga either in its `content` attribute or as inner text
+ * A class decorator that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
+ * The `pathname` of the url will be used as identifier for the extracted manga.
+ * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
+ * @param pattern An expression to check if a manga can be extracted from an url or not
+ * @param query A CSS query to locate the element from which the manga title shall be extracted
  */
-export function MangaCSS(matcher: RegExp, query: string = queryMangaTitle) {
-    return Common.MangaCSS(matcher, query);
+export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
+    return Common.MangaCSS(pattern, query);
 }
 
 /***********************************************
@@ -42,21 +45,21 @@ export function MangaCSS(matcher: RegExp, query: string = queryMangaTitle) {
  ***********************************************/
 
 /**
- * An extension method for a {@link MangaScraper} instance, that can be used to extract a manga list by parsing a single URI of a webiste with the given CSS query.
- * @param this A reference to the {@link MangaScraper}
- * @param provider A reference to the {@link MangaPlugin} which contains the mangas
- * @param query A CSS query for all HTML anchor elements that are linked to a manga
- * @param path An URL path providing the list of mangas
+ * An extension method for extracting multiple mangas from the given relative {@link path} using the given CSS {@link query}.
+ * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param provider A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
+ * @param path The path relative to {@link this} scraper's base url from which the mangas shall be extracted
+ * @param query A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, path = pathname, query = queryMangaListLinks): Promise<Manga[]> {
     return Common.FetchMangasSinglePageCSS.call(this, provider, path, query);
 }
 
 /**
-* A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchMangas} method with {@link FetchMangasSinglePageCSS}.
-* @param query A CSS query to find all HTML elements that are linked to a manga
-* @param path An URL path providing the list of mangas
-*/
+ * A class decorator that adds the ability to extract multiple mangas from the given relative {@link path} using the given CSS {@link query}.
+ * @param query A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param path The path relative to the scraper's base url from which the mangas shall be extracted
+ */
 export function MangasSinglePageCSS(query: string = queryMangaListLinks, path: string = pathname) {
     return Common.MangasSinglePageCSS(path, query);
 }
@@ -84,10 +87,26 @@ function CreateChapterInfoExtractor<T extends HTMLAnchorElement>(manga: Manga, q
     };
 }
 
+/**
+ * An extension method for extracting all chapters for the given {@link manga} using the given CSS {@link query}.
+ * The chapters are extracted from the composed url based on the `Identifier` of the {@link manga} and the `URI` of the website.
+ * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
+ * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
+ * @param queryTitle A CSS sub-query performed on each element found with {@link query} to extract the chapter title
+ * @param queryBloat A CSS sub-query to remove elements that shall not be present in the chapter title
+ */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapterListLinks, queryTitle = queryChapterListTitle, queryBloat = queryChapterListTitleBloat): Promise<Chapter[]> {
     return Common.FetchChaptersSinglePageCSS.call(this, manga, query, CreateChapterInfoExtractor(manga, queryTitle, queryBloat));
 }
 
+/**
+ * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
+ * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
+ * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
+ * @param queryTitle A CSS sub-query performed on each element found with {@link query} to extract the chapter title
+ * @param queryBloat A CSS sub-query to remove elements that shall not be present in the chapter title
+ */
 export function ChaptersSinglePageCSS(query: string = queryChapterListLinks, queryTitle = queryChapterListTitle, queryBloat = queryChapterListTitleBloat) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
         return class extends ctor {
@@ -111,10 +130,11 @@ function CreateImageExtractor(this: MangaScraper) {
 }
 
 /**
- * Extracts the pages from the HTML page of the given {@link chapter}.
- * @param this A reference to the {@link MangaScraper}
- * @param chapter A reference to the {@link Chapter} which contains the pages
- * @param query A CSS query for all HTML image elements
+ * An extension method for extracting all pages for the given {@link chapter} using the given CSS {@link query}.
+ * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
+ * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ * @param query A CSS query to locate the elements from which the page information shall be extracted
  */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query = queryPageListLinks): Promise<Page[]> {
     return Common.FetchPagesSinglePageCSS.call(this, chapter, query, CreateImageExtractor.call(this));
@@ -122,8 +142,9 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
 }
 
 /**
- * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchPages} method with {@link FetchPagesSinglePageCSS}.
- * @param query A CSS query for all HTML image elements
+ * A class decorator that adds the ability to extract all pages for a given chapter using the given CSS {@link query}.
+ * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
+ * @param query A CSS query to locate the elements from which the page information shall be extracted
  */
 export function PagesSinglePageCSS(query = queryPageListLinks) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
