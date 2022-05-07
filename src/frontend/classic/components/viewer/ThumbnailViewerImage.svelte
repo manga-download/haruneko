@@ -3,21 +3,28 @@
     import { fly, fade } from 'svelte/transition';
     import type { IMediaItem } from '../../../../engine/providers/MediaPlugin';
     import { Priority } from '../../../../engine/taskpool/DeferredTask';
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onDestroy } from "svelte";
+
     const dispatch = createEventDispatcher();
 
     export let page: IMediaItem;
     export let title: string;
 
-    let dataload : Promise<Blob>
-    $: dataload = page.Fetch(Priority.High, new AbortController().signal);
+    let dataload : Promise<Blob>;
+    dataload = page.Fetch(Priority.High, new AbortController().signal)
+        .then((data) => {return URL.createObjectURL(data)});
+
+    onDestroy(() => {
+        dataload.then((src) => {if(src && src.startsWith('blob:')) URL.revokeObjectURL(src); })
+    });
+
 </script>
 
 <div class="thumbnail" transition:fly on:click={(e) => { dispatch("view", page); }}>
     {#await dataload}
         <InlineLoading />
-    {:then data } 
-        <ImageLoader class="imgload" alt={title} src={URL.createObjectURL(data)} fadeIn>
+    {:then data}
+        <ImageLoader class="imgload" alt={title} src={data} fadeIn>
             <svelte:fragment slot="loading"><InlineLoading /></svelte:fragment>
             <svelte:fragment slot="error"><InlineLoading status="error"/></svelte:fragment>
         </ImageLoader>
