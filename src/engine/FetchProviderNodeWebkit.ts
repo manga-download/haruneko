@@ -38,6 +38,13 @@ function ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails)
 }
 
 export function Initialize(): void {
+
+    // Forward compatibility for future chrome versions (MV3 - Manifest v3)
+    const nativeChromeCookiesGetAll = chrome.cookies.getAll;
+    chrome.cookies.getAll = function(details: chrome.cookies.GetAllDetails): Promise<chrome.cookies.Cookie[]> {
+        return new Promise<chrome.cookies.Cookie[]>(resolve => nativeChromeCookiesGetAll(details, resolve));
+    };
+
     // NOTE: parameter extraInfoSpec:
     //       'blocking'       => sync request required for header modification
     //       'requestHeaders' => allow change request headers?
