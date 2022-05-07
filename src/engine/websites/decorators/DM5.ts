@@ -1,7 +1,7 @@
 // DM5, MangaFox, MangaHere
 
 import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
-import { MangaScraper, Chapter, Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import type * as Common from './Common';
 
 const pathname = 'chapterfun.ashx';

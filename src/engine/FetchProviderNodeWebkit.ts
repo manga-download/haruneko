@@ -258,7 +258,8 @@ export async function FetchWindowScript<T>(request: FetchRequest, script: string
     const win = await FetchWindow(request, timeout);
     try {
         await Wait(delay);
-        return await (win.eval(null, script) as unknown as T | Promise<T>);
+        const result = win.eval(null, script) as unknown as T | Promise<T>;
+        return await result;
     } catch(inner) {
         const outer = new EvalError('<script>', { cause: inner });
         console.error(inner, outer);
