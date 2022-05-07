@@ -13,7 +13,6 @@ export { default as MangaFox } from './MangaFox';
 export { default as MangaHere } from './MangaHere';
 export { default as ScansMangas } from './ScansMangas';
 export { default as SheepManga } from './SheepManga';
-export { default as TestLongList } from './TestLongList';
 export { default as Toonily } from './Toonily';
 // Legacy Websites
 export { default as AMAScan } from './legacy/AMAScan';
