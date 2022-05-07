@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Loading, Accordion, AccordionItem,Button  } from "carbon-components-svelte";
+    import { Loading, Accordion, AccordionItem,Button, Modal } from "carbon-components-svelte";
     import CheckmarkOutline from "carbon-icons-svelte/lib/CheckmarkOutline.svelte";
     import { fade } from 'svelte/transition';
 
@@ -7,7 +7,8 @@
     import type { IMediaInfoTracker,Suggestion, Info} from '../../../engine/trackers/IMediaInfoTracker';
 
     export let media: IMediaContainer;
-    export let tracker: IMediaInfoTracker= window.HakuNeko.PluginController.InfoTrackers[0];
+    export let tracker: IMediaInfoTracker;
+    export let isTrackerModalOpen=false;
 
     let mediaSuggestions: Promise<Suggestion[]>;
     let mediaTracked:Info;
@@ -17,7 +18,18 @@
     //Todo: give it some polish !
 </script>
 
-<div id="Tracker" in:fade>
+<Modal
+    id="trackerModal"
+    size="lg"
+    hasScrollingContent
+    bind:open={isTrackerModalOpen}
+    passiveModal
+    modalHeading="Tracker"
+    on:click:button--secondary={() => (isTrackerModalOpen = false)}
+    on:open
+    on:close
+    hasForm
+>
     <div class="border">
         <h1><img alt={tracker.Title} src={tracker.Icon}/>{tracker.Title}</h1>
     </div>
@@ -35,7 +47,7 @@
     {:else}
     <div class="border" in:fade>
         {#await mediaSuggestions}
-        <Loading />
+        <Loading withOverlay={false}/>
         <p>...looking for suggestions</p>
         {:then mediaSuggestions}
             <Accordion>
@@ -57,8 +69,7 @@
         {/await}
     </div>
     {/if}
-</div>
-
+</Modal>
 <style>
     #Tracker {
         padding:0.5em;
