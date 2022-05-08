@@ -135,9 +135,9 @@
     </div>
     <div id="ItemList" class="list" bind:this={itemsdiv}>
         {#await loadItem}
-            <div class="loading">
-                <div class="center"><Loading withOverlay={false} /></div>
-                <div class="center">...loading medias</div>
+            <div class="loading center">
+                <div><Loading withOverlay={false} /></div>
+                <div>... items</div>
             </div>
         {:then} 
             {#each filteredItems as item}
@@ -189,7 +189,8 @@
         overflow-x: hidden;
     }
     #ItemList .loading {
-        padding: 2em;
+        width:100%;
+        height:100%;
     }
     #ItemCount {
         grid-area: ItemCount;

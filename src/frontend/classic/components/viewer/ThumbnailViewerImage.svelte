@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InlineLoading, ImageLoader } from "carbon-components-svelte";
+    import { InlineLoading, ImageLoader, Loading } from "carbon-components-svelte";
     import { fly } from 'svelte/transition';
     import type { IMediaItem } from '../../../../engine/providers/MediaPlugin';
     import { Priority } from '../../../../engine/taskpool/DeferredTask';
@@ -20,9 +20,9 @@
 
 </script>
 
-<div class="thumbnail" transition:fly on:click={() => { dispatch("view", page); }}>
+<div class="thumbnail" on:click={() => { dispatch("view", page); }}>
     {#await dataload}
-        <InlineLoading />
+        <div class="center"><Loading withOverlay={false} /></div>
     {:then data}
         <ImageLoader class="imgload" alt={title} src={data} fadeIn>
             <svelte:fragment slot="loading"><InlineLoading /></svelte:fragment>
@@ -31,7 +31,6 @@
     {:catch}
         <InlineLoading status="error"/>
     {/await}
-
 </div> 
 
 <style>
@@ -46,6 +45,7 @@
         cursor: pointer;
         box-shadow: 1em 1em 2em var(--cds-ui-01);
     }
+
     .thumbnail :global(.imgload) {
         width:100%;
         height:100%;

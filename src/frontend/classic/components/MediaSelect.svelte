@@ -195,9 +195,9 @@
     </div>
     <div id="MediaList" class="list" bind:this={mediasdiv}>
         {#await loadPlugin}
-            <div class="loading">
-                <div class="center"><Loading withOverlay={false} /></div>
-                <div class="center">...loading medias</div>
+            <div class="loading center">
+                <div><Loading withOverlay={false} /></div>
+                <div>... medias</div>
             </div>
         {:then}
             <VirtualList items={filteredmedias} let:item>
@@ -249,7 +249,8 @@
         user-select: none;
     }
     #MediaList .loading {
-        padding: 2em;
+        width:100%;
+        height:100%;
     }
     #MediaCount {
         grid-area: MediaCount;

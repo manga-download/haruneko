@@ -23,11 +23,13 @@
     }
 </script>
 
-<div id="Viewer">
-    <div id="Contents" class={mode}>
+<div id="Viewer"> 
+    <div id="Contents" class="{mode} center">
         {#await update}
-            <Loading withOverlay={false} />
-            <p>...loading items</p>
+            <div class="loading">
+                <div class="center"><Loading withOverlay={false} /></div>
+                <div class="center">... items</div>
+            </div>
         {:then}
             {#if mode === 'Thumbnail'}
                 <ThumbnailViewer {item} {toggleWideViewer} />
@@ -59,6 +61,10 @@
         background-position: left top;
         user-select: none;
         grid-area: Content;
+    }
+    #Contents .loading {
+
+        padding: 20em;
     }
     .error {
         color: red;
