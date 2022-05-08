@@ -10,12 +10,12 @@
     export let page: IMediaItem;
     export let title: string;
 
-    let dataload : Promise<Blob>;
+    let dataload : Promise<string | Blob>;
     dataload = page.Fetch(Priority.High, new AbortController().signal)
         .then((data) => {return URL.createObjectURL(data)});
 
     onDestroy(() => {
-        dataload.then((src) => {if(src && src.startsWith('blob:')) URL.revokeObjectURL(src); })
+        dataload.then((src) => {URL.revokeObjectURL(src)})
     });
 
 </script>
