@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import { fade } from 'svelte/transition';
 
     const dispatch = createEventDispatcher();
 
@@ -15,7 +16,7 @@
 </script>
 
 {#if display === "Row"}
-    <div class="listitem" class:selected on:click on:contextmenu>
+    <div class="listitem" in:fade class:selected on:click on:contextmenu>
         <span on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}><CloudDownload16 class="download" /></span>
         <span on:click={() => dispatch("view", item)} ><Image16 class="viewer" /></span>
         <span on:click={() => dispatch("bookmark", item)}><Bookmark16 class="bookmark" /></span>

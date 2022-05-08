@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { fade } from 'svelte/transition';
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
 
@@ -8,7 +9,7 @@
     export let selected: Boolean;
 </script>
 
-<div class="media" class:selected on:click={() => dispatch("select", media)}>
+<div class="media" in:fade class:selected on:click={() => dispatch("select", media)}>
     {media.Title}
 </div>
 

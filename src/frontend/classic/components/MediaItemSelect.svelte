@@ -7,6 +7,7 @@
         ContextMenuDivider,
         ContextMenuGroup,
         ContextMenuOption,
+        Loading,
     } from "carbon-components-svelte";
     import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled.svelte";
 
@@ -23,6 +24,7 @@
     let filteredItems: IMediaContainer[] = [];
 
     export let media: IMediaContainer | undefined;
+    let loadItem: Promise<void>; 
     let selectedItems: IMediaContainer[] = [];
     let multipleSelectionFrom: number = -1;
     let multipleSelectionTo: number = -1;
@@ -66,7 +68,7 @@
 
     //On: MangaChange
     $: {
-        media?.Update().then(() => {
+        loadItem = media?.Update().then(() => {
             items = (media?.Entries as IMediaContainer[]) ?? [];
             selectedItems = [];
         });
@@ -132,17 +134,25 @@
         <Search size="sm" bind:value={itemNameFilter} />
     </div>
     <div id="ItemList" class="list" bind:this={itemsdiv}>
-        {#each filteredItems as item}
-            <MediaItem
-                {item}
-                selected={selectedItems.includes(item)}
-                on:view={(e) => {
-                    selectedItems.push(e.detail);
-                    dispatch("view", item);
-                }}
-                on:click={(e) => onItemClick(item, e)}
-            />
-        {/each}
+        {#await loadItem}
+            <div class="loading">
+                <div class="center"><Loading withOverlay={false} /></div>
+                <div class="center">...loading medias</div>
+            </div>
+        {:then} 
+            {#each filteredItems as item}
+                <MediaItem
+                    {item}
+                    selected={selectedItems.includes(item)}
+                    on:view={(e) => {
+                        selectedItems.push(e.detail);
+                        dispatch("view", item);
+                    }}
+                    on:click={(e) => onItemClick(item, e)}
+                />
+            {/each}
+        {/await}
+        
     </div>
     <div id="ItemCount">
         Items: {filteredItems.length}/{items.length}
@@ -177,6 +187,9 @@
         background-color: var(--cds-field-01);
         overflow-y: scroll;
         overflow-x: hidden;
+    }
+    #ItemList .loading {
+        padding: 2em;
     }
     #ItemCount {
         grid-area: ItemCount;

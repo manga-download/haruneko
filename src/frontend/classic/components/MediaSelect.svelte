@@ -7,6 +7,7 @@
         ContextMenuDivider,
         ContextMenuGroup,
         ContextMenuOption,
+        Loading,
     } from 'carbon-components-svelte';
     import PlugFilled16 from 'carbon-icons-svelte/lib/PlugFilled.svelte';
     import UpdateNow16 from 'carbon-icons-svelte/lib/UpdateNow.svelte';
@@ -39,7 +40,8 @@
         minMatchCharLength: 1,
         fieldNormWeight: 0
     });
-
+    
+    let loadPlugin:Promise<void>;
     let selectedPlugin: IMediaContainer | undefined;
     let selectedMedia: IMediaContainer | undefined;
     let mediasdiv: HTMLElement;
@@ -112,7 +114,8 @@
     }
 
     async function onUpdateMediaEntriesClick() {
-        await selectedPlugin?.Update();
+        loadPlugin = selectedPlugin?.Update();
+        await loadPlugin;
         medias = (selectedPlugin?.Entries as IMediaContainer[]) ?? [];
     }
 </script>
@@ -191,16 +194,25 @@
         <Search size="sm" bind:value={mediaNameFilter} />
     </div>
     <div id="MediaList" class="list" bind:this={mediasdiv}>
-        <VirtualList items={filteredmedias} let:item>
-            <Media
-                media={item}
-                selected={selectedMedia === item}
-                on:select={(e) => {
-                    selectedMedia = e.detail;
-                    dispatch('select', e.detail);
-                }}
-            />
-        </VirtualList>
+        {#await loadPlugin}
+            <div class="loading">
+                <div class="center"><Loading withOverlay={false} /></div>
+                <div class="center">...loading medias</div>
+            </div>
+        {:then}
+            <VirtualList items={filteredmedias} let:item>
+                <Media
+                    media={item}
+                    selected={selectedMedia === item}
+                    on:select={(e) => {
+                        selectedMedia = e.detail;
+                        dispatch('select', e.detail);
+                    }}
+                />
+            </VirtualList>
+        {:catch}
+            Error loading medias
+        {/await}
     </div>
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
@@ -235,6 +247,9 @@
         background-color: var(--cds-field-01);
         overflow: hidden;
         user-select: none;
+    }
+    #MediaList .loading {
+        padding: 2em;
     }
     #MediaCount {
         grid-area: MediaCount;
