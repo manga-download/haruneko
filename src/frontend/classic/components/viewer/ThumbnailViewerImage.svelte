@@ -1,6 +1,6 @@
 <script lang="ts">
     import { InlineLoading, ImageLoader } from "carbon-components-svelte";
-    import { fly, fade } from 'svelte/transition';
+    import { fly } from 'svelte/transition';
     import type { IMediaItem } from '../../../../engine/providers/MediaPlugin';
     import { Priority } from '../../../../engine/taskpool/DeferredTask';
     import { createEventDispatcher, onDestroy } from "svelte";
@@ -10,7 +10,7 @@
     export let page: IMediaItem;
     export let title: string;
 
-    let dataload : Promise<string | Blob>;
+    let dataload : Promise<string>;
     dataload = page.Fetch(Priority.High, new AbortController().signal)
         .then((data) => {return URL.createObjectURL(data)});
 
@@ -20,7 +20,7 @@
 
 </script>
 
-<div class="thumbnail" transition:fly on:click={(e) => { dispatch("view", page); }}>
+<div class="thumbnail" transition:fly on:click={() => { dispatch("view", page); }}>
     {#await dataload}
         <InlineLoading />
     {:then data}
@@ -28,7 +28,7 @@
             <svelte:fragment slot="loading"><InlineLoading /></svelte:fragment>
             <svelte:fragment slot="error"><InlineLoading status="error"/></svelte:fragment>
         </ImageLoader>
-    {:catch error}
+    {:catch}
         <InlineLoading status="error"/>
     {/await}
 
