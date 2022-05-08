@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Loading } from "carbon-components-svelte";
     import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
     import ThumbnailViewer from './ThumbnailViewer.svelte';
     import WideViewer from './WideViewer.svelte';
@@ -25,6 +26,7 @@
 <div id="Viewer">
     <div id="Contents" class={mode}>
         {#await update}
+            <Loading withOverlay={false} />
             <p>...loading items</p>
         {:then}
             {#if mode === 'Thumbnail'}

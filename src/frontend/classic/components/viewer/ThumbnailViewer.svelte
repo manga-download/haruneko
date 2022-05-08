@@ -19,7 +19,7 @@
         <ThumbnailViewerImage
             page={content}
             title="Page {index}"
-            handleClick={() => toggleWideViewer(index)}
+            on:view={() => toggleWideViewer(index)}
         />
     {/each}
 </div>
