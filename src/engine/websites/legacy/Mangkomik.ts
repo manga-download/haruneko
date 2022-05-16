@@ -2,13 +2,13 @@
 // See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
 
 //import { Tags } from '../../Tags';
-import icon from './MangaMonarca.webp';
+import icon from './Mangkomik.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangamonarca', `Monarcamanga`, 'https://monarcamanga.com' /*, Tags.Language.English, Tags ... */);
+        super('mangkomik', `Mangkomik`, 'https://mangkomik.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -18,14 +18,15 @@ export default class extends DecoratableMangaScraper {
 
 // Original Source
 /*
-class MangaMonarca extends WordPressMadara {
+class Mangkomik extends WordPressMangastream {
 
     constructor() {
         super();
-        super.id = 'mangamonarca';
-        super.label = 'Monarcamanga';
-        this.tags = [ 'webtoon', 'spanish' ];
-        this.url = 'https://monarcamanga.com';
+        super.id = 'mangkomik';
+        super.label = 'Mangkomik';
+        this.tags = [ 'manga', 'webtoon', 'indonesian' ];
+        this.url = 'https://mangkomik.com';
+        this.path = '/manga/list-mode/';
     }
 }
 */

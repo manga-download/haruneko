@@ -2,13 +2,13 @@
 // See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
 
 //import { Tags } from '../../Tags';
-import icon from './MangaMonarca.webp';
+import icon from './DankeFursLesen.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangamonarca', `Monarcamanga`, 'https://monarcamanga.com' /*, Tags.Language.English, Tags ... */);
+        super('dankefurslesen', `Danke fürs Lesen`, 'https://danke.moe' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -18,14 +18,14 @@ export default class extends DecoratableMangaScraper {
 
 // Original Source
 /*
-class MangaMonarca extends WordPressMadara {
+class DankeFursLesen extends Guya {
 
     constructor() {
         super();
-        super.id = 'mangamonarca';
-        super.label = 'Monarcamanga';
-        this.tags = [ 'webtoon', 'spanish' ];
-        this.url = 'https://monarcamanga.com';
+        super.id = 'dankefurslesen';
+        super.label = 'Danke fürs Lesen';
+        this.tags = [ 'manga', 'english', 'scanlation' ];
+        this.url = 'https://danke.moe';
     }
 }
 */

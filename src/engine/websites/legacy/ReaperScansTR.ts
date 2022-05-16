@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('reaperscanstr', `Reaper Scans TR`, 'https://reaperscanstr.com' /*, Tags.Language.English, Tags ... */);
+        super('reaperscanstr', `Reaper Scans (Turkish)`, 'https://reaperscanstr.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -18,15 +18,17 @@ export default class extends DecoratableMangaScraper {
 
 // Original Source
 /*
-class ReaperScansTR extends WordPressMadara {
+class ReaperScansTR extends ReaperScans {
 
     constructor() {
         super();
         super.id = 'reaperscanstr';
-        super.label = 'Reaper Scans TR';
+        super.label = 'Reaper Scans (Turkish)';
         this.tags = ['webtoon', 'turkish'];
         this.url = 'https://reaperscanstr.com';
-        this.queryChapters = 'div.chapter-link > a';
+        this.links = {
+            login: 'https://reaperscanstr.com/login'
+        };
     }
 }
 */
