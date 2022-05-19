@@ -77,6 +77,21 @@ export function MangaCSS(pattern: RegExp, query: string) {
  ******** Manga List Extraction Methods ********
  ***********************************************/
 
+function EndsWith(target: Manga[], source: Manga[]) {
+    if(target.length < source.length) {
+        return false;
+    }
+    /*
+    for(let index = 1; index <= source.length; index++) {
+        if(target[target.length - index].Identifier !== source[source.length - index].Identifier) {
+            return false;
+        }
+    }
+    return true;
+    */
+    return target[target.length - 1].Identifier === source[source.length - 1].Identifier;
+}
+
 /**
  * An extension method for extracting multiple mangas from the given relative {@link path} using the given CSS {@link query}.
  * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
@@ -129,7 +144,8 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
         await reducer;
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract as InfoExtractor<HTMLElement>);
-        mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        // Always add when mangaList is empty ... (length = 0)
+        mangas.length > 0 && !EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
     }
     return mangaList;
