@@ -46,6 +46,49 @@ type APIMedia = {
     }
 }
 
+const chapterLanguageMap = {
+    //NULL: Tags.Language.Other,
+    ar: Tags.Language.Arabic,
+    //bn: Tags.Language.Bengali,
+    //bg: Tags.Language.Bulgarian,
+    //my: Tags.Language.Burmese,
+    //ca: Tags.Language.Catalan,
+    zh: Tags.Language.Chinese,
+    //cs: Tags.Language.Czech,
+    //da: Tags.Language.Danish,
+    //nl: Tags.Language.Dutch,
+    en: Tags.Language.English,
+    //fi: Tags.Language.Finnish,
+    fr: Tags.Language.French,
+    de: Tags.Language.German,
+    //el: Tags.Language.Greek,
+    //he: Tags.Language.Hebrew,
+    //hi: Tags.Language.Hindi,
+    //hu: Tags.Language.Hungarian,
+    id: Tags.Language.Indonesian,
+    it: Tags.Language.Italian,
+    ja: Tags.Language.Japanese,
+    ko: Tags.Language.Korean,
+    //lt: Tags.Language.Lithuanian,
+    //ms: Tags.Language.Malay,
+    //mn: Tags.Language.Mongolian,
+    //ne: Tags.Language.Nepali,
+    //no: Tags.Language.Norwegian,
+    //fa: Tags.Language.Persian,
+    pl: Tags.Language.Polish,
+    pt: Tags.Language.Portuguese,
+    //ro: Tags.Language.Romanian,
+    ru: Tags.Language.Russian,
+    //sh: Tags.Language.Serbo-Croatian,
+    es: Tags.Language.Spanish,
+    //sv: Tags.Language.Swedish,
+    //tl: Tags.Language.Tagalog,
+    th: Tags.Language.Thai,
+    tr: Tags.Language.Turkish,
+    //uk: Tags.Language.Ukrainian,
+    vi: Tags.Language.Vietnamese
+};
+
 export default class extends MangaScraper {
 
     private readonly api = 'https://api.mangadex.org'; // 163.47.176.14
@@ -165,7 +208,12 @@ export default class extends MangaScraper {
                 title += ' [' + groups.map(group => group.attributes.name).join(', ') + ']';
             }
             if(groups.length === 0 || groups.some(group => !this.licensedChapterGroups.includes(group.id))) {
-                return new Chapter(this, manga, entry.id, title.trim());
+                const chapter = new Chapter(this, manga, entry.id, title.trim());
+                const languageCode = entry.attributes.translatedLanguage?.split('-')?.shift();
+                if(languageCode && chapterLanguageMap[languageCode]) {
+                    chapter.Tags.push(chapterLanguageMap[languageCode]);
+                }
+                return chapter;
             } else {
                 return false;
             }
