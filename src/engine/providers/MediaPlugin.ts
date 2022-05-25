@@ -37,6 +37,7 @@ export interface IMediaContainer {
 
 export abstract class MediaContainer<T extends IMediaChild> implements IMediaContainer {
 
+    #tags: Tag[] = [];
     protected _entries: T[] = [];
 
     constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: IMediaContainer) {
@@ -51,7 +52,7 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
     }
 
     public get Tags(): Tag[] {
-        return [];
+        return this.#tags;
     }
 
     public get Entries(): T[] {
