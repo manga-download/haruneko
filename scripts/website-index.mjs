@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { appendFileSync } from 'fs';
 
 const current = path.resolve('src', 'engine', 'websites');
 const legacy = path.resolve('src', 'engine', 'websites', 'legacy');
@@ -11,6 +10,7 @@ const imports = [];
 async function concat(header, directory, prefix) {
     imports.push(header);
     const entries = (await fs.readdir(directory))
+        .sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base', caseFirst: 'lower', numeric: true }))
         .filter(entry => entry.endsWith('.ts') && !entry.includes('_'))
         .map(entry => entry.replace(/\.ts$/, ''))
         .map(entry => `export { default as ${ entry } } from './${ prefix + entry }';`);
