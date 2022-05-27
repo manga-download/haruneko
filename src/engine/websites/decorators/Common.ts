@@ -5,7 +5,32 @@ import type { Priority } from '../../taskpool/TaskPool';
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ //=> A mixin class must have a constructor with a single rest parameter of type 'any[]'
 export type Constructor = new (...args: any[]) => DecoratableMangaScraper;
 
+type LabelExtractor = (element: HTMLElement) => string;
 type InfoExtractor<E extends HTMLElement> = (element: E) => { id: string, title: string };
+
+/**
+ * The pre-defined default label extractor that will parse the media title from a given {@link HTMLElement}.
+ * In case of an {@link HTMLMetaElement} the media title will be extracted from the `content` attribute, otherwise the `textContent` of the element will be used as media title.
+ */
+const DefaultLabelExtractor = ElementLabelExtractor();
+
+/**
+ * Creates an label extractor that will parse the media title from an {@link HTMLElement}.
+ * In case of an {@link HTMLMetaElement} the media title will be extracted from the `content` attribute, otherwise the `textContent` of the element will be used as media title.
+ * @param queryBloat An optional CSS query which can be used to remove all matching child elements before extracting the media title
+ */
+export function ElementLabelExtractor(queryBloat: string = undefined) {
+    return function(element: HTMLElement) {
+        if(queryBloat) {
+            for(const bloat of element.querySelectorAll(queryBloat)) {
+                if (bloat.parentElement) {
+                    bloat.parentElement.removeChild(bloat);
+                }
+            }
+        }
+        return element instanceof HTMLMetaElement ? element.content : element.textContent.trim();
+    };
+}
 
 /**
  * The pre-defined default info extractor that will parse the media id and media title from a given {@link HTMLAnchorElement}.
@@ -15,10 +40,18 @@ const DefaultInfoExtractor = AnchorInfoExtractor();
 
 /**
  * Creates an info extractor that will parse the media id and media title from an {@link HTMLAnchorElement}.
- * @param useTitleAttribute If set to `true`, the media title will be extracted from the `title` attribute of the element, otherwise the `text` porperty of the element will be used as media title.
+ * @param useTitleAttribute If set to `true`, the media title will be extracted from the `title` attribute of the element, otherwise the `text` porperty of the element will be used as media title
+ * @param queryBloat An optional CSS query which can be used to remove all matching child elements before extracting the media title
  */
-export function AnchorInfoExtractor(useTitleAttribute = false): InfoExtractor<HTMLElement> {
+export function AnchorInfoExtractor(useTitleAttribute = false, queryBloat: string = undefined): InfoExtractor<HTMLElement> {
     return function(element: HTMLAnchorElement) {
+        if (!useTitleAttribute && queryBloat) {
+            for(const bloat of element.querySelectorAll(queryBloat)) {
+                if (bloat.parentElement) {
+                    bloat.parentElement.removeChild(bloat);
+                }
+            }
+        }
         return {
             id: element.pathname,
             title: useTitleAttribute ? element.title.trim() : element.text.trim()
@@ -45,12 +78,11 @@ function DefaultImageExtractor<E extends HTMLImageElement>(element: E): string {
  * @param url The url from which the manga shall be extracted
  * @param query A CSS query to locate the element from which the manga title shall be extracted
  */
-export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string): Promise<Manga> {
+export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string, extract = DefaultLabelExtractor as LabelExtractor): Promise<Manga> {
     const uri = new URL(url);
     const request = new FetchRequest(uri.href);
     const data = (await FetchCSS<HTMLElement>(request, query)).shift();
-    const title = data instanceof HTMLMetaElement ? data.content : data.textContent.trim();
-    return new Manga(this, provider, uri.pathname, title);
+    return new Manga(this, provider, uri.pathname, extract(data));
 }
 
 /**
@@ -60,14 +92,14 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * @param pattern An expression to check if a manga can be extracted from an url or not
  * @param query A CSS query to locate the element from which the manga title shall be extracted
  */
-export function MangaCSS(pattern: RegExp, query: string) {
+export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelExtractor as LabelExtractor) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
-                return FetchMangaCSS.call(this, provider, url, query);
+                return FetchMangaCSS.call(this, provider, url, query, extract);
             }
         };
     };

@@ -32,10 +32,21 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
     const script = `
         new Promise(async (resolve, reject) => {
             try {
-                const images = isbarchpater ? newImgs : await Promise.all([...(new Array(imagecount)).keys()].map(async p => {
+                const pagecount = window.DM5_IMAGE_COUNT || window.imagecount || 0;
+                const images = window.newImgs ? window.newImgs : await Promise.all([...(new Array(pagecount)).keys()].map(async p => {
                     eval(await $.ajax({
                         url: '${endpoint}',
-                        data: { cid: chapterid, page: p + 1, key: guidkey }
+                        data: {
+                            cid: window.DM5_CID || window.chapterid,
+                            page: p + 1,
+                            key: $("#dm5_key").val() || window.guidkey || '',
+                            //language: 1,
+                            //gtk: 6,
+                            _cid: window.DM5_CID,
+                            _mid: window.DM5_MID,
+                            _dt: window.DM5_VIEWSIGN_DT,
+                            _sign: window.DM5_VIEWSIGN
+                        }
                     }));
                     return d[0];
                 }));
