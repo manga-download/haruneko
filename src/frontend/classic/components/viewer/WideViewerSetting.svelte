@@ -1,11 +1,13 @@
 <script lang="ts">
-    import ChevronLeft24 from "carbon-icons-svelte/lib/ChevronLeft.svelte";
-    import ChevronRight24 from "carbon-icons-svelte/lib/ChevronRight.svelte";
-    import ZoomIn24 from "carbon-icons-svelte/lib/ZoomIn.svelte";
-    import ZoomOut24 from "carbon-icons-svelte/lib/ZoomOut.svelte";
-    import RowInsert24 from "carbon-icons-svelte/lib/RowExpand.svelte";
-    import RowDelete24 from "carbon-icons-svelte/lib/RowCollapse.svelte";
-    import Misuse24 from "carbon-icons-svelte/lib/Misuse.svelte";
+    import {
+        ChevronLeft,
+        ChevronRight,
+        Misuse,
+        RowDelete,
+        RowInsert,
+        ZoomIn,
+        ZoomOut
+    } from "carbon-icons-svelte";
 
     export let title: string;
     export let toggleThumbnailViewer: () => void;
@@ -18,28 +20,28 @@
 <div id="Buttons" tabindex="0">
     <span class="title">{title}</span>
     <span on:click={() => console.log(`createEventDispatcher("requestItemDown", item)`)}>
-        <ChevronLeft24 size={24} title="Item Down (ArrowLeft)" />
+        <ChevronLeft size={24} title="Item Down (ArrowLeft)" />
     </span>
     <span on:click={() => console.log(`createEventDispatcher("requestItemUp", item)`)}>
-        <ChevronRight24 size={24} title="Item Up (ArrowRight)" />
+        <ChevronRight size={24} title="Item Up (ArrowRight)" />
     </span>
     &nbsp;
     <span on:click={decreaseImagePadding}>
-        <RowDelete24 size={24} title="Decrease spacing between images (CTRL ➖)" />
+        <RowDelete size={24} title="Decrease spacing between images (CTRL ➖)" />
     </span>
     <span on:click={increaseImagePadding}>
-        <RowInsert24 size={24} title="Increase spacing between images (CTRL ➕)" />
+        <RowInsert size={24} title="Increase spacing between images (CTRL ➕)" />
     </span>
     &nbsp;
     <span on:click={zoomIn}>
-        <ZoomIn24 size={24} title="Zoom In (➕)" />
+        <ZoomIn size={24} title="Zoom In (➕)" />
     </span>
     <span on:click={zoomOut}>
-        <ZoomOut24 size={24} title="Zoom Out (➖)" />
+        <ZoomOut size={24} title="Zoom Out (➖)" />
     </span>
     &nbsp
     <span on:click={toggleThumbnailViewer}>
-        <Misuse24 size={24} title="Close (ESC)" />
+        <Misuse size={24} title="Close (ESC)" />
     </span>
 </div>
 

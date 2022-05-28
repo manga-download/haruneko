@@ -9,12 +9,11 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import PlayFilledAlt24 from 'carbon-icons-svelte/lib/PlayFilledAlt.svelte';
-    import ArrowUpRight24 from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
+    import {ArrowUpRight, PlayFilledAlt} from 'carbon-icons-svelte';
     import { createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
 
-    import Chip from './Tag.svelte';
+    import Chip from '../lib/Tag.svelte';
     import { Tag, Tags } from '../../../engine/Tags';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import { Locale } from '../SettingsStore';
@@ -28,9 +27,7 @@
             mediaContainer: item,
         };
     }
-
     const dispatch = createEventDispatcher();
-    export let pluginlist: Array<IMediaContainer>;
     export let isPluginModalOpen = false;
     let pagination = {
         totalItems: 0,
@@ -39,8 +36,6 @@
         pageSizes: [5, 10, 20],
     };
 
-    //because hardccoding values is da way (Do You Know Da Wae?)
-    //will fuse in a single main array with dispatch
     const langTags = Tags.Language.toArray();
     const typeTags = Tags.Media.toArray();
     const otherTags = [...Tags.Source.toArray(), ...Tags.Rating.toArray()];
@@ -60,7 +55,7 @@
 
     let filteredPluginlist = [];
     $: {
-        filteredPluginlist = pluginlist
+        filteredPluginlist = HakuNeko.PluginController.WebsitePlugins
             .filter((item) => {
                 let conditions: Array<boolean> = [];
                 if (pluginNameFilter !== '') {
@@ -109,6 +104,7 @@
                 <strong>{$Locale[Tags.Language.Title]()}</strong>
                 {#each langTags as item}
                     <Chip
+                        class='cursor-pointer'
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -119,6 +115,7 @@
                 <strong>{$Locale[Tags.Media.Title]()}</strong>
                 {#each typeTags as item}
                     <Chip
+                        class='cursor-pointer'
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -129,6 +126,7 @@
                 <strong>{$Locale[ResourceKey.Tags_Others]()}</strong>
                 {#each otherTags as item}
                     <Chip
+                        class='cursor-pointer'
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -182,7 +180,7 @@
                         size="small"
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
-                        icon={PlayFilledAlt24}
+                        icon={PlayFilledAlt}
                         on:click={(e) => {
                             alert('Run test');
                             e.stopPropagation();
@@ -193,7 +191,7 @@
                     <Button
                         size="small"
                         kind="ghost"
-                        icon={ArrowUpRight24}
+                        icon={ArrowUpRight}
                         iconDescription="Open link"
                     />
                 </div>
@@ -229,6 +227,9 @@
     }
     .tags {
         width: 100%;
+    }
+    .tags :global(.cursor-pointer){
+        cursor: pointer;
     }
     .lang {
         display: inline-block;

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Loading, Accordion, AccordionItem,Button, Modal } from "carbon-components-svelte";
-    import CheckmarkOutline from "carbon-icons-svelte/lib/CheckmarkOutline.svelte";
+    import { CheckmarkOutline } from "carbon-icons-svelte";
     import { fade } from 'svelte/transition';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';

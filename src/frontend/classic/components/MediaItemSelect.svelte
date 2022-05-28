@@ -9,21 +9,19 @@
         ContextMenuOption,
         Loading,
     } from "carbon-components-svelte";
-    import EarthFilled16 from "carbon-icons-svelte/lib/EarthFilled.svelte";
+    import {EarthFilled} from "carbon-icons-svelte";
 
     import { fade } from "svelte/transition";
 
-    import { createEventDispatcher } from "svelte";
-    const dispatch = createEventDispatcher();
-
     import MediaItem from "./MediaItem.svelte";
+    import { selectedPlugin, selectedMedia, selectedItem } from '../Stores.js';
 
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
+    
 
     let items: IMediaContainer[] = [];
     let filteredItems: IMediaContainer[] = [];
 
-    export let media: IMediaContainer | undefined;
     let loadItem: Promise<void>; 
     let selectedItems: IMediaContainer[] = [];
     let multipleSelectionFrom: number = -1;
@@ -66,13 +64,12 @@
         }
     }
 
-    //On: MangaChange
-    $: {
-        loadItem = media?.Update().then(() => {
-            items = (media?.Entries as IMediaContainer[]) ?? [];
+    selectedMedia.subscribe(value => {
+        loadItem = value?.Update().then(() => {
+            items = (value?.Entries as IMediaContainer[]) ?? [];
             selectedItems = [];
         });
-    }
+    });
 
     let itemNameFilter = "";
     $: filteredItems = items?.filter((item) => {
@@ -111,7 +108,7 @@
     <div id="LanguageFilter">
         <div class="inline">
             <Button
-                icon={EarthFilled16}
+                icon={EarthFilled}
                 size="small"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
@@ -146,7 +143,7 @@
                     selected={selectedItems.includes(item)}
                     on:view={(e) => {
                         selectedItems.push(e.detail);
-                        dispatch("view", item);
+                        $selectedItem=e.detail;
                     }}
                     on:click={(e) => onItemClick(item, e)}
                 />

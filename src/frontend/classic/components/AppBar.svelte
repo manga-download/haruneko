@@ -6,17 +6,19 @@
         HeaderGlobalAction,
         SkipToContent,
     } from 'carbon-components-svelte';
-    import MinimizeIcon from 'carbon-icons-svelte/lib/Subtract.svelte';
-    import MaximizeIcon from 'carbon-icons-svelte/lib/Checkbox.svelte';
-    import RestoreIcon from 'carbon-icons-svelte/lib/Copy.svelte';
-    import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
+    import {
+        Checkbox,
+        Close,
+        Copy,
+        Subtract
+    } from 'carbon-icons-svelte'
     import MenuLeftPanel from './MenuLeftPanel.svelte';
     import { WindowController } from '../Stores';
     import SettingsPanel from './settings/SettingsPanel.svelte';
     import { Locale } from '../SettingsStore';
 
     export let isSideNavOpen: boolean;
-    export let isOpen: boolean;
+
     let winMaximized = false;
 
     function updateWindowState() {
@@ -61,20 +63,20 @@
             <HeaderGlobalAction
                 on:click={minimize}
                 aria-label="Minimize"
-                icon={MinimizeIcon}
+                icon={Subtract}
             />
             <HeaderGlobalAction
                 on:click={() => (winMaximized ? restore() : maximize())}
                 aria-label="Maximize"
-                icon={winMaximized ? RestoreIcon : MaximizeIcon}
+                icon={winMaximized ? Copy : Checkbox}
             />
             <HeaderGlobalAction
                 on:click={() => close()}
                 aria-label="Close"
-                icon={CloseIcon}
+                icon={Close}
             />
         {/if}
-        <HeaderAction bind:isOpen>
+        <HeaderAction>
             <!-- Show global HakuNeko settings?
             <SettingsViewer scope={Scope} />
             -->
