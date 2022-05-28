@@ -1,8 +1,11 @@
-<script>
-    import Search16 from 'carbon-icons-svelte/lib/Search.svelte';
-    import Plug16 from 'carbon-icons-svelte/lib/Plug.svelte';
-    import Language16 from 'carbon-icons-svelte/lib/Language.svelte';
-    import Renew16 from 'carbon-icons-svelte/lib/Renew.svelte';
+<script lang="ts">
+    import {
+        Language,
+        Plug,
+        Renew,
+        Search
+    } from "carbon-icons-svelte";
+
     import { fade } from 'svelte/transition';
 </script>
 
@@ -16,18 +19,18 @@
         </p>
         <ol>
             <li>
-                <Plug16 class="home-icons" /> Select your connector (the website).
+                <Plug class="home-icons" /> Select your connector (the website).
                 Use the filters
             </li>
             <li>
-                <Renew16 class="home-icons" /> Click on the refresh button (can take
+                <Renew class="home-icons" /> Click on the refresh button (can take
                 minutes)
             </li>
-            <li><Search16 class="home-icons" /> Find a manga</li>
+            <li><Search class="home-icons" /> Find a manga</li>
             <li>
-                <Language16 class="home-icons" /> Filter chapters by language (optional)
+                <Language class="home-icons" /> Filter chapters by language (optional)
             </li>
-            <li><Search16 class="home-icons" /> Select a chapter</li>
+            <li><Search class="home-icons" /> Select a chapter</li>
         </ol>
         <p>
             The connector you are looking for is not in the list ?<br />

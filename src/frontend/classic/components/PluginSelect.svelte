@@ -9,8 +9,7 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import PlayFilledAlt24 from 'carbon-icons-svelte/lib/PlayFilledAlt.svelte';
-    import ArrowUpRight24 from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
+    import {ArrowUpRight, PlayFilledAlt} from 'carbon-icons-svelte';
     import { createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
 
@@ -181,7 +180,7 @@
                         size="small"
                         tooltipPosition="bottom"
                         tooltipAlignment="center"
-                        icon={PlayFilledAlt24}
+                        icon={PlayFilledAlt}
                         on:click={(e) => {
                             alert('Run test');
                             e.stopPropagation();
@@ -192,7 +191,7 @@
                     <Button
                         size="small"
                         kind="ghost"
-                        icon={ArrowUpRight24}
+                        icon={ArrowUpRight}
                         iconDescription="Open link"
                     />
                 </div>
