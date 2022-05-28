@@ -74,7 +74,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
 
 /**
  * An extension method for extracting multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
- * The range of all {@link path} patterns begins with {@link start} and is incremented until no more new mangas can be extracted.
+ * The range of all {@link path} patterns begins with `1` and is incremented until no more new mangas can be extracted.
  * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param provider A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
  * @param path The path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
@@ -86,7 +86,7 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
 
 /**
  * A class decorator that adds the ability to extract multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
- * The range of all {@link path} patterns begins with {@link start} and is incremented until no more new mangas can be extracted.
+ * The range of all {@link path} patterns begins with `1` and is incremented until no more new mangas can be extracted.
  * @param path The path pattern relative to the scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
  * @param query A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
