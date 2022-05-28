@@ -14,7 +14,7 @@
     import { createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
 
-    import Chip from './Tag.svelte';
+    import Chip from '../lib/Tag.svelte';
     import { Tag, Tags } from '../../../engine/Tags';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import { Locale } from '../SettingsStore';
@@ -37,8 +37,6 @@
         pageSizes: [5, 10, 20],
     };
 
-    //because hardccoding values is da way (Do You Know Da Wae?)
-    //will fuse in a single main array with dispatch
     const langTags = Tags.Language.toArray();
     const typeTags = Tags.Media.toArray();
     const otherTags = [...Tags.Source.toArray(), ...Tags.Rating.toArray()];
@@ -107,6 +105,7 @@
                 <strong>{$Locale[Tags.Language.Title]()}</strong>
                 {#each langTags as item}
                     <Chip
+                        class='cursor-pointer'
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -117,6 +116,7 @@
                 <strong>{$Locale[Tags.Media.Title]()}</strong>
                 {#each typeTags as item}
                     <Chip
+                        class='cursor-pointer'
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -127,6 +127,7 @@
                 <strong>{$Locale[ResourceKey.Tags_Others]()}</strong>
                 {#each otherTags as item}
                     <Chip
+                        class='cursor-pointer'
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -227,6 +228,9 @@
     }
     .tags {
         width: 100%;
+    }
+    .tags :global(.cursor-pointer){
+        cursor: pointer;
     }
     .lang {
         display: inline-block;

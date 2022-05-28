@@ -21,7 +21,7 @@
 </script>
 
 <Tag {filter} type={color} on:click>
-    <div class="tagContent {category}">{$Locale[label]()}</div>
+    <div class="tagContent {category} {$$props.class}">{$Locale[label]()}</div>
 </Tag>
 
 <style>
