@@ -91,7 +91,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
     });
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
-        const { id, title } = ChapterInfoExtractor(element);
+        const { id, title } = ChapterInfoExtractor.call(this, element);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }

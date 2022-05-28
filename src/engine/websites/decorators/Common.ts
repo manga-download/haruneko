@@ -5,8 +5,8 @@ import type { Priority } from '../../taskpool/TaskPool';
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ //=> A mixin class must have a constructor with a single rest parameter of type 'any[]'
 export type Constructor = new (...args: any[]) => DecoratableMangaScraper;
 
-type LabelExtractor = (element: HTMLElement) => string;
-type InfoExtractor<E extends HTMLElement> = (element: E) => { id: string, title: string };
+type LabelExtractor = (this: MangaScraper, element: HTMLElement) => string;
+type InfoExtractor<E extends HTMLElement> = (this: MangaScraper, element: E) => { id: string, title: string };
 
 /**
  * The pre-defined default label extractor that will parse the media title from a given {@link HTMLElement}.
@@ -20,7 +20,7 @@ const DefaultLabelExtractor = ElementLabelExtractor();
  * @param queryBloat An optional CSS query which can be used to remove all matching child elements before extracting the media title
  */
 export function ElementLabelExtractor(queryBloat: string = undefined) {
-    return function(element: HTMLElement) {
+    return function(this: MangaScraper, element: HTMLElement) {
         if(queryBloat) {
             for(const bloat of element.querySelectorAll(queryBloat)) {
                 if (bloat.parentElement) {
@@ -44,7 +44,7 @@ const DefaultInfoExtractor = AnchorInfoExtractor();
  * @param queryBloat An optional CSS query which can be used to remove all matching child elements before extracting the media title
  */
 export function AnchorInfoExtractor(useTitleAttribute = false, queryBloat: string = undefined): InfoExtractor<HTMLElement> {
-    return function(element: HTMLAnchorElement) {
+    return function(this: MangaScraper, element: HTMLAnchorElement) {
         if (!useTitleAttribute && queryBloat) {
             for(const bloat of element.querySelectorAll(queryBloat)) {
                 if (bloat.parentElement) {
@@ -59,9 +59,9 @@ export function AnchorInfoExtractor(useTitleAttribute = false, queryBloat: strin
     };
 }
 
-type ImageExtractor<E extends HTMLElement> = (element: E) => string;
+type ImageExtractor<E extends HTMLElement> = (this: MangaScraper, element: E) => string;
 
-function DefaultImageExtractor<E extends HTMLImageElement>(element: E): string {
+function DefaultImageExtractor<E extends HTMLImageElement>(this: MangaScraper, element: E): string {
     return element.dataset.src || element.getAttribute('src') || ''; // TODO: Throw if none found?
 }
 
@@ -82,7 +82,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
     const uri = new URL(url);
     const request = new FetchRequest(uri.href);
     const data = (await FetchCSS<HTMLElement>(request, query)).shift();
-    return new Manga(this, provider, uri.pathname, extract(data));
+    return new Manga(this, provider, uri.pathname, extract.call(this, data));
 }
 
 /**
@@ -137,7 +137,7 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
     const request = new FetchRequest(uri.href);
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
-        const { id, title } = extract(element);
+        const { id, title } = extract.call(this, element);
         return new Manga(this, provider, id, title);
     });
 }
@@ -219,7 +219,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
     const request = new FetchRequest(uri.href);
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
-        const { id, title } = extract(element);
+        const { id, title } = extract.call(this, element);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }
@@ -257,7 +257,7 @@ export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: Manga
     const request = new FetchRequest(uri.href);
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
-        const link = new URL(extract(element), request.url);
+        const link = new URL(extract.call(this, element), request.url);
         return new Page(this, chapter, link, { Referer: uri.href });
     });
 }
