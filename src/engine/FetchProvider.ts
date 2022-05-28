@@ -64,7 +64,7 @@ export function Initialize(info?: PlatformInfo): void {
     if([ Runtime.Chrome, Runtime.Gecko, Runtime.WebKit ].includes(info.Runtime)) {
         FetchProviderBrowser.Initialize();
         request = FetchProviderBrowser.FetchRequest;
-        fetch = FetchProviderNodeWebkit.Fetch;
+        fetch = FetchProviderBrowser.Fetch;
         fetchHTML = FetchProviderNodeWebkit.FetchHTML;
         fetchJSON = FetchProviderNodeWebkit.FetchJSON;
         fetchCSS = FetchProviderNodeWebkit.FetchCSS;

@@ -9,6 +9,10 @@ export class FetchRequest extends Request {
     }
 }
 
+export async function Fetch(request: FetchRequest): Promise<Response> {
+    return fetch(request);
+}
+
 export async function FetchWindowCSS<T extends HTMLElement>(/*request: FetchRequest, query: string, delay = 0, timeout?: number*/): Promise<T[]> {
     /*
     const win = window.open(request.url);
