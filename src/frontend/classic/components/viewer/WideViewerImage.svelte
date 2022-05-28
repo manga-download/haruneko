@@ -6,8 +6,6 @@
     export let page: IMediaItem;
     export let alt: string;
 
-    console.log($$restProps);
-
     const spinner = 'https://gifimage.net/wp-content/uploads/2017/08/spinner-gif-13.gif';
     const error = 'https://cms-assets.tutsplus.com/uploads/users/30/posts/23176/image/final-grey-2.png';
 
