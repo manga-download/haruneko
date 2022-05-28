@@ -5,51 +5,70 @@
         SideNavMenu,
         SideNavLink,
     } from 'carbon-components-svelte';
-    import LogoDiscord16 from 'carbon-icons-svelte/lib/LogoDiscord.svelte';
-    import Home16 from 'carbon-icons-svelte/lib/Home.svelte';
-    import LogoGithub16 from 'carbon-icons-svelte/lib/LogoGithub.svelte';
-    import App16 from 'carbon-icons-svelte/lib/App.svelte';
-    import Doc16 from 'carbon-icons-svelte/lib/Doc.svelte';
-    import Events16 from 'carbon-icons-svelte/lib/Events.svelte'; // Maintainers
-    import EventsAlt16 from 'carbon-icons-svelte/lib/EventsAlt.svelte'; // contributors
-    import Debug16 from 'carbon-icons-svelte/lib/Debug.svelte';
-    import Image16 from 'carbon-icons-svelte/lib/Image.svelte';
-    import Location16 from 'carbon-icons-svelte/lib/Location.svelte';
-    import Settings24 from 'carbon-icons-svelte/lib/Settings.svelte';
-    import SettingsAdjust20 from 'carbon-icons-svelte/lib/SettingsAdjust.svelte';
-    import TaskSettings20 from 'carbon-icons-svelte/lib/TaskSettings.svelte';
-    import SettingsView20 from 'carbon-icons-svelte/lib/SettingsView.svelte';
-    import NetworkOverlay24 from 'carbon-icons-svelte/lib/NetworkOverlay.svelte';
-    import ContentDeliveryNetwork24 from 'carbon-icons-svelte/lib/ContentDeliveryNetwork.svelte';
+    import {
+        App,
+        ContentDeliveryNetwork,
+        Debug,
+        Doc,
+        Document,
+        Events,
+        EventsAlt,
+        Home,
+        Image,
+        Information,
+        Location,
+        LogoDiscord,
+        LogoGithub,
+        NetworkOverlay,
+        Plug,
+        Settings,
+        SettingsAdjust,
+        SettingsView,
+        TaskSettings,
+    } from 'carbon-icons-svelte';
 
     import SettingsMenu from './settings/SettingsModal.svelte';
+    import PluginSelect from './PluginSelect.svelte';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
-    export let isSideNavOpen = false;
+    //Todo: why doesn't it work with rail mode on sidenav ?
+    export let isSideNavOpen: boolean;
+    
     //Settings Modal
     let settingsSelectedTabs = 0;
     let settingsPreselectedPlugin: IMediaContainer;
     let isSettingsModalOpen = false;
-
-    function openExternalLink(url: string) {
-        // TODO: Frontend must not use framework globals such as `nw` or `chrome`
-        // => Such non-browser functionalities needs to be abstracted by the HakuNekp engine ...
-        //nw.Shell.openExternal(uri);
-        window.open(url);
-    }
+    let isPluginModalOpen = false;
 </script>
 
+{#if isPluginModalOpen}
+    <div>
+        <PluginSelect
+            bind:isPluginModalOpen
+            on:close={() => (isPluginModalOpen = false)}
+        />
+    </div>
+{/if}
 <SettingsMenu
     bind:isModalOpen={isSettingsModalOpen}
     selectedTab={settingsSelectedTabs}
     preselectedPlugin={settingsPreselectedPlugin}
 />
-<SideNav bind:isOpen={isSideNavOpen}>
+<SideNav bind:isOpen={isSideNavOpen} rail>
     <SideNavItems>
-        <SideNavMenu text="[RES:Settings]" icon={Settings24}>
+        <SideNavLink
+                text="[RES:Plugins]"
+                icon={Plug}
+                on:click={() => {
+                    settingsPreselectedPlugin = undefined;
+                    settingsSelectedTabs = 0;
+                    isPluginModalOpen = true;
+                }}
+            />
+        <SideNavMenu text="[RES:Settings]" icon={Settings}>
             <SideNavLink
                 text="[RES:General]"
-                icon={SettingsAdjust20}
+                icon={SettingsAdjust}
                 on:click={() => {
                     settingsPreselectedPlugin = undefined;
                     settingsSelectedTabs = 0;
@@ -58,7 +77,7 @@
             />
             <SideNavLink
                 text="[RES:UI]"
-                icon={SettingsView20}
+                icon={SettingsView}
                 on:click={() => {
                     settingsPreselectedPlugin = undefined;
                     settingsSelectedTabs = 1;
@@ -67,7 +86,7 @@
             />
             <SideNavLink
                 text="[RES:Trackers]"
-                icon={TaskSettings20}
+                icon={TaskSettings}
                 on:click={() => {
                     settingsPreselectedPlugin = undefined;
                     settingsSelectedTabs = 2;
@@ -76,7 +95,7 @@
             />
             <SideNavLink
                 text="[RES:Network]"
-                icon={NetworkOverlay24}
+                icon={NetworkOverlay}
                 on:click={() => {
                     settingsPreselectedPlugin = undefined;
                     settingsSelectedTabs = 3;
@@ -84,7 +103,7 @@
                 }}
             />
         </SideNavMenu>
-        <SideNavMenu text="[RES:Websites]" icon={ContentDeliveryNetwork24}>
+        <SideNavMenu text="[RES:Websites]" icon={ContentDeliveryNetwork}>
             <!-- TODO:
             Showing the settings from all websites maybe a bad idea, this is just for prototyping
             A better approach could be a gear icon for each website which open its settings
@@ -107,83 +126,83 @@
             {/each}
         </SideNavMenu>
 
-        <SideNavMenu text="[RES:Help]">
+        <SideNavMenu text="[RES:Help]"  icon={Document}>
             <SideNavLink
                 text="Documentation"
-                icon={Doc16}
+                icon={Doc}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink(
+                    window.open(
                         'https://hakuneko.download/docs/interface/'
                     )}
             />
             <SideNavLink
                 text="Discord"
-                icon={LogoDiscord16}
+                icon={LogoDiscord}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink('https://discordapp.com/invite/A5d3NDf')}
+                    window.open('https://discordapp.com/invite/A5d3NDf')}
             />
             <SideNavLink
                 text="Open a ticket"
-                icon={Debug16}
+                icon={Debug}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink(
+                    window.open(
                         'https://hakuneko.download/docs/troubleshoot/'
                     )}
             />
             <SideNavLink
                 text="Home page"
-                icon={Home16}
+                icon={Home}
                 class="clik-item"
-                on:click={() => openExternalLink('https://hakuneko.download')}
+                on:click={() => window.open('https://hakuneko.download')}
             />
             <SideNavLink
                 text="Show IP and localisation"
-                icon={Location16}
+                icon={Location}
                 class="clik-item"
-                on:click={() => openExternalLink('https://ipinfo.io/json')}
+                on:click={() => window.open('https://ipinfo.io/json')}
             />
         </SideNavMenu>
-        <SideNavMenu text="[RES:About]">
+        <SideNavMenu text="[RES:About]" icon={Information }>
             <SideNavLink
                 text="Code source"
-                icon={LogoGithub16}
+                icon={LogoGithub}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink(
+                    window.open(
                         'https://hakuneko.download/docs/interface/'
                     )}
             />
             <SideNavLink
                 text="Using version X.X.X"
-                icon={App16}
+                icon={App}
                 class="clik-item"
-                on:click={() => openExternalLink('https://todo.com')}
+                on:click={() => window.open('https://todo.com')}
             />
             <SideNavLink
                 text="Maintainers"
-                icon={Events16}
+                icon={Events}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink('https://discordapp.com/invite/A5d3NDf')}
+                    window.open('https://discordapp.com/invite/A5d3NDf')}
             />
             <SideNavLink
                 text="Contributors"
-                icon={EventsAlt16}
+                icon={EventsAlt}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink(
+                    window.open(
                         'https://hakuneko.download/docs/troubleshoot/'
                     )}
             />
             <SideNavLink
                 text="Artwork"
-                icon={Image16}
+                icon={Image}
                 class="clik-item"
                 on:click={() =>
-                    openExternalLink(
+                    window.open(
                         'https://www.deviantart.com/hakuneko3kune'
                     )}
             />

@@ -12,12 +12,12 @@
     import Console from './components/Console.svelte';
     import Network from './components/Network.svelte';
     import Viewer from './components/viewer/Viewer.svelte';
-    import Tracker from './components/Tracker.svelte';
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
     import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
     import { ContentPanelValue, ThemeValue } from './SettingsStore';
+    import { selectedPlugin, selectedMedia, selectedItem } from './Stores.js';
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
     export const FinishLoading = new Promise<void>(
@@ -26,7 +26,6 @@
 
     // UI
     let isSideNavOpen = false;
-    let isOpen = false;
 
     let app: HTMLElement;
 
@@ -34,11 +33,10 @@
         app = document.getElementById('hakunekoapp')!;
         app.classList.add(uimode);
         // some delay for pre-rendering
+        // Todo: find a way to detect if the UI is loaded
         setTimeout(resolveFinishLoading, 2500);
     });
 
-    let selectedMedia: IMediaContainer | undefined;
-    let selectedItem: IMediaContainer | undefined;
     let selectedBottomTab = 0;
     let currentContent = 'home';
     let showHome = true;
@@ -54,24 +52,21 @@
         app.classList.add(uimode);
     }
 
-    $: currentContent = selectedItem ? 'viewer' : 'home';
+    $: currentContent = $selectedItem ? 'viewer' : 'home';
     
 </script>
 
 <UserMessage />
 
 <Theme theme={$ThemeValue}>
-    <AppBar {isSideNavOpen} {isOpen} />
+    <AppBar bind:isSideNavOpen />
     <Content id="hakunekoapp">
-        <MediaSelect on:select={(evt) => (selectedMedia = evt.detail )} />
-        <MediaItemSelect
-            media={selectedMedia}
-            on:view={(evt) => (selectedItem = evt.detail)}
-        />
+        <MediaSelect />
+        <MediaItemSelect />
         {#if uimode === 'ui-mode-content'}
             <div id="Content" transition:fade>
                 {#if currentContent === 'viewer'}
-                    <Viewer item={selectedItem} />
+                    <Viewer item={$selectedItem} />
                 {:else if currentContent && showHome}
                     <ContentPage />
                 {/if}

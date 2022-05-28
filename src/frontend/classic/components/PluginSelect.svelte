@@ -28,9 +28,7 @@
             mediaContainer: item,
         };
     }
-
     const dispatch = createEventDispatcher();
-    export let pluginlist: Array<IMediaContainer>;
     export let isPluginModalOpen = false;
     let pagination = {
         totalItems: 0,
@@ -60,7 +58,7 @@
 
     let filteredPluginlist = [];
     $: {
-        filteredPluginlist = pluginlist
+        filteredPluginlist = HakuNeko.PluginController.WebsitePlugins
             .filter((item) => {
                 let conditions: Array<boolean> = [];
                 if (pluginNameFilter !== '') {

@@ -9,18 +9,16 @@
         ContextMenuOption,
         Loading,
     } from 'carbon-components-svelte';
-    import PlugFilled16 from 'carbon-icons-svelte/lib/PlugFilled.svelte';
-    import UpdateNow16 from 'carbon-icons-svelte/lib/UpdateNow.svelte';
+
+    import {PlugFilled,UpdateNow} from 'carbon-icons-svelte';
     import Fuse from 'fuse.js';
 
     import { fade } from 'svelte/transition';
 
     import Media from './Media.svelte';
-    import PluginSelect from './PluginSelect.svelte';
     import Tracker from './Tracker.svelte';
 
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
+    import { selectedPlugin, selectedMedia } from '../Stores.js';
 
     import VirtualList from '@sveltejs/svelte-virtual-list';
 
@@ -28,8 +26,6 @@
     import type { IMediaInfoTracker,Suggestion, Info} from '../../../engine/trackers/IMediaInfoTracker';
 
     import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
-
-    const plugins: IMediaContainer[] = HakuNeko.PluginController.WebsitePlugins;
 
     let medias: IMediaContainer[] = [];
     let filteredmedias: IMediaContainer[] = [];
@@ -42,42 +38,37 @@
     });
     
     let loadPlugin:Promise<void>;
-    let selectedPlugin: IMediaContainer | undefined;
-    let selectedMedia: IMediaContainer | undefined;
     let mediasdiv: HTMLElement;
 
     let pluginsFavorites = ['sheep-scanlations', 'test-long-list'];
     let pluginsCombo: Array<ComboBoxItem>;
     let orderedPlugins = [];
 
-    $: {
-        orderedPlugins = plugins.sort((a, b) => {
-            return (
-                // sort by favorite
-                (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
-                    (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
-                //sort by string
-                a.Title.localeCompare(b.Title)
-            );
-        });
-        pluginsCombo = orderedPlugins.map((plugin, key) => {
-            return {
-                id: key.toString(),
-                text: pluginsFavorites.includes(plugin.Identifier)
-                    ? '⭐' + plugin.Title
-                    : plugin.Title,
-            };
-        });
-    }
+    orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
+        return (
+            // sort by favorite
+            (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
+                (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
+            //sort by string
+            a.Title.localeCompare(b.Title)
+        );
+    });
+    pluginsCombo = orderedPlugins.map((plugin, key) => {
+        return {
+            id: key.toString(),
+            text: pluginsFavorites.includes(plugin.Identifier)
+                ? '⭐' + plugin.Title
+                : plugin.Title,
+        };
+    });
 
-    let selectedPluginIndex = undefined;
-    $: {
-        selectedPlugin = orderedPlugins[selectedPluginIndex];
-    }
+
+    let pluginIndex = undefined;
+    $: $selectedPlugin = orderedPlugins[pluginIndex];
 
     //On: PluginChange
-    $: {
-        medias = (selectedPlugin?.Entries as IMediaContainer[]) ?? [];
+    selectedPlugin.subscribe(value => {
+        medias = (value?.Entries as IMediaContainer[]) ?? [];
         fuse = new Fuse(medias, {
             keys: ['Title'],
             findAllMatches: true,
@@ -85,8 +76,8 @@
             minMatchCharLength: 1,
             fieldNormWeight: 0
         });
-        selectedMedia = undefined;
-    }
+        $selectedMedia = undefined;
+    });
 
     let mediaNameFilter = '';
     $: filteredmedias =
@@ -94,7 +85,6 @@
             ? medias
             : fuse.search(mediaNameFilter).map((item) => item.item);
 
-    let isPluginModalOpen = false;
     let isTrackerModalOpen = false;
     let selectedTracker: IMediaInfoTracker;
 
@@ -103,9 +93,8 @@
             (item) => item.text === event.detail.Title
         );
         if (searchComboItem) {
-            selectedPluginIndex = searchComboItem;
+            pluginIndex = searchComboItem;
         }
-        isPluginModalOpen = false;
     }
 
     function shouldFilterPlugin(item: any, value: string) {
@@ -114,27 +103,18 @@
     }
 
     async function onUpdateMediaEntriesClick() {
-        loadPlugin = selectedPlugin?.Update();
+        loadPlugin = $selectedPlugin?.Update();
         await loadPlugin;
-        medias = (selectedPlugin?.Entries as IMediaContainer[]) ?? [];
+        medias = ($selectedPlugin?.Entries as IMediaContainer[]) ?? [];
     }
 </script>
 
-{#if isPluginModalOpen}
-    <div>
-        <PluginSelect
-            {isPluginModalOpen}
-            pluginlist={plugins}
-            on:close={() => (isPluginModalOpen = false)}
-            on:select={selectPlugin}
-        />
-    </div>
-{/if}
+
 {#if isTrackerModalOpen}
     <div>
         <Tracker
             {isTrackerModalOpen}
-            media={selectedMedia}
+            media={$selectedMedia}
             tracker={selectedTracker}
             on:close={() => (isTrackerModalOpen = false)}
         />
@@ -157,21 +137,10 @@
         <h5 class="separator">Media List (Manga, Anime etc..)</h5>
     </div>
     <div id="Plugin">
-        <div class="inline">
-            <Button
-                icon={PlugFilled16}
-                size="small"
-                tooltipPosition="bottom"
-                tooltipAlignment="center"
-                iconDescription="Plugin"
-                on:click={() => (isPluginModalOpen = true)}
-            />
-        </div>
-
         <div class="inline-wide">
             <ComboBox
                 placeholder="Select a Plugin"
-                bind:selectedId={selectedPluginIndex}
+                bind:selectedId={pluginIndex}
                 size="sm"
                 items={pluginsCombo}
                 shouldFilterItem={shouldFilterPlugin}
@@ -180,7 +149,7 @@
 
         <div class="inline">
             <Button
-                icon={UpdateNow16}
+                icon={UpdateNow}
                 size="small"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
@@ -205,8 +174,7 @@
                     media={item}
                     selected={selectedMedia === item}
                     on:select={(e) => {
-                        selectedMedia = e.detail;
-                        dispatch('select', e.detail);
+                        $selectedMedia = e.detail;
                     }}
                 />
             </VirtualList>
