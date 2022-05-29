@@ -17,7 +17,7 @@
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
 
-    import { selectedPlugin, selectedMedia } from '../Stores';
+    import { selectedPlugin, selectedMedia, selectedItem } from '../Stores';
 
     import VirtualList from '@sveltejs/svelte-virtual-list';
 
@@ -39,9 +39,11 @@
     let loadPlugin:Promise<void>;
     let mediasdiv: HTMLElement;
 
-    let pluginsFavorites = ['sheep-scanlations', 'test-long-list'];
+    // Todo : implement favorites
+    let pluginsFavorites = ['sheep-scanlations'];
+
     let pluginsCombo: Array<ComboBoxItem>;
-    let orderedPlugins = [];
+    let orderedPlugins : IMediaContainer[] = [];
 
     orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
         return (
@@ -52,21 +54,24 @@
             a.Title.localeCompare(b.Title)
         );
     });
-    pluginsCombo = orderedPlugins.map((plugin, key) => {
+    pluginsCombo = orderedPlugins.map((plugin) => {
         return {
-            id: key.toString(),
-            text: pluginsFavorites.includes(plugin.Identifier)
-                ? '⭐' + plugin.Title
-                : plugin.Title,
+            id: plugin.Identifier,
+            text: plugin.Title,
         };
     });
 
 
-    let pluginIndex = undefined;
-    $: $selectedPlugin = orderedPlugins[pluginIndex];
+    function pluginsComboText (item:ComboBoxItem):string {
+        return pluginsFavorites.includes(item.id) ? '⭐' + item.text : item.text;
+    }
 
-    //On: PluginChange
+    let pluginDropdownSelected:string;
+    let currentPlugin:string;
+
     selectedPlugin.subscribe(value => {
+        if (!value || value?.Identifier === currentPlugin) return;
+        currentPlugin = pluginDropdownSelected = value.Identifier;
         medias = (value?.Entries as IMediaContainer[]) ?? [];
         fuse = new Fuse(medias, {
             keys: ['Title'],
@@ -75,7 +80,8 @@
             minMatchCharLength: 1,
             fieldNormWeight: 0
         });
-        $selectedMedia = undefined;
+        $selectedMedia=undefined;
+        $selectedItem=undefined;
     });
 
     let mediaNameFilter = '';
@@ -86,15 +92,6 @@
 
     let isTrackerModalOpen = false;
     let selectedTracker: IMediaInfoTracker;
-
-    function selectPlugin(event: any) {
-        const searchComboItem = pluginsCombo.findIndex(
-            (item) => item.text === event.detail.Title
-        );
-        if (searchComboItem) {
-            pluginIndex = searchComboItem;
-        }
-    }
 
     function shouldFilterPlugin(item: any, value: string) {
         if (!value) return true;
@@ -139,10 +136,12 @@
         <div class="inline-wide">
             <ComboBox
                 placeholder="Select a Plugin"
-                bind:selectedId={pluginIndex}
+                bind:selectedId={pluginDropdownSelected}
+                on:select={(event)=>$selectedPlugin=orderedPlugins.find((plugin) => (plugin.Identifier===event.detail.selectedId))}
                 size="sm"
                 items={pluginsCombo}
                 shouldFilterItem={shouldFilterPlugin}
+                itemToString={pluginsComboText}
             />
         </div>
 

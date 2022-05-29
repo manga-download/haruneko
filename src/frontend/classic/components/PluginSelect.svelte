@@ -9,8 +9,7 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import {ArrowUpRight, PlayFilledAlt} from 'carbon-icons-svelte';
-    import { createEventDispatcher } from 'svelte';
+    import { ArrowUpRight, CertificateCheck, Settings } from 'carbon-icons-svelte';
     import { fade } from 'svelte/transition';
 
     import Chip from '../lib/Tag.svelte';
@@ -18,6 +17,8 @@
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import { Locale } from '../SettingsStore';
     import { ResourceKey } from '../../../i18n/ILocale';
+
+    import { selectedPlugin } from '../Stores';
 
     function createDataRow(item: IMediaContainer) {
         return {
@@ -27,7 +28,7 @@
             mediaContainer: item,
         };
     }
-    const dispatch = createEventDispatcher();
+
     export let isPluginModalOpen = false;
     let pagination = {
         totalItems: 0,
@@ -51,7 +52,6 @@
     function removeTagFilter(tag: Tag) {
         pluginTagsFilter = pluginTagsFilter.filter((value) => tag !== value);
     }
-    addTagFilter(Tags.Language.French);
 
     let filteredPluginlist = [];
     $: {
@@ -158,8 +158,10 @@
         pageSize={pagination.pageSize}
         page={pagination.page}
         rows={filteredPluginlist}
-        on:click:row={(event) =>
-            dispatch('select', event.detail.mediaContainer)}
+        on:click:row={(event) => {
+            $selectedPlugin=event.detail.mediaContainer;
+            isPluginModalOpen = false;
+        }}
     >
         <Toolbar>
             <ToolbarContent>
@@ -176,23 +178,34 @@
             {:else if cell.key === 'overflow'}
                 <div class=" action-cell">
                     <Button
-                        kind="ghost"
                         size="small"
-                        tooltipPosition="bottom"
-                        tooltipAlignment="center"
-                        icon={PlayFilledAlt}
+                        kind="secondary"
+                        tooltipPosition="left"
+                        icon={Settings}
+                        iconDescription="Connector's settings"
                         on:click={(e) => {
-                            alert('Run test');
                             e.stopPropagation();
                         }}
-                    >
-                        Run Test
-                    </Button>
+                    />
                     <Button
                         size="small"
-                        kind="ghost"
+                        kind="secondary"
+                        tooltipPosition="left"
+                        icon={CertificateCheck }
+                        iconDescription="Test plugin"
+                        on:click={(e) => {
+                            e.stopPropagation();
+                        }}
+                    />
+                    <Button
+                        size="small"
+                        kind="secondary"
+                        tooltipPosition="left"
                         icon={ArrowUpRight}
-                        iconDescription="Open link"
+                        iconDescription="Open website URL"
+                        on:click={(e) => {
+                            e.stopPropagation();
+                        }}
                     />
                 </div>
             {:else}{cell.value}{/if}

@@ -20,7 +20,7 @@
         LogoDiscord,
         LogoGithub,
         NetworkOverlay,
-        Plug,
+        PlugFilled,
         Settings,
         SettingsAdjust,
         SettingsView,
@@ -42,12 +42,10 @@
 </script>
 
 {#if isPluginModalOpen}
-    <div>
-        <PluginSelect
-            bind:isPluginModalOpen
-            on:close={() => (isPluginModalOpen = false)}
-        />
-    </div>
+    <PluginSelect
+        bind:isPluginModalOpen
+        on:close={() => (isPluginModalOpen = false)}
+    />
 {/if}
 <SettingsMenu
     bind:isModalOpen={isSettingsModalOpen}
@@ -58,10 +56,8 @@
     <SideNavItems>
         <SideNavLink
                 text="[RES:Plugins]"
-                icon={Plug}
+                icon={PlugFilled}
                 on:click={() => {
-                    settingsPreselectedPlugin = undefined;
-                    settingsSelectedTabs = 0;
                     isPluginModalOpen = true;
                 }}
             />
