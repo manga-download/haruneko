@@ -1,5 +1,4 @@
-import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
-import { type MangaScraper, type MangaPlugin, type Manga, type Chapter, Page } from '../../providers/MangaPlugin';
+import type { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
 const pathpaged = '/?page={page}';
@@ -106,10 +105,7 @@ export function MangasMultiPageCSS(path: string = pathpaged, query: string = que
  * @param script A JS script to extract the image links
  */
 export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = scriptPageListLinks): Promise<Page[]> {
-    const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href);
-    const data = await FetchWindowScript<string[]>(request, script, 2500);
-    return data.map(link => new Page(this, chapter, new URL(link), { Referer: uri.href }));
+    return Common.FetchPagesSinglePageJS.call(this, chapter, script, 2500);
 }
 
 /**
@@ -118,13 +114,7 @@ export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapte
  * @param script A JS script to extract the image links
  */
 export function PagesSinglePageJS(script: string = scriptPageListLinks) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
-        return class extends ctor {
-            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageJS.call(this, chapter, script);
-            }
-        };
-    };
+    return Common.PagesSinglePageJS(script, 2500);
 }
 
 /***********************************************

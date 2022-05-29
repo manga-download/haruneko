@@ -1,4 +1,4 @@
-import { Fetch, FetchCSS, FetchRequest } from '../../FetchProvider';
+import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchProvider';
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 
@@ -273,6 +273,37 @@ export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageCSS.call(this, chapter, query, extract as ImageExtractor<HTMLElement>);
+            }
+        };
+    };
+}
+
+/**
+ * An extension method for extracting all pages for the given {@link chapter} using the given JS {@link script}.
+ * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
+ * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ * @param script A JS script to extract the image links
+ * @param delay An initial delay [ms] before the {@link script} is executed
+ */
+export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay = 0): Promise<Page[]> {
+    const uri = new URL(chapter.Identifier, this.URI);
+    const request = new FetchRequest(uri.href);
+    const data = await FetchWindowScript<string[]>(request, script, delay);
+    return data.map(link => new Page(this, chapter, new URL(link, uri), { Referer: uri.href }));
+}
+
+/**
+ * A class decorator that adds the ability to extract all pages for a given chapter using the given JS {@link script}.
+ * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
+ * @param script A JS script to extract the image links
+ * @param delay An initial delay [ms] before the {@link script} is executed
+ */
+export function PagesSinglePageJS(script: string, delay = 0) {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
+        return class extends ctor {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+                return FetchPagesSinglePageJS.call(this, chapter, script, delay);
             }
         };
     };
