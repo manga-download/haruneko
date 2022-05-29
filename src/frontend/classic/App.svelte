@@ -15,9 +15,8 @@
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
-    import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
     import { ContentPanelValue, ThemeValue } from './SettingsStore';
-    import { selectedPlugin, selectedMedia, selectedItem } from './Stores.js';
+    import { selectedItem } from './Stores';
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
     export const FinishLoading = new Promise<void>(
