@@ -6,7 +6,7 @@ export default {
     globalTeardown: '../test/PuppeteerTeardown.ts',
     testEnvironment: '../test/PuppeteerEnvironment.ts',
     reporters: [ 'default', 'jest-junit' ],
-    testTimeout: 15000,
+    testTimeout: 25000,
     globals: {
         'ts-jest': {
             tsconfig: {
