@@ -71,9 +71,6 @@
     {/if}
 </Modal>
 <style>
-    #Tracker {
-        padding:0.5em;
-    }
     .border {
         border: 2px solid var(--cds-ui-04);
         border-radius: 1em;

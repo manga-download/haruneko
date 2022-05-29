@@ -50,7 +50,7 @@
         "jest-mock-extended": "^2.0.5",
         "jsdom": "^19.0.0",
         "lit": "^2.2.3",
-        "nw": "0.63.1-sdk",
+        "nw": "0.64.1-sdk",
         "plist": "^3.0.5",
         "puppeteer-core": "^13.7.0",
         "react": "^18.1.0",
