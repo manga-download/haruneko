@@ -5,12 +5,11 @@
         Search,
         ContextMenu,
         ContextMenuDivider,
-        ContextMenuGroup,
         ContextMenuOption,
         Loading,
     } from 'carbon-components-svelte';
 
-    import {PlugFilled,UpdateNow} from 'carbon-icons-svelte';
+    import { UpdateNow } from 'carbon-icons-svelte';
     import Fuse from 'fuse.js';
 
     import { fade } from 'svelte/transition';
@@ -18,12 +17,12 @@
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
 
-    import { selectedPlugin, selectedMedia } from '../Stores.js';
+    import { selectedPlugin, selectedMedia } from '../Stores';
 
     import VirtualList from '@sveltejs/svelte-virtual-list';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
-    import type { IMediaInfoTracker,Suggestion, Info} from '../../../engine/trackers/IMediaInfoTracker';
+    import type { IMediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
 
     import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
 

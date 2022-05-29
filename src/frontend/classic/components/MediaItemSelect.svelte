@@ -9,12 +9,12 @@
         ContextMenuOption,
         Loading,
     } from "carbon-components-svelte";
-    import {EarthFilled} from "carbon-icons-svelte";
+    import { EarthFilled } from "carbon-icons-svelte";
 
     import { fade } from "svelte/transition";
 
     import MediaItem from "./MediaItem.svelte";
-    import { selectedPlugin, selectedMedia, selectedItem } from '../Stores.js';
+    import { selectedMedia, selectedItem } from '../Stores';
 
     import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
     
