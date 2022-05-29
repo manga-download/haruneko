@@ -1,6 +1,5 @@
 <script lang="ts">
     import { InlineLoading, ImageLoader, Loading } from "carbon-components-svelte";
-    import { fly } from 'svelte/transition';
     import type { IMediaItem } from '../../../../engine/providers/MediaPlugin';
     import { Priority } from '../../../../engine/taskpool/DeferredTask';
     import { createEventDispatcher, onDestroy } from "svelte";
