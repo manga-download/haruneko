@@ -3,13 +3,10 @@
         ComboBox,
         Button,
         Search,
-        ContextMenu,
-        ContextMenuDivider,
-        ContextMenuOption,
         Loading,
     } from 'carbon-components-svelte';
 
-    import { UpdateNow } from 'carbon-icons-svelte';
+    import { Star, StarFilled, UpdateNow } from 'carbon-icons-svelte';
     import Fuse from 'fuse.js';
 
     import { fade } from 'svelte/transition';
@@ -37,8 +34,9 @@
     });
     
     let loadPlugin:Promise<void>;
-    let mediasdiv: HTMLElement;
-
+    let isBookmarkPlugin:Boolean;
+    $: isBookmarkPlugin = $selectedPlugin === window.HakuNeko.BookmarkPlugin;
+    
     // Todo : implement favorites
     let pluginsFavorites = ['sheep-scanlations'];
 
@@ -116,21 +114,22 @@
         />
     </div>
 {/if}
-<ContextMenu target={mediasdiv}>
-    <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" />
-    <ContextMenuOption indented labelText="Add to Bookmarks" shortcutText="⌘F" />
-    <ContextMenuDivider />
-    <ContextMenuOption indented labelText="Trackers">
-        {#each window.HakuNeko.PluginController.InfoTrackers as tracker}
-            <ContextMenuOption labelText="{tracker.Title}" on:click={() => {selectedTracker=tracker; isTrackerModalOpen=true;}} />
-        {/each}
-    </ContextMenuOption>
-    <ContextMenuDivider />
-    <ContextMenuOption indented labelText="Bookmark" shortcutText="⌘B" />
-</ContextMenu>
 <div id="Media" transition:fade>
     <div id="MediaTitle">
-        <h5 class="separator">Media List (Manga, Anime etc..)</h5>
+
+        <h5 class="separator">
+            <Button 
+                kind="ghost" 
+                size="small" 
+                iconDescription="Show bookmarks"
+                tooltipPosition="right"
+                icon={isBookmarkPlugin ? StarFilled : Star} 
+                on:click={() => {
+                    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                }}
+            />
+            Media List (Manga, Anime etc..)
+        </h5>
     </div>
     <div id="Plugin">
         <div class="inline-wide">
@@ -160,7 +159,7 @@
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list" bind:this={mediasdiv}>
+    <div id="MediaList" class="list">
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>

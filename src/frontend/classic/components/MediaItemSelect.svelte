@@ -65,9 +65,10 @@
     }
 
     selectedMedia.subscribe(value => {
+        items = [];
+        selectedItems = [];
         loadItem = value?.Update().then(() => {
             items = (value?.Entries as IMediaContainer[]) ?? [];
-            selectedItems = [];
         });
     });
 
