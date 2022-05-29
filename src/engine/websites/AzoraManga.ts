@@ -1,36 +1,22 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './AzoraManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/azoramanga\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/azoraworld\.com\/series\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
+// TODO: Website merged with azoraworld
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('azoramanga', 'أزورا مانج (AZORA MANGA)', 'https://azoramanga.com'/*, Tags.Media., Tags.Language.*/);
+        super('azoramanga', 'ازورا مانجا (AZORA MANGA)', 'https://azoraworld.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class AzoraManga extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'azoramanga';
-        super.label = 'أزورا مانج (AZORA MANGA)';
-        this.tags = [ 'webtoon', 'arabic' ];
-        this.url = 'https://azoramanga.com';
-    }
-}
-*/

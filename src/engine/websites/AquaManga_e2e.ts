@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'aquamanga',
         title: 'AquaManga'
-    }/*,
+    },
     container: {
-        url: 'https://aquamanga.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://aquamanga.com/read/martial-peak/',
+        id: JSON.stringify({ post: '197', slug: '/read/martial-peak/' }),
+        title: 'Martial Peak'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/read/martial-peak/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 267_930,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

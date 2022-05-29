@@ -1,11 +1,10 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './ApollToons.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/apolltoons\.xyz\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/apolltoons\.xyz\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Apoll"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('apolltoons', 'Apolltoons', 'https://apolltoons.xyz'/*, Tags.Media., Tags.Language.*/);
+        super('apolltoons', 'Apolltoons', 'https://apolltoons.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Rating.Erotica);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class ApollToons extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'apolltoons';
-        super.label = 'Apolltoons';
-        this.tags = [ 'webtoon', 'spanish' ];
-        this.url = 'https://apolltoons.xyz';
-    }
-}
-*/

@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'anisamanga',
         title: 'Anisa manga'
-    }/*,
+    },
     container: {
-        url: 'https://anisamanga.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://anisamanga.com/manga/pumpkin-night/',
+        id: JSON.stringify({ post: '469', slug: '/manga/pumpkin-night/' }),
+        title: 'Pumpkin Night'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/pumpkin-night/bolum-1/',
+        title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 504_475,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

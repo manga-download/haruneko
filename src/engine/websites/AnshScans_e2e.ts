@@ -3,22 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'anshscans',
-        title: 'AnshScans'
-    }/*,
+        title: 'Ansh Scans'
+    },
     container: {
-        url: 'https://anshscans.org/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://anshscans.org/comic/eternal-god-emperor/',
+        id: JSON.stringify({ post: '140', slug: '/comic/eternal-god-emperor/' }),
+        title: 'Eternal God Emperor'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/comic/eternal-god-emperor/chapter-0/',
+        title: 'chapter 0'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 2_142_912,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);

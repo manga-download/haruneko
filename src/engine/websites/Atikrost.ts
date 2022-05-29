@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Atikrost.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/atikrost\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/www\.atikrost\.com\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('atikrost', 'Atikrost', 'https://atikrost.com'/*, Tags.Media., Tags.Language.*/);
+        super('atikrost', 'Atikrost', 'https://www.atikrost.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class Atikrost extends WordPressMadara {
-    constructor() {
-        super();
-        super.id = 'atikrost';
-        super.label = 'Atikrost';
-        this.tags = [ 'manga', 'high-quality', 'turkish' ];
-        this.url = 'https://atikrost.com';
-        this.language = 'tr';
-    }
-}
-*/

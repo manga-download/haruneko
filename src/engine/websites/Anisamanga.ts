@@ -1,5 +1,4 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Anisamanga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('anisamanga', 'Anisa manga', 'https://anisamanga.com'/*, Tags.Media., Tags.Language.*/);
+        super('anisamanga', 'Anisa manga', 'https://anisamanga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class Anisamanga extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'anisamanga';
-        super.label = 'Anisa manga';
-        this.tags = [ 'manga', 'webtoon', 'turkish' ];
-        this.url = 'https://anisamanga.com';
-    }
-}
-*/

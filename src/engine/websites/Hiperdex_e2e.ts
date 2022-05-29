@@ -5,8 +5,6 @@ const config = {
         id: 'hiperdex',
         title: 'Hiperdex'
     },
-    // CloudFlare challenge... cannot be bypassed yet with puppeteer
-    /*
     container: {
         url: 'https://hiperdex.com/manga/b-chiku/',
         id: JSON.stringify({ post: '2529', slug: '/manga/b-chiku/' }),
@@ -14,14 +12,13 @@ const config = {
     },
     child: {
         id: '/manga/b-chiku/07-end/',
-        title: '_07 [END]'
+        title: '07 [END]'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
+        size: 183_996,
+        type: 'image/webp'
     }
-    */
 };
 
 const fixture = new TestFixture(config);

@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'apollcomics',
         title: 'Apoll Comics'
-    }/*,
+    },
     container: {
-        url: 'https://apollcomics.xyz/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://apollcomics.xyz/manga/the-girls-nest/',
+        id: JSON.stringify({ post: '1168', slug: '/manga/the-girls-nest/' }),
+        title: 'The Girls Nest'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/the-girls-nest/capitulo-1/',
+        title: 'Capitulo 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 172_565,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
