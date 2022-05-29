@@ -17,7 +17,7 @@ endif::[]
 This document briefly describes how to consume the HakuNeko engine, e.g. as a frontend developer.
 Each section is focused on how to solve certain use cases by explained samples (instead of simply providing the technical API documentation).
 
-The HakuNeko engine is globally exposed and can easily be scripted, so any sample found in this document can be directly run within the application itself.
+The HakuNeko engine is globally exposed and can easily be scripted, so any sample found in this document that uses the engine may be directly run within the application itself.
 After starting the application simply press `F12` to open the developer tools and switch to the `Console` tab.
 Now everything is ready to start scripting.
 
@@ -31,10 +31,39 @@ console.log(today);
 
 == Localization
 
+Every text or error message that is going to be presented to the user should be localized.
+
+=== Add translated Entry
+
 ...
 
+```javascript
+//
+import { GetLocale } from './i18n/Localization';
+import { type ILocale, ResourceKey as R } from './i18n/ILocale';
+
+```
+
+=== Use translated Entry
+
+...
+
+```javascript
+//
+```
+
+=== Update Translation
+
+The localization may be changed at runtime, so it may be ncessary to perform some updates.
+
+```javascript
+//
+```
+
 [#settings]
-== Settings (Global)
+== Settings
+
+=== Global
 
 ```javascript
 // Get the global settings
@@ -49,6 +78,9 @@ for(const setting of settings) {
 }
 
 // Get the setting for descrambling image quality by its corresponding `ID`
+// NOTE: In production code use the `ID` provided by the `SettingsGlobal` module
+//       import { Key } from './engine/SettingsGlobal';
+//       const quality = settings.Get(Key.DescramblingQuality);
 const quality = settings.Get('descrambling-quality');
 
 // Interested in changes? Lets subscribe with a callback when any of the settings is changed
@@ -68,6 +100,23 @@ quality.ValueChanged.Unsubscribe(onImageQualityChanged);
 
 // Our subscribers will no longer be notified when resetting to the default value
 quality.Value = quality.Default;
+```
+
+=== Scoped
+
+It is also possible to create and use different setting scopes.
+This is useful in case settings that are not supposed to pollute the global settings should be stored.
+Such a use case would be if a new frontend is added which shall provide some specific settings.
+
+```javascript
+import { Choice } from '../../engine/SettingsManager';
+
+// Open a new named settings scope, or create one if not exist
+const settings = HakuNeko.SettingsManager.OpenScope('my-frontend-settings');
+
+// Add all the setting entries
+await settings.Initialize(Theme, ...);
+
 ```
 
 [#website-plugins]
@@ -208,7 +257,7 @@ URL.revokeObjectURL(imageURL);
 
 == Managing Bookmarks
 
-...
+https://github.com/manga-download/haruneko/issues/41
 
 === Tracker Information
 

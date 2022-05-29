@@ -9,7 +9,7 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import { ArrowUpRight, CertificateCheck, Settings } from 'carbon-icons-svelte';
+    import { ArrowUpRight, CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
     import { fade } from 'svelte/transition';
 
     import Chip from '../lib/Tag.svelte';
@@ -26,6 +26,7 @@
             name: item.Title,
             image: item.Icon,
             mediaContainer: item,
+            favorite: item
         };
     }
 
@@ -150,6 +151,7 @@
         zebra
         size="short"
         headers={[
+            { key: 'favorite', empty: true },
             { key: 'image', empty: true },
             { key: 'name', value: 'Name' },
             { key: 'tags', value: 'Tags' },
@@ -172,8 +174,15 @@
                 />
             </ToolbarContent>
         </Toolbar>
-        <div class="plugin-row" slot="cell" let:cell in:fade>
-            {#if cell.key === 'image'}
+        <div class="plugin-row" slot="cell" let:cell let:row in:fade>
+            {#if cell.key === 'favorite'}
+                <Button kind="ghost" iconDescription="Tooltip text" icon={true ? StarFilled : Star} 
+                    on:click={(e) => {
+                        // TODO: trigger plugin favorite
+                        e.stopPropagation();
+                    }}
+                />
+            {:else if  cell.key === 'image'}
                 <img src={cell.value} alt="Logo" height="24" />
             {:else if cell.key === 'overflow'}
                 <div class=" action-cell">
@@ -201,8 +210,6 @@
                         size="small"
                         kind="secondary"
                         tooltipPosition="left"
-                        icon={ArrowUpRight}
-                        iconDescription="Open website URL"
                         on:click={(e) => {
                             e.stopPropagation();
                         }}
@@ -213,7 +220,6 @@
     </DataTable>
     <Pagination
         bind:pageSize={pagination.pageSize}
-        bind:page={pagination.page}
         totalItems={pagination.totalItems}
         pageSizes={pagination.pageSizes}
     />

@@ -59,7 +59,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     public async Add(entry: IMediaContainer) {
-        if(this.Entries.some(bookmark => bookmark.Identifier === entry.Identifier)) {
+        if(this.isBookmarked(entry)) {
             // TODO: Keep duplicate bookmark, or replace with new one?
             return;
         }
@@ -74,6 +74,20 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         this._entries = this._entries.filter(entry => entry !== bookmark);
         this.EntriesUpdated.Dispatch(this, this.Entries);
         await this.storage.RemovePersistent(Store.Bookmarks, bookmark.StorageKey);
+    }
+
+    public async Toggle(entry: IMediaContainer): Promise<boolean> {
+        const bookmark = this.Find(entry);
+        if (bookmark) { await this.Remove(bookmark); return false; }
+        else { await this.Add(entry); return true;}
+    }
+
+    public Find(entry: IMediaContainer): Bookmark {
+        return this.Entries.find(bookmark => bookmark.Identifier === entry.Identifier && bookmark.Parent.Identifier === entry.Parent.Identifier);
+    }
+
+    public isBookmarked(entry: IMediaContainer): boolean {
+        return this.Find(entry)!==undefined;
     }
 
     /*

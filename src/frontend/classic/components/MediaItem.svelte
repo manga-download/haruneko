@@ -5,6 +5,7 @@
     const dispatch = createEventDispatcher();
     import {
         Bookmark,
+        BookmarkFilled,
         Image,
         CloudDownload,
     } from "carbon-icons-svelte";
@@ -14,13 +15,21 @@
     export let item: IMediaContainer;
     export let selected: Boolean;
     export let display = "Row";
+
+    let isAlreadyWatched=false;
 </script>
 
 {#if display === "Row"}
     <div class="listitem" in:fade class:selected on:click on:contextmenu>
         <span on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}><CloudDownload class="download" /></span>
         <span on:click={() => dispatch("view", item)} ><Image class="viewer" /></span>
-        <span on:click={() => dispatch("bookmark", item)}><Bookmark class="bookmark" /></span>
+        <span on:click={() => true }>
+            {#if isAlreadyWatched}
+                <BookmarkFilled />
+            {:else}
+                <Bookmark/>
+            {/if}
+        </span>
         {item.Title}
     </div>
 {/if}
