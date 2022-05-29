@@ -1,19 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './BestManhua.webp';
+import icon from './ReadFreeComics.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/bestmanhua\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/readfreecomics\.com\/webtoon-comic\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS('ul.blocks-gallery-grid li.blocks-gallery-item figure img')
+@Madara.ChaptersSinglePageAJAXv2()
+@Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
-// TODO: Website no longer exist?
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('bestmanhua', 'Best Manhua', 'https://bestmanhua.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('readfreecomics', 'ReadFreeComics', 'https://readfreecomics.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

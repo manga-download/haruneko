@@ -318,6 +318,7 @@ export { default as RaiderScans } from './RaiderScans';
 export { default as RandomScan } from './RandomScan';
 export { default as RandomTranslations } from './RandomTranslations';
 export { default as RAWMangas } from './RAWMangas';
+export { default as ReadFreeComics } from './ReadFreeComics';
 export { default as ReadMangaTV } from './ReadMangaTV';
 export { default as ReadManhua } from './ReadManhua';
 export { default as ReadRawManga } from './ReadRawManga';
