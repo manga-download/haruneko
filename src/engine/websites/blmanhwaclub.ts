@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
-import icon from './blmanhwaclub.webp';
+import { Tags } from '../Tags';
+import icon from './BLManhwaClub.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/blmanhwa\.club\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/blmanhwa\.club\/bl\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageCSS('ul li.wp-manga-chapter a')
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('blmanhwaclub', 'BL Manhwa Club', 'https://blmanhwa.club'/*, Tags.Media., Tags.Language.*/);
+        super('blmanhwaclub', 'BL Manhwa Club', 'https://blmanhwa.club', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Rating.Suggestive, Tags.Accessibility.RegionLocked/*Brazil*/);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class blmanhwaclub extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'blmanhwaclub';
-        super.label = 'BL Manhwa Club';
-        this.tags = [ 'webtoon', 'portuguese' ];
-        this.url = 'https://blmanhwa.club';
-    }
-}
-*/

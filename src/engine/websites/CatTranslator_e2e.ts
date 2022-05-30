@@ -4,21 +4,24 @@ const config = {
     plugin: {
         id: 'cat-translator',
         title: 'Cat-Translator'
-    }/*,
+    },
+    // Geo-blocked (Region: Thailand)
+    /*
     container: {
-        url: 'https://cat-translator.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://cats-translator.com/manga/manga/sky-sword-god/',
+        id: JSON.stringify({ post: '6294', slug: '/manga/manga/sky-sword-god/' }),
+        title: 'Sky Sword God'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: encodeURI('/manga/manga/sky-sword-god/ซีซั่น/ตอนที่-1/').toLowerCase(),
+        title: 'ตอนที่ 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 28_664,
         type: 'image/jpeg'
-    }*/
+    }
+    */
 };
 
 const fixture = new TestFixture(config);

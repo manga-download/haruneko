@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'boyslove',
         title: 'Boys Love'
-    }/*,
+    },
     container: {
-        url: 'https://boyslove.me/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://boyslove.me/boyslove/sex-exercise/',
+        id: JSON.stringify({ post: '47957', slug: '/boyslove/sex-exercise/' }),
+        title: 'Sex Exercise'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/boyslove/sex-exercise/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 76_878,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
