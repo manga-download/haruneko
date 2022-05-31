@@ -25,7 +25,8 @@ export enum ResourceKey {
     Frontend_Product_Description = 'Frontend_Product_Description',
 
     // [SECTION]: Frontend Classic
-
+    Frontend_Classic_Settings_FuzzySearch = 'Frontend_Classic_Settings_FuzzySearch',
+    Frontend_Classic_Settings_FuzzySearchInfo = 'Frontend_Classic_Settings_FuzzySearchInfo',
     Frontend_Classic_Settings_Theme = 'Frontend_Classic_Settings_Theme',
     Frontend_Classic_Settings_ThemeInfo = 'Frontend_Classic_Settings_ThemeInfo',
     Frontend_Classic_Settings_Theme_HakuNeko = 'Frontend_Classic_Settings_Theme_HakuNeko',

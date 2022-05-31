@@ -15,6 +15,7 @@
     import Tracker from './Tracker.svelte';
 
     import { selectedPlugin, selectedMedia, selectedItem } from '../Stores';
+    import { FuzzySearchValue, } from '../SettingsStore';
 
     import VirtualList from '@sveltejs/svelte-virtual-list';
 
@@ -81,12 +82,12 @@
         $selectedMedia=undefined;
         $selectedItem=undefined;
     });
-
+    function filterMedia(mediaNameFilter:string):IMediaContainer[] {
+        if ($FuzzySearchValue) return fuse.search(mediaNameFilter).map((item) => item.item);
+        else return medias.filter((item) => item.Title.includes(mediaNameFilter));
+    }
     let mediaNameFilter = '';
-    $: filteredmedias =
-        mediaNameFilter === ''
-            ? medias
-            : fuse.search(mediaNameFilter).map((item) => item.item);
+    $: filteredmedias = mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter);
 
     let isTrackerModalOpen = false;
     let selectedTracker: IMediaInfoTracker;
