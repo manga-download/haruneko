@@ -4,21 +4,24 @@ const config = {
     plugin: {
         id: 'cizgiromanarsivi',
         title: 'Çizgi Roman Arşivi (CizgiRomanArsivi)'
-    }/*,
+    },
+    // CloudFlare challenge... cannot be bypassed yet with puppeteer
+    /*
     container: {
-        url: 'https://cizgiromanarsivi.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://cizgiromanarsivi.com/seri/nano-makine/',
+        id: JSON.stringify({ post: '30', slug: '/seri/nano-makine/' }),
+        title: 'Nano Machine'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/seri/nano-makine/1-bolum/',
+        title: '1. Bölüm'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 22_334,
+        type: 'image/webp'
+    }
+    */
 };
 
 const fixture = new TestFixture(config);
