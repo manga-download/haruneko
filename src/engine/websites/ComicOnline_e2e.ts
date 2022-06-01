@@ -2,21 +2,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'comickiba',
-        title: 'Comic Kiba'
+        id: 'comichub',
+        title: 'ComicOnline'
     },
     container: {
-        url: 'https://comickiba.com/manga/isekai-kenkokuki/',
-        id: JSON.stringify({ post: '13858', slug: '/manga/isekai-kenkokuki/' }),
-        title: 'Isekai Kenkokuki'
+        url: 'https://comiconline.org/comic/batman-white-knight/',
+        id: JSON.stringify({ post: '5913', slug: '/comic/batman-white-knight/' }),
+        title: 'Batman: White Knight'
     },
     child: {
-        id: '/manga/isekai-kenkokuki/chapter-1/',
+        id: '/comic/batman-white-knight/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 139_550,
+        size: 325_705,
         type: 'image/jpeg'
     }
 };

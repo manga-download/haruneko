@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'comicsvalley',
         title: 'Comics Valley'
-    }/*,
+    },
     container: {
-        url: 'https://comicsvalley.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://comicsvalley.com/adult-comics/llxbd-snowball/',
+        id: JSON.stringify({ post: '11403', slug: '/adult-comics/llxbd-snowball/' }),
+        title: 'LLXBD Snowball'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/adult-comics/llxbd-snowball/snowball-1-0/',
+        title: 'Snowball 1.0'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 246_192,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
