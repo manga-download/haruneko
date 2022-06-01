@@ -30,7 +30,7 @@ export { default as BestManhua } from './BestManhua';
 export { default as BetaFox } from './BetaFox';
 export { default as BirManga } from './BirManga';
 export { default as BlackDragonsFansub } from './BlackDragonsFansub';
-export { default as BLManhwaClub } from './BLManhwaClub';
+export { default as BLManhwaClub } from './BLManhwaClub_';
 export { default as BoysLove } from './BoysLove';
 export { default as CatOnHead } from './CatOnHead';
 export { default as CatTranslator } from './CatTranslator';
