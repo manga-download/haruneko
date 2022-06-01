@@ -33,7 +33,9 @@
         minMatchCharLength: 1,
         fieldNormWeight: 0
     });
-    
+
+    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
+
     let loadPlugin:Promise<void>;
     let isBookmarkPlugin:Boolean;
     $: isBookmarkPlugin = $selectedPlugin === window.HakuNeko.BookmarkPlugin;
@@ -117,8 +119,6 @@
 {/if}
 <div id="Media" transition:fade>
     <div id="MediaTitle">
-
-        <h5 class="separator">
             <Button 
                 kind="ghost" 
                 size="small" 
@@ -129,8 +129,7 @@
                     $selectedPlugin = window.HakuNeko.BookmarkPlugin;
                 }}
             />
-            Media List (Manga, Anime etc..)
-        </h5>
+            <h5>Media List</h5>
     </div>
     <div id="Plugin">
         <div class="inline-wide">
@@ -190,7 +189,7 @@
         min-height: 0;
         height: 100%;
         display: grid;
-        grid-template-rows: 2em 2em 2em 1fr 2em;
+        grid-template-rows: 2.2em 2em 2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
             'MediaTitle'
@@ -227,8 +226,10 @@
         display: table-cell;
         width: 100%;
     }
-    .separator {
-        border-bottom: 1px groove var(--cds-button-separator);
+    #MediaTitle h5 {
+        display:inline-block;
+        height:100%;
+        padding-top:0.3em;
     }
 
     .inline {

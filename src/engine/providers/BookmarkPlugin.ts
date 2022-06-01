@@ -13,6 +13,10 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         this.Load();
     }
 
+    public get Entries(): Bookmark[] {
+        return this._entries.sort((a, b) => a.Title.localeCompare(b.Title));
+    }
+
     private OnBookmarkChangedCallback(sender: Bookmark): void {
         this.EntriesUpdated.Dispatch(this, this.Entries);
         this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(sender), Store.Bookmarks, sender.StorageKey);

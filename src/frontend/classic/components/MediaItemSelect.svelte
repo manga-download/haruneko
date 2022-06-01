@@ -104,7 +104,7 @@
 
 <div id="Item" transition:fade>
     <div id="ItemTitle">
-        <h5 class="separator">Item List</h5>
+        <h5>Item List</h5>
     </div>
     <div id="LanguageFilter">
         <div class="inline">
@@ -162,7 +162,7 @@
         display: grid;
         min-height: 0;
         height: 100%;
-        grid-template-rows: 2em 2em 2em 1fr 2em;
+        grid-template-rows: 2.2em 2em 2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
             "ItemTitle"
@@ -190,6 +190,9 @@
         width:100%;
         height:100%;
     }
+    #ItemTitle {
+        padding-top:0.3em;
+    }
     #ItemCount {
         grid-area: ItemCount;
         margin: 0.25em;
@@ -198,9 +201,6 @@
         white-space: nowrap;
         list-style-type: none;
         padding: 0.25em;
-    }
-    .separator {
-        border-bottom: 1px groove var(--cds-button-separator);
     }
 
     .inline {
