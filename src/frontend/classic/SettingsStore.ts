@@ -23,6 +23,8 @@ export const enum Key {
     //
     ContentPanel = 'content-panel',
     //
+    FuzzySearch ='fuzzy-search',
+    //
     ViewerMode = 'viewer-mode',
     ViewerMode_Paginated = 'paginated',
     ViewerMode_Longstrip = 'longstrip',
@@ -74,6 +76,13 @@ export const ContentPanel = new Check(
     true
 );
 export const ContentPanelValue = CreateStore(ContentPanel);
+export const FuzzySearch = new Check(
+    Key.FuzzySearch,
+    R.Frontend_Classic_Settings_FuzzySearch,
+    R.Frontend_Classic_Settings_FuzzySearchInfo,
+    true
+);
+export const FuzzySearchValue = CreateStore(FuzzySearch);
 
 export const ViewerMode = new Choice(
     Key.ViewerMode,

@@ -6,6 +6,8 @@
         ContentPanelValue,
         Key,
         Locale,
+        FuzzySearch,
+        FuzzySearchValue,
         Theme,
         ThemeValue,
         ViewerDoublePage,
@@ -48,3 +50,7 @@
     </SettingItem>
 
 {/if}
+
+<SettingItem labelText={$Locale[FuzzySearch.Label]()} helperText={$Locale[FuzzySearch.Description]()}>
+    <Toggle toggled={$FuzzySearchValue} on:toggle={evt => FuzzySearch.Value = evt.detail.toggled} />
+</SettingItem>

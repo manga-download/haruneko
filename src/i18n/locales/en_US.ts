@@ -12,7 +12,8 @@ export const en_US: IResource = {
     Frontend_Product_Description: 'Manga, Anime and Novel Downloader',
 
     // [SECTION]: Frontend Classic
-
+    Frontend_Classic_Settings_FuzzySearch:'Fuzzy Search',
+    Frontend_Classic_Settings_FuzzySearchInfo:'Enable fuzzy search on filters (approximative matching)',
     Frontend_Classic_Settings_Theme: 'Theme',
     Frontend_Classic_Settings_ThemeInfo: 'Select the color theme for the user interface',
     Frontend_Classic_Settings_Theme_HakuNeko: 'HakuNeko',

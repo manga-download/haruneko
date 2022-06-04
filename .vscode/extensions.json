@@ -1,6 +1,5 @@
 {
     "recommendations": [
-        "johnsoncodehk.volar",
         "svelte.svelte-vscode"
     ]
 }
