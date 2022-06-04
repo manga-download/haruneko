@@ -1,28 +1,27 @@
 <script lang="ts">
+    // UI: Carbon
     import {
         ComboBox,
         Button,
         Search,
         Loading,
     } from 'carbon-components-svelte';
-
     import { Star, StarFilled, UpdateNow } from 'carbon-icons-svelte';
+    import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
+    // Third Party
     import Fuse from 'fuse.js';
-
+    // Svelte
     import { fade } from 'svelte/transition';
-
+    import VirtualList from '@sveltejs/svelte-virtual-list';
+    // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
-
+    // UI : Stores
     import { selectedPlugin, selectedMedia, selectedItem } from '../Stores';
     import { FuzzySearchValue, } from '../SettingsStore';
-
-    import VirtualList from '@sveltejs/svelte-virtual-list';
-
+    // Hakuneko Engine
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import type { IMediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
-
-    import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
 
     let medias: IMediaContainer[] = [];
     let filteredmedias: IMediaContainer[] = [];
@@ -89,7 +88,7 @@
         else return medias.filter((item) => item.Title.includes(mediaNameFilter));
     }
     let mediaNameFilter = '';
-    $: filteredmedias = mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter);
+    $: filteredmedias = (mediaNameFilter === '') ? medias : filterMedia(mediaNameFilter);
 
     let isTrackerModalOpen = false;
     let selectedTracker: IMediaInfoTracker;

@@ -1,4 +1,5 @@
 <script lang="ts">
+    // UI: Svelte
     import {
         Button,
         Tile,
@@ -10,15 +11,17 @@
         Pagination,
     } from 'carbon-components-svelte';
     import { ArrowUpRight, CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
+    // Svelte
     import { fade } from 'svelte/transition';
-
+    // UI: Components
     import Chip from '../lib/Tag.svelte';
     import { Tag, Tags } from '../../../engine/Tags';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    // UI : Stores
     import { Locale } from '../SettingsStore';
-    import { ResourceKey } from '../../../i18n/ILocale';
-
     import { selectedPlugin } from '../Stores';
+    // Hakuneko Engine
+    import { ResourceKey } from '../../../i18n/ILocale';
 
     function createDataRow(item: IMediaContainer) {
         return {
