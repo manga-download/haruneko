@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './DragonTea.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/dragontea\.ink\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/dragontea\.ink\/novel\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dragontea', 'Dragon Tea Scans', 'https://dragontea.ink'/*, Tags.Media., Tags.Language.*/);
+        super('dragontea', 'Dragon Tea Scans', 'https://dragontea.ink', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class DragonTea extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'dragontea';
-        super.label = 'Dragon Tea Scans';
-        this.tags = [ 'webtoon', 'english' ];
-        this.url = 'https://dragontea.ink';
-    }
-}
-*/

@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'doujinhentai',
         title: 'DoujinHentai'
-    }/*,
+    },
     container: {
-        url: 'https://doujinhentai.net/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://doujinhentai.net/manga-hentai/tits-tits-tits',
+        id: JSON.stringify({ slug: '/manga-hentai/tits-tits-tits' }),
+        title: 'Tits! Tits! Tits!'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga-hentai/tits-tits-tits/wife-packed-beach',
+        title: 'Capitulo 1'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 5_880_916,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);

@@ -1,5 +1,4 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './DiabolickScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -10,27 +9,14 @@ import * as Common from './decorators/Common';
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
+// TODO: Website no longer exist?
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('diabolickscan', 'Diabolick Scan', 'https://diabolickscan.com'/*, Tags.Media., Tags.Language.*/);
+        super('diabolickscan', 'Diabolick Scan', 'https://diabolickscan.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class DiabolickScan extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'diabolickscan';
-        super.label = 'Diabolick Scan';
-        this.tags = [ 'webtoon', 'manga', 'portuguese', 'scanlation' ];
-        this.url = 'https://diabolickscan.com';
-    }
-}
-*/

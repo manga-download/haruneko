@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'dragontea',
         title: 'Dragon Tea Scans'
-    }/*,
+    },
     container: {
-        url: 'https://dragontea.ink/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://dragontea.ink/novel/strongest-tamer/',
+        id: JSON.stringify({ post: '3756', slug: '/novel/strongest-tamer/' }),
+        title: 'Strongest Tamer'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/novel/strongest-tamer/chapter-0/',
+        title: 'chapter 0'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 92_087,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

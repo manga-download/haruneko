@@ -1,5 +1,4 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Deliscan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -10,27 +9,14 @@ import * as Common from './decorators/Common';
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
+// TODO: Website no longer exist?
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('deliscan', 'Deliscan', 'https://deliscan.xyz'/*, Tags.Media., Tags.Language.*/);
+        super('deliscan', 'Deliscan', 'https://deliscan.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class Deliscan extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'deliscan';
-        super.label = 'Deliscan';
-        this.tags = [ 'webtoon', 'french' ];
-        this.url = 'https://deliscan.xyz';
-    }
-}
-*/

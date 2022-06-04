@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'decadencescans',
         title: 'Decadence'
-    }/*,
+    },
     container: {
-        url: 'https://reader.decadencescans.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://reader.decadencescans.com/manga/switch-girl/',
+        id: JSON.stringify({ post: '1748', slug: '/manga/switch-girl/' }),
+        title: 'Switch Girl'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/switch-girl/volume-1/chapter-1-kyonpyon/',
+        title: 'Chapter 1 - kyonpyon'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 235_881,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
