@@ -8,9 +8,10 @@
         ZoomIn,
         ZoomOut
     } from "carbon-icons-svelte";
-
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+    
     export let title: string;
-    export let toggleThumbnailViewer: () => void;
     function increaseImagePadding() {}
     function decreaseImagePadding() {}
     function zoomIn() {}
@@ -40,7 +41,7 @@
         <ZoomOut size={24} title="Zoom Out (➖)" />
     </span>
     &nbsp
-    <span on:click={toggleThumbnailViewer}>
+    <span on:click={() => dispatch('close')}>
         <Misuse size={24} title="Close (ESC)" />
     </span>
 </div>
@@ -54,6 +55,7 @@
         position: fixed;
         top: 0;
         right: 0;
+        height: 3rem;
         padding-left: 1em;
         padding-right: 2em;
         opacity: 0.05;

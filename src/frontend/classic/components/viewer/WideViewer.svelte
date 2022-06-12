@@ -6,7 +6,6 @@
     import { Key, ViewerModeValue } from '../../SettingsStore';
 
     export let item: IMediaContainer;
-    export let toggleThumbnailViewer: () => void;
     export let currentImageIndex: number;
 
     let imagePadding = 2;
@@ -14,7 +13,7 @@
 </script>
 
 <div class={$ViewerModeValue}>
-    <WideViewerSetting {title} {toggleThumbnailViewer} />
+    <WideViewerSetting {title} on:close />
     {#if $ViewerModeValue === Key.ViewerMode_Longstrip}
         <WebtoonViewer {item} {imagePadding} />
     {:else if $ViewerModeValue === Key.ViewerMode_Paginated}

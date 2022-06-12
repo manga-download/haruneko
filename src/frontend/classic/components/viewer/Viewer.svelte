@@ -31,14 +31,15 @@
                 <div class="center">... items</div>
             </div>
         {:then}
-            {#if mode === 'Thumbnail'}
-                <ThumbnailViewer {item} {toggleWideViewer} />
-            {:else if mode === 'Wide'}
+            {#if mode === 'Thumbnail' || mode === 'Wide'}
+                <ThumbnailViewer hide={mode !== 'Thumbnail'} {item} {toggleWideViewer} />
+                {#if mode === 'Wide'}
                 <WideViewer
                     {item}
                     {currentImageIndex}
-                    {toggleThumbnailViewer}
+                    on:close={toggleThumbnailViewer}
                 />
+                {/if}
             {:else if mode === 'Video'}
                 <VideoViewer />
             {:else}
