@@ -62,7 +62,7 @@
 <UserMessage />
 
 <Theme theme={$ThemeValue}>
-    <AppBar bind:isSideNavOpen />
+    <AppBar bind:isSideNavOpen on:home={() => $selectedItem=null}/>
     <Content id="hakunekoapp">
         <MediaSelect />
         <MediaItemSelect />

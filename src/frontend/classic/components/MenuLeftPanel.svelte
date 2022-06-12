@@ -26,7 +26,8 @@
         SettingsView,
         TaskSettings,
     } from 'carbon-icons-svelte';
-
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
@@ -55,11 +56,14 @@
 <SideNav bind:isOpen={isSideNavOpen} rail>
     <SideNavItems>
         <SideNavLink
+                text="[RES:Home]"
+                icon={Home}
+                on:click={() => dispatch('home') }
+            />
+        <SideNavLink
                 text="[RES:Plugins]"
                 icon={PlugFilled}
-                on:click={() => {
-                    isPluginModalOpen = true;
-                }}
+                on:click={() => isPluginModalOpen = true }
             />
         <SideNavMenu text="[RES:Settings]" icon={Settings}>
             <SideNavLink
