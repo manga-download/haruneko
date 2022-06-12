@@ -46,6 +46,11 @@
     <PluginSelect
         bind:isPluginModalOpen
         on:close={() => (isPluginModalOpen = false)}
+        on:settings={(event) => {
+            settingsPreselectedPlugin = event.detail;
+            settingsSelectedTabs = 4;
+            isSettingsModalOpen = true;
+        }}
     />
 {/if}
 <SettingsMenu

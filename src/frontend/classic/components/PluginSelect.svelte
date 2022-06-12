@@ -13,6 +13,8 @@
     import { ArrowUpRight, CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
     // UI: Components
     import Chip from '../lib/Tag.svelte';
     import { Tag, Tags } from '../../../engine/Tags';
@@ -29,7 +31,7 @@
             name: item.Title,
             image: item.Icon,
             tags : item.Tags,
-            mediaContainer: item,
+            overflow: item,
             favorite: item
         };
     }
@@ -153,7 +155,7 @@
         page={pagination.page}
         rows={filteredPluginlist}
         on:click:row={(event) => {
-            $selectedPlugin=event.detail.mediaContainer;
+            $selectedPlugin=event.detail.overflow;
             isPluginModalOpen = false;
         }}
     >
@@ -204,6 +206,7 @@
                         icon={Settings}
                         iconDescription="Connector's settings"
                         on:click={(e) => {
+                            dispatch('settings',cell.value);
                             e.stopPropagation();
                         }}
                     />
