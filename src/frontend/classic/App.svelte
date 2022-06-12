@@ -150,6 +150,7 @@
 
     #Content {
         grid-area: Content;
+        overflow-y:auto;
     }
     #Bottom {
         grid-area: Bottom;
