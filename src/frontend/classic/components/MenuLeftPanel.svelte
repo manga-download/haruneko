@@ -108,29 +108,6 @@
                 }}
             />
         </SideNavMenu>
-        <SideNavMenu text="[RES:Websites]" icon={ContentDeliveryNetwork}>
-            <!-- TODO:
-            Showing the settings from all websites maybe a bad idea, this is just for prototyping
-            A better approach could be a gear icon for each website which open its settings
-            -->
-            {#each [...window.HakuNeko.PluginController.WebsitePlugins].filter((plugin) => [...plugin.Settings].length > 0) as plugin}
-                <SideNavLink
-                    text={plugin.Title}
-                    on:click={() => {
-                        settingsPreselectedPlugin = plugin;
-                        settingsSelectedTabs = 4;
-                        isSettingsModalOpen = true;
-                    }}
-                />
-                <!--<SettingItem type="sub-menu">
-                    <SideNavMenu text={plugin.Title}>
-                        <SettingsViewer settings={plugin.Settings} />
-                    </SideNavMenu>
-                </SettingItem>
-                -->
-            {/each}
-        </SideNavMenu>
-
         <SideNavMenu text="[RES:Help]"  icon={Document}>
             <SideNavLink
                 text="Documentation"
