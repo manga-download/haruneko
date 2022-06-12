@@ -199,6 +199,7 @@
                 {/each}
             {:else if cell.key === 'overflow'}
                 <div class=" action-cell">
+                    {#if [...cell.value.Settings].length > 0} 
                     <Button
                         size="small"
                         kind="secondary"
@@ -210,6 +211,7 @@
                             e.stopPropagation();
                         }}
                     />
+                    {/if}
                     <Button
                         size="small"
                         kind="secondary"
