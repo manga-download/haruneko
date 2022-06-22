@@ -4,7 +4,7 @@
 
     const location = useLocation();
     let path;
-    $: path = $location.pathname;
+    $: path = $location.pathname.replace('/index.html');
     let steps;
     $: steps = path.split('/').slice(1);
 </script>

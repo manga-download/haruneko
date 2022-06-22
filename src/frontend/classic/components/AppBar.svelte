@@ -85,4 +85,4 @@
     </HeaderUtilities>
 </Header>
 
-<MenuLeftPanel {isSideNavOpen} />
+<MenuLeftPanel {isSideNavOpen} on:home />

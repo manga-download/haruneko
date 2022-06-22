@@ -1,10 +1,13 @@
 <script lang="ts">
+    // UI : Carbon
     import 'carbon-components-svelte/css/all.css';
     import './theme/hakuneko.css';
     import './theme/sidenav-hack.css';
     import { Content, Tabs, Tab, TabContent } from 'carbon-components-svelte';
+    // Svelte
     import { fade } from 'svelte/transition';
     import { onMount } from 'svelte';
+    // UI: Components
     import Theme from './components/Theme.svelte';
     import MediaSelect from './components/MediaSelect.svelte';
     import MediaItemSelect from './components/MediaItemSelect.svelte';
@@ -15,6 +18,7 @@
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
+    // UI: Stores
     import { ContentPanelValue, ThemeValue } from './SettingsStore';
     import { selectedItem } from './Stores';
 
@@ -58,7 +62,7 @@
 <UserMessage />
 
 <Theme theme={$ThemeValue}>
-    <AppBar bind:isSideNavOpen />
+    <AppBar bind:isSideNavOpen on:home={() => $selectedItem=null}/>
     <Content id="hakunekoapp">
         <MediaSelect />
         <MediaItemSelect />
@@ -146,6 +150,7 @@
 
     #Content {
         grid-area: Content;
+        overflow-y:auto;
     }
     #Bottom {
         grid-area: Bottom;

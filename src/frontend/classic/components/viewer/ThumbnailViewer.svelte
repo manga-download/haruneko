@@ -6,6 +6,7 @@
     import ThumbnailViewerImage from './ThumbnailViewerImage.svelte';
 
     export let item: IMediaContainer;
+    export let hide:boolean=false;
 
     // TODO: Implement correct filter/extraction of IMediaItem types ...
     let entries: IMediaItem[];
@@ -14,7 +15,7 @@
     export let toggleWideViewer: (currentImage: number) => void;
 </script>
 
-<div>
+<div class:hide={hide}>
     {#each entries as content, index}
         <ThumbnailViewerImage
             page={content}
@@ -30,5 +31,8 @@
         height: 100%;
         overflow-y: auto;
         text-align: center;
+    }
+    .hide {
+        display:none;
     }
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+    // UI: Svelte
     import {
         Button,
         Tile,
@@ -10,22 +11,27 @@
         Pagination,
     } from 'carbon-components-svelte';
     import { ArrowUpRight, CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
+    // Svelte
     import { fade } from 'svelte/transition';
-
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+    // UI: Components
     import Chip from '../lib/Tag.svelte';
     import { Tag, Tags } from '../../../engine/Tags';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    // UI : Stores
     import { Locale } from '../SettingsStore';
-    import { ResourceKey } from '../../../i18n/ILocale';
-
     import { selectedPlugin } from '../Stores';
+    // Hakuneko Engine
+    import { ResourceKey } from '../../../i18n/ILocale';
 
     function createDataRow(item: IMediaContainer) {
         return {
             id: item.Identifier,
             name: item.Title,
             image: item.Icon,
-            mediaContainer: item,
+            tags : item.Tags,
+            overflow: item,
             favorite: item
         };
     }
@@ -54,33 +60,21 @@
         pluginTagsFilter = pluginTagsFilter.filter((value) => tag !== value);
     }
 
+    let filterFavorites=false;
     let filteredPluginlist = [];
     $: {
         filteredPluginlist = HakuNeko.PluginController.WebsitePlugins
-            .filter((item) => {
-                let conditions: Array<boolean> = [];
-                if (pluginNameFilter !== '') {
-                    conditions.push(
-                        item.Title.toLowerCase().indexOf(
-                            pluginNameFilter.toLowerCase()
-                        ) !== -1
-                    );
+            .filter((plugin) => {
+                let rejectconditions: Array<boolean> = [];
+                if (pluginNameFilter !== '' 
+                    &&  plugin.Title.toLowerCase().indexOf(pluginNameFilter.toLowerCase()) === -1
+                )  rejectconditions.push(true);
+                if (plugin.Tags) {
+                    pluginTagsFilter.forEach(tagfilter => {
+                        if (!plugin.Tags.includes(tagfilter)) rejectconditions.push(true);
+                    });
                 }
-                if (pluginTagsFilter.length > 0) {
-                    // Quick test tag filtering using language property
-                    // Should be a test if all selected tags are in the tags of plugin
-                    conditions.push(
-                        true
-                        /* TODO: resurect language tags later
-                item. !== undefined
-                    ? pluginTagsFilter.find(
-                        (element) => element.label === item.Language
-                    ) !== undefined
-                    : true
-                */
-                    );
-                }
-                return !conditions.includes(false);
+                return !rejectconditions.length;
             })
             .map((item) => createDataRow(item));
         pagination.totalItems = filteredPluginlist.length;
@@ -151,7 +145,7 @@
         zebra
         size="short"
         headers={[
-            { key: 'favorite', empty: true },
+            { key: 'favorite', empty: false },
             { key: 'image', empty: true },
             { key: 'name', value: 'Name' },
             { key: 'tags', value: 'Tags' },
@@ -161,7 +155,7 @@
         page={pagination.page}
         rows={filteredPluginlist}
         on:click:row={(event) => {
-            $selectedPlugin=event.detail.mediaContainer;
+            $selectedPlugin=event.detail.overflow;
             isPluginModalOpen = false;
         }}
     >
@@ -174,9 +168,21 @@
                 />
             </ToolbarContent>
         </Toolbar>
+        <svelte:fragment slot="cell-header" let:header>
+            {#if header.key === "favorite"}
+                <Button kind="secondary" iconDescription="Filter favorites" icon={filterFavorites ? StarFilled : Star} 
+                    on:click={(e) => {
+                        filterFavorites=!filterFavorites;
+                        e.stopPropagation();
+                    }}
+                />
+            {:else}
+                {header.value}
+            {/if}
+        </svelte:fragment>
         <div class="plugin-row" slot="cell" let:cell let:row in:fade>
             {#if cell.key === 'favorite'}
-                <Button kind="ghost" iconDescription="Tooltip text" icon={true ? StarFilled : Star} 
+                <Button kind="ghost" iconDescription="Add to favorites" icon={true ? StarFilled : Star} 
                     on:click={(e) => {
                         // TODO: trigger plugin favorite
                         e.stopPropagation();
@@ -184,8 +190,16 @@
                 />
             {:else if  cell.key === 'image'}
                 <img src={cell.value} alt="Logo" height="24" />
+            {:else if  cell.key === 'tags'}
+                {#each cell.value as item}
+                    <Chip
+                        category={item.Category}
+                        label={item.Title}
+                    />
+                {/each}
             {:else if cell.key === 'overflow'}
                 <div class=" action-cell">
+                    {#if [...cell.value.Settings].length > 0} 
                     <Button
                         size="small"
                         kind="secondary"
@@ -193,9 +207,11 @@
                         icon={Settings}
                         iconDescription="Connector's settings"
                         on:click={(e) => {
+                            dispatch('settings',cell.value);
                             e.stopPropagation();
                         }}
                     />
+                    {/if}
                     <Button
                         size="small"
                         kind="secondary"
