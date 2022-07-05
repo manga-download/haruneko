@@ -3,7 +3,19 @@ import * as BlockListNodeWebkit from './BlockListNodeWebkit';
 import * as BlockListBrowser from './BlockListBrowser';
 
 const patterns = [
-    '*://*.google.com/*',
+    '*://*/js/ads*',
+    '*://owewary.com/*',
+    '*://pickupfaxmultitude.com/*',
+    '*://captivatepestilentstormy.com/*',
+    '*://creepingbrings.com/*',
+    '*://crunchyscan.fr/arc-sw?*',
+    '*://crunchyscan.fr/arc-widget',
+    '*://crunchyscan.fr/blockexx.js',
+    '*://crunchyscan.fr/node_modules/devtools-detect/*',
+    '*://tumultmarten.com/*',
+    '*://*.chatango.com/*',
+    '*://*.arc.io/*',
+    '*://*.doubleclick.net/*',
 ];
 
 export function Initialize(info?: PlatformInfo): void {
