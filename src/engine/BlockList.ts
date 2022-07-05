@@ -2,20 +2,22 @@ import { type PlatformInfo, Runtime, DetectPlatform, CreateUnsupportedPlatformEr
 import * as BlockListNodeWebkit from './BlockListNodeWebkit';
 import * as BlockListBrowser from './BlockListBrowser';
 
+// Sort: https://www.online-utility.org/text/sort.jsp
 const patterns = [
+    '*://*.arc.io/*',
+    '*://*.chatango.com/*',
+    '*://*.doubleclick.net/*',
+    '*://*.ospicalad.buzz/*',
     '*://*/js/ads*',
-    '*://owewary.com/*',
-    '*://pickupfaxmultitude.com/*',
     '*://captivatepestilentstormy.com/*',
     '*://creepingbrings.com/*',
     '*://crunchyscan.fr/arc-sw?*',
     '*://crunchyscan.fr/arc-widget',
     '*://crunchyscan.fr/blockexx.js',
     '*://crunchyscan.fr/node_modules/devtools-detect/*',
+    '*://owewary.com/*',
+    '*://pickupfaxmultitude.com/*',
     '*://tumultmarten.com/*',
-    '*://*.chatango.com/*',
-    '*://*.arc.io/*',
-    '*://*.doubleclick.net/*',
 ];
 
 export function Initialize(info?: PlatformInfo): void {
