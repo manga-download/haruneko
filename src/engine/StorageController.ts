@@ -35,7 +35,7 @@ export function SanitizeFileName(name: string): string {
     const lookup = {
         '<' : '＜', // https://unicode-table.com/en/FF1C/
         '>' : '＞', // https://unicode-table.com/en/FF1E/
-        ':' : '﹕', // https://unicode-table.com/en/FF1A/, https://unicode-table.com/en/FE55/
+        ':' : '꞉', // https://unicode-table.com/en/A789/, https://unicode-table.com/en/FF1A/, https://unicode-table.com/en/FE55/
         '"' : '＂', // https://unicode-table.com/en/FF02/
         '/' : '／', // https://unicode-table.com/en/FF0F/
         '\\': '＼', // https://unicode-table.com/en/FF3C/
