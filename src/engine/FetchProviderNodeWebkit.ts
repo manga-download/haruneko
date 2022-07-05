@@ -1,5 +1,5 @@
 import { GetLocale } from '../i18n/Localization';
-import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDetection';
+import { FetchRedirection, CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit.js';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -131,8 +131,8 @@ async function Wait(delay: number) {
 
 async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<NWJS_Helpers.win> {
 
-    const options = {
-        new_instance: false,
+    const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
+        new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
         mixed_context: false,
         show: false,
         position: 'center',
@@ -153,7 +153,7 @@ async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<NWJ
 
         let cancellation = setTimeout(destroy, timeout);
 
-        const load = async () => {
+        async function load() {
             try {
                 const redirect = await CheckAntiScrapingDetection(win);
                 switch (redirect) {
@@ -161,7 +161,6 @@ async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<NWJ
                         // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
                         clearTimeout(cancellation);
                         cancellation = setTimeout(destroy, 150_000);
-                        win.eval(null, `alert('${GetLocale().FetchProvider_FetchWindow_AlertCaptcha()}');`);
                         win.show();
                         break;
                     case FetchRedirection.Automatic:
@@ -176,15 +175,15 @@ async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<NWJ
                 win.close();
                 reject(error);
             }
-        };
-
-        win.on('loaded', load);
-        // HACK: win.on('loaded', load) alone seems quite unreliable => inject additonal 'DOMContentLoaded' ...
-        if (win.window.document.readyState === 'loading') {
-            win.window.addEventListener('DOMContentLoaded', load);
-        } else {
-            load();
         }
+
+        // NOTE: Use policy to prevent any new popup windows
+        win.on('new-win-policy', (_frame, _url, policy) => policy.ignore());
+        win.on('document-start', (frame: Window) => PreventDialogs(win, frame));
+        win.on('navigation', win.hide);
+        win.on('loaded', load);
+        // HACK: win.on('loaded', load) alone seems quite unreliable => enforce reload after event was attached ...
+        win.reload();
     });
 }
 
