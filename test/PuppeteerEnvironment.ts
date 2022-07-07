@@ -1,11 +1,11 @@
 import type { Page } from 'puppeteer-core';
 import NodeEnvironment from 'jest-environment-node';
-import type { Config } from '@jest/types';
+import type { JestEnvironmentConfig, EnvironmentContext } from '@jest/environment';
 
 export default class PuppeteerEnvironment extends NodeEnvironment {
 
-    constructor(config: Config.ProjectConfig) {
-        super(config);
+    constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
+        super(config, context);
         this.global.PAGE = global.PAGE;
         this.global.BROWSER = global.BROWSER;
     }
