@@ -1,6 +1,6 @@
 export default class GithubActionsReporter {
 
-    constructor(configuration, options) {
+    constructor(/*configuration, options*/) {
         //this.configuration = configuration;
         //this.options = options;
     }
