@@ -5,8 +5,6 @@ const fixtureWithoutLanguage = new TestFixture({
         id: 'mangawindow',
         title: 'MangaWindow (by AnyACG)'
     },
-    // CloudFlare challenge... cannot be bypassed yet with puppeteer
-    /*
     container: {
         url: 'https://mangawindow.net/series/105860/your-talent-is-mine',
         id: '/series/105860/your-talent-is-mine',
@@ -18,10 +16,9 @@ const fixtureWithoutLanguage = new TestFixture({
     },
     entry: {
         index: 0,
-        size: 285_368,
-        type: 'image/jpeg'
+        size: 126_808,
+        type: 'image/webp'
     }
-    */
 });
 describe(fixtureWithoutLanguage.Name, () => fixtureWithoutLanguage.AssertWebsite());
 
@@ -30,8 +27,6 @@ const fixtureWithLanguage = new TestFixture({
         id: 'mangawindow',
         title: 'MangaWindow (by AnyACG)'
     },
-    // CloudFlare challenge... cannot be bypassed yet with puppeteer
-    /*
     container: {
         url: 'https://mangawindow.net/series/102127/wind-breaker',
         id: '/series/102127/wind-breaker',
@@ -43,9 +38,8 @@ const fixtureWithLanguage = new TestFixture({
     },
     entry: {
         index: 0,
-        size: 160_214,
-        type: 'image/jpeg'
+        size: 62_432,
+        type: 'image/webp'
     }
-    */
 });
 describe(fixtureWithLanguage.Name, () => fixtureWithLanguage.AssertWebsite());
