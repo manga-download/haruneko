@@ -6,12 +6,12 @@ const config = {
         title: 'Aiin Scan'
     },
     container: {
-        url: 'https://aiinscan.xyz/manga/i-have-a-dragon-in-my-body/',
-        id: JSON.stringify({ post: '635', slug: '/manga/i-have-a-dragon-in-my-body/' }),
+        url: 'https://aiinscan.xyz/manga/obra06/',
+        id: JSON.stringify({ post: '635', slug: '/manga/obra06/' }),
         title: 'I Have a Dragon in My Body'
     },
     child: {
-        id: '/manga/i-have-a-dragon-in-my-body/capitulo-200/',
+        id: '/manga/obra06/capitulo-200/',
         title: 'Capítulo 200'
     },
     entry: {
