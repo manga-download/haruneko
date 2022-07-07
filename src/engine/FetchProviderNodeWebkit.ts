@@ -1,5 +1,5 @@
 import { GetLocale } from '../i18n/Localization';
-import { FetchRedirection, CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit.js';
+import { FetchRedirection, CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
