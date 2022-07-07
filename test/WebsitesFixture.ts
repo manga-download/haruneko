@@ -32,36 +32,36 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
         this.config = config;
     }
 
-    private async GetRemotePlugin(pluginID: string) {
-        return this.page.evaluateHandle<JSHandle<TWebsitePlugin>>(async (id: string) => {
-            return window.HakuNeko.PluginController.WebsitePlugins.find(website => website.Identifier === id);
+    private async GetRemotePlugin(pluginID: string): Promise<JSHandle<TWebsitePlugin>> {
+        return this.page.evaluateHandle(async (id: string) => {
+            return window.HakuNeko.PluginController.WebsitePlugins.find(website => website.Identifier === id) as TWebsitePlugin;
         }, pluginID);
     }
 
-    private async GetRemoteContainer(remotePlugin: JSHandle<TWebsitePlugin>, containerURL: string) {
-        return remotePlugin.evaluateHandle<JSHandle<TContainer>>(async (plugin: TWebsitePlugin, url: string) => {
+    private async GetRemoteContainer(remotePlugin: JSHandle<TWebsitePlugin>, containerURL: string): Promise<JSHandle<TContainer>> {
+        return remotePlugin.evaluateHandle(async (plugin: TWebsitePlugin, url: string) => {
             const container = await plugin.TryGetEntry(url) as TContainer;
             await container.Update();
             return container;
         }, containerURL);
     }
 
-    private async GetRemoteChild(remoteContainer: JSHandle<TContainer>, childID: string) {
-        return remoteContainer.evaluateHandle<JSHandle<TChild>>(async (container: TContainer, id: string) => {
+    private async GetRemoteChild(remoteContainer: JSHandle<TContainer>, childID: string): Promise<JSHandle<TChild>> {
+        return remoteContainer.evaluateHandle(async (container: TContainer, id: string) => {
             const child = (container.Entries as TChild[]).find(child => child.Identifier === id);
             await child.Update();
             return child;
         }, childID);
     }
 
-    private async GetRemoteEntry(remoteChild: JSHandle<TChild>, entryIndex?: number) {
-        return remoteChild.evaluateHandle<JSHandle<TEntry>>(async (child: TChild, index: number) => {
+    private async GetRemoteEntry(remoteChild: JSHandle<TChild>, entryIndex?: number): Promise<JSHandle<TEntry>> {
+        return remoteChild.evaluateHandle(async (child: TChild, index: number) => {
             return child.Entries[index] as TEntry;
         }, entryIndex);
     }
 
-    private async GetRemoteData(remoteEntry: JSHandle<TEntry>) {
-        return remoteEntry.evaluateHandle<JSHandle<Blob>>(async (entry: TEntry, priority: number) => {
+    private async GetRemoteData(remoteEntry: JSHandle<TEntry>): Promise<JSHandle<Blob>> {
+        return remoteEntry.evaluateHandle(async (entry: TEntry, priority: number) => {
             return await entry.Fetch(priority, null);
         }, 0);
     }
