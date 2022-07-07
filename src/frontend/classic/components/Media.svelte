@@ -17,7 +17,7 @@
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
     }
 </script>
-<ContextMenu target={mediadiv}>
+<ContextMenu target={[mediadiv]}>
     <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" />
     <ContextMenuOption indented labelText={isBookmarked ?"Remove from Bookmarks" :"Add to Bookmarks"} shortcutText="⌘F" on:click={toggleBookmark}/>
     <ContextMenuDivider />

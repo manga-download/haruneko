@@ -1,7 +1,7 @@
 import { Request } from 'node-fetch';
 
 export default {
-    preset: 'ts-jest',
+    preset: 'ts-jest/presets/js-with-ts-esm',
     rootDir: '../src',
     testMatch: [ '**/*[_.](test|spec).[jt]s(x)?' ],
     testEnvironment: 'jest-environment-jsdom',
@@ -12,6 +12,7 @@ export default {
     globals: {
         'ts-jest': {
             tsconfig: {
+                allowJs: true,
                 esModuleInterop: true
             }
         },

@@ -180,7 +180,7 @@
                 {header.value}
             {/if}
         </svelte:fragment>
-        <div class="plugin-row" slot="cell" let:cell let:row in:fade>
+        <div class="plugin-row" slot="cell" let:cell in:fade>
             {#if cell.key === 'favorite'}
                 <Button kind="ghost" iconDescription="Add to favorites" icon={true ? StarFilled : Star} 
                     on:click={(e) => {

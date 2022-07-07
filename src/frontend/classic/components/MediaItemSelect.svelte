@@ -84,7 +84,7 @@
     let itemsdiv: HTMLElement;
 </script>
 
-<ContextMenu target={itemsdiv}>
+<ContextMenu target={[itemsdiv]}>
     {#if selectedItems.length > 1}
         <ContextMenuOption indented labelText="Download selecteds" />
     {:else}

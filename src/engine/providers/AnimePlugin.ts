@@ -106,6 +106,7 @@ export class Video extends MediaItem {
 
     private _controller?: AbortController;
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Parameter `parent` is used in `super()` call!
     public constructor(/*private readonly scraper: AnimeScraper, */private readonly parent: MediaContainer<Video>, private readonly uri: URL/*, private readonly request: RequestInit*/) {
         super(parent);
     }
