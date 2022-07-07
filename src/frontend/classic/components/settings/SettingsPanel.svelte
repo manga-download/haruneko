@@ -24,7 +24,7 @@
 </SettingItem>
 
 <SettingItem labelText={$Locale[Theme.Label]()} helperText={$Locale[Theme.Description]()}>
-    <Select selected={$ThemeValue} on:change={evt => Theme.Value = evt.detail}>
+    <Select selected={$ThemeValue} on:change={evt => Theme.Value = evt.detail.toString()}>
         {#each Theme.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
         {/each}
@@ -32,7 +32,7 @@
 </SettingItem>
 
 <SettingItem labelText={$Locale[ViewerMode.Label]()} helperText={$Locale[ViewerMode.Description]()}>
-    <Select selected={$ViewerModeValue} on:change={evt => ViewerMode.Value = evt.detail}>
+    <Select selected={$ViewerModeValue} on:change={evt => ViewerMode.Value = evt.detail.toString()}>
         {#each ViewerMode.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
         {/each}

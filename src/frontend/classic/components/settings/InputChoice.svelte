@@ -34,7 +34,7 @@
 </script>
 
 <SettingItem labelText={$Locale[setting.Label]()} helperText={$Locale[setting.Description]()}>
-    <Select selected={value} on:change={evt => setting.Value = evt.detail}>
+    <Select selected={value} on:change={evt => setting.Value = evt.detail.toString()}>
         {#each setting.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
         {/each}

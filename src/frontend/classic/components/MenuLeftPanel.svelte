@@ -7,7 +7,6 @@
     } from 'carbon-components-svelte';
     import {
         App,
-        ContentDeliveryNetwork,
         Debug,
         Doc,
         Document,
