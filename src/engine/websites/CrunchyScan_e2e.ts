@@ -4,21 +4,20 @@ const config = {
     plugin: {
         id: 'crunchyscan',
         title: 'Crunchyscan'
-    }/*,
-    // CloudFlare challenge... cannot be bypassed yet with puppeteer
+    },
     container: {
         url: 'https://crunchyscan.fr/liste-manga/lucia/',
         id: JSON.stringify({ post: '1598', slug: '/liste-manga/lucia/' }),
         title: 'Lucia'
-    },
-    child: {
-        id: 'https://crunchyscan.fr/liste-manga/lucia/#',
-        title: 'Chapter ?'
-    },
+    }/*,
     // Custom Re-Captcha check... cannot be bypassed without user interaction
+    child: {
+        id: '/liste-manga/lucia/chapitre-1/',
+        title: 'Chapitre 1'
+    },
     entry: {
         index: 0,
-        size: -1,
+        size: 76071,
         type: 'image/jpeg'
     }*/
 };
