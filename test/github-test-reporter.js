@@ -1,34 +1,29 @@
 export default class GithubActionsReporter {
-    constructor(globalConfig, options) {
-        this._globalConfig = globalConfig;
-        this._options = options;
+
+    constructor(configuration, options) {
+        //this.configuration = configuration;
+        //this.options = options;
     }
 
-    onRunComplete(contexts, results) {
-        results.testResults.forEach((testResultItem) => {
-            const testFilePath = testResultItem.testFilePath;
-
-            testResultItem.testResults.forEach((result) => {
-                if (result.status !== 'failed') {
-                    return;
+    onRunComplete(context, results) {
+        if(!process.env.GITHUB_ACTIONS) {
+            return;
+        }
+        for(const suite of results.testResults) {
+            for(const test of suite.testResults) {
+                if (test.status === 'passed') {
+                    continue;
                 }
-
-                result.failureMessages.forEach((failureMessages) => {
-                    const newLine = '%0A';
-                    const message = failureMessages.replace(/\n/g, newLine);
-                    const captureGroup = message.match(/:([0-9]+):([0-9]+)/);
-
-                    if (!captureGroup) {
+                for(let message of test.failureMessages) {
+                    message = message.replace(/\n/g, '%0A');
+                    const match = message.match(/:([0-9]+):([0-9]+)/);
+                    if (match) {
+                        console.log(`::error file=${suite.testFilePath},line=${match[1]},col=${match[2]}::${message}`);
+                    } else {
                         console.log('Unable to extract line number from call stack');
-                        return;
                     }
-
-                    const [, line, col] = captureGroup;
-                    console.log(
-                        `::error file=${testFilePath},line=${line},col=${col}::${message}`,
-                    );
-                });
-            });
-        });
+                }
+            }
+        }
     }
 }
