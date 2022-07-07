@@ -26,7 +26,7 @@ async function LaunchNW() {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: nwExe,
-        args: [ nwApp ],
+        args: [ nwApp, '--disable-blink-features=AutomationControlled' ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);

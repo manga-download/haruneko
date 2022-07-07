@@ -5,7 +5,11 @@ export default {
     globalSetup: '../test/PuppeteerSetup.ts',
     globalTeardown: '../test/PuppeteerTeardown.ts',
     testEnvironment: '../test/PuppeteerEnvironment.ts',
-    reporters: [ 'default', 'jest-junit' ],
+    reporters: [
+        'default',
+        'jest-junit',
+        '../test/github-test-reporter'
+    ],
     testTimeout: 25000,
     globals: {
         'ts-jest': {
