@@ -16,7 +16,7 @@ async function CloseSplashScreen(target: puppeteer.Target) {
     const page = await target.page();
     const url = page?.url();
     if(url && /splash.html/i.test(url)) {
-        await page.close();
+        await page?.close();
     }
 }
 

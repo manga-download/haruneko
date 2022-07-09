@@ -10,7 +10,7 @@ export default {
         'jest-junit',
         '../test/github-test-reporter'
     ],
-    testTimeout: 25000,
+    testTimeout: 25_000,
     globals: {
         'ts-jest': {
             tsconfig: {

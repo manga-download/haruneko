@@ -5,22 +5,28 @@ export type Config = {
     plugin: {
         id: string;
         title: string;
+        timeout?: number;
     };
     container?: {
         url: string;
         id: string;
         title: string;
+        timeout?: number;
     };
     child?: {
         id: string;
         title: string;
+        timeout?: number;
     };
     entry?: {
         index: number;
         size: number;
         type: string;
+        timeout?: number;
     };
 }
+
+type MediaPuginInstance = IMediaContainer & { Initialize(): Promise<void> };
 
 export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer extends IMediaContainer, TChild extends IMediaContainer, TEntry extends IMediaItem> {
 
@@ -34,7 +40,9 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
 
     private async GetRemotePlugin(pluginID: string): Promise<JSHandle<TWebsitePlugin>> {
         return this.page.evaluateHandle(async (id: string) => {
-            return window.HakuNeko.PluginController.WebsitePlugins.find(website => website.Identifier === id) as TWebsitePlugin;
+            const plugin = window.HakuNeko.PluginController.WebsitePlugins.find(website => website.Identifier === id);
+            await (plugin as MediaPuginInstance).Initialize();
+            return plugin as TWebsitePlugin;
         }, pluginID);
     }
 
@@ -79,11 +87,11 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
 
         let remotePlugin: JSHandle<TWebsitePlugin>;
 
-        (this.config.plugin ? it : it.skip)('Should be registered as website', async () => {
+        (this.config.plugin ? it : it.skip)('Should get initialzed website plugin', async () => {
             remotePlugin = await this.GetRemotePlugin(this.config.plugin.id);
             expect(await remotePlugin.evaluate(plugin => plugin.Identifier)).toEqual(this.config.plugin.id);
             expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual(this.config.plugin.title);
-        });
+        }, this.config.plugin.timeout ?? 25_000);
 
         let remoteContainer: JSHandle<TContainer>;
 
@@ -91,7 +99,7 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
             remoteContainer = await this.GetRemoteContainer(remotePlugin, this.config.container.url);
             expect(await remoteContainer.evaluate(container => container.Identifier)).toEqual(this.config.container.id);
             expect(await remoteContainer.evaluate(container => container.Title)).toEqual(this.config.container.title);
-        });
+        }, this.config.container?.timeout ?? 7500);
 
         let remoteChild: JSHandle<TChild>;
 
@@ -99,7 +107,7 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
             remoteChild = await this.GetRemoteChild(remoteContainer, this.config.child.id);
             expect(await remoteChild.evaluate(child => child.Identifier)).toEqual(this.config.child.id);
             expect(await remoteChild.evaluate(child => child.Title)).toEqual(this.config.child.title);
-        });
+        }, this.config.child?.timeout ?? 7500);
 
         let remoteEntry: JSHandle<TEntry>;
 
@@ -107,7 +115,7 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
             remoteEntry = await this.GetRemoteEntry(remoteChild, this.config.entry.index);
             expect(await remoteEntry.evaluate(page => page.Parent.Identifier)).toEqual(this.config.child.id);
             expect(await remoteEntry.evaluate(page => page.Parent.Title)).toEqual(this.config.child.title);
-        });
+        }, this.config.entry?.timeout ?? 7500);
 
         let remoteData: JSHandle<Blob>;
 
@@ -115,6 +123,6 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
             remoteData = await this.GetRemoteData(remoteEntry);
             expect(await remoteData.evaluate(data => data.type)).toEqual(this.config.entry.type);
             expect(await remoteData.evaluate(data => data.size)).toEqual(this.config.entry.size);
-        });
+        }, this.config.entry?.timeout ?? 7500);
     }
 }
