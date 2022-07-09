@@ -5,8 +5,6 @@ const config = {
         id: 'cizgiromanarsivi',
         title: 'Çizgi Roman Arşivi (CizgiRomanArsivi)'
     },
-    // CloudFlare challenge... cannot be bypassed yet with puppeteer
-    /*
     container: {
         url: 'https://cizgiromanarsivi.com/seri/nano-makine/',
         id: JSON.stringify({ post: '30', slug: '/seri/nano-makine/' }),
@@ -21,7 +19,6 @@ const config = {
         size: 22_334,
         type: 'image/webp'
     }
-    */
 };
 
 const fixture = new TestFixture(config);

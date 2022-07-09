@@ -1,9 +1,10 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const config: Config = {
     plugin: {
         id: 'bestmanga',
-        title: 'Best Manga'
+        title: 'Best Manga',
+        timeout: 60_000
     },
     container: {
         url: 'https://bestmanga.club/manga/istinnaya-krasota/',
@@ -21,5 +22,6 @@ const config = {
     }
 };
 
+// TODO: website terrible slow, increase test timeout?
 const fixture = new TestFixture(config);
 describe(fixture.Name, () => fixture.AssertWebsite());

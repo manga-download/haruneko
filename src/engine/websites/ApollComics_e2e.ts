@@ -1,9 +1,10 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const config: Config = {
     plugin: {
         id: 'apollcomics',
-        title: 'Apoll Comics'
+        title: 'Apoll Comics',
+        timeout: 60_000
     },
     container: {
         url: 'https://apollcomics.xyz/manga/the-girls-nest/',

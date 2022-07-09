@@ -4,15 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/apolltoons\.xyz\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Apoll"])')
+@Madara.MangaCSS(/^https?:\/\/vermanhwa\.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Ver Manhwas"])')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('apolltoons', 'Apolltoons', 'https://apolltoons.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Rating.Erotica);
+        super('apolltoons', 'Ver Manhwas', 'https://vermanhwa.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Rating.Erotica);
     }
 
     public override get Icon() {

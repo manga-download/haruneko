@@ -3,10 +3,10 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'apolltoons',
-        title: 'Apolltoons'
+        title: 'Ver Manhwas'
     },
     container: {
-        url: 'https://apolltoons.xyz/manga/aqua/',
+        url: 'https://vermanhwa.com/manga/aqua/',
         id: JSON.stringify({ post: '961', slug: '/manga/aqua/' }),
         title: 'Aqua'
     },

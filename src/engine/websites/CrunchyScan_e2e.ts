@@ -9,8 +9,9 @@ const config = {
         url: 'https://crunchyscan.fr/liste-manga/lucia/',
         id: JSON.stringify({ post: '1598', slug: '/liste-manga/lucia/' }),
         title: 'Lucia'
-    }/*,
+    },
     // Custom Re-Captcha check... cannot be bypassed without user interaction
+    /*
     child: {
         id: '/liste-manga/lucia/chapitre-1/',
         title: 'Chapitre 1'
