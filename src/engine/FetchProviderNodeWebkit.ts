@@ -129,7 +129,7 @@ async function Wait(delay: number) {
     return new Promise(resolve => setTimeout(resolve, delay));
 }
 
-async function FetchWindow(request: FetchRequest, timeout = 30_000): Promise<NWJS_Helpers.win> {
+async function FetchWindow(request: FetchRequest, timeout = 60_000): Promise<NWJS_Helpers.win> {
 
     const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
         new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
