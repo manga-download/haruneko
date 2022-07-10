@@ -1,3 +1,4 @@
+import { GetLocale } from '../../../i18n/Localization';
 import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchProvider';
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
@@ -122,6 +123,26 @@ function EndsWith(target: Manga[], source: Manga[]) {
     return true;
     */
     return target[target.length - 1].Identifier === source[source.length - 1].Identifier;
+}
+
+/**
+ * An extension method that throws an error ... .
+ */
+export async function FetchMangasNotSupported(): Promise<Manga[]> {
+    throw new Error(GetLocale().Plugin_Common_MangasNotSupported());
+}
+
+/**
+ * A class decorator that throws an error ... .
+ */
+export function MangasNotSupported() {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
+        return class extends ctor {
+            public async FetchMangas(this: MangaScraper): Promise<Manga[]> {
+                return FetchMangasNotSupported();
+            }
+        };
+    };
 }
 
 /**
