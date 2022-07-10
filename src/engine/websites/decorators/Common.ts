@@ -138,7 +138,7 @@ export async function FetchMangasNotSupported(): Promise<Manga[]> {
 export function MangasNotSupported() {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
-            public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
+            public async FetchMangas(this: MangaScraper): Promise<Manga[]> {
                 return FetchMangasNotSupported();
             }
         };
