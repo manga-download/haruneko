@@ -118,6 +118,8 @@ export const de_DE: IResource = {
     Plugin_Settings_Throttling: 'Drosselung für Downloads [ms]',
     Plugin_Settings_ThrottlingInfo: '...',
 
+    Plugin_Common_MangasNotSupported: 'Es ist nicht möglich ein Inhaltsverzeichnis für diese Webseite zu erstellen. Verwende die Koieren & Einfügen Funktionalität um direkt auf einzelne Inhalte einer URL zuzugreifen!',
+
     Plugin_SheepScanlations_Settings_Username: 'Benutzername',
     Plugin_SheepScanlations_Settings_UsernameInfo: 'Benutzername zum automatischen einloggen des Benutzerkontos auf Sheep-Scanlations 😉',
     Plugin_SheepScanlations_Settings_Password: 'Passwort',

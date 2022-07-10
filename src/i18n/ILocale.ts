@@ -131,6 +131,8 @@ export enum ResourceKey {
     Plugin_Settings_Throttling = 'Plugin_Settings_Throttling',
     Plugin_Settings_ThrottlingInfo = 'Plugin_Settings_ThrottlingInfo',
 
+    Plugin_Common_MangasNotSupported = 'Plugin_Common_MangasNotSupported',
+
     Plugin_SheepScanlations_Settings_Username = 'Plugin_SheepScanlations_Settings_Username',
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
