@@ -2,21 +2,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: '8musesxxx',
-        title: '8 MUSES XXX'
+        id: '8muses',
+        title: '8 MUSES'
     },
     container: {
-        url: 'https://8muses.xxx/comics/hirama-hirokazu/',
-        id: '/comics/hirama-hirokazu/',
+        url: 'https://comics.8muses.com/comics/album/Fakku-Comics/Hirama-Hirokazu',
+        id: '/comics/album/Fakku-Comics/Hirama-Hirokazu',
         title: 'Hirama Hirokazu'
     },
     child: {
-        id: '/comics/hirama-hirokazu/issue-1',
-        title: 'Issue 1'
+        id: '/comics/album/Fakku-Comics/Hirama-Hirokazu/How-to-Draw-Girls',
+        title: 'How to Draw Girls'
     },
     entry: {
         index: 0,
-        size: 823_794,
+        size: 880_077,
         type: 'image/jpeg'
     }
 };
