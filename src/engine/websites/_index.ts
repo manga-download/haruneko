@@ -62,7 +62,7 @@ export { default as FreeManga } from './FreeManga';
 export { default as FreeWebtoonCoins } from './FreeWebtoonCoins';
 export { default as FurioScans } from './FurioScans';
 export { default as FusionScanlationHentai } from './FusionScanlationHentai';
-export { default as GateAnimeManga } from './GateAnimeManga';
+export { default as GateManga } from './GateManga';
 export { default as GDScans } from './GDScans';
 export { default as GeassScan } from './GeassScan';
 export { default as GeceninLordu } from './GeceninLordu';

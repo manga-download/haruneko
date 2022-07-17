@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './EightMuses.webp';
-import { DecoratableMangaScraper, type MangaScraper } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 const extractor = Common.AnchorInfoExtractor(true);
