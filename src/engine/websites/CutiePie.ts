@@ -9,11 +9,11 @@ import * as Common from './decorators/Common';
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
-// TODO: Website no longer exist?
+// TODO: Website region locked?
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('cutiepie', 'Cutie Pie', 'https://cutiepie.ga', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
+        super('cutiepie', 'Cutie Pie', 'https://cutiepie.moe', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
     }
 
     public override get Icon() {
