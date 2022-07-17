@@ -13,9 +13,20 @@ interface MangaID {
 const pathname = '';
 const pathpaged = '/page/{page}/';
 const queryMangaTitle = 'head meta[property="og:title"]';
-const queryMangaListLinks = 'div.post-title h3 a, div.post-title h5 a';
-const queryChapterListLinks = 'ul li.wp-manga-chapter > a';
+const queryMangaListLinks = [
+    'div.post-title h3 a',
+    'div.post-title h5 a'
+].join(', ');
+const queryChapterListLinks = [
+    'ul li.wp-manga-chapter > a',
+    'ul li.wp-manga-chapter div.chapter-link a'
+].join(', ');
+const queryChapterListBloat = [
+    'span.chapter-release-date'
+].join(', ');
 const queryPageListLinks = 'div.page-break img';
+
+const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapterListBloat);
 
 async function delay(milliseconds: number) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -172,12 +183,11 @@ export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, p
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
-async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: FetchRequest, query = queryChapterListLinks): Promise<Chapter[]> {
+async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: FetchRequest, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
-        const slug = element.pathname;
-        const title = element.text.trim();
-        return new Chapter(this, manga, slug, title);
+        const { id, title } = extract.call(this, element);
+        return new Chapter(this, manga, id, title);
     });
 }
 
@@ -189,11 +199,11 @@ async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Fetch
  * @param manga A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
-export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapterListLinks): Promise<Chapter[]> {
+export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const { slug } = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL(slug, this.URI);
     const request = new FetchRequest(uri.href);
-    const chapters = await FetchChaptersCSS.call(this, manga, request, query);
+    const chapters = await FetchChaptersCSS.call(this, manga, request, query, extract);
     if(!chapters.length) {
         throw new Error();
     } else {
@@ -207,11 +217,11 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  * This decorator utilizes the HTML pages which are targeted to be shown in the browser to extract the chapters.
  * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
-export function ChaptersSinglePageCSS(query = queryChapterListLinks) {
+export function ChaptersSinglePageCSS(query = queryChapterListLinks, extract = DefaultInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageCSS.call(this, manga, query);
+                return FetchChaptersSinglePageCSS.call(this, manga, query, extract);
             }
         };
     };
@@ -225,7 +235,7 @@ export function ChaptersSinglePageCSS(query = queryChapterListLinks) {
  * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  * @param path An additional prefix for the ajax endpoint relative to {@link this} scraper's base url
  */
-export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: Manga, query = queryChapterListLinks, path = pathname): Promise<Chapter[]> {
+export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: Manga, query = queryChapterListLinks, path = pathname, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const id = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL(path + '/wp-admin/admin-ajax.php', this.URI);
     const request = new FetchRequest(uri.href, {
@@ -239,7 +249,7 @@ export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: M
             'Referer': this.URI.href
         }
     });
-    return FetchChaptersCSS.call(this, manga, request, query);
+    return FetchChaptersCSS.call(this, manga, request, query, extract);
 }
 
 /**
@@ -248,11 +258,11 @@ export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: M
  * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  * @param path An additional prefix for the ajax endpoint relative to {@link this} scraper's base url
  */
-export function ChaptersSinglePageAJAXv1(query = queryChapterListLinks, path = pathname) {
+export function ChaptersSinglePageAJAXv1(query = queryChapterListLinks, path = pathname, extract = DefaultInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageAJAXv1.call(this, manga, query, path);
+                return FetchChaptersSinglePageAJAXv1.call(this, manga, query, path, extract);
             }
         };
     };
@@ -265,7 +275,7 @@ export function ChaptersSinglePageAJAXv1(query = queryChapterListLinks, path = p
  * @param manga A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
-export async function FetchChaptersSinglePageAJAXv2(this: MangaScraper, manga: Manga, query = queryChapterListLinks): Promise<Chapter[]> {
+export async function FetchChaptersSinglePageAJAXv2(this: MangaScraper, manga: Manga, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const id = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL((id.slug + '/ajax/chapters/').replace(/\/+/g, '/'), this.URI);
     const request = new FetchRequest(uri.href, {
@@ -274,7 +284,7 @@ export async function FetchChaptersSinglePageAJAXv2(this: MangaScraper, manga: M
             'Referer': this.URI.href
         }
     });
-    return FetchChaptersCSS.call(this, manga, request, query);
+    return FetchChaptersCSS.call(this, manga, request, query, extract);
 }
 
 /**
@@ -282,11 +292,11 @@ export async function FetchChaptersSinglePageAJAXv2(this: MangaScraper, manga: M
  * This method utilizes the HTML pages provided by the **WordPress Chapter AJAX endpoint** to extract the chapters.
  * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
-export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks) {
+export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks, extract = DefaultInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageAJAXv2.call(this, manga, query);
+                return FetchChaptersSinglePageAJAXv2.call(this, manga, query, extract);
             }
         };
     };
@@ -298,7 +308,7 @@ export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks) {
 
 function CreateImageExtractor(this: MangaScraper) {
     return (image: HTMLImageElement): string => {
-        const url = image.dataset?.src || image.srcset || image.src;
+        const url = image.dataset?.src || image.dataset?.lazySrc || image.srcset || image.src;
         const uri = new URL(url.trim(), this.URI);
         return DeProxify(uri).href;
     };
