@@ -4,7 +4,8 @@ const config = {
     plugin: {
         id: 'einherjarscans',
         title: 'Einherjar Scans'
-    }/*,
+    },
+    /*
     container: {
         url: 'https://einherjarscans.space/manga/.../',
         id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
@@ -18,7 +19,8 @@ const config = {
         index: 0,
         size: -1,
         type: 'image/jpeg'
-    }*/
+    }
+    */
 };
 
 const fixture = new TestFixture(config);

@@ -2,12 +2,12 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: '1stkissmanhua',
-        title: '1st Kiss Manhua'
+        id: 'firstkiss',
+        title: '1st Kiss Manga'
     },
     container: {
-        url: encodeURI('https://1stkissmanhua.com/manga/blank。/').toLocaleLowerCase(),
-        id: JSON.stringify({ post: '91431', slug: encodeURI('/manga/blank。/').toLocaleLowerCase(), }),
+        url: encodeURI('https://1stkissmanga.io/manga/blank。/').toLocaleLowerCase(),
+        id: JSON.stringify({ post: '156052', slug: encodeURI('/manga/blank。/').toLocaleLowerCase(), }),
         title: '[ blank。]'
     },
     child: {

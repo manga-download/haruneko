@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'freecomiconline',
         title: 'Free Comic Online'
-    }/*,
+    },
     container: {
-        url: 'https://freecomiconline.me/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://freecomiconline.me/comic/daughter-friend-raw/',
+        id: JSON.stringify({ post: '13014', slug: '/comic/daughter-friend-raw/' }),
+        title: 'Daughter Friend Raw'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/comic/daughter-friend-raw/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 249_175,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

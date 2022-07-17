@@ -4,7 +4,8 @@ const config = {
     plugin: {
         id: 'eternalscans',
         title: 'Eternal Scans'
-    }/*,
+    },
+    /*
     container: {
         url: 'https://eternalscans.com/manga/.../',
         id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
@@ -18,7 +19,8 @@ const config = {
         index: 0,
         size: -1,
         type: 'image/jpeg'
-    }*/
+    }
+    */
 };
 
 const fixture = new TestFixture(config);

@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/copypastescan\.xyz\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageCSS('ul li.wp-manga-chapter a')
+@Madara.ChaptersSinglePageCSS()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {

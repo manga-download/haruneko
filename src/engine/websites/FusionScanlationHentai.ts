@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './FenixScan.webp';
+import icon from './FusionScanlationHentai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/manga-fenix\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/h\.fusionscanlation\.com\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('fenixscan', 'Manga Fenix', 'https://manga-fenix.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish);
+        super('fusionscanlation-hentai', 'H Fusion Scanlation', 'https://h.fusionscanlation.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Rating.Erotica);
     }
 
     public override get Icon() {

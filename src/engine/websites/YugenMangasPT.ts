@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './FenixScan.webp';
+import icon from './YugenMangas.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/manga-fenix\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/yugenmangas\.com\.br\/series\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('fenixscan', 'Manga Fenix', 'https://manga-fenix.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish);
+        super('yugenmangas-pt', 'YugenMangas (PT)', 'https://yugenmangas.com.br', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese);
     }
 
     public override get Icon() {
