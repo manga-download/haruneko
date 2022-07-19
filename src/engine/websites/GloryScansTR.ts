@@ -1,5 +1,4 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './GloryScansTR.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -13,25 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('glory-scans', 'Glory-Scans', 'https://gloryscans.com'/*, Tags.Media., Tags.Language.*/);
+        super('glory-scans', 'Glory-Scans', 'https://gloryscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class GloryScansTR extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'glory-scans';
-        super.label = 'Glory-Scans';
-        this.tags = [ 'webtoon', 'turkish', 'scanlation' ];
-        this.url = 'https://gloryscans.com';
-        this.requestOptions.headers.set('x-referer', this.url);
-    }
-}
-*/

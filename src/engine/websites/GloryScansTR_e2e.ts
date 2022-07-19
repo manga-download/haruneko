@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'glory-scans',
         title: 'Glory-Scans'
-    }/*,
+    },
     container: {
-        url: 'https://gloryscans.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://gloryscans.com/manga/ghost-gate/',
+        id: JSON.stringify({ post: '536', slug: '/manga/ghost-gate/' }),
+        title: 'Ghost Gate'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/ghost-gate/bolum-1/',
+        title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 1_025_997,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);

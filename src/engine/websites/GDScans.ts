@@ -1,11 +1,10 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './GDScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/gdscan\.xyz\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/gdstmp\.site\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="GD Scans"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,23 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('gdscans', 'GD Scans', 'https://gdscan.xyz'/*, Tags.Media., Tags.Language.*/);
+        super('gdscans', 'GD Scans', 'https://gdstmp.site', Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class GDScans extends WordPressMadara {
-    constructor() {
-        super();
-        super.id = 'gdscans';
-        super.label = 'GD Scans';
-        this.tags = [ 'manga', 'scanlation', 'english' ];
-        this.url = 'https://gdscan.xyz';
-    }
-}
-*/

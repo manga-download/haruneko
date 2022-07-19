@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'gdscans',
         title: 'GD Scans'
-    }/*,
+    },
     container: {
-        url: 'https://gdscan.xyz/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://gdstmp.site/manga/sex-and-dungeon/',
+        id: JSON.stringify({ post: '3279', slug: '/manga/sex-and-dungeon/' }),
+        title: 'Sex and Dungeon'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/sex-and-dungeon/volume-7/chapter-25/',
+        title: 'Chapter 25'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 721_987,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

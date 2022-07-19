@@ -1,5 +1,4 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './GodsRealmScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('godsrealmscan', `God's Realm Scan`, 'https://godsrealmscan.com'/*, Tags.Media., Tags.Language.*/);
+        super('godsrealmscan', `God's Realm Scan`, 'https://godsrealmscan.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class GodsRealmScan extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'godsrealmscan';
-        super.label = 'God\'s Realm Scan';
-        this.tags = [ 'manga', 'high-quality', 'spanish', 'scanlation' ];
-        this.url = 'https://godsrealmscan.com';
-    }
-}
-*/

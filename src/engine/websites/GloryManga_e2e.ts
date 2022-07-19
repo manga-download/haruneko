@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'glorymanga',
         title: 'GloryManga'
-    }/*,
+    },
     container: {
-        url: 'https://glorymanga.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://glorymanga.com/manga/dragon-master/',
+        id: JSON.stringify({ post: '12536', slug: '/manga/dragon-master/' }),
+        title: 'Dragon Master'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/dragon-master/bolum-1/',
+        title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 240_765,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
