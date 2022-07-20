@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'hadesnofansub',
         title: 'Hades No Fansub'
-    }/*,
+    },
     container: {
-        url: 'https://mangareaderpro.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangareaderpro.com/manga/dark-star-emperor/',
+        id: JSON.stringify({ post: '117', slug: '/manga/dark-star-emperor/' }),
+        title: 'Dark Star Emperor'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/dark-star-emperor/1/',
+        title: '1'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 604_438,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);

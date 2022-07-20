@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'guncelmanga',
         title: 'Güncel Manga'
-    }/*,
+    },
     container: {
-        url: 'https://guncelmanga.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://guncelmanga.com/manga/the-promised-queen/',
+        id: JSON.stringify({ post: '11215', slug: '/manga/the-promised-queen/' }),
+        title: 'The Promised Queen'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/the-promised-queen/bolum-1/',
+        title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 5_815_034,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
