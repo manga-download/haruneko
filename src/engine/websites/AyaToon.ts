@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './Hentai3z.webp';
+import icon from './AyaToon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/hentai3z\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/ayatoon\.com\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hentai3z', 'Hentai3z', 'https://hentai3z.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Rating.Erotica);
+        super('himerafansub', 'AyaToon', 'https://ayatoon.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
     }
 
     public override get Icon() {

@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'hentai3z',
         title: 'Hentai3z'
-    }/*,
+    },
     container: {
-        url: 'https://hentai3z.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://hentai3z.com/manga/secret-class-8/',
+        id: JSON.stringify({ post: '1464', slug: '/manga/secret-class-8/' }),
+        title: 'Secret Class'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/secret-class-8/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 41_812,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

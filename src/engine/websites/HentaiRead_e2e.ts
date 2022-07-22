@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'hentairead',
         title: 'HentaiRead'
-    }/*,
+    },
     container: {
-        url: 'https://hentairead.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://hentairead.com/hentai/meccha-kimochi-yokattassho/',
+        id: JSON.stringify({ post: '63295', slug: '/hentai/meccha-kimochi-yokattassho/' }),
+        title: 'Meccha Kimochi Yokattassho?'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/hentai/meccha-kimochi-yokattassho/english/?style=list',
+        title: 'English'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 185_694,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

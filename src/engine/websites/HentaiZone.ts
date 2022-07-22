@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './HentaiZone.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/hentaizone\.xyz\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/hentaizone\.xyz\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hentaizone', 'HentaiZone', 'https://hentaizone.xyz'/*, Tags.Media., Tags.Language.*/);
+        super('hentaizone', 'HentaiZone', 'https://hentaizone.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Rating.Erotica);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class HentaiZone extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'hentaizone';
-        super.label = 'HentaiZone';
-        this.tags = [ 'webtoon', 'hentai', 'french' ];
-        this.url = 'https://hentaizone.xyz';
-    }
-}
-*/
