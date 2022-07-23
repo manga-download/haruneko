@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'hscans',
         title: 'HSCANS'
-    }/*,
+    },
     container: {
-        url: 'https://hscans.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://hscans.com/manga/sleeping-with-enemy/',
+        id: JSON.stringify({ post: '231', slug: '/manga/sleeping-with-enemy/' }),
+        title: 'Sleeping With Enemy'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/sleeping-with-enemy/chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 854_503,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

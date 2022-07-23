@@ -11,7 +11,7 @@ const config = {
         title: 'Kimetsu No Yaiba'
     },
     child: {
-        id: encodeURI('/ar/kimetsu-no-yaiba/الفصل-1-قسوة/?style=list').toLowerCase(),
+        id: encodeURI('/ar/kimetsu-no-yaiba/الفصل-1-قسوة/').toLowerCase(),
         title: 'الفصل 1 : قسوة'
     },
     entry: {

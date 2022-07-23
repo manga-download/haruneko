@@ -11,7 +11,7 @@ const config = {
         title: 'Meccha Kimochi Yokattassho?'
     },
     child: {
-        id: '/hentai/meccha-kimochi-yokattassho/english/?style=list',
+        id: '/hentai/meccha-kimochi-yokattassho/english/',
         title: 'English'
     },
     entry: {

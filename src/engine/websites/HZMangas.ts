@@ -1,5 +1,4 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './HZMangas.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hzmangas', 'Hz Manga', 'http://hzmangas.com'/*, Tags.Media., Tags.Language.*/);
+        super('hzmangas', 'Hz Manga', 'https://hzmangas.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class HZMangas extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'hzmangas';
-        super.label = 'Hz Manga';
-        this.tags = [ 'webtoon', 'spanish' ];
-        this.url = 'http://hzmangas.com';
-    }
-}
-*/
