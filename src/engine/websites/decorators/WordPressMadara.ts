@@ -1,7 +1,7 @@
 // https://mangabooth.com/product/wp-manga-theme-madara/
 
 import { FetchRequest, FetchCSS, FetchHTML } from '../../FetchProvider';
-import { type MangaScraper, type MangaPlugin, Manga, Chapter, type Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 import * as Common from './Common';
 
@@ -23,6 +23,9 @@ const queryChapterListLinks = [
 ].join(', ');
 const queryChapterListBloat = [
     'span.chapter-release-date'
+].join(', ');
+const queryPageListSelector = [
+    'select#single-pager'
 ].join(', ');
 const queryPageListLinks = 'div.page-break img';
 
@@ -306,12 +309,10 @@ export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks, extract 
  ******** Page List Extraction Methods ********
  **********************************************/
 
-function CreateImageExtractor(this: MangaScraper) {
-    return (image: HTMLImageElement): string => {
-        const url = image.dataset?.src || image.dataset?.lazySrc || image.srcset || image.src;
-        const uri = new URL(url.trim(), this.URI);
-        return DeProxify(uri).href;
-    };
+function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement): string {
+    const url = image.dataset?.src || image.dataset?.lazySrc || image.srcset || image.src;
+    const uri = new URL(url.trim(), this.URI);
+    return DeProxify(uri).href;
 }
 
 /**
@@ -322,7 +323,21 @@ function CreateImageExtractor(this: MangaScraper) {
  * @param query A CSS query to locate the elements from which the page information shall be extracted
  */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query = queryPageListLinks): Promise<Page[]> {
-    return Common.FetchPagesSinglePageCSS.call(this, chapter, query, CreateImageExtractor.call(this));
+    const uri = new URL(chapter.Identifier, this.URI);
+    let request = new FetchRequest(uri.href);
+    const [ body ] = await FetchCSS<HTMLBodyElement>(request, 'body');
+    let data: HTMLImageElement[] = [];
+    if(body.querySelector(queryPageListSelector)) {
+        uri.searchParams.set('style', 'list');
+        request = new FetchRequest(uri.href);
+        data = await FetchCSS<HTMLImageElement>(request, query);
+    } else {
+        data = [...body.querySelectorAll<HTMLImageElement>(query)];
+    }
+    return data.map(element => {
+        const link = new URL(ChapterPageExtractor.call(this, element), request.url);
+        return new Page(this, chapter, link, { Referer: uri.href });
+    });
 }
 
 /**
