@@ -1,12 +1,12 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'imperiodosotakus',
-        title: 'Imperio dos Otakus'
+        id: 'imperfectcomic',
+        title: 'Imperfect Comic'
     }/*,
     container: {
-        url: 'https://imperiodosotakus.tk/manga/.../',
+        url: 'https://imperfectcomic.com/manga/.../',
         id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
         title: 'Manga ?'
     },

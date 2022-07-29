@@ -1,86 +1,53 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './InstaManhwa.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import { FetchCSS, FetchRequest } from '../FetchProviderNodeWebkit';
 
-@Madara.MangaCSS(/^https?:\/\/www\.instamanhwa\.com\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+const extract = Common.AnchorInfoExtractor(false, 'span.chapter-release-date');
+
+@Madara.MangaCSS(/^https?:\/\/www\.instamanhwa\.com\/manga\/[^/]+$/, 'div.post-title h1')
+@Madara.MangasMultiPageCSS('div.post-title h3 a', 0, '/latest?page={page}')
 @Madara.PagesSinglePageCSS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('instamanhwa', 'InstaManhwa', 'https://www.instamanhwa.com'/*, Tags.Media., Tags.Language.*/);
+        super('instamanhwa', 'InstaManhwa', 'https://www.instamanhwa.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Rating.Erotica);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class InstaManhwa extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'instamanhwa';
-        super.label = 'InstaManhwa';
-        this.tags = [ 'webtoon', 'hentai', 'english' ];
-        this.url = 'https://www.instamanhwa.com';
-
-        this.queryTitleForURI = 'div.profile-manga div.post-title h1';
+    private async GetToken(manga: Manga): Promise<string> {
+        const { slug } = JSON.parse(manga.Identifier);
+        const uri = new URL(slug, this.URI);
+        const request = new FetchRequest(uri.href, {});
+        const data = await FetchCSS<HTMLMetaElement>(request, 'meta[name="csrf-token"]');
+        return data.shift().content;
     }
 
-    async _getMangas() {
-        let mangaList = [];
-        for (let page = 1, run = true; run; page++) {
-            let mangas = await this._getMangasFromPage(page);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    async _getMangasFromPage(page) {
-        const uri = new URL('/latest?page=' + page, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryMangas);
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const id = JSON.parse(manga.Identifier) as { post: string, slug: string };
+        const uri = new URL('/ajax', this.URI);
+        const request = new FetchRequest(uri.href, {
+            method: 'POST',
+            body: new URLSearchParams({
+                '_token': await this.GetToken(manga),
+                'action': 'manga_get_chapters',
+                'manga': id.post
+            }).toString(),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Referer': this.URI.href
+            }
+        });
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul li.wp-manga-chapter > a');
         return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.text.trim()
-            };
+            const { id, title } = extract.call(this, element);
+            return new Chapter(this, manga, id, title);
         });
     }
-
-    async _getChapters(manga) {
-        const script = `
-            new Promise((resolve, reject) => {
-                const timer = setInterval(() => {
-                    try {
-                        const list = document.querySelector('div#manga-chapters-holder ul')
-                        if(list) {
-                            clearInterval(timer);
-                            const chapters = [...list.querySelectorAll('${this.queryChapters}')].map(element => {
-                                return {
-                                    id: element.pathname,
-                                    title: element.text.trim()
-                                }
-                            });
-                            resolve(chapters);
-                        }
-                    } catch(error) {
-                        reject(error);
-                    }
-                }, 500);
-            });
-        `;
-        const uri = new URL(manga.id, this.url);
-        const request = new Request(uri, this.requestOptions);
-        return Engine.Request.fetchUI(request, script);
-    }
 }
-*/

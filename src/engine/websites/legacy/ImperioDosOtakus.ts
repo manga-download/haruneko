@@ -1,15 +1,11 @@
 // Auto-Generated export from HakuNeko Legacy
 //import { Tags } from '../Tags';
 import icon from './ImperioDosOtakus.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
-import * as Common from './decorators/Common';
+import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+//import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/imperiodosotakus\.tk\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
-@Common.ImageDirect()
+// TODO: Moved to http://imperiodosotakus.epizy.com/
+//@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

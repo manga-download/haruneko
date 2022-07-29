@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'ikifeng',
         title: 'Ikifeng'
-    }/*,
+    },
     container: {
-        url: 'https://ikifeng.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://ikifeng.com/manga/aporia/',
+        id: JSON.stringify({ post: '2189', slug: '/manga/aporia/' }),
+        title: 'Aporia'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/aporia/capitulo-0/',
+        title: 'Capitulo 0'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 333_677,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
