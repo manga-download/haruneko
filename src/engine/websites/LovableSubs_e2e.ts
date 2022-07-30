@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'lovablesubs',
         title: 'lovablesubs'
-    }/*,
+    },
     container: {
-        url: 'https://lovablesubs.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://lovablesubs.com/seriler/oddeye/',
+        id: JSON.stringify({ post: '1981', slug: '/seriler/oddeye/' }),
+        title: 'Oddeye'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/seriler/oddeye/0-bolum/',
+        title: '0. Bölüm'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 529_570,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

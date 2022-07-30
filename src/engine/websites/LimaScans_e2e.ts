@@ -1,24 +1,25 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const config : Config = {
     plugin: {
         id: 'limascans',
         title: 'Lima Scans'
-    }/*,
+    },
     container: {
-        url: 'http://limascans.xyz/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'http://limascans.xyz/v2/manga/meikyuu-black-company/',
+        id: JSON.stringify({ post: '83', slug: '/v2/manga/meikyuu-black-company/' }),
+        title: 'Meikyuu Black Company'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/v2/manga/meikyuu-black-company/capitulo-01/',
+        title: 'Capítulo 01'
     },
     entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        index: 1,
+        size: 1_633_426,
+        type: 'image/jpeg',
+        timeout: 15_000
+    }
 };
 
 const fixture = new TestFixture(config);

@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'lilymanga',
         title: 'Lily Manga'
-    }/*,
+    },
     container: {
-        url: 'https://lilymanga.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://lilymanga.com/ys/liberty/',
+        id: JSON.stringify({ post: '232', slug: '/ys/liberty/' }),
+        title: 'Liberty'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/ys/liberty/chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 2_093_370,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);

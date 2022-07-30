@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'leviatanscans',
         title: 'LeviatanScans'
-    }/*,
+    },
     container: {
-        url: 'https://leviatanscans.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://leviatanscans.com/hy/manga/my-dad-is-too-strong/',
+        id: JSON.stringify({ post: '24', slug: '/hy/manga/my-dad-is-too-strong/' }),
+        title: 'My Dad is Too Strong'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/hy/manga/my-dad-is-too-strong/01/',
+        title: '01'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 708_019,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

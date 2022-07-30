@@ -1,12 +1,12 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'luxyscans',
-        title: 'LuxyScans'
+        id: 'tumanhwas',
+        title: 'TuManhwas'
     }/*,
     container: {
-        url: 'https://luxyscans.com/manga/.../',
+        url: 'https://tumanhwas.com/manga/.../',
         id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
         title: 'Manga ?'
     },
