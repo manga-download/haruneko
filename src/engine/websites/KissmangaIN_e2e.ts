@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'kissmangain',
         title: 'Kissmanga'
-    }/*,
+    },
     container: {
-        url: 'https://kissmanga.in/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://kissmanga.in/kissmanga/one-piece-kpp/',
+        id: JSON.stringify({ post: '274', slug: '/kissmanga/one-piece-kpp/' }),
+        title: 'One Piece'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/kissmanga/one-piece-kpp/chapter-1-romance-dawn/',
+        title: 'Chapter 1 Romance Dawn'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 159_252,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

@@ -3,22 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'isekaiscan',
-        title: 'IsekaiScan'
-    }/*,
+        title: 'Isekai Scan'
+    },
     container: {
-        url: 'https://isekaiscan.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://isekaiscan.com/manga/magic-emperor/',
+        id: JSON.stringify({ post: '16763', slug: '/manga/magic-emperor/' }),
+        title: 'Magic Emperor'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/magic-emperor/chapter-1/',
+        title: 'chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 56_861,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('komiktap', `KomikTap`, 'https://komiktap.in' /*, Tags.Language.English, Tags ... */);
+        super('komiktap', `KomikTap`, 'https://194.233.66.232' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
