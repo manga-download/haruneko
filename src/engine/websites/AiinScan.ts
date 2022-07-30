@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/aiinscan.xyz\/manga\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^https?:\/\/aiinscan.xyz\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Aiin Scan"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()

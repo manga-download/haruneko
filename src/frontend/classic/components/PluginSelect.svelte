@@ -226,8 +226,6 @@
                         size="small"
                         kind="secondary"
                         tooltipPosition="left"
-                        icon={ArrowUpRight}
-                        iconDescription="Open website URL"
                         on:click={(e) => {
                             e.stopPropagation();
                         }}
@@ -238,7 +236,6 @@
     </DataTable>
     <Pagination
         bind:pageSize={pagination.pageSize}
-        bind:page={pagination.page}
         totalItems={pagination.totalItems}
         pageSizes={pagination.pageSizes}
     />

@@ -1,14 +1,15 @@
 // Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+//import { Tags } from '../Tags';
 import icon from './ImperioDosOtakus.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+//import * as Common from './decorators/Common';
 
+// TODO: Moved to http://imperiodosotakus.epizy.com/
+//@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('imperiodosotakus', `Imperio dos Otakus`, 'https://imperiodosotakus.tk' /*, Tags.Language.English, Tags ... */);
+        super('imperiodosotakus', 'Imperio dos Otakus', 'https://imperiodosotakus.tk'/*, Tags.Media., Tags.Language.*/);
     }
 
     public override get Icon() {
