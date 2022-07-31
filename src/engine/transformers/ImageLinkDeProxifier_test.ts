@@ -48,20 +48,18 @@ describe('ImageProxyTransformer', () => {
             expect(() => testee(uri)).toThrowError(/Invalid URL/i);
         });
 
-        it('Should transform statically proxy', () => {
-            const samples = [
-                'https://cdn.statically.io/img/cdn.image.host/picture.png',
-                'https://cdn.statically.io/img/cdn.image.host/w=123/picture.png',
-                'https://cdn.statically.io/img/cdn.image.host/h=123/picture.png',
-                'https://cdn.statically.io/img/cdn.image.host/q=123/picture.png',
-                'https://cdn.statically.io/img/cdn.image.host/f=auto/picture.png',
-                'https://cdn.statically.io/img/cdn.image.host/w=1200,h=2600/picture.png',
-                'https://cdn.statically.io/img/cdn.image.host/w=1200,h=2600,q=80,f=auto/picture.png'
-            ];
-            for(const sample of samples) {
-                const uri = new URL(sample);
-                expect(testee(uri).href).toBe('https://cdn.image.host/picture.png');
-            }
+        it.each([
+            'https://cdn.statically.io/img/cdn.image.host/picture.png',
+            'https://cdn.statically.io/img/cdn.image.host/w=123/picture.png',
+            'https://cdn.statically.io/img/cdn.image.host/h=123/picture.png',
+            'https://cdn.statically.io/img/cdn.image.host/q=123/picture.png',
+            'https://cdn.statically.io/img/cdn.image.host/f=auto/picture.png',
+            'https://cdn.statically.io/img/cdn.image.host/w=1200,h=2600/picture.png',
+            'https://cdn.statically.io/img/cdn.image.host/w=1200,h=2600,q=80,f=auto/picture.png',
+            'https://cdn.statically.io/img/bacakomik/cdn.image.host/picture.png',
+        ])('Should transform statically proxy', url => {
+            const uri = new URL(url);
+            expect(testee(uri).href).toBe('https://cdn.image.host/picture.png');
         });
     });
 });
