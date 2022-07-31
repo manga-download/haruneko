@@ -20,7 +20,9 @@ function DeProxifyWordPressPassthru(uri: URL): URL {
 
 function DeProxifyStatically(uri: URL): URL {
     const url = uri.href
-        .replace(/cdn\.statically\.io\/img\//, '')
+        // NOTE: The indonesian developer of statically.io (Frans Allen) seems to be affiliated with BacaKomik
+        //       and added support for some kind of optional URL branding => remove known brands from URL
+        .replace(/cdn\.statically\.io\/img\/(bacakomik\/)?/, '')
         .replace(/\/(w=\d+|h=\d+|q=\d+|f=auto)(,(w=\d+|h=\d+|q=\d+|f=auto))*\//, '/');
     return new URL(url);
 }
