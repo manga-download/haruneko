@@ -12,6 +12,7 @@
         "build:app": "node scripts/build-app.mjs",
         "test": "jest --detectOpenHandles --config=test/jest.config.js",
         "test:e2e": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --config=test/jest.e2e.js",
+        "test:websites": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --config=test/jest.websites.js",
         "serve:web-dev": "vite --port=3000 --strictPort",
         "serve:web-prod": "npm run build:web && vite preview --port=5000 --strictPort",
         "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw build.app",
