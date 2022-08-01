@@ -1,0 +1,141 @@
+= Add Website Guide
+:toc:
+:numbered:
+:icons: font
+:linkattrs:
+:imagesdir: ./assets
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+== Introduction
+
+This document briefly describes how to add a new websites to HakuNeko.
+
+[#decorators]
+== Decorators
+
+The latest version of HakuNeko adds support for defining and using decorators.
+Decorates can add one or more pre-defined behaviors to a class definition.
+This is useful if the same behavior should be applied to multiple classes, such as opening an HTML page, find a certain `img` tag and extract its `src` attribute.
+
+== Add a Manga Website
+
+Each new wesbite must extend the `DecoratableMangaScraper` located in _/src/engine/providers/MangaPlugin.ts_.
+Get started by creating a new typescript file in _/src/engine/websites_ based on the name of the website, e.g. _MySampleMangas.ts_.
+Use the following boiler plate, but customize the constructor with appropriate arguments for the website:
+
+- `identifier` a unique string to distinguish and identifiy this website implementation
+- `name` a user friendly string that will be shown as the name of the website
+- `url` the origin of the website
+- `...tags` one or more comma seperated tags used to describe/categorize the content of the website
+
+_MySampleMangas.ts_
+```typescript
+import { Tags } from '../Tags';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+
+export default class extends DecoratableMangaScraper {
+
+    public constructor() {
+        super('mysamplemangas', 'My Sample Mangas', 'https://my-sample-mangas.net', Tags.Media.Manga, Tags.Language.English);
+    }
+}
+```
+
+After that, run `node ./scripts/website-index.js` to automatically update the import in _/src/engine/websites/_index.ts_ (otherwise the website will not be available in HakuNeko).
+
+=== Provide Icon (optional)
+
+Each website may provide an icon to make it easier for users to identify the website (e.g. in user interface).
+After finding or creating an icon, store it along the previously created file (e.g. _MySampleMangas.webp_) and use _WEBP_ with a quality of _50%_ and size of _64x64_, to ensure it size is below [4 KB](https://vitejs.dev/config/build-options.html#build-assetsinlinelimit).
+In the existing implementation import the icon and override the `Icon` property.
+
+_MySampleMangas.ts_
+```typescript
+import { Tags } from '../Tags';
+import icon from './MySampleMangas.webp';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+
+export default class extends DecoratableMangaScraper {
+
+    public constructor() {
+        super('mysamplemangas', 'My Sample Mangas', 'https://my-sample-mangas.net', Tags.Media.Manga, Tags.Language.English);
+    }
+
+    public override get Icon(): string {
+        return icon;
+    }
+}
+```
+
+=== Implement Copy & Paste Support
+
+...
+
+==== Using Method
+
+...
+
+==== Using Decorator
+
+...
+
+=== Implement Manga List
+
+...
+
+==== Using Method
+
+...
+
+==== Using Decorator
+
+...
+
+
+=== Implement Chapter List
+
+...
+
+==== Using Method
+
+...
+
+==== Using Decorator
+
+...
+
+
+=== Implement Page List
+
+...
+
+==== Using Method
+
+...
+
+==== Using Decorator
+
+...
+
+
+=== Implement Image 
+
+...
+
+==== Using Method
+
+...
+
+==== Using Decorator
+
+...
+
+=== Write and Run Test
+
+...
