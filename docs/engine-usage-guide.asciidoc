@@ -257,7 +257,32 @@ URL.revokeObjectURL(imageURL);
 
 == Managing Bookmarks
 
-https://github.com/manga-download/haruneko/issues/41
+...
+
+```javascript
+// Get a website plugin
+const sheepscanlations = HakuNeko.PluginController.WebsitePlugins.find(plugin => plugin.Identifier.includes('sheep'));
+// Update manga list
+await sheepscanlations.Update();
+// Get a manga from the list that shall be bookmarked
+const manga = await sheepscanlations.Entries[0];
+// Update chapter list
+await manga.Update();
+// Remove a chapter to pretend the list is outdated
+manga.Entries.pop();
+// Add manga with outdated chapter list to bookmark
+await HakuNeko.BookmarkPlugin.Add(manga);
+// Get a handle to the bookmark
+const bookmark = HakuNeko.BookmarkPlugin.Entries[0];
+// Set the current chapter list as "known" chapters (e.g. may be done everytime the user reads the chapter list ...)
+await bookmark.ApplyEntriesAsKnownEntries();
+// Check for new chapters => this contains the chapter we pretended to not be in the previous list
+await bookmark.GetNewEntries();
+// Can remove bookmark since it was only for testing purposes ...
+await HakuNeko.BookmarkPlugin.Remove(bookmark);
+```
+
+See also: https://github.com/manga-download/haruneko/issues/41
 
 === Tracker Information
 
