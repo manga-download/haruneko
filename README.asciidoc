@@ -135,3 +135,17 @@ To start these tests, simply run
 ```sh
 npm run test:e2e
 ```
+
+#### Website Tests
+Website tests (file extension `⋆.e2e.ts` in _/src/engine/websites_) will run some basic checks for each website.
+The environment for these tests is a running instance of the NW.js production build, controlled by the tests through `puppeteer`.
+[WARNING]
+Running all tests will take very very long and may use up a lot of your internet bandwidth.
+
+To start these test(s), simply run
+```sh
+# Test all websites
+npm run test:websites
+# Test certain website
+npm run test:websites -- MangaDex
+```
