@@ -4,7 +4,7 @@ import { StorageControllerBrowser } from './StorageControllerBrowser';
 export const enum Store {
     Settings = 'Settings',
     Bookmarks = 'Bookmarks',
-    Itemmarks = 'Itemmarks',
+    Itemflags = 'Itemflags',
     MediaLists = 'MediaLists',
 }
 

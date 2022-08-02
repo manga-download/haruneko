@@ -5,7 +5,7 @@ import { Initialize as InitGlobalSettings } from './SettingsGlobal';
 import { Tags } from './Tags';
 import { PluginController } from './PluginController';
 import { BookmarkPlugin } from './providers/BookmarkPlugin';
-import { ItemmarkManager } from './ItemmarkManager';
+import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
 import { SettingsManager } from './SettingsManager';
 import { DownloadManager } from './DownloadManager';
@@ -16,7 +16,7 @@ export class HakuNeko {
     readonly #settingsManager: SettingsManager;
     readonly #pluginController: PluginController;
     readonly #bookmarkPlugin: BookmarkPlugin;
-    readonly #itemmarkManager: ItemmarkManager;
+    readonly #itemflagManager: ItemflagManager;
     readonly #downloadManager: DownloadManager;
 
     constructor(info?: PlatformInfo) {
@@ -27,7 +27,7 @@ export class HakuNeko {
         this.#settingsManager = new SettingsManager(this.#storageController);
         this.#pluginController = new PluginController(this.#storageController, this.#settingsManager);
         this.#bookmarkPlugin = new BookmarkPlugin(this.#storageController, this.#pluginController);
-        this.#itemmarkManager = new ItemmarkManager(this.#storageController);
+        this.#itemflagManager = new ItemflagManager(this.#storageController);
         this.#downloadManager = new DownloadManager(this.#storageController);
     }
 
@@ -51,8 +51,8 @@ export class HakuNeko {
         return this.#bookmarkPlugin;
     }
 
-    public get ItemmarkManager(): ItemmarkManager {
-        return this.#itemmarkManager;
+    public get ItemflagManager(): ItemflagManager {
+        return this.#itemflagManager;
     }
     public get DownloadManager(): DownloadManager {
         return this.#downloadManager;
