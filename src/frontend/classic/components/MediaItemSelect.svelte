@@ -17,11 +17,11 @@
     import { selectedMedia, selectedItem } from '../Stores';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
-    import { ItemMark, MarkType } from '../../../engine/ItemmarkManager';
+    import { ItemFlag, FlagType } from '../../../engine/ItemflagManager';
 
     let items: IMediaContainer[] = [];
     let filteredItems: IMediaContainer[] = [];
-    let marks: ItemMark[] = [];
+    let flags: ItemFlag[] = [];
 
     let loadItem: Promise<void>;
     let selectedItems: IMediaContainer[] = [];
@@ -66,10 +66,12 @@
         }
     }
 
-    selectedMedia.subscribe((value) => {
+    selectedMedia.subscribe(async (value) => {
         items = [];
         selectedItems = [];
-        if (value) marks = HakuNeko.ItemmarkManager.Find(value);
+        flags = value
+            ? await HakuNeko.ItemflagManager.GetContainerItemsFlags(value)
+            : [];
         loadItem = value?.Update().then(() => {
             items = (value?.Entries as IMediaContainer[]) ?? [];
         });
@@ -97,24 +99,40 @@
             labelText="View"
             shortcutText="⌘V"
             on:click={() => {
-                window.HakuNeko.ItemmarkManager.Add(
-                    selectedItems[0],
-                    MarkType.Viewed
-                );
                 $selectedItem = selectedItems[0];
             }}
         />
-        <ContextMenuOption
-            indented
-            labelText="MarkAsViewed"
-            shortcutText="⌘V"
-            on:click={async () => {
-                marks = await HakuNeko.ItemmarkManager.Add(
-                    selectedItems[0],
-                    MarkType.Viewed
-                );
-            }}
-        />
+        <ContextMenuOption indented labelText="Flag as">
+            <ContextMenuOption
+                indented
+                labelText="Not viewed"
+                on:click={async () => {
+                    window.HakuNeko.ItemflagManager.UnflagItem(
+                        selectedItems[0]
+                    );
+                }}
+            />
+            <ContextMenuOption
+                indented
+                labelText="Viewed"
+                on:click={async () => {
+                    window.HakuNeko.ItemflagManager.FlagItem(
+                        selectedItems[0],
+                        FlagType.Viewed
+                    );
+                }}
+            />
+            <ContextMenuOption
+                indented
+                labelText="Current"
+                on:click={async () => {
+                    window.HakuNeko.ItemflagManager.FlagItem(
+                        selectedItems[0],
+                        FlagType.Current
+                    );
+                }}
+            />
+        </ContextMenuOption>
     {/if}
     <ContextMenuDivider />
     <ContextMenuOption indented labelText="Copy">
@@ -124,7 +142,6 @@
         </ContextMenuGroup>
     </ContextMenuOption>
     <ContextMenuDivider />
-    <ContextMenuOption indented labelText="Bookmark" shortcutText="⌘B" />
 </ContextMenu>
 
 <div id="Item" transition:fade>
@@ -166,7 +183,6 @@
             {#each filteredItems as item}
                 <MediaItem
                     {item}
-                    mark={HakuNeko.ItemmarkManager.getMark(item, marks)}
                     selected={selectedItems.includes(item)}
                     on:view={(e) => {
                         selectedItems.push(e.detail);
