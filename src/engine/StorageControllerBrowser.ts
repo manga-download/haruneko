@@ -27,7 +27,7 @@ const VersionUpgrades = [
     },
     // V4 => V5
     function V5(db: IDBDatabase) {
-        db.createObjectStore(Store.Itemmarks);
+        db.createObjectStore(Store.Itemflags);
     },
 ];
 
