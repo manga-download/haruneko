@@ -2,11 +2,13 @@ import { GetLocale } from '../i18n/Localization';
 import { Event } from '../engine/Event';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
+import { Info as InfoBarelyFluent } from './barely-fluent/FrontendInfo';
 import { CreateWindowController } from './WindowController';
 
 const frontendSelector = '#app';
 const frontendList: IFrontendInfo[] = [
-    InfoClassic
+    InfoClassic,
+    InfoBarelyFluent
 ];
 
 export interface IFrontendController {
