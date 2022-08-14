@@ -23,20 +23,18 @@ export enum InvariantResourceKey {
 
 /**
  * All pre-defined identifiers that must be provided by any localization {@link IResource} implementation.
+ * Using merged enum for structuring ...
  */
+
+// [SECTION]: Frontends (Common)
 export enum VariantResourceKey {
-
-    // [SECTION]: FrontendController
-
     FrontendController_Reload_ConfirmNotice = 'FrontendController_Reload_ConfirmNotice',
-
-    // [SECTION]: Frontend (Common/Shared)
-
     Frontend_Product_Title = 'Frontend_Product_Title',
     Frontend_Product_Description = 'Frontend_Product_Description',
+}
 
-    // [SECTION]: Frontend Classic
-
+// [SECTION]: Frontend Classic
+export enum VariantResourceKey {
     Frontend_Classic_Settings_FuzzySearch = 'Frontend_Classic_Settings_FuzzySearch',
     Frontend_Classic_Settings_FuzzySearchInfo = 'Frontend_Classic_Settings_FuzzySearchInfo',
     Frontend_Classic_Settings_Theme = 'Frontend_Classic_Settings_Theme',
@@ -57,9 +55,10 @@ export enum VariantResourceKey {
     Frontend_Classic_Settings_ViewerReverseDirectionInfo = 'Frontend_Classic_Settings_ViewerReverseDirectionInfo',
     Frontend_Classic_Settings_ViewerDoublePage = 'Frontend_Classic_Settings_ViewerDoublePage',
     Frontend_Classic_Settings_ViewerDoublePageInfo = 'Frontend_Classic_Settings_ViewerDoublePageInfo',
+}
 
-    // [SECTION]: Engine
-
+// [SECTION]: Engine
+export enum VariantResourceKey {
     Settings_Global_Language = 'Settings_Global_Language',
     Settings_Global_LanguageInfo = 'Settings_Global_LanguageInfo',
     Settings_Global_MediaDirectory = 'Settings_Global_MediaDirectory',
@@ -83,9 +82,10 @@ export enum VariantResourceKey {
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
+}
 
-    // [SECTION]: Tags
-
+// [SECTION]: Tags
+export enum VariantResourceKey {
     Tags_Media = 'Tags_Media',
     Tags_Media_Manga = 'Tags_Media_Manga',
     Tags_Media_MangaDescription = 'Tags_Media_MangaDescription',
@@ -134,21 +134,25 @@ export enum VariantResourceKey {
     Tags_Language_Turkish = 'Tags_Language_Turkish',
     Tags_Language_Vietnamese = 'Tags_Language_Vietnamese',
     Tags_Others = 'Tags_Others',
+}
 
-    // [SECTION]: Trackers
-
+// [SECTION]: Tracker Kitsu
+export enum VariantResourceKey {
     Tracker_Kitsu_Settings_Username = 'Tracker_Kitsu_Settings_Username',
     Tracker_Kitsu_Settings_UsernameInfo = 'Tracker_Kitsu_Settings_UsernameInfo',
     Tracker_Kitsu_Settings_Password = 'Tracker_Kitsu_Settings_Password',
     Tracker_Kitsu_Settings_PasswordInfo = 'Tracker_Kitsu_Settings_PasswordInfo',
+}
 
-    // [SECTION]: Websites
-
+// [SECTION]: Websites (Common)
+export enum VariantResourceKey {
     Plugin_Settings_Throttling = 'Plugin_Settings_Throttling',
     Plugin_Settings_ThrottlingInfo = 'Plugin_Settings_ThrottlingInfo',
-
     Plugin_Common_MangasNotSupported = 'Plugin_Common_MangasNotSupported',
+}
 
+// [SECTION]: Website SheepScanlations
+export enum VariantResourceKey {
     Plugin_SheepScanlations_Settings_Username = 'Plugin_SheepScanlations_Settings_Username',
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
