@@ -43,10 +43,12 @@
         on:click
         on:contextmenu
     >
-        <span on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
+        <span
+            class="download"
+            on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
             ><CloudDownload class="download" /></span
         >
-        <span on:click={() => dispatch('view', item)}>
+        <span class="view" on:click={() => dispatch('view', item)}>
             {#if flagtype === FlagType.Viewed}
                 <ViewFilled />
             {:else if flagtype === FlagType.Current}
@@ -72,5 +74,11 @@
     }
     .listitem.selected {
         background-color: var(--cds-active-ui);
+    }
+    .listitem .view:hover {
+        color: var(--cds-active-ui);
+    }
+    .listitem .download:hover {
+        color: var(--cds-active-ui);
     }
 </style>
