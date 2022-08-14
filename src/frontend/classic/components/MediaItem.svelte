@@ -55,7 +55,7 @@
                 <View />
             {/if}
         </span>
-        {item.Title}
+        <span title={item.Title}>{item.Title}</span>
     </div>
 {/if}
 
