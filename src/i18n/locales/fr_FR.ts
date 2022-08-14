@@ -1,6 +1,12 @@
 import type { IResource } from '../ILocale';
+import { en_US } from './en_US';
 
 export const fr_FR: IResource = {
+    // NOTE: Use defaults from 'en_US' for missing translations
+    //       => can be removed when translation is complete
+    ...en_US,
+
+    _: '🇫🇷 Français (FR)',
 
     // [SECTION]: FrontendController
 
@@ -12,6 +18,7 @@ export const fr_FR: IResource = {
     Frontend_Product_Description: 'Manga, Anime et Novel Téléchargeur',
 
     // [SECTION]: Frontend Classic
+
     Frontend_Classic_Settings_FuzzySearch:'Fuzzy Search',
     Frontend_Classic_Settings_FuzzySearchInfo:'Enable fuzzy search on filters (approximative matching)',
     Frontend_Classic_Settings_Theme: 'Theme',
@@ -37,9 +44,6 @@ export const fr_FR: IResource = {
 
     Settings_Global_Language: 'Language',
     Settings_Global_LanguageInfo: 'Select the language for the user interface',
-    Settings_Global_Language_enUS: '🇺🇸 English (US)', // This must not be localized (native speakers must be able to recognize their language option)!
-    Settings_Global_Language_frFR: '🇫🇷 Français (FR)', // This must not be localized (native speakers must be able to recognize their language option)!
-    Settings_Global_Language_deDE: '🇩🇪 Deutsch (DE)', // This must not be localized (native speakers must be able to recognize their language option)!
     Settings_Global_MediaDirectory: 'Media Directory',
     Settings_Global_MediaDirectoryInfo: 'Select the directory where HakuNeko store the downloads',
     Settings_Global_WebsiteSubDirectory: 'Use Sub-Directories',

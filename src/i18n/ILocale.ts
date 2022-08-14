@@ -5,15 +5,27 @@ export type ILocale = Record<ResourceKey, (...params: string[]) => string>;
  * All supported langauage codes (must be unique).
  */
 export enum Code {
-    en_US = 'en_US',
-    fr_FR = 'fr_FR',
+    ar_AE = 'ar_AE',
     de_DE = 'de_DE',
+    en_US = 'en_US',
+    es_ES = 'es_ES',
+    fil_PH = 'fil_PH',
+    fr_FR = 'fr_FR',
+    in_ID = 'in_ID',
+    pt_BR = 'pt_BR',
+    ru_RU = 'ru_RU',
+    th_TH = 'th_TH',
+    tr_TR = 'tr_TR',
+    zh_CN = 'zh_CN',
 }
 
 /**
  * All pre-defined identifiers that must be provided by any localization {@link IResource} implementation.
  */
 export enum ResourceKey {
+
+    // NOTE: The visual representation of the locale itself (e.g. for locale-agnostic language selection)
+    _ = '_',
 
     // [SECTION]: FrontendController
 
@@ -25,6 +37,7 @@ export enum ResourceKey {
     Frontend_Product_Description = 'Frontend_Product_Description',
 
     // [SECTION]: Frontend Classic
+
     Frontend_Classic_Settings_FuzzySearch = 'Frontend_Classic_Settings_FuzzySearch',
     Frontend_Classic_Settings_FuzzySearchInfo = 'Frontend_Classic_Settings_FuzzySearchInfo',
     Frontend_Classic_Settings_Theme = 'Frontend_Classic_Settings_Theme',
@@ -50,9 +63,6 @@ export enum ResourceKey {
 
     Settings_Global_Language = 'Settings_Global_Language',
     Settings_Global_LanguageInfo = 'Settings_Global_LanguageInfo',
-    Settings_Global_Language_enUS = 'Settings_Global_Language_enUS',
-    Settings_Global_Language_frFR = 'Settings_Global_Language_frFR',
-    Settings_Global_Language_deDE = 'Settings_Global_Language_deDE',
     Settings_Global_MediaDirectory = 'Settings_Global_MediaDirectory',
     Settings_Global_MediaDirectoryInfo = 'Settings_Global_MediaDirectoryInfo',
     Settings_Global_WebsiteSubDirectory = 'Settings_Global_WebsiteSubDirectory',
