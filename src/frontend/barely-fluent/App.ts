@@ -15,13 +15,9 @@ const styles: ElementStyles = css`
         color: var(--neutral-foreground-rest);
         user-select: none;
     }
-
     #titlebar {
     }
-
     #content {
-        padding: 8px;
-        overflow: hidden;
     }
 `;
 
@@ -30,6 +26,7 @@ const template: ViewTemplate<App> = html`
     <div id="content">
         <fluent-accordion-website :selected=${model => model.website} @changed=${(model, ctx) => model.WebsiteChanged(ctx.event.currentTarget as WebsitePlugin)}></fluent-accordion-website>
         <fluent-accordion-mediacontainer :parent=${model => model.website} @changed=${(model, ctx) => model.ContainerChanged(ctx.event.currentTarget as MediaContainer)}></fluent-accordion-mediacontainer>
+        <div style="border: 1px dotted red;"></div>
     </div>
 `;
 

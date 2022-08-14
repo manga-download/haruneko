@@ -1,5 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+import S from '../services/StateService';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
 import IconCase from '@vscode/codicons/src/icons/case-sensitive.svg?raw';
@@ -52,35 +53,36 @@ const styles: ElementStyles = css`
         overflow-y: scroll;
         overflow-x: hidden;
     }
+    .hint {
+        padding: calc(var(--design-unit) * 1px);
+        color: var(--neutral-foreground-hint);
+    }
 `;
 
 const selected: ViewTemplate<MediaContainer> = html`
     <img id="logo" slot="start" src="${model => model.selected.Icon}"></img>
-    <div id="title" slot="heading">
-        ${model => model.selected.Title}
-        (${model => model.updating ? '?' : model.selected.Entries.length})
-    </div>
+    <div id="title" slot="heading">${model => model.selected.Title}</div>
 `;
 
 const busy: ViewTemplate<MediaContainer> = html`
     <fluent-progress-ring id="busy-status"></fluent-progress-ring>
-    <fluent-tooltip anchor="busy-status">LOCALE:MediaContainer_BusyStatus_Description</fluent-tooltip>
+    <fluent-tooltip anchor="busy-status">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_BusyStatus_Description()}</fluent-tooltip>
 `;
 
 const unstarred: ViewTemplate<MediaContainer> = html`
     <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.AddFavorite()}>${IconAddBookmark}</fluent-button>
-    <fluent-tooltip anchor="add-favorite-button">LOCALE:MediaContainer_AddBookmarkButton_Description</fluent-tooltip>
+    <fluent-tooltip anchor="add-favorite-button">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_AddBookmarkButton_Description()}</fluent-tooltip>
 `;
 
 const starred: ViewTemplate<MediaContainer> = html`
     <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.RemoveFavorite()}>${IconRemoveBookmark}</fluent-button>
-    <fluent-tooltip anchor="remove-favorite-button">LOCALE:MediaContainer_RemoveBookmarkButton_Description</fluent-tooltip>
+    <fluent-tooltip anchor="remove-favorite-button">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_RemoveBookmarkButton_Description()}</fluent-tooltip>
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
     <li>
         <div>${model => model.Title}</div>
-        <div style="color: var(--neutral-foreground-hint)">${model => model.Identifier}</div>
+        <div class="hint">${model => model.Identifier}</div>
     </li>
 `;
 
@@ -89,16 +91,17 @@ const template: ViewTemplate<MediaContainer> = html`
         ${when(model => model.selected, selected)}
         <div class="controls" slot="end">
             ${when(model => model.updating || model.pasting, busy)}
+            <div class="hint">${model => !model.selected || model.updating || model.pasting ? '' : model.selected.Entries.length}</div>
             <fluent-button id="update-entries-button" appearance="stealth" ?disabled=${model => !model.selected || model.updating || model.pasting} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
-            <fluent-tooltip anchor="update-entries-button">LOCALE:MediaContainer_UpdateEntriesButton_Description</fluent-tooltip>
+            <fluent-tooltip anchor="update-entries-button">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_UpdateEntriesButton_Description()}</fluent-tooltip>
             ${model => model.bookmark ? starred : unstarred}
             <fluent-button id="paste-clipboard-button" appearance="stealth" ?disabled=${model => model.updating || model.pasting} @click="${model => model.PasteClipboard()}">${IconClipboard}</fluent-button>
-            <fluent-tooltip anchor="paste-clipboard-button">LOCALE:MediaContainer_PasteClipboardButton_Description</fluent-tooltip>
+            <fluent-tooltip anchor="paste-clipboard-button">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_PasteClipboardButton_Description()}</fluent-tooltip>
         </div>
         <div id="panel">
             <div id="filters">
-                <fluent-text-field id="searchbox" appearance="outline" placeholder="LOCALE:MediaContainer_SearchTextbox_Placeholder" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
-                    <!-- LOCALE:MediaContainer_SearchTextbox_Label -->
+                <fluent-text-field id="searchbox" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder()}" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
+                    <!-- ${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label()} -->
                     <div slot="start">${IconSearch}</div>
                     <div class="controls" slot="end">
                         <fluent-button appearance="${model => model.filtercase ? 'accent' : 'stealth'}" @click=${model => model.filtercase = !model.filtercase}>${IconCase}</fluent-button>
@@ -122,7 +125,7 @@ export class MediaContainer extends FASTElement {
     @observable parent: IMediaContainer = HakuNeko.PluginController.WebsitePlugins[4];
     parentChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(!previous || !previous.IsSameAs(current)) {
-            this.entries = (current?.Entries ?? []) as IMediaContainer[];
+            this.entries = (current?.Entries ?? []).slice(0, 250) as IMediaContainer[]; // TODO: virtual scrolling
             this.selected = this.entries.find(entry => entry.IsSameAs(this.selected));
         }
     }
@@ -151,7 +154,7 @@ export class MediaContainer extends FASTElement {
         this.entries = (this.parent.Entries as IMediaContainer[]).filter(entry => {
             // TODO: consider tags ...
             return pattern.test(entry.Title);
-        });
+        }).slice(0, 250); // TODO: virtual scrolling
     }
 
     public async UpdateEntries(): Promise<void> {

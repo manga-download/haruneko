@@ -14,7 +14,7 @@ const styles: ElementStyles = css`
         /*border: 2px dotted grey;*/
     }
     #logo {
-        height: 32px;
+        height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
     }
     #title {
         font-weight: bold;
@@ -27,9 +27,9 @@ const styles: ElementStyles = css`
         align-items: center;
     }
     #busy-status {
-        margin: calc(var(--design-unit) * 1px);
-        width: calc((var(--base-height-multiplier) + var(--density) - 2) * var(--design-unit) * 1px);
-        height: calc((var(--base-height-multiplier) + var(--density) - 2) * var(--design-unit) * 1px);
+        margin: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 0.25 * 1px);
+        width: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 0.75 * 1px);
+        height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 0.75 * 1px);
     }
     #panel {
     }
@@ -48,13 +48,15 @@ const styles: ElementStyles = css`
         overflow-y: scroll;
         overflow-x: hidden;
     }
+    .hint {
+        padding: calc(var(--design-unit) * 1px);
+        color: var(--neutral-foreground-hint);
+    }
 `;
 
 const selected: ViewTemplate<WebsitePlugin> = html`
     <img id="logo" slot="start" src="${model => model.selected.Icon}"></img>
-    <div id="title" slot="heading">
-        ${model => model.selected.Title} (${model => model.updating ? '?' : model.selected.Entries.length})
-    </div>
+    <div id="title" slot="heading">${model => model.selected.Title}</div>
 `;
 
 const busy: ViewTemplate<WebsitePlugin> = html`
@@ -75,7 +77,7 @@ const starred: ViewTemplate<WebsitePlugin> = html`
 const listitem: ViewTemplate<IMediaContainer> = html`
     <li>
         <div>${model => model.Title}</div>
-        <div style="color: var(--neutral-foreground-hint)">${model => model.Identifier}</div>
+        <div class="hint">${model => model.Identifier}</div>
     </li>
 `;
 
@@ -84,6 +86,7 @@ const template: ViewTemplate<WebsitePlugin> = html`
         ${when(model => model.selected, selected)}
         <div id="controls" slot="end">
             ${when(model => model.updating, busy)}
+            <div class="hint">${model => !model.selected || model.updating ? '' : model.selected.Entries.length}</div>
             <fluent-button id="update-entries-button" appearance="stealth" ?disabled=${model => !model.selected || model.updating} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
             <fluent-tooltip anchor="update-entries-button">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description()}</fluent-tooltip>
             ${model => model.favorite ? starred : unstarred}

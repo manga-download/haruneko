@@ -17,12 +17,12 @@ import IconClose from '@vscode/codicons/src/icons/chrome-close.svg?raw';
 
 const styles: ElementStyles = css`
     :host {
-        gap: 4px;
+        gap: calc(var(--design-unit) * 1px);
         display: grid;
         align-items: center;
         grid-template-columns: max-content auto max-content;
         background-color: var(--neutral-layer-2);
-        padding: 0px 4px 0px 4px;
+        padding: 0px calc(var(--design-unit) * 1px) 0px calc(var(--design-unit) * 1px);
         user-select: none;
     }
     fluent-button {
@@ -48,7 +48,6 @@ const styles: ElementStyles = css`
         background-color: #FF6060 !important;
     }
     #settings-dialog {
-        /* display: grid; */
     }
 `;
 
@@ -65,7 +64,7 @@ const template: ViewTemplate<TitleBar> = html`
     <fluent-dialog id="settings-dialog" ?hidden=${model => !model.settings} trap-focus modal>
         <fluent-setting-theme-luminance style="width: 100%;"></fluent-setting-theme-luminance>
         <fluent-divider></fluent-divider>
-        <fluent-button id="settings-close-button" appearance="accent" @click=${model => model.CloseSettings()}>LOCALE:TitleBar_CloseSettingsButton_Label</fluent-button>
+        <fluent-button id="settings-close-button" appearance="accent" @click=${model => model.CloseSettings()}>${() => S.Locale.Frontend_BarelyFluid_TitleBar_CloseSettingsButton_Label()}</fluent-button>
     </fluent-dialog>
 `;
 

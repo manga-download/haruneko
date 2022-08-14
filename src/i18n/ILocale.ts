@@ -56,6 +56,28 @@ export enum VariantResourceKey {
     Frontend_Classic_Settings_ViewerDoublePage = 'Frontend_Classic_Settings_ViewerDoublePage',
     Frontend_Classic_Settings_ViewerDoublePageInfo = 'Frontend_Classic_Settings_ViewerDoublePageInfo',
 }
+// [SECTION]: Frontend BarelyFluid
+export enum VariantResourceKey {
+    Frontend_BarelyFluid_TitleBar_CloseSettingsButton_Label = 'Frontend_BarelyFluid_TitleBar_CloseSettingsButton_Label',
+
+    Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description = 'Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description',
+    Frontend_BarelyFluid_WebsitePlugin_BusyStatus_Description = 'Frontend_BarelyFluid_WebsitePlugin_BusyStatus_Description',
+    Frontend_BarelyFluid_WebsitePlugin_AddFavoriteButton_Description = 'Frontend_BarelyFluid_WebsitePlugin_AddFavoriteButton_Description',
+    Frontend_BarelyFluid_WebsitePlugin_RemoveFavoriteButton_Description = 'Frontend_BarelyFluid_WebsitePlugin_RemoveFavoriteButton_Description',
+    Frontend_BarelyFluid_WebsitePlugin_OpenSettingsButton_Description = 'Frontend_BarelyFluid_WebsitePlugin_OpenSettingsButton_Description',
+    Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder = 'Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder',
+    Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label = 'Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label',
+
+    Frontend_BarelyFluid_MediaContainer_UpdateEntriesButton_Description = 'Frontend_BarelyFluid_MediaContainer_UpdateEntriesButton_Description',
+    Frontend_BarelyFluid_MediaContainer_BusyStatus_Description = 'Frontend_BarelyFluid_MediaContainer_BusyStatus_Description',
+    Frontend_BarelyFluid_MediaContainer_AddBookmarkButton_Description = 'Frontend_BarelyFluid_MediaContainer_AddBookmarkButton_Description',
+    Frontend_BarelyFluid_MediaContainer_RemoveBookmarkButton_Description = 'Frontend_BarelyFluid_MediaContainer_RemoveBookmarkButton_Description',
+    Frontend_BarelyFluid_MediaContainer_PasteClipboardButton_Description = 'Frontend_BarelyFluid_MediaContainer_PasteClipboardButton_Description',
+    Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder = 'Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder',
+    Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label = 'Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label',
+
+    //Frontend_BarelyFluid_ = '',
+}
 
 // [SECTION]: Engine
 export enum VariantResourceKey {
