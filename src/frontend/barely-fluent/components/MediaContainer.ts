@@ -53,6 +53,14 @@ const styles: ElementStyles = css`
         overflow-y: scroll;
         overflow-x: hidden;
     }
+    #entries ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    #entries ul li:hover {
+        cursor: pointer;
+        background-color: var(--neutral-fill-hover);
+    }
     .hint {
         padding: calc(var(--design-unit) * 1px);
         color: var(--neutral-foreground-hint);
@@ -80,14 +88,14 @@ const starred: ViewTemplate<MediaContainer> = html`
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <li>
+    <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
         <div>${model => model.Title}</div>
         <div class="hint">${model => model.Identifier}</div>
     </li>
 `;
 
 const template: ViewTemplate<MediaContainer> = html`
-    <fluent-accordion-item>
+    <fluent-accordion-item :expanded=${model => model.expanded}>
         ${when(model => model.selected, selected)}
         <div class="controls" slot="end">
             ${when(model => model.updating || model.pasting, busy)}
@@ -122,6 +130,7 @@ const template: ViewTemplate<MediaContainer> = html`
 @customElement({ name: 'fluent-accordion-mediacontainer', template, styles })
 export class MediaContainer extends FASTElement {
 
+    @observable expanded = false;
     @observable parent: IMediaContainer = HakuNeko.PluginController.WebsitePlugins[4];
     parentChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(!previous || !previous.IsSameAs(current)) {
@@ -155,6 +164,11 @@ export class MediaContainer extends FASTElement {
             // TODO: consider tags ...
             return pattern.test(entry.Title);
         }).slice(0, 250); // TODO: virtual scrolling
+    }
+
+    public SelectEntry(entry: IMediaContainer) {
+        this.selected = entry;
+        this.expanded = false;
     }
 
     public async UpdateEntries(): Promise<void> {

@@ -48,6 +48,14 @@ const styles: ElementStyles = css`
         overflow-y: scroll;
         overflow-x: hidden;
     }
+    #entries ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    #entries ul li:hover {
+        cursor: pointer;
+        background-color: var(--neutral-fill-hover);
+    }
     .hint {
         padding: calc(var(--design-unit) * 1px);
         color: var(--neutral-foreground-hint);
@@ -75,14 +83,14 @@ const starred: ViewTemplate<WebsitePlugin> = html`
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <li>
+    <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
         <div>${model => model.Title}</div>
         <div class="hint">${model => model.Identifier}</div>
     </li>
 `;
 
 const template: ViewTemplate<WebsitePlugin> = html`
-    <fluent-accordion-item>
+    <fluent-accordion-item :expanded=${model => model.expanded}>
         ${when(model => model.selected, selected)}
         <div id="controls" slot="end">
             ${when(model => model.updating, busy)}
@@ -113,6 +121,7 @@ const template: ViewTemplate<WebsitePlugin> = html`
 @customElement({ name: 'fluent-accordion-website', template, styles })
 export class WebsitePlugin extends FASTElement {
 
+    @observable expanded = false;
     @observable entries = HakuNeko.PluginController.WebsitePlugins;
     @observable selected: IMediaContainer = HakuNeko.PluginController.WebsitePlugins[4];
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
@@ -135,6 +144,11 @@ export class WebsitePlugin extends FASTElement {
             // TODO: consider tags ...
             return pattern.test(entry.Title);
         });
+    }
+
+    public SelectEntry(entry: IMediaContainer) {
+        this.selected = entry;
+        this.expanded = false;
     }
 
     public async UpdateEntries(): Promise<void> {
