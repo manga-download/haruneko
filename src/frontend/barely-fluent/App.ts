@@ -9,7 +9,7 @@ const styles: ElementStyles = css`
         gap: 0;
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: max-content auto;
+        grid-template-rows: max-content max-content max-content auto;
         height: 100vh;
         background-color: var(--neutral-layer-1);
         color: var(--neutral-foreground-rest);
@@ -17,17 +17,13 @@ const styles: ElementStyles = css`
     }
     #titlebar {
     }
-    #content {
-    }
 `;
 
 const template: ViewTemplate<App> = html`
     <fluent-titlebar id="titlebar"></fluent-titlebar>
-    <div id="content">
-        <fluent-accordion-website :selected=${model => model.website} @changed=${(model, ctx) => model.WebsiteChanged(ctx.event.currentTarget as WebsitePlugin)}></fluent-accordion-website>
-        <fluent-accordion-mediacontainer :parent=${model => model.website} @changed=${(model, ctx) => model.ContainerChanged(ctx.event.currentTarget as MediaContainer)}></fluent-accordion-mediacontainer>
-        <div style="border: 1px dotted red;"></div>
-    </div>
+    <fluent-accordion-website :selected=${model => model.website} @changed=${(model, ctx) => model.WebsiteChanged(ctx.event.currentTarget as WebsitePlugin)}></fluent-accordion-website>
+    <fluent-accordion-mediacontainer :parent=${model => model.website} @changed=${(model, ctx) => model.ContainerChanged(ctx.event.currentTarget as MediaContainer)}></fluent-accordion-mediacontainer>
+    <div style="border: 1px dotted red;"></div>
 `;
 
 @customElement({ name: 'fluent-app', template, styles })
