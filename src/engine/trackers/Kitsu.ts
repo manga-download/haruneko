@@ -1,6 +1,6 @@
 import logo from './Kitsu.webp';
 import poster from '../../img/media.png';
-import { ResourceKey } from '../../i18n/ILocale';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
 import { type IMediaInfoTracker, type Info, MediaType, type TrackingStatus } from './IMediaInfoTracker';
 import { type SettingsManager, type ISettings , Text, Secret } from '../SettingsManager';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
@@ -57,8 +57,8 @@ export class Kitsu implements IMediaInfoTracker {
     public readonly Title: string = 'Kitsu';
 
     private readonly settings: ISettings;
-    private readonly username = new Text('username', ResourceKey.Plugin_SheepScanlations_Settings_Username, ResourceKey.Plugin_SheepScanlations_Settings_UsernameInfo, '');
-    private readonly password = new Secret('password', ResourceKey.Plugin_SheepScanlations_Settings_Password, ResourceKey.Plugin_SheepScanlations_Settings_PasswordInfo, '');
+    private readonly username = new Text('username', R.Tracker_Kitsu_Settings_Username, R.Tracker_Kitsu_Settings_UsernameInfo, '');
+    private readonly password = new Secret('password', R.Tracker_Kitsu_Settings_Password, R.Tracker_Kitsu_Settings_PasswordInfo, '');
 
     constructor(private readonly settingsManager: SettingsManager) {
         this.settings = this.settingsManager.OpenScope(`tracker.${this.Identifier}`);

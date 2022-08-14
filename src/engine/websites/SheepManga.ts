@@ -3,7 +3,7 @@ import icon from '../../img/logo.png';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { Numeric, Secret, Text } from '../SettingsManager';
-import { ResourceKey as R } from '../../i18n/ILocale';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
 import * as Common from './decorators/Common';
 
 /**

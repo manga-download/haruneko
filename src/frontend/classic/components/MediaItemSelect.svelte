@@ -8,26 +8,28 @@
         ContextMenuGroup,
         ContextMenuOption,
         Loading,
-    } from "carbon-components-svelte";
-    import { EarthFilled } from "carbon-icons-svelte";
+    } from 'carbon-components-svelte';
+    import { EarthFilled } from 'carbon-icons-svelte';
 
-    import { fade } from "svelte/transition";
+    import { fade } from 'svelte/transition';
 
-    import MediaItem from "./MediaItem.svelte";
+    import MediaItem from './MediaItem.svelte';
     import { selectedMedia, selectedItem } from '../Stores';
 
-    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
-    
+    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import { ItemFlag, FlagType } from '../../../engine/ItemflagManager';
 
     let items: IMediaContainer[] = [];
     let filteredItems: IMediaContainer[] = [];
+    let flags: ItemFlag[] = [];
 
-    let loadItem: Promise<void>; 
+    let loadItem: Promise<void>;
     let selectedItems: IMediaContainer[] = [];
     let multipleSelectionFrom: number = -1;
     let multipleSelectionTo: number = -1;
 
     async function onItemClick(item: IMediaContainer, event: any) {
+        //console.log(event.detail, event);
         if (event.shiftKey) {
             //range mode
             if (multipleSelectionFrom === -1) {
@@ -64,15 +66,18 @@
         }
     }
 
-    selectedMedia.subscribe(value => {
+    selectedMedia.subscribe(async (value) => {
         items = [];
         selectedItems = [];
+        flags = value
+            ? await HakuNeko.ItemflagManager.GetContainerItemsFlags(value)
+            : [];
         loadItem = value?.Update().then(() => {
             items = (value?.Entries as IMediaContainer[]) ?? [];
         });
     });
 
-    let itemNameFilter = "";
+    let itemNameFilter = '';
     $: filteredItems = items?.filter((item) => {
         return (
             item.Parent?.Title.toLowerCase().indexOf(
@@ -89,7 +94,45 @@
         <ContextMenuOption indented labelText="Download selecteds" />
     {:else}
         <ContextMenuOption indented labelText="Download" shortcutText="⌘D" />
-        <ContextMenuOption indented labelText="View" shortcutText="⌘V" />
+        <ContextMenuOption
+            indented
+            labelText="View"
+            shortcutText="⌘V"
+            on:click={() => {
+                $selectedItem = selectedItems[0];
+            }}
+        />
+        <ContextMenuOption indented labelText="Flag as">
+            <ContextMenuOption
+                indented
+                labelText="Not viewed"
+                on:click={async () => {
+                    window.HakuNeko.ItemflagManager.UnflagItem(
+                        selectedItems[0]
+                    );
+                }}
+            />
+            <ContextMenuOption
+                indented
+                labelText="Viewed"
+                on:click={async () => {
+                    window.HakuNeko.ItemflagManager.FlagItem(
+                        selectedItems[0],
+                        FlagType.Viewed
+                    );
+                }}
+            />
+            <ContextMenuOption
+                indented
+                labelText="Current"
+                on:click={async () => {
+                    window.HakuNeko.ItemflagManager.FlagItem(
+                        selectedItems[0],
+                        FlagType.Current
+                    );
+                }}
+            />
+        </ContextMenuOption>
     {/if}
     <ContextMenuDivider />
     <ContextMenuOption indented labelText="Copy">
@@ -99,7 +142,6 @@
         </ContextMenuGroup>
     </ContextMenuOption>
     <ContextMenuDivider />
-    <ContextMenuOption indented labelText="Bookmark" shortcutText="⌘B" />
 </ContextMenu>
 
 <div id="Item" transition:fade>
@@ -121,9 +163,9 @@
                 selectedId="0"
                 size="sm"
                 items={[
-                    { id: "0", text: "*" },
-                    { id: "1", text: "gb" },
-                    { id: "2", text: "fr" },
+                    { id: '0', text: '*' },
+                    { id: '1', text: 'gb' },
+                    { id: '2', text: 'fr' },
                 ]}
             />
         </div>
@@ -137,20 +179,20 @@
                 <div><Loading withOverlay={false} /></div>
                 <div>... items</div>
             </div>
-        {:then} 
+        {:then}
             {#each filteredItems as item}
                 <MediaItem
                     {item}
                     selected={selectedItems.includes(item)}
                     on:view={(e) => {
                         selectedItems.push(e.detail);
-                        $selectedItem=e.detail;
+                        $selectedItem = e.detail;
                     }}
                     on:click={(e) => onItemClick(item, e)}
+                    on:contextmenu={(e) => onItemClick(item, e)}
                 />
             {/each}
         {/await}
-        
     </div>
     <div id="ItemCount">
         Items: {filteredItems.length}/{items.length}
@@ -165,11 +207,11 @@
         grid-template-rows: 2.2em 2em 2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
-            "ItemTitle"
-            "LanguageFilter"
-            "ItemFilter"
-            "ItemList"
-            "ItemCount";
+            'ItemTitle'
+            'LanguageFilter'
+            'ItemFilter'
+            'ItemList'
+            'ItemCount';
         grid-area: Item;
     }
     #LanguageFilter {
@@ -187,11 +229,11 @@
         overflow-x: hidden;
     }
     #ItemList .loading {
-        width:100%;
-        height:100%;
+        width: 100%;
+        height: 100%;
     }
     #ItemTitle {
-        padding-top:0.3em;
+        padding-top: 0.3em;
     }
     #ItemCount {
         grid-area: ItemCount;

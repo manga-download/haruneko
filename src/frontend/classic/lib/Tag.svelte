@@ -2,14 +2,14 @@
     import { Tag } from 'carbon-components-svelte';
     import type { TagProps } from 'carbon-components-svelte/types/Tag/Tag.svelte';
     import { Tags } from '../../../engine/Tags';
-    import type { ResourceKey } from '../../../i18n/ILocale';
+    import type { IResource } from '../../../i18n/ILocale';
     import { Locale } from '../SettingsStore';
 
-    export let label: ResourceKey;
-    export let category: ResourceKey;
+    export let label: keyof IResource;
+    export let category: keyof IResource;
     export let filter = false;
 
-    const colorTranslator: Map<ResourceKey, TagProps['type']> = new Map([
+    const colorTranslator: Map<keyof IResource, TagProps['type']> = new Map([
         [Tags.Language.Title, 'cyan'],
         [Tags.Media.Title, 'magenta'],
         [Tags.Source.Title, 'teal'],

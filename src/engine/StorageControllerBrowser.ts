@@ -25,6 +25,10 @@ const VersionUpgrades = [
     function V4(db: IDBDatabase) {
         db.createObjectStore(InternalStore.TemporaryData);
     },
+    // V4 => V5
+    function V5(db: IDBDatabase) {
+        db.createObjectStore(Store.Itemflags);
+    },
 ];
 
 const Version = VersionUpgrades.length;

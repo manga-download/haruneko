@@ -1,5 +1,5 @@
 import { type SettingsManager, Check, Numeric, Text, Secret, Choice, Directory } from './SettingsManager';
-import { Code, ResourceKey as R } from '../i18n/ILocale';
+import { VariantResourceKey as R, LocaleID } from '../i18n/ILocale';
 
 export const Scope = '*';
 
@@ -20,10 +20,10 @@ export async function Initialize(settingsManager: SettingsManager): Promise<void
             Key.Language,
             R.Settings_Global_Language,
             R.Settings_Global_LanguageInfo,
-            Code.en_US,
-            { key: Code.en_US, label: R.Settings_Global_Language_enUS },
-            { key: Code.fr_FR, label: R.Settings_Global_Language_frFR },
-            { key: Code.de_DE, label: R.Settings_Global_Language_deDE },
+            LocaleID.Locale_enUS,
+            ...Object.entries(LocaleID).map(([key, label]) => {
+                return { key, label };
+            })
         ),
         new Directory(
             Key.MediaDirectory,

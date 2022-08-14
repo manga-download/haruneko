@@ -1,9 +1,38 @@
-import { Code, type ILocale, type IResource, ResourceKey } from './ILocale';
-import { en_US } from './locales/en_US';
-import { fr_FR } from './locales/fr_FR';
-import { de_DE } from './locales/de_DE';
-import { Scope, Key } from '../engine/SettingsGlobal';
+import { type ILocale, type IVariantResource, LocaleID, InvariantResourceKey, VariantResourceKey } from './ILocale';
 import type { Choice } from '../engine/SettingsManager';
+import { Scope, Key } from '../engine/SettingsGlobal';
+import { invariant } from './locales/_invariant';
+import { ar_AE } from './locales/ar_AE';
+import { de_DE } from './locales/de_DE';
+import { en_US } from './locales/en_US';
+import { es_ES } from './locales/es_ES';
+import { fil_PH } from './locales/fil_PH';
+import { fr_FR } from './locales/fr_FR';
+import { in_ID } from './locales/in_ID';
+import { pt_BR } from './locales/pt_BR';
+import { ru_RU } from './locales/ru_RU';
+import { th_TH } from './locales/th_TH';
+import { tr_TR } from './locales/tr_TR';
+import { zh_CN } from './locales/zh_CN';
+
+/**
+ * List of all available localizations in the application.
+ * See: https://www.localeplanet.com/icu/
+ */
+const resources: Record<LocaleID, ILocale> = {
+    Locale_arAE: CreateLocale(ar_AE),
+    Locale_deDE: CreateLocale(de_DE),
+    Locale_enUS: CreateLocale(en_US),
+    Locale_esES: CreateLocale(es_ES),
+    Locale_filPH: CreateLocale(fil_PH),
+    Locale_frFR: CreateLocale(fr_FR),
+    Locale_inID: CreateLocale(in_ID),
+    Locale_ptBR: CreateLocale(pt_BR),
+    Locale_ruRU: CreateLocale(ru_RU),
+    Locale_thTH: CreateLocale(th_TH),
+    Locale_trTR: CreateLocale(tr_TR),
+    Locale_zhCN: CreateLocale(zh_CN),
+};
 
 function Format(this: string, ...params: string[]) {
     let text = this.toString();
@@ -17,34 +46,29 @@ function Format(this: string, ...params: string[]) {
     return text;
 }
 
-export function CreateLocale(resource: IResource): ILocale {
+export function CreateLocale(resource: IVariantResource): ILocale {
     const result: Record<string, typeof Format> = {};
-    for(const key in ResourceKey) {
-        result[key] = Format.bind(resource[key as ResourceKey]);
+    for(const key in LocaleID) {
+        result[key] = Format.bind(invariant[key]);
+    }
+    for(const key in InvariantResourceKey) {
+        result[key] = Format.bind(invariant[key]);
+    }
+    for(const key in VariantResourceKey) {
+        result[key] = Format.bind(resource[key]);
     }
     return result as ILocale;
 }
 
 /**
- * List of all available localizations in the application.
- * See: https://saimana.com/list-of-country-locale-code/
- * NOTE: Available languages must also be exposed in global settings
- */
-const localizations = {
-    [Code.en_US]: CreateLocale(en_US),
-    [Code.fr_FR]: CreateLocale(fr_FR),
-    [Code.de_DE]: CreateLocale(de_DE),
-};
-
-/**
  * Search the localized resource for the given language code.
  * If no language code is given, it is determined from the global settings.
  */
-export function GetLocale(code: Code = null): ILocale {
+export function GetLocale(code: LocaleID = null): ILocale {
     if(code) {
-        return localizations[code];
+        return resources[code];
     } else {
-        const active = HakuNeko.SettingsManager.OpenScope(Scope).Get<Choice>(Key.Language).Value as Code;
-        return localizations[active];
+        const active = HakuNeko.SettingsManager.OpenScope(Scope).Get<Choice>(Key.Language).Value as LocaleID;
+        return resources[active];
     }
 }

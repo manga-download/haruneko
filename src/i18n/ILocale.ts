@@ -1,30 +1,40 @@
-export type IResource = Record<ResourceKey, string>;
-export type ILocale = Record<ResourceKey, (...params: string[]) => string>;
+export type IResource = Record<LocaleID | InvariantResourceKey | VariantResourceKey, string>;
+export type ILocale = Record<keyof IResource, (...params: string[]) => string>;
+export type IVariantResource = Record<VariantResourceKey, string>;
 
-/**
- * All supported langauage codes (must be unique).
- */
-export enum Code {
-    en_US = 'en_US',
-    fr_FR = 'fr_FR',
-    de_DE = 'de_DE',
+export enum LocaleID {
+    Locale_arAE = 'Locale_arAE',
+    Locale_deDE = 'Locale_deDE',
+    Locale_enUS = 'Locale_enUS',
+    Locale_esES = 'Locale_esES',
+    Locale_filPH = 'Locale_filPH',
+    Locale_frFR = 'Locale_frFR',
+    Locale_inID = 'Locale_inID',
+    Locale_ptBR = 'Locale_ptBR',
+    Locale_ruRU = 'Locale_ruRU',
+    Locale_thTH = 'Locale_thTH',
+    Locale_trTR = 'Locale_trTR',
+    Locale_zhCN = 'Locale_zhCN',
+}
+
+export enum InvariantResourceKey {
+    //
 }
 
 /**
  * All pre-defined identifiers that must be provided by any localization {@link IResource} implementation.
+ * Using merged enum for structuring ...
  */
-export enum ResourceKey {
 
-    // [SECTION]: FrontendController
-
+// [SECTION]: Frontends (Common)
+export enum VariantResourceKey {
     FrontendController_Reload_ConfirmNotice = 'FrontendController_Reload_ConfirmNotice',
-
-    // [SECTION]: Frontend (Common/Shared)
-
     Frontend_Product_Title = 'Frontend_Product_Title',
     Frontend_Product_Description = 'Frontend_Product_Description',
+}
 
-    // [SECTION]: Frontend Classic
+// [SECTION]: Frontend Classic
+export enum VariantResourceKey {
     Frontend_Classic_Settings_FuzzySearch = 'Frontend_Classic_Settings_FuzzySearch',
     Frontend_Classic_Settings_FuzzySearchInfo = 'Frontend_Classic_Settings_FuzzySearchInfo',
     Frontend_Classic_Settings_Theme = 'Frontend_Classic_Settings_Theme',
@@ -45,14 +55,12 @@ export enum ResourceKey {
     Frontend_Classic_Settings_ViewerReverseDirectionInfo = 'Frontend_Classic_Settings_ViewerReverseDirectionInfo',
     Frontend_Classic_Settings_ViewerDoublePage = 'Frontend_Classic_Settings_ViewerDoublePage',
     Frontend_Classic_Settings_ViewerDoublePageInfo = 'Frontend_Classic_Settings_ViewerDoublePageInfo',
+}
 
-    // [SECTION]: Engine
-
+// [SECTION]: Engine
+export enum VariantResourceKey {
     Settings_Global_Language = 'Settings_Global_Language',
     Settings_Global_LanguageInfo = 'Settings_Global_LanguageInfo',
-    Settings_Global_Language_enUS = 'Settings_Global_Language_enUS',
-    Settings_Global_Language_frFR = 'Settings_Global_Language_frFR',
-    Settings_Global_Language_deDE = 'Settings_Global_Language_deDE',
     Settings_Global_MediaDirectory = 'Settings_Global_MediaDirectory',
     Settings_Global_MediaDirectoryInfo = 'Settings_Global_MediaDirectoryInfo',
     Settings_Global_WebsiteSubDirectory = 'Settings_Global_WebsiteSubDirectory',
@@ -74,9 +82,10 @@ export enum ResourceKey {
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
+}
 
-    // [SECTION]: Tags
-
+// [SECTION]: Tags
+export enum VariantResourceKey {
     Tags_Media = 'Tags_Media',
     Tags_Media_Manga = 'Tags_Media_Manga',
     Tags_Media_MangaDescription = 'Tags_Media_MangaDescription',
@@ -125,14 +134,25 @@ export enum ResourceKey {
     Tags_Language_Turkish = 'Tags_Language_Turkish',
     Tags_Language_Vietnamese = 'Tags_Language_Vietnamese',
     Tags_Others = 'Tags_Others',
+}
 
-    // [SECTION]: Plugins
+// [SECTION]: Tracker Kitsu
+export enum VariantResourceKey {
+    Tracker_Kitsu_Settings_Username = 'Tracker_Kitsu_Settings_Username',
+    Tracker_Kitsu_Settings_UsernameInfo = 'Tracker_Kitsu_Settings_UsernameInfo',
+    Tracker_Kitsu_Settings_Password = 'Tracker_Kitsu_Settings_Password',
+    Tracker_Kitsu_Settings_PasswordInfo = 'Tracker_Kitsu_Settings_PasswordInfo',
+}
 
+// [SECTION]: Websites (Common)
+export enum VariantResourceKey {
     Plugin_Settings_Throttling = 'Plugin_Settings_Throttling',
     Plugin_Settings_ThrottlingInfo = 'Plugin_Settings_ThrottlingInfo',
-
     Plugin_Common_MangasNotSupported = 'Plugin_Common_MangasNotSupported',
+}
 
+// [SECTION]: Website SheepScanlations
+export enum VariantResourceKey {
     Plugin_SheepScanlations_Settings_Username = 'Plugin_SheepScanlations_Settings_Username',
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',

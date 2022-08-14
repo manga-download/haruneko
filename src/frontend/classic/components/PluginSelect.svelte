@@ -10,7 +10,7 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import { ArrowUpRight, CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
+    import { CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
@@ -23,7 +23,7 @@
     import { Locale } from '../SettingsStore';
     import { selectedPlugin } from '../Stores';
     // Hakuneko Engine
-    import { ResourceKey } from '../../../i18n/ILocale';
+    import { VariantResourceKey as R } from '../../../i18n/ILocale';
 
     function createDataRow(item: IMediaContainer) {
         return {
@@ -118,7 +118,7 @@
                 {/each}
             </div>
             <div class="other">
-                <strong>{$Locale[ResourceKey.Tags_Others]()}</strong>
+                <strong>{$Locale[R.Tags_Others]()}</strong>
                 {#each otherTags as item}
                     <Chip
                         class='cursor-pointer'
