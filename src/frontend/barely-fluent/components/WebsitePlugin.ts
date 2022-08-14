@@ -90,7 +90,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<WebsitePlugin> = html`
-    <fluent-accordion-item :expanded=${model => model.expanded}>
+    <fluent-accordion-item ?expanded=${model => model.expanded}>
         ${when(model => model.selected, selected)}
         <div id="controls" slot="end">
             ${when(model => model.updating, busy)}
@@ -152,9 +152,14 @@ export class WebsitePlugin extends FASTElement {
     }
 
     public async UpdateEntries(): Promise<void> {
-        this.updating = true;
-        await this.selected?.Update();
-        this.updating = false;
+        try {
+            this.updating = true;
+            await this.selected?.Update();
+        } catch(error) {
+            console.warn(error);
+        } finally {
+            this.updating = false;
+        }
     }
 
     public AddFavorite() {
