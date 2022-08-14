@@ -48,7 +48,21 @@ export class ItemflagManager {
             TitleHash: this.Hash(entry.Title),
             kind: kind,
         };
-        let flags: ItemFlag[] = await this.GetContainerItemsFlags(entry.Parent) ?? [];
+        let flags: ItemFlag[] = [];
+        if (kind === FlagType.Current) {
+            // Ignore all previous flags and add flag viewed on all items after entry
+            // TODO: Manage flags context per language in case of multiple current flag (1 per language)
+            const items = entry.Parent?.Entries as IMediaContainer[];
+            const entryIndex = items?.indexOf(entry);
+            items.forEach((item, index) => {
+                if (index > entryIndex) flags.push({
+                    IdentifierHash: this.Hash(item.Identifier),
+                    TitleHash: this.Hash(item.Title),
+                    kind: FlagType.Viewed,
+                });
+            });
+        }
+        else flags = await this.GetContainerItemsFlags(entry.Parent) ?? [];
         flags = flags.filter(flag => {
             return !(newflag.IdentifierHash === flag.IdentifierHash)
                 && !(newflag.TitleHash === flag.TitleHash);
