@@ -10,7 +10,7 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import { ArrowUpRight, CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
+    import { CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';

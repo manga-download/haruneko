@@ -2,7 +2,7 @@
     import { Tag } from 'carbon-components-svelte';
     import type { TagProps } from 'carbon-components-svelte/types/Tag/Tag.svelte';
     import { Tags } from '../../../engine/Tags';
-    import type { IResource, VariantResourceKey as R } from '../../../i18n/ILocale';
+    import type { IResource } from '../../../i18n/ILocale';
     import { Locale } from '../SettingsStore';
 
     export let label: keyof IResource;

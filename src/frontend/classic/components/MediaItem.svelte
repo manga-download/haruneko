@@ -4,7 +4,6 @@
 
     const dispatch = createEventDispatcher();
     import {
-        Bookmark as IconBookmark,
         BookmarkFilled as IconBookmarkFilled,
         View,
         ViewFilled,
