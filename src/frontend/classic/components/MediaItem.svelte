@@ -63,6 +63,9 @@
     .listitem {
         cursor: pointer;
         user-select: none;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     .listitem:hover {
         background-color: var(--cds-hover-ui);
