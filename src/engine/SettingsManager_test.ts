@@ -1,6 +1,6 @@
 import { mock, mockClear, mockFn } from 'jest-mock-extended';
 import type { HakuNeko } from '../engine/HakuNeko';
-import { Code, type ResourceKey } from '../i18n/ILocale';
+import { LocaleID, type VariantResourceKey } from '../i18n/ILocale';
 import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type Setting, type IValue, type ISettings } from './SettingsManager';
 import { type StorageController, Store } from './StorageController';
 import type { Event } from './Event';
@@ -16,7 +16,7 @@ window.btoa = function(decoded: string): string {
 
 // Mocking globals
 {
-    const mockChoice = mock<Choice>({ Value: Code.en_US });
+    const mockChoice = mock<Choice>({ Value: LocaleID.Locale_enUS });
 
     const mockSettigns = mock<ISettings>();
     mockSettigns.Get.calledWith(Key.Language).mockReturnValue(mockChoice);
@@ -55,15 +55,15 @@ describe('Settings', () => {
 
     function CreateSettings() {
         return [
-            new Check('[ID]:Check', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, false),
-            new Text('[ID]:Text', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '{TEXT}'),
-            new Secret('[ID]:Secret', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '{SECRET}'),
-            new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 50, 0, 100),
-            new Choice('[ID]:Choice', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, '{CHOICE}', ...[
-                { key: '{CHOICE}', label : null as ResourceKey },
-                { key: '{STORED-CHOICE}', label : null as ResourceKey }
+            new Check('[ID]:Check', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, false),
+            new Text('[ID]:Text', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, '{TEXT}'),
+            new Secret('[ID]:Secret', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, '{SECRET}'),
+            new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 50, 0, 100),
+            new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, '{CHOICE}', ...[
+                { key: '{CHOICE}', label : null as VariantResourceKey },
+                { key: '{STORED-CHOICE}', label : null as VariantResourceKey }
             ]),
-            new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, null),
+            new Directory('[ID]:Path', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, null),
         ];
     }
 
@@ -205,7 +205,7 @@ describe('Check', () => {
     describe('Constructor', () => {
 
         it.each([ false, true ])('Should construct with correct parameters', async (value: boolean) => {
-            const testee = new Check('[ID]:Check', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, value);
+            const testee = new Check('[ID]:Check', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, value);
 
             expect(testee.Value).toBe(value);
             expect(testee.ID).toBe('[ID]:Check');
@@ -217,7 +217,7 @@ describe('Check', () => {
     describe('Value', () => {
 
         it('Should correctly set value', async () => {
-            const testee = new Check('[ID]:Check', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, false);
+            const testee = new Check('[ID]:Check', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, false);
             testee.Value = true;
             expect(testee.Value).toBe(true);
         });
@@ -226,7 +226,7 @@ describe('Check', () => {
     describe('ValueChanged', () => {
 
         it('Should not notify on value unchanged when subscribed', async () => {
-            const testee = new Check('[ID]:Check', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, true);
+            const testee = new Check('[ID]:Check', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, true);
 
             const callback = mockFn<(sender: Check, args: boolean) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -236,7 +236,7 @@ describe('Check', () => {
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
-            const testee = new Check('[ID]:Check', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, false);
+            const testee = new Check('[ID]:Check', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, false);
 
             const callback = mockFn<(sender: Check, args: boolean) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -247,7 +247,7 @@ describe('Check', () => {
         });
 
         it('Should notify on value changed when subscribed', async () => {
-            const testee = new Check('[ID]:Check', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, false);
+            const testee = new Check('[ID]:Check', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, false);
 
             const callback = mockFn<(sender: Check, args: boolean) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -265,7 +265,7 @@ describe('Text', () => {
     describe('Constructor', () => {
 
         it('Should construct with correct parameters', async () => {
-            const testee = new Text('[ID]:Text', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Text('[ID]:Text', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
 
             expect(testee.Value).toBe('alice');
             expect(testee.ID).toBe('[ID]:Text');
@@ -277,7 +277,7 @@ describe('Text', () => {
     describe('Value', () => {
 
         it('Should correctly set value', async () => {
-            const testee = new Text('[ID]:Text', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Text('[ID]:Text', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
             testee.Value = 'bob';
             expect(testee.Value).toBe('bob');
         });
@@ -286,7 +286,7 @@ describe('Text', () => {
     describe('ValueChanged', () => {
 
         it('Should not notify on value unchanged when subscribed', async () => {
-            const testee = new Text('[ID]:Text', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Text('[ID]:Text', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
 
             const callback = mockFn<(sender: Text, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -296,7 +296,7 @@ describe('Text', () => {
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
-            const testee = new Text('[ID]:Text', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Text('[ID]:Text', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
 
             const callback = mockFn<(sender: Text, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -307,7 +307,7 @@ describe('Text', () => {
         });
 
         it('Should notify on value changed when subscribed', async () => {
-            const testee = new Text('[ID]:Text', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Text('[ID]:Text', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
 
             const callback = mockFn<(sender: Text, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -325,7 +325,7 @@ describe('Secret', () => {
     describe('Constructor', () => {
 
         it('Should construct with correct parameters', async () => {
-            const testee = new Secret('[ID]:Secret', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Secret('[ID]:Secret', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
 
             expect(testee.Value).toBe('alice');
             expect(testee.ID).toBe('[ID]:Secret');
@@ -337,7 +337,7 @@ describe('Secret', () => {
     describe('Value', () => {
 
         it('Should correctly set value', async () => {
-            const testee = new Secret('[ID]:Secret', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Secret('[ID]:Secret', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
             testee.Value = 'bob';
             expect(testee.Value).toBe('bob');
         });
@@ -346,7 +346,7 @@ describe('Secret', () => {
     describe('ValueChanged', () => {
 
         it('Should not notify on value unchanged when subscribed', async () => {
-            const testee = new Secret('[ID]:Secret', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Secret('[ID]:Secret', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
 
             const callback = mockFn<(sender: Secret, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -356,7 +356,7 @@ describe('Secret', () => {
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
-            const testee = new Secret('[ID]:Secret', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Secret('[ID]:Secret', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
 
             const callback = mockFn<(sender: Secret, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -367,7 +367,7 @@ describe('Secret', () => {
         });
 
         it('Should notify on value changed when subscribed', async () => {
-            const testee = new Secret('[ID]:Secret', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice');
+            const testee = new Secret('[ID]:Secret', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice');
 
             const callback = mockFn<(sender: Secret, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -385,7 +385,7 @@ describe('Numeric', () => {
     describe('Constructor', () => {
 
         it.each([-1, 0 , 1 ])('Should construct with correct parameters', async (value: number) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, value, -1, 1);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, value, -1, 1);
 
             expect(testee.Max).toBe(1);
             expect(testee.Min).toBe(-1);
@@ -396,14 +396,14 @@ describe('Numeric', () => {
         });
 
         it('Should cap value below minimum', async () => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, -10, -5, 5);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, -10, -5, 5);
             expect(testee.Max).toBe(5);
             expect(testee.Min).toBe(-5);
             expect(testee.Value).toBe(-5);
         });
 
         it('Should cap value above maximum', async () => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 10, -5, 5);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 10, -5, 5);
             expect(testee.Max).toBe(5);
             expect(testee.Min).toBe(-5);
             expect(testee.Value).toBe(5);
@@ -413,7 +413,7 @@ describe('Numeric', () => {
     describe('Value', () => {
 
         it.each([-1, 0, 1])('Should correctly set value', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 0, -1, 1);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 0, -1, 1);
             testee.Value = value;
             expect(testee.Max).toBe(1);
             expect(testee.Min).toBe(-1);
@@ -421,7 +421,7 @@ describe('Numeric', () => {
         });
 
         it('Should cap value below minimum', async () => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 0, -5, 5);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 0, -5, 5);
             testee.Value = -10;
             expect(testee.Max).toBe(5);
             expect(testee.Min).toBe(-5);
@@ -429,7 +429,7 @@ describe('Numeric', () => {
         });
 
         it('Should cap value above maximum', async () => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 0, -5, 5);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 0, -5, 5);
             testee.Value = 10;
             expect(testee.Max).toBe(5);
             expect(testee.Min).toBe(-5);
@@ -440,7 +440,7 @@ describe('Numeric', () => {
     describe('ValueChanged', () => {
 
         it.each([-5, -1, 0, 1, 5])('Should not notify on value unchanged when subscribed', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, value, -1, 1);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, value, -1, 1);
 
             const callback = mockFn<(sender: Numeric, args: number) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -450,7 +450,7 @@ describe('Numeric', () => {
         });
 
         it.each([-5, -1, 0, 1, 5])('Should not notify on value changed when unsubscribed', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 0, -1, 1);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 0, -1, 1);
 
             const callback = mockFn<(sender: Numeric, args: number) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -461,7 +461,7 @@ describe('Numeric', () => {
         });
 
         it.each([-5, -1, 1, 5])('Should notify on value changed when subscribed', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 0, -5, 5);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 0, -5, 5);
 
             const callback = mockFn<(sender: Numeric, args: number) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -473,7 +473,7 @@ describe('Numeric', () => {
         });
 
         it.each([0, -1, -5])('Should notify on value changed when exceeding minimum', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, value, -1, 1);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, value, -1, 1);
 
             const callback = mockFn<(sender: Numeric, args: number) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -484,7 +484,7 @@ describe('Numeric', () => {
         });
 
         it.each([0, 1, 5])('Should notify on value changed when exceeding maximum', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, value, -1, 1);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, value, -1, 1);
 
             const callback = mockFn<(sender: Numeric, args: number) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -499,14 +499,14 @@ describe('Numeric', () => {
 describe('Choice', () => {
 
     const options = [
-        { key: 'alice', label: 'Alice' as ResourceKey },
-        { key: 'bob', label: 'Bob' as ResourceKey }
+        { key: 'alice', label: 'Alice' as VariantResourceKey },
+        { key: 'bob', label: 'Bob' as VariantResourceKey }
     ];
 
     describe('Constructor', () => {
 
         it('Should construct with correct parameters', async () => {
-            const testee = new Choice('[ID]:Choice', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice', ...options);
+            const testee = new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice', ...options);
 
             expect(testee.Options).toStrictEqual(options);
             expect(testee.Value).toBe('alice');
@@ -519,13 +519,13 @@ describe('Choice', () => {
     describe('Value', () => {
 
         it('Should correctly set value', async () => {
-            const testee = new Choice('[ID]:Choice', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice', ...options);
+            const testee = new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice', ...options);
             testee.Value = 'bob';
             expect(testee.Value).toBe('bob');
         });
 
         it('Should use default when not in options', async () => {
-            const testee = new Choice('[ID]:Choice', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice', ...options);
+            const testee = new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice', ...options);
             testee.Value = 'chi';
             expect(testee.Value).toBe('alice');
         });
@@ -534,7 +534,7 @@ describe('Choice', () => {
     describe('ValueChanged', () => {
 
         it('Should not notify on value unchanged when subscribed', async () => {
-            const testee = new Choice('[ID]:Choice', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice', ...options);
+            const testee = new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice', ...options);
 
             const callback = mockFn<(sender: Choice, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -544,7 +544,7 @@ describe('Choice', () => {
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
-            const testee = new Choice('[ID]:Choice', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice', ...options);
+            const testee = new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice', ...options);
 
             const callback = mockFn<(sender: Choice, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -555,7 +555,7 @@ describe('Choice', () => {
         });
 
         it('Should notify on valid value changed when subscribed', async () => {
-            const testee = new Choice('[ID]:Choice', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice', ...options);
+            const testee = new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice', ...options);
 
             const callback = mockFn<(sender: Choice, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -567,7 +567,7 @@ describe('Choice', () => {
         });
 
         it('Should notify on invalid value changed when subscribed', async () => {
-            const testee = new Choice('[ID]:Choice', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, 'alice', ...options);
+            const testee = new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 'alice', ...options);
 
             const callback = mockFn<(sender: Choice, args: string) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -584,7 +584,7 @@ describe('Directory', () => {
     describe('Constructor', () => {
 
         it('Should construct with correct parameters', async () => {
-            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
             expect(testee.Value.name).toBe('/path/file');
             expect(testee.ID).toBe('[ID]:Path');
@@ -596,7 +596,7 @@ describe('Directory', () => {
     describe('Value', () => {
 
         it('Should correctly set value', async () => {
-            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
             testee.Value = { name: '/path/directory', kind: 'directory' } as FileSystemDirectoryHandle;
             expect(testee.Value.name).toBe('/path/directory');
         });
@@ -606,7 +606,7 @@ describe('Directory', () => {
 
         it('Should not notify on value unchanged when subscribed', async () => {
             const directory = { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle;
-            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, directory);
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, directory);
 
             const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -616,7 +616,7 @@ describe('Directory', () => {
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
-            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
             const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
             testee.ValueChanged.Subscribe(callback);
@@ -627,7 +627,7 @@ describe('Directory', () => {
         });
 
         it('Should notify on value changed when subscribed', async () => {
-            const testee = new Directory('[ID]:Path', '[RES]:Label' as ResourceKey, '[RES]:Description' as ResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
+            const testee = new Directory('[ID]:Path', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
             const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
             testee.ValueChanged.Subscribe(callback);

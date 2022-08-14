@@ -1,31 +1,30 @@
-export type IResource = Record<ResourceKey, string>;
-export type ILocale = Record<ResourceKey, (...params: string[]) => string>;
+export type IResource = Record<LocaleID | InvariantResourceKey | VariantResourceKey, string>;
+export type ILocale = Record<keyof IResource, (...params: string[]) => string>;
+export type IVariantResource = Record<VariantResourceKey, string>;
 
-/**
- * All supported langauage codes (must be unique).
- */
-export enum Code {
-    ar_AE = 'ar_AE',
-    de_DE = 'de_DE',
-    en_US = 'en_US',
-    es_ES = 'es_ES',
-    fil_PH = 'fil_PH',
-    fr_FR = 'fr_FR',
-    in_ID = 'in_ID',
-    pt_BR = 'pt_BR',
-    ru_RU = 'ru_RU',
-    th_TH = 'th_TH',
-    tr_TR = 'tr_TR',
-    zh_CN = 'zh_CN',
+export enum LocaleID {
+    Locale_arAE = 'Locale_arAE',
+    Locale_deDE = 'Locale_deDE',
+    Locale_enUS = 'Locale_enUS',
+    Locale_esES = 'Locale_esES',
+    Locale_filPH = 'Locale_filPH',
+    Locale_frFR = 'Locale_frFR',
+    Locale_inID = 'Locale_inID',
+    Locale_ptBR = 'Locale_ptBR',
+    Locale_ruRU = 'Locale_ruRU',
+    Locale_thTH = 'Locale_thTH',
+    Locale_trTR = 'Locale_trTR',
+    Locale_zhCN = 'Locale_zhCN',
+}
+
+export enum InvariantResourceKey {
+    //
 }
 
 /**
  * All pre-defined identifiers that must be provided by any localization {@link IResource} implementation.
  */
-export enum ResourceKey {
-
-    // NOTE: The visual representation of the locale itself (e.g. for locale-agnostic language selection)
-    _ = '_',
+export enum VariantResourceKey {
 
     // [SECTION]: FrontendController
 
@@ -136,7 +135,14 @@ export enum ResourceKey {
     Tags_Language_Vietnamese = 'Tags_Language_Vietnamese',
     Tags_Others = 'Tags_Others',
 
-    // [SECTION]: Plugins
+    // [SECTION]: Trackers
+
+    Tracker_Kitsu_Settings_Username = 'Tracker_Kitsu_Settings_Username',
+    Tracker_Kitsu_Settings_UsernameInfo = 'Tracker_Kitsu_Settings_UsernameInfo',
+    Tracker_Kitsu_Settings_Password = 'Tracker_Kitsu_Settings_Password',
+    Tracker_Kitsu_Settings_PasswordInfo = 'Tracker_Kitsu_Settings_PasswordInfo',
+
+    // [SECTION]: Websites
 
     Plugin_Settings_Throttling = 'Plugin_Settings_Throttling',
     Plugin_Settings_ThrottlingInfo = 'Plugin_Settings_ThrottlingInfo',

@@ -23,7 +23,7 @@
     import { Locale } from '../SettingsStore';
     import { selectedPlugin } from '../Stores';
     // Hakuneko Engine
-    import { ResourceKey } from '../../../i18n/ILocale';
+    import { VariantResourceKey as R } from '../../../i18n/ILocale';
 
     function createDataRow(item: IMediaContainer) {
         return {
@@ -118,7 +118,7 @@
                 {/each}
             </div>
             <div class="other">
-                <strong>{$Locale[ResourceKey.Tags_Others]()}</strong>
+                <strong>{$Locale[R.Tags_Others]()}</strong>
                 {#each otherTags as item}
                     <Chip
                         class='cursor-pointer'

@@ -1,8 +1,6 @@
-import type { IResource } from '../ILocale';
+import type { IVariantResource } from '../ILocale';
 
-export const en_US: IResource = {
-
-    _: '🇺🇸 English (US)',
+export const en_US: IVariantResource = {
 
     // [SECTION]: FrontendController
 
@@ -15,8 +13,8 @@ export const en_US: IResource = {
 
     // [SECTION]: Frontend Classic
 
-    Frontend_Classic_Settings_FuzzySearch:'Fuzzy Search',
-    Frontend_Classic_Settings_FuzzySearchInfo:'Enable fuzzy search on filters (approximative matching)',
+    Frontend_Classic_Settings_FuzzySearch: 'Fuzzy Search',
+    Frontend_Classic_Settings_FuzzySearchInfo: 'Enable fuzzy search on filters (approximative matching)',
     Frontend_Classic_Settings_Theme: 'Theme',
     Frontend_Classic_Settings_ThemeInfo: 'Select the color theme for the user interface',
     Frontend_Classic_Settings_Theme_HakuNeko: 'HakuNeko',
@@ -112,6 +110,13 @@ export const en_US: IResource = {
     Tags_Language_Turkish: '🇹🇷Turkish',
     Tags_Language_Vietnamese: '🇻🇳Vietnamese',
     Tags_Others: 'Others',
+
+    // [SECTION]: Trackers
+
+    Tracker_Kitsu_Settings_Username: 'Username',
+    Tracker_Kitsu_Settings_UsernameInfo: 'Username for automatic account login to Kitsu',
+    Tracker_Kitsu_Settings_Password: 'Password',
+    Tracker_Kitsu_Settings_PasswordInfo: 'Password for automatic account login to Kitsu',
 
     // [SECTION]: Plugins
 

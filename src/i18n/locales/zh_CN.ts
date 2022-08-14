@@ -1,12 +1,10 @@
-import type { IResource } from '../ILocale';
+import type { IVariantResource } from '../ILocale';
 import { en_US } from './en_US';
 
-export const zh_CN: IResource = {
+export const zh_CN: IVariantResource = {
     // NOTE: Use defaults from 'en_US' for missing translations
     //       => can be removed when translation is complete
     ...en_US,
-
-    _: '🇨🇳 中文 (中国)',
 
     // [SECTION]: FrontendController
 

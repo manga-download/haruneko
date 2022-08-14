@@ -1,10 +1,10 @@
 import { Tags } from './Tags';
-import { ResourceKey } from '../i18n/ILocale';
+import { VariantResourceKey } from '../i18n/ILocale';
 
 describe('Tags.Media', () => {
 
     it('Should default to english category title', async () => {
-        expect(Tags.Media.Title).toBe(ResourceKey.Tags_Media);
+        expect(Tags.Media.Title).toBe(VariantResourceKey.Tags_Media);
         expect(Tags.Media.toArray().every(tag => tag.Category === Tags.Media.Title)).toBeTruthy();
     });
 
@@ -23,26 +23,26 @@ describe('Tags.Media', () => {
 
     it('Should default to english tag titles without formatting', async () => {
         const expected = [
-            ResourceKey.Tags_Media_Manga,
-            ResourceKey.Tags_Media_Manhua,
-            ResourceKey.Tags_Media_Manhwa,
-            ResourceKey.Tags_Media_Comic,
-            ResourceKey.Tags_Media_Anime,
-            ResourceKey.Tags_Media_Cartoon,
-            ResourceKey.Tags_Media_Novel,
+            VariantResourceKey.Tags_Media_Manga,
+            VariantResourceKey.Tags_Media_Manhua,
+            VariantResourceKey.Tags_Media_Manhwa,
+            VariantResourceKey.Tags_Media_Comic,
+            VariantResourceKey.Tags_Media_Anime,
+            VariantResourceKey.Tags_Media_Cartoon,
+            VariantResourceKey.Tags_Media_Novel,
         ];
         expect(Tags.Media.toArray().map(tag => tag.Title)).toStrictEqual(expected);
     });
 
     it('Should default to english tag descriptions', async () => {
         const expected = [
-            ResourceKey.Tags_Media_MangaDescription,
-            ResourceKey.Tags_Media_ManhuaDescription,
-            ResourceKey.Tags_Media_ManhwaDescription,
-            ResourceKey.Tags_Media_ComicDescription,
-            ResourceKey.Tags_Media_AnimeDescription,
-            ResourceKey.Tags_Media_CartoonDescription,
-            ResourceKey.Tags_Media_NovelDescription,
+            VariantResourceKey.Tags_Media_MangaDescription,
+            VariantResourceKey.Tags_Media_ManhuaDescription,
+            VariantResourceKey.Tags_Media_ManhwaDescription,
+            VariantResourceKey.Tags_Media_ComicDescription,
+            VariantResourceKey.Tags_Media_AnimeDescription,
+            VariantResourceKey.Tags_Media_CartoonDescription,
+            VariantResourceKey.Tags_Media_NovelDescription,
         ];
         expect(Tags.Media.toArray().map(tag => tag.Description)).toStrictEqual(expected);
     });
@@ -51,7 +51,7 @@ describe('Tags.Media', () => {
 describe('Tags.Source', () => {
 
     it('Should default to english category title', async () => {
-        expect(Tags.Source.Title).toBe(ResourceKey.Tags_Source);
+        expect(Tags.Source.Title).toBe(VariantResourceKey.Tags_Source);
         expect(Tags.Source.toArray().every(tag => tag.Category === Tags.Source.Title)).toBeTruthy();
     });
 
@@ -66,18 +66,18 @@ describe('Tags.Source', () => {
 
     it('Should default to english tag titles without formatting', async () => {
         const expected = [
-            ResourceKey.Tags_Source_Official,
-            ResourceKey.Tags_Source_Scanlator,
-            ResourceKey.Tags_Source_Aggregator,
+            VariantResourceKey.Tags_Source_Official,
+            VariantResourceKey.Tags_Source_Scanlator,
+            VariantResourceKey.Tags_Source_Aggregator,
         ];
         expect(Tags.Source.toArray().map(tag => tag.Title)).toStrictEqual(expected);
     });
 
     it('Should default to english tag descriptions', async () => {
         const expected = [
-            ResourceKey.Tags_Source_Official,
-            ResourceKey.Tags_Source_Scanlator,
-            ResourceKey.Tags_Source_Aggregator,
+            VariantResourceKey.Tags_Source_Official,
+            VariantResourceKey.Tags_Source_Scanlator,
+            VariantResourceKey.Tags_Source_Aggregator,
         ];
         expect(Tags.Source.toArray().map(tag => tag.Description)).toStrictEqual(expected);
     });
@@ -86,7 +86,7 @@ describe('Tags.Source', () => {
 describe('Tags.Rating', () => {
 
     it('Should default to english category title', async () => {
-        expect(Tags.Rating.Title).toBe(ResourceKey.Tags_Rating);
+        expect(Tags.Rating.Title).toBe(VariantResourceKey.Tags_Rating);
         expect(Tags.Rating.toArray().every(tag => tag.Category === Tags.Rating.Title)).toBeTruthy();
     });
 
@@ -102,20 +102,20 @@ describe('Tags.Rating', () => {
 
     it('Should default to english tag titles without formatting', async () => {
         const expected = [
-            ResourceKey.Tags_Rating_Safe,
-            ResourceKey.Tags_Rating_Suggestive,
-            ResourceKey.Tags_Rating_Erotica,
-            ResourceKey.Tags_Rating_Pornographic,
+            VariantResourceKey.Tags_Rating_Safe,
+            VariantResourceKey.Tags_Rating_Suggestive,
+            VariantResourceKey.Tags_Rating_Erotica,
+            VariantResourceKey.Tags_Rating_Pornographic,
         ];
         expect(Tags.Rating.toArray().map(tag => tag.Title)).toStrictEqual(expected);
     });
 
     it('Should default to english tag descriptions', async () => {
         const expected = [
-            ResourceKey.Tags_Rating_Safe,
-            ResourceKey.Tags_Rating_Suggestive,
-            ResourceKey.Tags_Rating_Erotica,
-            ResourceKey.Tags_Rating_Pornographic,
+            VariantResourceKey.Tags_Rating_Safe,
+            VariantResourceKey.Tags_Rating_Suggestive,
+            VariantResourceKey.Tags_Rating_Erotica,
+            VariantResourceKey.Tags_Rating_Pornographic,
         ];
         expect(Tags.Rating.toArray().map(tag => tag.Description)).toStrictEqual(expected);
     });
@@ -124,7 +124,7 @@ describe('Tags.Rating', () => {
 describe('Tags.Language', () => {
 
     it('Should default to english category title', async () => {
-        expect(Tags.Language.Title).toBe(ResourceKey.Tags_Language);
+        expect(Tags.Language.Title).toBe(VariantResourceKey.Tags_Language);
         expect(Tags.Language.toArray().every(tag => tag.Category === Tags.Language.Title)).toBeTruthy();
     });
 
@@ -153,46 +153,46 @@ describe('Tags.Language', () => {
 
     it('Should default to english tag titles without formatting', async () => {
         const expected = [
-            ResourceKey.Tags_Language_Multilingual,
-            ResourceKey.Tags_Language_Arabic,
-            ResourceKey.Tags_Language_Chinese,
-            ResourceKey.Tags_Language_English,
-            ResourceKey.Tags_Language_French,
-            ResourceKey.Tags_Language_German,
-            ResourceKey.Tags_Language_Indonesian,
-            ResourceKey.Tags_Language_Italian,
-            ResourceKey.Tags_Language_Japanese,
-            ResourceKey.Tags_Language_Korean,
-            ResourceKey.Tags_Language_Polish,
-            ResourceKey.Tags_Language_Portuguese,
-            ResourceKey.Tags_Language_Russian,
-            ResourceKey.Tags_Language_Spanish,
-            ResourceKey.Tags_Language_Thai,
-            ResourceKey.Tags_Language_Turkish,
-            ResourceKey.Tags_Language_Vietnamese,
+            VariantResourceKey.Tags_Language_Multilingual,
+            VariantResourceKey.Tags_Language_Arabic,
+            VariantResourceKey.Tags_Language_Chinese,
+            VariantResourceKey.Tags_Language_English,
+            VariantResourceKey.Tags_Language_French,
+            VariantResourceKey.Tags_Language_German,
+            VariantResourceKey.Tags_Language_Indonesian,
+            VariantResourceKey.Tags_Language_Italian,
+            VariantResourceKey.Tags_Language_Japanese,
+            VariantResourceKey.Tags_Language_Korean,
+            VariantResourceKey.Tags_Language_Polish,
+            VariantResourceKey.Tags_Language_Portuguese,
+            VariantResourceKey.Tags_Language_Russian,
+            VariantResourceKey.Tags_Language_Spanish,
+            VariantResourceKey.Tags_Language_Thai,
+            VariantResourceKey.Tags_Language_Turkish,
+            VariantResourceKey.Tags_Language_Vietnamese,
         ];
         expect(Tags.Language.toArray().map(tag => tag.Title)).toStrictEqual(expected);
     });
 
     it('Should default to english tag descriptions', async () => {
         const expected = [
-            ResourceKey.Tags_Language_Multilingual,
-            ResourceKey.Tags_Language_Arabic,
-            ResourceKey.Tags_Language_Chinese,
-            ResourceKey.Tags_Language_English,
-            ResourceKey.Tags_Language_French,
-            ResourceKey.Tags_Language_German,
-            ResourceKey.Tags_Language_Indonesian,
-            ResourceKey.Tags_Language_Italian,
-            ResourceKey.Tags_Language_Japanese,
-            ResourceKey.Tags_Language_Korean,
-            ResourceKey.Tags_Language_Polish,
-            ResourceKey.Tags_Language_Portuguese,
-            ResourceKey.Tags_Language_Russian,
-            ResourceKey.Tags_Language_Spanish,
-            ResourceKey.Tags_Language_Thai,
-            ResourceKey.Tags_Language_Turkish,
-            ResourceKey.Tags_Language_Vietnamese,
+            VariantResourceKey.Tags_Language_Multilingual,
+            VariantResourceKey.Tags_Language_Arabic,
+            VariantResourceKey.Tags_Language_Chinese,
+            VariantResourceKey.Tags_Language_English,
+            VariantResourceKey.Tags_Language_French,
+            VariantResourceKey.Tags_Language_German,
+            VariantResourceKey.Tags_Language_Indonesian,
+            VariantResourceKey.Tags_Language_Italian,
+            VariantResourceKey.Tags_Language_Japanese,
+            VariantResourceKey.Tags_Language_Korean,
+            VariantResourceKey.Tags_Language_Polish,
+            VariantResourceKey.Tags_Language_Portuguese,
+            VariantResourceKey.Tags_Language_Russian,
+            VariantResourceKey.Tags_Language_Spanish,
+            VariantResourceKey.Tags_Language_Thai,
+            VariantResourceKey.Tags_Language_Turkish,
+            VariantResourceKey.Tags_Language_Vietnamese,
         ];
         expect(Tags.Language.toArray().map(tag => tag.Description)).toStrictEqual(expected);
     });

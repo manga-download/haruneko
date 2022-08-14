@@ -1,12 +1,10 @@
-import type { IResource } from '../ILocale';
+import type { IVariantResource } from '../ILocale';
 import { en_US } from './en_US';
 
-export const de_DE: IResource = {
+export const de_DE: IVariantResource = {
     // NOTE: Use defaults from 'en_US' for missing translations
     //       => can be removed when translation is complete
     ...en_US,
-
-    _: '🇩🇪 Deutsch (DE)',
 
     // [SECTION]: FrontendController
 
@@ -19,8 +17,8 @@ export const de_DE: IResource = {
 
     // [SECTION]: Frontend Classic
 
-    Frontend_Classic_Settings_FuzzySearch:'Fuzzy Search',
-    Frontend_Classic_Settings_FuzzySearchInfo:'Enable fuzzy search on filters (approximative matching)',
+    Frontend_Classic_Settings_FuzzySearch: 'Fuzzy Search',
+    Frontend_Classic_Settings_FuzzySearchInfo: 'Enable fuzzy search on filters (approximative matching)',
     Frontend_Classic_Settings_Theme: 'Motiv',
     Frontend_Classic_Settings_ThemeInfo: 'Legt das Farbschema der Benutzeroberfläche fest',
     Frontend_Classic_Settings_Theme_HakuNeko: 'HakuNeko',

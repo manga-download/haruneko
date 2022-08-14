@@ -1,12 +1,10 @@
-import type { IResource } from '../ILocale';
+import type { IVariantResource } from '../ILocale';
 import { en_US } from './en_US';
 
-export const ar_AE: IResource = {
+export const ar_AE: IVariantResource = {
     // NOTE: Use defaults from 'en_US' for missing translations
     //       => can be removed when translation is complete
     ...en_US,
-
-    _: '🇦🇪 العربية (AE)',
 
     // [SECTION]: FrontendController
 

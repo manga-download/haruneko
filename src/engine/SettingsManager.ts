@@ -1,4 +1,4 @@
-import type { ResourceKey } from '../i18n/ILocale';
+import type { IResource } from '../i18n/ILocale';
 import { type StorageController, Store } from './StorageController';
 import { Event } from './Event';
 import { GetLocale } from '../i18n/Localization';
@@ -23,10 +23,10 @@ class Setting<T extends IValue> {
     public value: T;
     private readonly initial: T;
     private readonly id: string;
-    private readonly label: ResourceKey;
-    private readonly description: ResourceKey;
+    private readonly label: keyof IResource;
+    private readonly description: keyof IResource;
 
-    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: T) {
+    constructor(id: string, label: keyof IResource, description: keyof IResource, initial: T) {
         this.id = id;
         this.label = label;
         this.description = description;
@@ -40,11 +40,11 @@ class Setting<T extends IValue> {
         return this.id;
     }
 
-    public get Label(): ResourceKey {
+    public get Label(): keyof IResource {
         return this.label;
     }
 
-    public get Description(): ResourceKey {
+    public get Description(): keyof IResource {
         return this.description;
     }
 
@@ -71,14 +71,14 @@ export type { Setting };
 
 export class Text extends Setting<string> {
 
-    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: string) {
+    constructor(id: string, label: keyof IResource, description: keyof IResource, initial: string) {
         super(id, label, description, initial);
     }
 }
 
 export class Secret extends Setting<string> {
 
-    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: string) {
+    constructor(id: string, label: keyof IResource, description: keyof IResource, initial: string) {
         super(id, label, description, Encrypt(initial));
     }
 
@@ -93,16 +93,16 @@ export class Secret extends Setting<string> {
 
 export class Check extends Setting<boolean> {
 
-    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: boolean) {
+    constructor(id: string, label: keyof IResource, description: keyof IResource, initial: boolean) {
         super(id, label, description, initial);
     }
 }
 
-type IOption = { key: string, label: ResourceKey }
+type IOption = { key: string, label: keyof IResource }
 
 export class Choice extends Setting<string> {
 
-    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: string, ...options: IOption[]) {
+    constructor(id: string, label: keyof IResource, description: keyof IResource, initial: string, ...options: IOption[]) {
         super(id, label, description, initial);
         this.options = options;
     }
@@ -123,7 +123,7 @@ export class Choice extends Setting<string> {
 
 export class Numeric extends Setting<number> {
 
-    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: number, min: number, max: number) {
+    constructor(id: string, label: keyof IResource, description: keyof IResource, initial: number, min: number, max: number) {
         super(id, label, description, initial);
         this.min = min;
         this.max = max;
@@ -152,7 +152,7 @@ export class Numeric extends Setting<number> {
 
 export class Directory extends Setting<FileSystemDirectoryHandle> {
 
-    constructor(id: string, label: ResourceKey, description: ResourceKey, initial: FileSystemDirectoryHandle) {
+    constructor(id: string, label: keyof IResource, description: keyof IResource, initial: FileSystemDirectoryHandle) {
         super(id, label, description, initial);
     }
 }
