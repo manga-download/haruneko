@@ -26,8 +26,8 @@
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
-    import { Locale } from '../SettingsStore';
-    import { selectedPlugin } from '../Stores';
+    import { Locale } from '../stores/Settings';
+    import { selectedPlugin } from '../stores/Stores';
     // Hakuneko Engine
     import { VariantResourceKey as R } from '../../../i18n/ILocale';
 

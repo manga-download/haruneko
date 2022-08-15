@@ -5,7 +5,7 @@
         ContextMenuDivider,
         ContextMenuOption,
     } from 'carbon-components-svelte';
-    import { selectedMedia } from '../Stores';
+    import { selectedMedia } from '../stores/Stores';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 

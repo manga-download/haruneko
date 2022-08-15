@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { TextInput } from "carbon-components-svelte";
-    import type { Text } from "../../../../engine/SettingsManager";
-    import { Locale } from "../../SettingsStore";
-    import SettingItem from "./SettingItem.svelte";
+    import { TextInput } from 'carbon-components-svelte';
+    import type { Text } from '../../../../engine/SettingsManager';
+    import { Locale } from '../../stores/Settings';
+    import SettingItem from './SettingItem.svelte';
 
     export let setting: Text;
     let current: Text;
@@ -11,13 +11,13 @@
     $: Update(setting);
 
     function Update(setting: Text) {
-        if(current === setting) {
+        if (current === setting) {
             return;
         }
-        if(current) {
+        if (current) {
             current.ValueChanged.Unsubscribe(OnValueChangedCallback);
         }
-        if(setting) {
+        if (setting) {
             setting.ValueChanged.Subscribe(OnValueChangedCallback);
         }
         value = setting.Value;
@@ -25,7 +25,7 @@
     }
 
     function OnValueChangedCallback(sender: Text, args: string) {
-        if(sender && sender !== current) {
+        if (sender && sender !== current) {
             sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
         } else {
             value = args;
@@ -33,6 +33,12 @@
     }
 </script>
 
-<SettingItem labelText={$Locale[setting.Label]()} helperText={$Locale[setting.Description]()}>
-    <TextInput value={value} on:change={event => setting.Value = event.currentTarget['value']} />
+<SettingItem
+    labelText={$Locale[setting.Label]()}
+    helperText={$Locale[setting.Description]()}
+>
+    <TextInput
+        {value}
+        on:change={(event) => (setting.Value = event.currentTarget['value'])}
+    />
 </SettingItem>

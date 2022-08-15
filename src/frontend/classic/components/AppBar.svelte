@@ -6,16 +6,11 @@
         HeaderGlobalAction,
         SkipToContent,
     } from 'carbon-components-svelte';
-    import {
-        Checkbox,
-        Close,
-        Copy,
-        Subtract
-    } from 'carbon-icons-svelte'
+    import { Checkbox, Close, Copy, Subtract } from 'carbon-icons-svelte';
     import MenuLeftPanel from './MenuLeftPanel.svelte';
-    import { WindowController } from '../Stores';
+    import { WindowController } from '../stores/Stores';
     import SettingsPanel from './settings/SettingsPanel.svelte';
-    import { Locale } from '../SettingsStore';
+    import { Locale } from '../stores/Settings';
 
     export let isSideNavOpen: boolean;
 

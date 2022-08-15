@@ -14,7 +14,7 @@
     import { fade } from 'svelte/transition';
 
     import MediaItem from './MediaItem.svelte';
-    import { selectedMedia, selectedItem } from '../Stores';
+    import { selectedMedia, selectedItem } from '../stores/Stores';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';

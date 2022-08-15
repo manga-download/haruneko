@@ -5,7 +5,10 @@
     } from '../../../../engine/providers/MediaPlugin';
     import WideViewerImage from './WideViewerImage.svelte';
     import { onMount } from 'svelte';
-    import { ViewerDoublePageValue, ViewerReverseDirectionValue } from '../../SettingsStore';
+    import {
+        ViewerDoublePageValue,
+        ViewerReverseDirectionValue,
+    } from '../../stores/Settings';
 
     type ChapterImage = { current: IMediaItem; next: IMediaItem | undefined };
 
@@ -69,16 +72,18 @@
         await item.Update();
         let pages: ChapterImage[] = [];
         let increment = $ViewerDoublePageValue ? 2 : 1;
-        for(let index = 0; index < item.Entries.length; index += increment) {
+        for (let index = 0; index < item.Entries.length; index += increment) {
             pages.push({
                 current: item.Entries[index] as IMediaItem,
-                next: $ViewerDoublePageValue ? item.Entries[index + 1] as IMediaItem : undefined
+                next: $ViewerDoublePageValue
+                    ? (item.Entries[index + 1] as IMediaItem)
+                    : undefined,
             });
         }
-        if($ViewerDoublePageValue && item.Entries.length % increment > 0) {
+        if ($ViewerDoublePageValue && item.Entries.length % increment > 0) {
             pages.push({
                 current: item.Entries[item.Entries.length - 1] as IMediaItem,
-                next: undefined
+                next: undefined,
             });
         }
         chapterImages = pages;

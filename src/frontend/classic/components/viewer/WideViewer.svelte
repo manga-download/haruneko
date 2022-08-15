@@ -3,7 +3,7 @@
     import WideViewerSetting from './WideViewerSetting.svelte';
     import WebtoonViewer from './WebtoonViewer.svelte';
     import MangaViewer from './MangaViewer.svelte';
-    import { Key, ViewerModeValue } from '../../SettingsStore';
+    import { Key, ViewerModeValue } from '../../stores/Settings';
 
     export let item: IMediaContainer;
     export let currentImageIndex: number;
@@ -17,11 +17,7 @@
     {#if $ViewerModeValue === Key.ViewerMode_Longstrip}
         <WebtoonViewer {item} {imagePadding} />
     {:else if $ViewerModeValue === Key.ViewerMode_Paginated}
-        <MangaViewer
-            {item}
-            {currentImageIndex}
-            {imagePadding}
-        />
+        <MangaViewer {item} {currentImageIndex} {imagePadding} />
     {/if}
 </div>
 

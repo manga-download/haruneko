@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-import type { IWindowController } from '../WindowController';
-import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
+import type { IWindowController } from '../../WindowController';
+import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
 export const WindowController = writable<IWindowController>();
 export const selectedPlugin = writable<IMediaContainer>();

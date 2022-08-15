@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { NumberInput } from "carbon-components-svelte";
-    import type { Numeric } from "../../../../engine/SettingsManager";
-    import { Locale } from "../../SettingsStore";
-    import SettingItem from "./SettingItem.svelte";
+    import { NumberInput } from 'carbon-components-svelte';
+    import type { Numeric } from '../../../../engine/SettingsManager';
+    import { Locale } from '../../stores/Settings';
+    import SettingItem from './SettingItem.svelte';
 
     export let setting: Numeric;
     let current: Numeric;
@@ -11,13 +11,13 @@
     $: Update(setting);
 
     function Update(setting: Numeric) {
-        if(current === setting) {
+        if (current === setting) {
             return;
         }
-        if(current) {
+        if (current) {
             current.ValueChanged.Unsubscribe(OnValueChangedCallback);
         }
-        if(setting) {
+        if (setting) {
             setting.ValueChanged.Subscribe(OnValueChangedCallback);
         }
         value = setting.Value;
@@ -25,7 +25,7 @@
     }
 
     function OnValueChangedCallback(sender: Numeric, args: number) {
-        if(sender && sender !== current) {
+        if (sender && sender !== current) {
             sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
         } else {
             value = args;
@@ -33,6 +33,14 @@
     }
 </script>
 
-<SettingItem labelText={$Locale[setting.Label]()} helperText={$Locale[setting.Description]()}>
-    <NumberInput value={value} min={setting.Min} max={setting.Max} on:change={event => setting.Value = event.detail} />
+<SettingItem
+    labelText={$Locale[setting.Label]()}
+    helperText={$Locale[setting.Description]()}
+>
+    <NumberInput
+        {value}
+        min={setting.Min}
+        max={setting.Max}
+        on:change={(event) => (setting.Value = event.detail)}
+    />
 </SettingItem>

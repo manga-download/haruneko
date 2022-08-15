@@ -1,8 +1,8 @@
 import type { IWindowController } from '../WindowController';
 import type { IFrontendModule } from '../IFrontend';
 import App from './App.svelte';
-import { Initialize } from './SettingsStore';
-import { WindowController } from './Stores';
+import { Initialize } from './stores/Settings';
+import { WindowController } from './stores/Stores';
 
 class Classic implements IFrontendModule {
     async Render(root: HTMLElement, windowController: IWindowController): Promise<void> {

@@ -17,8 +17,12 @@
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
     // UI : Stores
-    import { selectedPlugin, selectedMedia, selectedItem } from '../Stores';
-    import { FuzzySearchValue, } from '../SettingsStore';
+    import {
+        selectedPlugin,
+        selectedMedia,
+        selectedItem,
+    } from '../stores/Stores';
+    import { FuzzySearchValue } from '../stores/Settings';
     // Hakuneko Engine
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import type { IMediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
@@ -30,20 +34,20 @@
         findAllMatches: true,
         ignoreLocation: true,
         minMatchCharLength: 1,
-        fieldNormWeight: 0
+        fieldNormWeight: 0,
     });
 
     $selectedPlugin = window.HakuNeko.BookmarkPlugin;
 
-    let loadPlugin:Promise<void>;
-    let isBookmarkPlugin:Boolean;
+    let loadPlugin: Promise<void>;
+    let isBookmarkPlugin: Boolean;
     $: isBookmarkPlugin = $selectedPlugin === window.HakuNeko.BookmarkPlugin;
-    
+
     // Todo : implement favorites
     let pluginsFavorites = ['sheep-scanlations'];
 
     let pluginsCombo: Array<ComboBoxItem>;
-    let orderedPlugins : IMediaContainer[] = [];
+    let orderedPlugins: IMediaContainer[] = [];
 
     orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
         return (
@@ -61,15 +65,16 @@
         };
     });
 
-
-    function pluginsComboText (item:ComboBoxItem):string {
-        return pluginsFavorites.includes(item.id) ? '⭐' + item.text : item.text;
+    function pluginsComboText(item: ComboBoxItem): string {
+        return pluginsFavorites.includes(item.id)
+            ? '⭐' + item.text
+            : item.text;
     }
 
-    let pluginDropdownSelected:string;
-    let currentPlugin:string;
+    let pluginDropdownSelected: string;
+    let currentPlugin: string;
 
-    selectedPlugin.subscribe(value => {
+    selectedPlugin.subscribe((value) => {
         if (!value || value?.Identifier === currentPlugin) return;
         currentPlugin = pluginDropdownSelected = value.Identifier;
         medias = (value?.Entries as IMediaContainer[]) ?? [];
@@ -78,17 +83,22 @@
             findAllMatches: true,
             ignoreLocation: true,
             minMatchCharLength: 1,
-            fieldNormWeight: 0
+            fieldNormWeight: 0,
         });
-        $selectedMedia=undefined;
-        $selectedItem=undefined;
+        $selectedMedia = undefined;
+        $selectedItem = undefined;
     });
-    function filterMedia(mediaNameFilter:string):IMediaContainer[] {
-        if ($FuzzySearchValue) return fuse.search(mediaNameFilter).map((item) => item.item);
-        else return medias.filter((item) => item.Title.includes(mediaNameFilter));
+    function filterMedia(mediaNameFilter: string): IMediaContainer[] {
+        if ($FuzzySearchValue)
+            return fuse.search(mediaNameFilter).map((item) => item.item);
+        else
+            return medias.filter((item) =>
+                item.Title.includes(mediaNameFilter)
+            );
     }
     let mediaNameFilter = '';
-    $: filteredmedias = (mediaNameFilter === '') ? medias : filterMedia(mediaNameFilter);
+    $: filteredmedias =
+        mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter);
 
     let isTrackerModalOpen = false;
     let selectedTracker: IMediaInfoTracker;
@@ -105,7 +115,6 @@
     }
 </script>
 
-
 {#if isTrackerModalOpen}
     <div>
         <Tracker
@@ -118,24 +127,28 @@
 {/if}
 <div id="Media" transition:fade>
     <div id="MediaTitle">
-            <Button 
-                kind="ghost" 
-                size="small" 
-                iconDescription="Show bookmarks"
-                tooltipPosition="right"
-                icon={isBookmarkPlugin ? StarFilled : Star} 
-                on:click={() => {
-                    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
-                }}
-            />
-            <h5>Media List</h5>
+        <Button
+            kind="ghost"
+            size="small"
+            iconDescription="Show bookmarks"
+            tooltipPosition="right"
+            icon={isBookmarkPlugin ? StarFilled : Star}
+            on:click={() => {
+                $selectedPlugin = window.HakuNeko.BookmarkPlugin;
+            }}
+        />
+        <h5>Media List</h5>
     </div>
     <div id="Plugin">
         <div class="inline-wide">
             <ComboBox
                 placeholder="Select a Plugin"
                 bind:selectedId={pluginDropdownSelected}
-                on:select={(event)=>$selectedPlugin=orderedPlugins.find((plugin) => (plugin.Identifier===event.detail.selectedId))}
+                on:select={(event) =>
+                    ($selectedPlugin = orderedPlugins.find(
+                        (plugin) =>
+                            plugin.Identifier === event.detail.selectedId
+                    ))}
                 size="sm"
                 items={pluginsCombo}
                 shouldFilterItem={shouldFilterPlugin}
@@ -213,8 +226,8 @@
         user-select: none;
     }
     #MediaList .loading {
-        width:100%;
-        height:100%;
+        width: 100%;
+        height: 100%;
     }
     #MediaCount {
         grid-area: MediaCount;
@@ -226,9 +239,9 @@
         width: 100%;
     }
     #MediaTitle h5 {
-        display:inline-block;
-        height:100%;
-        padding-top:0.3em;
+        display: inline-block;
+        height: 100%;
+        padding-top: 0.3em;
     }
 
     .inline {
