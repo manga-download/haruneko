@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Loading } from "carbon-components-svelte";
+    import { Loading } from 'carbon-components-svelte';
     import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
     import ThumbnailViewer from './ThumbnailViewer.svelte';
     import WideViewer from './WideViewer.svelte';
@@ -23,7 +23,7 @@
     }
 </script>
 
-<div id="Viewer"> 
+<div id="Viewer">
     <div id="Contents" class="{mode} center">
         {#await update}
             <div class="loading">
@@ -32,13 +32,15 @@
             </div>
         {:then}
             {#if mode === 'Thumbnail' || mode === 'Wide'}
-                <ThumbnailViewer hide={mode !== 'Thumbnail'} {item} {toggleWideViewer} />
+                <div class:hide={mode !== 'Thumbnail'}>
+                    <ThumbnailViewer {item} {toggleWideViewer} />
+                </div>
                 {#if mode === 'Wide'}
-                <WideViewer
-                    {item}
-                    {currentImageIndex}
-                    on:close={toggleThumbnailViewer}
-                />
+                    <WideViewer
+                        {item}
+                        {currentImageIndex}
+                        on:close={toggleThumbnailViewer}
+                    />
                 {/if}
             {:else if mode === 'Video'}
                 <VideoViewer />
@@ -64,10 +66,12 @@
         grid-area: Content;
     }
     #Contents .loading {
-
         padding: 20em;
     }
     .error {
         color: red;
+    }
+    .hide {
+        display: none;
     }
 </style>
