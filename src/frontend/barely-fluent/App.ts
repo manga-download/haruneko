@@ -51,7 +51,7 @@ export default class App extends FASTElement {
 
     public MediaChanged(sender: MediaContainer) {
         this.items = sender?.selected?.Entries as IMediaContainer[];
-        if(!this.website || !this.website.IsSameAs(sender?.selected?.Parent)) {
+        if(!this.website || (sender?.selected?.Parent && !this.website.IsSameAs(sender?.selected?.Parent))) {
             this.website = sender?.selected?.Parent;
         }
     }
