@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat, Observable } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
@@ -169,6 +169,7 @@ export class MediaContainer extends FASTElement {
     public SelectEntry(entry: IMediaContainer) {
         this.selected = entry;
         this.expanded = false;
+        Observable.notify(this, 'expanded'); // force update of UI even when property not changed
     }
 
     public async UpdateEntries(): Promise<void> {
