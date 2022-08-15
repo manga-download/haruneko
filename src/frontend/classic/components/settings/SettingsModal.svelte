@@ -11,12 +11,10 @@
     import SettingsViewer from './SettingsViewer.svelte';
     import SettingsPanel from './SettingsPanel.svelte';
 
-    import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
     import { Scope } from '../../../../engine/SettingsGlobal';
 
     export let isModalOpen = false;
     export let selectedTab = 0;
-    export let preselectedPlugin: IMediaContainer;
 </script>
 
 <Modal
@@ -36,12 +34,6 @@
         <Tab label="Style" />
         <Tab label="Trackers" />
         <Tab label="Network" />
-        <Tab
-            label={preselectedPlugin
-                ? '* ' + preselectedPlugin.Title
-                : 'Connectors'}
-        />
-
         <svelte:fragment slot="content">
             <TabContent class="settingtab">
                 <SettingsViewer
@@ -100,13 +92,6 @@
                         subtitle="per Plugin value in each plugin settings page"
                     />
                 </div>
-            </TabContent>
-            <TabContent style="height:70vh">
-                {#if preselectedPlugin}
-                    <SettingsViewer settings={preselectedPlugin.Settings} />
-                {:else}
-                    Access each plugin settings from the plugin list menu.
-                {/if}
             </TabContent>
         </svelte:fragment>
     </Tabs>
