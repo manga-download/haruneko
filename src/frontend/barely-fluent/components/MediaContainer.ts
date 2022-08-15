@@ -13,6 +13,7 @@ import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.s
 //import IconBookmark from '@fluentui/svg-icons/icons/bookmark_20_regular.svg?raw';
 import IconAddBookmark from '@fluentui/svg-icons/icons/bookmark_off_20_regular.svg?raw';
 import IconRemoveBookmark from '@fluentui/svg-icons/icons/bookmark_20_filled.svg?raw';
+import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 
 const styles: ElementStyles = css`
     :host {
@@ -78,12 +79,12 @@ const busy: ViewTemplate<MediaContainer> = html`
 `;
 
 const unstarred: ViewTemplate<MediaContainer> = html`
-    <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.AddFavorite()}>${IconAddBookmark}</fluent-button>
+    <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.AddBookmark()}>${IconAddBookmark}</fluent-button>
     <fluent-tooltip anchor="add-favorite-button">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_AddBookmarkButton_Description()}</fluent-tooltip>
 `;
 
 const starred: ViewTemplate<MediaContainer> = html`
-    <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.RemoveFavorite()}>${IconRemoveBookmark}</fluent-button>
+    <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.RemoveBookmark()}>${IconRemoveBookmark}</fluent-button>
     <fluent-tooltip anchor="remove-favorite-button">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_RemoveBookmarkButton_Description()}</fluent-tooltip>
 `;
 
@@ -130,6 +131,17 @@ const template: ViewTemplate<MediaContainer> = html`
 @customElement({ name: 'fluent-accordion-mediacontainer', template, styles })
 export class MediaContainer extends FASTElement {
 
+    override connectedCallback(): void {
+        super.connectedCallback();
+        HakuNeko.BookmarkPlugin.EntriesUpdated.Subscribe(this.BookmarksChanged);
+        this.FilterEntries();
+    }
+
+    override disconnectedCallback(): void {
+        super.disconnectedCallback();
+        HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
+    }
+
     @observable expanded = false;
     @observable parent: IMediaContainer = HakuNeko.PluginController.WebsitePlugins[4];
     parentChanged(previous: IMediaContainer, current: IMediaContainer) {
@@ -142,6 +154,7 @@ export class MediaContainer extends FASTElement {
     @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(!previous || !previous.IsSameAs(current)) {
+            this.BookmarksChanged(HakuNeko.BookmarkPlugin);
             this.$emit('changed');
         }
     }
@@ -183,15 +196,22 @@ export class MediaContainer extends FASTElement {
         }
     }
 
-    public AddFavorite() {
-        this.bookmark = true;
-        console.log('Added Bookmark', this.selected?.Identifier);
+    public async AddBookmark() {
+        if(this.selected) {
+            await HakuNeko.BookmarkPlugin.Add(this.selected);
+        }
     }
 
-    public RemoveFavorite() {
-        this.bookmark = false;
-        console.log('Removed Bookmark', this.selected?.Identifier);
+    public async RemoveBookmark() {
+        if(this.selected && HakuNeko.BookmarkPlugin.isBookmarked(this.selected)) {
+            const bookmark = HakuNeko.BookmarkPlugin.Find(this.selected);
+            await HakuNeko.BookmarkPlugin.Remove(bookmark);
+        }
     }
+
+    private BookmarksChanged = (function(sender: BookmarkPlugin) {
+        this.bookmark = this.selected && sender.isBookmarked(this.selected);
+    }).bind(this);
 
     public async PasteClipboard() {
         try {
