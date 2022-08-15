@@ -121,7 +121,7 @@ const template: ViewTemplate<MediaContainer> = html`
             <fluent-divider></fluent-divider>
             <div id="entries">
                 <ul>
-                    ${repeat(model => model.entries, listitem)}
+                    ${repeat(model => model.filtered, listitem)}
                 </ul>
             </div>
         </div>
@@ -143,14 +143,14 @@ export class MediaContainer extends FASTElement {
     }
 
     @observable expanded = false;
-    @observable parent: IMediaContainer = HakuNeko.PluginController.WebsitePlugins[4];
-    parentChanged(previous: IMediaContainer, current: IMediaContainer) {
-        if(!previous || !previous.IsSameAs(current)) {
-            this.entries = (current?.Entries ?? []).slice(0, 250) as IMediaContainer[]; // TODO: virtual scrolling
-            this.selected = this.entries.find(entry => entry.IsSameAs(this.selected));
+    @observable entries: IMediaContainer[] = [];
+    entriesChanged(previous: IMediaContainer[], current: IMediaContainer[]) {
+        if(previous !== current) {
+            this.selected = this.entries?.find(entry => entry.IsSameAs(this.selected));
+            this.FilterEntries();
         }
     }
-    @observable entries: IMediaContainer[] = [];
+    @observable filtered: IMediaContainer[] = [];
     @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(!previous || !previous.IsSameAs(current)) {
@@ -173,10 +173,10 @@ export class MediaContainer extends FASTElement {
 
     public async FilterEntries() {
         const pattern = new RegExp(this.filtertext, 'i');
-        this.entries = (this.parent.Entries as IMediaContainer[]).filter(entry => {
+        this.filtered = this.entries ? this.entries.filter(entry => {
             // TODO: consider tags ...
             return pattern.test(entry.Title);
-        }).slice(0, 250); // TODO: virtual scrolling
+        }).slice(0, 250) : []; // TODO: virtual scrolling
     }
 
     public SelectEntry(entry: IMediaContainer) {
@@ -193,6 +193,7 @@ export class MediaContainer extends FASTElement {
             console.warn(error);
         } finally {
             this.updating = false;
+            this.$emit('changed');
         }
     }
 
@@ -220,7 +221,6 @@ export class MediaContainer extends FASTElement {
             for(const website of HakuNeko.PluginController.WebsitePlugins) {
                 const media = await website.TryGetEntry(link) as IMediaContainer;
                 if(media) {
-                    this.parent = media.Parent;
                     if(!this.selected || !this.selected.IsSameAs(media)) {
                         this.selected = media;
                     }

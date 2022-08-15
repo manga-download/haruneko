@@ -160,6 +160,7 @@ export class WebsitePlugin extends FASTElement {
             console.warn(error);
         } finally {
             this.updating = false;
+            this.$emit('changed');
         }
     }
 

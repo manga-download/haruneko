@@ -32,9 +32,9 @@ const template: ViewTemplate<App> = html`
     <fluent-titlebar id="titlebar"></fluent-titlebar>
     <fluent-bookmarks id="bookmarks"></fluent-bookmarks>
     <fluent-accordion-website :selected=${model => model.website} @changed=${(model, ctx) => model.WebsiteChanged(ctx.event.currentTarget as WebsitePlugin)}></fluent-accordion-website>
-    <fluent-accordion-mediacontainer :parent=${model => model.website} @changed=${(model, ctx) => model.ContainerChanged(ctx.event.currentTarget as MediaContainer)}></fluent-accordion-mediacontainer>
+    <fluent-accordion-mediacontainer :entries=${model => model.entries} @changed=${(model, ctx) => model.MediaChanged(ctx.event.currentTarget as MediaContainer)}></fluent-accordion-mediacontainer>
     <div id="content">
-        ${repeat(model => model.container?.Entries, html`<div>${entry => entry.Title}</div>`)}
+        ${repeat(model => model.items, html`<div>${entry => entry.Title}</div>`)}
     </div>
 `;
 
@@ -42,14 +42,15 @@ const template: ViewTemplate<App> = html`
 export default class App extends FASTElement {
 
     @observable website: IMediaContainer;
-    @observable container: IMediaContainer;
+    @observable entries: IMediaContainer[];
+    @observable items: IMediaContainer[];
 
     public WebsiteChanged(sender: WebsitePlugin) {
-        this.website = sender?.selected;
+        this.entries = sender?.selected?.Entries as IMediaContainer[];
     }
 
-    public ContainerChanged(sender: MediaContainer) {
-        this.container = sender?.selected;
+    public MediaChanged(sender: MediaContainer) {
+        this.items = sender?.selected?.Entries as IMediaContainer[];
         if(!this.website || !this.website.IsSameAs(sender?.selected?.Parent)) {
             this.website = sender?.selected?.Parent;
         }
