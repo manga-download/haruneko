@@ -33,7 +33,7 @@
 
     //Todo: why doesn't it work with rail mode on sidenav ?
     export let isSideNavOpen: boolean;
-    
+
     //Settings Modal
     let settingsSelectedTabs = 0;
     let settingsPreselectedPlugin: IMediaContainer;
@@ -55,20 +55,19 @@
 <SettingsMenu
     bind:isModalOpen={isSettingsModalOpen}
     selectedTab={settingsSelectedTabs}
-    preselectedPlugin={settingsPreselectedPlugin}
 />
 <SideNav bind:isOpen={isSideNavOpen} rail>
     <SideNavItems>
         <SideNavLink
-                text="[RES:Home]"
-                icon={Home}
-                on:click={() => dispatch('home') }
-            />
+            text="[RES:Home]"
+            icon={Home}
+            on:click={() => dispatch('home')}
+        />
         <SideNavLink
-                text="[RES:Plugins]"
-                icon={PlugFilled}
-                on:click={() => isPluginModalOpen = true }
-            />
+            text="[RES:Plugins]"
+            icon={PlugFilled}
+            on:click={() => (isPluginModalOpen = true)}
+        />
         <SideNavMenu text="[RES:Settings]" icon={Settings}>
             <SideNavLink
                 text="[RES:General]"
@@ -107,15 +106,13 @@
                 }}
             />
         </SideNavMenu>
-        <SideNavMenu text="[RES:Help]"  icon={Document}>
+        <SideNavMenu text="[RES:Help]" icon={Document}>
             <SideNavLink
                 text="Documentation"
                 icon={Doc}
                 class="clik-item"
                 on:click={() =>
-                    window.open(
-                        'https://hakuneko.download/docs/interface/'
-                    )}
+                    window.open('https://hakuneko.download/docs/interface/')}
             />
             <SideNavLink
                 text="Discord"
@@ -129,9 +126,7 @@
                 icon={Debug}
                 class="clik-item"
                 on:click={() =>
-                    window.open(
-                        'https://hakuneko.download/docs/troubleshoot/'
-                    )}
+                    window.open('https://hakuneko.download/docs/troubleshoot/')}
             />
             <SideNavLink
                 text="Home page"
@@ -146,15 +141,13 @@
                 on:click={() => window.open('https://ipinfo.io/json')}
             />
         </SideNavMenu>
-        <SideNavMenu text="[RES:About]" icon={Information }>
+        <SideNavMenu text="[RES:About]" icon={Information}>
             <SideNavLink
                 text="Code source"
                 icon={LogoGithub}
                 class="clik-item"
                 on:click={() =>
-                    window.open(
-                        'https://hakuneko.download/docs/interface/'
-                    )}
+                    window.open('https://hakuneko.download/docs/interface/')}
             />
             <SideNavLink
                 text="Using version X.X.X"
@@ -174,18 +167,14 @@
                 icon={EventsAlt}
                 class="clik-item"
                 on:click={() =>
-                    window.open(
-                        'https://hakuneko.download/docs/troubleshoot/'
-                    )}
+                    window.open('https://hakuneko.download/docs/troubleshoot/')}
             />
             <SideNavLink
                 text="Artwork"
                 icon={Image}
                 class="clik-item"
                 on:click={() =>
-                    window.open(
-                        'https://www.deviantart.com/hakuneko3kune'
-                    )}
+                    window.open('https://www.deviantart.com/hakuneko3kune')}
             />
         </SideNavMenu>
     </SideNavItems>
