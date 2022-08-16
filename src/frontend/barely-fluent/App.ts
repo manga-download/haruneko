@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
-import type { WebsitePlugin, MediaContainer } from './components/_index';
+import type { WebsiteSelect, MediaTitleSelect } from './components/_index';
 
 const styles: ElementStyles = css`
     :host {
@@ -31,8 +31,8 @@ const styles: ElementStyles = css`
 const template: ViewTemplate<App> = html`
     <fluent-titlebar id="titlebar"></fluent-titlebar>
     <fluent-bookmarks id="bookmarks"></fluent-bookmarks>
-    <fluent-accordion-website :selected=${model => model.website} @changed=${(model, ctx) => model.WebsiteChanged(ctx.event.currentTarget as WebsitePlugin)}></fluent-accordion-website>
-    <fluent-accordion-mediacontainer :entries=${model => model.entries} @changed=${(model, ctx) => model.MediaChanged(ctx.event.currentTarget as MediaContainer)}></fluent-accordion-mediacontainer>
+    <fluent-website-select :selected=${model => model.website} @changed=${(model, ctx) => model.WebsiteChanged(ctx.event.currentTarget as WebsiteSelect)}></fluent-website-select>
+    <fluent-media-title-select :entries=${model => model.entries} @changed=${(model, ctx) => model.MediaChanged(ctx.event.currentTarget as MediaTitleSelect)}></fluent-media-title-select>
     <div id="content">
         ${repeat(model => model.items, html`<div>${entry => entry.Title}</div>`)}
     </div>
@@ -45,13 +45,13 @@ export default class App extends FASTElement {
     @observable entries: IMediaContainer[];
     @observable items: IMediaContainer[];
 
-    public WebsiteChanged(sender: WebsitePlugin) {
+    public WebsiteChanged(sender: WebsiteSelect) {
         this.entries = sender?.selected?.Entries as IMediaContainer[];
     }
 
-    public MediaChanged(sender: MediaContainer) {
+    public MediaChanged(sender: MediaTitleSelect) {
         this.items = sender?.selected?.Entries as IMediaContainer[];
-        if(!this.website || (sender?.selected?.Parent && !this.website.IsSameAs(sender?.selected?.Parent))) {
+        if(!this.website || sender?.selected?.Parent && !this.website.IsSameAs(sender?.selected?.Parent)) {
             this.website = sender?.selected?.Parent;
         }
     }

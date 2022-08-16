@@ -62,22 +62,22 @@ const styles: ElementStyles = css`
     }
 `;
 
-const selected: ViewTemplate<WebsitePlugin> = html`
+const selected: ViewTemplate<WebsiteSelect> = html`
     <img id="logo" slot="start" src="${model => model.selected.Icon}"></img>
     <div id="title" slot="heading">${model => model.selected.Title}</div>
 `;
 
-const busy: ViewTemplate<WebsitePlugin> = html`
+const busy: ViewTemplate<WebsiteSelect> = html`
     <fluent-progress-ring id="busy-status"></fluent-progress-ring>
     <fluent-tooltip anchor="busy-status">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_BusyStatus_Description()}</fluent-tooltip>
 `;
 
-const unstarred: ViewTemplate<WebsitePlugin> = html`
+const unstarred: ViewTemplate<WebsiteSelect> = html`
     <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.AddFavorite()}>${IconAddFavorite}</fluent-button>
     <fluent-tooltip anchor="add-favorite-button">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_AddFavoriteButton_Description()}</fluent-tooltip>
 `;
 
-const starred: ViewTemplate<WebsitePlugin> = html`
+const starred: ViewTemplate<WebsiteSelect> = html`
     <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.RemoveFavorite()}>${IconRemoveFavorite}</fluent-button>
     <fluent-tooltip anchor="remove-favorite-button">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_RemoveFavoriteButton_Description()}</fluent-tooltip>
 `;
@@ -89,7 +89,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
     </li>
 `;
 
-const template: ViewTemplate<WebsitePlugin> = html`
+const template: ViewTemplate<WebsiteSelect> = html`
     <fluent-accordion-item ?expanded=${model => model.expanded}>
         ${when(model => model.selected, selected)}
         <div id="controls" slot="end">
@@ -118,8 +118,8 @@ const template: ViewTemplate<WebsitePlugin> = html`
     </fluent-accordion-item>
 `;
 
-@customElement({ name: 'fluent-accordion-website', template, styles })
-export class WebsitePlugin extends FASTElement {
+@customElement({ name: 'fluent-website-select', template, styles })
+export class WebsiteSelect extends FASTElement {
 
     @observable expanded = false;
     @observable entries = HakuNeko.PluginController.WebsitePlugins;

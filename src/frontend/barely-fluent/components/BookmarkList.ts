@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
@@ -60,7 +60,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
     </li>
 `;
 
-const template: ViewTemplate<BookmarkPlugin> = html`
+const template: ViewTemplate<BookmarkList> = html`
     <div id="filters">
         <fluent-text-field id="searchbox" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder()}" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
         <div slot="start">${IconSearch}</div>    
@@ -73,8 +73,8 @@ const template: ViewTemplate<BookmarkPlugin> = html`
     </ul>
 `;
 
-@customElement({ name: 'fluent-bookmarks', template, styles })
-export class BookmarkPlugin extends FASTElement {
+@customElement({ name: 'fluent-bookmark-list', template, styles })
+export class BookmarkList extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
@@ -104,6 +104,7 @@ export class BookmarkPlugin extends FASTElement {
     }
 
     public SelectEntry(entry: IMediaContainer) {
+        console.log(entry);
         //this.selected = entry;
     }
 
@@ -124,7 +125,7 @@ export class BookmarkPlugin extends FASTElement {
         console.log('Removed Bookmark');
     }
 
-    private BookmarksChanged = (function() {
+    private BookmarksChanged = function() {
         this.FilterEntries();
-    }).bind(this);
+    }.bind(this);
 }

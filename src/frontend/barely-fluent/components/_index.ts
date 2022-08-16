@@ -1,5 +1,5 @@
 export { TitleBar } from './TitleBar';
-export { WebsitePlugin } from './WebsitePlugin';
-export { BookmarkPlugin } from './BookmarkPlugin';
-export { MediaContainer } from './MediaContainer';
+export { WebsiteSelect } from './WebsiteSelect';
+export { BookmarkList } from './BookmarkList';
+export { MediaTitleSelect } from './MediaTitleSelect';
 export { ThemeLuminance } from './settings/ThemeLuminance';

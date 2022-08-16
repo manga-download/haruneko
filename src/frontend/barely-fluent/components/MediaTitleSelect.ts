@@ -68,22 +68,22 @@ const styles: ElementStyles = css`
     }
 `;
 
-const selected: ViewTemplate<MediaContainer> = html`
+const selected: ViewTemplate<MediaTitleSelect> = html`
     <img id="logo" slot="start" src="${model => model.selected.Icon}"></img>
     <div id="title" slot="heading">${model => model.selected.Title}</div>
 `;
 
-const busy: ViewTemplate<MediaContainer> = html`
+const busy: ViewTemplate<MediaTitleSelect> = html`
     <fluent-progress-ring id="busy-status"></fluent-progress-ring>
     <fluent-tooltip anchor="busy-status">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_BusyStatus_Description()}</fluent-tooltip>
 `;
 
-const unstarred: ViewTemplate<MediaContainer> = html`
+const unstarred: ViewTemplate<MediaTitleSelect> = html`
     <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.AddBookmark()}>${IconAddBookmark}</fluent-button>
     <fluent-tooltip anchor="add-favorite-button">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_AddBookmarkButton_Description()}</fluent-tooltip>
 `;
 
-const starred: ViewTemplate<MediaContainer> = html`
+const starred: ViewTemplate<MediaTitleSelect> = html`
     <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.RemoveBookmark()}>${IconRemoveBookmark}</fluent-button>
     <fluent-tooltip anchor="remove-favorite-button">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_RemoveBookmarkButton_Description()}</fluent-tooltip>
 `;
@@ -95,7 +95,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
     </li>
 `;
 
-const template: ViewTemplate<MediaContainer> = html`
+const template: ViewTemplate<MediaTitleSelect> = html`
     <fluent-accordion-item ?expanded=${model => model.expanded}>
         ${when(model => model.selected, selected)}
         <div class="controls" slot="end">
@@ -128,8 +128,8 @@ const template: ViewTemplate<MediaContainer> = html`
     </fluent-accordion-item>
 `;
 
-@customElement({ name: 'fluent-accordion-mediacontainer', template, styles })
-export class MediaContainer extends FASTElement {
+@customElement({ name: 'fluent-media-title-select', template, styles })
+export class MediaTitleSelect extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
@@ -210,9 +210,9 @@ export class MediaContainer extends FASTElement {
         }
     }
 
-    private BookmarksChanged = (function(sender: BookmarkPlugin) {
+    private BookmarksChanged = function(sender: BookmarkPlugin) {
         this.bookmark = this.selected && sender.isBookmarked(this.selected);
-    }).bind(this);
+    }.bind(this);
 
     public async PasteClipboard() {
         try {
