@@ -36,7 +36,6 @@
 
     //Settings Modal
     let settingsSelectedTabs = 0;
-    let settingsPreselectedPlugin: IMediaContainer;
     let isSettingsModalOpen = false;
     let isPluginModalOpen = false;
 </script>
@@ -45,11 +44,6 @@
     <PluginSelect
         bind:isPluginModalOpen
         on:close={() => (isPluginModalOpen = false)}
-        on:settings={(event) => {
-            settingsPreselectedPlugin = event.detail;
-            settingsSelectedTabs = 4;
-            isSettingsModalOpen = true;
-        }}
     />
 {/if}
 <SettingsMenu
@@ -74,7 +68,6 @@
                     text="[RES:General]"
                     icon={SettingsAdjust}
                     on:click={() => {
-                        settingsPreselectedPlugin = undefined;
                         settingsSelectedTabs = 0;
                         isSettingsModalOpen = true;
                     }}
@@ -83,7 +76,6 @@
                     text="[RES:UI]"
                     icon={SettingsView}
                     on:click={() => {
-                        settingsPreselectedPlugin = undefined;
                         settingsSelectedTabs = 1;
                         isSettingsModalOpen = true;
                     }}
@@ -92,7 +84,6 @@
                     text="[RES:Trackers]"
                     icon={TaskSettings}
                     on:click={() => {
-                        settingsPreselectedPlugin = undefined;
                         settingsSelectedTabs = 2;
                         isSettingsModalOpen = true;
                     }}
@@ -101,7 +92,6 @@
                     text="[RES:Network]"
                     icon={NetworkOverlay}
                     on:click={() => {
-                        settingsPreselectedPlugin = undefined;
                         settingsSelectedTabs = 3;
                         isSettingsModalOpen = true;
                     }}
