@@ -29,10 +29,8 @@
     const dispatch = createEventDispatcher();
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';
-    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
-    //Todo: why doesn't it work with rail mode on sidenav ?
-    export let isSideNavOpen: boolean;
+    export let isOpen: boolean;
 
     //Settings Modal
     let settingsSelectedTabs = 0;
@@ -50,7 +48,7 @@
     bind:isModalOpen={isSettingsModalOpen}
     selectedTab={settingsSelectedTabs}
 />
-<SideNav bind:isOpen={isSideNavOpen} rail>
+<SideNav bind:isOpen rail expansionBreakpoint={100000}>
     <span class="menuleftpanel">
         <SideNavItems>
             <SideNavLink

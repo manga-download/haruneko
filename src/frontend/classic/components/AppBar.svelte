@@ -12,7 +12,7 @@
     import SettingsPanel from './settings/SettingsPanel.svelte';
     import { Locale } from '../stores/Settings';
 
-    export let isSideNavOpen: boolean;
+    let isSideNavOpen: boolean = false;
 
     let winMaximized = false;
 
@@ -80,4 +80,4 @@
     </HeaderUtilities>
 </Header>
 
-<MenuLeftPanel {isSideNavOpen} on:home />
+<MenuLeftPanel bind:isOpen={isSideNavOpen} on:home />
