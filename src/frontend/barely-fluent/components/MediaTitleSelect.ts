@@ -69,8 +69,8 @@ const styles: ElementStyles = css`
 `;
 
 const selected: ViewTemplate<MediaTitleSelect> = html`
-    <img id="logo" slot="start" src="${model => model.selected.Icon}"></img>
-    <div id="title" slot="heading">${model => model.selected.Title}</div>
+    <img id="logo" slot="start" src="${model => model.selected?.Icon}"></img>
+    <div id="title" slot="heading">${model => model.selected?.Title}</div>
 `;
 
 const busy: ViewTemplate<MediaTitleSelect> = html`
@@ -155,7 +155,7 @@ export class MediaTitleSelect extends FASTElement {
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(!previous || !previous.IsSameAs(current)) {
             this.BookmarksChanged(HakuNeko.BookmarkPlugin);
-            this.$emit('changed');
+            this.$emit('selectedChanged');
         }
     }
     @observable bookmark = false;
@@ -193,7 +193,7 @@ export class MediaTitleSelect extends FASTElement {
             console.warn(error);
         } finally {
             this.updating = false;
-            this.$emit('changed');
+            this.$emit('entriesUpdated');
         }
     }
 

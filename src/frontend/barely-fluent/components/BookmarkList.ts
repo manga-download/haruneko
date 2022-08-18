@@ -98,14 +98,14 @@ export class BookmarkList extends FASTElement {
 
     public async FilterEntries() {
         const pattern = new RegExp(this.filtertext, 'i');
-        this.entries = HakuNeko.BookmarkPlugin.Entries.filter(entry => {
+        const entries = HakuNeko.BookmarkPlugin.Entries;
+        this.entries = !this.filtertext ? entries : entries.filter(entry => {
             return pattern.test(entry.Title);
         });
     }
 
     public SelectEntry(entry: IMediaContainer) {
-        console.log(entry);
-        //this.selected = entry;
+        this.$emit('bookmarkClicked', entry);
     }
 
     public async UpdateEntries(): Promise<void> {

@@ -18,7 +18,7 @@ const styles: ElementStyles = css`
     #titlebar {
         grid-column: 1 / -1;
     }
-    #bookmarks {
+    #bookmark-list {
         grid-row: 2 / -1;
     }
     #content {
@@ -30,9 +30,13 @@ const styles: ElementStyles = css`
 
 const template: ViewTemplate<App> = html`
     <fluent-titlebar id="titlebar"></fluent-titlebar>
-    <fluent-bookmarks id="bookmarks"></fluent-bookmarks>
-    <fluent-website-select :selected=${model => model.website} @changed=${(model, ctx) => model.WebsiteChanged(ctx.event.currentTarget as WebsiteSelect)}></fluent-website-select>
-    <fluent-media-title-select :entries=${model => model.entries} @changed=${(model, ctx) => model.MediaChanged(ctx.event.currentTarget as MediaTitleSelect)}></fluent-media-title-select>
+    <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
+    <fluent-website-select id="website-select" :selected=${model => model.website}
+        @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
+        @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}></fluent-website-select>
+    <fluent-media-title-select id="media-select" :entries=${model => model.titles}
+        @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
+        @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}></fluent-media-title-select>
     <div id="content">
         ${repeat(model => model.items, html`<div>${entry => entry.Title}</div>`)}
     </div>
@@ -42,17 +46,45 @@ const template: ViewTemplate<App> = html`
 export default class App extends FASTElement {
 
     @observable website: IMediaContainer;
-    @observable entries: IMediaContainer[];
+    @observable titles: IMediaContainer[];
     @observable items: IMediaContainer[];
 
-    public WebsiteChanged(sender: WebsiteSelect) {
-        this.entries = sender?.selected?.Entries as IMediaContainer[];
+    private get websiteselect() {
+        return this.shadowRoot.querySelector('#website-select') as WebsiteSelect;
     }
 
-    public MediaChanged(sender: MediaTitleSelect) {
+    private get mediaselect() {
+        return this.shadowRoot.querySelector('#media-select') as MediaTitleSelect;
+    }
+
+    public WebsiteSelectedChanged(event: Event) {
+        const sender = event.currentTarget as WebsiteSelect;
+        this.titles = sender?.selected?.Entries as IMediaContainer[];
+    }
+
+    public WebsiteEntriesUpdated(event: Event) {
+        const sender = event.currentTarget as WebsiteSelect;
+        this.titles = sender?.selected?.Entries as IMediaContainer[];
+    }
+
+    public MediaTitleSelectedChanged(event: Event) {
+        const sender = event.currentTarget as MediaTitleSelect;
         this.items = sender?.selected?.Entries as IMediaContainer[];
+        /*
         if(!this.website || sender?.selected?.Parent && !this.website.IsSameAs(sender?.selected?.Parent)) {
             this.website = sender?.selected?.Parent;
         }
+        */
+    }
+
+    public MediaTitleEntriesUpdated(event: Event) {
+        const sender = event.currentTarget as MediaTitleSelect;
+        this.items = sender?.selected?.Entries as IMediaContainer[];
+    }
+
+    public BookmarkClicked(event: Event) {
+        const bookmark = (event as CustomEvent<IMediaContainer>).detail;
+        this.mediaselect.selected = bookmark;
+        this.websiteselect.selected = bookmark?.Parent;
     }
 }

@@ -126,7 +126,7 @@ export class WebsiteSelect extends FASTElement {
     @observable selected: IMediaContainer = HakuNeko.PluginController.WebsitePlugins[4];
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(!previous || !previous.IsSameAs(current)) {
-            this.$emit('changed');
+            this.$emit('selectedChanged');
         }
     }
     @observable updating = false;
@@ -160,7 +160,7 @@ export class WebsiteSelect extends FASTElement {
             console.warn(error);
         } finally {
             this.updating = false;
-            this.$emit('changed');
+            this.$emit('entriesUpdated');
         }
     }
 
