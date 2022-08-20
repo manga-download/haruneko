@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat, Observable } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat, Observable } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
