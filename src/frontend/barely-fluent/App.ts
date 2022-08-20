@@ -12,7 +12,7 @@ const styles: ElementStyles = css`
         font-size: var(--type-ramp-base-font-size);
         gap: 0;
         display: grid;
-        grid-template-columns: minmax(240px, 320px) auto;
+        grid-template-columns: minmax(240px, 320px) 1fr;
         grid-template-rows: min-content min-content min-content 1fr;
         height: 100vh;
         background-color: var(--neutral-layer-1);
