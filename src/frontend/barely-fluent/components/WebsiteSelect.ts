@@ -10,66 +10,105 @@ import IconAddFavorite from '@fluentui/svg-icons/icons/star_off_20_regular.svg?r
 import IconRemoveFavorite from '@fluentui/svg-icons/icons/star_20_filled.svg?raw';
 
 const styles: ElementStyles = css`
+
     :host {
         margin: calc(var(--base-height-multiplier) * 1px);
     }
-    #logo {
+
+    #heading {
+        padding: calc(var(--base-height-multiplier) * 1px);
+        gap: calc(var(--base-height-multiplier) * 1px);
+        display: grid;
+        align-items: center;
+        grid-template-columns: max-content 1fr max-content;
+    }
+
+    #heading #logo {
         height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
     }
-    #title {
+
+    #heading #title {
         font-weight: bold;
         overflow: hidden;
         white-space: nowrap;
-        text-overflow: ellipsis; 
+        text-overflow: ellipsis;
+        cursor: pointer;
     }
+
     #controls {
         display: flex;
         align-items: center;
     }
-    #busy-status {
-        margin: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 0.25 * 1px);
-        width: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 0.75 * 1px);
-        height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 0.75 * 1px);
+
+    #controls .hint {
+        margin-left: calc(var(--design-unit) * 1px);
+        margin-right: calc(var(--design-unit) * 1px);
     }
-    #panel {
+
+    #dropdown {
+        height: 100%;
+        display: none;
     }
-    #searchbox {
-        width: 100%;
+
+    #searchcontrol {
+        padding: calc(var(--base-height-multiplier) * 1px);
+        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
+        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
     }
-    #searchbox svg {
+
+    #searchpattern {
+        width: 50%;
+    }
+
+    #searchpattern svg {
         width: 100%;
         height: 100%;
     }
-    #searchbox .controls fluent-button {
-        height: fit-content;
+
+    #button-update-entries.updating svg {
+        animation: spinning 1.5s linear infinite;
     }
+
+    @keyframes spinning {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
     #entries {
-        max-height: 240px;
+        max-height: 320px;
         overflow-y: scroll;
         overflow-x: hidden;
     }
-    #entries ul {
+
+    ul#entries {
         list-style-type: none;
         padding: 0;
     }
-    #entries ul li:hover {
+
+    ul#entries li {
+        height: 42px; /* calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px); */
+        padding: calc(var(--design-unit) * 1px);
+        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
+        gap: calc(var(--design-unit) * 1px);
+        display: grid;
+        grid-template-rows: 0fr 1fr;
+        grid-template-columns: min-content 1fr;
+    }
+
+    ul#entries li:hover {
         cursor: pointer;
         background-color: var(--neutral-fill-hover);
     }
+
+    .icon {
+        margin-right: calc(var(--design-unit) * 1px);
+        height: inherit;
+        grid-row: 1 / -1;
+    }
+
     .hint {
-        padding: calc(var(--design-unit) * 1px);
         color: var(--neutral-foreground-hint);
     }
-`;
-
-const selected: ViewTemplate<WebsiteSelect> = html`
-    <img id="logo" slot="start" src="${model => model.selected.Icon}"></img>
-    <div id="title" slot="heading">${model => model.selected.Title}</div>
-`;
-
-const busy: ViewTemplate<WebsiteSelect> = html`
-    <fluent-progress-ring id="busy-status"></fluent-progress-ring>
-    <fluent-tooltip anchor="busy-status">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_BusyStatus_Description()}</fluent-tooltip>
 `;
 
 const unstarred: ViewTemplate<WebsiteSelect> = html`
@@ -84,49 +123,54 @@ const starred: ViewTemplate<WebsiteSelect> = html`
 
 const listitem: ViewTemplate<IMediaContainer> = html`
     <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
-        <div>${model => model.Title}</div>
+        <img class="icon" src="${model => model.Icon}"></img>
+        <div style="font-weight: bold;">${model => model.Title}</div>
         <div class="hint">${model => model.Identifier}</div>
     </li>
 `;
 
 const template: ViewTemplate<WebsiteSelect> = html`
-    <fluent-accordion-item ?expanded=${model => model.expanded}>
-        ${when(model => model.selected, selected)}
-        <div id="controls" slot="end">
-            ${when(model => model.updating, busy)}
-            <div class="hint">${model => !model.selected || model.updating ? '' : model.selected.Entries.length}</div>
-            <fluent-button id="update-entries-button" appearance="stealth" ?disabled=${model => !model.selected || model.updating} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
-            <fluent-tooltip anchor="update-entries-button">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description()}</fluent-tooltip>
-            ${model => model.favorite ? starred : unstarred}
-            <fluent-button id="buttonOpenSettings" appearance="stealth" ?disabled=${model => !model.selected} @click="${model => model.OpenSettings()}">${IconSettings}</fluent-button>
-            <fluent-tooltip anchor="buttonOpenSettings">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_OpenSettingsButton_Description()}</fluent-tooltip>
+    <fluent-card>
+        <div id="heading">
+            <img id="logo" src="${model => model.selected?.Icon}"></img>
+            <div id="title" @click=${model => model.expanded = !model.expanded}>${model => model.selected?.Title ?? '…'}</div>
+            <div id="controls">
+                <div class="hint">${model => model.updating ? '-' : model.selected?.Entries?.length ?? ''}</div>
+                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" ?disabled=${model => !model.selected || model.updating} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
+                <fluent-tooltip anchor="button-update-entries">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description()}</fluent-tooltip>
+                ${model => model.favorite ? starred : unstarred}
+                <fluent-button id="button-settings" appearance="stealth" ?disabled=${model => !model.selected} @click="${model => model.OpenSettings()}">${IconSettings}</fluent-button>
+                <fluent-tooltip anchor="button-settings">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_OpenSettingsButton_Description()}</fluent-tooltip>
+            </div>
         </div>
-        <div id="panel">
-            <div id="filters">
-                <fluent-text-field id="searchbox" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder()}" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
-                <div slot="start">${IconSearch}</div>    
-                <!-- ${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label()} -->
+        <div id="dropdown">
+            <div id="searchcontrol">
+                <fluent-text-field id="searchpattern" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder()}" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
+                    <div slot="start">${IconSearch}</div>    
+                    <!-- ${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label()} -->
                 </fluent-text-field>
             </div>
-            <fluent-divider></fluent-divider>
-            <div id="entries">
-                <ul>
-                    ${repeat(model => model.entries, listitem)}
-                </ul>
-            </div>
+            <ul id="entries">
+                ${repeat(model => model.entries, listitem)}
+            </ul>
         </div>
-    </fluent-accordion-item>
+    </fluent-card>
 `;
 
 @customElement({ name: 'fluent-website-select', template, styles })
 export class WebsiteSelect extends FASTElement {
 
-    @observable expanded = false;
     @observable entries = HakuNeko.PluginController.WebsitePlugins;
     @observable selected: IMediaContainer = HakuNeko.PluginController.WebsitePlugins[4];
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(!previous || !previous.IsSameAs(current)) {
             this.$emit('selectedChanged');
+        }
+    }
+    @observable expanded = false;
+    expandedChanged(previous: boolean, current: boolean) {
+        if(this.dropdown) {
+            this.dropdown.style.display = current ? 'block' : 'none';
         }
     }
     @observable updating = false;
@@ -136,6 +180,10 @@ export class WebsiteSelect extends FASTElement {
         if(previous !== current) {
             this.FilterEntries();
         }
+    }
+
+    private get dropdown(): HTMLElement {
+        return this.shadowRoot.querySelector('#dropdown') as HTMLElement;
     }
 
     public async FilterEntries() {

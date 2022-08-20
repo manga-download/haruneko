@@ -86,11 +86,8 @@ export default class App extends FASTElement {
     public MediaTitleSelectedChanged(event: Event) {
         const sender = event.currentTarget as MediaTitleSelect;
         this.items = sender?.selected?.Entries as IMediaContainer[];
-        /*
-        if(!this.website || sender?.selected?.Parent && !this.website.IsSameAs(sender?.selected?.Parent)) {
-            this.website = sender?.selected?.Parent;
-        }
-        */
+        // TODO: Setting website e.g. due to paste may lead to livelock ...
+        //this.websiteselect.selected = sender?.selected?.Parent;
     }
 
     public MediaTitleEntriesUpdated(event: Event) {
