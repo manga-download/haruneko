@@ -12,24 +12,34 @@ const styles: ElementStyles = css`
         font-size: var(--type-ramp-base-font-size);
         gap: 0;
         display: grid;
-        grid-template-columns: minmax(240px, 320px) 1fr;
-        grid-template-rows: min-content min-content min-content 1fr;
+        grid-template-columns: auto;
+        grid-template-rows: min-content 1fr;
         height: 100vh;
         background-color: var(--neutral-layer-1);
         color: var(--neutral-foreground-rest);
         user-select: none;
     }
+
     #titlebar {
         grid-column: 1 / -1;
     }
-    #bookmark-list {
-        grid-row: 2 / -1;
+
+    #panel {
+        gap: calc(var(--base-height-multiplier) * 1px);
+        margin: calc(var(--base-height-multiplier) * 1px);
+        display: grid;
+        grid-template-columns: minmax(240px, 320px) 1fr;
+        grid-template-rows: min-content min-content 1fr;
     }
+
+    #bookmark-list {
+        grid-row: 1 / -1;
+    }
+
     #content {
         border: 1px dotted red;
         overflow-x: hidden;
         overflow-y: scroll;
-        margin: calc(var(--base-height-multiplier) * 1px);
     }
 `;
 
@@ -46,15 +56,17 @@ const template: ViewTemplate<App> = html`
         <fluent-menu-item>${IconSettings} LOCALE:Menu_Settings</fluent-menu-item>
     </fluent-menu>
     -->
-    <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
-    <fluent-website-select id="website-select" :selected=${model => model.website}
-        @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
-        @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}></fluent-website-select>
-    <fluent-media-title-select id="media-select" :entries=${model => model.titles}
-        @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
-        @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}></fluent-media-title-select>
-    <div id="content">
-        ${repeat(model => model.items, html`<div>${entry => entry.Title}</div>`)}
+    <div id="panel">
+        <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
+        <fluent-website-select id="website-select" :selected=${model => model.website}
+            @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
+            @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}></fluent-website-select>
+        <fluent-media-title-select id="media-select" :entries=${model => model.titles}
+            @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
+            @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}></fluent-media-title-select>
+        <div id="content">
+            ${repeat(model => model.items, html`<div>${entry => entry.Title}</div>`)}
+        </div>
     </div>
 `;
 

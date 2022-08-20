@@ -10,62 +10,65 @@ const styles: ElementStyles = css`
         display: grid;
         grid-template-columns: auto;
         grid-template-rows: max-content 1fr;
-        margin: calc(var(--base-height-multiplier) * 1px);
     }
-    #logo {
-        height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
-    }
-    #title {
-        font-weight: bold;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis; 
-    }
-    #controls {
-        display: flex;
-        align-items: center;
-    }
-    #searchbox {
+
+    #searchpattern {
         width: 100%;
     }
-    #searchbox svg {
+
+    #searchpattern svg {
         width: 100%;
         height: 100%;
     }
-    #searchbox .controls fluent-button {
-        height: fit-content;
-    }
-    #entries {
+
+    ul#entries {
+        list-style-type: none;
         overflow-y: scroll;
         overflow-x: hidden;
-    }
-    #entries {
-        margin: 0;
         padding: 0;
-        list-style-type: none;
+        margin: 0;
     }
-    #entries li:hover {
+
+    ul#entries li {
+        height: 24px; /* calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px); */
+        padding: calc(var(--design-unit) * 1px);
+        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
+        gap: calc(var(--design-unit) * 1px);
+        display: grid;
+        align-items: center;
+        grid-template-rows: min-content;
+        grid-template-columns: min-content 1fr;
+    }
+
+    ul#entries li > div {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    ul#entries li:hover {
         cursor: pointer;
         background-color: var(--neutral-fill-hover);
     }
-    .hint {
-        padding: calc(var(--design-unit) * 1px);
-        color: var(--neutral-foreground-hint);
+
+    .icon {
+        margin-right: calc(var(--design-unit) * 1px);
+        height: inherit;
     }
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
     <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
+        <img class="icon" src="${model => model.Parent?.Icon}"></img>
         <div>${model => model.Title}</div>
-        <div class="hint">${model => model.Identifier}</div>
     </li>
 `;
 
 const template: ViewTemplate<BookmarkList> = html`
-    <div id="filters">
-        <fluent-text-field id="searchbox" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder()}" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
-        <div slot="start">${IconSearch}</div>    
-        <!-- ${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label()} -->
+    <div id="searchcontrol">
+        <fluent-text-field id="searchpattern" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder()}" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
+            <div slot="start">${IconSearch}</div>    
+            <!-- ${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label()} -->
         </fluent-text-field>
         <fluent-divider></fluent-divider>
     </div>
@@ -98,11 +101,12 @@ export class BookmarkList extends FASTElement {
     }
 
     public async FilterEntries() {
-        const pattern = new RegExp(this.filtertext, 'i');
-        const entries = HakuNeko.BookmarkPlugin.Entries;
-        this.entries = !this.filtertext ? entries : entries.filter(entry => {
-            return pattern.test(entry.Title);
-        });
+        let filtered = HakuNeko.BookmarkPlugin.Entries;
+        try {
+            const pattern = this.filtertext?.toLowerCase();
+            filtered = !pattern ? filtered : filtered.filter(entry => entry.Title.toLowerCase().includes(pattern));
+        } catch { /* ignore errors */ }
+        this.entries = filtered.slice(0, 250); // TODO: virtual scrolling
     }
 
     public SelectEntry(entry: IMediaContainer) {

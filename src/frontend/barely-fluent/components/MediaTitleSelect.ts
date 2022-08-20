@@ -4,6 +4,7 @@ import S from '../services/StateService';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
 import IconCase from '@vscode/codicons/src/icons/case-sensitive.svg?raw';
+import IconClear from '@vscode/codicons/src/icons/trash.svg?raw';
 import IconRegex from '@vscode/codicons/src/icons/regex.svg?raw';
 import IconSynchronize from '@vscode/codicons/src/icons/sync.svg?raw';
 import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.svg?raw';
@@ -17,11 +18,10 @@ import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 
 const styles: ElementStyles = css`
     :host {
-        margin: calc(var(--base-height-multiplier) * 1px);
     }
 
     #heading {
-        padding: calc(var(--base-height-multiplier) * 1px);
+        padding: calc(var(--design-unit) * 1px);
         gap: calc(var(--base-height-multiplier) * 1px);
         display: grid;
         align-items: center;
@@ -62,7 +62,7 @@ const styles: ElementStyles = css`
     }
 
     #searchpattern {
-        width: 50%;
+        display: block;
     }
 
     #searchpattern svg {
@@ -87,15 +87,13 @@ const styles: ElementStyles = css`
         100% { transform: rotate(360deg); }
     }
 
-    #entries {
+    ul#entries {
+        list-style-type: none;
         max-height: 320px;
         overflow-y: scroll;
         overflow-x: hidden;
-    }
-
-    ul#entries {
-        list-style-type: none;
         padding: 0;
+        margin: 0;
     }
 
     ul#entries li {
@@ -164,17 +162,18 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         </div>
         <div id="dropdown">
             <div id="searchcontrol">
-                <fluent-text-field id="searchpattern" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder()}" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
+                <fluent-text-field id="searchpattern" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder()}" :value=${model => model.filtertext} @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
                     <!-- ${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label()} -->
                     <div slot="start">${IconSearch}</div>
                     <div slot="end">
-                        <fluent-button appearance="${model => model.filtercase ? 'accent' : 'stealth'}" @click=${model => model.filtercase = !model.filtercase}>${IconCase}</fluent-button>
-                        <fluent-button appearance="${model => model.filterregex ? 'accent' : 'stealth'}" @click=${model => model.filterregex = !model.filterregex}>${IconRegex}</fluent-button>
+                        <fluent-button appearance="stealth" @click=${model => model.filtertext = ''}>${IconClear}</fluent-button>
+                        <fluent-button appearance="${model => model.filtercase ? 'outline' : 'stealth'}" @click=${model => model.filtercase = !model.filtercase}>${IconCase}</fluent-button>
+                        <fluent-button appearance="${model => model.filterregex ? 'outline' : 'stealth'}" @click=${model => model.filterregex = !model.filterregex}>${IconRegex}</fluent-button>
                     </div>
                 </fluent-text-field>
             </div>
             <ul id="entries">
-                ${repeat(model => model.entries, listitem)}
+                ${repeat(model => model.filtered, listitem)}
             </ul>
         </div>
     </fluent-card>
@@ -219,24 +218,35 @@ export class MediaTitleSelect extends FASTElement {
     @observable scanning = false;
     @observable pasting = false;
     @observable filtertext = '';
-    filtertextChanged(previous: typeof this.filtertext, current: typeof this.filtertext) {
-        if(previous !== current) {
-            this.FilterEntries();
-        }
+    filtertextChanged() {
+        this.FilterEntries();
     }
     @observable filtercase = false;
+    filtercaseChanged() {
+        this.FilterEntries();
+    }
     @observable filterregex = false;
+    filterregexChanged() {
+        this.FilterEntries();
+    }
 
     private get dropdown(): HTMLElement {
         return this.shadowRoot.querySelector('#dropdown') as HTMLElement;
     }
 
     public async FilterEntries() {
-        const pattern = new RegExp(this.filtertext, 'i');
-        this.filtered = this.entries ? this.entries.filter(entry => {
-            // TODO: consider tags ...
-            return pattern.test(entry.Title);
-        }).slice(0, 250) : []; // TODO: virtual scrolling
+        let filtered = this.entries ?? [];
+        try {
+            if(this.filterregex) {
+                const pattern = new RegExp(this.filtertext, this.filtercase ? undefined : 'i');
+                filtered = !this.filtertext ? filtered : this.entries?.filter(entry => pattern.test(entry.Title));
+            }
+            else {
+                const pattern = this.filtertext?.toLowerCase();
+                filtered = !this.filtertext ? filtered : this.entries?.filter(entry => this.filtercase ? entry.Title.includes(this.filtertext) : entry.Title.toLowerCase().includes(pattern));
+            }
+        } catch { /* ignore errors */ }
+        this.filtered = filtered.slice(0, 250); // TODO: virtual scrolling
     }
 
     public SelectEntry(entry: IMediaContainer) {

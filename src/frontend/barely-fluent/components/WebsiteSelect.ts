@@ -12,11 +12,10 @@ import IconRemoveFavorite from '@fluentui/svg-icons/icons/star_20_filled.svg?raw
 const styles: ElementStyles = css`
 
     :host {
-        margin: calc(var(--base-height-multiplier) * 1px);
     }
 
     #heading {
-        padding: calc(var(--base-height-multiplier) * 1px);
+        padding: calc(var(--design-unit) * 1px);
         gap: calc(var(--base-height-multiplier) * 1px);
         display: grid;
         align-items: center;
@@ -74,15 +73,13 @@ const styles: ElementStyles = css`
         100% { transform: rotate(360deg); }
     }
 
-    #entries {
+    ul#entries {
+        list-style-type: none;
         max-height: 320px;
         overflow-y: scroll;
         overflow-x: hidden;
-    }
-
-    ul#entries {
-        list-style-type: none;
         padding: 0;
+        margin: 0;
     }
 
     ul#entries li {
@@ -193,11 +190,12 @@ export class WebsiteSelect extends FASTElement {
     }
 
     public async FilterEntries() {
-        const pattern = new RegExp(this.filtertext, 'i');
-        this.entries = HakuNeko.PluginController.WebsitePlugins.filter(entry => {
-            // TODO: consider tags ...
-            return pattern.test(entry.Title);
-        });
+        let filtered = HakuNeko.PluginController.WebsitePlugins;
+        try {
+            const pattern = this.filtertext?.toLowerCase();
+            filtered = !pattern ? filtered : filtered.filter(entry => entry.Title.toLowerCase().includes(pattern));
+        } catch { /* ignore errors */ }
+        this.entries = filtered.slice(0, 250); // TODO: virtual scrolling
     }
 
     public SelectEntry(entry: IMediaContainer) {
