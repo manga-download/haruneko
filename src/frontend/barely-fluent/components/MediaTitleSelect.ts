@@ -104,8 +104,14 @@ const styles: ElementStyles = css`
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
         gap: calc(var(--design-unit) * 1px);
         display: grid;
-        grid-template-rows: 0fr 1fr;
+        grid-template-rows: min-content 1fr;
         grid-template-columns: min-content 1fr;
+    }
+
+    ul#entries li > div {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     ul#entries li:hover {
@@ -148,7 +154,7 @@ const template: ViewTemplate<MediaTitleSelect> = html`
             <img id="logo" src="${model => model.selected?.Icon}"></img>
             <div id="title" @click=${model => model.expanded = !model.expanded}>${model => model.selected?.Title ?? '…'}</div>
             <div id="controls">
-                <div class="hint">${model => model.updating || model.pasting ? '-' : model.selected?.Entries?.length ?? ''}</div>
+                <div class="hint">${model => model.updating || model.pasting ? '┄' : model.selected?.Entries?.length ?? ''}</div>
                 <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" ?disabled=${model => !model.selected || model.updating || model.pasting} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
                 <fluent-tooltip anchor="button-update-entries">${() => S.Locale.Frontend_BarelyFluid_MediaContainer_UpdateEntriesButton_Description()}</fluent-tooltip>
                 ${model => model.bookmark ? starred : unstarred}
@@ -191,7 +197,6 @@ export class MediaTitleSelect extends FASTElement {
     @observable entries: IMediaContainer[] = [];
     entriesChanged(previous: IMediaContainer[], current: IMediaContainer[]) {
         if(previous !== current) {
-            this.selected = this.entries?.find(entry => entry.IsSameAs(this.selected));
             this.FilterEntries();
         }
     }
@@ -279,7 +284,7 @@ export class MediaTitleSelect extends FASTElement {
                     if(!this.selected || !this.selected.IsSameAs(media)) {
                         this.selected = media;
                     }
-                    return;
+                    return this.UpdateEntries();
                 }
             }
             throw new Error(`No matching website found for '${link}'`);

@@ -76,6 +76,9 @@ export default class App extends FASTElement {
     public WebsiteSelectedChanged(event: Event) {
         const sender = event.currentTarget as WebsiteSelect;
         this.titles = sender?.selected?.Entries as IMediaContainer[];
+        if(!sender?.selected?.IsSameAs(this.mediaselect.selected?.Parent)) {
+            this.mediaselect.selected = undefined;
+        }
     }
 
     public WebsiteEntriesUpdated(event: Event) {
@@ -87,7 +90,9 @@ export default class App extends FASTElement {
         const sender = event.currentTarget as MediaTitleSelect;
         this.items = sender?.selected?.Entries as IMediaContainer[];
         // TODO: Setting website e.g. due to paste may lead to livelock ...
-        //this.websiteselect.selected = sender?.selected?.Parent;
+        if(sender?.selected && !sender?.selected?.Parent?.IsSameAs(this.websiteselect.selected)) {
+            this.websiteselect.selected = sender?.selected?.Parent;
+        }
     }
 
     public MediaTitleEntriesUpdated(event: Event) {
@@ -97,7 +102,7 @@ export default class App extends FASTElement {
 
     public BookmarkClicked(event: Event) {
         const bookmark = (event as CustomEvent<IMediaContainer>).detail;
-        this.mediaselect.selected = bookmark;
         this.websiteselect.selected = bookmark?.Parent;
+        this.mediaselect.selected = bookmark;
     }
 }
