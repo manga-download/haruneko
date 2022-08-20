@@ -10,6 +10,8 @@ import IconClose from '@fluentui/svg-icons/icons/dismiss_square_20_filled.svg?ra
 */
 // See: https://microsoft.github.io/vscode-codicons/dist/codicon.html
 import IconMenu from '@vscode/codicons/src/icons/menu.svg?raw';
+import IconBookmarkList from '@fluentui/svg-icons/icons/bookmark_multiple_20_regular.svg?raw'; // star_line_horizontal_3_20_regular
+import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw'; // arrow_swap_2-_regular
 import IconMinimize from '@vscode/codicons/src/icons/chrome-minimize.svg?raw';
 import IconMaximize from '@vscode/codicons/src/icons/chrome-maximize.svg?raw';
 import IconRestore from '@vscode/codicons/src/icons/chrome-restore.svg?raw';
@@ -17,18 +19,18 @@ import IconClose from '@vscode/codicons/src/icons/chrome-close.svg?raw';
 
 const styles: ElementStyles = css`
     :host {
-        gap: calc(var(--design-unit) * 1px);
+        gap: 0;
         display: grid;
         align-items: center;
         grid-template-columns: max-content auto max-content;
         background-color: var(--neutral-layer-2);
-        padding: 0px calc(var(--design-unit) * 1px) 0px calc(var(--design-unit) * 1px);
         user-select: none;
     }
     fluent-button {
         --neutral-fill-stealth-rest: transparent;
     }
     #menu {
+        display: flex;
     }
     #title {
         font-weight: bold;
@@ -36,7 +38,7 @@ const styles: ElementStyles = css`
         -webkit-app-region: drag;
     }
     #controls {
-        /* ... */
+        display: flex;
     }
     #controls fluent-anchor {
         --neutral-fill-stealth-rest: transparent;
@@ -54,6 +56,10 @@ const styles: ElementStyles = css`
 const template: ViewTemplate<TitleBar> = html`
     <div id="menu">
         <fluent-button appearance="stealth" @click=${model => model.OpenSettings()}>${IconMenu}</fluent-button>
+        <!--
+        <fluent-button appearance="stealth">${IconBookmarkList}</fluent-button>
+        <fluent-button appearance="stealth">${IconDownloadManager}</fluent-button>
+        -->
     </div>
     <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
     <div id="controls">

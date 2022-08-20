@@ -2,6 +2,10 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
 import type { WebsiteSelect, MediaTitleSelect } from './components/_index';
 
+import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
+import IconBookmarkList from '@fluentui/svg-icons/icons/bookmark_multiple_20_regular.svg?raw';
+import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw';
+
 const styles: ElementStyles = css`
     :host {
         font-family: var(--body-font);
@@ -25,11 +29,23 @@ const styles: ElementStyles = css`
         border: 1px dotted red;
         overflow-x: hidden;
         overflow-y: scroll;
+        margin: calc(var(--base-height-multiplier) * 1px);
     }
 `;
 
 const template: ViewTemplate<App> = html`
     <fluent-titlebar id="titlebar"></fluent-titlebar>
+    <!--
+    <fluent-menu id="menu">
+        <fluent-menu-item role="menuitemcheckbox">Foo</fluent-menu-item>
+        <fluent-menu-item role="menuitemcheckbox">Bar</fluent-menu-item>
+        <fluent-divider></fluent-divider>
+        <fluent-menu-item role="menuitemradio">${IconBookmarkList} LOCALE:Menu_Bookmarks</fluent-menu-item>
+        <fluent-menu-item role="menuitemradio">LOCALE:Menu_Downloads</fluent-menu-item>
+        <fluent-divider></fluent-divider>
+        <fluent-menu-item>${IconSettings} LOCALE:Menu_Settings</fluent-menu-item>
+    </fluent-menu>
+    -->
     <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
     <fluent-website-select id="website-select" :selected=${model => model.website}
         @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}

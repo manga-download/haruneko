@@ -17,7 +17,7 @@ import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 
 const styles: ElementStyles = css`
     :host {
-        /*border: 2px dotted grey;*/
+        margin: calc(var(--base-height-multiplier) * 1px);
     }
     #logo {
         height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);

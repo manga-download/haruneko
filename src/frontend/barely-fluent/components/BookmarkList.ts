@@ -10,6 +10,7 @@ const styles: ElementStyles = css`
         display: grid;
         grid-template-columns: auto;
         grid-template-rows: max-content 1fr;
+        margin: calc(var(--base-height-multiplier) * 1px);
     }
     #logo {
         height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
