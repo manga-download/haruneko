@@ -50,6 +50,7 @@ const styles: ElementStyles = css`
         background-color: #FF6060 !important;
     }
     #settings-dialog {
+        z-index: 2147483647;
     }
 `;
 
