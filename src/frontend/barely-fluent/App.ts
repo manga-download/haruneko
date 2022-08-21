@@ -62,7 +62,7 @@ const template: ViewTemplate<App> = html`
         <fluent-media-title-select id="media-select" :entries=${model => model.titles}
             @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
             @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}></fluent-media-title-select>
-        <fluent-media-item-select id="content" :entries=${model => model.items}></fluent-media-item-select>
+        <fluent-media-item-list id="content" :entries=${model => model.items}></fluent-media-item-list>
     </div>
 `;
 

@@ -102,7 +102,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
     </li>
 `;
 
-const template: ViewTemplate<MediaItemSelect> = html`
+const template: ViewTemplate<MediaItemList> = html`
     <div id="searchcontrol">
         <fluent-text-field id="searchpattern" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder()}" :value=${model => model.filtertext} @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
             <!-- ${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label()} -->
@@ -119,8 +119,8 @@ const template: ViewTemplate<MediaItemSelect> = html`
     </ul>
 `;
 
-@customElement({ name: 'fluent-media-item-select', template, styles })
-export class MediaItemSelect extends FASTElement {
+@customElement({ name: 'fluent-media-item-list', template, styles })
+export class MediaItemList extends FASTElement {
 
     @observable entries: IMediaContainer[] = [];
     entriesChanged(previous: IMediaContainer[], current: IMediaContainer[]) {
