@@ -14,15 +14,13 @@
     import { fade } from 'svelte/transition';
 
     import MediaItem from './MediaItem.svelte';
-    import { selectedMedia, selectedItem } from '../Stores';
+    import { selectedMedia, selectedItem } from '../stores/Stores';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
-    import { ItemFlag, FlagType } from '../../../engine/ItemflagManager';
+    import { FlagType } from '../../../engine/ItemflagManager';
 
     let items: IMediaContainer[] = [];
     let filteredItems: IMediaContainer[] = [];
-    let flags: ItemFlag[] = [];
-
     let loadItem: Promise<void>;
     let selectedItems: IMediaContainer[] = [];
     let multipleSelectionFrom: number = -1;
@@ -69,9 +67,6 @@
     selectedMedia.subscribe(async (value) => {
         items = [];
         selectedItems = [];
-        flags = value
-            ? await HakuNeko.ItemflagManager.GetContainerItemsFlags(value)
-            : [];
         loadItem = value?.Update().then(() => {
             items = (value?.Entries as IMediaContainer[]) ?? [];
         });

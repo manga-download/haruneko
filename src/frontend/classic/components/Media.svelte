@@ -5,21 +5,27 @@
         ContextMenuDivider,
         ContextMenuOption,
     } from 'carbon-components-svelte';
-    import { selectedMedia } from '../Stores';
+    import { selectedMedia } from '../stores/Stores';
 
-    import type { IMediaContainer } from "../../../engine/providers/MediaPlugin";
+    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
     export let media: IMediaContainer;
     export let selected: Boolean;
     let isBookmarked: Boolean = HakuNeko.BookmarkPlugin.isBookmarked(media);
     let mediadiv: HTMLElement;
-    async function toggleBookmark(){
+    async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
     }
 </script>
+
 <ContextMenu target={[mediadiv]}>
     <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" />
-    <ContextMenuOption indented labelText={isBookmarked ?"Remove from Bookmarks" :"Add to Bookmarks"} shortcutText="⌘F" on:click={toggleBookmark}/>
+    <ContextMenuOption
+        indented
+        labelText={isBookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'}
+        shortcutText="⌘F"
+        on:click={toggleBookmark}
+    />
     <ContextMenuDivider />
     <ContextMenuOption indented labelText="Trackers">
         <!--{#each window.HakuNeko.PluginController.InfoTrackers as tracker}
@@ -29,8 +35,16 @@
     </ContextMenuOption>
     <ContextMenuDivider />
 </ContextMenu>
-<div bind:this={mediadiv} class="media" in:fade class:selected on:click={() => $selectedMedia = media}>
-    {#if isBookmarked}<span transition:fade>⭐</span>{/if}{media.Title}
+<div
+    bind:this={mediadiv}
+    class="media"
+    in:fade
+    class:selected
+    on:click={() => ($selectedMedia = media)}
+>
+    {#if isBookmarked}<span transition:fade>⭐</span>{/if}<span
+        title={media.Title}>{media.Title}</span
+    >
 </div>
 
 <style>

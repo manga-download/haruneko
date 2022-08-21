@@ -3,7 +3,7 @@
     import type { TagProps } from 'carbon-components-svelte/types/Tag/Tag.svelte';
     import { Tags } from '../../../engine/Tags';
     import type { IResource } from '../../../i18n/ILocale';
-    import { Locale } from '../SettingsStore';
+    import { Locale } from '../stores/Settings';
 
     export let label: keyof IResource;
     export let category: keyof IResource;

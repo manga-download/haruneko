@@ -17,36 +17,32 @@
     export let selected: Boolean;
     export let display = 'Row';
     let flag: Promise<FlagType> =
-        window.HakuNeko.ItemflagManager.GetItemFlagType(item);
+        HakuNeko.ItemflagManager.GetItemFlagType(item);
     let flagtype: FlagType;
     $: flag.then((flag) => (flagtype = flag));
 
-    function OnFlagChangedCallback(
+    async function OnFlagChangedCallback(
         changedItem: IMediaContainer,
         changedFlag: FlagType
     ) {
         if (changedItem === item) flagtype = changedFlag;
+        else if (changedFlag === FlagType.Current)
+            flagtype = await HakuNeko.ItemflagManager.GetItemFlagType(item);
     }
     HakuNeko.ItemflagManager.FlagChanged.Subscribe(OnFlagChangedCallback);
     onDestroy(() => {
         HakuNeko.ItemflagManager.FlagChanged.Unsubscribe(OnFlagChangedCallback);
     });
-    let itemdiv: HTMLElement;
 </script>
 
 {#if display === 'Row'}
-    <div
-        bind:this={itemdiv}
-        class="listitem"
-        in:fade
-        class:selected
-        on:click
-        on:contextmenu
-    >
-        <span on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
+    <div class="listitem" in:fade class:selected on:click on:contextmenu>
+        <span
+            class="download"
+            on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
             ><CloudDownload class="download" /></span
         >
-        <span on:click={() => dispatch('view', item)}>
+        <span class="view" on:click={() => dispatch('view', item)}>
             {#if flagtype === FlagType.Viewed}
                 <ViewFilled />
             {:else if flagtype === FlagType.Current}
@@ -55,7 +51,7 @@
                 <View />
             {/if}
         </span>
-        {item.Title}
+        <span title={item.Title}>{item.Title}</span>
     </div>
 {/if}
 
@@ -63,11 +59,20 @@
     .listitem {
         cursor: pointer;
         user-select: none;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     .listitem:hover {
         background-color: var(--cds-hover-ui);
     }
     .listitem.selected {
         background-color: var(--cds-active-ui);
+    }
+    .listitem .view:hover {
+        color: var(--cds-active-ui);
+    }
+    .listitem .download:hover {
+        color: var(--cds-active-ui);
     }
 </style>

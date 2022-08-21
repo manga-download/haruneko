@@ -10,7 +10,12 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import { CertificateCheck, Settings, Star, StarFilled, } from 'carbon-icons-svelte';
+    import {
+        CertificateCheck,
+        Settings,
+        Star,
+        StarFilled,
+    } from 'carbon-icons-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
@@ -19,9 +24,10 @@
     import Chip from '../lib/Tag.svelte';
     import { Tag, Tags } from '../../../engine/Tags';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
-    import { Locale } from '../SettingsStore';
-    import { selectedPlugin } from '../Stores';
+    import { Locale } from '../stores/Settings';
+    import { selectedPlugin } from '../stores/Stores';
     // Hakuneko Engine
     import { VariantResourceKey as R } from '../../../i18n/ILocale';
 
@@ -30,9 +36,9 @@
             id: item.Identifier,
             name: item.Title,
             image: item.Icon,
-            tags : item.Tags,
+            tags: item.Tags,
             overflow: item,
-            favorite: item
+            favorite: item,
         };
     }
 
@@ -43,6 +49,9 @@
         pageSize: 5,
         pageSizes: [5, 10, 20],
     };
+
+    let isSettingOpen = false;
+    let pluginToConfigure: IMediaContainer;
 
     const langTags = Tags.Language.toArray();
     const typeTags = Tags.Media.toArray();
@@ -60,23 +69,28 @@
         pluginTagsFilter = pluginTagsFilter.filter((value) => tag !== value);
     }
 
-    let filterFavorites=false;
+    let filterFavorites = false;
     let filteredPluginlist = [];
     $: {
-        filteredPluginlist = HakuNeko.PluginController.WebsitePlugins
-            .filter((plugin) => {
+        filteredPluginlist = HakuNeko.PluginController.WebsitePlugins.filter(
+            (plugin) => {
                 let rejectconditions: Array<boolean> = [];
-                if (pluginNameFilter !== '' 
-                    &&  plugin.Title.toLowerCase().indexOf(pluginNameFilter.toLowerCase()) === -1
-                )  rejectconditions.push(true);
+                if (
+                    pluginNameFilter !== '' &&
+                    plugin.Title.toLowerCase().indexOf(
+                        pluginNameFilter.toLowerCase()
+                    ) === -1
+                )
+                    rejectconditions.push(true);
                 if (plugin.Tags) {
-                    pluginTagsFilter.forEach(tagfilter => {
-                        if (!plugin.Tags.includes(tagfilter)) rejectconditions.push(true);
+                    pluginTagsFilter.forEach((tagfilter) => {
+                        if (!plugin.Tags.includes(tagfilter))
+                            rejectconditions.push(true);
                     });
                 }
                 return !rejectconditions.length;
-            })
-            .map((item) => createDataRow(item));
+            }
+        ).map((item) => createDataRow(item));
         pagination.totalItems = filteredPluginlist.length;
     }
 </script>
@@ -99,7 +113,7 @@
                 <strong>{$Locale[Tags.Language.Title]()}</strong>
                 {#each langTags as item}
                     <Chip
-                        class='cursor-pointer'
+                        class="cursor-pointer"
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -110,7 +124,7 @@
                 <strong>{$Locale[Tags.Media.Title]()}</strong>
                 {#each typeTags as item}
                     <Chip
-                        class='cursor-pointer'
+                        class="cursor-pointer"
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -121,7 +135,7 @@
                 <strong>{$Locale[R.Tags_Others]()}</strong>
                 {#each otherTags as item}
                     <Chip
-                        class='cursor-pointer'
+                        class="cursor-pointer"
                         category={item.Category}
                         label={item.Title}
                         on:click={() => addTagFilter(item)}
@@ -155,7 +169,7 @@
         page={pagination.page}
         rows={filteredPluginlist}
         on:click:row={(event) => {
-            $selectedPlugin=event.detail.overflow;
+            $selectedPlugin = event.detail.overflow;
             isPluginModalOpen = false;
         }}
     >
@@ -169,10 +183,13 @@
             </ToolbarContent>
         </Toolbar>
         <svelte:fragment slot="cell-header" let:header>
-            {#if header.key === "favorite"}
-                <Button kind="secondary" iconDescription="Filter favorites" icon={filterFavorites ? StarFilled : Star} 
+            {#if header.key === 'favorite'}
+                <Button
+                    kind="secondary"
+                    iconDescription="Filter favorites"
+                    icon={filterFavorites ? StarFilled : Star}
                     on:click={(e) => {
-                        filterFavorites=!filterFavorites;
+                        filterFavorites = !filterFavorites;
                         e.stopPropagation();
                     }}
                 />
@@ -182,41 +199,42 @@
         </svelte:fragment>
         <div class="plugin-row" slot="cell" let:cell in:fade>
             {#if cell.key === 'favorite'}
-                <Button kind="ghost" iconDescription="Add to favorites" icon={true ? StarFilled : Star} 
+                <Button
+                    kind="ghost"
+                    iconDescription="Add to favorites"
+                    icon={true ? StarFilled : Star}
                     on:click={(e) => {
                         // TODO: trigger plugin favorite
                         e.stopPropagation();
                     }}
                 />
-            {:else if  cell.key === 'image'}
+            {:else if cell.key === 'image'}
                 <img src={cell.value} alt="Logo" height="24" />
-            {:else if  cell.key === 'tags'}
+            {:else if cell.key === 'tags'}
                 {#each cell.value as item}
-                    <Chip
-                        category={item.Category}
-                        label={item.Title}
-                    />
+                    <Chip category={item.Category} label={item.Title} />
                 {/each}
             {:else if cell.key === 'overflow'}
                 <div class=" action-cell">
-                    {#if [...cell.value.Settings].length > 0} 
-                    <Button
-                        size="small"
-                        kind="secondary"
-                        tooltipPosition="left"
-                        icon={Settings}
-                        iconDescription="Connector's settings"
-                        on:click={(e) => {
-                            dispatch('settings',cell.value);
-                            e.stopPropagation();
-                        }}
-                    />
+                    {#if [...cell.value.Settings].length > 0}
+                        <Button
+                            size="small"
+                            kind="secondary"
+                            tooltipPosition="left"
+                            icon={Settings}
+                            iconDescription="Connector's settings"
+                            on:click={(e) => {
+                                pluginToConfigure = cell.value;
+                                isSettingOpen = true;
+                                e.stopPropagation();
+                            }}
+                        />
                     {/if}
                     <Button
                         size="small"
                         kind="secondary"
                         tooltipPosition="left"
-                        icon={CertificateCheck }
+                        icon={CertificateCheck}
                         iconDescription="Test plugin"
                         on:click={(e) => {
                             e.stopPropagation();
@@ -241,6 +259,23 @@
     />
 </Modal>
 
+{#if pluginToConfigure}
+    <Modal
+        id="pluginSettingsModal"
+        size="lg"
+        hasScrollingContent
+        bind:open={isSettingOpen}
+        passiveModal
+        modalHeading="Settings"
+        on:click:button--secondary={() => (isSettingOpen = false)}
+        on:open
+        on:close
+        hasForm
+    >
+        <SettingsViewer settings={pluginToConfigure.Settings} />
+    </Modal>
+{/if}
+
 <style>
     :global(#selectedTags) {
         padding: 1rem 1rem 0 0;
@@ -263,7 +298,7 @@
     .tags {
         width: 100%;
     }
-    .tags :global(.cursor-pointer){
+    .tags :global(.cursor-pointer) {
         cursor: pointer;
     }
     .lang {

@@ -1,8 +1,8 @@
 import { type Readable, readable, writable } from 'svelte/store';
-import { type ILocale, VariantResourceKey as R } from '../../i18n/ILocale';
-import { GetLocale } from '../../i18n/Localization';
-import { Check, Choice, type IValue, type Setting } from '../../engine/SettingsManager';
-import { Key as GlobalKey } from '../../engine/SettingsGlobal';
+import { type ILocale, VariantResourceKey as R } from '../../../i18n/ILocale';
+import { GetLocale } from '../../../i18n/Localization';
+import { Check, Choice, type IValue, type Setting } from '../../../engine/SettingsManager';
+import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
 
 const scope = 'frontend.classic';
 

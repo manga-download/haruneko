@@ -6,12 +6,13 @@
         RowDelete,
         RowInsert,
         ZoomIn,
-        ZoomOut
-    } from "carbon-icons-svelte";
+        ZoomOut,
+    } from 'carbon-icons-svelte';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
-    
+
     export let title: string;
+
     function increaseImagePadding() {}
     function decreaseImagePadding() {}
     function zoomIn() {}
@@ -20,18 +21,30 @@
 
 <div id="Buttons" tabindex="0">
     <span class="title">{title}</span>
-    <span on:click={() => console.log(`createEventDispatcher("requestItemDown", item)`)}>
+    <span
+        on:click={() =>
+            console.log(`createEventDispatcher("requestItemDown", item)`)}
+    >
         <ChevronLeft size={24} title="Item Down (ArrowLeft)" />
     </span>
-    <span on:click={() => console.log(`createEventDispatcher("requestItemUp", item)`)}>
+    <span
+        on:click={() =>
+            console.log(`createEventDispatcher("requestItemUp", item)`)}
+    >
         <ChevronRight size={24} title="Item Up (ArrowRight)" />
     </span>
     &nbsp;
     <span on:click={decreaseImagePadding}>
-        <RowDelete size={24} title="Decrease spacing between images (CTRL ➖)" />
+        <RowDelete
+            size={24}
+            title="Decrease spacing between images (CTRL ➖)"
+        />
     </span>
     <span on:click={increaseImagePadding}>
-        <RowInsert size={24} title="Increase spacing between images (CTRL ➕)" />
+        <RowInsert
+            size={24}
+            title="Increase spacing between images (CTRL ➕)"
+        />
     </span>
     &nbsp;
     <span on:click={zoomIn}>

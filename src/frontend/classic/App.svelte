@@ -19,8 +19,8 @@
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
     // UI: Stores
-    import { ContentPanelValue, ThemeValue } from './SettingsStore';
-    import { selectedItem } from './Stores';
+    import { ContentPanelValue, ThemeValue } from './stores/Settings';
+    import { selectedItem } from './stores/Stores';
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
     export const FinishLoading = new Promise<void>(
@@ -56,13 +56,12 @@
     }
 
     $: currentContent = $selectedItem ? 'viewer' : 'home';
-    
 </script>
 
 <UserMessage />
 
 <Theme theme={$ThemeValue}>
-    <AppBar bind:isSideNavOpen on:home={() => $selectedItem=null}/>
+    <AppBar bind:isSideNavOpen on:home={() => ($selectedItem = null)} />
     <Content id="hakunekoapp">
         <MediaSelect />
         <MediaItemSelect />
@@ -150,7 +149,7 @@
 
     #Content {
         grid-area: Content;
-        overflow-y:auto;
+        overflow-y: auto;
     }
     #Bottom {
         grid-area: Bottom;

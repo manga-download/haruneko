@@ -10,34 +10,36 @@
 </script>
 
 <Breadcrumb noTrailingSlash>
-    <BreadcrumbItem isCurrentPage={path === '/'}>
-        <Link class="contentpathbar" to="/">Hakuneko</Link>
-    </BreadcrumbItem>
-    {#if path !== '/'}
-        {#each steps as step, index}
-            {#if index === steps.length - 1}
-                <BreadcrumbItem isCurrentPage>
-                    {step.charAt(0).toUpperCase() + step.slice(1)}
-                </BreadcrumbItem>
-            {:else}
-                <BreadcrumbItem>
-                    <Link
-                        class="contentpathbar"
-                        to={path
-                            .split('/')
-                            .slice(0, index + 2)
-                            .join('/')}
-                    >
+    <span class="contentpathbar">
+        <BreadcrumbItem isCurrentPage={path === '/'}>
+            <Link class="contentpathbar" to="/">Hakuneko</Link>
+        </BreadcrumbItem>
+        {#if path !== '/'}
+            {#each steps as step, index}
+                {#if index === steps.length - 1}
+                    <BreadcrumbItem isCurrentPage>
                         {step.charAt(0).toUpperCase() + step.slice(1)}
-                    </Link>
-                </BreadcrumbItem>
-            {/if}
-        {/each}
-    {/if}
+                    </BreadcrumbItem>
+                {:else}
+                    <BreadcrumbItem>
+                        <Link
+                            class="contentpathbar"
+                            to={path
+                                .split('/')
+                                .slice(0, index + 2)
+                                .join('/')}
+                        >
+                            {step.charAt(0).toUpperCase() + step.slice(1)}
+                        </Link>
+                    </BreadcrumbItem>
+                {/if}
+            {/each}
+        {/if}
+    </span>
 </Breadcrumb>
 
 <style>
-    :global(.contentpathbar) {
+    .contentpathbar :global(.contentpathbar) {
         color: unset;
     }
 </style>
