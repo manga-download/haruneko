@@ -1,9 +1,10 @@
 import type { IFrontendInfo } from '../IFrontend';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
 
 export const Info: IFrontendInfo = {
     ID: 'classic',
-    Label: 'Classic',
-    Description: 'The standard frontend, no bells no whistles ...',
+    Label: R.Frontend_Classic_Label,
+    Description: R.Frontend_Classic_Description,
     Screenshots: [],
     LoadModule: async () => (await import('./Frontend')).default
 };

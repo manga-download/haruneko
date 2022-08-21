@@ -5,7 +5,7 @@ import { Info as InfoClassic } from './classic/FrontendInfo';
 import { CreateWindowController } from './WindowController';
 
 const frontendSelector = '#app';
-const frontendList: IFrontendInfo[] = [
+export const FrontendList: IFrontendInfo[] = [
     InfoClassic
 ];
 
@@ -33,24 +33,24 @@ export class FrontendController implements IFrontendController {
     }
 
     public get AvailableFrontends(): IFrontendInfo[] {
-        return frontendList;
+        return FrontendList;
     }
 
     private async GetStoredFrontendID(): Promise<string | null> {
         // TODO: get selected frontend through settings engine
         const frontendID = window.localStorage.getItem('hakuneko.frontend');
-        return frontendList.some(frontend => frontend.ID === frontendID) ? frontendID : null;
+        return this.AvailableFrontends.some(frontend => frontend.ID === frontendID) ? frontendID : null;
     }
 
     private async SetStoredFrontendID(frontendID: string | null): Promise<void> {
-        if(frontendID && frontendList.some(frontend => frontend.ID === frontendID)) {
+        if(frontendID && this.AvailableFrontends.some(frontend => frontend.ID === frontendID)) {
             // TODO: set selected frontend through settings engine
             window.localStorage.setItem('hakuneko.frontend', frontendID);
         }
     }
 
     private GetFrontendInfoByID(id: string): IFrontendInfo {
-        const info = frontendList.find(item => item.ID === id);
+        const info = this.AvailableFrontends.find(item => item.ID === id);
         if(info) {
             return info;
         } else {
@@ -59,7 +59,7 @@ export class FrontendController implements IFrontendController {
     }
 
     private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
-        const info = frontendList.find(item => item.ID === id);
+        const info = this.AvailableFrontends.find(item => item.ID === id);
         if(info) {
             return info.LoadModule();
         } else {

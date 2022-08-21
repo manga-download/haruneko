@@ -35,6 +35,8 @@ export enum VariantResourceKey {
 
 // [SECTION]: Frontend Classic
 export enum VariantResourceKey {
+    Frontend_Classic_Label = 'Frontend_Classic_Label',
+    Frontend_Classic_Description = 'Frontend_Classic_Description',
     Frontend_Classic_Settings_FuzzySearch = 'Frontend_Classic_Settings_FuzzySearch',
     Frontend_Classic_Settings_FuzzySearchInfo = 'Frontend_Classic_Settings_FuzzySearchInfo',
     Frontend_Classic_Settings_Theme = 'Frontend_Classic_Settings_Theme',
@@ -59,6 +61,8 @@ export enum VariantResourceKey {
 
 // [SECTION]: Engine
 export enum VariantResourceKey {
+    Settings_Global_Frontend = 'Settings_Global_Frontend',
+    Settings_Global_FrontendInfo = 'Settings_Global_FrontendInfo',
     Settings_Global_Language = 'Settings_Global_Language',
     Settings_Global_LanguageInfo = 'Settings_Global_LanguageInfo',
     Settings_Global_MediaDirectory = 'Settings_Global_MediaDirectory',
