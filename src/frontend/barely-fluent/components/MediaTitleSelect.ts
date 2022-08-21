@@ -3,10 +3,6 @@ import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import S from '../services/StateService';
 
-import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
-import IconCase from '@vscode/codicons/src/icons/case-sensitive.svg?raw';
-import IconClear from '@vscode/codicons/src/icons/trash.svg?raw';
-import IconRegex from '@vscode/codicons/src/icons/regex.svg?raw';
 import IconSynchronize from '@vscode/codicons/src/icons/sync.svg?raw';
 import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.svg?raw';
 //import IconAnime from '@fluentui/svg-icons/icons/video_clip_20_regular.svg?raw';
@@ -59,23 +55,6 @@ const styles: ElementStyles = css`
         padding: calc(var(--base-height-multiplier) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
         border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-    }
-
-    #searchpattern {
-        display: block;
-    }
-
-    #searchpattern svg {
-        width: 100%;
-        height: 100%;
-    }
-
-    #searchpattern [slot="end"] {
-        display: flex;
-    }
-
-    #searchpattern [slot="end"] fluent-button {
-        height: fit-content;
     }
 
     #button-update-entries.updating svg {
@@ -162,15 +141,7 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         </div>
         <div id="dropdown">
             <div id="searchcontrol">
-                <fluent-text-field id="searchpattern" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder()}" :value=${model => model.filtertext} @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
-                    <!-- ${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label()} -->
-                    <div slot="start">${IconSearch}</div>
-                    <div slot="end">
-                        <fluent-button appearance="stealth" @click=${model => model.filtertext = ''}>${IconClear}</fluent-button>
-                        <fluent-button appearance="${model => model.filtercase ? 'outline' : 'stealth'}" @click=${model => model.filtercase = !model.filtercase}>${IconCase}</fluent-button>
-                        <fluent-button appearance="${model => model.filterregex ? 'outline' : 'stealth'}" @click=${model => model.filterregex = !model.filterregex}>${IconRegex}</fluent-button>
-                    </div>
-                </fluent-text-field>
+                <fluent-searchbox placeholder="${() => S.Locale.Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
             </div>
             <ul id="entries">
                 ${repeat(model => model.filtered, listitem)}
@@ -194,10 +165,12 @@ export class MediaTitleSelect extends FASTElement {
     }
 
     @observable entries: IMediaContainer[] = [];
-    entriesChanged(previous: IMediaContainer[], current: IMediaContainer[]) {
-        if(previous !== current) {
-            this.FilterEntries();
-        }
+    entriesChanged() {
+        this.FilterEntries();
+    }
+    @observable match: (text: string) => boolean = () => true;
+    matchChanged() {
+        this.FilterEntries();
     }
     @observable filtered: IMediaContainer[] = [];
     @observable selected: IMediaContainer;
@@ -208,45 +181,22 @@ export class MediaTitleSelect extends FASTElement {
         }
     }
     @observable expanded = false;
-    expandedChanged(previous: boolean, current: boolean) {
+    expandedChanged() {
         if(this.dropdown) {
-            this.dropdown.style.display = current ? 'block' : 'none';
+            this.dropdown.style.display = this.expanded ? 'block' : 'none';
         }
     }
     @observable bookmark = false;
     @observable updating = false;
     @observable scanning = false;
     @observable pasting = false;
-    @observable filtertext = '';
-    filtertextChanged() {
-        this.FilterEntries();
-    }
-    @observable filtercase = false;
-    filtercaseChanged() {
-        this.FilterEntries();
-    }
-    @observable filterregex = false;
-    filterregexChanged() {
-        this.FilterEntries();
-    }
 
     private get dropdown(): HTMLElement {
         return this.shadowRoot.querySelector('#dropdown') as HTMLElement;
     }
 
     public async FilterEntries() {
-        let filtered = this.entries ?? [];
-        try {
-            if(this.filterregex) {
-                const pattern = new RegExp(this.filtertext, this.filtercase ? undefined : 'i');
-                filtered = !this.filtertext ? filtered : this.entries?.filter(entry => pattern.test(entry.Title));
-            }
-            else {
-                const pattern = this.filtertext?.toLowerCase();
-                filtered = !this.filtertext ? filtered : this.entries?.filter(entry => this.filtercase ? entry.Title.includes(this.filtertext) : entry.Title.toLowerCase().includes(pattern));
-            }
-        } catch { /* ignore errors */ }
-        this.filtered = filtered.slice(0, 250); // TODO: virtual scrolling
+        this.filtered = this.entries ? this.entries?.filter(entry => this.match(entry.Title)).slice(0, 250) /* TODO: virtual scrolling */ : [];
     }
 
     public SelectEntry(entry: IMediaContainer) {

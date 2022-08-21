@@ -2,7 +2,6 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
-import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
 import IconSynchronize from '@vscode/codicons/src/icons/sync.svg?raw';
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
 //import IconFavorite from '@fluentui/svg-icons/icons/star_20_regular.svg?raw';
@@ -53,15 +52,6 @@ const styles: ElementStyles = css`
         padding: calc(var(--base-height-multiplier) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
         border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-    }
-
-    #searchpattern {
-        width: 50%;
-    }
-
-    #searchpattern svg {
-        width: 100%;
-        height: 100%;
     }
 
     #button-update-entries.updating svg {
@@ -148,10 +138,7 @@ const template: ViewTemplate<WebsiteSelect> = html`
         </div>
         <div id="dropdown">
             <div id="searchcontrol">
-                <fluent-text-field id="searchpattern" appearance="outline" placeholder="${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder()}" @input=${(model, ctx) => model.filtertext = ctx.event.currentTarget['value']}>
-                    <div slot="start">${IconSearch}</div>    
-                    <!-- ${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label()} -->
-                </fluent-text-field>
+                <fluent-searchbox placeholder="${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
             </div>
             <ul id="entries">
                 ${repeat(model => model.entries, listitem)}
@@ -164,38 +151,31 @@ const template: ViewTemplate<WebsiteSelect> = html`
 export class WebsiteSelect extends FASTElement {
 
     @observable entries = HakuNeko.PluginController.WebsitePlugins;
-    @observable selected: IMediaContainer = HakuNeko.PluginController.WebsitePlugins[4];
+    @observable match: (text: string) => boolean = () => true;
+    matchChanged() {
+        this.FilterEntries();
+    }
+    @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(!previous || !previous.IsSameAs(current)) {
             this.$emit('selectedChanged');
         }
     }
     @observable expanded = false;
-    expandedChanged(previous: boolean, current: boolean) {
+    expandedChanged() {
         if(this.dropdown) {
-            this.dropdown.style.display = current ? 'block' : 'none';
+            this.dropdown.style.display = this.expanded ? 'block' : 'none';
         }
     }
     @observable updating = false;
     @observable favorite = false;
-    @observable filtertext = '';
-    filtertextChanged(previous: typeof this.filtertext, current: typeof this.filtertext) {
-        if(previous !== current) {
-            this.FilterEntries();
-        }
-    }
 
     private get dropdown(): HTMLElement {
         return this.shadowRoot.querySelector('#dropdown') as HTMLElement;
     }
 
     public async FilterEntries() {
-        let filtered = HakuNeko.PluginController.WebsitePlugins;
-        try {
-            const pattern = this.filtertext?.toLowerCase();
-            filtered = !pattern ? filtered : filtered.filter(entry => entry.Title.toLowerCase().includes(pattern));
-        } catch { /* ignore errors */ }
-        this.entries = filtered.slice(0, 250); // TODO: virtual scrolling
+        this.entries = HakuNeko.PluginController.WebsitePlugins.filter(entry => this.match(entry.Title)).slice(0, 250); /* TODO: virtual scrolling */
     }
 
     public SelectEntry(entry: IMediaContainer) {

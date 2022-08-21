@@ -1,10 +1,10 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
 import type { WebsiteSelect, MediaTitleSelect } from './components/_index';
 
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
 import IconBookmarkList from '@fluentui/svg-icons/icons/bookmark_multiple_20_regular.svg?raw';
-import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw';
+//import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw';
 
 const styles: ElementStyles = css`
     :host {
