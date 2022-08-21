@@ -24,6 +24,11 @@ const styles: ElementStyles = css`
         grid-template-columns: max-content 1fr max-content;
     }
 
+    #heading:hover {
+        cursor: pointer;
+        background-color: var(--neutral-fill-hover);
+    }
+
     #heading #logo {
         height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
     }
@@ -33,7 +38,6 @@ const styles: ElementStyles = css`
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        cursor: pointer;
     }
 
     #controls {
@@ -108,11 +112,11 @@ const styles: ElementStyles = css`
 `;
 
 const unstarred: ViewTemplate<MediaTitleSelect> = html`
-    <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description()}" @click=${model => model.AddBookmark()}>${IconAddBookmark}</fluent-button>
+    <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description()}" @click=${(model, ctx) => model.AddBookmark(ctx.event)}>${IconAddBookmark}</fluent-button>
 `;
 
 const starred: ViewTemplate<MediaTitleSelect> = html`
-    <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description()}" @click=${model => model.RemoveBookmark()}>${IconRemoveBookmark}</fluent-button>
+    <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description()}" @click=${(model, ctx) => model.RemoveBookmark(ctx.event)}>${IconRemoveBookmark}</fluent-button>
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
@@ -125,14 +129,14 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 
 const template: ViewTemplate<MediaTitleSelect> = html`
     <fluent-card>
-        <div id="heading">
+        <div id="heading" @click=${model => model.expanded = !model.expanded}>
             <img id="logo" src="${model => model.selected?.Icon}"></img>
-            <div id="title" @click=${model => model.expanded = !model.expanded}>${model => model.selected?.Title ?? '…'}</div>
+            <div id="title">${model => model.selected?.Title ?? '…'}</div>
             <div id="controls">
                 <div class="hint">${model => model.updating || model.pasting ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating || model.pasting} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
+                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating || model.pasting} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>${IconSynchronize}</fluent-button>
                 ${model => model.bookmark ? starred : unstarred}
-                <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} @click="${model => model.PasteClipboard()}">${IconClipboard}</fluent-button>
+                <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}">${IconClipboard}</fluent-button>
             </div>
         </div>
         <div id="dropdown">
@@ -201,7 +205,8 @@ export class MediaTitleSelect extends FASTElement {
         Observable.notify(this, 'expanded'); // force update of UI even when property not changed
     }
 
-    public async UpdateEntries(): Promise<void> {
+    public async UpdateEntries(event: Event): Promise<void> {
+        event.stopPropagation();
         try {
             this.updating = true;
             await this.selected?.Update();
@@ -213,13 +218,15 @@ export class MediaTitleSelect extends FASTElement {
         }
     }
 
-    public async AddBookmark() {
+    public async AddBookmark(event: Event) {
+        event.stopPropagation();
         if(this.selected) {
             await HakuNeko.BookmarkPlugin.Add(this.selected);
         }
     }
 
-    public async RemoveBookmark() {
+    public async RemoveBookmark(event: Event) {
+        event.stopPropagation();
         if(this.selected && HakuNeko.BookmarkPlugin.isBookmarked(this.selected)) {
             const bookmark = HakuNeko.BookmarkPlugin.Find(this.selected);
             await HakuNeko.BookmarkPlugin.Remove(bookmark);
@@ -230,7 +237,8 @@ export class MediaTitleSelect extends FASTElement {
         this.bookmark = this.selected && sender.isBookmarked(this.selected);
     }.bind(this);
 
-    public async PasteClipboard() {
+    public async PasteClipboard(event: Event) {
+        event.stopPropagation();
         try {
             this.pasting = true;
             const link = new URL(await navigator.clipboard.readText()).href;
@@ -240,7 +248,7 @@ export class MediaTitleSelect extends FASTElement {
                     if(!this.selected || !this.selected.IsSameAs(media)) {
                         this.selected = media;
                     }
-                    return this.UpdateEntries();
+                    return this.UpdateEntries(event);
                 }
             }
             throw new Error(`No matching website found for '${link}'`);

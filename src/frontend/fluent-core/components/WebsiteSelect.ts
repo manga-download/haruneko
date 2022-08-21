@@ -21,6 +21,11 @@ const styles: ElementStyles = css`
         grid-template-columns: max-content 1fr max-content;
     }
 
+    #heading:hover {
+        cursor: pointer;
+        background-color: var(--neutral-fill-hover);
+    }
+
     #heading #logo {
         height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
     }
@@ -30,7 +35,6 @@ const styles: ElementStyles = css`
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        cursor: pointer;
     }
 
     #controls {
@@ -105,11 +109,11 @@ const styles: ElementStyles = css`
 `;
 
 const unstarred: ViewTemplate<WebsiteSelect> = html`
-    <fluent-button id="add-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${model => model.AddFavorite()}>${IconAddFavorite}</fluent-button>
+    <fluent-button id="add-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${(model, ctx) => model.AddFavorite(ctx.event)}>${IconAddFavorite}</fluent-button>
 `;
 
 const starred: ViewTemplate<WebsiteSelect> = html`
-    <fluent-button id="remove-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${model => model.RemoveFavorite()}>${IconRemoveFavorite}</fluent-button>
+    <fluent-button id="remove-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${(model, ctx) => model.RemoveFavorite(ctx.event)}>${IconRemoveFavorite}</fluent-button>
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
@@ -122,14 +126,14 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 
 const template: ViewTemplate<WebsiteSelect> = html`
     <fluent-card>
-        <div id="heading">
+        <div id="heading" @click=${model => model.expanded = !model.expanded}>
             <img id="logo" src="${model => model.selected?.Icon}"></img>
-            <div id="title" @click=${model => model.expanded = !model.expanded}>${model => model.selected?.Title ?? '…'}</div>
+            <div id="title">${model => model.selected?.Title ?? '…'}</div>
             <div id="controls">
                 <div class="hint">${model => model.updating ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
+                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>${IconSynchronize}</fluent-button>
                 ${model => model.favorite ? starred : unstarred}
-                <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} @click="${model => model.OpenSettings()}">${IconSettings}</fluent-button>
+                <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} @click="${(model, ctx) => model.OpenSettings(ctx.event)}">${IconSettings}</fluent-button>
             </div>
         </div>
         <div id="dropdown">
@@ -180,7 +184,8 @@ export class WebsiteSelect extends FASTElement {
         Observable.notify(this, 'expanded'); // force update of UI even when property not changed
     }
 
-    public async UpdateEntries(): Promise<void> {
+    public async UpdateEntries(event: Event): Promise<void> {
+        event.stopPropagation();
         try {
             this.updating = true;
             await this.selected?.Update();
@@ -192,17 +197,20 @@ export class WebsiteSelect extends FASTElement {
         }
     }
 
-    public AddFavorite() {
+    public AddFavorite(event: Event) {
+        event.stopPropagation();
         this.favorite = true;
         console.log('Added Favorite', this.selected?.Identifier);
     }
 
-    public RemoveFavorite() {
+    public RemoveFavorite(event: Event) {
+        event.stopPropagation();
         this.favorite = false;
         console.log('Removed Favorite', this.selected?.Identifier);
     }
 
-    public OpenSettings() {
+    public OpenSettings(event: Event) {
+        event.stopPropagation();
         console.log('Open Settings', this.selected?.Identifier);
     }
 }
