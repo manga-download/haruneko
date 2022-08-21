@@ -36,8 +36,11 @@ export const en_US: IVariantResource = {
     Frontend_Classic_Settings_ViewerDoublePage: 'Show Double Pages',
     Frontend_Classic_Settings_ViewerDoublePageInfo: 'Show two pages/images at once (like in tradional Manga)',
 
-    // [SECTION]: Frontend BarelyFluid
+    // [SECTION]: Frontend FluentCore
 
+    Frontend_FluentCore_Label: 'Fluent Core',
+    Frontend_FluentCore_Description: 'A simple frontend with no bells and whistles, especially for developers to quickly verify essential functionality',
+    //
     Frontend_FluentCore_TitleBar_CloseSettingsButton_Label: 'Done',
     //
     Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description: 'Click to fetch the list of all available titles from the website,\ndepending on the number of required requests this may take a while',

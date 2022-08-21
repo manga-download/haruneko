@@ -60,6 +60,9 @@ export enum VariantResourceKey {
 }
 // [SECTION]: Frontend: FluentCore
 export enum VariantResourceKey {
+    Frontend_FluentCore_Label = 'Frontend_FluentCore_Label',
+    Frontend_FluentCore_Description = 'Frontend_FluentCore_Description',
+
     Frontend_FluentCore_TitleBar_CloseSettingsButton_Label = 'Frontend_FluentCore_TitleBar_CloseSettingsButton_Label',
 
     Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description = 'Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description',
