@@ -33,7 +33,7 @@ async function InitializeNodeWebkit(info: PlatformInfo) {
     await window.HakuNeko.Initialze();
     FrontendController.FrontendLoaded.Subscribe(HideSplashScreen);
     const timerHideSplashScreen = setTimeout(HideSplashScreen, 7500);
-    new FrontendController();
+    new FrontendController(window.HakuNeko.SettingsManager.OpenScope());
 
     function HideSplashScreen() {
         FrontendController.FrontendLoaded.Unsubscribe(HideSplashScreen);
@@ -48,7 +48,7 @@ async function InitializeBrowser(info: PlatformInfo) {
 
     globalThis.window.HakuNeko = new HakuNeko(info);
     await window.HakuNeko.Initialze();
-    new FrontendController();
+    new FrontendController(window.HakuNeko.SettingsManager.OpenScope());
 }
 
 (async function() {

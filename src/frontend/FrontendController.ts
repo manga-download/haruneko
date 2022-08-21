@@ -3,54 +3,35 @@ import { Event } from '../engine/Event';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
 import { CreateWindowController } from './WindowController';
+import type { Choice, ISettings } from '../engine/SettingsManager';
+import { Key } from '../engine/SettingsGlobal';
 
 const frontendSelector = '#app';
 export const FrontendList: IFrontendInfo[] = [
     InfoClassic
 ];
 
-export interface IFrontendController {
-    readonly ActiveFrontendID: string;
-    AvailableFrontends: IFrontendInfo[];
-}
-
-export class FrontendController implements IFrontendController {
+export class FrontendController {
 
     private activeFrontendID = '';
     public static readonly FrontendLoaded = new Event<IFrontendModule, IFrontendInfo>();
 
-    constructor() {
+    constructor(private readonly settings: ISettings) {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', this.Load);
         } else {
             this.Load();
         }
-        // TODO: listen to settings controller when the frontend is changed => Reload(...)
+        this.settings.Get<Choice>(Key.Frontend).ValueChanged.Subscribe((_, value) => this.Reload(value));
     }
 
-    public get ActiveFrontendID(): string {
-        return this.activeFrontendID;
-    }
-
-    public get AvailableFrontends(): IFrontendInfo[] {
-        return FrontendList;
-    }
-
-    private async GetStoredFrontendID(): Promise<string | null> {
-        // TODO: get selected frontend through settings engine
-        const frontendID = window.localStorage.getItem('hakuneko.frontend');
-        return this.AvailableFrontends.some(frontend => frontend.ID === frontendID) ? frontendID : null;
-    }
-
-    private async SetStoredFrontendID(frontendID: string | null): Promise<void> {
-        if(frontendID && this.AvailableFrontends.some(frontend => frontend.ID === frontendID)) {
-            // TODO: set selected frontend through settings engine
-            window.localStorage.setItem('hakuneko.frontend', frontendID);
-        }
+    private GetSettingsFrontendID(): string | null {
+        const frontendID = this.settings.Get<Choice>(Key.Frontend).Value;
+        return FrontendList.some(frontend => frontend.ID === frontendID) ? frontendID : null;
     }
 
     private GetFrontendInfoByID(id: string): IFrontendInfo {
-        const info = this.AvailableFrontends.find(item => item.ID === id);
+        const info = FrontendList.find(item => item.ID === id);
         if(info) {
             return info;
         } else {
@@ -59,7 +40,7 @@ export class FrontendController implements IFrontendController {
     }
 
     private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
-        const info = this.AvailableFrontends.find(item => item.ID === id);
+        const info = FrontendList.find(item => item.ID === id);
         if(info) {
             return info.LoadModule();
         } else {
@@ -69,7 +50,7 @@ export class FrontendController implements IFrontendController {
 
     private async Load(): Promise<void> {
         try {
-            const frontendID = await this.GetStoredFrontendID() || this.AvailableFrontends[0].ID;
+            const frontendID = this.GetSettingsFrontendID() || FrontendList[0].ID;
             const frontend = await this.GetFrontendModuleByID(frontendID);
             const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';
@@ -81,10 +62,8 @@ export class FrontendController implements IFrontendController {
         }
     }
 
-    // Apply new frontend assigned by settings and ask to reload application ...
-    public async Reload(frontendID: string): Promise<void> {
-        await this.SetStoredFrontendID(frontendID);
-        if(frontendID !== this.ActiveFrontendID && confirm(GetLocale().FrontendController_Reload_ConfirmNotice())) {
+    private Reload(frontendID: string): void {
+        if(frontendID !== this.activeFrontendID && confirm(GetLocale().FrontendController_Reload_ConfirmNotice())) {
             window.location.reload();
         }
     }
