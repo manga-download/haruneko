@@ -13,6 +13,8 @@ export const en_US: IVariantResource = {
 
     // [SECTION]: Frontend Classic
 
+    Frontend_Classic_Label: 'Classic',
+    Frontend_Classic_Description: 'The standard frontend mostly based on the previous version',
     Frontend_Classic_Settings_FuzzySearch: 'Fuzzy Search',
     Frontend_Classic_Settings_FuzzySearchInfo: 'Enable fuzzy search on filters (approximative matching)',
     Frontend_Classic_Settings_Theme: 'Theme',
@@ -61,6 +63,8 @@ export const en_US: IVariantResource = {
 
     // [SECTION]: Engine
 
+    Settings_Global_Frontend: 'Frontend',
+    Settings_Global_FrontendInfo: 'Select the user interface (restart required)',
     Settings_Global_Language: 'Language',
     Settings_Global_LanguageInfo: 'Select the language for the user interface',
     Settings_Global_MediaDirectory: 'Media Directory',

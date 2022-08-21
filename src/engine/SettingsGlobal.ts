@@ -1,9 +1,12 @@
 import { type SettingsManager, Check, Numeric, Text, Secret, Choice, Directory } from './SettingsManager';
 import { VariantResourceKey as R, LocaleID } from '../i18n/ILocale';
+import { FrontendList } from '../frontend/FrontendController';
+import { Info as InfoClassic } from '../frontend/classic/FrontendInfo';
 
 export const Scope = '*';
 
 export const enum Key {
+    Frontend = 'frontend',
     Language = 'language',
     MediaDirectory = 'media-directory',
     UseWebsiteSubDirectory = 'website-subdirectory',
@@ -16,6 +19,15 @@ export const enum Key {
 export async function Initialize(settingsManager: SettingsManager): Promise<void> {
     const settings = settingsManager.OpenScope(Scope);
     await settings.Initialize(
+        new Choice(
+            Key.Frontend,
+            R.Settings_Global_Frontend,
+            R.Settings_Global_FrontendInfo,
+            InfoClassic.ID,
+            ...FrontendList.map(info => {
+                return { key: info.ID, label: info.Label /* description: info.Description */ };
+            })
+        ),
         new Choice(
             Key.Language,
             R.Settings_Global_Language,

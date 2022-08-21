@@ -1,9 +1,10 @@
 import type { IWindowController } from './WindowController';
+import type { IResource } from '../i18n/ILocale';
 
 export interface IFrontendInfo {
     ID: string;
-    Label: string;
-    Description: string;
+    Label: keyof IResource;
+    Description: keyof IResource;
     Screenshots: string[];
     LoadModule(): Promise<IFrontendModule>;
 }
