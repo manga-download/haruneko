@@ -41,7 +41,8 @@ export const en_US: IVariantResource = {
     Frontend_FluentCore_Label: 'Fluent Core',
     Frontend_FluentCore_Description: 'A simple frontend with no bells and whistles, especially for developers to quickly verify essential functionality',
     //
-    Frontend_FluentCore_TitleBar_CloseSettingsButton_Label: 'Done',
+    Frontend_FluentCore_SettingsDialog_Title: 'Settings',
+    Frontend_FluentCore_SettingsDialog_CloseButton_Label: 'Done',
     //
     Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description: 'Click to fetch the list of all available titles from the website,\ndepending on the number of required requests this may take a while',
     Frontend_FluentCore_WebsiteSelect_BusyStatus_Description: 'Fetching the list of all available titles,\ndepending on the number of required requests this may take a while',

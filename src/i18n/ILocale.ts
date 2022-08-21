@@ -63,7 +63,8 @@ export enum VariantResourceKey {
     Frontend_FluentCore_Label = 'Frontend_FluentCore_Label',
     Frontend_FluentCore_Description = 'Frontend_FluentCore_Description',
 
-    Frontend_FluentCore_TitleBar_CloseSettingsButton_Label = 'Frontend_FluentCore_TitleBar_CloseSettingsButton_Label',
+    Frontend_FluentCore_SettingsDialog_Title = 'Frontend_FluentCore_SettingsDialog_Title',
+    Frontend_FluentCore_SettingsDialog_CloseButton_Label = 'Frontend_FluentCore_SettingsDialog_CloseButton_Label',
 
     Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description = 'Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description',
     Frontend_FluentCore_WebsiteSelect_BusyStatus_Description = 'Frontend_FluentCore_WebsiteSelect_BusyStatus_Description',
