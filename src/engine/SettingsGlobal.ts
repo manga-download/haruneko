@@ -72,7 +72,7 @@ export async function Initialize(settingsManager: SettingsManager): Promise<void
         ),
         new Text(
             Key.PostCommand,
-            R.Settings_Global_PostCommandInfo,
+            R.Settings_Global_PostCommand,
             R.Settings_Global_PostCommandInfo,
             ''
         )
