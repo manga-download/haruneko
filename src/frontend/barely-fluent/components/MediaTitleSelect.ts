@@ -1,5 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat, Observable } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import S from '../services/StateService';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
@@ -14,7 +15,6 @@ import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.s
 //import IconBookmark from '@fluentui/svg-icons/icons/bookmark_20_regular.svg?raw';
 import IconAddBookmark from '@fluentui/svg-icons/icons/bookmark_off_20_regular.svg?raw';
 import IconRemoveBookmark from '@fluentui/svg-icons/icons/bookmark_20_filled.svg?raw';
-import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 
 const styles: ElementStyles = css`
     :host {

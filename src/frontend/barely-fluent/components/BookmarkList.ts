@@ -9,7 +9,7 @@ const styles: ElementStyles = css`
         gap: calc(var(--design-unit) * 1px);
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: max-content 1fr;
+        grid-template-rows: max-content minmax(0, 1fr);
     }
 
     #searchpattern {

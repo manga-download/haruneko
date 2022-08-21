@@ -13,7 +13,7 @@ const styles: ElementStyles = css`
         gap: 0;
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: min-content 1fr;
+        grid-template-rows: min-content minmax(0, 1fr);
         height: 100vh;
         background-color: var(--neutral-layer-1);
         color: var(--neutral-foreground-rest);
@@ -29,7 +29,7 @@ const styles: ElementStyles = css`
         margin: calc(var(--base-height-multiplier) * 1px);
         display: grid;
         grid-template-columns: minmax(240px, 320px) 1fr;
-        grid-template-rows: min-content min-content 1fr;
+        grid-template-rows: min-content min-content minmax(0, 1fr);
     }
 
     #bookmark-list {
@@ -38,8 +38,6 @@ const styles: ElementStyles = css`
 
     #content {
         border: 1px dotted red;
-        overflow-x: hidden;
-        overflow-y: scroll;
     }
 `;
 
@@ -64,9 +62,7 @@ const template: ViewTemplate<App> = html`
         <fluent-media-title-select id="media-select" :entries=${model => model.titles}
             @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
             @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}></fluent-media-title-select>
-        <div id="content">
-            ${repeat(model => model.items, html`<div>${entry => entry.Title}</div>`)}
-        </div>
+        <fluent-media-item-select id="content" :entries=${model => model.items}></fluent-media-item-select>
     </div>
 `;
 
