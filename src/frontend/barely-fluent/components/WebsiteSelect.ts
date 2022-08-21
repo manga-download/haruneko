@@ -105,13 +105,11 @@ const styles: ElementStyles = css`
 `;
 
 const unstarred: ViewTemplate<WebsiteSelect> = html`
-    <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.AddFavorite()}>${IconAddFavorite}</fluent-button>
-    <fluent-tooltip anchor="add-favorite-button">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_AddFavoriteButton_Description()}</fluent-tooltip>
+    <fluent-button id="add-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${model => model.AddFavorite()}>${IconAddFavorite}</fluent-button>
 `;
 
 const starred: ViewTemplate<WebsiteSelect> = html`
-    <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} @click=${model => model.RemoveFavorite()}>${IconRemoveFavorite}</fluent-button>
-    <fluent-tooltip anchor="remove-favorite-button">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_RemoveFavoriteButton_Description()}</fluent-tooltip>
+    <fluent-button id="remove-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${model => model.RemoveFavorite()}>${IconRemoveFavorite}</fluent-button>
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
@@ -129,16 +127,14 @@ const template: ViewTemplate<WebsiteSelect> = html`
             <div id="title" @click=${model => model.expanded = !model.expanded}>${model => model.selected?.Title ?? '…'}</div>
             <div id="controls">
                 <div class="hint">${model => model.updating ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" ?disabled=${model => !model.selected || model.updating} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
-                <fluent-tooltip anchor="button-update-entries">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description()}</fluent-tooltip>
+                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating} @click=${model => model.UpdateEntries()}>${IconSynchronize}</fluent-button>
                 ${model => model.favorite ? starred : unstarred}
-                <fluent-button id="button-settings" appearance="stealth" ?disabled=${model => !model.selected} @click="${model => model.OpenSettings()}">${IconSettings}</fluent-button>
-                <fluent-tooltip anchor="button-settings">${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_OpenSettingsButton_Description()}</fluent-tooltip>
+                <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} @click="${model => model.OpenSettings()}">${IconSettings}</fluent-button>
             </div>
         </div>
         <div id="dropdown">
             <div id="searchcontrol">
-                <fluent-searchbox placeholder="${() => S.Locale.Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+                <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
             </div>
             <ul id="entries">
                 ${repeat(model => model.entries, listitem)}

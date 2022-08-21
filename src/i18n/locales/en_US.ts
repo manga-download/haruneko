@@ -36,23 +36,28 @@ export const en_US: IVariantResource = {
 
     // [SECTION]: Frontend BarelyFluid
 
-    Frontend_BarelyFluid_TitleBar_CloseSettingsButton_Label: 'Done',
+    Frontend_FluentCore_TitleBar_CloseSettingsButton_Label: 'Done',
     //
-    Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description: 'Click to fetch the list of all available titles from the website,\ndepending on the number of required requests this may take a while',
-    Frontend_BarelyFluid_WebsitePlugin_BusyStatus_Description: 'Fetching the list of all available titles,\ndepending on the number of required requests this may take a while',
-    Frontend_BarelyFluid_WebsitePlugin_AddFavoriteButton_Description: 'Star this website (mark as favorite)',
-    Frontend_BarelyFluid_WebsitePlugin_RemoveFavoriteButton_Description: 'Unstar this website (unmark as favorite)',
-    Frontend_BarelyFluid_WebsitePlugin_OpenSettingsButton_Description: 'Edit the settings for this website',
-    Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder: '',
-    Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label: 'Filter',
+    Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description: 'Click to fetch the list of all available titles from the website,\ndepending on the number of required requests this may take a while',
+    Frontend_FluentCore_WebsiteSelect_BusyStatus_Description: 'Fetching the list of all available titles,\ndepending on the number of required requests this may take a while',
+    Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description: 'Star this website (mark as favorite)',
+    Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description: 'Unstar this website (unmark as favorite)',
+    Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description: 'Edit the settings for this website',
+    Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder: '',
     //
-    Frontend_BarelyFluid_MediaContainer_UpdateEntriesButton_Description: 'Click to fetch the list of all available chapters/episodes from the website,\ndepending on the number of required requests this may take a while',
-    Frontend_BarelyFluid_MediaContainer_BusyStatus_Description: 'Fetching the list of all available chapters/episodes,\ndepending on the number of required requests this may take a while',
-    Frontend_BarelyFluid_MediaContainer_AddBookmarkButton_Description: 'Add this title to the bookmark list',
-    Frontend_BarelyFluid_MediaContainer_RemoveBookmarkButton_Description: 'Remove this title from the bookmarks list',
-    Frontend_BarelyFluid_MediaContainer_PasteClipboardButton_Description: 'Detect the title from the link currently copied in the clipboard',
-    Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder: '',
-    Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label: 'Filter',
+    Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description: 'Click to fetch the list of all available chapters/episodes from the website,\ndepending on the number of required requests this may take a while',
+    Frontend_FluentCore_MediaTitleSelect_BusyStatus_Description: 'Fetching the list of all available chapters/episodes,\ndepending on the number of required requests this may take a while',
+    Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description: 'Add this title to the bookmark list',
+    Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description: 'Remove this title from the bookmarks list',
+    Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description: 'Detect the title from the link currently copied in the clipboard',
+    Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder: '',
+    //
+    Frontend_FluentCore_MediaItemList_PreviewButton_Description: 'Show content',
+    Frontend_FluentCore_MediaItemList_DownloadButton_Description: 'Download content',
+    //
+    Frontend_FluentCore_SearchBox_ClearButton_Description: 'Clear the current search pattern',
+    Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description: 'Toggle between case sensitive and insensitive mode',
+    Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description: 'Toggle between text and regular expression mode',
 
     // [SECTION]: Engine
 

@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, attr, when } from '@microsoft/fast-element';
-//import S from '../services/StateService';
+import S from '../services/StateService';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
 import IconClear from '@vscode/codicons/src/icons/trash.svg?raw';
@@ -35,13 +35,13 @@ const styles: ElementStyles = css`
 `;
 
 const templateCaseSensivity: ViewTemplate<SearchBox> = html`
-    <fluent-button appearance="${model => model.caseenabled ? 'outline' : 'stealth'}" @click=${model => model.caseenabled = !model.caseenabled}>
+    <fluent-button appearance="${model => model.caseenabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" @click=${model => model.caseenabled = !model.caseenabled}>
         ${IconCase}
     </fluent-button>
 `;
 
 const templateRegularExpression: ViewTemplate<SearchBox> = html`
-    <fluent-button appearance="${model => model.regexenabled ? 'outline' : 'stealth'}" @click=${model => model.regexenabled = !model.regexenabled}>
+    <fluent-button appearance="${model => model.regexenabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" @click=${model => model.regexenabled = !model.regexenabled}>
         ${IconRegex}
     </fluent-button>
 `;
@@ -50,7 +50,7 @@ const template: ViewTemplate<SearchBox> = html`
     <fluent-text-field id="searchpattern" appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.needle} @input=${(model, ctx) => model.needle = ctx.event.currentTarget['value']}>
         <div slot="start">${IconSearch}</div>
         <div slot="end">
-            <fluent-button appearance="stealth" @click=${model => model.needle = ''}>
+            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" @click=${model => model.needle = ''}>
                 ${IconClear}
             </fluent-button>
             ${when(model => model.allowcase, templateCaseSensivity)}

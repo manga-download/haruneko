@@ -1,7 +1,7 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer, IMediaItem } from '../../../engine/providers/MediaPlugin';
 import { Priority } from '../../../engine/taskpool/DeferredTask';
-//import S from '../services/StateService';
+import S from '../services/StateService';
 
 //import IconSortNone from '@fluentui/svg-icons/icons/arrow_sort_20_regular.svg?raw';
 //import IconSortAscending from '@fluentui/svg-icons/icons/text_sort_ascending_20_regular.svg?raw';
@@ -75,8 +75,8 @@ const listitem: ViewTemplate<IMediaContainer> = html`
         <div><!-- <fluent-checkbox></fluent-checkbox> --></div>
         <div>${model => model.Title}</div>
         <div class="controls">
-            <fluent-button appearance="stealth" @click=${(model, ctx) => ctx.parent.ShowPreview(model)}>${IconPreview}</fluent-button>
-            <fluent-button appearance="stealth" @click=${(model, ctx) => ctx.parent.Download(model)}>${IconDownload}</fluent-button>
+            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}" @click=${(model, ctx) => ctx.parent.ShowPreview(model)}>${IconPreview}</fluent-button>
+            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}" @click=${(model, ctx) => ctx.parent.Download(model)}>${IconDownload}</fluent-button>
         </div>
     </li>
 `;

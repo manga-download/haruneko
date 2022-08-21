@@ -33,7 +33,7 @@ export enum VariantResourceKey {
     Frontend_Product_Description = 'Frontend_Product_Description',
 }
 
-// [SECTION]: Frontend Classic
+// [SECTION]: Frontend: Classic
 export enum VariantResourceKey {
     Frontend_Classic_Settings_FuzzySearch = 'Frontend_Classic_Settings_FuzzySearch',
     Frontend_Classic_Settings_FuzzySearchInfo = 'Frontend_Classic_Settings_FuzzySearchInfo',
@@ -56,27 +56,32 @@ export enum VariantResourceKey {
     Frontend_Classic_Settings_ViewerDoublePage = 'Frontend_Classic_Settings_ViewerDoublePage',
     Frontend_Classic_Settings_ViewerDoublePageInfo = 'Frontend_Classic_Settings_ViewerDoublePageInfo',
 }
-// [SECTION]: Frontend BarelyFluid
+// [SECTION]: Frontend: FluentCore
 export enum VariantResourceKey {
-    Frontend_BarelyFluid_TitleBar_CloseSettingsButton_Label = 'Frontend_BarelyFluid_TitleBar_CloseSettingsButton_Label',
+    Frontend_FluentCore_TitleBar_CloseSettingsButton_Label = 'Frontend_FluentCore_TitleBar_CloseSettingsButton_Label',
 
-    Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description = 'Frontend_BarelyFluid_WebsitePlugin_UpdateEntriesButton_Description',
-    Frontend_BarelyFluid_WebsitePlugin_BusyStatus_Description = 'Frontend_BarelyFluid_WebsitePlugin_BusyStatus_Description',
-    Frontend_BarelyFluid_WebsitePlugin_AddFavoriteButton_Description = 'Frontend_BarelyFluid_WebsitePlugin_AddFavoriteButton_Description',
-    Frontend_BarelyFluid_WebsitePlugin_RemoveFavoriteButton_Description = 'Frontend_BarelyFluid_WebsitePlugin_RemoveFavoriteButton_Description',
-    Frontend_BarelyFluid_WebsitePlugin_OpenSettingsButton_Description = 'Frontend_BarelyFluid_WebsitePlugin_OpenSettingsButton_Description',
-    Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder = 'Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Placeholder',
-    Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label = 'Frontend_BarelyFluid_WebsitePlugin_SearchTextbox_Label',
+    Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description = 'Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description',
+    Frontend_FluentCore_WebsiteSelect_BusyStatus_Description = 'Frontend_FluentCore_WebsiteSelect_BusyStatus_Description',
+    Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description = 'Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description',
+    Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description = 'Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description',
+    Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description = 'Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description',
+    Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder = 'Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder',
 
-    Frontend_BarelyFluid_MediaContainer_UpdateEntriesButton_Description = 'Frontend_BarelyFluid_MediaContainer_UpdateEntriesButton_Description',
-    Frontend_BarelyFluid_MediaContainer_BusyStatus_Description = 'Frontend_BarelyFluid_MediaContainer_BusyStatus_Description',
-    Frontend_BarelyFluid_MediaContainer_AddBookmarkButton_Description = 'Frontend_BarelyFluid_MediaContainer_AddBookmarkButton_Description',
-    Frontend_BarelyFluid_MediaContainer_RemoveBookmarkButton_Description = 'Frontend_BarelyFluid_MediaContainer_RemoveBookmarkButton_Description',
-    Frontend_BarelyFluid_MediaContainer_PasteClipboardButton_Description = 'Frontend_BarelyFluid_MediaContainer_PasteClipboardButton_Description',
-    Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder = 'Frontend_BarelyFluid_MediaContainer_SearchTextbox_Placeholder',
-    Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label = 'Frontend_BarelyFluid_MediaContainer_SearchTextbox_Label',
+    Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description = 'Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description',
+    Frontend_FluentCore_MediaTitleSelect_BusyStatus_Description = 'Frontend_FluentCore_MediaTitleSelect_BusyStatus_Description',
+    Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description = 'Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description',
+    Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description = 'Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description',
+    Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description = 'Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description',
+    Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder = 'Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder',
 
-    //Frontend_BarelyFluid_ = '',
+    Frontend_FluentCore_MediaItemList_PreviewButton_Description = 'Frontend_FluentCore_MediaItemList_PreviewButton_Description',
+    Frontend_FluentCore_MediaItemList_DownloadButton_Description = 'Frontend_FluentCore_MediaItemList_DownloadButton_Description',
+
+    Frontend_FluentCore_SearchBox_ClearButton_Description = 'Frontend_FluentCore_SearchBox_ClearButton_Description',
+    Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description = 'Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description',
+    Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description = 'Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description',
+
+    //Frontend_FluentCore_ = '',
 }
 
 // [SECTION]: Engine
