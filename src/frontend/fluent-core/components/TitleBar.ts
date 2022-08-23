@@ -1,4 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import type { SettingsDialog } from './settings/SettingsDialog';
 import S from '../services/StateService';
 
 // See: https://icon-sets.iconify.design/fluent/
@@ -64,7 +65,7 @@ const styles: ElementStyles = css`
 
 const template: ViewTemplate<TitleBar> = html`
     <div id="menu">
-        <fluent-button appearance="stealth" @click=${model => model.settings = true}>${IconMenu}</fluent-button>
+        <fluent-button appearance="stealth" @click=${model => model.ShowGlobalSettingsDialog()}>${IconMenu}</fluent-button>
         <!--
         <fluent-button appearance="stealth">${IconBookmarkList}</fluent-button>
         <fluent-button appearance="stealth">${IconDownloadManager}</fluent-button>
@@ -76,7 +77,7 @@ const template: ViewTemplate<TitleBar> = html`
         <fluent-anchor appearance="stealth" @click="${model => model.Maximize()}" :innerHTML=${model => model.maximized ? IconRestore : IconMaximize}></fluent-anchor>
         <fluent-anchor id="close" appearance="stealth" @click=${model => model.Close()}>${IconClose}</fluent-anchor>
     </div>
-    <fluent-settings-dialog :hidden=${model => !model.settings}></fluent-settings-dialog>
+    <fluent-settings-dialog id="settings" :hidden=${model => !model.settings}></fluent-settings-dialog>
 `;
 
 @customElement({ name: 'fluent-titlebar', template, styles })
@@ -84,6 +85,11 @@ export class TitleBar extends FASTElement {
 
     @observable maximized = false;
     @observable settings = false;
+
+    public ShowGlobalSettingsDialog() {
+        const dialog = this.shadowRoot.querySelector<SettingsDialog>('#settings');
+        dialog.Show(...HakuNeko.SettingsManager.OpenScope());
+    }
 
     public Minimize(): void {
         console.log('Minimize ...');
