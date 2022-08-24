@@ -13,6 +13,7 @@ import IconClose from '@fluentui/svg-icons/icons/dismiss_square_20_filled.svg?ra
 import IconMenu from '@vscode/codicons/src/icons/menu.svg?raw';
 import IconBookmarkList from '@fluentui/svg-icons/icons/bookmark_multiple_20_regular.svg?raw'; // star_line_horizontal_3_20_regular
 import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw'; // arrow_swap_2-_regular
+import IconSettings from '@vscode/codicons/src/icons/settings.svg?raw';
 import IconMinimize from '@vscode/codicons/src/icons/chrome-minimize.svg?raw';
 import IconMaximize from '@vscode/codicons/src/icons/chrome-maximize.svg?raw';
 import IconRestore from '@vscode/codicons/src/icons/chrome-restore.svg?raw';
@@ -33,7 +34,7 @@ const styles: ElementStyles = css`
     }
 
     #menu {
-        display: flex;
+        display: block;
     }
 
     #title {
@@ -61,15 +62,43 @@ const styles: ElementStyles = css`
     #settings-dialog {
         z-index: 2147483647;
     }
+
+    #menu-overlay {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 2147483647;
+    }
+
+    #menu-popup {
+        display: none;
+        position: absolute;
+        z-index: 2147483647;
+    }
 `;
 
 const template: ViewTemplate<TitleBar> = html`
     <div id="menu">
-        <fluent-button appearance="stealth" @click=${model => model.ShowGlobalSettingsDialog()}>${IconMenu}</fluent-button>
-        <!--
-        <fluent-button appearance="stealth">${IconBookmarkList}</fluent-button>
-        <fluent-button appearance="stealth">${IconDownloadManager}</fluent-button>
-        -->
+        <fluent-button id="menu-button" appearance="stealth" @click=${model => model.popup = !model.popup}>${IconMenu}</fluent-button>
+        <div id="menu-overlay" style="display: ${model => model.popup ? 'block' : 'none'}" @click=${model => model.popup = false}></div>
+        <fluent-menu id="menu-popup" style="display: ${model => model.popup ? 'block' : 'none'}">
+            <fluent-menu-item role="menuitemcheckbox">
+                <div slot="start">${IconBookmarkList}</div> LOCALE:Menu_Bookmarks
+            </fluent-menu-item>
+            <fluent-menu-item role="menuitemcheckbox">
+                <div slot="start">${IconDownloadManager}</div> LOCALE:Menu_Downloads
+            </fluent-menu-item>
+            <fluent-divider></fluent-divider>
+            <fluent-menu-item @click=${model => model.ShowGlobalSettingsDialog()}>
+                <div slot="start">${IconSettings}</div> LOCALE:Menu_Settings
+            </fluent-menu-item>
+            <fluent-menu-item @click=${model => model.ShowImportDialog()}>
+                LOCALE:Menu_ImportBookmarks
+            </fluent-menu-item>
+        </fluent-menu>
     </div>
     <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
     <div id="controls">
@@ -85,10 +114,17 @@ export class TitleBar extends FASTElement {
 
     @observable maximized = false;
     @observable settings = false;
+    @observable popup = false;
 
     public ShowGlobalSettingsDialog() {
+        this.popup = false;
         const dialog = this.shadowRoot.querySelector<SettingsDialog>('#settings');
         dialog.Show(...HakuNeko.SettingsManager.OpenScope());
+    }
+
+    public ShowImportDialog()
+    {
+        this.popup = false;
     }
 
     public Minimize(): void {
