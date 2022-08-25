@@ -7,7 +7,13 @@ const styles: ElementStyles = css`
         gap: calc(var(--design-unit) * 1px);
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: max-content minmax(0, 1fr);
+        grid-template-rows: min-content minmax(0, 1fr);
+    }
+
+    #searchcontrol {
+        padding: calc(var(--base-height-multiplier) * 1px);
+        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
+        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
     }
 
     ul#entries {
@@ -54,9 +60,9 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<BookmarkList> = html`
-    <div id="searchcontrol">
-        <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
-        <fluent-divider></fluent-divider>
+    <div>
+        <div>[ LOCALE:Bookmarks ]</div>
+        <fluent-searchbox id="searchcontrol" placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <ul id="entries">
         ${repeat(model => model.entries, listitem)}
