@@ -7,7 +7,11 @@ const styles: ElementStyles = css`
         gap: calc(var(--design-unit) * 1px);
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: min-content minmax(0, 1fr);
+        grid-template-rows: min-content min-content minmax(0, 1fr);
+    }
+
+    #header {
+        padding: calc(var(--base-height-multiplier) * 1px);
     }
 
     #searchcontrol {
@@ -60,9 +64,9 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<BookmarkList> = html`
-    <div>
-        <div>[ LOCALE:Bookmarks ]</div>
-        <fluent-searchbox id="searchcontrol" placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+    <div id="header">[ LOCALE:Bookmarks ]</div>
+    <div id="searchcontrol">
+        <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <ul id="entries">
         ${repeat(model => model.entries, listitem)}

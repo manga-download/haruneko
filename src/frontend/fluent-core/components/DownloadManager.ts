@@ -7,7 +7,11 @@ const styles: ElementStyles = css`
         gap: calc(var(--design-unit) * 1px);
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: min-content minmax(0, 1fr);
+        grid-template-rows: min-content min-content minmax(0, 1fr);
+    }
+
+    #header {
+        padding: calc(var(--base-height-multiplier) * 1px);
     }
 
     #searchcontrol {
@@ -66,9 +70,9 @@ const listitem: ViewTemplate<number> = html`
 `;
 
 const template: ViewTemplate<DownloadManager> = html`
-    <div>
-        <div>[ LOCALE:Downloads ]</div>
-        <fluent-searchbox id="searchcontrol" placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+    <div id="header">[ LOCALE:Downloads ]</div>
+    <div id="searchcontrol">
+        <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <ul id="entries">
         ${repeat(model => model.entries, listitem)}
@@ -89,7 +93,7 @@ export class DownloadManager extends FASTElement {
         //HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
     }
 
-    @observable entries: number[] = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ]; // HakuNeko.BookmarkPlugin.Entries;
+    @observable entries: number[] = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]; // HakuNeko.BookmarkPlugin.Entries;
     @observable match: (text: string) => boolean = () => true;
     matchChanged() {
         this.FilterEntries();
