@@ -17,31 +17,39 @@ const styles: ElementStyles = css`
     }
 
     #titlebar {
-        grid-column: 1 / -1;
     }
 
     #panel {
         gap: calc(var(--base-height-multiplier) * 1px);
         margin: calc(var(--base-height-multiplier) * 1px);
         display: grid;
-        grid-template-columns: minmax(240px, 320px) 1fr;
-        grid-template-rows: min-content min-content minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr);
+        grid-template-columns: minmax(240px, 2fr) 3fr;
     }
 
     #sidepanel {
-        grid-row: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        gap: calc(var(--base-height-multiplier) * 1px);
+    }
+
+    #mainpanel {
         gap: calc(var(--base-height-multiplier) * 1px);
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: min-content min-content minmax(0, 1fr);
     }
 
     #bookmark-list {
+        flex: 1;
+        min-height: 0;
         display: block;
         border: 1px dotted green;
     }
 
     #download-manager {
+        flex: 1;
+        min-height: 0;
         display: block;
         border: 1px dotted blue;
     }
@@ -56,15 +64,17 @@ const template: ViewTemplate<App> = html`
     <div id="panel">
         <div id="sidepanel">
             <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
-            <div id="download-manager">[ Downloads ]<br>---<br>---<br>---</div>
+            <fluent-download-manager id="download-manager"></fluent-download-manager>
         </div>
-        <fluent-website-select id="website-select" :selected=${model => model.website}
-            @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
-            @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}></fluent-website-select>
-        <fluent-media-title-select id="media-select" :entries=${model => model.titles}
-            @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
-            @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}></fluent-media-title-select>
-        <fluent-media-item-list id="content" :entries=${model => model.items}></fluent-media-item-list>
+        <div id="mainpanel">
+            <fluent-website-select id="website-select" :selected=${model => model.website}
+                @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
+                @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}></fluent-website-select>
+            <fluent-media-title-select id="media-select" :entries=${model => model.titles}
+                @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
+                @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}></fluent-media-title-select>
+            <fluent-media-item-list id="content" :entries=${model => model.items}></fluent-media-item-list>
+        </div>
     </div>
 `;
 

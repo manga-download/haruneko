@@ -12,6 +12,8 @@ const styles: ElementStyles = css`
 
     #header {
         padding: calc(var(--base-height-multiplier) * 1px);
+        background-color: var(--neutral-layer-2);
+        font-weight: bold;
     }
 
     #searchcontrol {
