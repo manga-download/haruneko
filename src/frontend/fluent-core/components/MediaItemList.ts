@@ -62,11 +62,16 @@ const styles: ElementStyles = css`
     }
 
     ul#entries li .controls {
+        visibility: hidden;
         display: flex;
     }
 
     ul#entries li:hover {
         background-color: var(--neutral-fill-hover);
+    }
+
+    ul#entries li:hover .controls {
+        visibility: visible;
     }
 `;
 
