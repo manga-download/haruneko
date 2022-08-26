@@ -43,14 +43,12 @@ const styles: ElementStyles = css`
     #bookmark-list {
         flex: 1;
         min-height: 0;
-        display: block;
         border: 1px dotted green;
     }
 
     #download-manager {
         flex: 1;
         min-height: 0;
-        display: block;
         border: 1px dotted blue;
     }
 

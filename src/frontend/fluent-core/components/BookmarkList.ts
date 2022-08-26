@@ -4,7 +4,6 @@ import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
 const styles: ElementStyles = css`
     :host {
-        gap: calc(var(--design-unit) * 1px);
         display: grid;
         grid-template-columns: auto;
         grid-template-rows: min-content min-content minmax(0, 1fr);

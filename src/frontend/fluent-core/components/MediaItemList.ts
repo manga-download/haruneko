@@ -16,7 +16,6 @@ import IconDownload from '@fluentui/svg-icons/icons/arrow_circle_down_20_regular
 
 const styles: ElementStyles = css`
     :host {
-        gap: calc(var(--design-unit) * 1px);
         display: grid;
         grid-template-columns: auto;
         grid-template-rows: min-content minmax(0, 1fr);
