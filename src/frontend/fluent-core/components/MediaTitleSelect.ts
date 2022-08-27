@@ -3,7 +3,7 @@ import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import S from '../services/StateService';
 
-import IconSynchronize from '@vscode/codicons/src/icons/sync.svg?raw';
+import IconSynchronize from '@vscode/codicons/src/icons/refresh.svg?raw'; // sync.svg
 import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.svg?raw';
 //import IconAnime from '@fluentui/svg-icons/icons/video_clip_20_regular.svg?raw';
 //import IconManga from '@fluentui/svg-icons/icons/image_multiple_20_regular.svg?raw';

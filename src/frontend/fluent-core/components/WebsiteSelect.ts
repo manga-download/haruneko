@@ -2,7 +2,7 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
-import IconSynchronize from '@vscode/codicons/src/icons/sync.svg?raw';
+import IconSynchronize from '@vscode/codicons/src/icons/refresh.svg?raw'; // sync.svg
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
 //import IconFavorite from '@fluentui/svg-icons/icons/star_20_regular.svg?raw';
 import IconAddFavorite from '@fluentui/svg-icons/icons/star_off_20_regular.svg?raw';
