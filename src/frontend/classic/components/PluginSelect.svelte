@@ -15,11 +15,10 @@
         Settings,
         Star,
         StarFilled,
+        ContentDeliveryNetwork,
     } from 'carbon-icons-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
     // UI: Components
     import Chip from '../lib/Tag.svelte';
     import { Tag, Tags } from '../../../engine/Tags';
@@ -165,8 +164,8 @@
             { key: 'tags', value: 'Tags' },
             { key: 'overflow', empty: true },
         ]}
-        pageSize={pagination.pageSize}
-        page={pagination.page}
+        bind:pageSize={pagination.pageSize}
+        bind:page={pagination.page}
         rows={filteredPluginlist}
         on:click:row={(event) => {
             $selectedPlugin = event.detail.overflow;
@@ -244,6 +243,8 @@
                         size="small"
                         kind="secondary"
                         tooltipPosition="left"
+                        icon={ContentDeliveryNetwork}
+                        iconDescription="Open website URL"
                         on:click={(e) => {
                             e.stopPropagation();
                         }}
@@ -254,6 +255,7 @@
     </DataTable>
     <Pagination
         bind:pageSize={pagination.pageSize}
+        bind:page={pagination.page}
         totalItems={pagination.totalItems}
         pageSizes={pagination.pageSizes}
     />
