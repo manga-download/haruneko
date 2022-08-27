@@ -15,8 +15,8 @@
         "test:websites": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --config=test/jest.websites.js",
         "serve:web-dev": "vite --port=3000 --strictPort",
         "serve:web-prod": "npm run build:web && vite preview --port=5000 --strictPort",
-        "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw build.app",
-        "launch:app-prod": "npm run build:app -- --url=http://localhost:5000 && nw build.app"
+        "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw ./build.app",
+        "launch:app-prod": "npm run build:app -- --url=http://localhost:5000 && nw ./build.app"
     },
     "engines": {
         "node": ">=16.13.0",
@@ -45,7 +45,7 @@
         "@vitejs/plugin-react": "^1.3.2",
         "@vitejs/plugin-vue": "^2.3.3",
         "@vscode/codicons": "^0.0.32",
-        "carbon-components-svelte": "^0.67.0",
+        "carbon-components-svelte": "^0.70.1",
         "carbon-icons-svelte": "^11.1.0",
         "eslint": "^8.19.0",
         "fuse.js": "^6.6.2",
@@ -55,7 +55,7 @@
         "jest-mock-extended": "^2.0.6",
         "jsdom": "^20.0.0",
         "lit": "^2.2.7",
-        "nw": "0.66.0-sdk",
+        "nw": "0.67.1-sdk",
         "plist": "^3.0.5",
         "puppeteer-core": "^15.3.1",
         "react": "^18.2.0",
