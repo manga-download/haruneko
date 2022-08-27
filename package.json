@@ -15,8 +15,8 @@
         "test:websites": "npm run build:web && npm run build:app -- --url=http://localhost:5000 && jest --runInBand --config=test/jest.websites.js",
         "serve:web-dev": "vite --port=3000 --strictPort",
         "serve:web-prod": "npm run build:web && vite preview --port=5000 --strictPort",
-        "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw build.app",
-        "launch:app-prod": "npm run build:app -- --url=http://localhost:5000 && nw build.app"
+        "launch:app-dev": "npm run build:app -- --url=http://localhost:3000 && nw ./build.app",
+        "launch:app-prod": "npm run build:app -- --url=http://localhost:5000 && nw ./build.app"
     },
     "engines": {
         "node": ">=16.13.0",
@@ -51,7 +51,7 @@
         "jest-mock-extended": "^2.0.6",
         "jsdom": "^20.0.0",
         "lit": "^2.2.7",
-        "nw": "0.66.0-sdk",
+        "nw": "0.67.1-sdk",
         "plist": "^3.0.5",
         "puppeteer-core": "^15.3.1",
         "react": "^18.2.0",
