@@ -1,179 +1,52 @@
 <script lang="ts">
     import {
-        InlineLoading,
         StructuredList,
-        StructuredListRow,
-        StructuredListCell,
         StructuredListBody,
-    } from "carbon-components-svelte";
+    } from 'carbon-components-svelte';
+    import { onMount, onDestroy } from 'svelte';
 
-    import {TrashCan} from "carbon-icons-svelte";
+    import type { IDownloadTask } from '../../../engine/DownloadTask';
+    import Job from './Job.svelte';
 
-    interface Job {
-        type: string;
-        status: any;
-        context: string;
-        contextDetail: string;
-        text: string;
+    let jobs: IDownloadTask[] = [];
+    HakuNeko.DownloadManager.GetTasks().then((data) => (jobs = data));
+
+    async function OnTasksChangedCallback() {
+        jobs = await HakuNeko.DownloadManager.GetTasks();
     }
-    let jobs: Job[] = [];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "active",
-            context: "connector1",
-            contextDetail: "Manga1",
-            text: "4/32 images ...",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "inactive",
-            context: "connector2",
-            contextDetail: "Manga1",
-            text: "cancelled",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "finished",
-            context: "connector1",
-            contextDetail: "Manga2",
-            text: "32/32 images finished",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "error",
-            context: "connector1",
-            contextDetail: "Manga1",
-            text: "4/32 images error",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "finished",
-            context: "connector1",
-            contextDetail: "Manga2",
-            text: "32/32 images finished",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "error",
-            context: "connector1",
-            contextDetail: "Manga1",
-            text: "4/32 images error",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "finished",
-            context: "connector1",
-            contextDetail: "Manga2",
-            text: "32/32 images finished",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "error",
-            context: "connector1",
-            contextDetail: "Manga1",
-            text: "4/32 images error",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "finished",
-            context: "connector1",
-            contextDetail: "Manga2",
-            text: "32/32 images finished",
-        },
-    ];
-    jobs = [
-        ...jobs,
-        {
-            type: "Chapter",
-            status: "error",
-            context: "connector1",
-            contextDetail: "Manga1",
-            text: "4/32 images error",
-        },
-    ];
+
+    onMount(async () => {
+        OnTasksChangedCallback();
+        HakuNeko.DownloadManager.TasksAdded.Subscribe(OnTasksChangedCallback);
+        HakuNeko.DownloadManager.TasksRemoved.Subscribe(OnTasksChangedCallback);
+    });
+    onDestroy(() => {
+        HakuNeko.DownloadManager.TasksAdded.Unsubscribe(OnTasksChangedCallback);
+        HakuNeko.DownloadManager.TasksRemoved.Unsubscribe(
+            OnTasksChangedCallback
+        );
+    });
 </script>
 
 <div id="jobs">
-    <StructuredList>
-        <StructuredListBody>
-            {#each jobs as job}
-                <StructuredListRow class="job">
-                    <StructuredListCell class="type"
-                        >{job.type}</StructuredListCell
-                    >
-                    <StructuredListCell class="context"
-                        >{job.context}</StructuredListCell
-                    >
-                    <StructuredListCell class="contextDetail"
-                        >{job.contextDetail}</StructuredListCell
-                    >
-                    <StructuredListCell class="status {job.type}">
-                        <InlineLoading
-                            status={job.status}
-                            description={job.text}
-                        />
-                    </StructuredListCell>
-                    <StructuredListCell class="action">
-                        {#if job.status === "active"}
-                            <span on:click={() => alert("clicked")}><TrashCan size={20} /></span>
-                        {/if}
-                    </StructuredListCell>
-                </StructuredListRow>
-            {/each}
-        </StructuredListBody>
-    </StructuredList>
+    {#if jobs.length > 0}
+        <StructuredList condensed>
+            <StructuredListBody>
+                {#each jobs as job}
+                    <Job {job} />
+                {/each}
+            </StructuredListBody>
+        </StructuredList>
+    {:else}
+        <div>No tasks in queues</div>
+    {/if}
 </div>
 
 <style>
     #jobs {
         height: 100%;
+        width: 100%;
         overflow-y: scroll;
-    }
-    :global(.job .bx--structured-list-td) {
-        padding: 0;
-    }
-    :global(.job .type) {
-        max-width: 3em;
-        margin-right: 0.25em;
-    }
-    :global(.job .context) {
-        max-width: 8em;
-        margin-right: 0.25em;
-    }
-    :global(.job .contextDetail) {
-        max-width: 8em;
-        margin-right: 0.25em;
-    }
-    :global(.job .action) {
-        max-width: 1em;
-    }
-    :global(.job .status .bx--inline-loading__animation) {
-        height: 1em;
+        overflow-x: hidden;
     }
 </style>
