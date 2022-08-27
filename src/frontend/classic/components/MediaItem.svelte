@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy, createEventDispatcher } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
 
     const dispatch = createEventDispatcher();
@@ -16,20 +16,20 @@
     export let item: IMediaContainer;
     export let selected: Boolean;
     export let display = 'Row';
-    let flag: Promise<FlagType> =
-        HakuNeko.ItemflagManager.GetItemFlagType(item);
-    let flagtype: FlagType;
-    $: flag.then((flag) => (flagtype = flag));
+    let flag: FlagType;
 
     async function OnFlagChangedCallback(
         changedItem: IMediaContainer,
         changedFlag: FlagType
     ) {
-        if (changedItem === item) flagtype = changedFlag;
+        if (changedItem === item) flag = changedFlag;
         else if (changedFlag === FlagType.Current)
-            flagtype = await HakuNeko.ItemflagManager.GetItemFlagType(item);
+            flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
     }
     HakuNeko.ItemflagManager.FlagChanged.Subscribe(OnFlagChangedCallback);
+    onMount(async () => {
+        flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
+    });
     onDestroy(() => {
         HakuNeko.ItemflagManager.FlagChanged.Unsubscribe(OnFlagChangedCallback);
     });
@@ -43,9 +43,9 @@
             ><CloudDownload class="download" /></span
         >
         <span class="view" on:click={() => dispatch('view', item)}>
-            {#if flagtype === FlagType.Viewed}
+            {#if flag === FlagType.Viewed}
                 <ViewFilled />
-            {:else if flagtype === FlagType.Current}
+            {:else if flag === FlagType.Current}
                 <IconBookmarkFilled />
             {:else}
                 <View />
