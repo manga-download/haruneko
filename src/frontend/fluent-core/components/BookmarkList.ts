@@ -3,6 +3,7 @@ import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 //import S from '../services/StateService';
 
 const styles: ElementStyles = css`
+
     :host {
         display: grid;
         grid-template-columns: auto;
@@ -12,6 +13,7 @@ const styles: ElementStyles = css`
     #header {
         padding: calc(var(--base-height-multiplier) * 1px);
         background-color: var(--neutral-layer-2);
+        text-transform: uppercase;
         font-weight: bold;
     }
 
@@ -65,7 +67,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<BookmarkList> = html`
-    <div id="header">[ LOCALE:Bookmarks ]</div>
+    <div id="header">LOCALE:Bookmarks</div>
     <div id="searchcontrol">
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>

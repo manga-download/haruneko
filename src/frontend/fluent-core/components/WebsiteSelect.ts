@@ -11,6 +11,9 @@ import IconRemoveFavorite from '@fluentui/svg-icons/icons/star_20_filled.svg?raw
 const styles: ElementStyles = css`
 
     :host {
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: min-content minmax(0, 1fr);
     }
 
     #heading {
@@ -125,26 +128,24 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<WebsiteSelect> = html`
-    <fluent-card>
-        <div id="heading" @click=${model => model.expanded = !model.expanded}>
-            <img id="logo" src="${model => model.selected?.Icon}"></img>
-            <div id="title">${model => model.selected?.Title ?? '…'}</div>
-            <div id="controls">
-                <div class="hint">${model => model.updating ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>${IconSynchronize}</fluent-button>
-                ${model => model.favorite ? starred : unstarred}
-                <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} @click="${(model, ctx) => model.OpenSettings(ctx.event)}">${IconSettings}</fluent-button>
-            </div>
+    <div id="heading" @click=${model => model.expanded = !model.expanded}>
+        <img id="logo" src="${model => model.selected?.Icon}"></img>
+        <div id="title">${model => model.selected?.Title ?? '…'}</div>
+        <div id="controls">
+            <div class="hint">${model => model.updating ? '┄' : model.selected?.Entries?.length ?? ''}</div>
+            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>${IconSynchronize}</fluent-button>
+            ${model => model.favorite ? starred : unstarred}
+            <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} @click="${(model, ctx) => model.OpenSettings(ctx.event)}">${IconSettings}</fluent-button>
         </div>
-        <div id="dropdown">
-            <div id="searchcontrol">
-                <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
-            </div>
-            <ul id="entries">
-                ${repeat(model => model.entries, listitem)}
-            </ul>
+    </div>
+    <div id="dropdown">
+        <div id="searchcontrol">
+            <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-    </fluent-card>
+        <ul id="entries">
+            ${repeat(model => model.entries, listitem)}
+        </ul>
+    </div>
 `;
 
 @customElement({ name: 'fluent-website-select', template, styles })

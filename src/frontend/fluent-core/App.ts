@@ -20,40 +20,41 @@ const styles: ElementStyles = css`
     }
 
     #panel {
+        display: flex;
+        flex-direction: row;
         gap: calc(var(--base-height-multiplier) * 1px);
         margin: calc(var(--base-height-multiplier) * 1px);
-        display: grid;
-        grid-template-rows: minmax(0, 1fr);
-        grid-template-columns: minmax(240px, 2fr) 3fr;
     }
 
     #sidepanel {
+        flex: 2;
         display: flex;
         flex-direction: column;
         gap: calc(var(--base-height-multiplier) * 1px);
     }
 
     #mainpanel {
+        flex: 3;
         gap: calc(var(--base-height-multiplier) * 1px);
         display: grid;
         grid-template-columns: auto;
         grid-template-rows: min-content min-content minmax(0, 1fr);
     }
 
-    #bookmark-list {
+    #bookmark-list-panel {
         flex: 1;
         min-height: 0;
-        border: 1px dotted green;
+        /*border: 1px dotted green;*/
     }
 
-    #download-manager {
+    #download-manager-panel {
         flex: 1;
         min-height: 0;
-        border: 1px dotted blue;
+        /*border: 1px dotted blue;*/
     }
 
-    #content {
-        border: 1px dotted red;
+    #bookmark-list, #download-manager, #website-select, #media-title-select, #media-item-list {
+        height: 100%;
     }
 `;
 
@@ -61,17 +62,29 @@ const template: ViewTemplate<App> = html`
     <fluent-titlebar id="titlebar"></fluent-titlebar>
     <div id="panel">
         <div id="sidepanel">
-            <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
-            <fluent-download-manager id="download-manager"></fluent-download-manager>
+            <fluent-card id="bookmark-list-panel">
+                <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
+            </fluent-card>
+            <fluent-card id="download-manager-panel">
+                <fluent-download-manager id="download-manager"></fluent-download-manager>
+            </fluent-card>
         </div>
         <div id="mainpanel">
-            <fluent-website-select id="website-select" :selected=${model => model.website}
-                @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
-                @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}></fluent-website-select>
-            <fluent-media-title-select id="media-select" :entries=${model => model.titles}
-                @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
-                @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}></fluent-media-title-select>
-            <fluent-media-item-list id="content" :entries=${model => model.items}></fluent-media-item-list>
+            <fluent-card>
+                <fluent-website-select id="website-select" :selected=${model => model.website}
+                    @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
+                    @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}>
+                </fluent-website-select>
+            </fluent-card>
+            <fluent-card>
+                <fluent-media-title-select id="media-title-select" :entries=${model => model.titles}
+                    @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
+                    @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}>
+                </fluent-media-title-select>
+            </fluent-card>
+            <fluent-card>
+                <fluent-media-item-list id="media-item-list" :entries=${model => model.items}></fluent-media-item-list>
+            </fluent-card>
         </div>
     </div>
 `;
@@ -88,7 +101,7 @@ export default class App extends FASTElement {
     }
 
     private get mediaselect() {
-        return this.shadowRoot.querySelector('#media-select') as MediaTitleSelect;
+        return this.shadowRoot.querySelector('#media-title-select') as MediaTitleSelect;
     }
 
     public WebsiteSelectedChanged(event: Event) {

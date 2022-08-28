@@ -13,7 +13,11 @@ import IconAddBookmark from '@fluentui/svg-icons/icons/bookmark_off_20_regular.s
 import IconRemoveBookmark from '@fluentui/svg-icons/icons/bookmark_20_filled.svg?raw';
 
 const styles: ElementStyles = css`
+
     :host {
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: min-content minmax(0, 1fr);
     }
 
     #heading {
@@ -128,26 +132,24 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<MediaTitleSelect> = html`
-    <fluent-card>
-        <div id="heading" @click=${model => model.expanded = !model.expanded}>
-            <img id="logo" src="${model => model.selected?.Icon}"></img>
-            <div id="title">${model => model.selected?.Title ?? '…'}</div>
-            <div id="controls">
-                <div class="hint">${model => model.updating || model.pasting ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-                <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating || model.pasting} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>${IconSynchronize}</fluent-button>
-                ${model => model.bookmark ? starred : unstarred}
-                <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}">${IconClipboard}</fluent-button>
-            </div>
+    <div id="heading" @click=${model => model.expanded = !model.expanded}>
+        <img id="logo" src="${model => model.selected?.Icon}"></img>
+        <div id="title">${model => model.selected?.Title ?? '…'}</div>
+        <div id="controls">
+            <div class="hint">${model => model.updating || model.pasting ? '┄' : model.selected?.Entries?.length ?? ''}</div>
+            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating || model.pasting} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>${IconSynchronize}</fluent-button>
+            ${model => model.bookmark ? starred : unstarred}
+            <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}">${IconClipboard}</fluent-button>
         </div>
-        <div id="dropdown">
-            <div id="searchcontrol">
-                <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
-            </div>
-            <ul id="entries">
-                ${repeat(model => model.filtered, listitem)}
-            </ul>
+    </div>
+    <div id="dropdown">
+        <div id="searchcontrol">
+            <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-    </fluent-card>
+        <ul id="entries">
+            ${repeat(model => model.filtered, listitem)}
+        </ul>
+    </div>
 `;
 
 @customElement({ name: 'fluent-media-title-select', template, styles })

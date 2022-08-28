@@ -15,10 +15,18 @@ import IconDownload from '@fluentui/svg-icons/icons/arrow_circle_down_20_regular
 //import IconCheckBoxIndeterminate from '@fluentui/svg-icons/icons/checkbox_indeterminate_20_regular.svg?raw';
 
 const styles: ElementStyles = css`
+
     :host {
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: min-content minmax(0, 1fr);
+        grid-template-rows: min-content min-content minmax(0, 1fr);
+    }
+
+    #header {
+        padding: calc(var(--base-height-multiplier) * 1px);
+        background-color: var(--neutral-layer-2);
+        text-transform: uppercase;
+        font-weight: bold;
     }
 
     #searchcontrol {
@@ -86,6 +94,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<MediaItemList> = html`
+    <div id="header">LOCALE:MediaItemList</div>
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
