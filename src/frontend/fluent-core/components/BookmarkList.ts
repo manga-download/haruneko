@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
-//import S from '../services/StateService';
+import S from '../services/StateService';
 
 const styles: ElementStyles = css`
 
@@ -67,7 +67,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<BookmarkList> = html`
-    <div id="header">LOCALE:Bookmarks</div>
+    <div id="header">${() => S.Locale.Frontend_FluentCore_Panel_BookmarkList_Heading()}</div>
     <div id="searchcontrol">
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>

@@ -1,6 +1,7 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
 import type { WebsiteSelect, MediaTitleSelect } from './components/_index';
+import S from './services/StateService';
 
 const styles: ElementStyles = css`
     :host {
@@ -61,11 +62,11 @@ const styles: ElementStyles = css`
 const template: ViewTemplate<App> = html`
     <fluent-titlebar id="titlebar"></fluent-titlebar>
     <div id="panel">
-        <div id="sidepanel">
-            <fluent-card id="bookmark-list-panel">
+        <div id="sidepanel" style="display: ${() => S.SettingPanelBookmarks || S.SettingPanelDownloads ? 'flex' : 'none'}">
+            <fluent-card id="bookmark-list-panel" style="display: ${() => S.SettingPanelBookmarks ? 'block' : 'none'}">
                 <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
             </fluent-card>
-            <fluent-card id="download-manager-panel">
+            <fluent-card id="download-manager-panel" style="display: ${() => S.SettingPanelDownloads ? 'block' : 'none'}">
                 <fluent-download-manager id="download-manager"></fluent-download-manager>
             </fluent-card>
         </div>
@@ -96,19 +97,19 @@ export default class App extends FASTElement {
     @observable titles: IMediaContainer[];
     @observable items: IMediaContainer[];
 
-    private get websiteselect() {
+    private get elementWebsiteSelect() {
         return this.shadowRoot.querySelector('#website-select') as WebsiteSelect;
     }
 
-    private get mediaselect() {
+    private get elementMediaSelect() {
         return this.shadowRoot.querySelector('#media-title-select') as MediaTitleSelect;
     }
 
     public WebsiteSelectedChanged(event: Event) {
         const sender = event.currentTarget as WebsiteSelect;
         this.titles = sender?.selected?.Entries as IMediaContainer[];
-        if(!sender?.selected?.IsSameAs(this.mediaselect.selected?.Parent)) {
-            this.mediaselect.selected = undefined;
+        if(!sender?.selected?.IsSameAs(this.elementMediaSelect.selected?.Parent)) {
+            this.elementMediaSelect.selected = undefined;
         }
     }
 
@@ -121,8 +122,8 @@ export default class App extends FASTElement {
         const sender = event.currentTarget as MediaTitleSelect;
         this.items = sender?.selected?.Entries as IMediaContainer[];
         // TODO: Setting website e.g. due to paste may lead to livelock ...
-        if(sender?.selected && !sender?.selected?.Parent?.IsSameAs(this.websiteselect.selected)) {
-            this.websiteselect.selected = sender?.selected?.Parent;
+        if(sender?.selected && !sender?.selected?.Parent?.IsSameAs(this.elementWebsiteSelect.selected)) {
+            this.elementWebsiteSelect.selected = sender?.selected?.Parent;
         }
     }
 
@@ -133,7 +134,7 @@ export default class App extends FASTElement {
 
     public BookmarkClicked(event: Event) {
         const bookmark = (event as CustomEvent<IMediaContainer>).detail;
-        this.websiteselect.selected = bookmark?.Parent;
-        this.mediaselect.selected = bookmark;
+        this.elementWebsiteSelect.selected = bookmark?.Parent;
+        this.elementMediaSelect.selected = bookmark;
     }
 }

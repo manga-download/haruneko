@@ -94,7 +94,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<MediaItemList> = html`
-    <div id="header">LOCALE:MediaItemList</div>
+    <div id="header">${() => S.Locale.Frontend_FluentCore_Panel_MediaItems_Heading()}</div>
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>

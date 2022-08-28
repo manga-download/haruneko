@@ -41,8 +41,24 @@ export const en_US: IVariantResource = {
     Frontend_FluentCore_Label: 'Fluent Core',
     Frontend_FluentCore_Description: 'A simple frontend with no bells and whistles, especially for developers to quickly verify essential functionality',
     //
+    Frontend_FluentCore_Settings_ThemeLuminance_Label: 'Theme Luminance',
+    Frontend_FluentCore_Settings_ThemeLuminance_Description: 'Change the lightness/darkness of the theme',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: 'Bookmark List',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: 'Download Manager',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: 'Toggle the visibility of the download manager',
+    //
+    Frontend_FluentCore_Menu_OpenSettings_Label: 'Settings...',
+    Frontend_FluentCore_Menu_OpenSettings_Description: 'Edit the application settings',
+    Frontend_FluentCore_Menu_ImportBookmarks_Label: 'Import Bookmarks...',
+    Frontend_FluentCore_Menu_ImportBookmarks_Description: 'Open the dialog to import bookmarks from previous version(s)',
+    //
     Frontend_FluentCore_SettingsDialog_Title: 'Settings',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label: 'Done',
+    //
+    Frontend_FluentCore_Panel_BookmarkList_Heading: 'Bookmarks',
+    Frontend_FluentCore_Panel_DownloadManager_Heading: 'Downloads',
+    Frontend_FluentCore_Panel_MediaItems_Heading: 'Media Items',
     //
     Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description: 'Click to fetch the list of all available titles from the website,\ndepending on the number of required requests this may take a while',
     Frontend_FluentCore_WebsiteSelect_BusyStatus_Description: 'Fetching the list of all available titles,\ndepending on the number of required requests this may take a while',

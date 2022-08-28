@@ -85,18 +85,21 @@ const template: ViewTemplate<TitleBar> = html`
         <fluent-button id="menu-button" appearance="stealth" @click=${model => model.popup = !model.popup}>${IconMenu}</fluent-button>
         <div id="menu-overlay" style="display: ${model => model.popup ? 'block' : 'none'}" @click=${model => model.popup = false}></div>
         <fluent-menu id="menu-popup" style="display: ${model => model.popup ? 'block' : 'none'}">
-            <fluent-menu-item role="menuitemcheckbox">
-                <div slot="start">${IconBookmarkList}</div> LOCALE:Menu_Bookmarks
+            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description()}" :checked=${() => S.SettingPanelBookmarks} @change=${() => S.SettingPanelBookmarks= !S.SettingPanelBookmarks}>
+                <div slot="start">${IconBookmarkList}</div>
+                ${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label()}
             </fluent-menu-item>
-            <fluent-menu-item role="menuitemcheckbox">
-                <div slot="start">${IconDownloadManager}</div> LOCALE:Menu_Downloads
+            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description()}" :checked=${() => S.SettingPanelDownloads} @change=${() => S.SettingPanelDownloads = !S.SettingPanelDownloads}>
+                <div slot="start">${IconDownloadManager}</div>
+                ${() => S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
-            <fluent-menu-item @click=${model => model.ShowGlobalSettingsDialog()}>
-                <div slot="start">${IconSettings}</div> LOCALE:Menu_Settings
+            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Description()}" @click=${model => model.ShowGlobalSettingsDialog()}>
+                <div slot="start">${IconSettings}</div>
+                ${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
             </fluent-menu-item>
-            <fluent-menu-item @click=${model => model.ShowImportDialog()}>
-                LOCALE:Menu_ImportBookmarks
+            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ShowImportDialog()}>
+                ${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
             </fluent-menu-item>
         </fluent-menu>
     </div>

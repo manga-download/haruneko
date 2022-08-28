@@ -58,13 +58,30 @@ export enum VariantResourceKey {
     Frontend_Classic_Settings_ViewerDoublePage = 'Frontend_Classic_Settings_ViewerDoublePage',
     Frontend_Classic_Settings_ViewerDoublePageInfo = 'Frontend_Classic_Settings_ViewerDoublePageInfo',
 }
+
 // [SECTION]: Frontend: FluentCore
 export enum VariantResourceKey {
     Frontend_FluentCore_Label = 'Frontend_FluentCore_Label',
     Frontend_FluentCore_Description = 'Frontend_FluentCore_Description',
 
+    Frontend_FluentCore_Settings_ThemeLuminance_Label = 'Frontend_FluentCore_Settings_ThemeLuminance_Label',
+    Frontend_FluentCore_Settings_ThemeLuminance_Description = 'Frontend_FluentCore_Settings_ThemeLuminance_Description',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Label = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Label',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Description = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Description',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Label = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Label',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Description = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Description',
+
+    Frontend_FluentCore_Menu_OpenSettings_Label = 'Frontend_FluentCore_Menu_OpenSettings_Label',
+    Frontend_FluentCore_Menu_OpenSettings_Description = 'Frontend_FluentCore_Menu_OpenSettings_Description',
+    Frontend_FluentCore_Menu_ImportBookmarks_Label = 'Frontend_FluentCore_Menu_ImportBookmarks_Label',
+    Frontend_FluentCore_Menu_ImportBookmarks_Description = 'Frontend_FluentCore_Menu_ImportBookmarks_Description',
+
     Frontend_FluentCore_SettingsDialog_Title = 'Frontend_FluentCore_SettingsDialog_Title',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label = 'Frontend_FluentCore_SettingsDialog_CloseButton_Label',
+
+    Frontend_FluentCore_Panel_BookmarkList_Heading = 'Frontend_FluentCore_Panel_BookmarkList_Heading',
+    Frontend_FluentCore_Panel_DownloadManager_Heading = 'Frontend_FluentCore_Panel_DownloadManager_Heading',
+    Frontend_FluentCore_Panel_MediaItems_Heading = 'Frontend_FluentCore_Panel_MediaItems_Heading',
 
     Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description = 'Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description',
     Frontend_FluentCore_WebsiteSelect_BusyStatus_Description = 'Frontend_FluentCore_WebsiteSelect_BusyStatus_Description',
