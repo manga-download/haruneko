@@ -27,9 +27,6 @@
         (resolve) => (resolveFinishLoading = resolve)
     );
 
-    // UI
-    let isSideNavOpen = false;
-
     let app: HTMLElement;
 
     onMount(async () => {
@@ -61,7 +58,7 @@
 <UserMessage />
 
 <Theme theme={$ThemeValue}>
-    <AppBar bind:isSideNavOpen on:home={() => ($selectedItem = null)} />
+    <AppBar on:home={() => ($selectedItem = null)} />
     <Content id="hakunekoapp">
         <MediaSelect />
         <MediaItemSelect />

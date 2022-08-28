@@ -37,7 +37,7 @@ export class ItemflagManager {
     /* Retrieves the flags of a media */
     public async GetContainerItemsFlags(container: IMediaContainer): Promise<ItemFlag[]> {
         const storagekey = this.StorageKey(container);
-        if (!this.items.has(storagekey)) this.LoadContainerFlags(container);
+        if (!this.items.has(storagekey)) await this.LoadContainerFlags(container);
         return this.items.get(storagekey);
     }
 
