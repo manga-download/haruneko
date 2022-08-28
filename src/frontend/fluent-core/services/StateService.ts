@@ -11,14 +11,22 @@ const SettingKeys = {
 
 class StateService {
 
-    constructor(private readonly settings = HakuNeko.SettingsManager.OpenScope(SettingKeys.Scope)) {
+    private readonly settings = HakuNeko.SettingsManager.OpenScope(SettingKeys.Scope);
+
+    constructor() {
         HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).ValueChanged.Subscribe(() => this.Locale = GetLocale());
         this.settingPanelBookmarksCheck.ValueChanged.Subscribe((_, args) => this.SettingPanelBookmarks = args);
         this.settingPanelDownloadsCheck.ValueChanged.Subscribe((_, args) => this.SettingPanelDownloads = args);
-        settings.Initialize(
+        this.Initialize();
+    }
+
+    private async Initialize() {
+        await this.settings.Initialize(
             this.settingPanelBookmarksCheck,
             this.settingPanelDownloadsCheck
         );
+        this.SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
+        this.SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     }
 
     @observable Locale = GetLocale();
@@ -27,14 +35,12 @@ class StateService {
     @observable SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
     SettingPanelBookmarksChanged() {
         this.settingPanelBookmarksCheck.Value = this.SettingPanelBookmarks;
-        console.log('Bookmarks Menu:', this.settingPanelBookmarksCheck.Value);
     }
 
     private readonly settingPanelDownloadsCheck = new Check(SettingKeys.PanelDownloads, undefined, undefined, false);
     @observable SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     SettingPanelDownloadsChanged() {
         this.settingPanelDownloadsCheck.Value = this.SettingPanelDownloads;
-        console.log('Downloads Menu:', this.settingPanelDownloadsCheck.Value);
     }
 }
 
