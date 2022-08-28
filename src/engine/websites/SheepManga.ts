@@ -9,7 +9,7 @@ import * as Common from './decorators/Common';
 /**
  * Sample Website Implementation for Developer Testing
  */
- @Common.ImageDirect()
+@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
