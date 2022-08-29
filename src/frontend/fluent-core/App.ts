@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
 import type { WebsiteSelect, MediaTitleSelect } from './components/_index';
 import S from './services/StateService';
@@ -59,17 +59,21 @@ const styles: ElementStyles = css`
     }
 `;
 
+const templateSidePanel: ViewTemplate<App> = html`
+    <div id="sidepanel">
+        <fluent-card id="bookmark-list-panel" style="display: ${() => S.SettingPanelBookmarks ? 'block' : 'none'}">
+            <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
+        </fluent-card>
+        <fluent-card id="download-manager-panel" style="display: ${() => S.SettingPanelDownloads ? 'block' : 'none'}">
+            <fluent-download-manager id="download-manager"></fluent-download-manager>
+        </fluent-card>
+    </div>
+`;
+
 const template: ViewTemplate<App> = html`
     <fluent-titlebar id="titlebar"></fluent-titlebar>
     <div id="panel">
-        <div id="sidepanel" style="display: ${() => S.SettingPanelBookmarks || S.SettingPanelDownloads ? 'flex' : 'none'}">
-            <fluent-card id="bookmark-list-panel" style="display: ${() => S.SettingPanelBookmarks ? 'block' : 'none'}">
-                <fluent-bookmark-list id="bookmark-list" @bookmarkClicked=${(model, ctx) => model.BookmarkClicked(ctx.event)}></fluent-bookmark-list>
-            </fluent-card>
-            <fluent-card id="download-manager-panel" style="display: ${() => S.SettingPanelDownloads ? 'block' : 'none'}">
-                <fluent-download-manager id="download-manager"></fluent-download-manager>
-            </fluent-card>
-        </div>
+        ${when(() => S.SettingPanelBookmarks || S.SettingPanelDownloads, templateSidePanel)}
         <div id="mainpanel">
             <fluent-card>
                 <fluent-website-select id="website-select" :selected=${model => model.website}
