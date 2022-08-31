@@ -129,9 +129,6 @@ export class MediaItemList extends FASTElement {
     }
 
     public async Download(entry: IMediaContainer) {
-        await entry.Update();
-        console.log('DOWNLOAD:', entry.Entries);
-        const first = await (entry.Entries[0] as IMediaItem)?.Fetch(Priority.Low, undefined);
-        console.log('DOWNLOAD [0]:', first?.type, first?.size);
+        HakuNeko.DownloadManager.Enqueue(entry);
     }
 }
