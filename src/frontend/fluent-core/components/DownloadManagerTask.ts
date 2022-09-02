@@ -1,10 +1,30 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
-import type { IDownloadTask, Status } from '../../../engine/DownloadTask';
+import { type IDownloadTask, Status } from '../../../engine/DownloadTask';
+//import S from '../services/StateService';
+
+import IconQueued from '@fluentui/svg-icons/icons/clock_20_regular.svg?raw';
+import IconPaused from '@fluentui/svg-icons/icons/pause_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/debug-paused.svg?raw';
+import IconDownloading from '@fluentui/svg-icons/icons/arrow_circle_down_20_regular.svg?raw'; // '@vscode/codicons/src/icons/arrow-circle-down.svg?raw';
+import IconProcessing from '@fluentui/svg-icons/icons/arrow_sync_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/arrow-circle-down.svg?raw';
+import IconFailed from '@fluentui/svg-icons/icons/error_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/error.svg?raw';
+import IconCompleted from '@fluentui/svg-icons/icons/checkmark_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/pass.svg?raw';
+import IconRemove from '@fluentui/svg-icons/icons/dismiss_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/trash.svg?raw';
+
+const StatusIcons: Record<Status, string> = {
+    [Status.Queued]: IconQueued,
+    [Status.Paused]: IconPaused,
+    [Status.Downloading]: IconDownloading,
+    [Status.Processing]: IconProcessing,
+    [Status.Failed]: IconFailed,
+    [Status.Completed]: IconCompleted,
+};
 
 const styles: ElementStyles = css`
 
     :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        gap: calc(var(--design-unit) * 1px);
         padding: calc(var(--design-unit) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
     }
@@ -23,8 +43,33 @@ const styles: ElementStyles = css`
         gap: calc(var(--design-unit) * 1px);
         display: grid;
         align-items: center;
-        grid-template-columns: min-content  minmax(0, 1fr) min-content;
+        grid-template-columns:  minmax(0, 1fr) min-content min-content;
         white-space: nowrap;
+    }
+
+    .decorator {
+        display: contents;
+    }
+
+    .${Status.Queued} {
+        opacity: 0.5;
+    }
+
+    .${Status.Paused} {
+    }
+
+    .${Status.Downloading} {
+    }
+
+    .${Status.Processing} {
+    }
+
+    .${Status.Failed} {
+        fill: #FF6060;
+    }
+
+    .${Status.Completed} {
+        fill: #20C040;
     }
 `;
 
@@ -32,9 +77,9 @@ const template: ViewTemplate<DownloadManagerTask> = html`
     <div class="mediatitle">${model => model.entry?.Media.Parent.Title}</div>
     <div class="mediaitem">${model => model.entry?.Media.Title}</div>
     <div class="controls">
-        <div>${model => model.status}</div>
         <fluent-progress min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress>
-        <div>[ X ]</div>
+        <div class="decorator ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]}></div>
+        <fluent-button appearance="stealth" title="LOCALE:AbortAndRemoveJobFromQueue" @click=${model => HakuNeko.DownloadManager.Dequeue(model.entry)}>${IconRemove}</fluent-button>
     </div>
 `;
 
@@ -64,11 +109,11 @@ export class DownloadManagerTask extends FASTElement {
     @observable status: Status;
     @observable progress = 0;
 
-    private UpdateStatus = function (_, value?: Status) {
+    private UpdateStatus = function (_: IDownloadTask, value?: Status) {
         this.status = value;
     }.bind(this);
 
-    private UpdateProgress = function (_, value?: number) {
+    private UpdateProgress = function (_: IDownloadTask, value?: number) {
         this.progress = value ?? 0;
     }.bind(this);
 }
