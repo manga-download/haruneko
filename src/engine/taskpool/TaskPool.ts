@@ -12,8 +12,8 @@ export class TaskPool {
 
     /**
      * Create a new task pool.
-     * @param Workers The number of workers for processing tasks (maximum number of tasks processed at the same time). Default: 4
-     * @param RateLimit The maximum throughput for processing tasks. Default: infinite
+     * @param Workers - The number of workers for processing tasks (maximum number of tasks processed at the same time). Default: 4
+     * @param RateLimit - The maximum throughput for processing tasks. Default: infinite
      */
     constructor(public Workers: number = 4, public RateLimit = Unlimited) {
         //setInterval(this.Process.bind(this), 750);

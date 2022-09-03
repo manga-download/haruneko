@@ -34,7 +34,7 @@ const VersionUpgrades = [
 const Version = VersionUpgrades.length;
 
 /**
- * A storage controller that uses the {@link indexedDB} and the {@link File System Access API}.
+ * A storage controller that uses the {@link indexedDB} and the {@link https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API|File System Access API}.
  * It is intended to be used within modern web-browsers.
  */
 export class StorageControllerBrowser implements StorageController {
