@@ -47,28 +47,28 @@ const styles: ElementStyles = css`
         white-space: nowrap;
     }
 
-    .decorator {
+    .status {
         display: contents;
     }
 
-    .${Status.Queued} {
+    .status.${Status.Queued} svg {
         opacity: 0.5;
     }
 
-    .${Status.Paused} {
+    .status.${Status.Paused} svg {
     }
 
-    .${Status.Downloading} {
+    .status.${Status.Downloading} svg {
     }
 
-    .${Status.Processing} {
+    .status.${Status.Processing} svg {
     }
 
-    .${Status.Failed} {
+    .status.${Status.Failed} svg {
         fill: #FF6060;
     }
 
-    .${Status.Completed} {
+    .status.${Status.Completed} svg {
         fill: #20C040;
     }
 `;
@@ -78,7 +78,7 @@ const template: ViewTemplate<DownloadManagerTask> = html`
     <div class="mediaitem">${model => model.entry?.Media.Title}</div>
     <div class="controls">
         <fluent-progress min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress>
-        <div class="decorator ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]}></div>
+        <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]}></div>
         <fluent-button appearance="stealth" title="LOCALE:AbortAndRemoveJobFromQueue" @click=${model => HakuNeko.DownloadManager.Dequeue(model.entry)}>${IconRemove}</fluent-button>
     </div>
 `;
