@@ -24,9 +24,9 @@ const pathname = 'chapterfun.ashx';
 
 /**
  * Extracts the pages from the HTML page of the given {@link chapter}.
- * @param this A reference to the {@link MangaScraper}
- * @param chapter A reference to the {@link Chapter} which contains the pages
- * @param endpoint An URL path providing the protected image link data (for each image)
+ * @param this - A reference to the {@link MangaScraper}
+ * @param chapter - A reference to the {@link Chapter} which contains the pages
+ * @param endpoint - An URL path providing the protected image link data (for each image)
  */
 export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Chapter, endpoint = pathname): Promise<Page[]> {
     const script = `
@@ -72,7 +72,7 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
 
 /**
  * A class decorator for any {@link DecoratableMangaScraper} implementation, that will overwrite the {@link MangaScraper.FetchPages} method with {@link FetchPagesSinglePageScript}.
- * @param endpoint An URL path providing the protected image link data (for each image)
+ * @param endpoint - An URL path providing the protected image link data (for each image)
  */
 export function PagesSinglePageScript(endpoint = pathname) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T): T {

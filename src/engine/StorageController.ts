@@ -38,8 +38,8 @@ export function SanitizeFileName(name: string): string {
         '>' : '＞', // https://unicode-table.com/en/FF1E/
         ':' : '꞉', // https://unicode-table.com/en/A789/, https://unicode-table.com/en/FF1A/, https://unicode-table.com/en/FE55/
         '"' : '＂', // https://unicode-table.com/en/FF02/
-        '/' : '／', // https://unicode-table.com/en/FF0F/
-        '\\': '＼', // https://unicode-table.com/en/FF3C/
+        '/' : '／', // https://unicode-table.com/en/FF0F/, https://unicode-table.com/en/29F8/, https://unicode-table.com/en/2044/
+        '\\': '＼', // https://unicode-table.com/en/FF3C/, https://unicode-table.com/en/29F9/, https://unicode-table.com/en/FE68/, https://unicode-table.com/en/29F5/
         '|' : '｜', // https://unicode-table.com/en/FF5C/
         '?' : '？', // https://unicode-table.com/en/FF1F/, https://unicode-table.com/en/FE56/
         '*' : '＊', // https://unicode-table.com/en/FF0A/

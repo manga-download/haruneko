@@ -21,10 +21,10 @@ const regexPageListEntries = [
  * An extension method for extracting a single manga from the given {@link url} using the given CSS {@link query}.
  * The `pathname` of the given {@link url} will be used as identifier for the extracted manga.
  * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
- * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param provider A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted manga
- * @param url The url from which the manga shall be extracted
- * @param query A CSS query to locate the element from which the manga title shall be extracted
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted manga
+ * @param url - The url from which the manga shall be extracted
+ * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     return Common.FetchMangaCSS.call(this, provider, url, query);
@@ -34,8 +34,8 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * A class decorator that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
  * The `pathname` of the url will be used as identifier for the extracted manga.
  * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
- * @param pattern An expression to check if a manga can be extracted from an url or not
- * @param query A CSS query to locate the element from which the manga title shall be extracted
+ * @param pattern - An expression to check if a manga can be extracted from an url or not
+ * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
     return Common.MangaCSS(pattern, query);
@@ -48,10 +48,10 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
 /**
  * An extension method for extracting multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
  * The range of all {@link path} patterns begins with `1` and is incremented until no more new mangas can be extracted.
- * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param provider A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
- * @param path The path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
- * @param query A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
+ * @param path - The path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
+ * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export async function FetchMangasMultipPageCSS(this: MangaScraper, provider: MangaPlugin, path = pathpaged, query = queryMangaListLinks): Promise<Manga[]> {
     return Common.FetchMangasMultiPageCSS.call(this, provider, path, query);
@@ -60,8 +60,8 @@ export async function FetchMangasMultipPageCSS(this: MangaScraper, provider: Man
 /**
  * A class decorator that adds the ability to extract multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
  * The range of all {@link path} patterns begins with `1` and is incremented until no more new mangas can be extracted.
- * @param path The path pattern relative to the scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
- * @param query A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param path - The path pattern relative to the scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
+ * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export function MangasMultiPageCSS(path: string = pathpaged, query: string = queryMangaListLinks) {
     return Common.MangasMultiPageCSS(path, query);
@@ -76,9 +76,9 @@ const ChapterInfoExtractor = Common.AnchorInfoExtractor();
 /**
  * An extension method for extracting all chapters for the given {@link manga} using the given CSS {@link query}.
  * The chapters are extracted from the composed url based on the `Identifier` of the {@link manga} and the `URI` of the website.
- * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param manga A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
- * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
+ * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
@@ -99,7 +99,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
 /**
  * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
  * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
- * @param query A CSS query to locate the elements from which the chapter identifier and title shall be extracted
+ * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export function ChaptersSinglePageCSS(query: string = queryChapterListLinks) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
@@ -118,9 +118,9 @@ export function ChaptersSinglePageCSS(query: string = queryChapterListLinks) {
 /**
  * An extension method for extracting all pages for the given {@link chapter} using the first match of the given regular expression {@link matchers}.
  * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
- * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param chapter A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param matchers An optional list of regular expressions (each must contain a capture group) used to find a JSON based list of image links within `<script>` tags,
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ * @param matchers - An optional list of regular expressions (each must contain a capture group) used to find a JSON based list of image links within `<script>` tags,
  * only the first regular expression that matches will be used
  */
 export async function FetchPagesSinglePageREGEX(this: MangaScraper, chapter: Chapter, ...matchers: RegExp[]): Promise<Page[]> {
@@ -157,16 +157,16 @@ export async function FetchPagesSinglePageREGEX(this: MangaScraper, chapter: Cha
 /**
  * An extension method for extracting all pages for the given {@link chapter} using the first match of the given regular expression {@link matchers}.
  * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
- * @param this A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param chapter A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param matchers An optional list of regular expressions (each must contain a capture group) used to find a JSON based list of image links within `<script>` tags,
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ * @param matchers - An optional list of regular expressions (each must contain a capture group) used to find a JSON based list of image links within `<script>` tags,
  * only the first regular expression that matches will be used
  */
 
 /**
  * A class decorator that adds the ability to extract all pages for the given {@link chapter} using the first match of the given regular expression {@link matchers}.
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
- * @param matchers An optional list of regular expressions (each must contain a capture group) used to find a JSON based list of image links within `<script>` tags,
+ * @param matchers - An optional list of regular expressions (each must contain a capture group) used to find a JSON based list of image links within `<script>` tags,
  * only the first regular expression that matches will be used
  */
 export function PagesSinglePageREGEX(...matchers: RegExp[]) {

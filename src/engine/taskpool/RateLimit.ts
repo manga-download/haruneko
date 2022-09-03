@@ -2,8 +2,8 @@ export class RateLimit {
 
     /**
      * Create a new {@link RateLimit} instance.
-     * @param amount Maximum number of units within the given {@link interval}.
-     * @param interval Related timespan [sec] for the given {@link amount}.
+     * @param amount - Maximum number of units within the given {@link interval}.
+     * @param interval - Related timespan [sec] for the given {@link amount}.
      */
     constructor(private readonly amount: number, private readonly interval: number = 1) {
     }
