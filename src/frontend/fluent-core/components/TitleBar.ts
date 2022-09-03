@@ -98,7 +98,7 @@ const template: ViewTemplate<TitleBar> = html`
                 <div slot="start">${IconSettings}</div>
                 ${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
             </fluent-menu-item>
-            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ShowImportDialog()}>
+            <fluent-menu-item disabled title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ShowImportDialog()}>
                 ${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
             </fluent-menu-item>
         </fluent-menu>
