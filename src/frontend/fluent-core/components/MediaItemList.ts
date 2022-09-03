@@ -25,8 +25,22 @@ const styles: ElementStyles = css`
     #header {
         padding: calc(var(--base-height-multiplier) * 1px);
         background-color: var(--neutral-layer-2);
+        display: grid;
+        align-items: center;
+        grid-template-rows: auto;
+        grid-template-columns: minmax(0, 1fr) max-content;
+    }
+
+    #title {
         text-transform: uppercase;
         font-weight: bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .hint {
+        color: var(--neutral-foreground-hint);
     }
 
     #searchcontrol {
@@ -94,7 +108,10 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<MediaItemList> = html`
-    <div id="header">${() => S.Locale.Frontend_FluentCore_Panel_MediaItems_Heading()}</div>
+    <div id="header">
+        <div id="title">${() => S.Locale.Frontend_FluentCore_Panel_MediaItems_Heading()}</div>
+        <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
+    </div>
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
@@ -118,7 +135,7 @@ export class MediaItemList extends FASTElement {
     @observable updating = false;
 
     public async FilterEntries() {
-        this.filtered = this.entries ? this.entries?.filter(entry => this.match(entry.Title)).slice(0, 250) /* TODO: virtual scrolling */ : [];
+        this.filtered = this.entries?.filter(entry => this.match(entry.Title)).slice(0, 250) /* TODO: virtual scrolling */ ?? [];
     }
 
     public async ShowPreview(entry: IMediaContainer) {

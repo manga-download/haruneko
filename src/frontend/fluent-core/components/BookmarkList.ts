@@ -13,8 +13,22 @@ const styles: ElementStyles = css`
     #header {
         padding: calc(var(--base-height-multiplier) * 1px);
         background-color: var(--neutral-layer-2);
+        display: grid;
+        align-items: center;
+        grid-template-rows: auto;
+        grid-template-columns: minmax(0, 1fr) max-content;
+    }
+
+    #title {
         text-transform: uppercase;
         font-weight: bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .hint {
+        color: var(--neutral-foreground-hint);
     }
 
     #searchcontrol {
@@ -67,12 +81,15 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<BookmarkList> = html`
-    <div id="header">${() => S.Locale.Frontend_FluentCore_Panel_BookmarkList_Heading()}</div>
+    <div id="header">
+        <div id="title">${() => S.Locale.Frontend_FluentCore_Panel_BookmarkList_Heading()}</div>
+        <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
+    </div>
     <div id="searchcontrol">
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <ul id="entries">
-        ${repeat(model => model.entries, listitem)}
+        ${repeat(model => model.filtered, listitem)}
     </ul>
 `;
 
@@ -82,7 +99,7 @@ export class BookmarkList extends FASTElement {
     override connectedCallback(): void {
         super.connectedCallback();
         HakuNeko.BookmarkPlugin.EntriesUpdated.Subscribe(this.BookmarksChanged);
-        this.FilterEntries();
+        this.BookmarksChanged();
     }
 
     override disconnectedCallback(): void {
@@ -90,22 +107,26 @@ export class BookmarkList extends FASTElement {
         HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
     }
 
-    @observable entries: IMediaContainer[] = HakuNeko.BookmarkPlugin.Entries;
+    @observable entries: IMediaContainer[] = [];
+    entriesChanged() {
+        this.FilterEntries();
+    }
     @observable match: (text: string) => boolean = () => true;
     matchChanged() {
         this.FilterEntries();
     }
+    @observable filtered: IMediaContainer[] = [];
     @observable updating = false;
-
-    public async FilterEntries() {
-        this.entries = HakuNeko.BookmarkPlugin.Entries.filter(entry => this.match(entry.Title)).slice(0, 250); /* TODO: virtual scrolling */
-    }
 
     public SelectEntry(entry: IMediaContainer) {
         this.$emit('bookmarkClicked', entry);
     }
 
+    public FilterEntries() {
+        this.filtered = this.entries.filter(entry => this.match(entry.Title)).slice(0, 250); /* TODO: virtual scrolling */
+    }
+
     private BookmarksChanged = function() {
-        this.FilterEntries();
+        this.entries = HakuNeko.BookmarkPlugin.Entries.slice();
     }.bind(this);
 }

@@ -13,8 +13,22 @@ const styles: ElementStyles = css`
     #header {
         padding: calc(var(--base-height-multiplier) * 1px);
         background-color: var(--neutral-layer-2);
+        display: grid;
+        align-items: center;
+        grid-template-rows: auto;
+        grid-template-columns: minmax(0, 1fr) max-content;
+    }
+
+    #title {
         text-transform: uppercase;
         font-weight: bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .hint {
+        color: var(--neutral-foreground-hint);
     }
 
     #searchcontrol {
@@ -66,12 +80,15 @@ const listitem: ViewTemplate<IDownloadTask> = html`
 `;
 
 const template: ViewTemplate<DownloadManager> = html`
-    <div id="header">${() => S.Locale.Frontend_FluentCore_Panel_DownloadManager_Heading()}</div>
+    <div id="header">
+        <div id="title">${() => S.Locale.Frontend_FluentCore_Panel_DownloadManager_Heading()}</div>
+        <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
+    </div>
     <div id="searchcontrol">
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <div id="entries">
-        ${repeat(model => model.entries, listitem)}
+        ${repeat(model => model.filtered, listitem)}
     </div>
 `;
 
@@ -80,22 +97,32 @@ export class DownloadManager extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
-        HakuNeko.DownloadManager.TasksAdded.Subscribe(() => this.FilterEntries());
-        HakuNeko.DownloadManager.TasksRemoved.Subscribe(() => this.FilterEntries());
-        this.FilterEntries();
+        HakuNeko.DownloadManager.TasksAdded.Subscribe(this.DownloadsChanged);
+        HakuNeko.DownloadManager.TasksRemoved.Subscribe(this.DownloadsChanged);
+        this.DownloadsChanged();
     }
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
+        HakuNeko.DownloadManager.TasksAdded.Unsubscribe(this.DownloadsChanged);
+        HakuNeko.DownloadManager.TasksRemoved.Unsubscribe(this.DownloadsChanged);
     }
 
     @observable entries: IDownloadTask[] = [];
+    entriesChanged() {
+        this.FilterEntries();
+    }
     @observable match: (text: string) => boolean = () => true;
     matchChanged() {
         this.FilterEntries();
     }
+    @observable filtered: IDownloadTask[] = [];
 
-    public async FilterEntries() {
-        this.entries = (await HakuNeko.DownloadManager.GetTasks()).filter(task => this.match(task.Media.Title)).slice(0, 250); /* TODO: virtual scrolling */
+    public FilterEntries() {
+        this.filtered = this.entries.filter(task => this.match(task.Media.Title)).slice(0, 250); /* TODO: virtual scrolling */
     }
+
+    private DownloadsChanged = async function() {
+        this.entries = (await HakuNeko.DownloadManager.GetTasks()).slice();
+    }.bind(this);
 }
