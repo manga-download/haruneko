@@ -1,10 +1,12 @@
 import { observable } from '@microsoft/fast-element';
-import { Check, type Choice } from '../../../engine/SettingsManager';
+import { baseLayerLuminance, StandardLuminance } from '@fluentui/web-components';
+import { Check, type Choice, Numeric } from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
 import { GetLocale } from '../../../i18n/Localization';
 
 const SettingKeys = {
     Scope: 'frontend.fluent-core',
+    ThemeLuminance: 'theme.luminance',
     PanelBookmarks: 'panel.bookmarks',
     PanelDownloads: 'panel.downloads',
 };
@@ -15,6 +17,7 @@ class StateService {
 
     constructor() {
         HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).ValueChanged.Subscribe(() => this.Locale = GetLocale());
+        this.settingThemeLuminanceNumeric.ValueChanged.Subscribe((_, args) => this.SettingThemeLuminance = args);
         this.settingPanelBookmarksCheck.ValueChanged.Subscribe((_, args) => this.SettingPanelBookmarks = args);
         this.settingPanelDownloadsCheck.ValueChanged.Subscribe((_, args) => this.SettingPanelDownloads = args);
         this.Initialize();
@@ -22,14 +25,23 @@ class StateService {
 
     private async Initialize() {
         await this.settings.Initialize(
+            this.settingThemeLuminanceNumeric,
             this.settingPanelBookmarksCheck,
             this.settingPanelDownloadsCheck
         );
+        this.SettingThemeLuminance = this.settingThemeLuminanceNumeric.Value;
         this.SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
         this.SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     }
 
     @observable Locale = GetLocale();
+
+    private readonly settingThemeLuminanceNumeric = new Numeric(SettingKeys.ThemeLuminance, undefined, undefined, StandardLuminance.LightMode, 0.0, 1.0);
+    @observable SettingThemeLuminance = this.settingThemeLuminanceNumeric.Value;
+    SettingThemeLuminanceChanged() {
+        this.settingThemeLuminanceNumeric.Value = this.SettingThemeLuminance;
+        baseLayerLuminance.setValueFor(document.body, this.SettingThemeLuminance);
+    }
 
     private readonly settingPanelBookmarksCheck = new Check(SettingKeys.PanelBookmarks, undefined, undefined, true);
     @observable SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;

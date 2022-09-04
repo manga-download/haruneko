@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
-import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../../engine/SettingsManager';
-import S from '../../services/StateService';
+import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
+import S from '../services/StateService';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 

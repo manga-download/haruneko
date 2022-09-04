@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
-import type { SettingsDialog } from './settings/SettingsDialog';
+import type { SettingsDialog } from './SettingsDialog';
 import S from '../services/StateService';
 
 // See: https://icon-sets.iconify.design/fluent/
@@ -101,6 +101,8 @@ const template: ViewTemplate<TitleBar> = html`
             <fluent-menu-item disabled title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ShowImportDialog()}>
                 ${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
             </fluent-menu-item>
+            <fluent-divider></fluent-divider>
+            <fluent-setting-theme-luminance></fluent-setting-theme-luminance>
         </fluent-menu>
     </div>
     <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
@@ -132,17 +134,17 @@ export class TitleBar extends FASTElement {
 
     public Minimize(): void {
         console.log('Minimize ...');
-        //this.windowController.Minimize();
+        //TODO: this.windowController.Minimize();
     }
 
     public Maximize(): void {
         console.log('Maximize ...');
-        //this.windowController.Maximize();
+        //TODO: this.windowController.Maximize();
     }
 
     public Close(): void {
         console.log('Close ...');
-        //this.windowController.Close();
+        //TODO: this.windowController.Close();
         window.close();
     }
 }
