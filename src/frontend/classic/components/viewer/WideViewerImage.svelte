@@ -50,9 +50,9 @@
 <style>
     .imageContainer :global(.image) {
         display: block;
+        transition: width 0.2s ease-in-out, padding 0.2s ease-in-out;
         margin-left: auto !important;
         margin-right: auto !important;
-        /* background-color: azure; */
     }
 
     .imageContainer :global(.image .double-page-image) {
