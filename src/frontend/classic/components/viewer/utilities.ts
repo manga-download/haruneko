@@ -23,7 +23,7 @@ export function scrollSmoothly(element, distance) {
  * Dynamically change the scrolling to stop at the end of images or skip to the start of the next image
  */
 export function scrollMagic(element: HTMLElement, defaultDistance: number, nextItemCallback: () => void) {
-    let images = element.querySelectorAll('.image');
+    let images = element.querySelectorAll('.viewerimage');
     // Are we at the end of the page
     if (images[images.length - 1].getBoundingClientRect().bottom -window.innerHeight < 1) {
         nextItemCallback();

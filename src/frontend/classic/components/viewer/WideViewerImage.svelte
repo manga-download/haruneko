@@ -20,10 +20,10 @@
 </script>
 
 {#await dataload}
-    <InlineLoading class={$$restProps.class} />
+    <InlineLoading class={$$restProps.class ?? ''} />
 {:then data}
     <ImageLoader
-        class="viewerimage {$$restProps.class}"
+        class="viewerimage {$$restProps.class ?? ''}"
         style={$$restProps.style}
         alt={page ? alt : ''}
         src={data}
@@ -32,14 +32,14 @@
         <svelte:fragment slot="loading"><InlineLoading /></svelte:fragment>
         <svelte:fragment slot="error">
             <InlineLoading
-                class="viewerimage {$$restProps.class}"
+                class="viewerimage {$$restProps.class ?? ''}"
                 status="error"
             />
         </svelte:fragment>
     </ImageLoader>
 {:catch error}
     <InlineLoading
-        class="viewerimage {$$restProps.class}"
+        class="viewerimage {$$restProps.class ?? ''}"
         type="error"
         description={error}
     />
@@ -58,7 +58,7 @@
         width: 50%;
     }
 
-    :global(.imviewerimageage .manga-image) {
+    :global(.viewerimage .manga-image) {
         max-height: 100%;
     }
 </style>

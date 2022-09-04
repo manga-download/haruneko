@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
+    import { ToastNotification } from 'carbon-components-svelte';
 
     import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
     import WideViewerSetting from './WideViewerSetting.svelte';
@@ -79,7 +80,9 @@
     }
 
     let autoNextItem = false;
+    export let hasNextItem = true;
     function onNextItemCallback() {
+        console.log('autonextitem', autoNextItem);
         if (autoNextItem) dispatch('nextItem');
         else {
             autoNextItem = true;
@@ -127,25 +130,34 @@
 </script>
 
 <svelte:window on:keydown={onKeyDown} on:mousedown={mouseDownHandler} />
-
-<div bind:this={viewer} class={$ViewerModeValue}>
+<div id="wideviewer" bind:this={viewer} class={$ViewerModeValue}>
     <WideViewerSetting {title} on:close />
     {#if $ViewerModeValue === Key.ViewerMode_Longstrip}
         <WebtoonViewer {item} />
     {:else if $ViewerModeValue === Key.ViewerMode_Paginated}
         <MangaViewer {item} {currentImageIndex} />
     {/if}
+    {#if autoNextItem && hasNextItem}
+        <ToastNotification
+            kind="info"
+            title="Bottom reached"
+            subtitle="Click or Press space again to go to next item."
+            on:click={() => dispatch('nextitem')}
+            on:close={() => (autoNextItem = false)}
+            style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
+        />
+    {/if}
 </div>
 
 <style>
-    div {
+    #wideviewer {
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
         position: absolute;
         overflow-y: scroll;
-        z-index: 9000;
+        z-index: 10000;
         background-color: var(--cds-ui-01);
         cursor: grab;
     }
