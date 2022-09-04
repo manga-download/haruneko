@@ -162,9 +162,45 @@
             });
         }
     }
+
+    let pos = { top: 0, left: 0, x: 0, y: 0 };
+
+    function mouseDownHandler(e) {
+        viewer.style.cursor = 'grabbing';
+        viewer.style.userSelect = 'none';
+        pos = {
+            // The current scroll
+            left: viewer.scrollLeft,
+            top: viewer.scrollTop,
+            // Get the current mouse position
+            x: e.clientX,
+            y: e.clientY,
+        };
+
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+    }
+
+    const mouseMoveHandler = function (e) {
+        // How far the mouse has been moved
+        const dx = e.clientX - pos.x;
+        const dy = e.clientY - pos.y;
+
+        // Scroll the element
+        viewer.scrollTop = pos.top - dy;
+        viewer.scrollLeft = pos.left - dx;
+    };
+
+    const mouseUpHandler = function () {
+        document.removeEventListener('mousemove', mouseMoveHandler);
+        document.removeEventListener('mouseup', mouseUpHandler);
+
+        viewer.style.cursor = 'grab';
+        viewer.style.removeProperty('user-select');
+    };
 </script>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window on:keydown={onKeyDown} on:mousedown={mouseDownHandler} />
 
 <div bind:this={viewer} class={$ViewerModeValue}>
     <WideViewerSetting {title} on:close />

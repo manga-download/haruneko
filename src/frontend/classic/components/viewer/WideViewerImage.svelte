@@ -53,6 +53,7 @@
         transition: width 0.2s ease-in-out, padding 0.2s ease-in-out;
         margin-left: auto !important;
         margin-right: auto !important;
+        pointer-events: none;
     }
 
     .imageContainer :global(.image .double-page-image) {
