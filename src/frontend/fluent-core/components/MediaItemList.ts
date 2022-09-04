@@ -109,7 +109,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 
 const template: ViewTemplate<MediaItemList> = html`
     <div id="header">
-        <div id="title">${() => S.Locale.Frontend_FluentCore_Panel_MediaItems_Heading()}</div>
+        <div id="title">${() => S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
         <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
     </div>
     <div id="searchcontrol">

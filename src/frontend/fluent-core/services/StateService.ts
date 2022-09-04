@@ -2,6 +2,7 @@ import { observable } from '@microsoft/fast-element';
 import { baseLayerLuminance, StandardLuminance } from '@fluentui/web-components';
 import { Check, type Choice, Numeric } from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
+import { VariantResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
 
 const SettingKeys = {
@@ -36,20 +37,20 @@ class StateService {
 
     @observable Locale = GetLocale();
 
-    private readonly settingThemeLuminanceNumeric = new Numeric(SettingKeys.ThemeLuminance, undefined, undefined, StandardLuminance.LightMode, 0.0, 1.0);
+    private readonly settingThemeLuminanceNumeric = new Numeric(SettingKeys.ThemeLuminance, R.Frontend_FluentCore_Settings_ThemeLuminance_Label, R.Frontend_FluentCore_Settings_ThemeLuminance_Description, StandardLuminance.LightMode, 0.0, 1.0);
     @observable SettingThemeLuminance = this.settingThemeLuminanceNumeric.Value;
     SettingThemeLuminanceChanged() {
         this.settingThemeLuminanceNumeric.Value = this.SettingThemeLuminance;
         baseLayerLuminance.setValueFor(document.body, this.SettingThemeLuminance);
     }
 
-    private readonly settingPanelBookmarksCheck = new Check(SettingKeys.PanelBookmarks, undefined, undefined, true);
+    private readonly settingPanelBookmarksCheck = new Check(SettingKeys.PanelBookmarks, R.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label, R.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description, true);
     @observable SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
     SettingPanelBookmarksChanged() {
         this.settingPanelBookmarksCheck.Value = this.SettingPanelBookmarks;
     }
 
-    private readonly settingPanelDownloadsCheck = new Check(SettingKeys.PanelDownloads, undefined, undefined, false);
+    private readonly settingPanelDownloadsCheck = new Check(SettingKeys.PanelDownloads, R.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label, R.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description, false);
     @observable SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     SettingPanelDownloadsChanged() {
         this.settingPanelDownloadsCheck.Value = this.SettingPanelDownloads;

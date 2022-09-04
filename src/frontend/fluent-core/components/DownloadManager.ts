@@ -41,38 +41,6 @@ const styles: ElementStyles = css`
         overflow-y: scroll;
         overflow-x: hidden;
     }
-
-    /*
-    #entries fluent-download-manager-item {
-        height: 24px;
-        padding: calc(var(--design-unit) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        gap: calc(var(--design-unit) * 1px);
-        display: grid;
-        align-items: center;
-        grid-template-rows: min-content;
-        grid-template-columns: min-content 1fr min-content;
-    }
-
-    ul#entries li > div {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-    ul#entries li .controls {
-        display: flex;
-    }
-
-    ul#entries li:hover {
-        background-color: var(--neutral-fill-hover);
-    }
-
-    .icon {
-        margin-right: calc(var(--design-unit) * 1px);
-        height: inherit;
-    }
-    */
 `;
 
 const listitem: ViewTemplate<IDownloadTask> = html`
@@ -81,7 +49,7 @@ const listitem: ViewTemplate<IDownloadTask> = html`
 
 const template: ViewTemplate<DownloadManager> = html`
     <div id="header">
-        <div id="title">${() => S.Locale.Frontend_FluentCore_Panel_DownloadManager_Heading()}</div>
+        <div id="title">${() => S.Locale.Frontend_FluentCore_DownloadManager_Heading()}</div>
         <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
     </div>
     <div id="searchcontrol">

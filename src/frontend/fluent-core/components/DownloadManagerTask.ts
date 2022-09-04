@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
 import { type IDownloadTask, Status } from '../../../engine/DownloadTask';
-//import S from '../services/StateService';
+import S from '../services/StateService';
 
 import IconQueued from '@fluentui/svg-icons/icons/clock_20_regular.svg?raw';
 import IconPaused from '@fluentui/svg-icons/icons/pause_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/debug-paused.svg?raw';
@@ -79,7 +79,7 @@ const template: ViewTemplate<DownloadManagerTask> = html`
     <div class="controls">
         <fluent-progress min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress>
         <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]}></div>
-        <fluent-button appearance="stealth" title="LOCALE:AbortAndRemoveJobFromQueue" @click=${model => HakuNeko.DownloadManager.Dequeue(model.entry)}>${IconRemove}</fluent-button>
+        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" @click=${model => HakuNeko.DownloadManager.Dequeue(model.entry)}>${IconRemove}</fluent-button>
     </div>
 `;
 

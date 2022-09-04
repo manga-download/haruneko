@@ -128,7 +128,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 `;
 
 const template: ViewTemplate<WebsiteSelect> = html`
-    <div id="heading" @click=${model => model.expanded = !model.expanded}>
+    <div id="heading" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_Description()}" @click=${model => model.expanded = !model.expanded}>
         <img id="logo" src="${model => model.selected?.Icon}"></img>
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">

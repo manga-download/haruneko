@@ -82,7 +82,7 @@ const styles: ElementStyles = css`
 
 const template: ViewTemplate<TitleBar> = html`
     <div id="menu">
-        <fluent-button id="menu-button" appearance="stealth" @click=${model => model.popup = !model.popup}>${IconMenu}</fluent-button>
+        <fluent-button id="menu-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Menu_Description()}" @click=${model => model.popup = !model.popup}>${IconMenu}</fluent-button>
         <div id="menu-overlay" style="display: ${model => model.popup ? 'block' : 'none'}" @click=${model => model.popup = false}></div>
         <fluent-menu id="menu-popup" style="display: ${model => model.popup ? 'block' : 'none'}">
             <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description()}" :checked=${() => S.SettingPanelBookmarks} @change=${(_, ctx) => S.SettingPanelBookmarks = ctx.event.currentTarget['checked']}>
@@ -107,9 +107,9 @@ const template: ViewTemplate<TitleBar> = html`
     </div>
     <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
     <div id="controls">
-        <fluent-anchor appearance="stealth" @click="${model => model.Minimize()}">${IconMinimize}</fluent-anchor>
-        <fluent-anchor appearance="stealth" @click="${model => model.Maximize()}" :innerHTML=${model => model.maximized ? IconRestore : IconMaximize}></fluent-anchor>
-        <fluent-anchor id="close" appearance="stealth" @click=${model => model.Close()}>${IconClose}</fluent-anchor>
+        <fluent-anchor appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" @click="${model => model.Minimize()}">${IconMinimize}</fluent-anchor>
+        <fluent-anchor appearance="stealth" title="${model => model.maximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" @click="${model => model.Maximize()}" :innerHTML=${model => model.maximized ? IconRestore : IconMaximize}></fluent-anchor>
+        <fluent-anchor id="close" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" @click=${model => model.Close()}>${IconClose}</fluent-anchor>
     </div>
     <fluent-settings-dialog id="settings" :hidden=${model => !model.settings}></fluent-settings-dialog>
 `;

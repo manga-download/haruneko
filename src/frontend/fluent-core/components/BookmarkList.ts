@@ -82,7 +82,7 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 
 const template: ViewTemplate<BookmarkList> = html`
     <div id="header">
-        <div id="title">${() => S.Locale.Frontend_FluentCore_Panel_BookmarkList_Heading()}</div>
+        <div id="title">${() => S.Locale.Frontend_FluentCore_BookmarkList_Heading()}</div>
         <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
     </div>
     <div id="searchcontrol">
