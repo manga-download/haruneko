@@ -23,7 +23,7 @@ export function scrollSmoothly(element, distance) {
  * Dynamically change the scrolling to stop at the end of images or skip to the start of the next image
  */
 export function scrollMagic(element: HTMLElement, defaultDistance: number, nextItemCallback: () => void) {
-    let images = element.querySelectorAll('.viewerimage');
+    const images = element.querySelectorAll('.viewerimage');
     // Are we at the end of the page
     if (images[images.length - 1].getBoundingClientRect().bottom -window.innerHeight < 1) {
         nextItemCallback();
@@ -31,13 +31,13 @@ export function scrollMagic(element: HTMLElement, defaultDistance: number, nextI
     }
     // Lets stay on current page
     // Find current image within view
-    let targetScrollImages = [...images].filter((image) => {
-        let rect = image.getBoundingClientRect();
+    const targetScrollImages = [...images].filter((image) => {
+        const rect = image.getBoundingClientRect();
         return rect.top <= window.innerHeight && rect.bottom > 1;
     });
 
     // If multiple images filtered, get the last one. If none use the top image
-    let targetScrollImage = targetScrollImages[targetScrollImages.length - 1] || images[0];
+    const targetScrollImage = targetScrollImages[targetScrollImages.length - 1] || images[0];
 
     // Is the target image top within view ? then scroll to the top of it
     if (targetScrollImage.getBoundingClientRect().top > 1) {
@@ -58,7 +58,7 @@ export function scrollMagic(element: HTMLElement, defaultDistance: number, nextI
     // We have to try to get to next image
     else {
         // Find next image
-        let nextScrollImage = targetScrollImage.nextElementSibling;
+        const nextScrollImage = targetScrollImage.nextElementSibling;
         // Scroll to it
         nextScrollImage.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'start'});
     }
