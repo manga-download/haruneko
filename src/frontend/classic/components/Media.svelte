@@ -10,7 +10,8 @@
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
     export let media: IMediaContainer;
-    export let selected: Boolean;
+    let selected: Boolean = false;
+    $: selected = $selectedMedia === media;
     let isBookmarked: Boolean = HakuNeko.BookmarkPlugin.isBookmarked(media);
     let mediadiv: HTMLElement;
     async function toggleBookmark() {
