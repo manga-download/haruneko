@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
-    import { ToastNotification } from 'carbon-components-svelte';
+    import { InlineNotification } from 'carbon-components-svelte';
 
     import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
     import WideViewerSetting from './WideViewerSetting.svelte';
@@ -82,7 +82,6 @@
     let autoNextItem = false;
     export let hasNextItem = true;
     function onNextItemCallback() {
-        console.log('autonextitem', autoNextItem);
         if (autoNextItem) dispatch('nextItem');
         else {
             autoNextItem = true;
@@ -138,7 +137,7 @@
         <MangaViewer {item} {currentImageIndex} />
     {/if}
     {#if autoNextItem && hasNextItem}
-        <ToastNotification
+        <InlineNotification
             kind="info"
             title="Bottom reached"
             subtitle="Click or Press space again to go to next item."
