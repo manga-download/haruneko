@@ -113,15 +113,15 @@ export const ViewerDoublePageValue = CreateStore(ViewerDoublePage);
 // Non persistant settings
 /** Viewer **/
 function createCount(initialValue:number, increment:number,minimum:number) {
-	const { subscribe, set, update } = writable(initialValue);
+    const { subscribe, set, update } = writable(initialValue);
 
-	return {
+    return {
         subscribe,
         set,
-		increment: () => update(n => n + increment),
+        increment: () => update(n => n + increment),
         decrement: () => update(n => n - increment >= minimum ? n - increment : n),
-		reset: () => set(initialValue)
-	};
+        reset: () => set(initialValue)
+    };
 }
 
 export const ViewerZoom = createCount(70,10,10);
