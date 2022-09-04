@@ -20,11 +20,15 @@ const styles: ElementStyles = css`
     #titlebar {
     }
 
-    #panel {
+    #widgets {
         display: flex;
         flex-direction: row;
         gap: calc(var(--base-height-multiplier) * 1px);
         margin: calc(var(--base-height-multiplier) * 1px);
+    }
+
+    #preview {
+        display: flex;
     }
 
     #sidepanel {
@@ -70,9 +74,8 @@ const templateSidePanel: ViewTemplate<App> = html`
     </div>
 `;
 
-const template: ViewTemplate<App> = html`
-    <fluent-titlebar id="titlebar"></fluent-titlebar>
-    <div id="panel">
+const templateWidgets: ViewTemplate<App> = html`
+    <div id="widgets">
         ${when(() => S.SettingPanelBookmarks || S.SettingPanelDownloads, templateSidePanel)}
         <div id="mainpanel">
             <fluent-card>
@@ -88,10 +91,20 @@ const template: ViewTemplate<App> = html`
                 </fluent-media-title-select>
             </fluent-card>
             <fluent-card>
-                <fluent-media-item-list id="media-item-list" :entries=${model => model.items}></fluent-media-item-list>
+                <fluent-media-item-list id="media-item-list" :entries=${model => model.items} @previewClicked=${(model, ctx) => model.PreviewClicked(ctx.event)}></fluent-media-item-list>
             </fluent-card>
         </div>
     </div>
+`;
+
+const templatePreview: ViewTemplate<App> = html`
+    <fluent-media-item-preview id="preview" :entry=${model => model.item} @previewClosed=${model => model.PreviewClosed()}></fluent-media-item-preview>
+`;
+
+const template: ViewTemplate<App> = html`
+    <fluent-titlebar id="titlebar"></fluent-titlebar>
+    ${when(model => !model.item, templateWidgets)}
+    ${when(model => model.item, templatePreview)}
 `;
 
 @customElement({ name: 'fluent-app', template, styles })
@@ -100,6 +113,7 @@ export default class App extends FASTElement {
     @observable website: IMediaContainer;
     @observable titles: IMediaContainer[];
     @observable items: IMediaContainer[];
+    @observable item: IMediaContainer;
 
     private get elementWebsiteSelect() {
         return this.shadowRoot.querySelector('#website-select') as WebsiteSelect;
@@ -140,5 +154,13 @@ export default class App extends FASTElement {
         const bookmark = (event as CustomEvent<IMediaContainer>).detail;
         this.elementWebsiteSelect.selected = bookmark?.Parent;
         this.elementMediaSelect.selected = bookmark;
+    }
+
+    public PreviewClicked(event: Event) {
+        this.item = (event as CustomEvent<IMediaContainer>).detail;
+    }
+
+    public PreviewClosed() {
+        this.item = null;
     }
 }

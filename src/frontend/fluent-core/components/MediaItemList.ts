@@ -139,10 +139,7 @@ export class MediaItemList extends FASTElement {
     }
 
     public async ShowPreview(entry: IMediaContainer) {
-        await entry.Update();
-        console.log('PREVIEW:', entry.Entries);
-        const first = await (entry.Entries[0] as IMediaItem)?.Fetch(Priority.High, undefined);
-        console.log('PREVIEW [0]:', first?.type, first?.size);
+        this.$emit('previewClicked', entry);
     }
 
     public async Download(entry: IMediaContainer) {

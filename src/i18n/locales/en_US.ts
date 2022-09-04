@@ -93,6 +93,8 @@ export const en_US: IVariantResource = {
     Frontend_FluentCore_MediaItemList_PreviewButton_Description: 'Show content',
     Frontend_FluentCore_MediaItemList_DownloadButton_Description: 'Download content',
     //
+    Frontend_FluentCore_Preview_CloseButton_Description: 'Close preview',
+    //
     Frontend_FluentCore_SearchBox_ClearButton_Description: 'Clear the current search pattern',
     Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description: 'Toggle between case sensitive and insensitive mode',
     Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description: 'Toggle between text and regular expression mode',

@@ -116,6 +116,8 @@ export enum VariantResourceKey {
     Frontend_FluentCore_MediaItemList_PreviewButton_Description = 'Frontend_FluentCore_MediaItemList_PreviewButton_Description',
     Frontend_FluentCore_MediaItemList_DownloadButton_Description = 'Frontend_FluentCore_MediaItemList_DownloadButton_Description',
 
+    Frontend_FluentCore_Preview_CloseButton_Description = 'Frontend_FluentCore_Preview_CloseButton_Description',
+
     Frontend_FluentCore_SearchBox_ClearButton_Description = 'Frontend_FluentCore_SearchBox_ClearButton_Description',
     Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description = 'Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description',
     Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description = 'Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description',
