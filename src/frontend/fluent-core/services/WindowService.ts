@@ -1,36 +1,44 @@
 import { DI } from '@microsoft/fast-foundation';
 import { observable } from '@microsoft/fast-element';
+import { Registration } from '@microsoft/fast-foundation';
+import type { IWindowController } from '../../WindowController';
 
-export const IWindowService = DI.createInterface<IWindowService>(builder => builder.singleton(WindowService));
+export const IWindowService = DI.createInterface<IWindowService>();
 
 export interface IWindowService {
+    readonly IsMaximized: boolean;
     Minimize(): void;
     Maximize(): void;
     Restore(): void;
     Close(): void;
 }
 
-export class WindowService implements IWindowService {
+class WindowService implements IWindowService {
 
-    constructor() {
-        //this.Maximized = false;
+    constructor(private readonly windowController: IWindowController) {
     }
 
-    @observable Maximized = false;
+    @observable IsMaximized = false;
 
     public Minimize(): void {
-        //throw new Error('Method not implemented.');
+        this.windowController.Minimize();
     }
 
     public Maximize(): void {
-        //throw new Error('Method not implemented.');
+        this.IsMaximized = true; // TODO: Implement correct solution instead of quick and dirty hack to determine current state
+        this.windowController.Maximize();
     }
 
     public Restore(): void {
-        //throw new Error('Method not implemented.');
+        this.IsMaximized = false; // TODO: Implement correct solution instead of quick and dirty hack to determine current state
+        this.windowController.Restore();
     }
 
     public Close(): void {
-        //throw new Error('Method not implemented.');
+        this.windowController.Close();
     }
+}
+
+export function createWindowService(windowController: IWindowController) {
+    return Registration.instance(IWindowService, new WindowService(windowController));
 }

@@ -18,6 +18,7 @@ import IconMinimize from '@vscode/codicons/src/icons/chrome-minimize.svg?raw';
 import IconMaximize from '@vscode/codicons/src/icons/chrome-maximize.svg?raw';
 import IconRestore from '@vscode/codicons/src/icons/chrome-restore.svg?raw';
 import IconClose from '@vscode/codicons/src/icons/chrome-close.svg?raw';
+import { IWindowService } from '../services/WindowService';
 
 const styles: ElementStyles = css`
 
@@ -107,9 +108,9 @@ const template: ViewTemplate<TitleBar> = html`
     </div>
     <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
     <div id="controls">
-        <fluent-anchor appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" @click="${model => model.Minimize()}">${IconMinimize}</fluent-anchor>
-        <fluent-anchor appearance="stealth" title="${model => model.maximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" @click="${model => model.Maximize()}" :innerHTML=${model => model.maximized ? IconRestore : IconMaximize}></fluent-anchor>
-        <fluent-anchor id="close" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" @click=${model => model.Close()}>${IconClose}</fluent-anchor>
+        <fluent-anchor appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" @click="${model => model.window.Minimize()}">${IconMinimize}</fluent-anchor>
+        <fluent-anchor appearance="stealth" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize}></fluent-anchor>
+        <fluent-anchor id="close" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" @click=${model => model.window.Close()}>${IconClose}</fluent-anchor>
     </div>
     <fluent-settings-dialog id="settings" :hidden=${model => !model.settings}></fluent-settings-dialog>
 `;
@@ -117,6 +118,7 @@ const template: ViewTemplate<TitleBar> = html`
 @customElement({ name: 'fluent-titlebar', template, styles })
 export class TitleBar extends FASTElement {
 
+    @IWindowService window!: IWindowService;
     @observable maximized = false;
     @observable settings = false;
     @observable popup = false;
@@ -130,21 +132,5 @@ export class TitleBar extends FASTElement {
     public ShowImportDialog()
     {
         this.popup = false;
-    }
-
-    public Minimize(): void {
-        console.log('Minimize ...');
-        //TODO: this.windowController.Minimize();
-    }
-
-    public Maximize(): void {
-        console.log('Maximize ...');
-        //TODO: this.windowController.Maximize();
-    }
-
-    public Close(): void {
-        console.log('Close ...');
-        //TODO: this.windowController.Close();
-        window.close();
     }
 }
