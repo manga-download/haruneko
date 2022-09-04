@@ -11,50 +11,49 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    export let title: string;
+    import { ViewerPadding, ViewerZoom } from '../../stores/Settings';
 
-    function increaseImagePadding() {}
-    function decreaseImagePadding() {}
-    function zoomIn() {}
-    function zoomOut() {}
+    export let title: string;
 </script>
 
 <div id="Buttons" tabindex="0">
     <span class="title">{title}</span>
     <span
+        class="button"
         on:click={() =>
             console.log(`createEventDispatcher("requestItemDown", item)`)}
     >
-        <ChevronLeft size={24} title="Item Down (ArrowLeft)" />
+        <ChevronLeft size={24} title="Preview item (ArrowLeft)" />
     </span>
     <span
+        class="button"
         on:click={() =>
             console.log(`createEventDispatcher("requestItemUp", item)`)}
     >
-        <ChevronRight size={24} title="Item Up (ArrowRight)" />
+        <ChevronRight size={24} title="Next item (ArrowRight)" />
     </span>
     &nbsp;
-    <span on:click={decreaseImagePadding}>
+    <span class="button" on:click={ViewerPadding.decrement}>
         <RowDelete
             size={24}
             title="Decrease spacing between images (CTRL ➖)"
         />
     </span>
-    <span on:click={increaseImagePadding}>
+    <span class="button" on:click={ViewerPadding.increment}>
         <RowInsert
             size={24}
             title="Increase spacing between images (CTRL ➕)"
         />
     </span>
     &nbsp;
-    <span on:click={zoomIn}>
+    <span class="button" on:click={ViewerZoom.increment}>
         <ZoomIn size={24} title="Zoom In (➕)" />
     </span>
-    <span on:click={zoomOut}>
+    <span class="button" on:click={ViewerZoom.decrement}>
         <ZoomOut size={24} title="Zoom Out (➖)" />
     </span>
     &nbsp
-    <span on:click={() => dispatch('close')}>
+    <span class="button" on:click={() => dispatch('close')}>
         <Misuse size={24} title="Close (ESC)" />
     </span>
 </div>
@@ -92,5 +91,9 @@
         font-weight: bold;
         font-size: 1.25em;
         color: var(--cds-text-01);
+    }
+
+    #Buttons .button:hover {
+        color: var(--cds-active-ui);
     }
 </style>

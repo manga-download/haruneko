@@ -8,12 +8,12 @@
     import {
         ViewerDoublePageValue,
         ViewerReverseDirectionValue,
+        ViewerPadding,
     } from '../../stores/Settings';
 
     type ChapterImage = { current: IMediaItem; next: IMediaItem | undefined };
 
     export let item: IMediaContainer;
-    export let imagePadding: number;
     export let currentImageIndex: number;
 
     let chapterImages: ChapterImage[] = [];
@@ -108,14 +108,14 @@
                 alt="content_{currentImageIndex}"
                 page={chapterImage.current}
                 class="manga-image double-page-image"
-                style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-right: {imagePadding}em; padding-left: {imagePadding /
+                style="padding-top: {$ViewerPadding}em; padding-bottom: {$ViewerPadding}em; padding-right: {$ViewerPadding}em; padding-left: {$ViewerPadding /
                     2}em;"
             />
             <WideViewerImage
                 alt="content_{currentImageIndex}"
                 page={chapterImage.next}
                 class="manga-image double-page-image"
-                style="padding-top: {imagePadding}em; padding-bottom: {imagePadding}em; padding-left: {imagePadding}em; padding-right: {imagePadding /
+                style="padding-top: {$ViewerPadding}em; padding-bottom: {$ViewerPadding}em; padding-left: {$ViewerPadding}em; padding-right: {$ViewerPadding /
                     2}em;"
             />
         </div>
@@ -125,7 +125,7 @@
                 alt="content_{currentImageIndex}"
                 page={chapterImage.current}
                 class="manga-image"
-                style="padding: {imagePadding}em; max-width: 100%; ;"
+                style="padding: {$ViewerPadding}em; max-width: 100%; ;"
             />
         </div>
     {/if}
