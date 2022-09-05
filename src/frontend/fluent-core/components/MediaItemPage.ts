@@ -40,7 +40,7 @@ const styles: ElementStyles = css`
 const template: ViewTemplate<MediaItemPage> = html`
     <div class="preview">
         <div class="info">${model => model.info ?? '┄'}</div>
-        ${when(model => model.img, html`<img src="${model => model.img}" />`)}
+        ${when(model => model.img, html`<img src="${model => model.img}" title="${model => model.item?.Link}" />`)}
         ${when(model => !model.img, html`<fluent-progress-ring></fluent-progress-ring>`)}
     </div>
 `;
@@ -76,7 +76,6 @@ export class MediaItemPage extends FASTElement {
                 this.abort = noop;
                 cancellator.abort();
             };
-            console.log('FETCH', this.item.Parent.Title, this.item['Link']['pathname']);
             const data = await this.item.Fetch(Priority.High, cancellator.signal);
             this.abort = noop;
             if(!data || cancellator.signal.aborted) {
