@@ -28,7 +28,6 @@ const styles: ElementStyles = css`
     }
 
     #preview {
-        display: flex;
     }
 
     #sidepanel {

@@ -8,24 +8,17 @@ import IconClose from '@fluentui/svg-icons/icons/dismiss_20_regular.svg?raw';
 const styles: ElementStyles = css`
 
     :host {
+        display: flex;
+        flex-direction: column;
     }
 
     #heading {
-        position: fixed;
-        left: 0;
-        right: 0;
-        opacity: 0.0;
         background-color: var(--neutral-layer-1);
         padding: calc(var(--design-unit) * 1px);
         gap: calc(var(--base-height-multiplier) * 1px);
         display: grid;
         align-items: center;
         grid-template-columns: max-content 1fr max-content;
-        z-index: 1;
-    }
-
-    #heading:hover {
-        opacity: 0.95;
     }
 
     #caption {
