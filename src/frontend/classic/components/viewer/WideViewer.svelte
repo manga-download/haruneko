@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
+    import { InlineNotification } from 'carbon-components-svelte';
 
     import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
     import WideViewerSetting from './WideViewerSetting.svelte';
@@ -8,13 +9,13 @@
     import MangaViewer from './MangaViewer.svelte';
     import { Key, ViewerModeValue } from '../../stores/Settings';
     import { ViewerPadding, ViewerZoom } from '../../stores/Settings';
+    import { scrollSmoothly, scrollMagic } from './utilities';
 
     export let item: IMediaContainer;
     export let currentImageIndex: number;
 
     const title = item?.Parent?.Title ?? 'unkown';
 
-    let autoNextChapter = false;
     let viewer: HTMLElement;
 
     function onKeyDown(event) {
@@ -67,123 +68,95 @@
                 dispatch('close');
                 break;
             case event.code === 'Space' && !event.ctrlKey:
-                scrollMagic(viewer, window.innerHeight * 0.8);
+                scrollMagic(
+                    viewer,
+                    window.innerHeight * 0.8,
+                    onNextItemCallback
+                );
                 break;
             default:
                 break;
         }
     }
 
-    function scrollSmoothly(element, distance) {
-        const speed = Math.abs(Math.floor(distance / 10)),
-            end = Math.abs(distance % speed);
-        function doTinyScroll() {
-            if (Math.abs(distance) == end) return;
-            else if (distance > 0) {
-                element.scrollBy({
-                    top: speed,
-                });
-                distance -= speed;
-            } else {
-                element.scrollBy({
-                    top: -speed,
-                });
-                distance += speed;
-            }
-            window.requestAnimationFrame(doTinyScroll);
-        }
-        window.requestAnimationFrame(doTinyScroll);
-    }
-
-    /**
-     * Dynamically change the scrolling to stop at the end of images or skip to the start of the next image
-     */
-    function scrollMagic(element: HTMLElement, defaultDistance: number) {
-        let images = element.querySelectorAll('.image');
-        // Are we at the end of the page
-        if (
-            images[images.length - 1].getBoundingClientRect().bottom -
-                window.innerHeight <
-            1
-        ) {
-            // Should we go to next chapter because we previouysly reached the end of page ?
-            if (autoNextChapter) {
-                return this.requestChapterUp();
-            }
-            // Prepare for next chapter
-            autoNextChapter = true;
-
-            // Todo: Find a way to popup that you have to press spacebar again within 4s
-            setTimeout(function () {
-                autoNextChapter = false;
-            }, 4000);
-            return;
-        }
-        // Lets stay on current page
-        // Find current image within view
-        let targetScrollImages = [...images].filter((image) => {
-            let rect = image.getBoundingClientRect();
-            return rect.top <= window.innerHeight && rect.bottom > 1;
-        });
-
-        // If multiple images filtered, get the last one. If none scroll use the top image
-        let targetScrollImage =
-            targetScrollImages[targetScrollImages.length - 1] || images[0];
-
-        // Is the target image top within view ? then scroll to the top of it
-        if (targetScrollImage.getBoundingClientRect().top > 1) {
-            // Scroll to it
-            targetScrollImage.scrollIntoView({
-                behavior: 'smooth',
-            });
-        }
-        // Do we stay within target ? (bottom is further than current view)
-        else if (
-            window.innerHeight + 1 <
-            targetScrollImage.getBoundingClientRect().bottom
-        ) {
-            element.scrollBy({
-                top: Math.min(
-                    defaultDistance,
-                    targetScrollImage.getBoundingClientRect().bottom -
-                        window.innerHeight
-                ),
-                left: 0,
-                behavior: 'smooth',
-            });
-        }
-        // We have to try to get to next image
+    let autoNextItem = false;
+    export let hasNextItem = true;
+    function onNextItemCallback() {
+        if (autoNextItem) dispatch('nextItem');
         else {
-            // Find next image
-            let nextScrollImage = targetScrollImage.nextElementSibling;
-            // Scroll to it
-            nextScrollImage.scrollIntoView({
-                behavior: 'smooth',
-            });
+            autoNextItem = true;
+            setTimeout(function () {
+                autoNextItem = false;
+            }, 4000);
         }
     }
+
+    let pos = { top: 0, left: 0, x: 0, y: 0 };
+
+    function mouseDownHandler(e) {
+        viewer.style.cursor = 'grabbing';
+        viewer.style.userSelect = 'none';
+        pos = {
+            // The current scroll
+            left: viewer.scrollLeft,
+            top: viewer.scrollTop,
+            // Get the current mouse position
+            x: e.clientX,
+            y: e.clientY,
+        };
+
+        viewer.addEventListener('mousemove', mouseMoveHandler);
+        viewer.addEventListener('mouseup', mouseUpHandler);
+    }
+
+    const mouseMoveHandler = function (e) {
+        // How far the mouse has been moved
+        const dx = e.clientX - pos.x;
+        const dy = e.clientY - pos.y;
+
+        // Scroll the element
+        viewer.scrollTop = pos.top - dy;
+        viewer.scrollLeft = pos.left - dx;
+    };
+
+    const mouseUpHandler = function () {
+        viewer.removeEventListener('mousemove', mouseMoveHandler);
+        viewer.removeEventListener('mouseup', mouseUpHandler);
+
+        viewer.style.cursor = 'grab';
+        viewer.style.removeProperty('user-select');
+    };
 </script>
 
-<svelte:window on:keydown={onKeyDown} />
-
-<div bind:this={viewer} class={$ViewerModeValue}>
+<svelte:window on:keydown={onKeyDown} on:mousedown={mouseDownHandler} />
+<div id="wideviewer" bind:this={viewer} class={$ViewerModeValue}>
     <WideViewerSetting {title} on:close />
     {#if $ViewerModeValue === Key.ViewerMode_Longstrip}
         <WebtoonViewer {item} />
     {:else if $ViewerModeValue === Key.ViewerMode_Paginated}
         <MangaViewer {item} {currentImageIndex} />
     {/if}
+    {#if autoNextItem && hasNextItem}
+        <InlineNotification
+            kind="info"
+            title="Bottom reached"
+            subtitle="Click or Press space again to go to next item."
+            on:click={() => dispatch('nextitem')}
+            on:close={() => (autoNextItem = false)}
+            style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
+        />
+    {/if}
 </div>
 
 <style>
-    div {
+    #wideviewer {
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
         position: absolute;
         overflow-y: scroll;
-        z-index: 9000;
+        z-index: 10000;
         background-color: var(--cds-ui-01);
         cursor: grab;
     }
