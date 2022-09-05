@@ -161,6 +161,6 @@ export default class App extends FASTElement {
     }
 
     public PreviewClosed() {
-        this.item = null;
+        this.item = undefined;
     }
 }

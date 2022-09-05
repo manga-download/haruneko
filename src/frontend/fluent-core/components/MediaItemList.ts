@@ -1,6 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
-import type { IMediaContainer, IMediaItem } from '../../../engine/providers/MediaPlugin';
-import { Priority } from '../../../engine/taskpool/DeferredTask';
+import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
 //import IconSortNone from '@fluentui/svg-icons/icons/arrow_sort_20_regular.svg?raw';

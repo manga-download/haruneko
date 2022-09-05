@@ -4,7 +4,6 @@ import { Chapter } from '../../../engine/providers/MangaPlugin';
 import S from '../services/StateService';
 
 import IconClose from '@fluentui/svg-icons/icons/dismiss_20_regular.svg?raw';
-import { Priority } from '../../../engine/taskpool/DeferredTask';
 
 const styles: ElementStyles = css`
 
@@ -66,25 +65,8 @@ export class MediaItemPreview extends FASTElement {
             await this.entry?.Update();
         }
         this.items = (this.entry?.Entries ?? []) as IMediaItem[];
-        console.log('Preview:', this.entry?.Title, this.entry instanceof Chapter);
     }
     @observable items: IMediaItem[];
-
-    public async LoadPage(page: IMediaItem, img: HTMLImageElement) {
-        console.log('Loading Page:', page, img);
-        const cancellator = new AbortController();
-        img.addEventListener('abort', () => {
-            console.log('Abort Page Request:', page);
-            cancellator.abort();
-        });
-        const data = await page.Fetch(Priority.High, cancellator.signal);
-        console.log('Page Loaded: ', data.type, data.size);
-        img.addEventListener('abort', () => {
-            console.log('Revoke Object URL:', img.src);
-            URL.revokeObjectURL(img.src);
-        });
-        img.src = URL.createObjectURL(data);
-    }
 
     public async ClosePreview() {
         this.$emit('previewClosed');
