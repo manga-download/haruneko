@@ -52,27 +52,33 @@ const template: ViewTemplate<MediaItemPage> = html`
 @customElement({ name: 'fluent-media-item-page', template, styles })
 export class MediaItemPage extends FASTElement {
 
+    // TODO: When connecting the same page again that was previously aborted, it won't load
+
     override disconnectedCallback(): void {
         super.disconnectedCallback();
         this.abort();
-        this.revoke();
     }
 
     private abort = noop;
-    private revoke = noop;
     @observable item: IMediaItem;
     itemChanged() {
         this.abort();
-        this.revoke();
         if(this.item) {
             this.LoadPage();
         }
     }
     @observable img: string = undefined;
+    imgChanged(oldValue: string, newValue: string) {
+        if(oldValue?.startsWith('blob:')) {
+            URL.revokeObjectURL(oldValue);
+        }
+        if(!newValue?.startsWith('blob:')) {
+            this.info = undefined;
+        }
+    }
     @observable info: string = undefined;
 
     private async LoadPage() {
-        this.info = undefined;
         this.img = undefined;
         try {
             const cancellator = new AbortController();
@@ -85,14 +91,7 @@ export class MediaItemPage extends FASTElement {
             if(!data || cancellator.signal.aborted) {
                 return;
             }
-            const url = URL.createObjectURL(data);
-            this.revoke = () => {
-                this.revoke = noop;
-                URL.revokeObjectURL(url);
-                this.img = undefined;
-                this.info = undefined;
-            };
-            this.img = url;
+            this.img = URL.createObjectURL(data);
             this.info = `${data.type} @ ${data.size.toLocaleString('en-US', { useGrouping: true })}`;
         } catch(error) {
             console.warn(error);
