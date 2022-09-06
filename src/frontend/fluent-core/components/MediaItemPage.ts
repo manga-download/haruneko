@@ -24,6 +24,10 @@ const styles: ElementStyles = css`
         color: var(--neutral-foreground-hint);
     }
 
+    .preview .info fluent-anchor::part(control) {
+        text-decoration: none;
+    }
+
     .preview img {
         width: 320px;
         height: 320px;
@@ -39,8 +43,8 @@ const styles: ElementStyles = css`
 
 const template: ViewTemplate<MediaItemPage> = html`
     <div class="preview">
-        <div class="info">${model => model.info ?? '┄'}</div>
-        ${when(model => model.img, html`<img src="${model => model.img}" title="${model => model.item?.Link}" />`)}
+        <div class="info"><fluent-anchor appearance="hypertext" target="_blank" href="${model => model.item['Link']}" title="${model => model.item['Link']}">${model => model.info ?? '┄'}</fluent-anchor></div>
+        ${when(model => model.img, html`<fluent-anchor appearance="hypertext" target="_blank" href="${model => model.img}" title="${model => model.img}"><img src="${model => model.img}" /></fluent-anchor>`)}
         ${when(model => !model.img, html`<fluent-progress-ring></fluent-progress-ring>`)}
     </div>
 `;
@@ -89,7 +93,7 @@ export class MediaItemPage extends FASTElement {
                 this.info = undefined;
             };
             this.img = url;
-            this.info = `${data.type} - ${data.size}`;
+            this.info = `${data.type} @ ${data.size.toLocaleString('en-US', { useGrouping: true })}`;
         } catch(error) {
             console.warn(error);
         } finally {
