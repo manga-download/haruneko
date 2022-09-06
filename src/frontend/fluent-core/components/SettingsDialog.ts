@@ -49,6 +49,10 @@ const styles: ElementStyles = css`
     #footer {
         text-align: center;
     }
+
+    fluent-select::part(listbox) {
+        max-height: 200px;
+    }
 `;
 
 const templateText: ViewTemplate<Text> = html`
