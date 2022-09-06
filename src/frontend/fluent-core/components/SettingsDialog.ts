@@ -123,13 +123,16 @@ const template: ViewTemplate<SettingsDialog> = html`
 @customElement({ name: 'fluent-settings-dialog', template, styles })
 export class SettingsDialog extends FASTElement {
 
+    constructor() {
+        super();
+        S.ShowSettingsDialog = (...settings: ISetting[]) => {
+            this.settings = settings;
+            this.hidden = false;
+        };
+    }
+
     @observable hidden = true;
     @observable settings: ISetting[] = [];
-
-    public Show(...settings: ISetting[]) {
-        this.settings = settings;
-        this.hidden = false;
-    }
 
     public async SelectDirectory(directory: Directory): Promise<void> {
         const folder = await window.showDirectoryPicker({ startIn: directory.Value ?? 'documents' }) ?? directory.Value;

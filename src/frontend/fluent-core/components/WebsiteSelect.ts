@@ -212,6 +212,8 @@ export class WebsiteSelect extends FASTElement {
 
     public OpenSettings(event: Event) {
         event.stopPropagation();
-        console.log('Open Settings', this.selected?.Identifier);
+        if(this.selected?.Settings) {
+            S.ShowSettingsDialog(...this.selected.Settings);
+        }
     }
 }

@@ -10,7 +10,7 @@ const styles: ElementStyles = css`
         gap: 0;
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: min-content minmax(0, 1fr);
+        grid-template-rows: min-content min-content minmax(0, 1fr);
         height: 100vh;
         background-color: var(--neutral-layer-1);
         color: var(--neutral-foreground-rest);
@@ -101,6 +101,7 @@ const templatePreview: ViewTemplate<App> = html`
 `;
 
 const template: ViewTemplate<App> = html`
+    <fluent-settings-dialog></fluent-settings-dialog>
     <fluent-titlebar id="titlebar"></fluent-titlebar>
     ${when(model => !model.item, templateWidgets)}
     ${when(model => model.item, templatePreview)}

@@ -1,6 +1,6 @@
 import { observable } from '@microsoft/fast-element';
 import { baseLayerLuminance, StandardLuminance } from '@fluentui/web-components';
-import { Check, type Choice, Numeric } from '../../../engine/SettingsManager';
+import { type ISetting, Check, type Choice, Numeric } from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
 import { VariantResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
@@ -55,6 +55,8 @@ class StateService {
     SettingPanelDownloadsChanged() {
         this.settingPanelDownloadsCheck.Value = this.SettingPanelDownloads;
     }
+
+    public ShowSettingsDialog: (...settings: ISetting[]) => void;
 }
 
 export default new StateService();
