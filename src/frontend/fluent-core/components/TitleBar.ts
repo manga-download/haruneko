@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, ref } from '@microsoft/fast-element';
 import type { SettingsDialog } from './SettingsDialog';
 import S from '../services/StateService';
 
@@ -60,10 +60,6 @@ const styles: ElementStyles = css`
         background-color: #FF6060 !important;
     }
 
-    #settings-dialog {
-        z-index: 2147483647;
-    }
-
     #menu-overlay {
         display: none;
         position: absolute;
@@ -112,12 +108,13 @@ const template: ViewTemplate<TitleBar> = html`
         <fluent-anchor appearance="stealth" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize}></fluent-anchor>
         <fluent-anchor id="close" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" @click=${model => model.window.Close()}>${IconClose}</fluent-anchor>
     </div>
-    <fluent-settings-dialog id="settings" :hidden=${model => !model.settings}></fluent-settings-dialog>
+    <fluent-settings-dialog :hidden=${model => !model.settings} ${ref('elementSettingsDialog')}></fluent-settings-dialog>
 `;
 
 @customElement({ name: 'fluent-titlebar', template, styles })
 export class TitleBar extends FASTElement {
 
+    elementSettingsDialog: SettingsDialog;
     @IWindowService window!: IWindowService;
     @observable maximized = false;
     @observable settings = false;
@@ -125,8 +122,7 @@ export class TitleBar extends FASTElement {
 
     public ShowGlobalSettingsDialog() {
         this.popup = false;
-        const dialog = this.shadowRoot.querySelector<SettingsDialog>('#settings');
-        dialog.Show(...HakuNeko.SettingsManager.OpenScope());
+        this.elementSettingsDialog.Show(...HakuNeko.SettingsManager.OpenScope());
     }
 
     public ShowImportDialog()

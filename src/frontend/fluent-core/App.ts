@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, ref, when } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
 import type { WebsiteSelect, MediaTitleSelect } from './components/_index';
 import S from './services/StateService';
@@ -78,13 +78,13 @@ const templateWidgets: ViewTemplate<App> = html`
         ${when(() => S.SettingPanelBookmarks || S.SettingPanelDownloads, templateSidePanel)}
         <div id="mainpanel">
             <fluent-card>
-                <fluent-website-select id="website-select" :selected=${model => model.website}
+                <fluent-website-select id="website-select" ${ref('elementWebsiteSelect')} :selected=${model => model.website}
                     @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
                     @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}>
                 </fluent-website-select>
             </fluent-card>
             <fluent-card>
-                <fluent-media-title-select id="media-title-select" :entries=${model => model.titles}
+                <fluent-media-title-select id="media-title-select" ${ref('elementMediaSelect')} :entries=${model => model.titles}
                     @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
                     @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}>
                 </fluent-media-title-select>
@@ -109,18 +109,12 @@ const template: ViewTemplate<App> = html`
 @customElement({ name: 'fluent-app', template, styles })
 export default class App extends FASTElement {
 
+    elementWebsiteSelect: WebsiteSelect;
+    elementMediaSelect: MediaTitleSelect;
     @observable website: IMediaContainer;
     @observable titles: IMediaContainer[];
     @observable items: IMediaContainer[];
     @observable item: IMediaContainer;
-
-    private get elementWebsiteSelect() {
-        return this.shadowRoot.querySelector('#website-select') as WebsiteSelect;
-    }
-
-    private get elementMediaSelect() {
-        return this.shadowRoot.querySelector('#media-title-select') as MediaTitleSelect;
-    }
 
     public WebsiteSelectedChanged(event: Event) {
         const sender = event.currentTarget as WebsiteSelect;
