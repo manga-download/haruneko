@@ -79,14 +79,14 @@ const templateWidgets: ViewTemplate<App> = html`
         <div id="mainpanel">
             <fluent-card>
                 <fluent-website-select id="website-select" ${ref('elementWebsiteSelect')} :selected=${model => model.website}
-                    @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event)}
-                    @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event)}>
+                    @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event.currentTarget as WebsiteSelect)}
+                    @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event.currentTarget as WebsiteSelect)}>
                 </fluent-website-select>
             </fluent-card>
             <fluent-card>
                 <fluent-media-title-select id="media-title-select" ${ref('elementMediaSelect')} :entries=${model => model.titles}
-                    @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event)}
-                    @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event)}>
+                    @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event.currentTarget as MediaTitleSelect)}
+                    @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event.currentTarget as MediaTitleSelect)}>
                 </fluent-media-title-select>
             </fluent-card>
             <fluent-card>
@@ -117,31 +117,29 @@ export default class App extends FASTElement {
     @observable items: IMediaContainer[];
     @observable item: IMediaContainer;
 
-    public WebsiteSelectedChanged(event: Event) {
-        const sender = event.currentTarget as WebsiteSelect;
-        this.titles = sender?.selected?.Entries as IMediaContainer[];
-        if(!sender?.selected?.IsSameAs(this.elementMediaSelect.selected?.Parent)) {
+    public WebsiteSelectedChanged(target: WebsiteSelect) {
+        this.website = target?.selected;
+        this.titles = this.website?.Entries as IMediaContainer[];
+        if(!this.website?.IsSameAs(this.elementMediaSelect.selected?.Parent)) {
             this.elementMediaSelect.selected = undefined;
         }
     }
 
-    public WebsiteEntriesUpdated(event: Event) {
-        const sender = event.currentTarget as WebsiteSelect;
-        this.titles = sender?.selected?.Entries as IMediaContainer[];
-    }
-
-    public MediaTitleSelectedChanged(event: Event) {
-        const sender = event.currentTarget as MediaTitleSelect;
-        this.items = sender?.selected?.Entries as IMediaContainer[];
-        // TODO: Setting website e.g. due to paste may lead to livelock ...
-        if(sender?.selected && !sender?.selected?.Parent?.IsSameAs(this.elementWebsiteSelect.selected)) {
-            this.elementWebsiteSelect.selected = sender?.selected?.Parent;
+    public WebsiteEntriesUpdated(target: WebsiteSelect) {
+        if(this.website?.IsSameAs(target?.selected)) { // currently always true
+            this.titles = this.website?.Entries as IMediaContainer[];
         }
     }
 
-    public MediaTitleEntriesUpdated(event: Event) {
-        const sender = event.currentTarget as MediaTitleSelect;
-        this.items = sender?.selected?.Entries as IMediaContainer[];
+    public MediaTitleSelectedChanged(target: MediaTitleSelect) {
+        this.items = target?.selected?.Entries as IMediaContainer[];
+        if(target?.selected && !target?.selected?.Parent?.IsSameAs(this.elementWebsiteSelect.selected)) {
+            this.elementWebsiteSelect.selected = target?.selected?.Parent;
+        }
+    }
+
+    public MediaTitleEntriesUpdated(target: MediaTitleSelect) {
+        this.items = target?.selected?.Entries as IMediaContainer[];
     }
 
     public BookmarkClicked(event: Event) {
