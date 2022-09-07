@@ -36,7 +36,7 @@ const styles: ElementStyles = css`
 `;
 
 const templatePage: ViewTemplate<IMediaItem> = html`<fluent-media-item-page :item=${model => model}></fluent-media-item-page>`;
-const templateChapter: ViewTemplate<MediaItemPreview> = html`${repeat(model => model.items, templatePage)}`;
+const templateChapter: ViewTemplate<MediaItemPreview> = html`${repeat(model => model.items, templatePage, { recycle: false })}`;
 
 const template: ViewTemplate<MediaItemPreview> = html`
     <div id="heading">

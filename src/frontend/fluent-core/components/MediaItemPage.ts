@@ -43,7 +43,7 @@ const styles: ElementStyles = css`
 
 const template: ViewTemplate<MediaItemPage> = html`
     <div class="preview">
-        <div class="info"><fluent-anchor appearance="hypertext" target="_blank" href="${model => model.item['Link']}" title="${model => model.item['Link']}">${model => model.info ?? '┄'}</fluent-anchor></div>
+        <div class="info"><fluent-anchor appearance="hypertext" target="_blank" href="${model => model.item?.['Link']}" title="${model => model.item?.['Link']}">${model => model.info ?? '┄'}</fluent-anchor></div>
         ${when(model => model.img, html`<fluent-anchor appearance="hypertext" target="_blank" href="${model => model.img}" title="${model => model.img}"><img src="${model => model.img}" /></fluent-anchor>`)}
         ${when(model => !model.img, html`<fluent-progress-ring></fluent-progress-ring>`)}
     </div>
@@ -52,20 +52,25 @@ const template: ViewTemplate<MediaItemPage> = html`
 @customElement({ name: 'fluent-media-item-page', template, styles })
 export class MediaItemPage extends FASTElement {
 
-    // TODO: When connecting the same page again that was previously aborted, it won't load
-
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        this.abort();
+        this.item = undefined;
     }
 
     private abort = noop;
+    private timerLoadPage: number;
     @observable item: IMediaItem;
     itemChanged() {
         this.abort();
-        if(this.item) {
-            this.LoadPage();
-        }
+        this.img = undefined;
+        // NOTE: Prevent too frequent changes, e.g. caused by recycling existing instances...
+        window.clearTimeout(this.timerLoadPage);
+        this.timerLoadPage = window.setTimeout(() => {
+            if(this.item) {
+                window.clearTimeout(this.timerLoadPage);
+                this.LoadPage();
+            }
+        }, 500);
     }
     @observable img: string = undefined;
     imgChanged(oldValue: string, newValue: string) {
@@ -79,7 +84,6 @@ export class MediaItemPage extends FASTElement {
     @observable info: string = undefined;
 
     private async LoadPage() {
-        this.img = undefined;
         try {
             const cancellator = new AbortController();
             this.abort = () => {
