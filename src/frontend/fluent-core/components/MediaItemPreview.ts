@@ -55,6 +55,7 @@ export class MediaItemPreview extends FASTElement {
     @observable entry: IMediaContainer;
     async entryChanged() {
         if(this.entry?.Entries?.length === 0) {
+            this.items = [];
             await this.entry?.Update();
         }
         this.items = (this.entry?.Entries ?? []) as IMediaItem[];
