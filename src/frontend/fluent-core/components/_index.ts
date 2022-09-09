@@ -10,3 +10,4 @@ export { MediaItemPage } from './MediaItemPage';
 export { SearchBox } from './SearchBox';
 export { SettingsDialog } from './SettingsDialog';
 export { SettingThemeLuminance } from './SettingThemeLuminance';
+export { LazyScroll } from './LazyScroll';
