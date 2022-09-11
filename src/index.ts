@@ -1,8 +1,9 @@
 import { CreateUnsupportedPlatformError, DetectPlatform, Runtime, type PlatformInfo } from './engine/Platform';
+import type { IFrontendModule, IFrontendInfo } from './frontend/IFrontend';
+import type { Event } from './engine/Event';
 
-async function InitializeNodeWebkit(info: PlatformInfo) {
+async function ShowNodeWebkitSplashScreen(nwWindow: NWJS_Helpers.win, event: Event<IFrontendModule, IFrontendInfo>, timeout: number) {
 
-    const nwWindow = nw.Window.get();
     nwWindow.hide();
 
     const nwSplashOptions = {
@@ -26,20 +27,31 @@ async function InitializeNodeWebkit(info: PlatformInfo) {
         });
     });
 
+    const hideSplashScreen = () => {
+        event.Unsubscribe(hideSplashScreen);
+        clearTimeout(hideSplashScreenTimeout);
+        nwSplash.close(true);
+    };
+
+    event.Subscribe(hideSplashScreen);
+    const hideSplashScreenTimeout = setTimeout(hideSplashScreen, timeout);
+}
+
+async function InitializeNodeWebkit(info: PlatformInfo) {
     const { HakuNeko } = await import('./engine/HakuNeko');
     const { FrontendController } = await import('./frontend/FrontendController');
 
+    const nwWindow = nw.Window.get();
+
+    if(window.localStorage.getItem('hakuneko-dev-nosplash') === 'true') {
+        nwWindow.show();
+    } else {
+        ShowNodeWebkitSplashScreen(nwWindow, FrontendController.FrontendLoaded, 7500);
+    }
+
     nwWindow.window.HakuNeko = new HakuNeko(info);
     await window.HakuNeko.Initialze();
-    FrontendController.FrontendLoaded.Subscribe(HideSplashScreen);
-    const timerHideSplashScreen = setTimeout(HideSplashScreen, 7500);
     new FrontendController(window.HakuNeko.SettingsManager.OpenScope());
-
-    function HideSplashScreen() {
-        FrontendController.FrontendLoaded.Unsubscribe(HideSplashScreen);
-        clearTimeout(timerHideSplashScreen);
-        nwSplash.close(true);
-    }
 }
 
 async function InitializeBrowser(info: PlatformInfo) {
