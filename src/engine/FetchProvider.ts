@@ -2,7 +2,7 @@ import { type PlatformInfo, Runtime, DetectPlatform, CreateUnsupportedPlatformEr
 import * as FetchProviderNodeWebkit from './FetchProviderNodeWebkit';
 import * as FetchProviderBrowser from './FetchProviderBrowser';
 
-export type PreloadAction = (window: Window, frame: Window) => void;
+export type PreloadAction = (win: typeof window, frame: typeof window) => void;
 
 const fail = function() {
     throw new Error();

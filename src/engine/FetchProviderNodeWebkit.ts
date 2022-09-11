@@ -159,27 +159,50 @@ async function FetchWindow(request: FetchRequest, timeout: number, preload: Prel
         //inject_js_end: 'filename'
     };
 
-    const win = await new Promise<NWJS_Helpers.win>(resolve => nw.Window.open(request.url, options, win => {
-        win.on('document-start', (frame: Window) => {
-            preload(win.window, frame);
+    return await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(request.url/*'data:text/plain,'*/, options, win => {
+
+        const invocations: {
+            name: 'opened' | 'document-start' | 'loaded' | 'new-win-policy' | 'navigation';
+            info: string
+        }[] = [];
+
+        if(win?.window?.window) {
+            invocations.push({ name: 'opened', info: win.window?.location?.href });
+            preload(win.window.window, win.window.window);
+            PreventDialogs(win, win.window.window);
+        }
+
+        win.on('document-start', (frame: typeof window) => {
+            invocations.push({ name: 'document-start', info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
+            preload(win.window.window, frame);
             PreventDialogs(win, frame);
         });
-        // NOTE: Use policy to prevent any new popup windows
-        win.on('new-win-policy', (_frame, _url, policy) => policy.ignore());
-        win.on('navigation', win.hide);
-        resolve(win);
-    }));
 
-    return new Promise((resolve, reject) => {
+        // NOTE: Use policy to prevent any new popup windows
+        win.on('new-win-policy', (_frame, url, policy) => {
+            invocations.push({ name: 'new-win-policy', info: url });
+            policy.ignore();
+        });
+
+        win.on('navigation', (_frame, url/*, policy*/) => {
+            invocations.push({ name: 'navigation', info: url });
+            //policy.ignore();
+            win.hide();
+        });
 
         const destroy = () => {
             win.close();
+            if(!invocations.some(invocation => invocation.name === 'loaded')) {
+                console.warn(`FetchWindow() timed out without <loaded> event being invoked!`);
+            }
+            console.log('FetchWindow()::invocations', invocations);
             reject(new Error(GetLocale().FetchProvider_FetchWindow_TimeoutError()));
         };
 
         let cancellation = setTimeout(destroy, timeout);
 
-        async function load() {
+        win.on('loaded', async () => {
+            invocations.push({ name: 'loaded', info: win.window?.location?.href });
             try {
                 const redirect = await CheckAntiScrapingDetection(win);
                 switch (redirect) {
@@ -201,12 +224,11 @@ async function FetchWindow(request: FetchRequest, timeout: number, preload: Prel
                 win.close();
                 reject(error);
             }
-        }
+        });
 
-        win.on('loaded', load);
         // HACK: win.on('loaded', load) alone seems quite unreliable => enforce reload after event was attached ...
-        win.reload();
-    });
+        //win.reload();
+    }));
 }
 
 export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay = 0, timeout?: number): Promise<T[]> {
