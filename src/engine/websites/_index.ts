@@ -547,7 +547,6 @@ export { default as ComicVN } from './legacy/ComicVN';
 export { default as ComicWalker } from './legacy/ComicWalker';
 export { default as ComicZenon } from './legacy/ComicZenon';
 export { default as ComicZerosum } from './legacy/ComicZerosum';
-export { default as Comikey } from './legacy/Comikey';
 export { default as CopyToon } from './legacy/CopyToon';
 export { default as CrunchyAnime } from './legacy/CrunchyAnime';
 export { default as CrunchyManga } from './legacy/CrunchyManga';
