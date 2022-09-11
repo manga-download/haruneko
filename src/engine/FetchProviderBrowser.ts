@@ -29,6 +29,10 @@ export async function FetchWindowCSS<T extends HTMLElement>(/*request: FetchRequ
 }
 
 export async function FetchWindowScript<T>(/*request: FetchRequest, script: string, delay = 0, timeout?: number*/): Promise<T> {
+    return FetchWindowPreloadScript();
+}
+
+export async function FetchWindowPreloadScript<T>(/*request: FetchRequest, preload: PreloadAction, script: string, delay = 0, timeout?: number*/): Promise<T> {
     /*
     const win = window.open(request.url);
     win.blur();

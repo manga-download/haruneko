@@ -1,4 +1,5 @@
 import { GetLocale } from '../i18n/Localization';
+import type { PreloadAction } from './FetchProvider';
 import { FetchRedirection, CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
@@ -23,7 +24,7 @@ export function RevealWebRequestHeaders(headers: chrome.webRequest.HttpHeader[])
     return headers;
 }
 
-function ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
+function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
     // TODO: set cookies from chrome matching the details.url?
     //       const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
 
@@ -38,6 +39,14 @@ function ModifyFetchHeaders(details: chrome.webRequest.WebRequestHeadersDetails)
     };
 }
 
+function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDetails): chrome.webRequest.BlockingResponse {
+    return {
+        // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
+        // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
+        responseHeaders: details.responseHeaders.filter(header => header.name.toLocaleLowerCase() !== 'link')
+    };
+}
+
 export function Initialize(): void {
 
     // Forward compatibility for future chrome versions (MV3 - Manifest v3)
@@ -48,10 +57,18 @@ export function Initialize(): void {
 
     // NOTE: parameter extraInfoSpec:
     //       'blocking'       => sync request required for header modification
-    //       'requestHeaders' => allow change request headers?
+    //       'requestHeaders' => allow change request headers
     //       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
-    if(!chrome.webRequest.onBeforeSendHeaders.hasListener(ModifyFetchHeaders)) {
-        chrome.webRequest.onBeforeSendHeaders.addListener(ModifyFetchHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
+    if(!chrome.webRequest.onBeforeSendHeaders.hasListener(ModifyRequestHeaders)) {
+        chrome.webRequest.onBeforeSendHeaders.addListener(ModifyRequestHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
+    }
+
+    // NOTE: parameter extraInfoSpec:
+    //       'blocking'        => sync request required for header modification
+    //       'responseHeaders' => allow change response headers
+    //       'extraHeaders'    => allow change 'referer', 'origin', 'cookie'
+    if(!chrome.webRequest.onHeadersReceived.hasListener(ModifyResponseHeaders)) {
+        chrome.webRequest.onHeadersReceived.addListener(ModifyResponseHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'responseHeaders', 'extraHeaders' ]);
     }
 
     // TODO: Swith to chrome.declarativeNetRequest
@@ -129,7 +146,7 @@ async function Wait(delay: number) {
     return new Promise(resolve => setTimeout(resolve, delay));
 }
 
-async function FetchWindow(request: FetchRequest, timeout = 60_000): Promise<NWJS_Helpers.win> {
+async function FetchWindow(request: FetchRequest, timeout: number, preload: PreloadAction = () => undefined): Promise<NWJS_Helpers.win> {
 
     const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
         new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
@@ -142,7 +159,16 @@ async function FetchWindow(request: FetchRequest, timeout = 60_000): Promise<NWJ
         //inject_js_end: 'filename'
     };
 
-    const win = await new Promise<NWJS_Helpers.win>(resolve => nw.Window.open(request.url, options, win => resolve(win)));
+    const win = await new Promise<NWJS_Helpers.win>(resolve => nw.Window.open(request.url, options, win => {
+        win.on('document-start', (frame: Window) => {
+            preload(win.window, frame);
+            PreventDialogs(win, frame);
+        });
+        // NOTE: Use policy to prevent any new popup windows
+        win.on('new-win-policy', (_frame, _url, policy) => policy.ignore());
+        win.on('navigation', win.hide);
+        resolve(win);
+    }));
 
     return new Promise((resolve, reject) => {
 
@@ -177,10 +203,6 @@ async function FetchWindow(request: FetchRequest, timeout = 60_000): Promise<NWJ
             }
         }
 
-        // NOTE: Use policy to prevent any new popup windows
-        win.on('new-win-policy', (_frame, _url, policy) => policy.ignore());
-        win.on('document-start', (frame: Window) => PreventDialogs(win, frame));
-        win.on('navigation', win.hide);
         win.on('loaded', load);
         // HACK: win.on('loaded', load) alone seems quite unreliable => enforce reload after event was attached ...
         win.reload();
@@ -199,15 +221,28 @@ export async function FetchWindowCSS<T extends HTMLElement>(request: FetchReques
 }
 
 export async function FetchWindowScript<T>(request: FetchRequest, script: string, delay = 0, timeout?: number): Promise<T> {
-    const win = await FetchWindow(request, timeout);
+    return FetchWindowPreloadScript(request, () => undefined, script, delay, timeout);
+}
+
+export async function FetchWindowPreloadScript<T>(request: FetchRequest, preload: PreloadAction, script: string, delay = 0, timeout = 60_000): Promise<T> {
+    const start = Date.now();
+    const win = await FetchWindow(request, timeout, preload);
+    const elapsed = Date.now() - start;
     try {
         await Wait(delay);
-        const result = win.eval(null, script) as unknown as T | Promise<T>;
-        return await result;
-    } catch(inner) {
-        const outer = new EvalError('<script>', { cause: inner });
-        console.error(inner, outer);
-        throw outer;
+        let result: T | Promise<T>;
+        try {
+            result = win.eval(null, script) as unknown as T | Promise<T>;
+        } catch(inner) {
+            const outer = new EvalError('<script>', { cause: inner });
+            console.error(inner, outer);
+            throw outer;
+        }
+        // wait for completion, otherwise finally block will be executed before the result is received
+        return await Promise.race<T>([
+            result,
+            new Promise<T>((_, reject) => setTimeout(reject, timeout - elapsed, new Error(GetLocale().FetchProvider_FetchWindow_TimeoutError())))
+        ]);
     } finally {
         win.close();
     }
