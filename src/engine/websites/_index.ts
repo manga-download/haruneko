@@ -45,6 +45,7 @@ export { default as ComicDom } from './ComicDom';
 export { default as ComicKiba } from './ComicKiba';
 export { default as ComicOnline } from './ComicOnline';
 export { default as ComicsValley } from './ComicsValley';
+export { default as ComikeyArchive } from './ComikeyArchive';
 export { default as CopyPasteScan } from './CopyPasteScan';
 export { default as CrazyScans } from './CrazyScans';
 export { default as CronosScan } from './CronosScan';

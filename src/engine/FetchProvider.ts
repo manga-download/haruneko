@@ -2,6 +2,8 @@ import { type PlatformInfo, Runtime, DetectPlatform, CreateUnsupportedPlatformEr
 import * as FetchProviderNodeWebkit from './FetchProviderNodeWebkit';
 import * as FetchProviderBrowser from './FetchProviderBrowser';
 
+export type PreloadAction = (win: typeof window, frame: typeof window) => void;
+
 const fail = function() {
     throw new Error();
 };
@@ -36,13 +38,40 @@ export function FetchCSS<T extends HTMLElement>(request: FetchRequest, query: st
 }
 
 let fetchWindowCSS: <T extends HTMLElement>(request: FetchRequest, query: string, delay: number, timeout?: number) => Promise<T[]> = fail;
+/**
+ * Open the given {@link request} in a new browser window and execute the given {@link query}.
+ * @param request - ...
+ * @param query - The CSS query that will be performed for the DOM of the browser window
+ * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link query} will be executed
+ * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
+ */
 export function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay = 0, timeout?: number): Promise<T[]> {
     return fetchWindowCSS(request, query, delay, timeout);
 }
 
 let fetchWindowScript: <T>(request: FetchRequest, script: string, delay: number, timeout?: number) => Promise<T> = fail;
+/**
+ * Open the given {@link request} in a new browser window and inject the given {@link script}.
+ * @param request - ...
+ * @param script - The JavaScript that will be evaluated within the browser window
+ * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
+ * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
+ */
 export function FetchWindowScript<T>(request: FetchRequest, script: string, delay = 0, timeout?: number): Promise<T> {
     return fetchWindowScript(request, script, delay, timeout);
+}
+
+let fetchWindowPreloadScript: <T>(request: FetchRequest, preload: PreloadAction, script: string, delay: number, timeout?: number) => Promise<T> = fail;
+/**
+ * Open the given {@link request} in a new browser window and inject the given {@link script}.
+ * @param request - ...
+ * @param preload - ...
+ * @param script - The JavaScript that will be evaluated within the browser window
+ * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
+ * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
+ */
+export function FetchWindowPreloadScript<T>(request: FetchRequest, preload: PreloadAction, script: string, delay = 0, timeout?: number): Promise<T> {
+    return fetchWindowPreloadScript(request, preload, script, delay, timeout);
 }
 
 export function Initialize(info?: PlatformInfo): void {
@@ -58,6 +87,7 @@ export function Initialize(info?: PlatformInfo): void {
         fetchCSS = FetchProviderNodeWebkit.FetchCSS;
         fetchWindowCSS = FetchProviderNodeWebkit.FetchWindowCSS;
         fetchWindowScript = FetchProviderNodeWebkit.FetchWindowScript;
+        fetchWindowPreloadScript = FetchProviderNodeWebkit.FetchWindowPreloadScript;
         return;
     }
 
@@ -70,6 +100,7 @@ export function Initialize(info?: PlatformInfo): void {
         fetchCSS = FetchProviderNodeWebkit.FetchCSS;
         fetchWindowCSS = FetchProviderBrowser.FetchWindowCSS;
         fetchWindowScript = FetchProviderBrowser.FetchWindowScript;
+        fetchWindowPreloadScript = FetchProviderBrowser.FetchWindowPreloadScript;
         return;
     }
 
