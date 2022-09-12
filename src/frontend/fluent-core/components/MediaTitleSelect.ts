@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat, Observable } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import S from '../services/StateService';
@@ -74,16 +74,13 @@ const styles: ElementStyles = css`
         100% { transform: rotate(360deg); }
     }
 
-    ul#entries {
-        list-style-type: none;
-        max-height: 320px;
-        overflow-y: scroll;
-        overflow-x: hidden;
+    #entries {
+        height: 320px;
         padding: 0;
         margin: 0;
     }
 
-    ul#entries li {
+    #entries .entry {
         height: 42px; /* calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px); */
         padding: calc(var(--design-unit) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
@@ -93,13 +90,13 @@ const styles: ElementStyles = css`
         grid-template-columns: min-content 1fr;
     }
 
-    ul#entries li > div {
+    #entries .entry > div {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
 
-    ul#entries li:hover {
+    #entries .entry:hover {
         cursor: pointer;
         background-color: var(--neutral-fill-hover);
     }
@@ -124,11 +121,11 @@ const starred: ViewTemplate<MediaTitleSelect> = html`
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
+    <div class="entry" @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
         <img class="icon" src="${model => model.Icon}"></img>
         <div style="font-weight: bold;">${model => model.Title}</div>
         <div class="hint">${model => model.Identifier}</div>
-    </li>
+    </div>
 `;
 
 const template: ViewTemplate<MediaTitleSelect> = html`
@@ -142,13 +139,11 @@ const template: ViewTemplate<MediaTitleSelect> = html`
             <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}">${IconClipboard}</fluent-button>
         </div>
     </div>
-    <div id="dropdown">
+    <div id="dropdown" ${ref('dropdown')}>
         <div id="searchcontrol">
             <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-        <ul id="entries">
-            ${repeat(model => model.filtered, listitem)}
-        </ul>
+        <fluent-lazy-scroll id="entries" :items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
     </div>
 `;
 
@@ -165,6 +160,8 @@ export class MediaTitleSelect extends FASTElement {
         super.disconnectedCallback();
         HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
     }
+
+    dropdown: HTMLDivElement;
 
     @observable entries: IMediaContainer[] = [];
     entriesChanged() {
@@ -193,12 +190,8 @@ export class MediaTitleSelect extends FASTElement {
     @observable scanning = false;
     @observable pasting = false;
 
-    private get dropdown(): HTMLElement {
-        return this.shadowRoot.querySelector('#dropdown') as HTMLElement;
-    }
-
     public async FilterEntries() {
-        this.filtered = this.entries ? this.entries?.filter(entry => this.match(entry.Title)).slice(0, 250) /* TODO: virtual scrolling */ : [];
+        this.filtered = this.entries ? this.entries?.filter(entry => this.match(entry.Title)) : [];
     }
 
     public SelectEntry(entry: IMediaContainer) {

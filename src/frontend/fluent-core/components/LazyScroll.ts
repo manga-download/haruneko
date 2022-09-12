@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat, ref } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 
 const styles: ElementStyles = css`
 

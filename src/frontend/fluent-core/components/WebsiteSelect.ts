@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat, Observable } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
@@ -70,16 +70,13 @@ const styles: ElementStyles = css`
         100% { transform: rotate(360deg); }
     }
 
-    ul#entries {
-        list-style-type: none;
-        max-height: 320px;
-        overflow-y: scroll;
-        overflow-x: hidden;
+    #entries {
+        height: 320px;
         padding: 0;
         margin: 0;
     }
 
-    ul#entries li {
+    #entries .entry {
         height: 42px; /* calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px); */
         padding: calc(var(--design-unit) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
@@ -89,13 +86,13 @@ const styles: ElementStyles = css`
         grid-template-columns: min-content 1fr;
     }
 
-    ul#entries li > div {
+    #entries .entry > div {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
 
-    ul#entries li:hover {
+    #entries .entry:hover {
         cursor: pointer;
         background-color: var(--neutral-fill-hover);
     }
@@ -120,11 +117,11 @@ const starred: ViewTemplate<WebsiteSelect> = html`
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
+    <div class="entry" @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
         <img class="icon" src="${model => model.Icon}"></img>
         <div style="font-weight: bold;">${model => model.Title}</div>
         <div class="hint">${model => model.Identifier}</div>
-    </li>
+    </div>
 `;
 
 const template: ViewTemplate<WebsiteSelect> = html`
@@ -138,18 +135,18 @@ const template: ViewTemplate<WebsiteSelect> = html`
             <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} @click="${(model, ctx) => model.OpenSettings(ctx.event)}">${IconSettings}</fluent-button>
         </div>
     </div>
-    <div id="dropdown">
+    <div id="dropdown" ${ref('dropdown')}>
         <div id="searchcontrol">
             <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-        <ul id="entries">
-            ${repeat(model => model.entries, listitem)}
-        </ul>
+        <fluent-lazy-scroll id="entries" :items=${model => model.entries} :template=${listitem}></fluent-lazy-scroll>
     </div>
 `;
 
 @customElement({ name: 'fluent-website-select', template, styles })
 export class WebsiteSelect extends FASTElement {
+
+    dropdown: HTMLDivElement;
 
     @observable entries = HakuNeko.PluginController.WebsitePlugins;
     @observable match: (text: string) => boolean = () => true;
@@ -171,12 +168,8 @@ export class WebsiteSelect extends FASTElement {
     @observable updating = false;
     @observable favorite = false;
 
-    private get dropdown(): HTMLElement {
-        return this.shadowRoot.querySelector('#dropdown') as HTMLElement;
-    }
-
     public async FilterEntries() {
-        this.entries = HakuNeko.PluginController.WebsitePlugins.filter(entry => this.match(entry.Title)).slice(0, 250); /* TODO: virtual scrolling */
+        this.entries = HakuNeko.PluginController.WebsitePlugins.filter(entry => this.match(entry.Title));
     }
 
     public SelectEntry(entry: IMediaContainer) {
