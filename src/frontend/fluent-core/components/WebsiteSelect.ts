@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
@@ -7,6 +7,43 @@ import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw'
 //import IconFavorite from '@fluentui/svg-icons/icons/star_20_regular.svg?raw';
 import IconAddFavorite from '@fluentui/svg-icons/icons/star_off_20_regular.svg?raw';
 import IconRemoveFavorite from '@fluentui/svg-icons/icons/star_20_filled.svg?raw';
+
+// #entries .entry
+const styleEntries = [
+    'height: 42px;',
+    'padding: calc(var(--design-unit) * 1px);',
+    'border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);',
+    'gap: calc(var(--design-unit) * 1px);',
+    'display: grid;',
+    'grid-template-rows: min-content 1fr;',
+    'grid-template-columns: min-content 1fr;',
+    // HACK: => hovered cursor
+    'cursor: pointer;',
+].join(' ');
+
+// #entries .entry:hover
+// cursor: pointer;
+// background-color: var(--neutral-fill-hover);
+
+// #entries .entry > div
+const styleTrim = [
+    'overflow: hidden;',
+    'white-space: nowrap;',
+    'text-overflow: ellipsis;',
+].join('');
+
+// #entries .entry > .title
+const styleTitle = styleTrim + 'font-weight: bold;';
+
+// .hint
+const styleHint = styleTrim + ' color: var(--neutral-foreground-hint);';
+
+// .icon
+const styleIcon = [
+    'margin-right: calc(var(--design-unit) * 1px);',
+    'height: inherit;',
+    'grid-row: 1 / -1;',
+].join(' ');
 
 const styles: ElementStyles = css`
 
@@ -76,8 +113,9 @@ const styles: ElementStyles = css`
         margin: 0;
     }
 
+    /*
     #entries .entry {
-        height: 42px; /* calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px); */
+        height: 42px;
         padding: calc(var(--design-unit) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
         gap: calc(var(--design-unit) * 1px);
@@ -92,6 +130,10 @@ const styles: ElementStyles = css`
         text-overflow: ellipsis;
     }
 
+    #entries .entry > .title {
+        font-weight: bold;
+    }
+
     #entries .entry:hover {
         cursor: pointer;
         background-color: var(--neutral-fill-hover);
@@ -102,6 +144,7 @@ const styles: ElementStyles = css`
         height: inherit;
         grid-row: 1 / -1;
     }
+    */
 
     .hint {
         color: var(--neutral-foreground-hint);
@@ -116,11 +159,14 @@ const starred: ViewTemplate<WebsiteSelect> = html`
     <fluent-button id="remove-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${(model, ctx) => model.RemoveFavorite(ctx.event)}>${IconRemoveFavorite}</fluent-button>
 `;
 
+// HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
+//       => classes are not working, apply inline styles
+//       => manually query correct host and provide callback function
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <div class="entry" @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
-        <img class="icon" src="${model => model.Icon}"></img>
-        <div style="font-weight: bold;">${model => model.Title}</div>
-        <div class="hint">${model => model.Identifier}</div>
+    <div class="entry" style="${styleEntries}" @click=${(model, ctx) => ctx.parent.parentNode.parentNode.host.SelectEntry(model) }>
+        <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
+        <div class="title" style="${styleTitle}">${model => model.Title}</div>
+        <div class="hint" style="${styleHint}">${model => model.Identifier}</div>
     </div>
 `;
 

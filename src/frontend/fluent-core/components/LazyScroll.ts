@@ -10,15 +10,20 @@ const styles: ElementStyles = css`
 `;
 
 const template: ViewTemplate<LazyScroll> = html`
-    ${repeat(model => model.visibles, model => html`${model.template}`)}
+    ${repeat(model => model.visibles, model => model.template)}
 `;
 
 @customElement({ name: 'fluent-lazy-scroll', template, styles })
 export class LazyScroll extends FASTElement {
 
-    constructor() {
-        super();
+    override connectedCallback(): void {
+        super.connectedCallback();
         this.addEventListener('scroll', this.LoadNext);
+    }
+
+    override disconnectedCallback(): void {
+        super.disconnectedCallback();
+        this.removeEventListener('scroll', this.LoadNext);
     }
 
     private scrolling = false;
@@ -35,7 +40,6 @@ export class LazyScroll extends FASTElement {
             this.scrolling = true;
             window.requestAnimationFrame(() => {
                 if(this.scrollTop + this.clientHeight === this.scrollHeight) {
-                    //console.log('Scroll:', 'next', this.visibles.length, this.items?.length);
                     this.visibles = this.items?.slice(0, this.visibles.length + 100) ?? [];
                 }
                 this.scrolling = false;
