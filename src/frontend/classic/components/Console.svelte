@@ -8,8 +8,8 @@
         text: string;
     }
     let consoleitems: ConsoleItem[] = [];
-
-    const log = window.console.log.bind(console);
+    //TODO: find a way to not remove the source file/line from the console
+    /*    const log = window.console.log.bind(console);
     console.log = (...args: any) => {
         consoleitems = [...consoleitems, { type: 'log', text: args }];
         log.apply(console, args);
@@ -30,11 +30,12 @@
         consoleitems = [...consoleitems, { type: 'warn', text: args }];
         warn.apply(console, args);
     };
+    
     console.log('console.log from code');
     console.info('console.info from code');
     console.error('console.error from code');
     console.warn('console.warn from code');
-
+*/
     const consoleTypes: Map<string, any> = new Map([
         ['log', 'info-square'],
         ['info', 'info'],
