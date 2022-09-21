@@ -9,6 +9,7 @@ const patterns = [
     '*://*.doubleclick.net/*',
     '*://*.onesignal.com/*',
     '*://*.ospicalad.buzz/*',
+    '*://*.sentry.io/*',
     '*://*.yandex.ru/*.js',
     '*://*/js/ads*',
     '*://captivatepestilentstormy.com/*',
