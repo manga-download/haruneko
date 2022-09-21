@@ -21,7 +21,7 @@ export class ItemflagManager {
     public async LoadContainersFlags(medias: IMediaContainer[], shouldUpdate=false) {
         await Promise.all(
             medias.map(async (media) => this.LoadContainerFlags(media, shouldUpdate))
-        )
+        );
     }
 
     private async SaveContainerFlags(container: IMediaContainer, flags: ItemFlag[]) {
