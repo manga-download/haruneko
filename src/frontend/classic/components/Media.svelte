@@ -1,10 +1,12 @@
 <script lang="ts">
+    import { onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     import {
         ContextMenu,
         ContextMenuDivider,
         ContextMenuOption,
     } from 'carbon-components-svelte';
+    import { PlayFilled } from 'carbon-icons-svelte';
     import { selectedMedia } from '../stores/Stores';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
@@ -16,6 +18,23 @@
     let mediadiv: HTMLElement;
     async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
+    }
+
+    //Check if media has unviewed content
+    let hasUnFlaggedContent: Boolean = false;
+
+    import { EventWatcher } from '../stores/Events';
+    const mediaFlagsChanged = EventWatcher(
+        null,
+        HakuNeko.ItemflagManager.MediaFlagsChanged,
+        media
+    );
+    $: if ($mediaFlagsChanged) findMediaUnFlaggedContent(media);
+
+    async function findMediaUnFlaggedContent(media) {
+        hasUnFlaggedContent =
+            (await HakuNeko.ItemflagManager.GetUnFlaggedItems(media)).length >
+            0;
     }
 </script>
 
@@ -43,9 +62,9 @@
     class:selected
     on:click={() => ($selectedMedia = media)}
 >
-    {#if isBookmarked}<span transition:fade>⭐</span>{/if}<span
-        title={media.Title}>{media.Title}</span
-    >
+    {#if isBookmarked}<span transition:fade class="bookmark">⭐</span>{/if}
+    <span title={media.Title} class="title">{media.Title}</span>
+    {#if hasUnFlaggedContent}<PlayFilled class="continue" />{/if}
 </div>
 
 <style>
@@ -54,12 +73,27 @@
         padding-bottom: 2px;
         cursor: pointer;
         overflow: hidden;
-        text-overflow: ellipsis;
+        display: flex;
     }
     .media:hover {
         background-color: var(--cds-hover-ui);
     }
     .media.selected {
         background-color: var(--cds-active-ui);
+    }
+    .bookmark {
+        flex: initial;
+        display: inline-block;
+    }
+    .title {
+        flex: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .media :global(.continue) {
+        flex: initial;
+        flex-shrink: 0;
+        color: var(--cds-interactive-01);
     }
 </style>
