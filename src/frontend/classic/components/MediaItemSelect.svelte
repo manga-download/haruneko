@@ -220,7 +220,6 @@
     #ItemList {
         grid-area: ItemList;
         background-color: var(--cds-field-01);
-        overflow-y: scroll;
         overflow-x: hidden;
     }
     #ItemList .loading {
