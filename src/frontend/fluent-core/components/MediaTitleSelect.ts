@@ -34,10 +34,10 @@ const styleTrim = [
     'overflow: hidden;',
     'white-space: nowrap;',
     'text-overflow: ellipsis;',
-].join('');
+].join(' ');
 
 // #entries .entry > .title
-const styleTitle = styleTrim + 'font-weight: bold;';
+const styleTitle = styleTrim + ' font-weight: bold;';
 
 // .hint
 const styleHint = styleTrim + ' color: var(--neutral-foreground-hint);';
