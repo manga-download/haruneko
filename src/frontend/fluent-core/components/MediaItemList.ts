@@ -13,6 +13,32 @@ import IconDownload from '@fluentui/svg-icons/icons/arrow_circle_down_20_regular
 //import IconCheckBoxUnchecked from '@fluentui/svg-icons/icons/checkbox_unchecked_20_regular.svg?raw';
 //import IconCheckBoxIndeterminate from '@fluentui/svg-icons/icons/checkbox_indeterminate_20_regular.svg?raw';
 
+// #entries .entry
+const styleEntry = [
+    'padding: calc(var(--design-unit) * 1px);',
+    'border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);',
+    'gap: calc(var(--design-unit) * 1px);',
+    'display: grid;',
+    'align-items: center;',
+    'grid-template-rows: min-content;',
+    'grid-template-columns: min-content 1fr min-content;',
+].join(' ');
+
+// #entries .entry > div
+const styleTrim = [
+    'overflow: hidden;',
+    'white-space: nowrap;',
+    'text-overflow: ellipsis;',
+].join(' ');
+
+// #entries .entry .controls
+const styleControls = [
+    styleTrim,
+    'display: flex;',
+    // HACK: => hovered buttons
+    'visibility: visible;',
+].join(' ');
+
 const styles: ElementStyles = css`
 
     :host {
@@ -57,15 +83,13 @@ const styles: ElementStyles = css`
         100% { transform: rotate(360deg); }
     }
 
-    ul#entries {
-        list-style-type: none;
-        overflow-y: scroll;
-        overflow-x: hidden;
+    #entries {
         padding: 0;
         margin: 0;
     }
 
-    ul#entries li {
+    /*
+    #entries .entry {
         padding: calc(var(--design-unit) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
         gap: calc(var(--design-unit) * 1px);
@@ -75,35 +99,36 @@ const styles: ElementStyles = css`
         grid-template-columns: min-content 1fr min-content;
     }
 
-    ul#entries li > div {
+    #entries .entry > div {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
 
-    ul#entries li .controls {
+    #entries .entry .controls {
         visibility: hidden;
         display: flex;
     }
 
-    ul#entries li:hover {
+    #entries .entry:hover {
         background-color: var(--neutral-fill-hover);
     }
 
-    ul#entries li:hover .controls {
+    #entries .entry:hover .controls {
         visibility: visible;
     }
+    */
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <li>
-        <div><!-- <fluent-checkbox></fluent-checkbox> --></div>
-        <div>${model => model.Title}</div>
-        <div class="controls">
+    <div class="entry" style="${styleEntry}">
+        <div style="${styleTrim}"><!-- <fluent-checkbox></fluent-checkbox> --></div>
+        <div style="${styleTrim}">${model => model.Title}</div>
+        <div class="controls" style="${styleControls}">
             <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}" @click=${(model, ctx) => ctx.parent.ShowPreview(model)}>${IconPreview}</fluent-button>
             <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}" @click=${(model, ctx) => ctx.parent.Download(model)}>${IconDownload}</fluent-button>
         </div>
-    </li>
+    </div>
 `;
 
 const template: ViewTemplate<MediaItemList> = html`
@@ -114,9 +139,7 @@ const template: ViewTemplate<MediaItemList> = html`
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
-    <ul id="entries">
-        ${repeat(model => model.filtered, listitem)}
-    </ul>
+    <fluent-lazy-scroll id="entries" :items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
 `;
 
 @customElement({ name: 'fluent-media-item-list', template, styles })
