@@ -3,22 +3,38 @@
     import { ClickableTile } from 'carbon-components-svelte';
     import { useNavigate } from 'svelte-navigator';
     import { fade } from 'svelte/transition';
+    import Suggestions from '../Suggestions.svelte';
 
     const navigate = useNavigate();
+    let contentToSee;
 </script>
 
 <div id="Home" in:fade>
-    <div>
-        <p id="whatis" class="border">
-            <img alt="hakuneko logo" class="logo" src={Logo} align="left" />
+    <div class="border" style="margin-bottom:1em;">
+        <p id="whatis">
+            <img
+                alt="hakuneko logo"
+                class="logo"
+                src={Logo}
+                align="left"
+                style="height:3em;"
+            />
             <strong>HakuNeko</strong> was made to help users who download media
             for circumstances that requires offline usage. <br />
             The philosophy is <u>ad-hoc consumption</u>, get it when you want to
             read/watch it.
         </p>
     </div>
+    <div
+        class="border"
+        style="margin-bottom:1em; 
+            visibility={contentToSee > 0 ? 'visible' : 'hidden'}"
+    >
+        <h3 style="display: inline">Continue</h3>
+        <Suggestions />
+    </div>
     <div class="border">
-        <h2>Guides</h2>
+        <h3>Guides</h3>
         <div class="guides">
             <ClickableTile light on:click={() => navigate('/howto')}
                 >🚀 QuickStart
@@ -74,9 +90,6 @@
     #Home {
         padding: 0.5em;
     }
-    #whatis {
-        min-height: 7em;
-    }
     .border {
         border: 2px solid var(--cds-ui-04);
         border-radius: 1em;
@@ -92,7 +105,7 @@
         display: flex;
         flex-flow: row wrap;
     }
-    :global(.guides > *) {
+    .guides > :global(*) {
         flex: 0 1 calc(33% - 0.5em);
         margin: 0.2em;
     }

@@ -12,9 +12,10 @@
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
+    import { selectedItem } from '../stores/Stores';
 
     export let item: IMediaContainer;
-    export let selected: Boolean;
+    export let selected: boolean;
     export let display = 'Row';
     let flag: FlagType;
 
@@ -36,7 +37,14 @@
 </script>
 
 {#if display === 'Row'}
-    <div class="listitem" in:fade class:selected on:click on:contextmenu>
+    <div
+        class="listitem"
+        in:fade
+        class:selected
+        class:active={$selectedItem?.Identifier === item?.Identifier}
+        on:click
+        on:contextmenu
+    >
         <span
             class="download"
             on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
@@ -64,15 +72,18 @@
         text-overflow: ellipsis;
     }
     .listitem:hover {
-        background-color: var(--cds-hover-ui);
+        background-color: var(--cds-hover-row);
     }
     .listitem.selected {
+        background-color: var(--cds-selected-ui);
+    }
+    .listitem.active {
         background-color: var(--cds-active-ui);
     }
     .listitem .view:hover {
-        color: var(--cds-active-ui);
+        color: var(--cds-hover-ui);
     }
     .listitem .download:hover {
-        color: var(--cds-active-ui);
+        color: var(--cds-hover-ui);
     }
 </style>

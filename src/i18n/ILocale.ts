@@ -31,6 +31,25 @@ export enum VariantResourceKey {
     FrontendController_Reload_ConfirmNotice = 'FrontendController_Reload_ConfirmNotice',
     Frontend_Product_Title = 'Frontend_Product_Title',
     Frontend_Product_Description = 'Frontend_Product_Description',
+    Frontend_Setting = 'Frontend_Setting',
+    Frontend_Settings = 'Frontend_Settings',
+    Frontend_Help = 'Frontend_Help',
+    Frontend_About= 'Frontend_About',
+    Frontend_Plugin = 'Frontend_Plugin',
+    Frontend_Plugins = 'Frontend_Plugins',
+    Frontend_Plugin_List = 'Frontend_Plugin_List',
+    Frontend_Plugin_Select = 'Frontend_Plugin_Select',
+    Frontend_Plugin_Selection = 'Frontend_Plugin_Selection',
+    Frontend_Media = 'Frontend_Media',
+    Frontend_Medias = 'Frontend_Medias',
+    Frontend_Media_List = 'Frontend_Media_List',
+    Frontend_Media_Select = 'Frontend_Media_Select',
+    Frontend_Media_Selection = 'Frontend_Media_Selection',
+    Frontend_Item = 'Frontend_Item',
+    Frontend_Items = 'Frontend_Items',
+    Frontend_Item_List = 'Frontend_Item_List',
+    Frontend_Item_Select = 'Frontend_Item_Select',
+    Frontend_Item_Selection = 'Frontend_Item_Selection',
 }
 
 // [SECTION]: Frontend: Classic
@@ -57,6 +76,12 @@ export enum VariantResourceKey {
     Frontend_Classic_Settings_ViewerReverseDirectionInfo = 'Frontend_Classic_Settings_ViewerReverseDirectionInfo',
     Frontend_Classic_Settings_ViewerDoublePage = 'Frontend_Classic_Settings_ViewerDoublePage',
     Frontend_Classic_Settings_ViewerDoublePageInfo = 'Frontend_Classic_Settings_ViewerDoublePageInfo',
+    Frontend_Classic_Sidenav_Home = 'Frontend_Classic_Sidenav_Home',
+    Frontend_Classic_Sidenav_Settings_General = 'Frontend_Classic_Sidenav_Settings_General',
+    Frontend_Classic_Sidenav_Settings_Interface = 'Frontend_Classic_Sidenav_Settings_Interface',
+    Frontend_Classic_Sidenav_Settings_Trackers = 'Frontend_Classic_Sidenav_Settings_Trackers',
+    Frontend_Classic_Sidenav_Settings_Network = 'Frontend_Classic_Sidenav_Settings_Network',
+
 }
 
 // [SECTION]: Frontend: FluentCore

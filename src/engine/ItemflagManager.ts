@@ -5,14 +5,23 @@ import { Event } from './Event';
 export class ItemflagManager {
 
     public readonly FlagChanged: Event<IMediaContainer, FlagType> = new Event<IMediaContainer, FlagType>();
+    public readonly MediaFlagsChanged: Event<ItemflagManager, IMediaContainer> = new Event<this, IMediaContainer>();
 
     private items:Map<string,ItemFlag[]> = new Map();
     constructor(private readonly storage: StorageController) {
     }
 
-    public async LoadContainerFlags(media: IMediaContainer) {
+    public async LoadContainerFlags(media: IMediaContainer, shouldUpdate = false) {
+        if (shouldUpdate) await media.Update();
         const mediaflags = await this.storage.LoadPersistent<ItemFlag[]>(Store.Itemflags,this.StorageKey(media));
-        this.items.set(this.StorageKey(media),mediaflags);
+        this.items.set(this.StorageKey(media), mediaflags);
+        this.MediaFlagsChanged.Dispatch(this, media);
+    }
+
+    public async LoadContainersFlags(medias: IMediaContainer[], shouldUpdate=false) {
+        await Promise.all(
+            medias.map(async (media) => this.LoadContainerFlags(media, shouldUpdate))
+        );
     }
 
     private async SaveContainerFlags(container: IMediaContainer, flags: ItemFlag[]) {
@@ -71,6 +80,7 @@ export class ItemflagManager {
         this.items.set(this.StorageKey(entry.Parent), flags);
         await this.SaveContainerFlags(entry.Parent, flags);
         this.FlagChanged.Dispatch(entry, kind);
+        this.MediaFlagsChanged.Dispatch(this, entry.Parent);
     }
 
     /* Remove the flag of an item */
@@ -83,6 +93,7 @@ export class ItemflagManager {
         this.items.set(this.StorageKey(itemToRemove.Parent), flags);
         await this.SaveContainerFlags(itemToRemove.Parent, flags);
         this.FlagChanged.Dispatch(itemToRemove, undefined);
+        this.MediaFlagsChanged.Dispatch(this, itemToRemove.Parent);
     }
 
     /* Get the flagType of an item */
@@ -93,6 +104,16 @@ export class ItemflagManager {
             return this.isContainerSameItem(mark, item);
         });
         return mark?.kind;
+    }
+
+    public async GetUnFlaggedItems(media: IMediaContainer): Promise<IMediaContainer[]> {
+        const marks = await this.GetContainerItemsFlags(media);
+        return media.Entries.filter((item:IMediaContainer) => {
+            const mark = marks?.find(mark => {
+                return this.isContainerSameItem(mark, item);
+            });
+            return mark === undefined;
+        }) as IMediaContainer[];
     }
 }
 

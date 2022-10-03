@@ -10,6 +10,25 @@ export const en_US: IVariantResource = {
 
     Frontend_Product_Title: 'HakuNeko',
     Frontend_Product_Description: 'Manga, Anime and Novel Downloader',
+    Frontend_Setting: 'Setting',
+    Frontend_Settings: 'Settings',
+    Frontend_Help: 'Help',
+    Frontend_About: 'About',
+    Frontend_Plugin: 'Plugin',
+    Frontend_Plugins: 'Plugins',
+    Frontend_Plugin_List: 'Plugin list',
+    Frontend_Plugin_Select: 'Select a plugin',
+    Frontend_Plugin_Selection: 'Plugin selection',
+    Frontend_Media: 'Media',
+    Frontend_Medias: 'Media',
+    Frontend_Media_List: 'Media list',
+    Frontend_Media_Select: 'Select a media',
+    Frontend_Media_Selection: 'Media selection',
+    Frontend_Item: 'Item',
+    Frontend_Items: 'items',
+    Frontend_Item_List: 'Item list',
+    Frontend_Item_Select: 'Select an item',
+    Frontend_Item_Selection: 'Item selection',
 
     // [SECTION]: Frontend Classic
 
@@ -35,6 +54,11 @@ export const en_US: IVariantResource = {
     Frontend_Classic_Settings_ViewerReverseDirectionInfo: 'Show pages/images in reverse order (like in tradional Manga)',
     Frontend_Classic_Settings_ViewerDoublePage: 'Show Double Pages',
     Frontend_Classic_Settings_ViewerDoublePageInfo: 'Show two pages/images at once (like in tradional Manga)',
+    Frontend_Classic_Sidenav_Home: 'Home',
+    Frontend_Classic_Sidenav_Settings_General:'General',
+    Frontend_Classic_Sidenav_Settings_Interface: 'Interface',
+    Frontend_Classic_Sidenav_Settings_Trackers:'Trackers',
+    Frontend_Classic_Sidenav_Settings_Network: 'Network',
 
     // [SECTION]: Frontend FluentCore
 

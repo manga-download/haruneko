@@ -181,7 +181,6 @@
             <VirtualList items={filteredmedias} let:item>
                 <Media
                     media={item}
-                    selected={selectedMedia === item}
                     on:select={(e) => {
                         $selectedMedia = e.detail;
                     }}

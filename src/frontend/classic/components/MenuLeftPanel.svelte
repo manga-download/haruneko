@@ -25,6 +25,7 @@
         SettingsView,
         TaskSettings,
     } from 'carbon-icons-svelte';
+    import { Locale } from '../stores/Settings';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
     import SettingsMenu from './settings/SettingsModal.svelte';
@@ -52,18 +53,18 @@
     <span class="menuleftpanel">
         <SideNavItems>
             <SideNavLink
-                text="[RES:Home]"
+                text={$Locale.Frontend_Classic_Sidenav_Home()}
                 icon={Home}
                 on:click={() => dispatch('home')}
             />
             <SideNavLink
-                text="[RES:Plugins]"
+                text={$Locale.Frontend_Plugins()}
                 icon={PlugFilled}
                 on:click={() => (isPluginModalOpen = true)}
             />
-            <SideNavMenu text="[RES:Settings]" icon={Settings}>
+            <SideNavMenu text={$Locale.Frontend_Settings()} icon={Settings}>
                 <SideNavLink
-                    text="[RES:General]"
+                    text={$Locale.Frontend_Classic_Sidenav_Settings_General()}
                     icon={SettingsAdjust}
                     on:click={() => {
                         settingsSelectedTabs = 0;
@@ -71,7 +72,7 @@
                     }}
                 />
                 <SideNavLink
-                    text="[RES:UI]"
+                    text={$Locale.Frontend_Classic_Sidenav_Settings_Interface()}
                     icon={SettingsView}
                     on:click={() => {
                         settingsSelectedTabs = 1;
@@ -79,7 +80,7 @@
                     }}
                 />
                 <SideNavLink
-                    text="[RES:Trackers]"
+                    text={$Locale.Frontend_Classic_Sidenav_Settings_Trackers()}
                     icon={TaskSettings}
                     on:click={() => {
                         settingsSelectedTabs = 2;
@@ -87,7 +88,7 @@
                     }}
                 />
                 <SideNavLink
-                    text="[RES:Network]"
+                    text={$Locale.Frontend_Classic_Sidenav_Settings_Network()}
                     icon={NetworkOverlay}
                     on:click={() => {
                         settingsSelectedTabs = 3;
@@ -95,7 +96,7 @@
                     }}
                 />
             </SideNavMenu>
-            <SideNavMenu text="[RES:Help]" icon={Document}>
+            <SideNavMenu text={$Locale.Frontend_Help()} icon={Document}>
                 <SideNavLink
                     text="Documentation"
                     icon={Doc}
@@ -134,7 +135,7 @@
                     on:click={() => window.open('https://ipinfo.io/json')}
                 />
             </SideNavMenu>
-            <SideNavMenu text="[RES:About]" icon={Information}>
+            <SideNavMenu text={$Locale.Frontend_About()} icon={Information}>
                 <SideNavLink
                     text="Code source"
                     icon={LogoGithub}
