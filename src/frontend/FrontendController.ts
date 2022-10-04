@@ -2,13 +2,15 @@ import { GetLocale } from '../i18n/Localization';
 import { Event } from '../engine/Event';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
+import { Info as InfoFluentCore } from './fluent-core/FrontendInfo';
 import { CreateWindowController } from './WindowController';
 import type { Choice, ISettings } from '../engine/SettingsManager';
 import { Key } from '../engine/SettingsGlobal';
 
 const frontendSelector = '#app';
 export const FrontendList: IFrontendInfo[] = [
-    InfoClassic
+    InfoClassic,
+    InfoFluentCore
 ];
 
 export class FrontendController {

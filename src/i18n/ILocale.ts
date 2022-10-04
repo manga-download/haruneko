@@ -52,7 +52,7 @@ export enum VariantResourceKey {
     Frontend_Item_Selection = 'Frontend_Item_Selection',
 }
 
-// [SECTION]: Frontend Classic
+// [SECTION]: Frontend: Classic
 export enum VariantResourceKey {
     Frontend_Classic_Label = 'Frontend_Classic_Label',
     Frontend_Classic_Description = 'Frontend_Classic_Description',
@@ -82,6 +82,70 @@ export enum VariantResourceKey {
     Frontend_Classic_Sidenav_Settings_Trackers = 'Frontend_Classic_Sidenav_Settings_Trackers',
     Frontend_Classic_Sidenav_Settings_Network = 'Frontend_Classic_Sidenav_Settings_Network',
 
+}
+
+// [SECTION]: Frontend: FluentCore
+export enum VariantResourceKey {
+    Frontend_FluentCore_Label = 'Frontend_FluentCore_Label',
+    Frontend_FluentCore_Description = 'Frontend_FluentCore_Description',
+
+    Frontend_FluentCore_Window_ButtonMinimize_Description = 'Frontend_FluentCore_Window_ButtonMinimize_Description',
+    Frontend_FluentCore_Window_ButtonMaximize_Description = 'Frontend_FluentCore_Window_ButtonMaximize_Description',
+    Frontend_FluentCore_Window_ButtonRestore_Description = 'Frontend_FluentCore_Window_ButtonRestore_Description',
+    Frontend_FluentCore_Window_ButtonClose_Description = 'Frontend_FluentCore_Window_ButtonClose_Description',
+
+    Frontend_FluentCore_Menu_Description = 'Frontend_FluentCore_Menu_Description',
+    Frontend_FluentCore_Menu_OpenSettings_Label = 'Frontend_FluentCore_Menu_OpenSettings_Label',
+    Frontend_FluentCore_Menu_OpenSettings_Description = 'Frontend_FluentCore_Menu_OpenSettings_Description',
+    Frontend_FluentCore_Menu_ImportBookmarks_Label = 'Frontend_FluentCore_Menu_ImportBookmarks_Label',
+    Frontend_FluentCore_Menu_ImportBookmarks_Description = 'Frontend_FluentCore_Menu_ImportBookmarks_Description',
+
+    Frontend_FluentCore_Settings_ThemeLuminance_Label = 'Frontend_FluentCore_Settings_ThemeLuminance_Label',
+    Frontend_FluentCore_Settings_ThemeLuminance_Description = 'Frontend_FluentCore_Settings_ThemeLuminance_Description',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Label = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Label',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Description = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Description',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Label = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Label',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Description = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Description',
+
+    Frontend_FluentCore_SettingsDialog_Title = 'Frontend_FluentCore_SettingsDialog_Title',
+    Frontend_FluentCore_SettingsDialog_CloseButton_Label = 'Frontend_FluentCore_SettingsDialog_CloseButton_Label',
+
+    Frontend_FluentCore_BookmarkList_Heading = 'Frontend_FluentCore_BookmarkList_Heading',
+
+    Frontend_FluentCore_DownloadManager_Heading = 'Frontend_FluentCore_DownloadManager_Heading',
+    Frontend_FluentCore_DownloadManagerTask_StatusQueued_Description = 'Frontend_FluentCore_DownloadManagerTask_StatusQueued_Description',
+    Frontend_FluentCore_DownloadManagerTask_StatusPaused_Description = 'Frontend_FluentCore_DownloadManagerTask_StatusPaused_Description',
+    Frontend_FluentCore_DownloadManagerTask_StatusDownloading_Description = 'Frontend_FluentCore_DownloadManagerTask_StatusDownloading_Description',
+    Frontend_FluentCore_DownloadManagerTask_StatusProcessing_Description = 'Frontend_FluentCore_DownloadManagerTask_StatusProcessing_Description',
+    Frontend_FluentCore_DownloadManagerTask_StatusFailed_Description = 'Frontend_FluentCore_DownloadManagerTask_StatusFailed_Description',
+    Frontend_FluentCore_DownloadManagerTask_StatusCompleted_Description = 'Frontend_FluentCore_DownloadManagerTask_StatusCompleted_Description',
+    Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description = 'Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description',
+
+    Frontend_FluentCore_WebsiteSelect_Description = 'Frontend_FluentCore_WebsiteSelect_Description',
+    Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description = 'Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description',
+    Frontend_FluentCore_WebsiteSelect_BusyStatus_Description = 'Frontend_FluentCore_WebsiteSelect_BusyStatus_Description',
+    Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description = 'Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description',
+    Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description = 'Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description',
+    Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description = 'Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description',
+    Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder = 'Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder',
+
+    Frontend_FluentCore_MediaTitleSelect_Description = 'Frontend_FluentCore_MediaTitleSelect_Description',
+    Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description = 'Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description',
+    Frontend_FluentCore_MediaTitleSelect_BusyStatus_Description = 'Frontend_FluentCore_MediaTitleSelect_BusyStatus_Description',
+    Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description = 'Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description',
+    Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description = 'Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description',
+    Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description = 'Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description',
+    Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder = 'Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder',
+
+    Frontend_FluentCore_MediaItemList_Heading = 'Frontend_FluentCore_MediaItemList_Heading',
+    Frontend_FluentCore_MediaItemList_PreviewButton_Description = 'Frontend_FluentCore_MediaItemList_PreviewButton_Description',
+    Frontend_FluentCore_MediaItemList_DownloadButton_Description = 'Frontend_FluentCore_MediaItemList_DownloadButton_Description',
+
+    Frontend_FluentCore_Preview_CloseButton_Description = 'Frontend_FluentCore_Preview_CloseButton_Description',
+
+    Frontend_FluentCore_SearchBox_ClearButton_Description = 'Frontend_FluentCore_SearchBox_ClearButton_Description',
+    Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description = 'Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description',
+    Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description = 'Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description',
 }
 
 // [SECTION]: Engine

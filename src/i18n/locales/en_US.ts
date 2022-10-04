@@ -60,6 +60,69 @@ export const en_US: IVariantResource = {
     Frontend_Classic_Sidenav_Settings_Trackers:'Trackers',
     Frontend_Classic_Sidenav_Settings_Network: 'Network',
 
+    // [SECTION]: Frontend FluentCore
+
+    Frontend_FluentCore_Label: 'Fluent Core',
+    Frontend_FluentCore_Description: 'A simple frontend with no bells and whistles, especially for developers to quickly verify essential functionality',
+    //
+    Frontend_FluentCore_Window_ButtonMinimize_Description: 'Minimize the application',
+    Frontend_FluentCore_Window_ButtonMaximize_Description: 'Maximize the application',
+    Frontend_FluentCore_Window_ButtonRestore_Description: 'Restore the application',
+    Frontend_FluentCore_Window_ButtonClose_Description: 'Close the application',
+    //
+    Frontend_FluentCore_Menu_Description: 'Show the application menu',
+    Frontend_FluentCore_Menu_OpenSettings_Label: 'Settings...',
+    Frontend_FluentCore_Menu_OpenSettings_Description: 'Edit the application settings',
+    Frontend_FluentCore_Menu_ImportBookmarks_Label: 'Import Bookmarks...',
+    Frontend_FluentCore_Menu_ImportBookmarks_Description: 'Open the dialog to import bookmarks from previous version(s)',
+    //
+    Frontend_FluentCore_Settings_ThemeLuminance_Label: 'Theme Luminance',
+    Frontend_FluentCore_Settings_ThemeLuminance_Description: 'Change the lightness/darkness of the theme',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: 'Bookmark List',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: 'Download Manager',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: 'Toggle the visibility of the download manager',
+    //
+    Frontend_FluentCore_SettingsDialog_Title: 'Settings',
+    Frontend_FluentCore_SettingsDialog_CloseButton_Label: 'Done',
+    //
+    Frontend_FluentCore_BookmarkList_Heading: 'Bookmarks',
+    //
+    Frontend_FluentCore_DownloadManager_Heading: 'Downloads',
+    Frontend_FluentCore_DownloadManagerTask_StatusQueued_Description: 'Queued',
+    Frontend_FluentCore_DownloadManagerTask_StatusPaused_Description: 'Paused',
+    Frontend_FluentCore_DownloadManagerTask_StatusDownloading_Description: 'Downloading',
+    Frontend_FluentCore_DownloadManagerTask_StatusProcessing_Description: 'Processing',
+    Frontend_FluentCore_DownloadManagerTask_StatusFailed_Description: 'Failed',
+    Frontend_FluentCore_DownloadManagerTask_StatusCompleted_Description: 'Completed',
+    Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description: 'Remove this task from the list',
+    //
+    Frontend_FluentCore_WebsiteSelect_Description: 'Select a website from the list of available websites',
+    Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description: 'Click to fetch the list of all available titles from the website,\ndepending on the number of required requests this may take a while',
+    Frontend_FluentCore_WebsiteSelect_BusyStatus_Description: 'Fetching the list of all available titles,\ndepending on the number of required requests this may take a while',
+    Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description: 'Star this website (mark as favorite)',
+    Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description: 'Unstar this website (unmark as favorite)',
+    Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description: 'Edit the settings for this website',
+    Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder: '',
+    //
+    Frontend_FluentCore_MediaTitleSelect_Description: 'Select a media title from the list of available media titles',
+    Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description: 'Click to fetch the list of all available chapters/episodes from the website,\ndepending on the number of required requests this may take a while',
+    Frontend_FluentCore_MediaTitleSelect_BusyStatus_Description: 'Fetching the list of all available chapters/episodes,\ndepending on the number of required requests this may take a while',
+    Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description: 'Add this title to the bookmark list',
+    Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description: 'Remove this title from the bookmarks list',
+    Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description: 'Detect the title from the link currently copied in the clipboard',
+    Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder: '',
+    //
+    Frontend_FluentCore_MediaItemList_Heading: 'Media Items',
+    Frontend_FluentCore_MediaItemList_PreviewButton_Description: 'Show content',
+    Frontend_FluentCore_MediaItemList_DownloadButton_Description: 'Download content',
+    //
+    Frontend_FluentCore_Preview_CloseButton_Description: 'Close preview',
+    //
+    Frontend_FluentCore_SearchBox_ClearButton_Description: 'Clear the current search pattern',
+    Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description: 'Toggle between case sensitive and insensitive mode',
+    Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description: 'Toggle between text and regular expression mode',
+
     // [SECTION]: Engine
 
     Settings_Global_Frontend: 'Frontend',
