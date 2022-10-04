@@ -36,7 +36,7 @@ const styleControls = [
     styleTrim,
     'display: flex;',
     // HACK: => hovered buttons
-    'visibility: visible;',
+    'visibility: hidden;',
 ].join(' ');
 
 const styles: ElementStyles = css`
@@ -121,7 +121,7 @@ const styles: ElementStyles = css`
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <div class="entry" style="${styleEntry}">
+    <div class="entry" style="${styleEntry}" onmouseover="this.querySelector('div.controls').style.visibility = 'visible'" onmouseout="this.querySelector('div.controls').style.visibility = 'hidden'">
         <div style="${styleTrim}"><!-- <fluent-checkbox></fluent-checkbox> --></div>
         <div style="${styleTrim}">${model => model.Title}</div>
         <div class="controls" style="${styleControls}">
