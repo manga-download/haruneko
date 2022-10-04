@@ -233,7 +233,7 @@ export class MediaTitleSelect extends FASTElement {
     @observable pasting = false;
 
     public async FilterEntries() {
-        this.filtered = this.entries ? this.entries?.filter(entry => this.match(entry.Title)) : [];
+        this.filtered = this.entries?.filter(entry => this.match(entry.Title)) ?? [];
     }
 
     public SelectEntry(entry: IMediaContainer) {

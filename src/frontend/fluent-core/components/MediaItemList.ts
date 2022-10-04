@@ -157,7 +157,7 @@ export class MediaItemList extends FASTElement {
     @observable updating = false;
 
     public async FilterEntries() {
-        this.filtered = this.entries?.filter(entry => this.match(entry.Title)).slice(0, 250) /* TODO: virtual scrolling */ ?? [];
+        this.filtered = this.entries?.filter(entry => this.match(entry.Title)) ?? [];
     }
 
     public async ShowPreview(entry: IMediaContainer) {
