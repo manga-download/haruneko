@@ -163,7 +163,7 @@ const starred: ViewTemplate<WebsiteSelect> = html`
 //       => classes are not working, apply inline styles
 //       => manually query correct host and provide callback function
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <div class="entry" style="${styleEntries}" @click=${(model, ctx) => ctx.parent.parentNode.parentNode.host.SelectEntry(model) }>
+    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--neutral-fill-hover')" onmouseout="this.style.backgroundColor = ''" @click=${(model, ctx) => ctx.parent.parentNode.parentNode.host.SelectEntry(model) }>
         <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
         <div class="title" style="${styleTitle}">${model => model.Title}</div>
         <div class="hint" style="${styleHint}">${model => model.Identifier}</div>
