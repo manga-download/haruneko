@@ -26,8 +26,8 @@
         "fs-extra": "10.1.0"
     },
     "devDependencies": {
-        "@fluentui/svg-icons": "^1.1.179",
-        "@fluentui/web-components": "^2.5.4",
+        "@fluentui/svg-icons": "^1.1.184",
+        "@fluentui/web-components": "^2.5.6",
         "@microsoft/fast-element": "^1.10.5",
         "@sveltejs/svelte-virtual-list": "^3.0.1",
         "@sveltejs/vite-plugin-svelte": "^1.0.2",
