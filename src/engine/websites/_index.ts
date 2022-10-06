@@ -87,7 +87,6 @@ export { default as FusionScanlation } from './FusionScanlation';
 export { default as FusionScanlationHentai } from './FusionScanlationHentai';
 export { default as GateManga } from './GateManga';
 export { default as GDScans } from './GDScans';
-export { default as GeassHentai } from './GeassHentai';
 export { default as GloryManga } from './GloryManga';
 export { default as GloryScansTR } from './GloryScansTR';
 export { default as GodsRealmScan } from './GodsRealmScan';
