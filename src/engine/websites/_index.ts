@@ -96,7 +96,6 @@ export { default as GourmetScans } from './GourmetScans';
 export { default as GuncelManga } from './GuncelManga';
 export { default as GuruKomik } from './GuruKomik';
 export { default as HadesNoFansub } from './HadesNoFansub';
-export { default as HakaiScan } from './HakaiScan';
 export { default as Hayalistic } from './Hayalistic';
 export { default as Hentai3z } from './Hentai3z';
 export { default as Hentaidexy } from './Hentaidexy';
