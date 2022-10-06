@@ -93,7 +93,6 @@ export { default as GodsRealmScan } from './GodsRealmScan';
 export { default as GogoManga } from './GogoManga';
 export { default as GoofFansub } from './GoofFansub';
 export { default as GourmetScans } from './GourmetScans';
-export { default as GSNation } from './GSNation';
 export { default as GuncelManga } from './GuncelManga';
 export { default as GuruKomik } from './GuruKomik';
 export { default as HadesNoFansub } from './HadesNoFansub';
