@@ -7,7 +7,7 @@ const argv = yargs(process.argv).argv;
 const pkgFile = 'package.json';
 const pkgConfig = await fs.readJSON(pkgFile);
 const dirBuild = path.resolve('build.app');
-const origin = (argv.url || pkgConfig.main);
+const origin = argv.url || pkgConfig.main;
 
 async function createApplicationManifest() {
     const manifest = {
