@@ -6,7 +6,7 @@ global.TextDecoder = TextDecoder;
 import * as path from 'path';
 import { JSDOM } from 'jsdom';
 import { CloudFlareMailDecryptor } from './CloudFlareMailDecryptor';
-const file = path.resolve('test', 'cloudflare-mail.html'); // <= https://test.cloudscraper.cf/mail
+const file = path.resolve('test', 'cloudflare-mail.html'); // <= https://test.cloudscraper.ovh/mail
 
 describe('CloudFlareMailDecryptor', () => {
 
