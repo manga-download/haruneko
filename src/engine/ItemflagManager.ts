@@ -11,17 +11,10 @@ export class ItemflagManager {
     constructor(private readonly storage: StorageController) {
     }
 
-    public async LoadContainerFlags(media: IMediaContainer, shouldUpdate = false) {
-        if (shouldUpdate) await media.Update();
+    public async LoadContainerFlags(media: IMediaContainer) {
         const mediaflags = await this.storage.LoadPersistent<ItemFlag[]>(Store.Itemflags,this.StorageKey(media));
         this.items.set(this.StorageKey(media), mediaflags);
         this.MediaFlagsChanged.Dispatch(this, media);
-    }
-
-    public async LoadContainersFlags(medias: IMediaContainer[], shouldUpdate=false) {
-        await Promise.all(
-            medias.map(async (media) => this.LoadContainerFlags(media, shouldUpdate))
-        );
     }
 
     private async SaveContainerFlags(container: IMediaContainer, flags: ItemFlag[]) {

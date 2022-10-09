@@ -104,6 +104,13 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     public async Update(): Promise<void> {
         await this.Load();
     }
+
+    public async getEntriesWithUnflaggedContent(): Promise<Bookmark[]> {
+        const results = await Promise.all(this.Entries.map(
+            async (bookmark) => (await bookmark.getUnflaggedContent()).length > 0
+        ));
+        return this.Entries.filter((value, index) => results[index]);
+    }
 }
 
 /**
@@ -207,6 +214,13 @@ export class Bookmark extends MediaContainer<IMediaChild> {
             const isTitleUnknown = !this.LastKnownEntries.TitleHashes.includes(this.Hash(entry.Title));
             return isIdentifierUnknown && isTitleUnknown;
         });
+    }
+
+    /**
+     * determine which entries have unflagged items
+     */
+    public async getUnflaggedContent(): Promise<IMediaContainer[]> {
+        return await HakuNeko.ItemflagManager.GetUnFlaggedItems(this);
     }
 }
 
