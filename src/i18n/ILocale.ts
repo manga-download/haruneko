@@ -175,6 +175,13 @@ export enum VariantResourceKey {
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
+
+    Settings_NewContent_Check = 'Settings_NewContent_Check',
+    Settings_NewContent_CheckInfo = 'Settings_NewContent_CheckInfo',
+    Settings_NewContent_CheckPeriod = 'Settings_NewContent_CheckPeriod',
+    Settings_NewContent_CheckPeriodInfo = 'Settings_NewContent_CheckPeriodInfo',
+    Settings_NewContent_Notify = 'Settings_NewContent_Notify',
+    Settings_NewContent_NotifyInfo = 'Settings_NewContent_NotifyInfo',
 }
 
 // [SECTION]: Tags

@@ -64,6 +64,13 @@ export const de_DE: IVariantResource = {
     FetchProvider_FetchWindow_CloudFlareError: 'Die Anfrage wurde aufgrund des folgenden CloudFlare Fehlers abgebrochen: "{0}"',
     FetchProvider_FetchWindow_AlertCaptcha: 'Um automatisch fortzufahren ist es erforderlich den auf der Website angezeigten Captcha zu lösen (die Webseite darf nach der Lösung nicht geschlossen werde)!',
 
+    Settings_NewContent_Check: 'Enable new content checker',
+    Settings_NewContent_CheckInfo: 'Will check if there are new content to available to read',
+    Settings_NewContent_CheckPeriod: 'Period to check new content (minutes)',
+    Settings_NewContent_CheckPeriodInfo: 'How many minutes before checking again for new content',
+    Settings_NewContent_Notify: 'Enable new content desktop notification',
+    Settings_NewContent_NotifyInfo: 'Will send a notification using the OS notification system',
+
     // [SECTION]: Tags
 
     Tags_Media: 'Art',

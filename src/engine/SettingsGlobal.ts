@@ -14,6 +14,9 @@ export const enum Key {
     DescramblingQuality = 'descrambling-quality',
     CaptchaToken = 'captcha-token',
     PostCommand = 'post-command',
+    CheckNewContent = 'check-new-content',
+    CheckNewContentPeriod = 'check-new-content-period',
+    NotifyNewContent = 'notify-new-content',
 }
 
 export async function Initialize(settingsManager: SettingsManager): Promise<void> {
@@ -75,6 +78,24 @@ export async function Initialize(settingsManager: SettingsManager): Promise<void
             R.Settings_Global_PostCommand,
             R.Settings_Global_PostCommandInfo,
             ''
-        )
+        ),
+        new Check(
+            Key.CheckNewContent,
+            R.Settings_NewContent_Check,
+            R.Settings_NewContent_CheckInfo,
+            false
+        ),
+        new Numeric(
+            Key.CheckNewContentPeriod,
+            R.Settings_NewContent_CheckPeriod,
+            R.Settings_NewContent_CheckPeriodInfo,
+            30, 10, 420
+        ),
+        new Check(
+            Key.NotifyNewContent,
+            R.Settings_NewContent_Notify,
+            R.Settings_NewContent_NotifyInfo,
+            false
+        ),
     );
 }
