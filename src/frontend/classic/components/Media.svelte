@@ -21,7 +21,8 @@
     }
 
     //Check if media has unviewed content
-    let hasUnFlaggedContent: Boolean = false;
+    let unFlaggedItems: IMediaContainer[] = [];
+    findMediaUnFlaggedContent(media);
 
     import { EventWatcher } from '../stores/Events';
     const mediaFlagsChanged = EventWatcher(
@@ -32,9 +33,9 @@
     $: if ($mediaFlagsChanged) findMediaUnFlaggedContent(media);
 
     async function findMediaUnFlaggedContent(media) {
-        hasUnFlaggedContent =
-            (await HakuNeko.ItemflagManager.GetUnFlaggedItems(media)).length >
-            0;
+        unFlaggedItems = await HakuNeko.ItemflagManager.GetUnFlaggedItems(
+            media
+        );
     }
 </script>
 
@@ -64,7 +65,7 @@
 >
     {#if isBookmarked}<span transition:fade class="bookmark">⭐</span>{/if}
     <span title={media.Title} class="title">{media.Title}</span>
-    {#if hasUnFlaggedContent}<PlayFilled class="continue" />{/if}
+    {#if unFlaggedItems.length > 0}<PlayFilled class="continue" />{/if}
 </div>
 
 <style>
