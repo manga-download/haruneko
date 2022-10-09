@@ -14,7 +14,11 @@ const userDir = path.resolve(tempDir, 'user-data');
 
 async function CloseSplashScreen(target: puppeteer.Target) {
     const page = await target.page();
-    const url = page?.url();
+    let url = page?.url();
+    while(!url?.startsWith('http')) {
+        await new Promise(resolve => setTimeout(resolve, 250));
+        url = page?.url();
+    }
     if(url && /splash.html/i.test(url)) {
         await page?.close();
     }
@@ -55,6 +59,12 @@ export default async function(/*config: Config.ConfigGlobals*/) {
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
-    global.SERVER = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { stdio: [ 'pipe', process.stdout, process.stderr ] });
-    global.BROWSER = await LaunchNW();
+    const server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { stdio: [ 'pipe', process.stdout, process.stderr ] });
+    global.SERVER = server;
+    try {
+        global.BROWSER = await LaunchNW();
+    } catch(error) {
+        server.kill('SIGINT') || server.kill('SIGTERM') || server.kill('SIGKILL');
+        throw error;
+    }
 }
