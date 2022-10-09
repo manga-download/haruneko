@@ -1,4 +1,4 @@
-export function scrollSmoothly(element, distance) {
+export function scrollSmoothly(element:HTMLElement, distance:number) {
     const speed = Math.abs(Math.floor(distance / 10)),
         end = Math.abs(distance % speed);
     function doTinyScroll() {

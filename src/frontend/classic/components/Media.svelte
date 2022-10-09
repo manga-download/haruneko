@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     import {
         ContextMenu,
@@ -32,7 +31,7 @@
     );
     $: if ($mediaFlagsChanged) findMediaUnFlaggedContent(media);
 
-    async function findMediaUnFlaggedContent(media) {
+    async function findMediaUnFlaggedContent(media: IMediaContainer) {
         unFlaggedItems = await HakuNeko.ItemflagManager.GetUnFlaggedItems(
             media
         );

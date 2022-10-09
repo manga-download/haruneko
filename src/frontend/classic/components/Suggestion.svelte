@@ -17,7 +17,7 @@
     );
     $: $mediaFlagsChanged, findMediaUnFlaggedContent(media);
 
-    async function findMediaUnFlaggedContent(media) {
+    async function findMediaUnFlaggedContent(media: IMediaContainer) {
         unFlaggedContent = await HakuNeko.ItemflagManager.GetUnFlaggedItems(
             media
         );

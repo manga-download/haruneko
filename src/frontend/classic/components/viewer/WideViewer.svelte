@@ -18,7 +18,7 @@
 
     let viewer: HTMLElement;
 
-    function onKeyDown(event) {
+    function onKeyDown(event: KeyboardEvent) {
         switch (true) {
             case event.code === 'ArrowUp' && !event.ctrlKey:
                 scrollSmoothly(viewer, -64);
@@ -93,7 +93,7 @@
 
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
-    function mouseDownHandler(e) {
+    function mouseDownHandler(e: MouseEvent) {
         viewer.style.cursor = 'grabbing';
         viewer.style.userSelect = 'none';
         pos = {
@@ -109,7 +109,7 @@
         viewer.addEventListener('mouseup', mouseUpHandler);
     }
 
-    const mouseMoveHandler = function (e) {
+    const mouseMoveHandler = function (e: MouseEvent) {
         // How far the mouse has been moved
         const dx = e.clientX - pos.x;
         const dy = e.clientY - pos.y;
