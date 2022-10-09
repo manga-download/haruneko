@@ -10,7 +10,7 @@ import { CreateStorageController, type StorageController } from './StorageContro
 import { SettingsManager } from './SettingsManager';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
-import type { Choice } from './SettingsManager';
+import type { Check } from './SettingsManager';
 
 export class HakuNeko {
 
@@ -36,12 +36,11 @@ export class HakuNeko {
     public async Initialze(): Promise<void> {
         await InitGlobalSettings(this.SettingsManager);
         // Preload bookmarks flags to show content to view
-        if (this.SettingsManager.OpenScope().Get<Choice>(GlobalKey.CheckNewContent).Value) {
-            this.BookmarkPlugin.Entries.map(async (media) => {
-                await media.Update();
-                this.ItemflagManager.LoadContainerFlags(media);
-            });
-        }
+        const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;
+        this.BookmarkPlugin.Entries.map(async (media) => {
+            if (checkNewContent) await media.Update();
+            this.ItemflagManager.LoadContainerFlags(media);
+        });
     }
 
     public get Tags() {

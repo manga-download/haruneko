@@ -3,7 +3,7 @@
     import { ClickableTile } from 'carbon-components-svelte';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
-    import Logo from '../../../img/logo.png';
+    import MediaIcon from '../../../img/media.png';
     export let media: IMediaContainer;
 
     //Check if media has unviewed content
@@ -34,7 +34,10 @@
                 ($selectedItem = unFlaggedContent[unFlaggedContent.length - 1])
             )}
         >
-            <div class="mediaitem" style="background-image: url({Logo});">
+            <div
+                class="mediaitem"
+                style="background-image: url({media.Icon ?? MediaIcon});"
+            >
                 <div class="border">{media.Title}</div>
                 <div
                     class="border"

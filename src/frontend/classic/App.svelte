@@ -35,11 +35,6 @@
         // some delay for pre-rendering
         // Todo: find a way to detect if the UI is loaded
         setTimeout(resolveFinishLoading, 2500);
-        // Start refreshing bookmarked media to show content to view
-        HakuNeko.ItemflagManager.LoadContainersFlags(
-            HakuNeko.BookmarkPlugin.Entries,
-            true
-        );
     });
 
     let selectedBottomTab = 0;
