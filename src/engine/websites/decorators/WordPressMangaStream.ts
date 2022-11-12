@@ -16,6 +16,7 @@ const queryChapterListBloat = [
     'span.chapterdate',
 ].join(', ');
 const queryPageListLinks = [
+    'div#readarea img[src]:not([src=""])',
     'div#readerarea img[src]:not([src=""])',
     'div.reader-area img[src]:not([src=""])',
 ].join(', ');
@@ -33,7 +34,7 @@ function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
         /^Manhwa\s+/i,
         /^Manhua\s+/i,
         /\s+Bahasa\s+Indonesia$/i,
-    ].reduce((aggregator, pattern) => aggregator.replace(pattern, ''), element.textContent.trim());
+    ].reduce((aggregator, pattern) => aggregator.replace(pattern, ''), (element instanceof HTMLMetaElement ? element.content : element.textContent).trim());
 }
 
 /**
