@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './HikariScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -8,7 +7,7 @@ import * as Common from './decorators/Common';
 @MangaStream.MangaCSS(/^https?:\/\/hikariscan\.com\.br\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
@@ -20,18 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class HikariScan extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'hikariscan';
-        super.label = 'Hikari Scan';
-        this.tags = [ 'manga', 'portuguese' ];
-        this.url = 'https://hikariscan.com.br';
-        this.path = '/manga/list-mode/';
-    }
-}
-*/
