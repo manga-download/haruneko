@@ -261,6 +261,39 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extr
     };
 }
 
+/**
+ * An extension method for extracting all chapters for the given {@link manga} using the given JS {@link script}.
+ * The chapters are extracted from the composed url based on the `Identifier` of the {@link manga} and the `URI` of the website.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
+ * @param script - A JS script to extract a list of entries with each entry containing the identifier and title property from which the chapters are composed
+ * @param delay - An initial delay [ms] before the {@link script} is executed
+ */
+export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga, script: string, delay = 0): Promise<Chapter[]> {
+    const uri = new URL(manga.Identifier, this.URI);
+    const request = new FetchRequest(uri.href);
+    const data = await FetchWindowScript<{ id: string, title: string }[]>(request, script, delay);
+    return data.map(entry => {
+        return new Chapter(this, manga, entry.id, entry.title.replace(manga.Title, '').trim() || manga.Title);
+    });
+}
+
+/**
+ * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given JS {@link script}.
+ * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
+ * @param script - A JS script to extract a list of entries with each entry containing the identifier and title property from which the chapters are composed
+ * @param delay - An initial delay [ms] before the {@link script} is executed
+ */
+export function ChaptersSinglePageJS(script: string, delay = 0) {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
+        return class extends ctor {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+                return FetchChaptersSinglePageJS.call(this, manga, script, delay);
+            }
+        };
+    };
+}
+
 /**********************************************
  ******** Page List Extraction Methods ********
  **********************************************/
