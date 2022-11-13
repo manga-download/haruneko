@@ -3,22 +3,22 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 const config: Config = {
     plugin: {
         id: 'gurukomik',
-        title: 'GuruKomik'
-    }/*,
+        title: 'Guru Komik'
+    },
     container: {
-        url: 'https://gurukomik.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://gurukomiklive.blogspot.com/2021/03/boku-no-kanojo-sensei.html',
+        id: '/2021/03/boku-no-kanojo-sensei.html',
+        title: 'Boku no Kanojo Sensei'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/2020/08/chapter-1.html',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 219_456,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
