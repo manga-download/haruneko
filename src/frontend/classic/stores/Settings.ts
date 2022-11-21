@@ -113,13 +113,15 @@ export const ViewerDoublePageValue = CreateStore(ViewerDoublePage);
 // Non persistant settings
 /** Viewer **/
 function createCount(initialValue:number, increment:number,minimum:number) {
-    const { subscribe, set, update } = writable(initialValue);
+    const { subscribe, get, set, update } = writable(initialValue);
 
     return {
         subscribe,
+        get,
         set,
-        increment: () => update(n => n + increment),
-        decrement: () => update(n => n - increment >= minimum ? n - increment : n),
+        increment: (): number => { return update(n => n + increment); },
+        decrement: (): number => {
+            return update(n => n - increment >= minimum ? n - increment : n);},
         reset: () => set(initialValue)
     };
 }

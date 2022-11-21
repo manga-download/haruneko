@@ -14,7 +14,12 @@
     import { fade } from 'svelte/transition';
 
     import MediaItem from './MediaItem.svelte';
-    import { selectedMedia, selectedItem } from '../stores/Stores';
+    import {
+        selectedMedia,
+        selectedItem,
+        selectedItemPrevious,
+        selectedItemNext,
+    } from '../stores/Stores';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
@@ -26,8 +31,18 @@
     let multipleSelectionFrom: number = -1;
     let multipleSelectionTo: number = -1;
 
+    selectedItem.subscribe((item: IMediaContainer) => {
+        const position = filteredItems.indexOf(item);
+        $selectedItemPrevious = filteredItems[position + 1];
+        $selectedItemNext = filteredItems[position - 1];
+        console.log(
+            'previous/next',
+            $selectedItemPrevious?.Title,
+            $selectedItemNext?.Title
+        );
+    });
+
     async function onItemClick(item: IMediaContainer, event: any) {
-        //console.log(event.detail, event);
         if (event.shiftKey) {
             //range mode
             if (multipleSelectionFrom === -1) {
@@ -62,6 +77,11 @@
             multipleSelectionTo = multipleSelectionFrom;
             selectedItems = [item];
         }
+    }
+
+    function onItemView(item: IMediaContainer) {
+        selectedItems.push(item);
+        $selectedItem = item;
     }
 
     selectedMedia.subscribe(async (value) => {
@@ -179,10 +199,7 @@
                 <MediaItem
                     {item}
                     selected={selectedItems.includes(item)}
-                    on:view={(e) => {
-                        selectedItems.push(e.detail);
-                        $selectedItem = e.detail;
-                    }}
+                    on:view={(e) => onItemView(item)}
                     on:click={(e) => onItemClick(item, e)}
                     on:contextmenu={(e) => onItemClick(item, e)}
                 />

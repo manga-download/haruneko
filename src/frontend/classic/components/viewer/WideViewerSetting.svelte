@@ -16,20 +16,12 @@
     export let title: string;
 </script>
 
-<div id="Buttons" tabindex="0">
+<div id="Buttons">
     <span class="title">{title}</span>
-    <span
-        class="button"
-        on:click={() =>
-            console.log(`createEventDispatcher("requestItemDown", item)`)}
-    >
+    <span class="button" on:click={() => dispatch('previousItem')}>
         <ChevronLeft size={24} title="Preview item (ArrowLeft)" />
     </span>
-    <span
-        class="button"
-        on:click={() =>
-            console.log(`createEventDispatcher("requestItemUp", item)`)}
-    >
+    <span class="button" on:click={() => dispatch('nextItem')}>
         <ChevronRight size={24} title="Next item (ArrowRight)" />
     </span>
     &nbsp;

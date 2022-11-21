@@ -11,7 +11,7 @@
 
     // TODO: Implement correct filter/extraction of IMediaItem types ...
     let entries: IMediaItem[];
-    $: entries = item.Entries.map((entry) => entry as IMediaItem);
+    $: entries = item.Entries as IMediaItem[];
 </script>
 
 {#each entries as content, index}

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     const dispatch = createEventDispatcher();
     import { InlineNotification } from 'carbon-components-svelte';
 
@@ -7,16 +7,18 @@
     import WideViewerSetting from './WideViewerSetting.svelte';
     import WebtoonViewer from './WebtoonViewer.svelte';
     import MangaViewer from './MangaViewer.svelte';
-    import { Key, ViewerModeValue } from '../../stores/Settings';
+    import { Key, ViewerMode, ViewerModeValue } from '../../stores/Settings';
     import { ViewerPadding, ViewerZoom } from '../../stores/Settings';
     import { scrollSmoothly, scrollMagic } from './utilities';
-
+    import { selectedItemNext } from '../../stores/Stores';
     export let item: IMediaContainer;
     export let currentImageIndex: number;
 
-    const title = item?.Parent?.Title ?? 'unkown';
+    const title = item?.Title ?? 'unkown';
 
     let viewer: HTMLElement;
+    // TODO: remove next line, it's a temp fix, the settings is getting lost on some reloads
+    ViewerMode.Value = Key.ViewerMode_Longstrip;
 
     function onKeyDown(event: KeyboardEvent) {
         switch (true) {
@@ -47,16 +49,16 @@
                 dispatch('previousItem');
                 break;
             case event.key === '*' && !event.ctrlKey:
-                ViewerZoom.set(100);
+                $ViewerZoom = 100;
                 break;
             case event.key === '/' && !event.ctrlKey:
                 ViewerZoom.reset();
                 break;
             case event.key === '+' && !event.ctrlKey:
-                ViewerZoom.increment();
+                zoomIn();
                 break;
             case event.key === '-' && !event.ctrlKey:
-                if ($ViewerZoom > 15) ViewerZoom.decrement();
+                zoomOut();
                 break;
             case event.key === '+' && event.ctrlKey:
                 ViewerPadding.increment();
@@ -79,10 +81,48 @@
         }
     }
 
+    /**
+     *
+     */
+    function zoomIn() {
+        previousOffset = viewer.scrollTop;
+        previousHeight = viewer.scrollHeight;
+        observeZoom();
+        ViewerZoom.increment();
+    }
+
+    /**
+     *
+     */
+    function zoomOut() {
+        if ($ViewerZoom > 15) {
+            previousOffset = viewer.scrollTop;
+            previousHeight = viewer.scrollHeight;
+            observeZoom();
+            ViewerZoom.decrement();
+        }
+    }
+
+    let previousOffset = 0;
+    let previousHeight = 0;
+
+    const zoomObserver = new ResizeObserver(function () {
+        if (viewer)
+            viewer.scrollTop =
+                viewer.scrollHeight * (previousOffset / previousHeight);
+    });
+
+    function observeZoom() {
+        zoomObserver.disconnect();
+        // We observe the size of all children to detect the full container scrollHeight change
+        for (var i = 0; i < viewer.children.length; i++) {
+            zoomObserver.observe(viewer.children[i]);
+        }
+    }
+
     let autoNextItem = false;
-    export let hasNextItem = true;
     function onNextItemCallback() {
-        if (autoNextItem) dispatch('nextItem');
+        if (autoNextItem && selectedItemNext) dispatch('nextItem');
         else {
             autoNextItem = true;
             setTimeout(function () {
@@ -130,13 +170,13 @@
 
 <svelte:window on:keydown={onKeyDown} on:mousedown={mouseDownHandler} />
 <div id="wideviewer" bind:this={viewer} class={$ViewerModeValue}>
-    <WideViewerSetting {title} on:close />
+    <WideViewerSetting {title} on:nextItem on:previousItem on:close />
     {#if $ViewerModeValue === Key.ViewerMode_Longstrip}
         <WebtoonViewer {item} />
     {:else if $ViewerModeValue === Key.ViewerMode_Paginated}
         <MangaViewer {item} {currentImageIndex} />
     {/if}
-    {#if autoNextItem && hasNextItem}
+    {#if autoNextItem && $selectedItemNext !== undefined}
         <InlineNotification
             kind="info"
             title="Bottom reached"

@@ -4,6 +4,11 @@
     import ThumbnailViewer from './ThumbnailViewer.svelte';
     import WideViewer from './WideViewer.svelte';
     import VideoViewer from './VideoViewer.svelte';
+    import {
+        selectedItem,
+        selectedItemPrevious,
+        selectedItemNext,
+    } from '../../stores/Stores';
 
     type Mode = 'Thumbnail' | 'Wide' | 'Video';
 
@@ -20,6 +25,15 @@
     function toggleWideViewer(imageIndex: number) {
         currentImageIndex = imageIndex;
         mode = 'Wide';
+    }
+
+    function onPreviousItem() {
+        console.log('now reading', $selectedItemPrevious);
+        $selectedItem = $selectedItemPrevious;
+    }
+    function onNextItem() {
+        console.log('now reading', $selectedItemNext);
+        $selectedItem = $selectedItemNext;
     }
 </script>
 
@@ -40,6 +54,8 @@
                         {item}
                         {currentImageIndex}
                         on:close={toggleThumbnailViewer}
+                        on:nextItem={() => onNextItem()}
+                        on:previousItem={() => onPreviousItem()}
                     />
                 {/if}
             {:else if mode === 'Video'}

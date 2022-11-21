@@ -6,3 +6,5 @@ export const WindowController = writable<IWindowController>();
 export const selectedPlugin = writable<IMediaContainer>();
 export const selectedMedia = writable<IMediaContainer>();
 export const selectedItem = writable<IMediaContainer>();
+export const selectedItemPrevious = writable<IMediaContainer>();
+export const selectedItemNext = writable<IMediaContainer>();
