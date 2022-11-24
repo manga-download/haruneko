@@ -35,11 +35,6 @@
         const position = filteredItems.indexOf(item);
         $selectedItemPrevious = filteredItems[position + 1];
         $selectedItemNext = filteredItems[position - 1];
-        console.log(
-            'previous/next',
-            $selectedItemPrevious?.Title,
-            $selectedItemNext?.Title
-        );
     });
 
     async function onItemClick(item: IMediaContainer, event: any) {

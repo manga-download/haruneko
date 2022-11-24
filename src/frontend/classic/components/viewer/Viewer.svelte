@@ -28,11 +28,9 @@
     }
 
     function onPreviousItem() {
-        console.log('now reading', $selectedItemPrevious);
         $selectedItem = $selectedItemPrevious;
     }
     function onNextItem() {
-        console.log('now reading', $selectedItemNext);
         $selectedItem = $selectedItemNext;
     }
 </script>
