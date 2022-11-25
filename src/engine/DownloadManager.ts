@@ -17,7 +17,7 @@ export class DownloadManager {
     /**
      * Perform a thread/concurrency safe operation on {@link queue}
      */
-    private async InvokeQueueTransaction<R>(transaction: (queue: typeof this.queue) => R): Promise<R> {
+    private async InvokeQueueTransaction<R>(transaction: (queue: DownloadTask[]) => R): Promise<R> {
         try {
             // TODO: Use a better locking mechanism?
             while(this.queueTransactionLock) {
