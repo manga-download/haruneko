@@ -6,7 +6,6 @@
     import Suggestions from '../Suggestions.svelte';
 
     const navigate = useNavigate();
-    let contentToSee;
 </script>
 
 <div id="Home" in:fade>
@@ -25,14 +24,8 @@
             read/watch it.
         </p>
     </div>
-    <div
-        class="border"
-        style="margin-bottom:1em; 
-            visibility={contentToSee > 0 ? 'visible' : 'hidden'}"
-    >
-        <h3 style="display: inline">Continue</h3>
-        <Suggestions />
-    </div>
+    <Suggestions />
+
     <div class="border">
         <h3>Guides</h3>
         <div class="guides">
@@ -90,6 +83,10 @@
     #Home {
         padding: 0.5em;
     }
+    #Home :global(#Suggestions) {
+        margin-bottom: 1em;
+    }
+
     .border {
         border: 2px solid var(--cds-ui-04);
         border-radius: 1em;
