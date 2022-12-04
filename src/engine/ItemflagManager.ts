@@ -12,9 +12,11 @@ export class ItemflagManager {
     }
 
     public async LoadContainerFlags(media: IMediaContainer) {
-        const mediaflags = await this.storage.LoadPersistent<ItemFlag[]>(Store.Itemflags,this.StorageKey(media));
-        this.items.set(this.StorageKey(media), mediaflags);
-        this.MediaFlagsChanged.Dispatch(this, media);
+        if(media.Parent) {
+            const mediaflags = await this.storage.LoadPersistent<ItemFlag[]>(Store.Itemflags, this.StorageKey(media));
+            this.items.set(this.StorageKey(media), mediaflags);
+            this.MediaFlagsChanged.Dispatch(this, media);
+        }
     }
 
     private async SaveContainerFlags(container: IMediaContainer, flags: ItemFlag[]) {
