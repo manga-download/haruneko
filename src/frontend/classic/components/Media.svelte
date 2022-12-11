@@ -55,6 +55,7 @@
     </ContextMenuOption>
     <ContextMenuDivider />
 </ContextMenu>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
     bind:this={mediadiv}
     class="media"

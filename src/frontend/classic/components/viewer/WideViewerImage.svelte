@@ -19,34 +19,36 @@
     });
 </script>
 
-{#await dataload}
-    <InlineLoading class={$$restProps.class ?? ''} />
-{:then data}
-    <ImageLoader
-        class="viewerimage {$$restProps.class ?? ''}"
-        style={$$restProps.style}
-        alt={page ? alt : ''}
-        src={data}
-        fadeIn
-    >
-        <svelte:fragment slot="loading"><InlineLoading /></svelte:fragment>
-        <svelte:fragment slot="error">
-            <InlineLoading
-                class="viewerimage {$$restProps.class ?? ''}"
-                status="error"
-            />
-        </svelte:fragment>
-    </ImageLoader>
-{:catch error}
-    <InlineLoading
-        class="viewerimage {$$restProps.class ?? ''}"
-        type="error"
-        description={error}
-    />
-{/await}
+<div class="wideimage">
+    {#await dataload}
+        <InlineLoading class={$$restProps.class ?? ''} />
+    {:then data}
+        <ImageLoader
+            class="viewerimage {$$restProps.class ?? ''}"
+            style={$$restProps.style}
+            alt={page ? alt : ''}
+            src={data}
+            fadeIn
+        >
+            <svelte:fragment slot="loading"><InlineLoading /></svelte:fragment>
+            <svelte:fragment slot="error">
+                <InlineLoading
+                    class="viewerimage {$$restProps.class ?? ''}"
+                    status="error"
+                />
+            </svelte:fragment>
+        </ImageLoader>
+    {:catch error}
+        <InlineLoading
+            class="viewerimage {$$restProps.class ?? ''}"
+            type="error"
+            description={error}
+        />
+    {/await}
+</div>
 
 <style>
-    :global(.viewerimage) {
+    .wideimage :global(.viewerimage) {
         display: block;
         transition: width 0.2s ease-in-out, padding 0.2s ease-in-out;
         margin-left: auto !important;
@@ -54,11 +56,11 @@
         pointer-events: none;
     }
 
-    :global(.viewerimage .double-page-image) {
+    .wideimage :global(.viewerimage .double-page-image) {
         width: 50%;
     }
 
-    :global(.viewerimage .manga-image) {
+    .wideimage :global(.viewerimage .manga-image) {
         max-height: 100%;
     }
 </style>

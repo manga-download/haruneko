@@ -4,8 +4,8 @@
         StructuredListRow,
         StructuredListCell,
         StructuredListBody,
-    } from "carbon-components-svelte";
-    import {Image} from "carbon-icons-svelte";
+    } from 'carbon-components-svelte';
+    import { Image } from 'carbon-icons-svelte';
 
     interface Request {
         type: string;
@@ -79,7 +79,7 @@
 <div id="network">
     <StructuredList>
         <StructuredListBody>
-            {#each [...requests] as [, request] (request)}
+            {#each [...requests] as [undefined, request] (request)}
                 <StructuredListRow class="job">
                     <StructuredListCell class="type"
                         >{request.type}</StructuredListCell
@@ -94,7 +94,8 @@
                         >{request.details}</StructuredListCell
                     >
                     <StructuredListCell class="action">
-                        <span on:click={() => alert("clicked")}><Image /></span>
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <span on:click={() => alert('clicked')}><Image /></span>
                     </StructuredListCell>
                 </StructuredListRow>
             {/each}

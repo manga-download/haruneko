@@ -50,7 +50,7 @@
     }
 </script>
 
-<span class="job">
+<div class="job">
     <StructuredListRow>
         <StructuredListCell noWrap class="media">
             {job.Media.Parent.Title}
@@ -70,12 +70,13 @@
             {/if}
         </StructuredListCell>
         <StructuredListCell noWrap class="action">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <span on:click={() => window.HakuNeko.DownloadManager.Dequeue(job)}>
                 <TrashCan size={20} />
             </span>
         </StructuredListCell>
     </StructuredListRow>
-</span>
+</div>
 
 <style>
     .job :global(.media) {
