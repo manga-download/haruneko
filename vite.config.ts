@@ -15,5 +15,8 @@ export default defineConfig({
                 chunkFileNames: 'assets/[hash].js'
             }
         }
+    },
+    optimizeDeps: {
+        exclude: ['carbon-components-svelte ','carbon-icons-svelte'] // do not pre-bundle some-library
     }
 });
