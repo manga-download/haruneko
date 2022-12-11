@@ -4,6 +4,7 @@
         IMediaItem,
     } from '../../../../engine/providers/MediaPlugin';
     import ThumbnailViewerImage from './ThumbnailViewerImage.svelte';
+    import { InlineNotification } from 'carbon-components-svelte';
 
     export let item: IMediaContainer;
 
@@ -15,6 +16,15 @@
 </script>
 
 <div>
+    {#if entries.length === 0}
+        <InlineNotification
+            lowContrast
+            hideCloseButton
+            kind="info"
+            title="Nothing to show:"
+            subtitle="content list is empty."
+        />
+    {/if}
     {#each entries as content, index}
         <ThumbnailViewerImage
             page={content}
