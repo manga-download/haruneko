@@ -96,6 +96,9 @@
     :global(#Suggestions #Continue) {
         background-color: var(--cds-background);
     }
+    :global(#Suggestions .suggesttile) {
+        padding: 0;
+    }
     :global(#Suggestions .suggesttile .bx--tag span) {
         width: 100%;
         overflow: hidden;
