@@ -1,10 +1,5 @@
 <script lang="ts">
-    import {
-        Language,
-        Plug,
-        Renew,
-        Search
-    } from "carbon-icons-svelte";
+    import { Language, Plug, Renew, Search } from 'carbon-icons-svelte';
 
     import { fade } from 'svelte/transition';
 </script>
@@ -48,12 +43,6 @@
 <style>
     #howto {
         padding: 0.5em;
-    }
-    .border {
-        border: 2px solid var(--cds-ui-04);
-        border-radius: 1em;
-        background-color: var(--cds-ui-01);
-        padding: 1em;
     }
 
     ol {

@@ -2,6 +2,7 @@
     // UI : Carbon
     import 'carbon-components-svelte/css/all.css';
     import './theme/hakuneko.css';
+    import './theme/global.css';
     import './theme/sidenav-hack.css';
     import { Content, Tabs, Tab, TabContent } from 'carbon-components-svelte';
     // Svelte
@@ -119,9 +120,6 @@
     :global(::-webkit-scrollbar-thumb) {
         background: var(--cds-active-ui); /* Scroll marker */
         border-radius: 2em; /* So marker has rounded edges */
-    }
-    :global(#app) {
-        background: var(--cds-ui-background);
     }
     :global(#hakunekoapp) {
         height: calc(100vh - 3.5em);

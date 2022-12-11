@@ -1,6 +1,6 @@
 <script>
     import Logo from '../../../../img/logo.png';
-    import { ClickableTile } from 'carbon-components-svelte';
+    import { Tile, ClickableTile } from 'carbon-components-svelte';
     import { useNavigate } from 'svelte-navigator';
     import { fade } from 'svelte/transition';
     import Suggestions from '../Suggestions.svelte';
@@ -9,8 +9,8 @@
 </script>
 
 <div id="Home" in:fade>
-    <div class="border" style="margin-bottom:1em;">
-        <p id="whatis">
+    <Tile class="border" style="margin-bottom:1em;">
+        <p>
             <img
                 alt="hakuneko logo"
                 class="logo"
@@ -23,10 +23,10 @@
             The philosophy is <u>ad-hoc consumption</u>, get it when you want to
             read/watch it.
         </p>
-    </div>
+    </Tile>
     <Suggestions />
 
-    <div class="border">
+    <Tile class="border">
         <h3>Guides</h3>
         <div class="guides">
             <ClickableTile light on:click={() => navigate('/howto')}
@@ -76,7 +76,7 @@
                 Send harucoins to Ukraine
             </ClickableTile>
         </div>
-    </div>
+    </Tile>
 </div>
 
 <style>
@@ -85,13 +85,6 @@
     }
     #Home :global(#Suggestions) {
         margin-bottom: 1em;
-    }
-
-    .border {
-        border: 2px solid var(--cds-ui-04);
-        border-radius: 1em;
-        background-color: var(--cds-ui-01);
-        padding: 1em;
     }
     .logo {
         margin-right: 1em;
