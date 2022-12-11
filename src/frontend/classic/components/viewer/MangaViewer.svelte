@@ -10,6 +10,7 @@
         ViewerReverseDirectionValue,
         ViewerPadding,
     } from '../../stores/Settings';
+    import { InlineNotification } from 'carbon-components-svelte';
 
     type ChapterImage = { current: IMediaItem; next: IMediaItem | undefined };
 
@@ -94,7 +95,16 @@
     on:keydown={(evt) => handleKeyDown(evt)}
     on:resize={() => setImageWidth()}
 />
-
+{#if chapterImages.length === 0}
+    <div class="center" style="width:100%;height:100%;">
+        <InlineNotification
+            hideCloseButton
+            kind="info"
+            title="Nothing to show:"
+            subtitle="content list is empty."
+        />
+    </div>
+{/if}
 {#each chapterImages as chapterImage, index}
     {#if chapterImage.next !== undefined}
         <div
