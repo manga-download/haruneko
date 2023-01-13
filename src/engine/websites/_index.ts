@@ -178,6 +178,7 @@ export { default as Mangabaz } from './Mangabaz';
 export { default as MangaBob } from './MangaBob';
 export { default as MangaBoruto } from './MangaBoruto';
 export { default as Mangaboss } from './Mangaboss';
+export { default as MangaBuddy } from './MangaBuddy';
 export { default as MangaCanBlog } from './MangaCanBlog';
 export { default as MangaCave } from './MangaCave';
 export { default as Mangacim } from './Mangacim';
