@@ -6,17 +6,17 @@ const config = {
         title: 'MangaForest'
     },
     container: {
-        url: 'https://truemanga.com/beware-of-the-villainess-manhwa',
-        id: '/beware-of-the-villainess-manhwa',
-        title: 'Beware of the Villainess! Manhwa'
+        url: 'https://mangaforest.me/tales-of-demons-and-gods',
+        id: '/tales-of-demons-and-gods',
+        title: 'Tales Of Demons And Gods'
     },
     child: {
-        id: '/beware-of-the-villainess-manhwa/chapter-1',
-        title: 'Chapter 1'
+        id: '/tales-of-demons-and-gods/chapter-1-rebirth',
+        title: 'Chapter 1: Rebirth'
     },
     entry: {
         index: 0,
-        size: 348_202,
+        size: 671_908,
         type: 'image/jpeg'
     }
 };

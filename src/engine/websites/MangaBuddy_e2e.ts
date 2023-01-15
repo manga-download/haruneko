@@ -3,20 +3,20 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'mangabuddy',
-        title: 'MangaBudy'
+        title: 'MangaBuddy'
     },
     container: {
-        url: 'https://mangabuddy.com/this-world-is-money-and-power',
-        id: '/this-world-is-money-and-power',
-        title: 'This World is Money and Power'
+        url: 'https://mangabuddy.com/this-world-is-mine',
+        id: '/this-world-is-mine',
+        title: 'This World is Mine'
     },
     child: {
-        id: '/this-world-is-money-and-power/chapter-1',
+        id: '/this-world-is-mine/chapter-1',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 3_054_093,
+        size: 187_647,
         type: 'image/jpeg'
     }
 };
