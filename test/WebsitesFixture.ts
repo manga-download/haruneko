@@ -87,7 +87,7 @@ export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer exte
 
         let remotePlugin: JSHandle<TWebsitePlugin>;
 
-        (this.config.plugin ? it : it.skip)('Should get initialzed website plugin', async () => {
+        (this.config.plugin ? it : it.skip)('Should get initialized website plugin', async () => {
             remotePlugin = await this.GetRemotePlugin(this.config.plugin.id);
             expect(await remotePlugin.evaluate(plugin => plugin?.Identifier || 'Website plugin not found!')).toEqual(this.config.plugin.id);
             expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual(this.config.plugin.title);
