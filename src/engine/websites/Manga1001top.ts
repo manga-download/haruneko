@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
-import icon from './MangaBuddy.webp';
+import icon from './Manga1001top.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/mangabuddy\.com\/[^/]+$/, 'div.name.box h1')
+@Common.MangaCSS(/^https?:\/\/manga1001\.top\/[^/]+$/, 'div.name.box h1')
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
 @Common.ChaptersSinglePageCSS('ul.chapter-list li a', Common.AnchorInfoExtractor(false, '.chapter-update'))
 @Common.PagesSinglePageJS(`      new Promise(resolve => {
@@ -15,7 +15,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangabuddy', 'MangaBuddy', 'https://mangabuddy.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('manga1001top', 'Manga1001.top', 'https://manga1001.top', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
