@@ -1,16 +1,19 @@
 import { Tags } from '../Tags';
 import icon from './Manga1001top.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
+import * as MadTheme from './decorators/Common';
+
+const scriptImageLinks = `
+    new Promise(resolve => {
+        const images = window.chapImages.split(',');
+        resolve(images.map(image => window.mainServer + image));
+    });
+`;
 
 @Common.MangaCSS(/^https?:\/\/manga1001\.top\/[^/]+$/, 'div.name.box h1')
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
 @Common.ChaptersSinglePageCSS('ul.chapter-list li a', Common.AnchorInfoExtractor(false, '.chapter-update'))
-@Common.PagesSinglePageJS(`      new Promise(resolve => {
-        let images = window.chapImages.split(',');
-            resolve(images.map(image => window.mainServer+image));
-        });
-        ;`)
+@MadTheme.PagesSinglePageJS(scriptImageLinks)
 @Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 

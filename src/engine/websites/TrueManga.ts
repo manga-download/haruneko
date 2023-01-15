@@ -1,17 +1,17 @@
 import { Tags } from '../Tags';
 import icon from './TrueManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
+import * as MadTheme from './decorators/Common';
 
 function ImageExtractor(element: HTMLImageElement): string {
     return element.dataset.src;
 }
 
-@Common.MangaCSS(/^https?:\/\/truemanga\.com\/[^/]+$/, 'div.name.box h1')
-@Common.MangasMultiPageCSS('/az-list?page={page}', 'div.list div.title h3 a', 1)
-@Common.ChaptersSinglePageCSS('ul.chapter-list li a', Common.AnchorInfoExtractor(false, '.chapter-update'))
-@Common.PagesSinglePageCSS('div.chapter-image img', ImageExtractor)
-@Common.ImageDirect()
+@MadTheme.MangaCSS(/^https?:\/\/truemanga\.com\/[^/]+$/, 'div.name.box h1')
+@MadTheme.MangasMultiPageCSS('/az-list?page={page}', 'div.list div.title h3 a', 1)
+@MadTheme.ChaptersSinglePageCSS('ul.chapter-list li a', MadTheme.AnchorInfoExtractor(false, '.chapter-update'))
+@MadTheme.PagesSinglePageCSS('div.chapter-image img', ImageExtractor)
+@MadTheme.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
