@@ -6,18 +6,18 @@ const config = {
         title: 'MangaDex'
     },
     container: {
-        url: 'https://mangadex.org/title/32d76d19-8a05-4db0-9fc2-e0b0648fe9d0/solo-leveling',
-        id: '32d76d19-8a05-4db0-9fc2-e0b0648fe9d0',
-        title: 'Solo Leveling'
+        url: 'https://mangadex.org/title/43dec29e-821c-459b-983b-315ca12f2c02/ev',
+        id: '43dec29e-821c-459b-983b-315ca12f2c02',
+        title: 'eV'
     },
     child: {
-        id: '306606ed-9272-40d7-9534-c552d7e13f32',
-        title: 'Vol.01 Ch.0000 - Prologue (en) [Flame Scans]'
+        id: '6b095fee-c6fb-49f8-972d-8df4c54fbc24',
+        title: 'Vol.01 Ch.0001 (en) [INKR Comics]'
     },
     entry: {
         index: 0,
-        size: 967_059,
-        type: 'image/png'
+        size: 290_930,
+        type: 'image/jpeg'
     }
 };
 

@@ -105,11 +105,11 @@ export default class extends MangaScraper {
         return icon;
     }
 
-    public ValidateMangaURL(url: string): boolean {
+    public override ValidateMangaURL(url: string): boolean {
         return /https?:\/\/mangadex\.org\/title\//.test(url);
     }
 
-    public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         const regexGUID = /[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}/;
         const id = (uri.pathname.match(regexGUID) || uri.hash.match(regexGUID))[0].toLowerCase();
@@ -119,7 +119,7 @@ export default class extends MangaScraper {
         return new Manga(this, provider, id, title);
     }
 
-    public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         const limit = 100;
         let lastCreatedAt = '2000-01-01T00:00:00';
@@ -153,7 +153,7 @@ export default class extends MangaScraper {
         return mangaList;
     }
 
-    public async FetchChapters(manga: Manga): Promise<Chapter[]> {
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         let throttle = Promise.resolve();
         for(let page = 0, run = true; run; page++) {
@@ -220,7 +220,7 @@ export default class extends MangaScraper {
         }).filter(chapter => chapter);
     }
 
-    public async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new FetchRequest(`${this.api}/at-home/server/${chapter.Identifier}`, { headers: { Referer: this.URI.href }});
         const { baseUrl, chapter: { hash, data: files } } = await FetchJSON<APIMedia>(request);
         return files.map(file => {
@@ -230,7 +230,7 @@ export default class extends MangaScraper {
         });
     }
 
-    public async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
 
         async function download(this: MangaScraper, page: Page, server: string): Promise<Blob> {
             const source = new Page(this, page.Parent as Chapter, new URL(server + page.Parameters.Slug), page.Parameters);
