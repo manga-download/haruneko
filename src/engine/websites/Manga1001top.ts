@@ -10,11 +10,11 @@ const scriptImageLinks = `
     });
 `;
 
-@Common.MangaCSS(/^https?:\/\/manga1001\.top\/[^/]+$/, 'div.name.box h1')
-@Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
-@Common.ChaptersSinglePageCSS('ul.chapter-list li a', Common.AnchorInfoExtractor(false, '.chapter-update'))
+@MadTheme.MangaCSS(/^https?:\/\/manga1001\.top\/[^/]+$/, 'div.name.box h1')
+@MadTheme.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
+@MadTheme.ChaptersSinglePageCSS('ul.chapter-list li a', MadTheme.AnchorInfoExtractor(false, '.chapter-update'))
 @MadTheme.PagesSinglePageJS(scriptImageLinks)
-@Common.ImageDirect()
+@MadTheme.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
