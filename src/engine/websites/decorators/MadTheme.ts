@@ -1,5 +1,5 @@
 import { FetchRequest, FetchCSS } from '../../FetchProvider';
-import { type MangaScraper, type DecoratableMangaScraper, type Manga, Chapter, type Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type Manga, Chapter, type Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
 const scriptImageLinks = `
@@ -9,9 +9,6 @@ const scriptImageLinks = `
     });
 `;
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ //=> A mixin class must have a constructor with a single rest parameter of type 'any[]'
-export type Constructor = new (...args: any[]) => DecoratableMangaScraper;
-
 const queryChapterListBloat = '.chapter-update';
 const queryChapterListLinks = 'ul.chapter-list li a';
 const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapterListBloat);
@@ -19,14 +16,6 @@ const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapterListB
 /*************************************************
  ******** Chapter List Extraction Methods ********
  *************************************************/
-
-async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: FetchRequest, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
-    const data = await FetchCSS<HTMLAnchorElement>(request, query);
-    return data.map(element => {
-        const { id, title } = extract.call(this, element);
-        return new Chapter(this, manga, id, title);
-    });
-}
 
 /**
  * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
@@ -54,9 +43,13 @@ export function ChaptersSinglePageAJAX(query = queryChapterListLinks, extract = 
  */
 export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const id = manga.Identifier.split('/').pop();
-    const uri = new URL('/api/manga/' +id+ '/chapters?source=detail', this.URI);
+    const uri = new URL(`/api/manga/${id}/chapters?source=detail`, this.URI);
     const request = new FetchRequest(uri.href);
-    return FetchChaptersCSS.call(this, manga, request, query, extract);
+    const data = await FetchCSS<HTMLAnchorElement>(request, query);
+    return data.map(element => {
+        const { id, title } = extract.call(this, element);
+        return new Chapter(this, manga, id, title);
+    });
 }
 
 /*************************************************
@@ -70,7 +63,7 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
 export function PagesSinglePageJS(script = scriptImageLinks, delay = 0) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return Common.FetchPagesSinglePageJS.call(this, chapter, script, delay);
