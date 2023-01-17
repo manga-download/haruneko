@@ -1,20 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './MangaForest.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MadTheme from './decorators/Common';
+import * as Common from './decorators/Common';
+import * as MadTheme from './decorators/MadTheme';
 
-const scriptImageLinks = `
-    new Promise(resolve => {
-        const images = window.chapImages.split(',');
-        resolve(images.map(image => window.mainServer + image));
-    });
-`;
-
-@MadTheme.MangaCSS(/^https?:\/\/mangaforest\.me\/[^/]+$/, 'div.name.box h1')
-@MadTheme.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
-@MadTheme.ChaptersSinglePageCSS('ul.chapter-list li a', MadTheme.AnchorInfoExtractor(false, '.chapter-update'))
-@MadTheme.PagesSinglePageJS(scriptImageLinks)
-@MadTheme.ImageDirect()
+@Common.MangaCSS(/^https?:\/\/mangaforest\.me\/[^/]+$/, 'div.name.box h1')
+@Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
+@MadTheme.ChaptersSinglePageAJAX()
+@MadTheme.PagesSinglePageJS()
+@Common.ImageDirect()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
