@@ -83,7 +83,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
     const uri = new URL(url);
     const request = new FetchRequest(uri.href);
     const data = (await FetchCSS<HTMLElement>(request, query)).shift();
-    return new Manga(this, provider, uri.pathname+uri.search, extract.call(this, data));
+    return new Manga(this, provider, uri.pathname + uri.search, extract.call(this, data));
 }
 
 /**
@@ -221,6 +221,53 @@ export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: s
             }
         };
     };
+}
+
+/**
+ * A class decorator that adds the ability to extract multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
+ * The range of all {@link path} patterns begins with {@link start} and is incremented until no more new mangas can be extracted.
+ * @param path - The path pattern relative to the scraper's base url from which the mangas shall be extracted containing the placeholder `{offset}` which is replaced by an incrementing number
+ * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param start - The start for the sequence of incremental numbers which are applied to the {@link path} pattern
+ * @param step  - The increment value for each page
+ * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
+ */
+export function MangasMultiPageCSSByOffset<E extends HTMLElement>(path: string, query: string, start = 0, throttle = 0, step = 25, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
+        return class extends ctor {
+            public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
+                return FetchMangasMultiPageCSSByOffset.call(this, provider, path, query, start, throttle, step, extract as InfoExtractor<HTMLElement>);
+            }
+        };
+    };
+}
+
+/**
+ * An extension method for extracting multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
+ * The range of all {@link path} patterns begins with {@link start} and is incremented until no more new mangas can be extracted.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
+ * @param path - The path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
+ * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param start - The start for the sequence of incremental numbers which are applied to the {@link path} pattern
+ * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
+ * @param step  - The increment value for each page
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
+ */
+export async function FetchMangasMultiPageCSSByOffset<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, throttle = 0, step = 25, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
+    const mangaList = [];
+    let reducer = Promise.resolve();
+    for (let page = start, run = true; run; page++) {
+        await reducer;
+        const offset = page * step;
+        reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
+        const mangas = await FetchMangasSinglePageCSS.call(this, provider, path.replace('{offset}', `${offset}`), query, extract as InfoExtractor<HTMLElement>);
+        // Always add when mangaList is empty ... (length = 0)
+        mangas.length > 0 && !EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
+        // TODO: Broadcast event that mangalist for provider has been updated?
+    }
+    return mangaList;
 }
 
 /*************************************************
