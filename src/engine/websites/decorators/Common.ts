@@ -83,7 +83,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
     const uri = new URL(url);
     const request = new FetchRequest(uri.href);
     const data = (await FetchCSS<HTMLElement>(request, query)).shift();
-    return new Manga(this, provider, uri.pathname, extract.call(this, data));
+    return new Manga(this, provider, uri.pathname+uri.search, extract.call(this, data));
 }
 
 /**
