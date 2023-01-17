@@ -99,15 +99,17 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
  * @param pattern - An expression to check if a manga can be extracted from an url or not
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
+ * @param includeSearch - append Uri.search to the manga identifier
+ * @param includeHash - append Uri.hash to the manga identifier
  */
-export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelExtractor as LabelExtractor) {
+export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelExtractor as LabelExtractor, includeSearch = false, includeHash = false) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
-                return FetchMangaCSS.call(this, provider, url, query, extract);
+                return FetchMangaCSS.call(this, provider, url, query, extract, includeSearch, includeHash);
             }
         };
     };
