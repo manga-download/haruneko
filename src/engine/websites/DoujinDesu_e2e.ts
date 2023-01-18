@@ -12,7 +12,7 @@ const config: Config = {
     },
     child: {
         id: '/2022/02/19/hero-villain-chapter-01/',
-        title: 'Hero Villain Chapter 01'
+        title: 'Chapter 01'
     },
     entry: {
         index: 1,
