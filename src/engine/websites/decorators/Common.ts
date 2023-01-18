@@ -21,9 +21,9 @@ const DefaultLabelExtractor = ElementLabelExtractor();
  * @param queryBloat - An optional CSS query which can be used to remove all matching child elements before extracting the media title
  */
 export function ElementLabelExtractor(queryBloat: string = undefined) {
-    return function(this: MangaScraper, element: HTMLElement) {
-        if(queryBloat) {
-            for(const bloat of element.querySelectorAll(queryBloat)) {
+    return function (this: MangaScraper, element: HTMLElement) {
+        if (queryBloat) {
+            for (const bloat of element.querySelectorAll(queryBloat)) {
                 if (bloat.parentElement) {
                     bloat.parentElement.removeChild(bloat);
                 }
@@ -45,9 +45,9 @@ const DefaultInfoExtractor = AnchorInfoExtractor();
  * @param queryBloat - An optional CSS query which can be used to remove all matching child elements before extracting the media title
  */
 export function AnchorInfoExtractor(useTitleAttribute = false, queryBloat: string = undefined): InfoExtractor<HTMLElement> {
-    return function(this: MangaScraper, element: HTMLAnchorElement) {
+    return function (this: MangaScraper, element: HTMLAnchorElement) {
         if (!useTitleAttribute && queryBloat) {
-            for(const bloat of element.querySelectorAll(queryBloat)) {
+            for (const bloat of element.querySelectorAll(queryBloat)) {
                 if (bloat.parentElement) {
                     bloat.parentElement.removeChild(bloat);
                 }
@@ -72,18 +72,25 @@ function DefaultImageExtractor<E extends HTMLImageElement>(this: MangaScraper, e
 
 /**
  * An extension method for extracting a single manga from the given {@link url} using the given CSS {@link query}.
- * The `pathname` of the given {@link url} will be used as identifier for the extracted manga.
+ * The `pathname`and the `search` of the given {@link url} will be used as identifier for the extracted manga.
  * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted manga
  * @param url - The url from which the manga shall be extracted
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
+ * @param extract - An Extractor to get manga infos
+ * @param includeSearch - append Uri.search to the manga identifier
+ * @param includeHash - append Uri.hash to the manga identifier
+
  */
-export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string, extract = DefaultLabelExtractor as LabelExtractor): Promise<Manga> {
+export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string, extract = DefaultLabelExtractor as LabelExtractor, includeSearch = false, includeHash = false): Promise<Manga> {
     const uri = new URL(url);
     const request = new FetchRequest(uri.href);
     const data = (await FetchCSS<HTMLElement>(request, query)).shift();
-    return new Manga(this, provider, uri.pathname, extract.call(this, data));
+    let id = uri.pathname;
+    id += includeSearch ? uri.search : '';
+    id += includeHash ? uri.hash : '';
+    return new Manga(this, provider, id, extract.call(this, data));
 }
 
 /**
@@ -92,15 +99,17 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
  * @param pattern - An expression to check if a manga can be extracted from an url or not
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
+ * @param includeSearch - append Uri.search to the manga identifier
+ * @param includeHash - append Uri.hash to the manga identifier
  */
-export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelExtractor as LabelExtractor) {
+export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelExtractor as LabelExtractor, includeSearch = false, includeHash = false) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
-                return FetchMangaCSS.call(this, provider, url, query, extract);
+                return FetchMangaCSS.call(this, provider, url, query, extract, includeSearch, includeHash);
             }
         };
     };
@@ -111,7 +120,7 @@ export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelE
  ***********************************************/
 
 function EndsWith(target: Manga[], source: Manga[]) {
-    if(target.length < source.length) {
+    if (target.length < source.length) {
         return false;
     }
     /*
@@ -181,19 +190,20 @@ export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: 
 
 /**
  * An extension method for extracting multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
- * The range of all {@link path} patterns begins with {@link start} and is incremented until no more new mangas can be extracted.
+ * The range of all {@link path} patterns begins with {@link start} and is incremented by {@link step} until no more new mangas can be extracted.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
  * @param path - The path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param start - The start for the sequence of incremental numbers which are applied to the {@link path} pattern
+ * @param step - An int that will be used to increase page on each loop, so page can be used as an offset if needed
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
+export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, step = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const mangaList = [];
     let reducer = Promise.resolve();
-    for(let page = start, run = true; run; page++) {
+    for (let page = start, run = true; run; page += step) {
         await reducer;
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract as InfoExtractor<HTMLElement>);
@@ -206,18 +216,19 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
 
 /**
  * A class decorator that adds the ability to extract multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
- * The range of all {@link path} patterns begins with {@link start} and is incremented until no more new mangas can be extracted.
+ * The range of all {@link path} patterns begins with {@link start} and is incremented by {@link step} until no more new mangas can be extracted.
  * @param path - The path pattern relative to the scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param start - The start for the sequence of incremental numbers which are applied to the {@link path} pattern
+ * @param step - An int that will be used to increase page on each loop, so page can be used as an offset if needed
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: string, start = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: string, start = 1, step = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasMultiPageCSS.call(this, provider, path, query, start, throttle, extract as InfoExtractor<HTMLElement>);
+                return FetchMangasMultiPageCSS.call(this, provider, path, query, start, step, throttle, extract as InfoExtractor<HTMLElement>);
             }
         };
     };
@@ -408,23 +419,23 @@ export function ImageDirect(detectMimeType = false) {
 export async function GetTypedData(buffer: ArrayBuffer): Promise<Blob> {
     const bytes = new Uint8Array(buffer);
     // WEBP [52 49 46 46 . . . . 57 45 42 50]
-    if(bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50 ) {
+    if (bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) {
         return new Blob([bytes], { type: 'image/webp' });
     }
     // JPEG [FF D8 FF]
-    if(bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF ) {
+    if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) {
         return new Blob([bytes], { type: 'image/jpeg' });
     }
     // PNG [. 50 4E 47]
-    if(bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47 ) {
+    if (bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) {
         return new Blob([bytes], { type: 'image/png' });
     }
     // GIF [47 49 46]
-    if(bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46 ) {
+    if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) {
         return new Blob([bytes], { type: 'image/gif' });
     }
     // BMP [42 4D]
-    if(bytes[0] === 0x42 && bytes[1] === 0x4D ) {
+    if (bytes[0] === 0x42 && bytes[1] === 0x4D) {
         return new Blob([bytes], { type: 'image/bmp' });
     }
     return new Blob([bytes], { type: 'application/octet-stream' });

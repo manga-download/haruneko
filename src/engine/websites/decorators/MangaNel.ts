@@ -81,7 +81,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, path = pathpaged, query = queryMangaListLinks): Promise<Manga[]> {
-    return Common.FetchMangasMultiPageCSS.call(this, provider, path, query, 1, 0, AnchorInfoExtractor);
+    return Common.FetchMangasMultiPageCSS.call(this, provider, path, query, 1, 1, 0, AnchorInfoExtractor);
 }
 
 /**
@@ -91,7 +91,7 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export function MangasMultiPageCSS(path: string = pathpaged, query: string = queryMangaListLinks) {
-    return Common.MangasMultiPageCSS(path, query, 1, 0, AnchorInfoExtractor);
+    return Common.MangasMultiPageCSS(path, query, 1, 1, 0, AnchorInfoExtractor);
 }
 
 /*************************************************

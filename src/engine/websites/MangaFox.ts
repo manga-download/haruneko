@@ -7,7 +7,7 @@ import * as DM5 from './decorators/DM5';
 
 const extractor = Common.AnchorInfoExtractor(true);
 @Common.MangaCSS(/^https?:\/\/fanfox\.net\/manga\//, 'div.detail-info span.detail-info-right-title-font')
-@Common.MangasMultiPageCSS('/directory/{page}.html?az', 'div.manga-list-1 ul li p.manga-list-1-item-title a', 1, 0, extractor)
+@Common.MangasMultiPageCSS('/directory/{page}.html?az', 'div.manga-list-1 ul li p.manga-list-1-item-title a', 1, 1, 0, extractor)
 @Common.ChaptersSinglePageCSS('div#chapterlist ul li a', extractor)
 @DM5.PagesSinglePageScript()
 @Common.ImageDirect()
