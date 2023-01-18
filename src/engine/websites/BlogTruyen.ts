@@ -1,7 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './AceScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-//import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/blogtruyen\.vn\/[^/]+\//, 'section.manga-detail h1.entry-title')
