@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from '../../img/logo.png';
+import icon from './SheepManga.webp';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { Numeric, Secret, Text } from '../SettingsManager';
