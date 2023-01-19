@@ -29,7 +29,7 @@ export default class extends DecoratableMangaScraper {
         request = new FetchRequest(uri.href, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ id: : chapterid })
+            body: new URLSearchParams({ id: chapterid })
         });
         data = await FetchCSS<HTMLImageElement>(request, 'img');
         return data.map(element => new Page(this, chapter, new URL(element.getAttribute('src'))));
