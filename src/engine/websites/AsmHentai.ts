@@ -29,7 +29,7 @@ const script = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('asmhentai', `AsmHentai`, 'https://asmhentai.com', Tags.Language.Multilingual, Tags.Rating.Erotica);
+        super('asmhentai', `AsmHentai`, 'https://asmhentai.com', Tags.Language.Multilingual, Tags.Rating.Erotica, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
