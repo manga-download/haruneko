@@ -1,5 +1,5 @@
 import logo from './Kitsu.webp';
-import poster from '../../img/media.webp';
+import poster from '../../img/media.png';
 import { VariantResourceKey as R } from '../../i18n/ILocale';
 import { type IMediaInfoTracker, type Info, MediaType, type TrackingStatus } from './IMediaInfoTracker';
 import { type SettingsManager, type ISettings , Text, Secret } from '../SettingsManager';
