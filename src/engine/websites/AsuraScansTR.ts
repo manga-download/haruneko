@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('asurascans-tr', `Asura Scans (TR)`, 'https://asurascanstr.com', Tags.Language.Turkish, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga);
+        super('asurascans-tr', `Asura Scans (TR)`, 'https://asurascanstr.com', Tags.Language.Turkish, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
