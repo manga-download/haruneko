@@ -13,7 +13,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('blogtruyen', `BlogTruyen`, 'https://blogtruyen.vn', Tags.Language.Vietnamese, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Source.Aggregator);
+        super('blogtruyen', `BlogTruyen`, 'https://blogtruyen.vn', Tags.Language.Vietnamese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
