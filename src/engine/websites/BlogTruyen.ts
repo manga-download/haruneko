@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('blogtruyen', `BlogTruyen`, 'https://blogtruyen.vn', Tags.Language.Vietnamese, Tags.Media.Manhua, Tags.Media.Manhua);
+        super('blogtruyen', `BlogTruyen`, 'https://blogtruyen.vn', Tags.Language.Vietnamese, Tags.Media.Manhua, Tags.Media.Manhwa);
     }
 
     public override get Icon() {
