@@ -8,7 +8,7 @@
 
     import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
 
-    import MediaIcon from '../../../img/media.png';
+    import MediaIcon from '../../../img/media.webp';
 
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Check } from '../../../engine/SettingsManager';
