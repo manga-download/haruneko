@@ -10,7 +10,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
-    const title = anchor.text;
+    const title = anchor.text.trim();
     const id = (anchor.pathname + anchor.search).replace('reader.php', 'readerr.php');
     return { id, title };
 }
