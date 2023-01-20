@@ -125,7 +125,8 @@ export async function FetchHTML(request: FetchRequest): Promise<Document> {
     const data = await response.arrayBuffer();
     const dom = new DOMParser().parseFromString(new TextDecoder().decode(data), mime);
 
-    const charset = dom.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
+    const charset = dom.head?.querySelector<HTMLMetaElement>('meta[charset]')?.getAttribute('charset')
+        ?? dom.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
         ?? response.headers?.get('Content-Type')?.match(charsetPattern)?.at(1)
         ?? 'UTF-8';
 
