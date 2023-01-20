@@ -118,10 +118,19 @@ export async function Fetch(request: FetchRequest): Promise<Response> {
 }
 
 export async function FetchHTML(request: FetchRequest): Promise<Document> {
+    const mime = 'text/html';
+    const charsetPattern = /charset=([\w-]+)/;
+
     const response = await Fetch(request);
-    const content = await response.text();
-    const mime = 'text/html'; // response.headers.get('content-type')
-    return new DOMParser().parseFromString(content, mime);
+    const data = await response.arrayBuffer();
+    const dom = new DOMParser().parseFromString(new TextDecoder().decode(data), mime);
+
+    const charset = dom.head?.querySelector<HTMLMetaElement>('meta[charset]')?.getAttribute('charset')
+        ?? dom.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
+        ?? response.headers?.get('Content-Type')?.match(charsetPattern)?.at(1)
+        ?? 'UTF-8';
+
+    return /UTF-?8/i.test(charset) ? dom : new DOMParser().parseFromString(new TextDecoder(charset).decode(data), mime);
 }
 
 export async function FetchJSON<TResult>(request: FetchRequest): Promise<TResult> {
