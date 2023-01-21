@@ -19,7 +19,6 @@ export { default as ApollToons } from './ApollToons';
 export { default as AquaManga } from './AquaManga';
 export { default as AresManga } from './AresManga';
 export { default as ArthurScan } from './ArthurScan';
-export { default as AsmHentai } from './AsmHentai';
 export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansTR } from './AsuraScansTR';
 export { default as Atikrost } from './Atikrost';
@@ -498,6 +497,7 @@ export { default as ZinManga } from './ZinManga';
 export { default as ZManga } from './ZManga';
 // Legacy Websites
 export { default as AkaiYuhiMun } from './legacy/AkaiYuhiMun';
+export { default as AllHentai } from './legacy/AllHentai';
 export { default as Alphapolis } from './legacy/Alphapolis';
 export { default as AMAScan } from './legacy/AMAScan';
 export { default as AnimaRegia } from './legacy/AnimaRegia';
