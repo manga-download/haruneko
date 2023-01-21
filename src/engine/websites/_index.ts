@@ -19,6 +19,7 @@ export { default as ApollToons } from './ApollToons';
 export { default as AquaManga } from './AquaManga';
 export { default as AresManga } from './AresManga';
 export { default as ArthurScan } from './ArthurScan';
+export { default as AsmHentai } from './AsmHentai';
 export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansTR } from './AsuraScansTR';
 export { default as Atikrost } from './Atikrost';
