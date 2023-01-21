@@ -1,5 +1,6 @@
 // Implemented Websites
 export { default as AceScans } from './AceScans';
+export { default as AGCScanlation } from './AGCScanlation';
 export { default as AHStudios } from './AHStudios';
 export { default as AiinScan } from './AiinScan';
 export { default as AkuManga } from './AkuManga';
@@ -18,7 +19,9 @@ export { default as ApollToons } from './ApollToons';
 export { default as AquaManga } from './AquaManga';
 export { default as AresManga } from './AresManga';
 export { default as ArthurScan } from './ArthurScan';
+export { default as AsmHentai } from './AsmHentai';
 export { default as AsuraScans } from './AsuraScans';
+export { default as AsuraScansTR } from './AsuraScansTR';
 export { default as Atikrost } from './Atikrost';
 export { default as AyaToon } from './AyaToon';
 export { default as AzoraManga } from './AzoraManga';
@@ -33,6 +36,7 @@ export { default as BestManga } from './BestManga';
 export { default as BetaFox } from './BetaFox';
 export { default as BlackArmy } from './BlackArmy';
 export { default as BLManhwaClub } from './BLManhwaClub';
+export { default as BlogTruyen } from './BlogTruyen';
 export { default as Boosei } from './Boosei';
 export { default as BoysLove } from './BoysLove';
 export { default as CatTranslator } from './CatTranslator';
