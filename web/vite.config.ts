@@ -17,8 +17,9 @@ export default defineConfig({
         }
     },
     optimizeDeps: {
+        // TODO: once carbon-componenets-svelte v1 is released, check if svelte optimize has been improved
         exclude: [
-            'carbon-components-svelte ',
+            'carbon-components-svelte',
             'carbon-icons-svelte'
         ]
     }
