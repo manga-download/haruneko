@@ -6,7 +6,8 @@
         Search,
         Loading,
     } from 'carbon-components-svelte';
-    import { Star, StarFilled, UpdateNow } from 'carbon-icons-svelte';
+
+    import { Star, StarFilled, UpdateNow, CopyLink } from 'carbon-icons-svelte';
     import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
     // Third Party
     import Fuse from 'fuse.js';
@@ -73,6 +74,7 @@
 
     let pluginDropdownSelected: string;
     let currentPlugin: string;
+    let preserveSelectedMedia=false;
 
     selectedPlugin.subscribe((value) => {
         if (!value || value?.Identifier === currentPlugin) return;
@@ -85,8 +87,18 @@
             minMatchCharLength: 1,
             fieldNormWeight: 0,
         });
-        $selectedMedia = undefined;
+        if (!preserveSelectedMedia) {
+            $selectedMedia = undefined;
+        }
         $selectedItem = undefined;
+        preserveSelectedMedia=false;
+    });
+
+    selectedMedia.subscribe((value) => {
+        if (value && !$selectedPlugin.IsSameAs(value.Parent)){
+            preserveSelectedMedia = true;
+            $selectedPlugin = value.Parent;
+        }  
     });
     function filterMedia(mediaNameFilter: string): IMediaContainer[] {
         if ($FuzzySearchValue)
@@ -112,6 +124,26 @@
         loadPlugin = $selectedPlugin?.Update();
         await loadPlugin;
         medias = ($selectedPlugin?.Entries as IMediaContainer[]) ?? [];
+    }
+
+    async function onClipboardPaste() {
+        try {
+            const link = new URL(await navigator.clipboard.readText()).href;
+            for (const website of HakuNeko.PluginController.WebsitePlugins) {
+                const media = (await website.TryGetEntry(
+                    link
+                )) as IMediaContainer;
+                if (media) {
+                    if (!$selectedMedia?.IsSameAs(media)) {
+                        $selectedMedia = media;
+                    }
+                    return;
+                }
+            }
+            throw new Error(`No matching website found for '${link}'`);
+        } catch (error) {
+            console.warn(error);
+        }
     }
 </script>
 
@@ -140,36 +172,39 @@
         <h5>Media List</h5>
     </div>
     <div id="Plugin">
-        <div class="inline-wide">
-            <ComboBox
-                placeholder="Select a Plugin"
-                bind:selectedId={pluginDropdownSelected}
-                on:select={(event) =>
-                    ($selectedPlugin = orderedPlugins.find(
-                        (plugin) =>
-                            plugin.Identifier === event.detail.selectedId
-                    ))}
-                size="sm"
-                items={pluginsCombo}
-                shouldFilterItem={shouldFilterPlugin}
-                itemToString={pluginsComboText}
-            />
-        </div>
-
-        <div class="inline">
-            <Button
-                icon={UpdateNow}
-                size="small"
-                tooltipPosition="bottom"
-                tooltipAlignment="center"
-                iconDescription="Update"
-                on:click={onUpdateMediaEntriesClick}
-            />
-        </div>
+        <ComboBox
+            placeholder="Select a Plugin"
+            bind:selectedId={pluginDropdownSelected}
+            on:select={(event) =>
+                ($selectedPlugin = orderedPlugins.find(
+                    (plugin) => plugin.Identifier === event.detail.selectedId
+                ))}
+            size="sm"
+            items={pluginsCombo}
+            shouldFilterItem={shouldFilterPlugin}
+            itemToString={pluginsComboText}
+        />
+        <Button
+            icon={UpdateNow}
+            size="small"
+            tooltipPosition="top"
+            tooltipAlignment="center"
+            iconDescription="Update"
+            style="float: right;"
+            on:click={onUpdateMediaEntriesClick}
+        />
     </div>
 
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
+        <Button
+            icon={CopyLink}
+            size="small"
+            tooltipPosition="bottom"
+            tooltipAlignment="center"
+            iconDescription="Paste media link"
+            on:click={onClipboardPaste}
+        />
     </div>
     <div id="MediaList" class="list">
         {#await loadPlugin}
@@ -200,7 +235,7 @@
         min-height: 0;
         height: 100%;
         display: grid;
-        grid-template-rows: 2.2em 2em 2em 1fr 2em;
+        grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
             'MediaTitle'
@@ -212,11 +247,13 @@
     }
     #Plugin {
         grid-area: Plugin;
-        display: table;
+        display: grid;
+        grid-template-columns: 1fr auto;
     }
     #MediaFilter {
         grid-area: MediaFilter;
-        display: table;
+        display: grid;
+        grid-template-columns: 1fr auto;
     }
     #MediaList {
         grid-area: MediaList;
@@ -241,13 +278,5 @@
         display: inline-block;
         height: 100%;
         padding-top: 0.3em;
-    }
-
-    .inline {
-        width: fit-content;
-    }
-    .inline-wide {
-        display: table-cell;
-        width: 100%;
     }
 </style>

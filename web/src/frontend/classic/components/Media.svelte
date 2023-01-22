@@ -12,7 +12,7 @@
 
     export let media: IMediaContainer;
     let selected: Boolean = false;
-    $: selected = $selectedMedia === media;
+    $: selected = $selectedMedia?.IsSameAs(media);
     let isBookmarked: Boolean = HakuNeko.BookmarkPlugin.isBookmarked(media);
     let mediadiv: HTMLElement;
     async function toggleBookmark() {
