@@ -3,7 +3,7 @@ import icon from './InstaManhwa.webp';
 import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProviderNodeWebkit';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 const extract = Common.AnchorInfoExtractor(false, 'span.chapter-release-date');
 
