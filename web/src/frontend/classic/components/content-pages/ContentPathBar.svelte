@@ -9,21 +9,16 @@
     $: steps = path.split('/').slice(1);
 </script>
 
-<Breadcrumb noTrailingSlash>
-    <span class="contentpathbar">
+<div id="contentpathbar">
+    <Breadcrumb noTrailingSlash>
         <BreadcrumbItem isCurrentPage={path === '/'}>
-            <Link class="contentpathbar" to="/">Hakuneko</Link>
+            <Link class="contentpath" to="/">Hakuneko</Link>
         </BreadcrumbItem>
         {#if path !== '/'}
             {#each steps as step, index}
-                {#if index === steps.length - 1}
-                    <BreadcrumbItem isCurrentPage>
-                        {step.charAt(0).toUpperCase() + step.slice(1)}
-                    </BreadcrumbItem>
-                {:else}
-                    <BreadcrumbItem>
+                    <BreadcrumbItem isCurrentPage={index === steps.length - 1}>
                         <Link
-                            class="contentpathbar"
+                            class="contentpath"
                             to={path
                                 .split('/')
                                 .slice(0, index + 2)
@@ -32,14 +27,16 @@
                             {step.charAt(0).toUpperCase() + step.slice(1)}
                         </Link>
                     </BreadcrumbItem>
-                {/if}
-            {/each}
+            {/each} 
         {/if}
-    </span>
-</Breadcrumb>
-
+    </Breadcrumb>
+</div>
 <style>
-    .contentpathbar :global(.contentpathbar) {
-        color: unset;
+    #contentpathbar :global(.contentpath) {
+        color: var(--cds-text-01);
+    }
+
+    #contentpathbar :global(.bx--breadcrumb-item--current .contentpath) {
+        text-decoration-line: unset;
     }
 </style>
