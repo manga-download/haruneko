@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { run } from './tools.mjs';
+import { run } from '../../../scripts/tools.mjs';
 
 const pkgFile = 'package.json';
 const pkgConfig = await fs.readJSON(pkgFile);
@@ -9,14 +9,14 @@ const pkgConfig = await fs.readJSON(pkgFile);
  * Bundle Portable Binary for Windows
  * See: https://docs.nwjs.io/en/latest/For%20Users/Package%20and%20Distribute/#platform-specific-steps
  */
-export async function bundle(dirApp, dirNW) {
+export async function bundle(dirApp, dirNW, dirRes, dirOut) {
     await bundleApp(dirApp, dirNW);
     await makePortable(dirNW);
-    await updateBinary(dirNW);
+    await updateBinary(dirNW, dirRes);
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
-    await createZipArchive(dirNW);
+    await createZipArchive(dirNW, dirOut);
 }
 
 async function bundleApp(dirApp, dirNW) {
@@ -33,10 +33,10 @@ async function makePortable(dirNW) {
     await fs.writeJSON(pkgfile, pkg, { spaces: 4 });
 }
 
-async function updateBinary(dirNW) {
+async function updateBinary(dirNW, dirRes) {
     const binary = path.join(dirNW, 'nw.exe');
-    const icon = path.join('.', 'dist', process.platform, 'app.ico');
-    const rcedit = path.join('.', 'dist', process.platform, 'rcedit64.exe');
+    const icon = path.join(dirRes, process.platform, 'app.ico');
+    const rcedit = path.join(dirRes, process.platform, 'rcedit64.exe');
     const command = [
         rcedit,
         `"${binary}"`,
@@ -54,8 +54,8 @@ async function updateBinary(dirNW) {
     await fs.move(binary, binary.replace(/nw\.exe$/i, `${pkgConfig.name}.exe`));
 }
 
-async function createZipArchive(dirNW) {
-    const artifact = path.join('.', 'deploy', path.basename(dirNW).replace(/^nwjs(-sdk)?/i, pkgConfig.name) + '.zip');
+async function createZipArchive(dirNW, dirOut) {
+    const artifact = path.join(dirOut, path.basename(dirNW).replace(/^nwjs(-sdk)?/i, pkgConfig.name) + '.zip');
     try {
         await fs.unlink(artifact);
     } catch(error) {/**/}

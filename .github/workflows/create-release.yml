@@ -23,13 +23,13 @@ jobs:
       - name: Install NPM Packages
         run: npm install
       - name: Build Application
-        run: npm run build:app && node ./scripts/deploy-app.mjs
+        run: npm run bundle --workspace app/nw
       - name: Upload Release Builds
         uses: actions/upload-artifact@v2
         with:
           name: release-builds
           retention-days: 3
-          path: deploy
+          path: app/nw/bundle
       - name: Upload Release Templates
         uses: actions/upload-artifact@v2
         if: ${{ matrix.os == 'windows-latest' }}

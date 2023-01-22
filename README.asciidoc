@@ -18,7 +18,7 @@ Prototype of HakuNeko based on NW.js + TypeScript + Vite
 
 ## Development
 
-Make sure **git** with **lfs** and **NodeJS + NPM** are installed on your system.
+Make sure **git** and **NodeJS + NPM** are installed on your system.
 
 ### Installation
 
@@ -44,21 +44,21 @@ HakuNeko consists of two parts, a web-application that needs to be hosted and an
 As a developer you probably want to launch the application and also want changes made to the source code reflecting in the running application.
 This can be achieved by hosting the source code directly on http://localhost:3000
 ```bash
-npm run serve:web-dev
+npm run serve:dev --workspace web
 ```
 Then launch the NW.js application to load the hosted web-application
 ```bash
-npm run launch:app-dev
+npm run launch:dev --workspace app/nw
 ```
 
 The same procedure can be applied to run a production build of both parts, but these can not be modified while running.
 Host the production web-application on http://localhost:5000
 ```bash
-npm run serve:web-prod
+npm run serve:prod --workspace web
 ```
 And then start the production NW.js application
 ```bash
-npm run launch:app-prod
+npm run launch:prod --workspace app/nw
 ```
 
 ////
@@ -146,6 +146,6 @@ To start these test(s), simply run
 ```sh
 # Test all websites
 npm run test:websites
-# Test certain website
+# Test a certain website
 npm run test:websites -- MangaDex
 ```

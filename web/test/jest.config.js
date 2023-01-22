@@ -8,7 +8,7 @@ export default {
     reporters: [
         'default',
         'jest-junit',
-        '../test/github-test-reporter'
+        '../../test/github-test-reporter'
     ],
     moduleNameMapper: {
         '\\.(png|jpg|webp|ico|gif)$': '<rootDir>/img/mock.ts'

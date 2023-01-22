@@ -1,6 +1,8 @@
-.cache/
-build*/
-deploy/
-node_modules/
+.DS_Store
+.cache
+build
+bundle
+deploy
+node_modules
 package-lock.json
 junit.xml

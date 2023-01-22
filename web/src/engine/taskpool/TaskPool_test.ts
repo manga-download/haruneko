@@ -138,10 +138,8 @@ describe('TaskPool', () => {
                 new MockJob(Priority.Normal, 11, '⑧'),
                 new MockJob(Priority.Normal, 12, '⑨')
             );
+            const elapsed = performance.now() - start;
             try {
-                // NOTE: Assumption that interval time for checking available workers is ~50 ms (3 performed batches)
-                //       See: TaskPool.ConcurrencySlotAvailable()
-                expect(performance.now() - start).toBeLessThan(3 * 50);
                 expect(results.map(r => r.Value)).toEqual([ '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨' ]);
                 const timestamps = results.map(r => r.ResolveTime);
                 const batches = [ timestamps.slice(0, 3), timestamps.slice(3, 6), timestamps.slice(6, 9) ];
@@ -160,6 +158,10 @@ describe('TaskPool', () => {
                 expect(averages[1] - averages[0]).toBeLessThan(65);
                 expect(averages[2] - averages[1]).toBeGreaterThan(50);
                 expect(averages[2] - averages[1]).toBeLessThan(65);
+
+                // NOTE: Assumption that interval time for checking available workers is ~50 ms (3 performed batches)
+                //       See: TaskPool.ConcurrencySlotAvailable()
+                expect(elapsed).toBeLessThan(3 * 50);
             } catch(error) {
                 console.log(results);
                 throw error;
@@ -199,11 +201,13 @@ describe('TaskPool', () => {
             );
             controller.abort();
             const results = await promise;
+            const elapsed = performance.now() - start;
             try {
+                expect(results.map(r => r?.Value)).toEqual([ '①', undefined, '③', undefined, '⑤', undefined, '⑦', undefined, '⑨' ]);
+
                 // NOTE: Assumption that interval time for checking available workers is ~50 ms (5 performed tasks)
                 //       See: TaskPool.ConcurrencySlotAvailable()
-                expect(performance.now() - start).toBeLessThan(5 * 50);
-                expect(results.map(r => r?.Value)).toEqual([ '①', undefined, '③', undefined, '⑤', undefined, '⑦', undefined, '⑨' ]);
+                expect(elapsed).toBeLessThan(5 * 50);
             } catch(error) {
                 console.log(results);
                 throw error;

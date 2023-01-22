@@ -5,8 +5,8 @@ import { spawn } from 'child_process';
 import puppeteer from 'puppeteer-core';
 //import type { Config } from '@jest/types';
 
-const nwApp = path.resolve('build.app');
-const nwURL = fs.readJSONSync(path.resolve(nwApp, 'package.json')).main;
+const nwURL = 'http://localhost:5000/';
+const nwApp = path.resolve('app', 'nw', 'build');
 const nwExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
 const viteExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
 const tempDir = path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32));
@@ -30,7 +30,7 @@ async function LaunchNW() {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: nwExe,
-        args: [ nwApp, '--disable-blink-features=AutomationControlled' ],
+        args: [ nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + nwURL ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
@@ -59,7 +59,7 @@ export default async function(/*config: Config.ConfigGlobals*/) {
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
-    const server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { stdio: [ 'pipe', process.stdout, process.stderr ] });
+    const server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { cwd: path.resolve('web'), stdio: [ 'pipe', process.stdout, process.stderr ] });
     global.SERVER = server;
     try {
         global.BROWSER = await LaunchNW();
