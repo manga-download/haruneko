@@ -122,7 +122,7 @@ export class DownloadManagerTask extends FASTElement {
         if(this.entry.Errors.length > 0) {
             // TODO: Show all errors in a fancy error dialog ...
             const message = this.entry.Errors.map(error => {
-                return `<div>Message: ${error.message}</div><pre>${error.stack}</pre>`;
+                return `<div>${error.message}</div><pre>${error.stack}</pre>`;
             }).join('<hr>');
             window.open(null, '_blank', [
                 'titlebar=no',
