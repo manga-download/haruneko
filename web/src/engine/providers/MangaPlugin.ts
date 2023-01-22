@@ -1,3 +1,4 @@
+import { GetLocale } from '../../i18n/Localization';
 import { Key, Scope } from '../SettingsGlobal';
 import type { Check, Directory, ISettings, SettingsManager } from '../SettingsManager';
 import { SanitizeFileName, type StorageController, Store } from '../StorageController';
@@ -155,10 +156,10 @@ export class Chapter extends StoreableMediaContainer<Page> {
         const settings = HakuNeko.SettingsManager.OpenScope(Scope);
         let directory = settings.Get<Directory>(Key.MediaDirectory).Value;
         if(!directory) {
-            throw new Error();
+            throw new Error(GetLocale().Settings_Global_MediaDirectory_UnsetError());
         }
         if(await directory.requestPermission() !== 'granted') {
-            throw new Error(); // user denied permission ...
+            throw new Error(GetLocale().Settings_Global_MediaDirectory_PermissionError());
         }
         if(settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {
             const website = SanitizeFileName(this.Parent?.Parent?.Title);

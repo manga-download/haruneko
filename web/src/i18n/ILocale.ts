@@ -156,6 +156,8 @@ export enum VariantResourceKey {
     Settings_Global_LanguageInfo = 'Settings_Global_LanguageInfo',
     Settings_Global_MediaDirectory = 'Settings_Global_MediaDirectory',
     Settings_Global_MediaDirectoryInfo = 'Settings_Global_MediaDirectoryInfo',
+    Settings_Global_MediaDirectory_UnsetError = 'Settings_Global_MediaDirectory_UnsetError',
+    Settings_Global_MediaDirectory_PermissionError = 'Settings_Global_MediaDirectory_PermissionError',
     Settings_Global_WebsiteSubDirectory = 'Settings_Global_WebsiteSubDirectory',
     Settings_Global_WebsiteSubDirectoryInfo = 'Settings_Global_WebsiteSubDirectoryInfo',
     Settings_Global_DescramblingFormat = 'Settings_Global_DescramblingFormat',
