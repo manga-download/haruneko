@@ -128,7 +128,7 @@ export class DownloadManagerTask extends FASTElement {
                 'titlebar=no',
                 'menubar=no',
                 'toolbar=no',
-                'ocation=no',
+                'location=no',
                 'status=no',
                 'scrollbars=yes',
                 'resizable=yes',
