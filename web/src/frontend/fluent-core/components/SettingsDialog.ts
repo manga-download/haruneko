@@ -82,7 +82,7 @@ const templateChoice: ViewTemplate<Choice> = html`
 `;
 
 const templateDirectory: ViewTemplate<Directory> = html`
-    <fluent-text-field readonly id="${model => model.ID}" :value=${model => model.Value.name}>
+    <fluent-text-field readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
     <div slot="end" style="display: flex; align-items: center;">
         <fluent-button appearance="stealth" style="height: fit-content;" @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}>${IconFolder}</fluent-button>
     </div>
