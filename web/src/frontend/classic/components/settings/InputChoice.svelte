@@ -39,7 +39,7 @@
 >
     <Select
         selected={value}
-        on:change={(evt) => (setting.Value = evt.detail.toString())}
+        on:update={(evt) => (setting.Value = evt.detail.toString())}
     >
         {#each setting.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
