@@ -1,6 +1,7 @@
 import { GetLocale } from '../../../i18n/Localization';
 import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchProvider';
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import type { IMediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ //=> A mixin class must have a constructor with a single rest parameter of type 'any[]'
@@ -66,6 +67,14 @@ function DefaultImageExtractor<E extends HTMLImageElement>(this: MangaScraper, e
     return element.dataset.src || element.getAttribute('src') || ''; // TODO: Throw if none found?
 }
 
+function GetParentReferer(item: IMediaContainer, base: URL): URL {
+    try {
+        return new URL(item.Parent?.Identifier ?? '', base);
+    } catch {
+        return base;
+    }
+}
+
 /***************************************************
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
@@ -85,7 +94,11 @@ function DefaultImageExtractor<E extends HTMLImageElement>(this: MangaScraper, e
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string, extract = DefaultLabelExtractor as LabelExtractor, includeSearch = false, includeHash = false): Promise<Manga> {
     const uri = new URL(url);
-    const request = new FetchRequest(uri.href);
+    const request = new FetchRequest(uri.href, {
+        headers: {
+            Referer: uri.href
+        }
+    });
     const data = (await FetchCSS<HTMLElement>(request, query)).shift();
     let id = uri.pathname;
     id += includeSearch ? uri.search : '';
@@ -164,7 +177,11 @@ export function MangasNotSupported() {
  */
 export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const uri = new URL(path, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new FetchRequest(uri.href, {
+        headers: {
+            Referer: this.URI.href
+        }
+    });
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
         const { id, title } = extract.call(this, element);
@@ -248,7 +265,11 @@ export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: s
  */
 export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new FetchRequest(uri.href, {
+        headers: {
+            Referer: this.URI.href
+        }
+    });
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
         const { id, title } = extract.call(this, element);
@@ -282,7 +303,11 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extr
  */
 export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga, script: string, delay = 0): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new FetchRequest(uri.href, {
+        headers: {
+            Referer: this.URI.href
+        }
+    });
     const data = await FetchWindowScript<{ id: string, title: string }[]>(request, script, delay);
     return data.map(entry => {
         return new Chapter(this, manga, entry.id, entry.title.replace(manga.Title, '').trim() || manga.Title);
@@ -319,7 +344,11 @@ export function ChaptersSinglePageJS(script: string, delay = 0) {
  */
 export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, query: string, extract = DefaultImageExtractor as ImageExtractor<E>): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new FetchRequest(uri.href, {
+        headers: {
+            Referer: GetParentReferer(chapter, this.URI).href
+        }
+    });
     const data = await FetchCSS<E>(request, query);
     return data.map(element => {
         const link = new URL(extract.call(this, element), request.url);
@@ -353,7 +382,11 @@ export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract
  */
 export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay = 0): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new FetchRequest(uri.href, {
+        headers: {
+            Referer: GetParentReferer(chapter, this.URI).href
+        }
+    });
     const data = await FetchWindowScript<string[]>(request, script, delay);
     return data.map(link => new Page(this, chapter, new URL(link, uri), { Referer: uri.href }));
 }
