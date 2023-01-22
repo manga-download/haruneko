@@ -1,6 +1,6 @@
 import { createServer, type Server, type IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
-import { CreateServer, type WebSocketServer } from 'websocket-rpc/server';
+import { CreateServer, type WebSocketServer } from '../../../../node_modules/websocket-rpc/dist/server';
 import { Contract } from './Contract';
 
 class AccessDeniedError extends Error {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as fs from 'fs-extra';
 import yargs from 'yargs';
-//import { RPCServer } from './rpc/Server';
+import { RPCServer } from './rpc/Server';
 
 async function GetArgumentURL(): Promise<string|undefined> {
     try {
@@ -48,7 +48,7 @@ async function OpenWindow() {
         win.showDevTools();
     }
 
-    ///*const rpc = */new RPCServer('/hakuneko').Listen(27544, 'Connection#Secret', [ /^(chrome-)?extension:/i ]);
+    /*const rpc = */new RPCServer('/hakuneko').Listen(27544, 'Connection#Secret', [ /^(chrome-)?extension:/i ]);
 }
 
 OpenWindow();

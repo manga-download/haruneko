@@ -1,4 +1,4 @@
-import type { RemoteContract } from 'websocket-rpc';
+import type { RemoteContract } from '../../../../node_modules/websocket-rpc/dist/types';
 
 // See => chrome.cookies.Cookie
 type TypeFromInterface<T> = {
