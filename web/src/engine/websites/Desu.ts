@@ -5,20 +5,18 @@ import * as Common from './decorators/Common';
 
 const scriptPages = `
     new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                resolve(Reader.images.map(element => new URL(element.url, window.location.origin)));
-            } catch (error) {
-                reject(error);
-            }
-        }, 500);
+        try {
+            resolve(Reader.images.map(element => new URL(element.url, window.location.origin)));
+        } catch (error) {
+            reject(error);
+        }
     });
 `;
 
 @Common.MangaCSS(/^https?:\/\/desu\.me\/[^/]+\//, 'div.titleBar h1 span.name')
 @Common.MangasMultiPageCSS('/manga/?page={page}', 'h3 a.animeTitle.oTitle')
 @Common.ChaptersSinglePageCSS('div#animeView div.expandable ul.chlist li h4 a')
-@Common.PagesSinglePageJS(scriptPages)
+@Common.PagesSinglePageJS(scriptPages, 500)
 @Common.ImageDirect()
 
 export default class extends DecoratableMangaScraper {
