@@ -24,6 +24,6 @@ jobs:
       - name: Code Inspection
         run: npm run check
       - name: Build Web-Application
-        run: npm run build:web
+        run: npm run build --workspace web
       - name: Unit & Component Tests
         run: npm run test

@@ -2,12 +2,13 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 import decompress from 'decompress';
-import { download } from './tools.mjs';
+import { download } from '../../../scripts/tools.mjs';
 
 const pkgFile = 'package.json';
 const pkgConfig = await fs.readJSON(pkgFile);
-const dirApp = path.join('.', 'build.app');
-const dirDeploy = path.join('.', 'deploy');
+const dirRes = path.join('..', 'res');
+const dirApp = path.join('.', 'build');
+const dirOut = path.join('.', 'bundle');
 
 const nwVersion = pkgConfig.devDependencies.nw.split('-').shift();
 const nwBuildType = pkgConfig.devDependencies.nw.match(/(-sdk)?$/)[0];
@@ -43,20 +44,20 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
 }
 
 let dirNW;
-await fs.mkdir(dirDeploy, { recursive: true });
+await fs.mkdir(dirOut, { recursive: true });
 
 if (process.platform === 'darwin') {
     dirNW = await redist(nwVersion, nwBuildType, 'osx', 'x64');
-    await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirNW);
+    await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirNW, dirRes, dirOut);
 }
 
 if (process.platform === 'win32') {
     dirNW = await redist(nwVersion, nwBuildType, 'win', 'ia32');
-    await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirNW);
+    await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirNW, dirRes, dirOut);
     //dirNW = await redist(nwVersion, nwBuildType, 'win', 'ia32');
     //await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirNW);
     dirNW = await redist(nwVersion, nwBuildType, 'win', 'x64');
-    await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirNW);
+    await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirNW, dirRes, dirOut);
     //dirNW = await redist(nwVersion, nwBuildType, 'win', 'x64');
     //await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirNW);
 }

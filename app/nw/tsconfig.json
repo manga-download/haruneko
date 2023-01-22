@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "outDir": "./build",
+        "strict": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "importsNotUsedAsValues": "error",
+        "forceConsistentCasingInFileNames": true,
+        "strictBindCallApply": true,
+        "removeComments": true
+    },
+    "include": [
+        "src/**/*.d.ts",
+        "src/**/*.ts"
+    ]
+}

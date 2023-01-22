@@ -9,7 +9,7 @@ export default defineConfig({
     publicDir: 'static',
     build: {
         sourcemap: true,
-        outDir: 'build.web',
+        outDir: 'build',
         rollupOptions: {
             output: {
                 chunkFileNames: 'assets/[hash].js'
@@ -17,6 +17,9 @@ export default defineConfig({
         }
     },
     optimizeDeps: {
-        exclude: ['carbon-components-svelte ','carbon-icons-svelte'] // do not pre-bundle some-library
+        exclude: [
+            'carbon-components-svelte ',
+            'carbon-icons-svelte'
+        ]
     }
 });

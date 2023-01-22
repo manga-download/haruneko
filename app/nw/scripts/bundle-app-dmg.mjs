@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import plist from 'plist';
-import { run, wait } from './tools.mjs';
+import { run, wait } from '../../../scripts/tools.mjs';
 
 const pkgFile = 'package.json';
 const pkgConfig = await fs.readJSON(pkgFile);
@@ -11,15 +11,15 @@ const product = pkgConfig.title;
  * Bundle AppleDisk Image for MacOS
  * See: https://docs.nwjs.io/en/latest/For%20Users/Package%20and%20Distribute/#platform-specific-steps
  */
-export async function bundle(dirApp, dirNW) {
+export async function bundle(dirApp, dirNW, dirRes, dirOut) {
     await bundleApp(dirApp, dirNW);
-    await replaceIcons(dirNW);
+    await replaceIcons(dirNW, dirRes);
     await replacePlist(dirNW);
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
     await cleanupNW(dirNW);
-    await createDiskImage(dirNW);
+    await createDiskImage(dirNW, dirRes, dirOut);
 }
 
 async function bundleApp(dirApp, dirNW) {
@@ -27,8 +27,8 @@ async function bundleApp(dirApp, dirNW) {
     await fs.copy(dirApp, target);
 }
 
-async function replaceIcons(dirNW) {
-    const source = path.join('.', 'dist', process.platform, 'app.iconset');
+async function replaceIcons(dirNW, dirRes) {
+    const source = path.join(dirRes, process.platform, 'app.iconset');
     const target = path.join(dirNW, 'nwjs.app', 'Contents', 'Resources', 'app.icns');
     await run(`iconutil --convert icns --output '${target}' '${source}'`);
 }
@@ -59,9 +59,9 @@ async function cleanupNW(dirNW) {
     await fs.move(path.join(dirNW, 'nwjs.app'), path.join(dirNW, product + '.app'));
 }
 
-async function createDiskImage(dirNW) {
-    const poster = path.join('.', 'dist', process.platform, 'setup.png');
-    const osascript = path.join('.', 'dist', process.platform, 'setup.scpt');
+async function createDiskImage(dirNW, dirRes, dirOut) {
+    const poster = path.join(dirRes, process.platform, 'setup.png');
+    const osascript = path.join(dirRes, process.platform, 'setup.scpt');
     await fs.copy(poster, path.join(dirNW, '.images', 'setup.png'));
     await run(`hdiutil create -volname '${product}' -srcfolder '${dirNW}' -fs 'HFS+' -fsargs '-c c=64,a=16,e=16' -format 'UDRW' '${dirNW}'`);
     await run(`hdiutil attach -readwrite -noverify -noautoopen '${dirNW}.dmg'`);
@@ -71,9 +71,10 @@ async function createDiskImage(dirNW) {
     await wait(5000);
     await run(`hdiutil detach '/Volumes/${product}'`);
     await wait(5000);
-    const artifact = path.join('.', 'deploy', path.basename(dirNW).replace(/^nwjs(-sdk)?/i, pkgConfig.name) + '.dmg');
+    const artifact = path.join(dirOut, path.basename(dirNW).replace(/^nwjs(-sdk)?/i, pkgConfig.name) + '.dmg');
     try {
         await fs.unlink(artifact);
     } catch(error) {/**/}
+    console.log('FINAL:', `hdiutil convert '${dirNW}.dmg' -format 'UDZO' -imagekey zlib-level=9 -o '${artifact}'`);
     await run(`hdiutil convert '${dirNW}.dmg' -format 'UDZO' -imagekey zlib-level=9 -o '${artifact}'`);
 }
