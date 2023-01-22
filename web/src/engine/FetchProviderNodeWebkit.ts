@@ -32,7 +32,10 @@ function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetail
     //       const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
 
     headers = details.requestHeaders?.filter(header => {
-        return header.name.toLowerCase() !== 'referer' || !header.value?.startsWith(window.location.origin);
+        if(header.name.toLowerCase() === 'referer' && header.value?.startsWith(window.location.origin)) {
+            return false;
+        }
+        return true;
     });
 
     headers = RevealWebRequestHeaders(headers);
