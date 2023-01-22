@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const fs = require('fs-extra'); //import * as fs from 'fs-extra';
-const yargs = require('yargs'); //import yargs from 'yargs';
+import * as fs from 'fs-extra';
+import yargs from 'yargs';
+//import { RPCServer } from './rpc/Server';
 
 async function GetArgumentURL(): Promise<string|undefined> {
     try {
+        /*
         type Arguments = {
             origin?: string;
         }
-        const argv: Arguments = await yargs(nw.App.argv).argv;
-        return argv.origin;
+        */
+        const argv/*: Arguments*/ = await yargs(nw.App.argv).argv;
+        return argv.origin as string;
     } catch {
         return undefined;
     }
@@ -44,6 +47,8 @@ async function OpenWindow() {
     if(!url) {
         win.showDevTools();
     }
+
+    ///*const rpc = */new RPCServer('/hakuneko').Listen(27544, 'Connection#Secret', [ /^(chrome-)?extension:/i ]);
 }
 
 OpenWindow();

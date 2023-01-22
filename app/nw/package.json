@@ -15,15 +15,20 @@
         "yargs": "^17.6.2"
     },
     "devDependencies": {
+        "@rollup/plugin-commonjs": "24.0.1",
+        "@rollup/plugin-node-resolve": "15.0.1",
+        "@rollup/plugin-typescript": "11.0.0",
         "@types/chrome": "^0.0.209",
         "@types/fs-extra": "^11.0.1",
         "@types/nw.js": "^0.13.16",
+        "@types/ws": "^8.5.4",
         "nw": "0.72.0-sdk",
-        "plist": "^3.0.6"
+        "plist": "^3.0.6",
+        "rollup": "^3.10.1"
     },
     "scripts": {
         "check": "eslint ./src",
-        "build": "node ./scripts/build-app.mjs && tsc",
+        "build": "node ./scripts/build-app.mjs && rollup --config rollup.config.js",
         "bundle": "npm run build && node ./scripts/deploy-app.mjs",
         "test": "jest --detectOpenHandles --passWithNoTests --config=test/jest.config.js",
         "launch:dev": "npm run build && nw ./build --origin=http://localhost:3000",
