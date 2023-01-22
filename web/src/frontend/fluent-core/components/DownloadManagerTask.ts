@@ -65,6 +65,7 @@ const styles: ElementStyles = css`
     }
 
     .status.${Status.Failed} svg {
+        cursor: pointer;
         fill: #FF6060;
     }
 
@@ -78,7 +79,7 @@ const template: ViewTemplate<DownloadManagerTask> = html`
     <div class="mediaitem">${model => model.entry?.Media.Title}</div>
     <div class="controls">
         <fluent-progress min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress>
-        <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]}></div>
+        <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]} @click=${model => model.ShowErrors()}></div>
         <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" @click=${model => HakuNeko.DownloadManager.Dequeue(model.entry)}>${IconRemove}</fluent-button>
     </div>
 `;
@@ -116,4 +117,24 @@ export class DownloadManagerTask extends FASTElement {
     private UpdateProgress = function (_: IDownloadTask, value?: number) {
         this.progress = value ?? 0;
     }.bind(this);
+
+    public ShowErrors() {
+        if(this.entry.Errors.length > 0) {
+            // TODO: Show all errors in a fancy error dialog ...
+            const message = this.entry.Errors.map(error => {
+                return `<div>Message: ${error.message}</div><pre>${error.stack}</pre>`;
+            }).join('<hr>');
+            window.open(null, '_blank', [
+                'titlebar=no',
+                'menubar=no',
+                'toolbar=no',
+                'ocation=no',
+                'status=no',
+                'scrollbars=yes',
+                'resizable=yes',
+                'width=800',
+                'height=480'
+            ].join(', ')).document.write(message);
+        }
+    }
 }
