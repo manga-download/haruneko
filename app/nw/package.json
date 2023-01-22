@@ -24,7 +24,7 @@
     "scripts": {
         "check": "eslint ./src",
         "build": "node ./scripts/build-app.mjs && tsc",
-        "bundle": "node ./scripts/deploy-app.mjs",
+        "bundle": "npm run build && node ./scripts/deploy-app.mjs",
         "test": "jest --detectOpenHandles --passWithNoTests --config=test/jest.config.js",
         "launch:dev": "npm run build && nw ./build --origin=http://localhost:3000",
         "launch:prod": "npm run build && nw ./build --origin=http://localhost:5000"
