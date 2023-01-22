@@ -25,17 +25,20 @@ export function RevealWebRequestHeaders(headers: chrome.webRequest.HttpHeader[])
 }
 
 function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
+
+    let headers = details.requestHeaders ?? [];
+
     // TODO: set cookies from chrome matching the details.url?
     //       const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
 
-    //const referers = details.requestHeaders?.filter(header => header.name.toLowerCase() === '');
-    //if() {
-    // window.location.hostname
-    //}
-    //headers.set('Referer', details.url);
+    headers = details.requestHeaders?.filter(header => {
+        return header.name.toLowerCase() !== 'referer' || !header.value?.startsWith(window.location.origin);
+    });
+
+    headers = RevealWebRequestHeaders(headers);
 
     return {
-        requestHeaders: [...RevealWebRequestHeaders(details.requestHeaders ?? [])]
+        requestHeaders: headers
     };
 }
 
