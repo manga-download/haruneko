@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
         //First : fetch page
         let uri = new URL(chapter.Identifier, this.URI);
         let request = new FetchRequest(uri.href);
-        let response = await Fetch(request);
+        const response = await Fetch(request);
         const dat = await response.text();
         const external = dat.includes('js/jq_rext.js');
 
@@ -38,8 +38,7 @@ export default class extends DecoratableMangaScraper {
                 'info[title]': 'Digital Team'
             })
         });
-        response = await Fetch(request);
-        let data = await response.json();
+        let data = await FetchJSON(request);
         data = typeof data === 'string' ? JSON.parse(data) : data;
         return data[0].map((file, index) => {
             if (external) {
