@@ -4,7 +4,11 @@
     import './theme/hakuneko.css';
     import './theme/global.css';
     import './theme/sidenav-hack.css';
-    import { Content, Tabs, Tab, TabContent } from 'carbon-components-svelte';
+    import {
+        Content,
+        Accordion,
+        AccordionItem,
+    } from 'carbon-components-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
     import { onMount } from 'svelte';
@@ -73,34 +77,11 @@
             </div>
         {/if}
         <div id="Bottom" transition:fade>
-            <Tabs type="container" bind:selected={selectedBottomTab}>
-                <Tab
-                    label="X"
-                    style="width:3em;"
-                    disabled={selectedBottomTab === 0}
-                />
-                <Tab label="Jobs" />
-                <Tab label="Console" />
-                <Tab label="Network" />
-                <div
-                    id="BottomTabs"
-                    slot="content"
-                    class:open={selectedBottomTab !== 0}
-                >
-                    <TabContent tabindex={0} style="padding:0;"
-                        ><div class="tabcontent" /></TabContent
-                    >
-                    <TabContent tabindex={1} style="padding:0;"
-                        ><div class="tabcontent"><Jobs /></div></TabContent
-                    >
-                    <TabContent tabindex={2} style="padding:0;"
-                        ><div class="tabcontent"><Console /></div></TabContent
-                    >
-                    <TabContent tabindex={3} style="padding:0;"
-                        ><div class="tabcontent"><Network /></div></TabContent
-                    >
-                </div>
-            </Tabs>
+            <Accordion>
+                <AccordionItem title="Jobs">
+                    <Jobs />
+                </AccordionItem>
+            </Accordion>
         </div>
     </Content>
 </Theme>
@@ -148,20 +129,7 @@
     }
     #Bottom {
         grid-area: Bottom;
-        border-top: 1px groove var(--cds-button-separator);
-    }
-    #BottomTabs {
-        max-height: 0;
-        transition: max-height 0.5s;
-    }
-    #BottomTabs.open {
-        max-height: 10em;
-    }
-
-    .tabcontent {
-        height: 10em;
-        padding: 0.2em;
-        background-color: var(--cds-field-01);
+        max-height: 20em;
     }
 
     :global(#BottomTabs .bx--tab--content) {

@@ -35,7 +35,7 @@
 >
     <Select
         selected={$ThemeValue}
-        on:change={(evt) => (Theme.Value = evt.detail.toString())}
+        on:update={(evt) => (Theme.Value = evt.detail.toString())}
     >
         {#each Theme.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
@@ -49,7 +49,7 @@
 >
     <Select
         selected={$ViewerModeValue}
-        on:change={(evt) => (ViewerMode.Value = evt.detail.toString())}
+        on:update={(evt) => (ViewerMode.Value = evt.detail.toString())}
     >
         {#each ViewerMode.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />

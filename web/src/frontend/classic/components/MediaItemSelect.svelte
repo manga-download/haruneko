@@ -159,26 +159,22 @@
         <h5>Item List</h5>
     </div>
     <div id="LanguageFilter">
-        <div class="inline">
-            <Button
-                icon={EarthFilled}
-                size="small"
-                tooltipPosition="bottom"
-                tooltipAlignment="center"
-                iconDescription="Languages"
-            />
-        </div>
-        <div class="inline-wide">
-            <Dropdown
-                selectedId="0"
-                size="sm"
-                items={[
-                    { id: '0', text: '*' },
-                    { id: '1', text: 'gb' },
-                    { id: '2', text: 'fr' },
-                ]}
-            />
-        </div>
+        <Button
+            icon={EarthFilled}
+            size="small"
+            tooltipPosition="bottom"
+            tooltipAlignment="center"
+            iconDescription="Languages"
+        />
+        <Dropdown
+            selectedId="0"
+            size="sm"
+            items={[
+                { id: '0', text: '*' },
+                { id: '1', text: 'gb' },
+                { id: '2', text: 'fr' },
+            ]}
+        />
     </div>
     <div id="ItemFilter">
         <Search size="sm" bind:value={itemNameFilter} />
@@ -223,7 +219,8 @@
     }
     #LanguageFilter {
         grid-area: LanguageFilter;
-        display: table;
+        display: grid;
+        grid-template-columns: auto 1fr;
     }
     #ItemFilter {
         grid-area: ItemFilter;
@@ -249,13 +246,5 @@
         white-space: nowrap;
         list-style-type: none;
         padding: 0.25em;
-    }
-
-    .inline {
-        width: fit-content;
-    }
-    .inline-wide {
-        display: table-cell;
-        width: 100%;
     }
 </style>

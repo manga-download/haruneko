@@ -12,14 +12,19 @@
 
     export let media: IMediaContainer;
     let selected: Boolean = false;
-    $: selected = $selectedMedia === media;
-    let isBookmarked: Boolean = HakuNeko.BookmarkPlugin.isBookmarked(media);
-    let mediadiv: HTMLElement;
+    $: selected = $selectedMedia?.IsSameAs(media);
+
+    //Bookmarks
+    let isBookmarked: Boolean = false;
+    $: isBookmarked = HakuNeko.BookmarkPlugin.isBookmarked(media);
     async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
     }
 
-    //Check if media has unviewed content
+    //Context menu
+    let mediadiv: HTMLElement;
+
+    //Unviewed content
     let unFlaggedItems: IMediaContainer[] = [];
     findMediaUnFlaggedContent(media);
 
