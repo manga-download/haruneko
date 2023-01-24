@@ -140,23 +140,28 @@ export const en_US: IVariantResource = {
     Settings_Global_DescramblingFormat_WEBP: 'WEBP (*.webp)',
     Settings_Global_DescramblingQuality: 'De-Scrambling Quality',
     Settings_Global_DescramblingQualityInfo: 'Set the quality in which de-scrambled images shall be stored (this will NOT apply to PNG)',
+    Settings_Global_UserAgent: 'User-Agent',
+    Settings_Global_UserAgentInfo: 'The User-Agent that HakuNeko will be pretend to be for each website request (leave blank to use default)',
     Settings_Global_HCaptchaToken: 'H-Captcha Token',
     Settings_Global_HCaptchaTokenInfo: `Set the accessibility token to automatically bypass websites which use CloudFlare's H-Captcha protection`,
     Settings_Global_PostCommand: 'Post Command',
     Settings_Global_PostCommandInfo: '...',
-
-    SettingsManager_Settings_AlreadyInitializedError: 'An internal application error occured: The settings scope <{0}> must only be initialized once!',
-
-    FetchProvider_FetchWindow_TimeoutError: 'The request could not be fulfilled within the given timeout!',
-    FetchProvider_FetchWindow_CloudFlareError: 'The request failed due to the following CloudFlare Error: "{0}"',
-    FetchProvider_FetchWindow_AlertCaptcha: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
-
     Settings_NewContent_Check: 'Enable new content checker',
     Settings_NewContent_CheckInfo: 'Will check if there are new content to available to read',
     Settings_NewContent_CheckPeriod: 'Check new content period (minutes)',
     Settings_NewContent_CheckPeriodInfo: 'How many minutes before checking again for new content',
     Settings_NewContent_Notify: 'Enable new content desktop notification',
     Settings_NewContent_NotifyInfo: 'Will send a notification using the OS notification system',
+    Settings_Global_RPCPort: 'RPC Port',
+    Settings_Global_RPCPortInfo: 'The communication port to be used by compatible applications (e.g., HakuNeko Assistant) to interact with this HakuNeko instance',
+    Settings_Global_RPCSecret: 'RPC Secret',
+    Settings_Global_RPCSecretInfo: 'The passphrase required by compatible applications (e.g., HakuNeko Assistant) to interact with this HakuNeko instance',
+
+    SettingsManager_Settings_AlreadyInitializedError: 'An internal application error occured: The settings scope <{0}> must only be initialized once!',
+
+    FetchProvider_FetchWindow_TimeoutError: 'The request could not be fulfilled within the given timeout!',
+    FetchProvider_FetchWindow_CloudFlareError: 'The request failed due to the following CloudFlare Error: "{0}"',
+    FetchProvider_FetchWindow_AlertCaptcha: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
 
     // [SECTION]: Tags
 
