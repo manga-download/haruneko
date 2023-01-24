@@ -26,7 +26,8 @@ const styles: ElementStyles = css`
         display: grid;
         align-items: center;
         grid-template-columns: max-content auto max-content;
-        background-color: var(--neutral-layer-2);
+        border-top-left-radius: calc(1px * var(--layer-corner-radius));
+        border-top-right-radius: calc(1px * var(--layer-corner-radius));
     }
 
     fluent-button {
