@@ -4,6 +4,25 @@ import { Chapter, DecoratableMangaScraper, Manga,type MangaPlugin, Page } from '
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import * as Common from './decorators/Common';
 
+type APIMangas = {
+    total_pages: number;
+    current_page: number;
+    tags: {
+        [tag: string]: {
+            permalink: string;
+            name: string;
+        }[]
+    }[];
+}
+
+type APIChapters = {
+    taggings: [{ title: string, permalink: string }]
+};
+
+type APIPages = {
+    pages: [{ name: string, url: string }]
+};
+
 @Common.MangaCSS(/^https?:\/\/dynasty-scans\.com\/[^/]+/, 'h2.tag-title b')
 @Common.ImageDirect()
 
@@ -20,26 +39,22 @@ export default class extends DecoratableMangaScraper {
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist = [];
         const categories = ['/series', '/anthologies', '/issues', '/doujins'];
-        for (const cat of categories) {
-            const mangas = await this.getMangasFromCategory(provider, cat);
+        for (const category of categories) {
+            const mangas = await this.getMangasFromCategory(provider, category);
             mangas.length > 0 ? mangalist.push(...mangas) : false;
         }
         return mangalist;
     }
 
-    async getMangasFromCategory(provider: MangaPlugin, cat: string): Promise<Manga[]> {
+    async getMangasFromCategory(provider: MangaPlugin, category: string): Promise<Manga[]> {
         const mangas = [];
         for (let i = 1, run = true; run; i++) {
             try {
-                const json = await FetchJSON(new FetchRequest(new URL(`${cat}.json?page=${i}`, this.URI).href));
-                run = i < json['total_pages'];
-
-                for (const tags of json['tags']) {
-                    //console.log(tags);
+                const json = await FetchJSON<APIMangas>(new FetchRequest(new URL(`${category}.json?page=${i}`, this.URI).href));
+                run = i < json.total_pages;
+                for (const tags of json.tags) {
                     for (const name in tags) {
-                        //  console.log(name + "=" + tags[name]);
-                        tags[name].map(manga => mangas.push(new Manga(this, provider, `${cat}/${manga.permalink}`, manga.name)));
-
+                        tags[name].map(manga => mangas.push(new Manga(this, provider, `${category}/${manga.permalink}`, manga.name)));
                     }
                 }
             }
@@ -51,8 +66,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const json = await FetchJSON(new FetchRequest(new URL(`${manga.Identifier}.json`, this.URI).href));
-        let chapterList = json['taggings'].filter(chapter => !('header' in chapter)).map(chapter => {
+        const json = await FetchJSON<APIChapters>(new FetchRequest(new URL(`${manga.Identifier}.json`, this.URI).href));
+        let chapterList = json.taggings.filter(chapter => !('header' in chapter)).map(chapter => {
             return new Chapter(this, manga, `/chapters/${chapter.permalink}`, chapter.title.trim());
         });
 
@@ -62,7 +77,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const json = await FetchJSON(new FetchRequest(new URL(`${chapter.Identifier}.json`, this.URI).href));
-        return json['pages'].map(page => new Page(this, chapter, new URL(page.url, this.URI)));
+        const json = await FetchJSON<APIPages>(new FetchRequest(new URL(`${chapter.Identifier}.json`, this.URI).href));
+        return json.pages.map(page => new Page(this, chapter, new URL(page.url, this.URI)));
     }
 }

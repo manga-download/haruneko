@@ -2,7 +2,13 @@ import { Tags } from '../Tags';
 import icon from './DigitalTeam.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchRequest } from '../FetchProvider';
+import { Fetch, FetchJSON, FetchRequest } from '../FetchProvider';
+
+type APIResult = [
+    [{ name: string, ex: string }],
+    string[],
+    string
+];
 
 @Common.MangaCSS(/^https?:\/\/dgtread\.com\/[^/]+/, 'div#manga_right div.title')
 @Common.MangasSinglePageCSS('/reader/series', 'div#series_list ul li.manga_block ul li.manga_info div.manga_title a')
@@ -38,7 +44,7 @@ export default class extends DecoratableMangaScraper {
                 'info[title]': 'Digital Team'
             })
         });
-        let data = await FetchJSON(request);
+        let data = await FetchJSON<APIResult>(request);
         data = typeof data === 'string' ? JSON.parse(data) : data;
         return data[0].map((file, index) => {
             if (external) {
