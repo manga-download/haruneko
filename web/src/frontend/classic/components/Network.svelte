@@ -79,7 +79,7 @@
 <div id="network">
     <StructuredList>
         <StructuredListBody>
-            {#each [...requests] as [undefined, request] (request)}
+            {#each [...requests] as [_, request] (request)}
                 <StructuredListRow class="job">
                     <StructuredListCell class="type"
                         >{request.type}</StructuredListCell

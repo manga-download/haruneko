@@ -109,7 +109,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         const results = await Promise.all(this.Entries.map(
             async (bookmark) => (await bookmark.getUnflaggedContent()).length > 0
         ));
-        return this.Entries.filter((value, index) => results[index]);
+        return this.Entries.filter((_, index) => results[index]);
     }
 }
 
