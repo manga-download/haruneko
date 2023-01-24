@@ -190,7 +190,7 @@
                 <MediaItem
                     {item}
                     selected={selectedItems.includes(item)}
-                    on:view={(e) => onItemView(item)}
+                    on:view={() => onItemView(item)}
                     on:click={(e) => onItemClick(item, e)}
                     on:contextmenu={(e) => onItemClick(item, e)}
                 />

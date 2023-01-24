@@ -15,7 +15,7 @@
 
     const settings = HakuNeko.SettingsManager.OpenScope();
     let checkNewContent = settings.Get<Check>(GlobalKey.CheckNewContent).Value;
-    settings.ValueChanged.Subscribe((sender, shouldCheck: boolean) => {
+    settings.ValueChanged.Subscribe((_, shouldCheck: boolean) => {
         if (shouldCheck) refreshSuggestions();
         checkNewContent = shouldCheck;
     });

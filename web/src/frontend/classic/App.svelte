@@ -17,8 +17,6 @@
     import MediaSelect from './components/MediaSelect.svelte';
     import MediaItemSelect from './components/MediaItemSelect.svelte';
     import Jobs from './components/Jobs.svelte';
-    import Console from './components/Console.svelte';
-    import Network from './components/Network.svelte';
     import Viewer from './components/viewer/Viewer.svelte';
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
@@ -42,7 +40,6 @@
         setTimeout(resolveFinishLoading, 2500);
     });
 
-    let selectedBottomTab = 0;
     let currentContent = 'home';
     let showHome = true;
 
