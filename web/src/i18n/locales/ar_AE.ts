@@ -1,10 +1,10 @@
 import type { IVariantResource } from '../ILocale';
-import { en_US } from './en_US';
+import base from './en_US';
 
-export const ar_AE: IVariantResource = {
+const translations: IVariantResource = {
     // NOTE: Use defaults from 'en_US' for missing translations
     //       => can be removed when translation is complete
-    ...en_US,
+    ...base,
 
     // [SECTION]: FrontendController
 
@@ -15,3 +15,5 @@ export const ar_AE: IVariantResource = {
     Frontend_Product_Title: 'HakuNeko',
     Frontend_Product_Description: 'مانغا وأنيمي ورواية داونلودر',
 };
+
+export default translations;

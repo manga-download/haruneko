@@ -2,18 +2,18 @@ import { type ILocale, type IVariantResource, LocaleID, InvariantResourceKey, Va
 import type { Choice } from '../engine/SettingsManager';
 import { Scope, Key } from '../engine/SettingsGlobal';
 import { invariant } from './locales/_invariant';
-import { ar_AE } from './locales/ar_AE';
-import { de_DE } from './locales/de_DE';
-import { en_US } from './locales/en_US';
-import { es_ES } from './locales/es_ES';
-import { fil_PH } from './locales/fil_PH';
-import { fr_FR } from './locales/fr_FR';
-import { in_ID } from './locales/in_ID';
-import { pt_BR } from './locales/pt_BR';
-import { ru_RU } from './locales/ru_RU';
-import { th_TH } from './locales/th_TH';
-import { tr_TR } from './locales/tr_TR';
-import { zh_CN } from './locales/zh_CN';
+import ar_AE from './locales/ar_AE';
+import de_DE from './locales/de_DE';
+import en_US from './locales/en_US';
+import es_ES from './locales/es_ES';
+import fil_PH from './locales/fil_PH';
+import fr_FR from './locales/fr_FR';
+import in_ID from './locales/in_ID';
+import pt_BR from './locales/pt_BR';
+import ru_RU from './locales/ru_RU';
+import th_TH from './locales/th_TH';
+import tr_TR from './locales/tr_TR';
+import zh_CN from './locales/zh_CN';
 
 /**
  * List of all available localizations in the application.
