@@ -131,6 +131,8 @@ export const en_US: IVariantResource = {
     Settings_Global_LanguageInfo: 'Select the language for the user interface',
     Settings_Global_MediaDirectory: 'Media Directory',
     Settings_Global_MediaDirectoryInfo: 'Select the directory where HakuNeko store the downloads',
+    Settings_Global_MediaDirectory_UnsetError: 'No download directory selected in HakuNeko settings!',
+    Settings_Global_MediaDirectory_PermissionError: 'Insufficient permission to acces the download directory!',
     Settings_Global_WebsiteSubDirectory: 'Use Sub-Directories',
     Settings_Global_WebsiteSubDirectoryInfo: 'Set wether HakuNeko shall store media directly in the directory, or use sub-directories per website',
     Settings_Global_DescramblingFormat: 'De-Scrambling Format',
