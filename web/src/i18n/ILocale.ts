@@ -3,14 +3,14 @@ export type ILocale = Record<keyof IResource, (...params: string[]) => string>;
 export type IVariantResource = Record<VariantResourceKey, string>;
 
 export enum LocaleID {
-    Locale_arAE = 'Locale_arAE',
+    Locale_arSA = 'Locale_arSA',
     Locale_deDE = 'Locale_deDE',
     Locale_enUS = 'Locale_enUS',
     Locale_esES = 'Locale_esES',
     Locale_filPH = 'Locale_filPH',
     Locale_frFR = 'Locale_frFR',
     Locale_inID = 'Locale_inID',
-    Locale_ptBR = 'Locale_ptBR',
+    Locale_ptPT = 'Locale_ptPT',
     Locale_ruRU = 'Locale_ruRU',
     Locale_thTH = 'Locale_thTH',
     Locale_trTR = 'Locale_trTR',
