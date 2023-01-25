@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import type { IVariantResource } from '../ILocale';
 import base from './xx_XX';
 
@@ -11,7 +12,6 @@ const translations: IVariantResource = {
     FrontendController_Reload_ConfirmNotice: 'The frontend was changed. Restart now to switch to the new frontend?',
 
     // [SECTION]: Frontend (Common/Shared)
-
     Frontend_Product_Title: 'HakuNeko',
     Frontend_Product_Description: 'Manga, Anime and Novel Downloader',
     Frontend_Setting: 'Setting',
