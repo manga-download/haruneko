@@ -58,6 +58,7 @@ const styles: ElementStyles = css`
     }
 
     #heading {
+        background-color: var(--neutral-layer-2);
         padding: calc(var(--design-unit) * 1px);
         gap: calc(var(--base-height-multiplier) * 1px);
         display: grid;
@@ -100,6 +101,7 @@ const styles: ElementStyles = css`
         padding: calc(var(--base-height-multiplier) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
         border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
+        background-color: var(--neutral-layer-2);
     }
 
     #button-update-entries.updating svg {

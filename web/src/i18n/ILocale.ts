@@ -3,15 +3,15 @@ export type ILocale = Record<keyof IResource, (...params: string[]) => string>;
 export type IVariantResource = Record<VariantResourceKey, string>;
 
 export enum LocaleID {
-    Locale_arAE = 'Locale_arAE',
+    Locale_arSA = 'Locale_arSA',
     Locale_deDE = 'Locale_deDE',
     Locale_enUS = 'Locale_enUS',
     Locale_esES = 'Locale_esES',
     Locale_filPH = 'Locale_filPH',
     Locale_frFR = 'Locale_frFR',
+    Locale_hiIN = 'Locale_hiIN',
     Locale_inID = 'Locale_inID',
-    Locale_ptBR = 'Locale_ptBR',
-    Locale_ruRU = 'Locale_ruRU',
+    Locale_ptPT = 'Locale_ptPT',
     Locale_thTH = 'Locale_thTH',
     Locale_trTR = 'Locale_trTR',
     Locale_zhCN = 'Locale_zhCN',
@@ -156,6 +156,8 @@ export enum VariantResourceKey {
     Settings_Global_LanguageInfo = 'Settings_Global_LanguageInfo',
     Settings_Global_MediaDirectory = 'Settings_Global_MediaDirectory',
     Settings_Global_MediaDirectoryInfo = 'Settings_Global_MediaDirectoryInfo',
+    Settings_Global_MediaDirectory_UnsetError = 'Settings_Global_MediaDirectory_UnsetError',
+    Settings_Global_MediaDirectory_PermissionError = 'Settings_Global_MediaDirectory_PermissionError',
     Settings_Global_WebsiteSubDirectory = 'Settings_Global_WebsiteSubDirectory',
     Settings_Global_WebsiteSubDirectoryInfo = 'Settings_Global_WebsiteSubDirectoryInfo',
     Settings_Global_DescramblingFormat = 'Settings_Global_DescramblingFormat',

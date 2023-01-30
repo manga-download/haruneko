@@ -11,7 +11,9 @@ const styles: ElementStyles = css`
         display: grid;
         grid-template-columns: auto;
         grid-template-rows: min-content min-content minmax(0, 1fr);
-        height: 100vh;
+        border: calc(1px * var(--stroke-width)) var(--neutral-base-color) solid;
+        border-radius: calc(1px * var(--layer-corner-radius));
+        height: calc(100vh - 2px * var(--stroke-width));
         background-color: var(--neutral-layer-1);
         color: var(--neutral-foreground-rest);
         user-select: none;
