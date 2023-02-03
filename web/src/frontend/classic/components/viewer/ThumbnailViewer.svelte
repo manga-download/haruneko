@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+
     import type {
         IMediaContainer,
         IMediaItem,
@@ -11,8 +14,6 @@
     // TODO: Implement correct filter/extraction of IMediaItem types ...
     let entries: IMediaItem[];
     $: entries = item.Entries.map((entry) => entry as IMediaItem);
-
-    export let toggleWideViewer: (currentImage: number) => void;
 </script>
 
 <div>
@@ -29,7 +30,7 @@
         <ThumbnailViewerImage
             page={content}
             title="Page {index}"
-            on:view={() => toggleWideViewer(index)}
+            on:view={() => dispatch('view',index)}
         />
     {/each}
 </div>

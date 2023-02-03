@@ -8,7 +8,6 @@
     import {
         ViewerDoublePageValue,
         ViewerReverseDirectionValue,
-        ViewerPadding,
     } from '../../stores/Settings';
     import { InlineNotification } from 'carbon-components-svelte';
 
@@ -117,16 +116,12 @@
             <WideViewerImage
                 alt="content_{currentImageIndex}"
                 page={chapterImage.current}
-                class="manga-image double-page-image"
-                style="padding-top: {$ViewerPadding}em; padding-bottom: {$ViewerPadding}em; padding-right: {$ViewerPadding}em; padding-left: {$ViewerPadding /
-                    2}em;"
+
             />
             <WideViewerImage
                 alt="content_{currentImageIndex}"
                 page={chapterImage.next}
-                class="manga-image double-page-image"
-                style="padding-top: {$ViewerPadding}em; padding-bottom: {$ViewerPadding}em; padding-left: {$ViewerPadding}em; padding-right: {$ViewerPadding /
-                    2}em;"
+
             />
         </div>
     {:else}
@@ -134,8 +129,7 @@
             <WideViewerImage
                 alt="content_{currentImageIndex}"
                 page={chapterImage.current}
-                class="manga-image"
-                style="padding: {$ViewerPadding}em; max-width: 100%; ;"
+
             />
         </div>
     {/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     const dispatch = createEventDispatcher();
     // UI
     import { InlineNotification } from 'carbon-components-svelte';
@@ -17,7 +17,19 @@
 
 
     export let item: IMediaContainer;
-    //export let currentImageIndex: number;
+    export let currentImageIndex: number=-1;
+    let viewerimages: HTMLElement;
+
+
+	onMount(async () => {
+		if(currentImageIndex != -1) {
+            setTimeout(() => {
+                const targetScrollImage = viewerimages.querySelector(`:nth-child(${currentImageIndex+1})`);
+                targetScrollImage.scrollIntoView({behavior: 'smooth'});
+                currentImageIndex=-1;
+            }, 200);
+        }
+	});
 
     $: entries = item.Entries as IMediaItem[];
 
@@ -187,7 +199,7 @@
 <svelte:window on:keydown={onKeyDown} on:mousedown={mouseDownHandler} />
 <div id="wideviewer" bind:this={viewer} class={$ViewerModeValue}>
     <WideViewerSetting {title} on:nextItem on:previousItem on:close />
-    <div id="viewerimages" class="{$ViewerModeValue}" style="{cssVarStyles}">
+    <div id="viewerimages" bind:this={viewerimages} class="{$ViewerModeValue}" style="{cssVarStyles}">
         {#if entries.length === 0}
             <div class="center" style="width:100%;height:100%;">
                 <InlineNotification

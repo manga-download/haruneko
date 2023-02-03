@@ -14,7 +14,7 @@
 
     export let item: IMediaContainer;
     export let mode: Mode = 'Thumbnail';
-    let currentImageIndex: number = 0;
+    let currentImageIndex: number = -1;
 
     let update: Promise<void> | undefined;
     $: update = item?.Update();
@@ -45,7 +45,7 @@
         {:then}
             {#if mode === 'Thumbnail' || mode === 'Wide'}
                 <div class:hide={mode !== 'Thumbnail'}>
-                    <ThumbnailViewer {item} {toggleWideViewer} />
+                    <ThumbnailViewer {item} on:view={e => toggleWideViewer(e.detail)} />
                 </div>
                 {#if mode === 'Wide'}
                     <WideViewer
