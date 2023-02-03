@@ -124,5 +124,5 @@ function createCount(initialValue:number, increment:number,minimum:number) {
     };
 }
 
-export const ViewerZoom = createCount(70,10,10);
+export const ViewerZoom = createCount(20,10,10);
 export const ViewerPadding = createCount(2,0.5,0);

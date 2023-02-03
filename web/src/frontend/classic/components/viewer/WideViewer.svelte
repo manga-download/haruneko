@@ -1,24 +1,29 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
+    // UI
     import { InlineNotification } from 'carbon-components-svelte';
-
-    import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
+    // engine
+    import type { IMediaContainer,IMediaItem } from '../../../../engine/providers/MediaPlugin';
+    // svelte component
     import WideViewerSetting from './WideViewerSetting.svelte';
-    import WebtoonViewer from './WebtoonViewer.svelte';
-    import MangaViewer from './MangaViewer.svelte';
-    import { Key, ViewerMode, ViewerModeValue } from '../../stores/Settings';
+    import WideViewerImage from './WideViewerImage.svelte';
+    // stores
+    import { ViewerModeValue } from '../../stores/Settings';
     import { ViewerPadding, ViewerZoom } from '../../stores/Settings';
-    import { scrollSmoothly, scrollMagic } from './utilities';
     import { selectedItemNext } from '../../stores/Stores';
+    // others
+    import { scrollSmoothly, scrollMagic } from './utilities';
+
+
     export let item: IMediaContainer;
-    export let currentImageIndex: number;
+    //export let currentImageIndex: number;
+
+    $: entries = item.Entries as IMediaItem[];
 
     const title = item?.Title ?? 'unkown';
 
     let viewer: HTMLElement;
-    // TODO: remove next line, it's a temp fix, the settings is getting lost on some reloads
-    ViewerMode.Value = Key.ViewerMode_Longstrip;
 
     function onKeyDown(event: KeyboardEvent) {
         switch (true) {
@@ -72,6 +77,7 @@
             case event.code === 'Space' && !event.ctrlKey:
                 scrollMagic(
                     viewer,
+                    '.viewerimage',
                     window.innerHeight * 0.8,
                     onNextItemCallback
                 );
@@ -166,16 +172,40 @@
         viewer.style.cursor = 'grab';
         viewer.style.removeProperty('user-select');
     };
+
+	$: cssvars = {
+		'viewer-padding': `${$ViewerPadding}em`,
+        'viewer-zoom': `${$ViewerZoom}%` 
+	};
+    $: cssVarStyles = Object.entries(cssvars)
+		.map(([key, value]) => `--${key}:${value}`)
+		.join(';');
+
+    
 </script>
 
 <svelte:window on:keydown={onKeyDown} on:mousedown={mouseDownHandler} />
 <div id="wideviewer" bind:this={viewer} class={$ViewerModeValue}>
     <WideViewerSetting {title} on:nextItem on:previousItem on:close />
-    {#if $ViewerModeValue === Key.ViewerMode_Longstrip}
-        <WebtoonViewer {item} />
-    {:else if $ViewerModeValue === Key.ViewerMode_Paginated}
-        <MangaViewer {item} {currentImageIndex} />
-    {/if}
+    <div id="viewerimages" class="{$ViewerModeValue}" style="{cssVarStyles}">
+        {#if entries.length === 0}
+            <div class="center" style="width:100%;height:100%;">
+                <InlineNotification
+                    hideCloseButton
+                    kind="info"
+                    title="Nothing to show:"
+                    subtitle="content list is empty."
+                />
+            </div>
+        {/if}
+
+        {#each entries as content, index}
+            <WideViewerImage
+                alt="content_{index}"
+                page={content}
+            />
+        {/each}
+    </div>
     {#if autoNextItem && $selectedItemNext !== undefined}
         <InlineNotification
             kind="info"
@@ -199,11 +229,29 @@
         z-index: 10000;
         background-color: var(--cds-ui-01);
         cursor: grab;
+        
+    }
+    #viewerimages {
+        display: grid;
+    }
+    #viewerimages.longstrip {
+        grid-template-columns:  1fr;
+        row-gap: var(--viewer-padding);
+        transition: row-gap 0.2s ease-in-out;
+        grid-auto-rows: min-content;
+    }
+    #viewerimages.paginated {
+        grid-template-columns:  1fr;
+        row-gap: var(--viewer-padding);
+        transition: row-gap 0.2s ease-in-out;
+        grid-auto-rows: min-content;
     }
 
-    /*  FIXME: For robustness this should be Key.ViewerMode_Paginated */
-    .paginated {
-        display: flex;
-        align-items: center;
+    #viewerimages :global(.viewerimage) {
+        display: block;
+        transition: width 0.2s ease-in-out, padding 0.2s ease-in-out;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        pointer-events: none;
     }
 </style>
