@@ -2,41 +2,37 @@
     import { onDestroy } from 'svelte';
     import type { IMediaItem } from '../../../../engine/providers/MediaPlugin';
     import { Priority } from '../../../../engine/taskpool/DeferredTask';
-    import { ImageLoader, InlineLoading } from 'carbon-components-svelte';
+    import { InlineLoading } from 'carbon-components-svelte';
     export let page: IMediaItem;
     export let alt: string;
-    let dataload: Promise<string>;
+    let loaded=false;
+    let dataload: Promise<Blob>;
     dataload = page
-        .Fetch(Priority.High, new AbortController().signal)
-        .then((data) => {
-            return URL.createObjectURL(data);
-        });
+        .Fetch(Priority.High, new AbortController().signal);
 
     onDestroy(() => {
         dataload.then((src) => {
-            URL.revokeObjectURL(src);
+            URL.revokeObjectURL(image.src);
         });
     });
-</script>
 
+    let image:HTMLImageElement;
+    import { ViewerZoomRatio } from '../../stores/Settings';
+    $: loaded ? image.width=image.naturalWidth * $ViewerZoomRatio : 100;
+    $: loaded ? image.height=image.naturalHeight * $ViewerZoomRatio : 100;
+
+</script>
 {#await dataload}
     <InlineLoading />
 {:then data}
-    <ImageLoader
+    <img
         class="viewerimage"
-        style="width: var(--viewer-zoom);"
         alt={page ? alt : ''}
-        src={data}
-        fadeIn
-    >
-        <svelte:fragment slot="loading"><InlineLoading /></svelte:fragment>
-        <svelte:fragment slot="error">
-            <InlineLoading
-                class="viewerimage"
-                status="error"
-            />
-        </svelte:fragment>
-    </ImageLoader>
+        src={URL.createObjectURL(data)}
+        bind:this={image}
+        on:load={() => loaded=true}
+    />
+
 {:catch error}
     <InlineLoading
         class="viewerimage"
@@ -44,3 +40,13 @@
         description={error}
     />
 {/await}
+
+<style>
+    .viewerimage {
+        transition: width 0.2s ease-in-out, padding 0.2s ease-in-out;
+        transition: height 0.2s ease-in-out, padding 0.2s ease-in-out;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        pointer-events: none;
+    }
+</style>

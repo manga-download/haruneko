@@ -9,8 +9,7 @@
     import WideViewerSetting from './WideViewerSetting.svelte';
     import WideViewerImage from './WideViewerImage.svelte';
     // stores
-    import { ViewerModeValue } from '../../stores/Settings';
-    import { ViewerPadding, ViewerZoom } from '../../stores/Settings';
+    import { Key, ViewerModeValue, ViewerPadding, ViewerZoom, ViewerReverseDirectionValue } from '../../stores/Settings';
     import { selectedItemNext } from '../../stores/Stores';
     // others
     import { scrollSmoothly, scrollMagic } from './utilities';
@@ -99,12 +98,14 @@
         }
     }
 
+
+    let previousOffset = { x : 0, y : 0 };
+    let previousSize = { width : 0, height : 0 };
+
     /**
      *
      */
     function zoomIn() {
-        previousOffset = viewer.scrollTop;
-        previousHeight = viewer.scrollHeight;
         observeZoom();
         ViewerZoom.increment();
     }
@@ -113,24 +114,32 @@
      *
      */
     function zoomOut() {
-        if ($ViewerZoom > 15) {
-            previousOffset = viewer.scrollTop;
-            previousHeight = viewer.scrollHeight;
-            observeZoom();
-            ViewerZoom.decrement();
-        }
+        observeZoom();
+        ViewerZoom.decrement();
     }
 
-    let previousOffset = 0;
-    let previousHeight = 0;
-
     const zoomObserver = new ResizeObserver(function () {
-        if (viewer)
-            viewer.scrollTop =
-                viewer.scrollHeight * (previousOffset / previousHeight);
+        switch ($ViewerModeValue){
+            case Key.ViewerMode_Longstrip : {
+                viewer.scrollTo({
+                    top: viewer.scrollHeight * (previousOffset.y/ previousSize.height),
+                    behavior: 'smooth'
+                });
+                break;
+            }
+            case Key.ViewerMode_Paginated: {
+                viewer.scrollTo({
+                    left: viewer.scrollWidth * (previousOffset.x/ previousSize.width),
+                    behavior: 'smooth'
+                });
+                break;
+            }
+        }
     });
 
     function observeZoom() {
+        previousOffset = { x : viewer.scrollTop, y : viewer.scrollLeft};
+        previousSize = {width: viewer.scrollWidth, height : viewer.scrollHeight};
         zoomObserver.disconnect();
         // We observe the size of all children to detect the full container scrollHeight change
         for (var i = 0; i < viewer.children.length; i++) {
@@ -187,19 +196,16 @@
 
 	$: cssvars = {
 		'viewer-padding': `${$ViewerPadding}em`,
-        'viewer-zoom': `${$ViewerZoom}%` 
 	};
     $: cssVarStyles = Object.entries(cssvars)
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
-
-    
 </script>
-
+{$ViewerReverseDirectionValue}
 <svelte:window on:keydown={onKeyDown} on:mousedown={mouseDownHandler} />
 <div id="wideviewer" bind:this={viewer} class={$ViewerModeValue}>
     <WideViewerSetting {title} on:nextItem on:previousItem on:close />
-    <div id="viewerimages" bind:this={viewerimages} class="{$ViewerModeValue}" style="{cssVarStyles}">
+    <div id="viewerimages" bind:this={viewerimages} class="{$ViewerModeValue} {$ViewerReverseDirectionValue ? '':'reverse'}" style="{cssVarStyles}">
         {#if entries.length === 0}
             <div class="center" style="width:100%;height:100%;">
                 <InlineNotification
@@ -244,26 +250,25 @@
         
     }
     #viewerimages {
-        display: grid;
+        transition: gap 0.2s ease-in-out;
+        gap: var(--viewer-padding);
+        min-width: 0;
+        min-height: 0;
     }
     #viewerimages.longstrip {
-        grid-template-columns:  1fr;
-        row-gap: var(--viewer-padding);
-        transition: row-gap 0.2s ease-in-out;
-        grid-auto-rows: min-content;
+        display: flex;
+        flex-direction: column;
+
     }
     #viewerimages.paginated {
-        grid-template-columns:  1fr;
-        row-gap: var(--viewer-padding);
-        transition: row-gap 0.2s ease-in-out;
-        grid-auto-rows: min-content;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        height:100%;
     }
-
-    #viewerimages :global(.viewerimage) {
-        display: block;
-        transition: width 0.2s ease-in-out, padding 0.2s ease-in-out;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        pointer-events: none;
+    /* TODO: implement RTL reading */
+    #viewerimages.paginated.reverse {
+        flex-flow: row-reverse;
     }
 </style>

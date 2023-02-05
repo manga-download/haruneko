@@ -1,4 +1,4 @@
-import { type Readable, readable, writable } from 'svelte/store';
+import { type Readable, readable, writable, derived } from 'svelte/store';
 import { type ILocale, VariantResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
 import { Check, Choice, type IValue, type Setting } from '../../../engine/SettingsManager';
@@ -112,17 +112,21 @@ export const ViewerDoublePageValue = CreateStore(ViewerDoublePage);
 
 // Non persistant settings
 /** Viewer **/
-function createCount(initialValue:number, increment:number,minimum:number) {
+function createCount(initialValue:number, increment:number,minimum = -Infinity, maximum = Infinity) {
     const { subscribe, set, update } = writable(initialValue);
 
     return {
         subscribe,
         set,
-        increment: () => update(n => n + increment),
+        increment: () => update(n => n + increment <= maximum ? n + increment : n),
         decrement: () => update(n => n - increment >= minimum ? n - increment : n),
         reset: () => set(initialValue)
     };
 }
 
-export const ViewerZoom = createCount(20,10,10);
+export const ViewerZoom = createCount(0,10,-100,100);
+export const ViewerZoomRatio = derived(
+    ViewerZoom,
+    $ViewerZoom => (100 + $ViewerZoom) / 100
+);
 export const ViewerPadding = createCount(2,0.5,0);
