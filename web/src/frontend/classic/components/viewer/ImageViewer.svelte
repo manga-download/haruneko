@@ -194,9 +194,10 @@
     let displaymode : 'thumbnail' | 'wide' = 'thumbnail';
 	$: if (displaymode==='wide') {
             if(currentImageIndex != -1) {
+                // delay because of smooth transition
                 setTimeout(() => {
-                    const targetScrollImage = viewer.querySelector(`:nth-child(${currentImageIndex+1})`);
-                    targetScrollImage.scrollIntoView({behavior: 'smooth', inline: 'center'});
+                    const targetScrollImage = viewer.querySelectorAll(`ImageViewer>img`)[currentImageIndex];
+                    targetScrollImage.scrollIntoView({behavior: 'smooth', inline:'center'});
                     currentImageIndex=-1;
                 }, 200);
             }
