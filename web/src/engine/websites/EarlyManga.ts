@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
 
-    private async _getMangasFromPage(page, provider) {
+    private async _getMangasFromPage(page:number, provider:MangaPlugin) {
         const uri = new URL('/api/search/advanced?page=' + page, this.URI);
         const request = new FetchRequest(uri.href);
         const data = await FetchJSON<APIMangasResult>(request);
