@@ -1,39 +1,29 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { createEventDispatcher, onDestroy } from 'svelte';
     const dispatch = createEventDispatcher();
     // UI
     import { InlineNotification } from 'carbon-components-svelte';
     // engine
     import type { IMediaContainer,IMediaItem } from '../../../../engine/providers/MediaPlugin';
     // svelte component
-    import WideViewerSetting from './WideViewerSetting.svelte';
-    import WideViewerImage from './WideViewerImage.svelte';
+    import ImageViewerWideSettings from './ImageViewerWideSettings.svelte';
+    import Image from './Image.svelte';
     // stores
     import { Key, ViewerModeValue, ViewerPadding, ViewerZoom, ViewerReverseDirectionValue } from '../../stores/Settings';
     import { selectedItemNext } from '../../stores/Stores';
     // others
     import { scrollSmoothly, scrollMagic } from './utilities';
 
-
     export let item: IMediaContainer;
     export let currentImageIndex: number=-1;
-    let viewerimages: HTMLElement;
 
-
-	onMount(async () => {
-		if(currentImageIndex != -1) {
-            setTimeout(() => {
-                const targetScrollImage = viewerimages.querySelector(`:nth-child(${currentImageIndex+1})`);
-                targetScrollImage.scrollIntoView({behavior: 'smooth'});
-                currentImageIndex=-1;
-            }, 200);
-        }
+	onDestroy(() => {
+        document.removeEventListener('keydown', onKeyDown);
 	});
 
     $: entries = item.Entries as IMediaItem[];
 
     const title = item?.Title ?? 'unkown';
-
     let viewer: HTMLElement;
 
     function onKeyDown(event: KeyboardEvent) {
@@ -98,7 +88,6 @@
         }
     }
 
-
     let previousOffset = { x : 0, y : 0 };
     let previousSize = { width : 0, height : 0 };
 
@@ -138,8 +127,8 @@
     });
 
     function observeZoom() {
-        previousOffset = { x : viewer.scrollTop, y : viewer.scrollLeft};
-        previousSize = {width: viewer.scrollWidth, height : viewer.scrollHeight};
+        previousOffset = { x : viewer.scrollTop, y : viewer.scrollLeft };
+        previousSize = { width: viewer.scrollWidth, height : viewer.scrollHeight };
         zoomObserver.disconnect();
         // We observe the size of all children to detect the full container scrollHeight change
         for (var i = 0; i < viewer.children.length; i++) {
@@ -160,7 +149,8 @@
 
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
-    function mouseDownHandler(e: MouseEvent) {
+    function onMouseDown(e: MouseEvent) {
+        
         viewer.style.cursor = 'grabbing';
         viewer.style.userSelect = 'none';
         pos = {
@@ -172,11 +162,11 @@
             y: e.clientY,
         };
 
-        viewer.addEventListener('mousemove', mouseMoveHandler);
-        viewer.addEventListener('mouseup', mouseUpHandler);
+        viewer.addEventListener('mousemove', onMouseMove);
+        viewer.addEventListener('mouseup', onMouseUp);
     }
 
-    const mouseMoveHandler = function (e: MouseEvent) {
+    const onMouseMove = function (e: MouseEvent) {
         // How far the mouse has been moved
         const dx = e.clientX - pos.x;
         const dy = e.clientY - pos.y;
@@ -186,9 +176,9 @@
         viewer.scrollLeft = pos.left - dx;
     };
 
-    const mouseUpHandler = function () {
-        viewer.removeEventListener('mousemove', mouseMoveHandler);
-        viewer.removeEventListener('mouseup', mouseUpHandler);
+    const onMouseUp = function () {
+        viewer.removeEventListener('mousemove', onMouseMove);
+        viewer.removeEventListener('mouseup', onMouseUp);
 
         viewer.style.cursor = 'grab';
         viewer.style.removeProperty('user-select');
@@ -200,30 +190,45 @@
     $: cssVarStyles = Object.entries(cssvars)
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
-</script>
-{$ViewerReverseDirectionValue}
-<svelte:window on:keydown={onKeyDown} on:mousedown={mouseDownHandler} />
-<div id="wideviewer" bind:this={viewer} class={$ViewerModeValue}>
-    <WideViewerSetting {title} on:nextItem on:previousItem on:close />
-    <div id="viewerimages" bind:this={viewerimages} class="{$ViewerModeValue} {$ViewerReverseDirectionValue ? '':'reverse'}" style="{cssVarStyles}">
-        {#if entries.length === 0}
-            <div class="center" style="width:100%;height:100%;">
-                <InlineNotification
-                    hideCloseButton
-                    kind="info"
-                    title="Nothing to show:"
-                    subtitle="content list is empty."
-                />
-            </div>
-        {/if}
 
-        {#each entries as content, index}
-            <WideViewerImage
-                alt="content_{index}"
-                page={content}
+    let displaymode : 'thumbnail' | 'wide' = 'thumbnail';
+	$: if (displaymode==='wide') {
+            if(currentImageIndex != -1) {
+                setTimeout(() => {
+                    const targetScrollImage = viewer.querySelector(`:nth-child(${currentImageIndex+1})`);
+                    targetScrollImage.scrollIntoView({behavior: 'smooth', inline: 'center'});
+                    currentImageIndex=-1;
+                }, 200);
+            }
+            document.addEventListener('keydown', onKeyDown);
+            viewer?.addEventListener('mousedown', onMouseDown); 
+        }
+        else {
+            document.removeEventListener('keydown', onKeyDown);
+            viewer?.removeEventListener('mousedown', onMouseDown);
+            if(viewer) viewer.style.userSelect = 'none';
+        }
+</script>
+<div id="ImageViewer" bind:this={viewer} class="{displaymode} {$ViewerModeValue} {$ViewerReverseDirectionValue ? 'reverse':''}" style="{cssVarStyles}">
+    {#if displaymode==='wide'}
+        <ImageViewerWideSettings {title} on:nextItem on:previousItem on:close={()=>displaymode='thumbnail'} />
+    {/if}
+    {#if entries.length === 0}
+        <div class="center" style="width:100%;height:100%;">
+            <InlineNotification
+                hideCloseButton
+                kind="info"
+                title="Nothing to show:"
+                subtitle="content list is empty."
             />
-        {/each}
-    </div>
+        </div>
+    {/if}
+
+    {#each entries as content, index}
+        <Image class="{displaymode}" alt="content_{index}" page={content}
+            on:click={() => {currentImageIndex = index; displaymode='wide'; }}
+        />
+    {/each}
     {#if autoNextItem && $selectedItemNext !== undefined}
         <InlineNotification
             kind="info"
@@ -237,7 +242,28 @@
 </div>
 
 <style>
-    #wideviewer {
+    #ImageViewer.thumbnail
+    {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        text-align: center;
+    }
+
+    #ImageViewer.thumbnail :global(img) {
+        display: inline-block;
+        border: 2px solid var(--cds-ui-04);
+        background-color: var(--cds-ui-01);
+        border-radius: 1em;
+        margin: 0.5em;
+        width: 16em;
+        height: 16em;
+        cursor: pointer;
+        box-shadow: 1em 1em 2em var(--cds-ui-01);
+        object-fit: contain;
+    }
+
+    #ImageViewer.wide {
         top: 0;
         left: 0;
         right: 0;
@@ -247,20 +273,19 @@
         z-index: 10000;
         background-color: var(--cds-ui-01);
         cursor: grab;
-        
-    }
-    #viewerimages {
+        width:100%;
+        align-items:center;
         transition: gap 0.2s ease-in-out;
         gap: var(--viewer-padding);
         min-width: 0;
         min-height: 0;
     }
-    #viewerimages.longstrip {
+    #ImageViewer.wide.longstrip {
         display: flex;
         flex-direction: column;
 
     }
-    #viewerimages.paginated {
+    #ImageViewer.wide.paginated {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
@@ -268,7 +293,7 @@
         height:100%;
     }
     /* TODO: implement RTL reading */
-    #viewerimages.paginated.reverse {
+    #ImageViewer.wide.paginated.reverse {
         flex-flow: row-reverse;
     }
 </style>
