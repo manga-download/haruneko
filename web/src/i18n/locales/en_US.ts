@@ -159,9 +159,9 @@ const translations: IVariantResource = {
     Settings_NewContent_Notify: 'Enable new content desktop notification',
     Settings_NewContent_NotifyInfo: 'Will send a notification using the OS notification system',
     Settings_Global_RPCPort: 'RPC Port',
-    Settings_Global_RPCPortInfo: 'The communication port to be used by compatible applications (e.g., HakuNeko Assistant) to interact with this HakuNeko instance',
+    Settings_Global_RPCPortInfo: 'The communication port to be used by compatible applications to interact with this HakuNeko instance (e.g., HakuNeko Assistant)',
     Settings_Global_RPCSecret: 'RPC Secret',
-    Settings_Global_RPCSecretInfo: 'The passphrase required by compatible applications (e.g., HakuNeko Assistant) to interact with this HakuNeko instance',
+    Settings_Global_RPCSecretInfo: 'The passphrase required by compatible applications to interact with this HakuNeko instance (e.g., HakuNeko Assistant)',
 
     SettingsManager_Settings_AlreadyInitializedError: 'An internal application error occured: The settings scope <{0}> must only be initialized once!',
 
