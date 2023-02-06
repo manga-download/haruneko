@@ -1,8 +1,7 @@
 <script lang="ts">
     import { Loading } from 'carbon-components-svelte';
     import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
-    import ThumbnailViewer from './ThumbnailViewer.svelte';
-    import WideViewer from './WideViewer.svelte';
+    import ImageViewer from './ImageViewer.svelte';
     import VideoViewer from './VideoViewer.svelte';
     import {
         selectedItem,
@@ -10,22 +9,12 @@
         selectedItemNext,
     } from '../../stores/Stores';
 
-    type Mode = 'Thumbnail' | 'Wide' | 'Video';
-
     export let item: IMediaContainer;
-    export let mode: Mode = 'Thumbnail';
+    export let mode: 'Image'| 'Video' = 'Image';
     let currentImageIndex: number = -1;
 
     let update: Promise<void> | undefined;
     $: update = item?.Update();
-
-    function toggleThumbnailViewer() {
-        mode = 'Thumbnail';
-    }
-    function toggleWideViewer(imageIndex: number) {
-        currentImageIndex = imageIndex;
-        mode = 'Wide';
-    }
 
     function onPreviousItem() {
         $selectedItem = $selectedItemPrevious;
@@ -35,36 +24,28 @@
     }
 </script>
 
-<div id="Viewer">
-    <div id="Contents" class="{mode} center">
-        {#await update}
-            <div class="loading">
-                <div class="center"><Loading withOverlay={false} /></div>
-                <div class="center">... items</div>
-            </div>
-        {:then}
-            {#if mode === 'Thumbnail' || mode === 'Wide'}
-                <div class:hide={mode !== 'Thumbnail'}>
-                    <ThumbnailViewer {item} on:view={e => toggleWideViewer(e.detail)} />
-                </div>
-                {#if mode === 'Wide'}
-                    <WideViewer
-                        {item}
-                        {currentImageIndex}
-                        on:close={toggleThumbnailViewer}
-                        on:nextItem={() => onNextItem()}
-                        on:previousItem={() => onPreviousItem()}
-                    />
-                {/if}
-            {:else if mode === 'Video'}
-                <VideoViewer />
-            {:else}
-                Unknown mode requested
-            {/if}
-        {:catch error}
-            <p class="error">Unable to load item : {error}</p>
-        {/await}
-    </div>
+<div id="Viewer" class="{mode} center">
+    {#await update}
+        <div class="loading">
+            <div class="center"><Loading withOverlay={false} /></div>
+            <div class="center">... items</div>
+        </div>
+    {:then}
+        {#if mode === 'Image'}
+            <ImageViewer
+            {item}
+            {currentImageIndex}
+            on:nextItem={() => onNextItem()}
+            on:previousItem={() => onPreviousItem()}
+            />
+        {:else if mode === 'Video'}
+            <VideoViewer />
+        {:else}
+            Unknown mode requested
+        {/if}
+    {:catch error}
+        <p class="error">Unable to load item : {error}</p>
+    {/await}
 </div>
 
 <style>
@@ -79,7 +60,7 @@
         user-select: none;
         grid-area: Content;
     }
-    #Contents .loading {
+    #Viewer .loading {
         padding: 20em;
     }
     .error {
