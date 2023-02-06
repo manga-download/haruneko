@@ -8,6 +8,7 @@ import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
 import { SettingsManager } from './SettingsManager';
+import { CreatePlatformIPC } from './ipc/InterProcessCommunication';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
@@ -22,6 +23,7 @@ export class HakuNeko {
     readonly #downloadManager: DownloadManager;
 
     constructor(info?: PlatformInfo) {
+        const ipc = CreatePlatformIPC();
         info = info ?? DetectPlatform();
         InitBlockList(info);
         InitFetchProvider(info);
@@ -62,6 +64,7 @@ export class HakuNeko {
     public get ItemflagManager(): ItemflagManager {
         return this.#itemflagManager;
     }
+
     public get DownloadManager(): DownloadManager {
         return this.#downloadManager;
     }
