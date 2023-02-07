@@ -1,5 +1,6 @@
 import { createServer, type Server, type IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
+// NOTE: Import with absolute path to integrate this file when bundling with roll-up
 import { CreateServer, type WebSocketServer } from '../../../../node_modules/websocket-rpc/dist/server';
 import { Contract } from './Contract';
 

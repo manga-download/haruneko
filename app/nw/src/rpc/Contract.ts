@@ -1,3 +1,4 @@
+// NOTE: Import with absolute path to integrate this file when bundling with roll-up
 import type { RemoteContract } from '../../../../node_modules/websocket-rpc/dist/types';
 
 // See => chrome.cookies.Cookie
