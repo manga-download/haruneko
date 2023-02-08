@@ -16,9 +16,11 @@
 
     export let item: IMediaContainer;
     export let currentImageIndex: number=-1;
+    export let wide:Boolean;
 
 	onDestroy(() => {
         document.removeEventListener('keydown', onKeyDown);
+        viewer?.removeEventListener('mousedown', onMouseDown);
 	});
 
     $: entries = item.Entries as IMediaItem[];
@@ -28,36 +30,36 @@
 
     function onKeyDown(event: KeyboardEvent) {
         switch (true) {
-            case event.code === 'ArrowUp' && !event.ctrlKey:
+            case event.code === 'ArrowUp':
                 scrollSmoothly(viewer, -64);
                 break;
-            case event.code === 'ArrowDown' && !event.ctrlKey:
+            case event.code === 'ArrowDown':
                 scrollSmoothly(viewer, 64);
                 break;
-            case event.code === 'PageUp' && !event.ctrlKey:
+            case event.code === 'PageUp':
                 viewer.scrollBy({
                     top: -window.innerHeight * 0.95,
                     left: 0,
                     behavior: 'smooth',
                 });
                 break;
-            case event.code === 'PageDown' && !event.ctrlKey:
+            case event.code === 'PageDown':
                 viewer.scrollBy({
                     top: window.innerHeight * 0.95,
                     left: 0,
                     behavior: 'smooth',
                 });
                 break;
-            case event.code === 'ArrowRight' && !event.ctrlKey:
+            case event.code === 'ArrowRight' :
                 dispatch('nextItem');
                 break;
-            case event.code === 'ArrowLeft' && !event.ctrlKey:
+            case event.code === 'ArrowLeft':
                 dispatch('previousItem');
                 break;
-            case event.key === '*' && !event.ctrlKey:
+            case event.key === '*':
                 $ViewerZoom = 100;
                 break;
-            case event.key === '/' && !event.ctrlKey:
+            case event.key === '/' :
                 ViewerZoom.reset();
                 break;
             case event.key === '+' && !event.ctrlKey:
@@ -72,10 +74,10 @@
             case event.key === '-' && event.ctrlKey:
                 ViewerPadding.decrement();
                 break;
-            case event.code === 'Escape' && !event.ctrlKey:
-                dispatch('close');
+            case event.code === 'Escape':
+                wide = false;
                 break;
-            case event.code === 'Space' && !event.ctrlKey:
+            case event.code === 'Space':
                 scrollMagic(
                     viewer,
                     '.viewerimage',
@@ -191,13 +193,12 @@
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
 
-    let displaymode : 'thumbnail' | 'wide' = 'thumbnail';
-	$: if (displaymode==='wide') {
+	$: if (wide) {
             if(currentImageIndex != -1) {
                 // delay because of smooth transition
                 setTimeout(() => {
-                    const targetScrollImage = viewer.querySelectorAll(`ImageViewer>img`)[currentImageIndex];
-                    targetScrollImage.scrollIntoView({behavior: 'smooth', inline:'center'});
+                    const targetScrollImage = viewer.querySelectorAll('ImageViewer>img')[currentImageIndex];
+                    targetScrollImage?.scrollIntoView({behavior: 'smooth', inline:'center'});
                     currentImageIndex=-1;
                 }, 200);
             }
@@ -210,9 +211,9 @@
             if(viewer) viewer.style.userSelect = 'none';
         }
 </script>
-<div id="ImageViewer" bind:this={viewer} class="{displaymode} {$ViewerModeValue} {$ViewerReverseDirectionValue ? 'reverse':''}" style="{cssVarStyles}">
-    {#if displaymode==='wide'}
-        <ImageViewerWideSettings {title} on:nextItem on:previousItem on:close={()=>displaymode='thumbnail'} />
+<div id="ImageViewer" bind:this={viewer} class="{wide?'wide':'thumbnail'} {$ViewerModeValue} {$ViewerReverseDirectionValue ? 'reverse':''}" style="{cssVarStyles}">
+    {#if wide}
+        <ImageViewerWideSettings {title} on:nextItem on:previousItem on:close={() => wide = false} />
     {/if}
     {#if entries.length === 0}
         <div class="center" style="width:100%;height:100%;">
@@ -226,8 +227,8 @@
     {/if}
 
     {#each entries as content, index}
-        <Image class="{displaymode}" alt="content_{index}" page={content}
-            on:click={() => {currentImageIndex = index; displaymode='wide'; }}
+        <Image class="{wide?'wide':'thumbnail'}" alt="content_{index}" page={content}
+            on:click={() => {currentImageIndex = index; wide=true; }}
         />
     {/each}
     {#if autoNextItem && $selectedItemNext !== undefined}
@@ -243,6 +244,7 @@
 </div>
 
 <style>
+
     #ImageViewer.thumbnail
     {
         width: 100%;
@@ -265,13 +267,7 @@
     }
 
     #ImageViewer.wide {
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        position: absolute;
         overflow-y: scroll;
-        z-index: 10000;
         background-color: var(--cds-ui-01);
         cursor: grab;
         width:100%;
