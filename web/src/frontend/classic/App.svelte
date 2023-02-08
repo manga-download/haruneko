@@ -37,7 +37,7 @@
         app.classList.add(uimode);
         // some delay for pre-rendering
         // Todo: find a way to detect if the UI is loaded
-        document.addEventListener("DOMContentLoaded", function(event){
+        document.addEventListener("DOMContentLoaded", () => {
             setTimeout(resolveFinishLoading, 2500);
         });
     });
