@@ -45,8 +45,12 @@
 {/await}
 
 <style>
-    img {
-        transition: width 0.2s ease-in-out;
-        transition: height 0.2s ease-in-out;
+    img.wide {
+        transition: width 50ms ease-in-out;
+        transition: height 50ms ease-in-out;
+    }
+    img.thumbnail {
+        transition: width 100ms ease-in-out;
+        transition: height 100ms ease-in-out;
     }
 </style>
