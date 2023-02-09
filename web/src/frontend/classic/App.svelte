@@ -37,10 +37,11 @@
         app.classList.add(uimode);
         // some delay for pre-rendering
         // Todo: find a way to detect if the UI is loaded
-        setTimeout(resolveFinishLoading, 2500);
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(resolveFinishLoading, 2500);
+        });
     });
 
-    let currentContent = 'home';
     let showHome = true;
 
     $: uimode = $ContentPanelValue ? 'ui-mode-content' : 'ui-mode-download';
@@ -54,7 +55,6 @@
         app.classList.add(uimode);
     }
 
-    $: currentContent = $selectedItem ? 'viewer' : 'home';
 </script>
 
 <UserMessage />
@@ -66,9 +66,9 @@
         <MediaItemSelect />
         {#if uimode === 'ui-mode-content'}
             <div id="Content" transition:fade>
-                {#if currentContent === 'viewer'}
+                {#if $selectedItem }
                     <Viewer item={$selectedItem} />
-                {:else if currentContent && showHome}
+                {:else if showHome}
                     <ContentPage />
                 {/if}
             </div>
