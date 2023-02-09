@@ -267,10 +267,11 @@
     }
 
     #ImageViewer.wide {
-        overflow-y: scroll;
+        overflow: auto;
         background-color: var(--cds-ui-01);
         cursor: grab;
         width:100%;
+        height: 100%;
         align-items:center;
         transition: gap 0.2s ease-in-out;
         gap: var(--viewer-padding);
@@ -280,6 +281,7 @@
     #ImageViewer.wide.longstrip {
         display: flex;
         flex-direction: column;
+        overflow-y:auto;
 
     }
     #ImageViewer.wide.paginated {
@@ -288,6 +290,7 @@
         flex-wrap: nowrap;
         align-items: center;
         height:100%;
+        overflow-x:auto;
     }
     /* TODO: implement RTL reading */
     #ImageViewer.wide.paginated.reverse {
