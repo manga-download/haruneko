@@ -244,11 +244,12 @@
 </div>
 
 <style>
-
-    #ImageViewer.thumbnail
-    {
+    #ImageViewer {
         width: 100%;
         height: 100%;
+    }
+    #ImageViewer.thumbnail
+    {
         overflow-y: auto;
         text-align: center;
     }
@@ -270,8 +271,6 @@
         overflow: auto;
         background-color: var(--cds-ui-01);
         cursor: grab;
-        width:100%;
-        height: 100%;
         align-items:center;
         transition: gap 0.2s ease-in-out;
         gap: var(--viewer-padding);

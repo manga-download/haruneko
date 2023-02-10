@@ -79,6 +79,7 @@
         bottom: 0;
         position: absolute;
         z-index: 10000;
+        -webkit-app-region: no-drag;
         padding:0;
         background-color: var(--cds-ui-01);
     }
