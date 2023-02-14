@@ -108,13 +108,13 @@
         grid-template-rows: 1fr fit-content(0.5em);
     }
     :global(.ui-mode-content) {
-        grid-template-columns: 19em 19em 1fr;
+        grid-template-columns: min-content min-content 1fr;
         grid-template-areas:
             'Media Item Content'
             'Bottom Bottom Content';
     }
     :global(.ui-mode-download) {
-        grid-template-columns: minmax(20em, 1fr) minmax(20em, 1fr);
+        grid-template-columns: min-content min-content;
         grid-template-areas:
             'Media Item'
             'Bottom Bottom';
