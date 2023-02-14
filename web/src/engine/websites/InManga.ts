@@ -27,7 +27,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    private _createPostRequest(uri: string, form: string) {
+    private createPostRequest(uri: string, form: string) {
         const request = new FetchRequest(uri, { body: form, method: 'POST', referrer: this.URI.href });
         request.headers.set('content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
         request.headers.set('X-Requested-With', 'XMLHttpRequest');
@@ -49,13 +49,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 0, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(page, provider);
+            const mangas = await this.getMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/manga/getMangasConsultResult', this.URI);
         const formManga = new URLSearchParams();
         formManga.set('filter[generes][]', '-1');
@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
         formManga.set('filter[onlyFavorites]', 'false');
         formManga.set('d', '');
 
-        const request = this._createPostRequest(uri.href, formManga.toString());
+        const request = this.createPostRequest(uri.href, formManga.toString());
         const data = await FetchCSS<HTMLAnchorElement>(request, 'a.manga-result');
         return data.map(element => {
             const id = element.href.split('/').filter(part => part !== '').pop();
@@ -82,7 +82,7 @@ export default class extends DecoratableMangaScraper {
         const request = new FetchRequest(uri.href);
         const data = await FetchJSON<APIChapters>(request);
         const data2: APIChapter = JSON.parse(data.data);
-        return data2.result.map(item => { return new Chapter(this, manga, item.Identification, item.FriendlyChapterNumber); });
+        return data2.result.map(item => new Chapter(this, manga, item.Identification, item.FriendlyChapterNumber));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
