@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS<HTMLAnchorElement>(request, 'a.manga-result');
         return data.map(element => {
             const id = element.href.split('/').filter(part => part !== '').pop();
-            const title = element.querySelector('h4.ellipsed-text').textContent.trim();
+            const title = element.querySelector<HTMLHeadingElement>('h4.ellipsed-text').textContent.trim();
             return new Manga(this, provider, id, title);
         });
     }
