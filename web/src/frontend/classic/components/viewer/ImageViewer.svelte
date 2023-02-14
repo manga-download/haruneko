@@ -226,11 +226,11 @@
         </div>
     {/if}
 
-    {#each entries as content, index}
+    {#each entries as content, index (index)}
         <Image class="{wide?'wide':'thumbnail'}" alt="content_{index}" page={content}
             on:click={() => {currentImageIndex = index; wide=true; }}
         />
-    {/each}
+    {/each} 
     {#if autoNextItem && $selectedItemNext !== undefined}
         <InlineNotification
             kind="info"
@@ -251,22 +251,27 @@
     #ImageViewer.thumbnail
     {
         overflow-y: auto;
-        text-align: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: flex-start;
     }
 
-    #ImageViewer.thumbnail :global(img) {
-        display: inline-block;
+    #ImageViewer.thumbnail :global(.imgpreview) {
         border: 2px solid var(--cds-ui-04);
         background-color: var(--cds-ui-01);
+        box-shadow: 1em 1em 2em var(--cds-ui-01);
         border-radius: 1em;
         margin: 0.5em;
         width: 16em;
         height: 16em;
+        min-width: 16em;
+        min-height:16em;
+        max-width: 16em;
+        max-height:16em;
         cursor: pointer;
-        box-shadow: 1em 1em 2em var(--cds-ui-01);
         object-fit: contain;
     }
-
     #ImageViewer.wide {
         overflow: auto;
         background-color: var(--cds-ui-01);

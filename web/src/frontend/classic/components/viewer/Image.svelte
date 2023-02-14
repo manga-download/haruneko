@@ -20,27 +20,35 @@
     import { ViewerZoomRatio } from '../../stores/Settings';
     $: loaded ? image.width=image.naturalWidth * $ViewerZoomRatio : 100;
     $: loaded ? image.height=image.naturalHeight * $ViewerZoomRatio : 100;
-
 </script>
 {#await dataload}
-    <InlineLoading class={$$props.class} />
+    <InlineLoading class="imgpreview {$$props.class}"  on:click/>
 {:then data}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <img
-        class={$$props.class}
-        alt={page ? alt : ''}
-        src={URL.createObjectURL(data)}
-        draggable="false"
-        bind:this={image}
-        on:click
-        on:load={() => loaded=true}
-    />
-
+    {#if data?.type.startsWith('image')}
+        <img
+            class="imgpreview {$$props.class}"
+            alt={page ? alt : ''}
+            src={URL.createObjectURL(data)}
+            draggable="false"
+            bind:this={image}
+            on:click
+            on:load={() => loaded=true}
+        />
+    {:else}
+        <InlineLoading
+            class="imgpreview {$$props.class}"
+            status="error"
+            description="Resource is not an image"
+            on:click
+        />
+    {/if}
 {:catch error}
     <InlineLoading
-        class={$$props.class}
-        type="error"
+        class="imgpreview {$$props.class}"
+        status="error"
         description={error}
+        on:click
     />
 {/await}
 
