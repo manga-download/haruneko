@@ -13,7 +13,7 @@ import * as MangaNel from './decorators/MangaNel';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangabat', `MangaBat`, 'https://h.mangabat.com', Tags.Language.English, Tags.Source.Aggregator);
+        super('mangabat', `MangaBat`, 'https://h.mangabat.com', Tags.Language.English, Tags.Source.Aggregator, Tags.Media.Manga);
     }
 
     public override get Icon() {
