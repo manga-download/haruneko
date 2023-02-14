@@ -216,6 +216,9 @@
             'ItemList'
             'ItemCount';
         grid-area: Item;
+        overflow-x:hidden;
+        resize: horizontal;
+        min-width:19em;
     }
     #LanguageFilter {
         grid-area: LanguageFilter;
@@ -224,7 +227,6 @@
     }
     #ItemFilter {
         grid-area: ItemFilter;
-        display: table;
     }
     #ItemList {
         grid-area: ItemList;

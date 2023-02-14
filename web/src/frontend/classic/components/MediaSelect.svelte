@@ -244,6 +244,9 @@
             'MediaList'
             'MediaCount';
         grid-area: Media;
+        overflow-x:hidden;
+        resize: horizontal;
+        min-width:19em;
     }
     #Plugin {
         grid-area: Plugin;
@@ -267,12 +270,7 @@
     }
     #MediaCount {
         grid-area: MediaCount;
-        display: table;
         margin: 0.25em;
-    }
-    :global(#Plugin-combo) {
-        display: table-cell;
-        width: 100%;
     }
     #MediaTitle h5 {
         display: inline-block;
