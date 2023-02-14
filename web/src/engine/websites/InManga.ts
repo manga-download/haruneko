@@ -89,7 +89,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/chapter/chapterIndexControls', this.URI);
         uri.searchParams.set('identification', chapter.Identifier);
         const request = new FetchRequest(uri.href);
-        const data = await FetchCSS(request, 'div.PagesContainer img.ImageContainer');
+        const data = await FetchCSS<HTMLImageElement>(request, 'div.PagesContainer img.ImageContainer');
         return data.map(element => new Page(this, chapter, new URL('/page/getPageImage/?identification=' + element.id, request.url)));
     }
 
