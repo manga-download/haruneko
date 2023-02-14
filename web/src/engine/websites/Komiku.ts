@@ -7,7 +7,7 @@ import { FetchCSS, FetchRequest } from './../FetchProvider';
 const paths = ['manga', 'manhua', 'manhwa'];
 
 function MangaLabelExtractor(element: HTMLElement) {
-    return element.textContent.replace('Komik', '').trim();
+    return element.textContent.replace(/^komik/i, '').trim();
 }
 
 @Common.MangaCSS(/https:\/\/komiku\.id/, 'article header#Judul h1[itemprop="name"]', MangaLabelExtractor)
@@ -26,7 +26,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        //need to get 3 categories since the "full list" is not full
         const mangaList = [];
         for (const genre of paths) {
             const request = new FetchRequest(new URL('/daftar-komik/?tipe=' + genre, this.URI).href);
