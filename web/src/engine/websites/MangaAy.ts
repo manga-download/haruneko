@@ -13,7 +13,7 @@ function MangaInfoExtractor(element: HTMLElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/https:\/\/manga-ay\.com/, 'div.card-body h4')
+@Common.MangaCSS(/https:\/\/manga-ay\.com\/manga\/\d+/, 'div.card-body h4')
 @Common.MangasMultiPageCSS('/seriler/{page}', 'div.ecommerce-card', 1,1,0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.table-responsive a[title]')
 @Common.PagesSinglePageJS(pageScript, 500)
