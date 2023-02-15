@@ -6,19 +6,18 @@ import type { PlatformIPC } from './InterProcessCommunication';
 export class NodeWebkitIPC implements PlatformIPC {
 
     constructor() {
-        (async function() {
-            //const tab = await chrome.tabs.getCurrent();
-            //tab.on
-            console.log();
-        })();
+        chrome.runtime.onMessage.addListener(this.Receive.bind(this));
     }
 
-    async RestartRPC(): Promise<void> {
-        // send to IPC main (background-page)
-        //window.postMessage
-        //window.addEventListener('message', )
+    private async Receive<M, R>(message: M, sender: chrome.runtime.MessageSender, callback: (response: R) => void) {
+        // is message always serialized JSON string?
+        console.log('Web::IPC.Received', message, sender, callback);
+        //callback();
+    }
 
-        //chrome.tabs.sendMessage
-        //chrome.runtime.sendMessage();
+    public async RestartRPC(): Promise<void> {
+        // send to IPC main (background-page)
+        console.log('Web::IPC.Send::RestartRPC');
+        return chrome.runtime.sendMessage<unknown, void>({ name: 'IPC::RestartRPC', parameters: [] });
     }
 }

@@ -24,6 +24,7 @@ export class HakuNeko {
 
     constructor(info?: PlatformInfo) {
         const ipc = CreatePlatformIPC();
+        setTimeout(ipc.RestartRPC, 5000);
         info = info ?? DetectPlatform();
         InitBlockList(info);
         InitFetchProvider(info);

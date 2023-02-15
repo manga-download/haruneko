@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as fs from 'fs-extra';
 import yargs from 'yargs';
+import { IPC } from './ipc/InterProcessCommunication';
 import { RPCServer } from './rpc/Server';
 
 async function GetArgumentURL(): Promise<string|undefined> {
@@ -49,6 +50,10 @@ async function OpenWindow() {
     }
 
     /*const rpc = */new RPCServer('/hakuneko').Listen(27544, 'Connection#Secret', [ /^(chrome-)?extension:/i ]);
+    const ipc = new IPC();
+
+    // Dummy Stuff for Development
+    setTimeout(() => ipc.Send({ name: 'test', parameters: [ 123, true ] }), 15000);
 }
 
 OpenWindow();
