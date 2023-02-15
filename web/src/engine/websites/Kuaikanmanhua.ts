@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 function LabelExtractor(element: HTMLElement) {
-    return element.textContent.split('|')[0].trim();
+    return element.textContent.split('|').shift().trim();
 }
 
 const chapterScript = `
