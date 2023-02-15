@@ -7,6 +7,7 @@
     } from 'carbon-components-svelte';
     import {
         App,
+        Bookmark,
         Debug,
         Doc,
         Document,
@@ -30,7 +31,11 @@
     const dispatch = createEventDispatcher();
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';
-
+    import {
+        selectedPlugin,
+        selectedMedia,
+        selectedItem,
+    } from '../stores/Stores';
     export let isOpen: boolean;
 
     //Settings Modal
@@ -56,6 +61,15 @@
                 text={$Locale.Frontend_Classic_Sidenav_Home()}
                 icon={Home}
                 on:click={() => dispatch('home')}
+            />
+            <SideNavLink
+                text={'Bookmarks'}
+                icon={Bookmark}
+                on:click={() => {
+                    $selectedPlugin=window.HakuNeko.BookmarkPlugin;
+                    $selectedMedia=undefined;
+                    $selectedItem=undefined;
+                }}
             />
             <SideNavLink
                 text={$Locale.Frontend_Plugins()}

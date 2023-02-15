@@ -4,7 +4,7 @@
     import BookmarkAdd from 'carbon-icons-svelte/lib/BookmarkAdd.svelte';
 
     import { EventWatcher } from '../stores/Events';
-    import { selectedMedia, selectedItem } from '../stores/Stores';
+    import { selectedPlugin, selectedMedia, selectedItem } from '../stores/Stores';
 
     import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
 
@@ -37,10 +37,9 @@
         () => refreshSuggestions()
     );
 
-    // on
-
     async function selectBookmark(bookmark: Bookmark) {
         let unFlaggedContent = await bookmark.getUnflaggedContent();
+        $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
         $selectedItem = unFlaggedContent[unFlaggedContent.length - 1];
     }

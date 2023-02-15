@@ -9,7 +9,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     public readonly EntriesUpdated: Event<typeof this, Bookmark[]> = new Event<typeof this, Bookmark[]>();
 
     constructor(private readonly storage: StorageController, private readonly plugins: PluginController) {
-        super(null, null);
+        super('bookmarks', 'Bookmarks');
         this.Load();
     }
 

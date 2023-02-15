@@ -7,7 +7,7 @@
         Loading,
     } from 'carbon-components-svelte';
 
-    import { Star, StarFilled, UpdateNow, CopyLink } from 'carbon-icons-svelte';
+    import { UpdateNow, CopyLink } from 'carbon-icons-svelte';
     import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
     // Third Party
     import Fuse from 'fuse.js';
@@ -37,12 +37,9 @@
         minMatchCharLength: 1,
         fieldNormWeight: 0,
     });
-
-    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
-
+    $selectedPlugin = HakuNeko.BookmarkPlugin;
+    let currentPlugin:IMediaContainer;
     let loadPlugin: Promise<void>;
-    let isBookmarkPlugin: Boolean;
-    $: isBookmarkPlugin = $selectedPlugin === window.HakuNeko.BookmarkPlugin;
 
     // Todo : implement favorites
     let pluginsFavorites = ['sheep-scanlations'];
@@ -52,34 +49,40 @@
 
     orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
         return (
-            // sort by favorite
+            
+        // sort by favorite
             (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
                 (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
             //sort by string
             a.Title.localeCompare(b.Title)
         );
     });
-    pluginsCombo = orderedPlugins.map((plugin) => {
+    pluginsCombo = [{
+            id: HakuNeko.BookmarkPlugin.Identifier,
+            text: '📚 Bookmarks',
+        },
+        ...orderedPlugins.map((plugin) => {
         return {
             id: plugin.Identifier,
             text: plugin.Title,
         };
-    });
+    })];
 
     function pluginsComboText(item: ComboBoxItem): string {
         return pluginsFavorites.includes(item.id)
             ? '⭐' + item.text
             : item.text;
     }
+    $: {
+        const previousPlugin=currentPlugin;
+        currentPlugin = $selectedPlugin;
+        if (! currentPlugin?.IsSameAs(previousPlugin)) loadMedia(currentPlugin);
+    }
+    $: pluginDropdownSelected = currentPlugin?.Identifier;
 
-    let pluginDropdownSelected: string;
-    let currentPlugin: string;
-    let preserveSelectedMedia=false;
-
-    selectedPlugin.subscribe((value) => {
-        if (!value || value?.Identifier === currentPlugin) return;
-        currentPlugin = pluginDropdownSelected = value.Identifier;
-        medias = (value?.Entries as IMediaContainer[]) ?? [];
+    function loadMedia(media:IMediaContainer){
+        if (!media) return;
+        medias = (media.Entries as IMediaContainer[]) ?? [];
         fuse = new Fuse(medias, {
             keys: ['Title'],
             findAllMatches: true,
@@ -87,19 +90,8 @@
             minMatchCharLength: 1,
             fieldNormWeight: 0,
         });
-        if (!preserveSelectedMedia) {
-            $selectedMedia = undefined;
-        }
-        $selectedItem = undefined;
-        preserveSelectedMedia=false;
-    });
+    }
 
-    selectedMedia.subscribe((value) => {
-        if (value && !$selectedPlugin.IsSameAs(value.Parent)){
-            preserveSelectedMedia = true;
-            $selectedPlugin = value.Parent;
-        }  
-    });
     function filterMedia(mediaNameFilter: string): IMediaContainer[] {
         if ($FuzzySearchValue)
             return fuse.search(mediaNameFilter).map((item) => item.item);
@@ -123,7 +115,7 @@
     async function onUpdateMediaEntriesClick() {
         loadPlugin = $selectedPlugin?.Update();
         await loadPlugin;
-        medias = ($selectedPlugin?.Entries as IMediaContainer[]) ?? [];
+        loadMedia($selectedPlugin);
     }
 
     async function onClipboardPaste() {
@@ -134,9 +126,13 @@
                     link
                 )) as IMediaContainer;
                 if (media) {
+                    if (!$selectedPlugin?.IsSameAs(media.Parent)) {
+                        $selectedPlugin = media.Parent;
+                    }
                     if (!$selectedMedia?.IsSameAs(media)) {
                         $selectedMedia = media;
                     }
+                    $selectedItem = undefined;
                     return;
                 }
             }
@@ -144,6 +140,12 @@
         } catch (error) {
             console.warn(error);
         }
+    }
+
+    async function selectPlugin(id:string) {
+        $selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
+            (plugin) => plugin.Identifier === id
+        );
     }
 </script>
 
@@ -159,26 +161,14 @@
 {/if}
 <div id="Media" transition:fade>
     <div id="MediaTitle">
-        <Button
-            kind="ghost"
-            size="small"
-            iconDescription="Show bookmarks"
-            tooltipPosition="right"
-            icon={isBookmarkPlugin ? StarFilled : Star}
-            on:click={() => {
-                $selectedPlugin = window.HakuNeko.BookmarkPlugin;
-            }}
-        />
         <h5>Media List</h5>
     </div>
     <div id="Plugin">
         <ComboBox
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
-            on:select={(event) =>
-                ($selectedPlugin = orderedPlugins.find(
-                    (plugin) => plugin.Identifier === event.detail.selectedId
-                ))}
+            on:clear={()=> $selectedPlugin = undefined}
+            on:select={(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
             items={pluginsCombo}
             shouldFilterItem={shouldFilterPlugin}
