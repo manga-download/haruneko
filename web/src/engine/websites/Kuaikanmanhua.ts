@@ -31,10 +31,10 @@ const chapterScript = `
 `;
 
 const pageScript = `
-        new Promise(resolve => {
-            resolve( __NUXT__.data[0].comicInfo.comicImages.map(img => img.url));
-        });
-        `;
+    new Promise(resolve => {
+        resolve( __NUXT__.data[0].comicInfo.comicImages.map(img => img.url));
+    });
+`;
 
 @Common.MangaCSS(/https:\/\/www\.kuaikanmanhua\.com/, 'head title', LabelExtractor)
 @Common.MangasMultiPageCSS('/tag/0?page={page}', 'div.tagContent div a')
