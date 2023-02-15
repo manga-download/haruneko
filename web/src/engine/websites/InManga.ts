@@ -28,9 +28,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     private createPostRequest(uri: string, form: string) {
-        const request = new FetchRequest(uri, { body: form, method: 'POST', referrer: this.URI.href });
-        request.headers.set('content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
-        request.headers.set('X-Requested-With', 'XMLHttpRequest');
+        const request = new FetchRequest(uri, {
+            body: form, method: 'POST', headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Referer' : this.URI.href
+            }
+        });
         return request;
     }
 
@@ -57,17 +61,18 @@ export default class extends DecoratableMangaScraper {
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/manga/getMangasConsultResult', this.URI);
-        const formManga = new URLSearchParams();
-        formManga.set('filter[generes][]', '-1');
-        formManga.set('filter[queryString]', '');
-        formManga.set('filter[skip]', String(500 * page));
-        formManga.set('filter[take]', '500');
-        formManga.set('filter[sortby]', '5');
-        formManga.set('filter[broadcastStatus]', '0');
-        formManga.set('filter[onlyFavorites]', 'false');
-        formManga.set('d', '');
+        const formManga = new URLSearchParams({
+            'filter[generes][]': '-1',
+            'filter[queryString]': '',
+            'filter[skip]' : String(500 * page),
+            'filter[take]': '500',
+            'filter[sortby]': '5',
+            'filter[broadcastStatus]': '0',
+            'filter[onlyFavorites]': 'false',
+            'd': '',
+        }).toString();
 
-        const request = this.createPostRequest(uri.href, formManga.toString());
+        const request = this.createPostRequest(uri.href, formManga);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'a.manga-result');
         return data.map(element => {
             const id = element.href.split('/').filter(part => part !== '').pop();
