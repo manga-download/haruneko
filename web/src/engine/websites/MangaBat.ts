@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaNel from './decorators/MangaNel';
 
-@MangaNel.MangaCSS(/mangabat\.com/)
+@MangaNel.MangaCSS(/(h\.|read\.)?mangabat\.com/)
 @MangaNel.MangasMultiPageCSS('/manga-list-all/{page}', 'div.panel-list-story div.list-story-item h3 a.item-title')
 @MangaNel.ChaptersSinglePageCSS()
 @MangaNel.PagesSinglePageCSS()
