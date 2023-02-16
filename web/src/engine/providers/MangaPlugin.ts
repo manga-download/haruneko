@@ -8,6 +8,17 @@ import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from
 
 const settingsKeyPrefix = 'plugin.';
 
+// See: https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
+const mimeFileExtension = {
+    default: '.bin',
+    'image/avif': '.avif',
+    'image/webp': '.webp',
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/gif': '.gif',
+    'image/bmp': '.bmp',
+};
+
 /**
  * The abstract base class that any custom manga scraper must implement.
  * This should be used for any custom manga scraper implementation that is not going to utilize the decorator pattern.
@@ -183,8 +194,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
             // TODO: inject storage controller
             const sc = this.Parent?.Parent['storageController'] as StorageController;
             const data = await sc.LoadTemporary<Blob>(resources.get(index));
-            // TODO: determine file extension based on mime type
-            const extension = '.jpg';
+            const extension = mimeFileExtension[data.type] ?? mimeFileExtension.default;
             const name = (index + 1).toString().padStart(digits, '0') + extension;
             const file = await directory.getFileHandle(name, { create: true });
             const stream = await file.createWritable();
