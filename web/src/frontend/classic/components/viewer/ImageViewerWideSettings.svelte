@@ -69,7 +69,6 @@
         border-bottom-left-radius: 1em;
         box-shadow: 0em 0em 1em var(--cds-ui-01);
         outline: none; /* disable focus border */
-        z-index: 10000;
     }
     #Buttons:hover {
         opacity: 1;

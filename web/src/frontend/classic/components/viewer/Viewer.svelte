@@ -9,43 +9,55 @@
         selectedItemNext,
     } from '../../stores/Stores';
 
-    export let item: IMediaContainer;
     export let mode: 'Image'| 'Video' = 'Image';
+    export let item: IMediaContainer;
+    let displayedItem:IMediaContainer;
     let currentImageIndex: number = -1;
 
-    let update: Promise<void> | undefined;
-    $: update = item?.Update();
+    let updating: Promise<void> | undefined;
+    $: refresh(item);
+    async function refresh(item:IMediaContainer){
+        updating = item.Update();
+        await updating;
+        displayedItem=item;
+    }
 
     function onPreviousItem() {
+        currentImageIndex=-1;
         $selectedItem = $selectedItemPrevious;
     }
     function onNextItem() {
+        currentImageIndex=-1;
         $selectedItem = $selectedItemNext;
     }
+    let wide=false;
 </script>
-
-<div id="Viewer" class="{mode} center">
-    {#await update}
-        <div class="loading">
+<div id="Viewer" class="{mode} center" class:wide={wide}>
+    {#await updating}
+        <div class="info loading">
             <div class="center"><Loading withOverlay={false} /></div>
             <div class="center">... items</div>
         </div>
-    {:then}
-        {#if mode === 'Image'}
-            <ImageViewer
-            {item}
-            {currentImageIndex}
-            on:nextItem={() => onNextItem()}
-            on:previousItem={() => onPreviousItem()}
-            />
-        {:else if mode === 'Video'}
-            <VideoViewer />
-        {:else}
-            Unknown mode requested
-        {/if}
     {:catch error}
-        <p class="error">Unable to load item : {error}</p>
+        <p class="info error">Unable to load item : {error.detail}</p>
     {/await}
+    {#if displayedItem}
+        {#key displayedItem}
+            {#if mode === 'Image'}
+                <ImageViewer
+                item={displayedItem}
+                {currentImageIndex}
+                bind:wide
+                on:nextItem={() => onNextItem()}
+                on:previousItem={() => onPreviousItem()}
+                />
+            {:else if mode === 'Video'}
+                <VideoViewer />
+            {:else}
+                Unknown mode requested
+            {/if}
+        {/key}
+    {/if}
 </div>
 
 <style>
@@ -60,12 +72,25 @@
         user-select: none;
         grid-area: Content;
     }
-    #Viewer .loading {
-        padding: 20em;
+    #Viewer.wide {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        position: absolute;
+        z-index: 10000;
+        -webkit-app-region: no-drag;
+        padding:0;
+        background-color: var(--cds-ui-01);
+    }
+    #Viewer .info  {
+        position: absolute;
+        z-index: 10001;
     }
     .error {
         color: red;
     }
+
     .hide {
         display: none;
     }

@@ -16,9 +16,11 @@
 
     export let item: IMediaContainer;
     export let currentImageIndex: number=-1;
+    export let wide:Boolean;
 
 	onDestroy(() => {
         document.removeEventListener('keydown', onKeyDown);
+        viewer?.removeEventListener('mousedown', onMouseDown);
 	});
 
     $: entries = item.Entries as IMediaItem[];
@@ -28,36 +30,36 @@
 
     function onKeyDown(event: KeyboardEvent) {
         switch (true) {
-            case event.code === 'ArrowUp' && !event.ctrlKey:
+            case event.code === 'ArrowUp':
                 scrollSmoothly(viewer, -64);
                 break;
-            case event.code === 'ArrowDown' && !event.ctrlKey:
+            case event.code === 'ArrowDown':
                 scrollSmoothly(viewer, 64);
                 break;
-            case event.code === 'PageUp' && !event.ctrlKey:
+            case event.code === 'PageUp':
                 viewer.scrollBy({
                     top: -window.innerHeight * 0.95,
                     left: 0,
                     behavior: 'smooth',
                 });
                 break;
-            case event.code === 'PageDown' && !event.ctrlKey:
+            case event.code === 'PageDown':
                 viewer.scrollBy({
                     top: window.innerHeight * 0.95,
                     left: 0,
                     behavior: 'smooth',
                 });
                 break;
-            case event.code === 'ArrowRight' && !event.ctrlKey:
+            case event.code === 'ArrowRight' :
                 dispatch('nextItem');
                 break;
-            case event.code === 'ArrowLeft' && !event.ctrlKey:
+            case event.code === 'ArrowLeft':
                 dispatch('previousItem');
                 break;
-            case event.key === '*' && !event.ctrlKey:
+            case event.key === '*':
                 $ViewerZoom = 100;
                 break;
-            case event.key === '/' && !event.ctrlKey:
+            case event.key === '/' :
                 ViewerZoom.reset();
                 break;
             case event.key === '+' && !event.ctrlKey:
@@ -72,10 +74,10 @@
             case event.key === '-' && event.ctrlKey:
                 ViewerPadding.decrement();
                 break;
-            case event.code === 'Escape' && !event.ctrlKey:
-                dispatch('close');
+            case event.code === 'Escape':
+                wide = false;
                 break;
-            case event.code === 'Space' && !event.ctrlKey:
+            case event.code === 'Space':
                 scrollMagic(
                     viewer,
                     '.viewerimage',
@@ -191,13 +193,12 @@
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
 
-    let displaymode : 'thumbnail' | 'wide' = 'thumbnail';
-	$: if (displaymode==='wide') {
+	$: if (wide) {
             if(currentImageIndex != -1) {
                 // delay because of smooth transition
                 setTimeout(() => {
-                    const targetScrollImage = viewer.querySelectorAll(`ImageViewer>img`)[currentImageIndex];
-                    targetScrollImage.scrollIntoView({behavior: 'smooth', inline:'center'});
+                    const targetScrollImage = viewer.querySelectorAll('ImageViewer>img')[currentImageIndex];
+                    targetScrollImage?.scrollIntoView({behavior: 'smooth', inline:'center'});
                     currentImageIndex=-1;
                 }, 200);
             }
@@ -210,9 +211,9 @@
             if(viewer) viewer.style.userSelect = 'none';
         }
 </script>
-<div id="ImageViewer" bind:this={viewer} class="{displaymode} {$ViewerModeValue} {$ViewerReverseDirectionValue ? 'reverse':''}" style="{cssVarStyles}">
-    {#if displaymode==='wide'}
-        <ImageViewerWideSettings {title} on:nextItem on:previousItem on:close={()=>displaymode='thumbnail'} />
+<div id="ImageViewer" bind:this={viewer} class="{wide?'wide':'thumbnail'} {$ViewerModeValue} {$ViewerReverseDirectionValue ? 'reverse':''}" style="{cssVarStyles}">
+    {#if wide}
+        <ImageViewerWideSettings {title} on:nextItem on:previousItem on:close={() => wide = false} />
     {/if}
     {#if entries.length === 0}
         <div class="center" style="width:100%;height:100%;">
@@ -225,11 +226,11 @@
         </div>
     {/if}
 
-    {#each entries as content, index}
-        <Image class="{displaymode}" alt="content_{index}" page={content}
-            on:click={() => {currentImageIndex = index; displaymode='wide'; }}
+    {#each entries as content, index (index)}
+        <Image class="{wide?'wide':'thumbnail'}" alt="content_{index}" page={content}
+            on:click={() => {currentImageIndex = index; wide=true; }}
         />
-    {/each}
+    {/each} 
     {#if autoNextItem && $selectedItemNext !== undefined}
         <InlineNotification
             kind="info"
@@ -243,38 +244,38 @@
 </div>
 
 <style>
-    #ImageViewer.thumbnail
-    {
+    #ImageViewer {
         width: 100%;
         height: 100%;
+    }
+    #ImageViewer.thumbnail
+    {
         overflow-y: auto;
-        text-align: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: flex-start;
     }
 
-    #ImageViewer.thumbnail :global(img) {
-        display: inline-block;
+    #ImageViewer.thumbnail :global(.imgpreview) {
         border: 2px solid var(--cds-ui-04);
         background-color: var(--cds-ui-01);
+        box-shadow: 1em 1em 2em var(--cds-ui-01);
         border-radius: 1em;
         margin: 0.5em;
         width: 16em;
         height: 16em;
+        min-width: 16em;
+        min-height:16em;
+        max-width: 16em;
+        max-height:16em;
         cursor: pointer;
-        box-shadow: 1em 1em 2em var(--cds-ui-01);
         object-fit: contain;
     }
-
     #ImageViewer.wide {
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        position: absolute;
-        overflow-y: scroll;
-        z-index: 10000;
+        overflow: auto;
         background-color: var(--cds-ui-01);
         cursor: grab;
-        width:100%;
         align-items:center;
         transition: gap 0.2s ease-in-out;
         gap: var(--viewer-padding);
@@ -284,6 +285,7 @@
     #ImageViewer.wide.longstrip {
         display: flex;
         flex-direction: column;
+        overflow-y:auto;
 
     }
     #ImageViewer.wide.paginated {
@@ -292,6 +294,7 @@
         flex-wrap: nowrap;
         align-items: center;
         height:100%;
+        overflow-x:auto;
     }
     /* TODO: implement RTL reading */
     #ImageViewer.wide.paginated.reverse {

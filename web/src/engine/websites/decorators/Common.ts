@@ -471,5 +471,9 @@ export async function GetTypedData(buffer: ArrayBuffer): Promise<Blob> {
     if (bytes[0] === 0x42 && bytes[1] === 0x4D) {
         return new Blob([bytes], { type: 'image/bmp' });
     }
+    // AVIF [00 00 00 20 66 74 79 70 61 76 69 66 ] ' ftypavif'
+    if (bytes[8] === 0x61 && bytes[9] === 0x76 && bytes[10] === 0x69 && bytes[11] === 0x66) {
+        return new Blob([bytes], { type: 'image/avif' });
+    }
     return new Blob([bytes], { type: 'application/octet-stream' });
 }
