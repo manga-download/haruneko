@@ -1,8 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './MangaJar.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, type MangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from './../FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -25,20 +24,13 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+    public override async FetchChapters(this : MangaScraper, manga: Manga): Promise<Chapter[]> {
         const chapterslist = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(page, manga);
+            const chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'ul.list-group li.chapter-item a', Common.AnchorInfoExtractor(), manga.Identifier + '/chaptersList?page=' + page);
             chapters.length > 0 ? chapterslist.push(...chapters) : run = false;
         }
         return chapterslist;
 
-    }
-
-    private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
-        const url = new URL(manga.Identifier + '/chaptersList?page='+page, this.URI).href;
-        const request = new FetchRequest(url);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.list-group li.chapter-item a');
-        return data.map(anchor => new Chapter(this, manga, anchor.pathname, anchor.text.trim()));
     }
 }
