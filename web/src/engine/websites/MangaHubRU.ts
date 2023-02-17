@@ -32,7 +32,8 @@ export default class extends DecoratableMangaScraper {
             let title = '';
             if (span2) {
                 span1.removeChild(span2);
-                title = span1.textContent.trim() + span2.textContent.trim();
+                title += span1.textContent.trim();
+                title += span2.textContent.startsWith(' - ') ? span2.textContent.trimEnd() : ' - ' + span2.textContent.trim();//make sure there is a separator
             } else {
                 title = span1.textContent.trim();
             }
