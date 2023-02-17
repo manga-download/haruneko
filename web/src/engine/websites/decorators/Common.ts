@@ -262,10 +262,9 @@ export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: s
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
- * @param path - Optional full pathname to use. Exemple : '/manga/one_piece?chaptersPage=1'. If empty, {@link manga}.Identifier is used)
  */
-export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>, path = ''): Promise<Chapter[]> {
-    const uri = path ? new URL(path, this.URI) : new URL(manga.Identifier, this.URI);
+export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
+    const uri = new URL(manga.Identifier, this.URI);
     const request = new FetchRequest(uri.href, {
         headers: {
             Referer: this.URI.href
