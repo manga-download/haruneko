@@ -6,13 +6,7 @@ import * as Common from './decorators/Common';
 const queryPages = '#imgs .wrap_img img[data-src]';
 
 const pageScript = `
-    new Promise((resolve, reject) => {
-        try {
-            resolve([ ...document.querySelectorAll('${queryPages}') ].map(element => element.dataset.src));
-        } catch(error) {
-            reject(error);
-        }
-   });
+    [ ...document.querySelectorAll('${queryPages}') ].map(element => element.dataset.src);
 `;
 
 @Common.MangaCSS(/^https?:\/\/mangakatana\.com\/manga\//, 'meta[property="og:title"]')

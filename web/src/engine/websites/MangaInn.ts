@@ -1,8 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './MangaInn.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type Manga, type MangaScraper, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from './../FetchProvider';
 
 //This website is literally a clone of MangaDoom
 
@@ -27,20 +26,13 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+    public override async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
         const mangalist = [];
         const paths = [''].concat('abcdefghijklmnopqrstuvwxyz'.split(''));
         for (const path of paths) {
-            mangalist.push(...await this.getMangasFromCategory(path, provider));
+            mangalist.push(... await Common.FetchMangasSinglePageCSS.call(this, provider, '/manga-list/' + path, 'div.content ul.manga-list li a.manga-info-qtip'));
         }
         return mangalist;
-    }
-
-    private async getMangasFromCategory(path: string, provider: MangaPlugin) {
-        const url = new URL('/manga-list/' + path, this.URI);
-        const request = new FetchRequest(url.href);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'div.content ul.manga-list li a.manga-info-qtip');
-        return data.map(element => new Manga(this, provider, element.pathname, element.text.trim()));
     }
 
 }

@@ -33,7 +33,9 @@ export default class extends DecoratableMangaScraper {
             if (span2) {
                 span1.removeChild(span2);
                 title = span1.textContent.trim() + span2.textContent.trim();
-            } else title = span1.textContent.trim();
+            } else {
+                title = span1.textContent.trim();
+            }
 
             return new Chapter(this, manga, element.pathname, title);
         });
@@ -43,7 +45,7 @@ export default class extends DecoratableMangaScraper {
         const url = new URL(chapter.Identifier, this.URI);
         const request = new FetchRequest(url.href);
         const data = await FetchCSS<HTMLElement>(request, 'reader[data-store]');
-        const jObject: APIPages = JSON.parse(data.shift().dataset['store']);
+        const jObject: APIPages = JSON.parse(data.shift().dataset.store);
         return jObject.scans.map(element => new Page(this, chapter, new URL(element.src, this.URI), { Referer: this.URI.href }));
     }
 }
