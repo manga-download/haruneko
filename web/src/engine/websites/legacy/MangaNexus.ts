@@ -1,73 +1,97 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './MangaNexus.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchJSON, FetchRequest } from '../../FetchProvider';
+
+const nextKey = '0x3KRYWgR4lD4UYPUEvIV';
+
+type JSONMangas = {
+    pageProps: {
+        mangas: {
+           items :{ id: string, name: string, slug: string } []
+        }
+    }
+}
+
+type JSONManga = {
+    pageProps: {
+        manga: { id: string, name: string, slug: string }
+        chapters: { id: string, number: string, slug: string, name: string }[]
+    }
+}
+
+type JSONChapter = {
+    pageProps: {
+        manga: { id: string, name: string, slug: string }
+        chapter: {
+            id: string, number: string, slug: string, name: string, mangaId: string,
+            pages: string[]
+        }
+    }
+}
+
+@Common.ImageDirect()
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manganexus', `MangaNexus`, 'https://manganexus.net' /*, Tags.Language.English, Tags ... */);
+        super('manganexus', `MangaNexus`, 'https://manganexus.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class MangaNexus extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'manganexus';
-        super.label = 'MangaNexus';
-        this.tags = ['manga', 'webtoon', 'portuguese'];
-        this.url = 'https://manganexus.net';
-        this.key = 'M_dDS-6KdyeTRJm-ZYL7E';
+    public override ValidateMangaURL(url: string): boolean {
+        return /https?:\/\/manganexus\.net\/manga\//.test(url);
     }
 
-    async _getMangaFromURI(uri) {
-        const id = uri.split('/').pop();
-        const url = new URL(`/_next/data/${this.key}/manga/${id}.json`, this.url);
-        const request = new Request(url, this.requestOptions);
-        const { pageProps: data } = await this.fetchJSON(request);
-        return new Manga(this, id, data.manga.name);
+    public override async FetchManga(provider: MangaPlugin, _url : string): Promise<Manga> {
+        const slug = _url.split('/').pop();
+        const url = new URL('/_next/data/' + nextKey + '/manga/' + slug + '.json?slug=' + slug, this.URI).href;
+        const request = new FetchRequest(url);
+        const data = await FetchJSON<JSONManga>(request);
+        return new Manga(this, provider, slug, data.pageProps.manga.name.trim());
     }
 
-    async _getMangas() {
-        const uri = new URL(`/_next/data/${this.key}/index.json`, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const { pageProps: data } = await this.fetchJSON(request);
-        const mangas = [...data.releases.mangas, ...data.releases.manhuas, ...data.releases.webtoons];
-        return mangas.map(manga => {
-            return {
-                id: manga.slug,
-                title: manga.name
-            };
+    public override async FetchMangas(provider: MangaPlugin) : Promise<Manga[]> {
+        const mangalist = [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this.getMangasFromPage(page, provider);
+            mangas.length > 0 ? mangalist.push(...mangas) : run = false;
+        }
+        return mangalist;
+    }
+
+    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        try {
+            const url = new URL('/_next/data/' + nextKey + '/lista-de-mangas.json?p=' + page, this.URI).href;
+            const request = new FetchRequest(url);
+            const data = await FetchJSON<JSONMangas>(request);
+            return data.pageProps.mangas.items.map(element => new Manga(this, provider, element.slug, element.name.trim()));
+        } catch (error) {
+            return [];
+        }
+
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const slug = manga.Identifier;
+        const url = new URL('/_next/data/' + nextKey + '/manga/' + slug + '.json?slug=' + slug, this.URI).href;
+        const request = new FetchRequest(url);
+        const data = await FetchJSON<JSONManga>(request);
+        return data.pageProps.chapters.map(chap => {
+            const title = `Capítulo ${chap.number}${chap.name.length != 0 ? ' - ' + chap.name : ''}`;
+            return new Chapter(this, manga, chap.slug, title);
         });
     }
 
-    async _getChapters(manga) {
-        const uri = new URL(`/_next/data/${this.key}/manga/${manga.id}.json`, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const { pageProps: data } = await this.fetchJSON(request);
-        return data.chapters.map(chapter => {
-            return {
-                id: chapter.slug,
-                title: `Capítulo ${chapter.number}${chapter.name.length != 0 ? ' - ' + chapter.name : ''}`,
-                language: '',
-            };
-        });
-    }
-
-    async _getPages(chapter) {
-        const uri = new URL(`/_next/data/${this.key}/manga/${chapter.manga.id}/capitulo/${chapter.id}.json`, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const { pageProps: data } = await this.fetchJSON(request);
-        return data.chapter.pages;
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const mangaSlug = chapter.Parent.Identifier;
+        const url = new URL('/_next/data/' + nextKey + '/manga/' + mangaSlug + '/capitulo/' + chapter.Identifier + '.json', this.URI).href;
+        const request = new FetchRequest(url);
+        const data = await FetchJSON<JSONChapter>(request);
+        return data.pageProps.chapter.pages.map(page => new Page(this, chapter, new URL(page)));
     }
 }
-*/
