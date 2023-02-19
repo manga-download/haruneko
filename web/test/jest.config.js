@@ -13,13 +13,17 @@ export default {
     moduleNameMapper: {
         '\\.(png|jpg|webp|ico|gif)$': '<rootDir>/img/mock.ts'
     },
-    globals: {
-        'ts-jest': {
-            tsconfig: {
-                allowJs: true,
-                esModuleInterop: true
+    transform: {
+        '\\.tsx?$': [
+            'ts-jest', {
+                tsconfig: {
+                    allowJs: true,
+                    esModuleInterop: true
+                }
             }
-        },
+        ]
+    },
+    globals: {
         'Request': Request
     }
 };
