@@ -1,11 +1,21 @@
-import type { PlatformIPC } from './InterProcessCommunication';
+//import type { PlatformIPC } from './InterProcessCommunication';
 
 /**
  * Inter Process Communication for Electron (main process)
  */
-export class ElectronIPC implements PlatformIPC {
+export class ElectronIPC /* implements PlatformIPC */ {
 
-    async RestartRPC(): Promise<void> {
-        // send to IPC main
+    /*
+    public async RestartRPC(): Promise<void> {
+        throw new Error();
     }
+
+    public async Foo(id: number): Promise<{ id: number, value: string }> {
+        throw new Error();
+    }
+
+    public async Bar(id: number): Promise<{ id: number, value: string }> {
+        throw new Error();
+    }
+    */
 }

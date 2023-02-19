@@ -24,7 +24,10 @@ export class HakuNeko {
 
     constructor(info?: PlatformInfo) {
         const ipc = CreatePlatformIPC();
-        setTimeout(ipc.RestartRPC, 5000);
+        setTimeout(async () => {
+            console.log('Foo Result:', await ipc.Foo(Math.random()));
+            console.log('Bar Result:', await ipc.Bar(Math.random()));
+        }, 2500);
         info = info ?? DetectPlatform();
         InitBlockList(info);
         InitFetchProvider(info);

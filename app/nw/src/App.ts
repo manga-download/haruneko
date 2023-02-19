@@ -53,7 +53,10 @@ async function OpenWindow() {
     const ipc = new IPC();
 
     // Dummy Stuff for Development
-    setTimeout(() => ipc.Send({ name: 'test', parameters: [ 123, true ] }), 15000);
+    setTimeout(async () => {
+        console.log('Foo Result:', await ipc.Foo(Math.random()));
+        console.log('Bar Result:', await ipc.Bar(Math.random()));
+    }, 7500);
 }
 
 OpenWindow();
