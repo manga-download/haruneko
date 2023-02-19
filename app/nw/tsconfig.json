@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "outDir": "./build",
         "strict": true,
         "strictFunctionTypes": false,
         "target": "ESNext",
