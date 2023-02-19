@@ -115,6 +115,8 @@
     async function onUpdateMediaEntriesClick() {
         loadPlugin = $selectedPlugin?.Update();
         await loadPlugin;
+        $selectedMedia=undefined;
+        $selectedItem=undefined;
         loadMedia($selectedPlugin);
     }
 
