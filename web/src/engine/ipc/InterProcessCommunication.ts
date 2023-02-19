@@ -18,15 +18,15 @@ type Contract<T> = {
  * Interface declaring methods that must be implemented in app context (background script).
  */
 export abstract class AppIPC implements Contract<AppIPC> {
-    abstract RestartRPC(): Promise<void>;
-    abstract Foo(id: number): Promise<{ id: number, value: string }>;
+    abstract StopRPC(): Promise<void>;
+    abstract RestartRPC(port: number, secret: string): Promise<void>;
 }
 
 /**
  * Interface declaring methods that must be implemented in web context (content script).
  */
 export abstract class WebIPC implements Contract<WebIPC> {
-    abstract Bar(id: number): Promise<{ id: number, value: string }>;
+    abstract LoadMediaContainerFromURL(url: string): Promise<void>;
 }
 
 export interface PlatformIPC extends AppIPC, WebIPC {}

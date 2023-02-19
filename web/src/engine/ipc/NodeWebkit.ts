@@ -24,18 +24,22 @@ export class NodeWebkitIPC implements PlatformIPC {
         }
     }
 
-    public async RestartRPC() {
-        console.log('Sending: RestartRPC');
-        return this.Send<void>('RestartRPC');
+    public async StopRPC() {
+        return this.Send<void>('StopRPC');
     }
 
-    public async Foo(id: number) {
-        console.log('Sending: Foo');
-        return this.Send<{ id: number, value: string }>('Foo', id);
+    public async RestartRPC(port: number, secret: string) {
+        return this.Send<void>('RestartRPC', port, secret);
     }
 
-    public async Bar(id: number) {
-        console.log('Invoking: Bar');
-        return { id, value: 'Bar!' };
+    public async LoadMediaContainerFromURL(url: string) {
+        for(const website of HakuNeko.PluginController.WebsitePlugins) {
+            const media = await website.TryGetEntry(url);
+            if(media) {
+                console.log('LoadMediaContainerFromURL() => Found:', media);
+                return;
+            }
+        }
+        console.log('LoadMediaContainerFromURL() => Found:', undefined);
     }
 }

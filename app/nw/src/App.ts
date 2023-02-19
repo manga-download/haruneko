@@ -1,7 +1,8 @@
 import * as fs from 'fs-extra';
 import yargs from 'yargs';
-import { IPC } from './ipc/InterProcessCommunication';
 import { RPCServer } from './rpc/Server';
+import { Contract } from './rpc/Contract';
+import { IPC } from './ipc/InterProcessCommunication';
 
 async function GetArgumentURL(): Promise<string|undefined> {
     try {
@@ -31,6 +32,10 @@ async function GetDefaultURL(): Promise<string|undefined> {
 }
 
 async function OpenWindow() {
+
+    const ipc = new IPC();
+    ipc.RPC = new RPCServer('/hakuneko', new Contract(ipc));
+
     const url = await GetArgumentURL() ?? await GetDefaultURL();
 
     const win = await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(url ?? 'about:blank', {
@@ -47,15 +52,6 @@ async function OpenWindow() {
     if(!url) {
         win.showDevTools();
     }
-
-    /*const rpc = */new RPCServer('/hakuneko').Listen(27544, 'Connection#Secret', [ /^(chrome-)?extension:/i ]);
-    const ipc = new IPC();
-
-    // Dummy Stuff for Development
-    setTimeout(async () => {
-        console.log('Foo Result:', await ipc.Foo(Math.random()));
-        console.log('Bar Result:', await ipc.Bar(Math.random()));
-    }, 7500);
 }
 
 OpenWindow();

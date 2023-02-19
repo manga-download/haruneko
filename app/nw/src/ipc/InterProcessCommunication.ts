@@ -1,9 +1,12 @@
 import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC } from '../../../../web/src/engine/ipc/InterProcessCommunication';
+import type { RPCServer } from '../rpc/Server';
 
 /**
  * Inter Process Communication for NodeWebkit (background page)
  */
 export class IPC implements PlatformIPC {
+
+    public RPC?: RPCServer;
 
     constructor() {
         chrome.runtime.onMessage.addListener(this.Listen.bind(this));
@@ -33,18 +36,15 @@ export class IPC implements PlatformIPC {
         }
     }
 
-    public async RestartRPC() {
-        console.log('Invoking: RestartRPC');
-        // TODO: Delay backpressure for to many consecutive invocations ...
+    public async StopRPC() {
+        return this.RPC?.Stop();
     }
 
-    public async Foo(id: number) {
-        console.log('Invoking: Foo');
-        return { id, value: 'Foo!' };
+    public async RestartRPC(port: number, secret: string) {
+        return this.RPC?.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
     }
 
-    public async Bar(id: number) {
-        console.log('Sending: Bar');
-        return this.Send<{ id: number, value: string }>('Bar', id);
+    public async LoadMediaContainerFromURL(url: string) {
+        return this.Send<void>('LoadMediaContainerFromURL', url);
     }
 }

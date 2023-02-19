@@ -23,11 +23,6 @@ export class HakuNeko {
     readonly #downloadManager: DownloadManager;
 
     constructor(info?: PlatformInfo) {
-        const ipc = CreatePlatformIPC();
-        setTimeout(async () => {
-            console.log('Foo Result:', await ipc.Foo(Math.random()));
-            console.log('Bar Result:', await ipc.Bar(Math.random()));
-        }, 2500);
         info = info ?? DetectPlatform();
         InitBlockList(info);
         InitFetchProvider(info);
@@ -41,6 +36,14 @@ export class HakuNeko {
 
     public async Initialze(): Promise<void> {
         await InitGlobalSettings(this.SettingsManager);
+        const ipc = CreatePlatformIPC();
+        if(ipc/* TODO: RPC enabled in settings? */) {
+            // TODO: Get global settings for port/secret and subscribe to changes ...
+            await ipc.RestartRPC(27544, 'Connection#Secret');
+        } else {
+            await ipc.StopRPC();
+        }
+
         // Preload bookmarks flags to show content to view
         const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;
         this.BookmarkPlugin.Entries.map(async (media) => {

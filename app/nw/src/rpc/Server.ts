@@ -2,7 +2,7 @@ import { createServer, type Server, type IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
 // NOTE: Import with absolute path to integrate this file when bundling with roll-up
 import { CreateServer, type WebSocketServer } from '../../../../node_modules/websocket-rpc/dist/server';
-import { Contract } from './Contract';
+import type { Contract } from './Contract';
 
 class AccessDeniedError extends Error {
     constructor(message?: string) {
@@ -18,12 +18,12 @@ export class RPCServer {
     private allowedOrigins: RegExp[] = [];
     private token?: string = undefined;
 
-    constructor(endpoint: string) {
+    constructor(endpoint: string, contract: Contract) {
         this.httpd = createServer()
             .on('connect', this.DestroyConnection.bind(this))
             .on('request', this.DestroyConnection.bind(this))
             .on('upgrade', this.Authorize.bind(this));
-        this.websocket = CreateServer(new Contract(), {
+        this.websocket = CreateServer(contract, {
             server: this.httpd,
             path: endpoint
         });
@@ -37,6 +37,7 @@ export class RPCServer {
 
     public async Listen(port: number, secret: string, allowedOrigins: RegExp[]) {
         // TODO: Implement locking to prevent concurrent calls ...
+        // TODO: Delay backpressure for to many consecutive invocations ...
         this.token = createHash('SHA256').update(secret).digest('hex').toUpperCase();
         this.allowedOrigins = allowedOrigins;
         await this.Stop();
