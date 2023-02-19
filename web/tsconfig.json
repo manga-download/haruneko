@@ -2,6 +2,7 @@
 {
     "compilerOptions": {
         "strict": false,
+        "strictFunctionTypes": false,
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "node",
