@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import * as fs from 'fs-extra';
 import yargs from 'yargs';
 import { IPC } from './ipc/InterProcessCommunication';
