@@ -61,7 +61,7 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
         //then treat the others either as name=value , or name only (which means name = true);
         cookie.forEach(element => {
             const keyPair = element.split('=');
-            const key = keyPair.shift().toLowerCase();
+            const key = keyPair.shift().toLowerCase().trim();//sometimes properties starts with a space
             const value = keyPair.length > 0 ? keyPair.shift() : true;
             details[key] = value;
         });
