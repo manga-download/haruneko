@@ -49,26 +49,24 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
 
     //Handle Set-Cookie header according to https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
     const cookiesHeaders = details.responseHeaders.filter(header => header.name.toLowerCase() == 'set-cookie');
-
     //Multiple Set-Cookie headers can be sent in the same response.
-    if (cookiesHeaders.length > 0) {
-        const url = new URL(details.url).origin;
-        cookiesHeaders.forEach(async header => {
-            const details: chrome.cookies.SetDetails = { url: url };
-            const cookie = header.value.split(';'); //TOKEN=3514g53df41gdf5g46d65gf3;Path=/;Secure
-            const nameValue = cookie.shift().split('='); //first element is name=value
-            details.name = nameValue.shift();
-            details.value = nameValue.shift();
-            //then treat the others either as name=value , or name only (which means name = true);
-            cookie.forEach(element => {
-                const keyPair = element.split('=');
-                const key = keyPair.shift().toLowerCase();
-                const value = keyPair.length > 0 ? keyPair.shift() : true;
-                details[key] = value;
-            });
-            chrome.cookies.set(details);
+
+    const url = new URL(details.url).origin;
+    cookiesHeaders?.forEach(async header => {
+        const details: chrome.cookies.SetDetails = { url: url };
+        const cookie = header.value.split(';'); //TOKEN=3514g53df41gdf5g46d65gf3;Path=/;Secure
+        const nameValue = cookie.shift().split('='); //first element is name=value
+        details.name = nameValue.shift();
+        details.value = nameValue.shift();
+        //then treat the others either as name=value , or name only (which means name = true);
+        cookie.forEach(element => {
+            const keyPair = element.split('=');
+            const key = keyPair.shift().toLowerCase();
+            const value = keyPair.length > 0 ? keyPair.shift() : true;
+            details[key] = value;
         });
-    }
+        chrome.cookies.set(details);
+    });
 
     return {
         // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
