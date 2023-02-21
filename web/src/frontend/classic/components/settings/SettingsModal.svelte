@@ -35,21 +35,21 @@
         <Tab label="Trackers" />
         <Tab label="Network" />
         <svelte:fragment slot="content">
-            <TabContent class="settingtab">
+            <TabContent name="setting-general" class="settingtab">
                 <SettingsViewer
-                    settings={window.HakuNeko.SettingsManager.OpenScope(Scope)}
+                    settings={[...window.HakuNeko.SettingsManager.OpenScope(Scope)]}
                 />
             </TabContent>
-            <TabContent class="settingtab">
+            <TabContent name="setting-style" class="settingtab">
                 <SettingsPanel />
             </TabContent>
-            <TabContent class="settingtab">
+            <TabContent name="setting-trackers" class="settingtab">
                 {#each [...window.HakuNeko.PluginController.InfoTrackers].filter((tracker) => [...tracker.Settings].length > 0) as tracker}
                     <h4>{tracker.Title}</h4>
-                    <SettingsViewer settings={tracker.Settings} />
+                    <SettingsViewer settings={[...tracker.Settings]} />
                 {/each}
             </TabContent>
-            <TabContent class="settingtab">
+            <TabContent name="setting-network" class="settingtab">
                 <div style="padding-bottom:2em;">
                     <Toggle
                         toggled
