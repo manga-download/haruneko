@@ -12,6 +12,16 @@ const fetchApiForbiddenHeaders = [
     'Host'
 ];
 
+//used to normalize Set-Cookies attributes keys to fit with chrome.cookies.SetDetails definition
+const setCookieAttributes = {
+    'expires': 'expirationDate',
+    'domain': 'domain' ,
+    'path': 'path',
+    'secure': 'secure' ,
+    'httponly': 'httpOnly',
+    'samesite': 'sameSite'
+};
+
 export function RevealWebRequestHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webRequest.HttpHeader[] {
     function ContainsPrefixed(headers: chrome.webRequest.HttpHeader[], header: chrome.webRequest.HttpHeader): boolean {
         const prefixed = (fetchApiSupportedPrefix + header.name).toLowerCase();
@@ -51,7 +61,7 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
     const cookiesHeaders = details.responseHeaders.filter(header => header.name.toLowerCase() == 'set-cookie');
     //Multiple Set-Cookie headers can be sent in the same response.
 
-    const url = new URL(details.url).origin;
+    const url = details.url;
     cookiesHeaders?.forEach(async header => {
         const details: chrome.cookies.SetDetails = { url: url };
         const cookie = header.value.split(';'); //TOKEN=3514g53df41gdf5g46d65gf3;Path=/;Secure
@@ -61,9 +71,11 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
         //then treat the others either as name=value , or name only (which means name = true);
         cookie.forEach(element => {
             const keyPair = element.split('=');
-            const key = keyPair.shift().toLowerCase();
-            const value = keyPair.length > 0 ? keyPair.shift() : true;
-            details[key] = value;
+            if (keyPair[0].trim().toLowerCase() in setCookieAttributes) {
+                const key = setCookieAttributes[keyPair.shift().trim().toLowerCase()];
+                const value = keyPair.length > 0 ? keyPair.shift() : true;
+                details[key] = value;
+            }
         });
         chrome.cookies.set(details);
     });
