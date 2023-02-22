@@ -75,13 +75,16 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
                 const key = setCookieAttributes[keyPair.shift().trim().toLowerCase()];
                 const value = keyPair.length > 0 ? keyPair.shift() : true;
                 details[key] = key == setCookieAttributes['expires'] ? Date.parse(String(value)) : value;
-                if (key == 'samesite' && String(value).toLowerCase() == 'none') {
-                    details[key] = 'no_restriction';
-                    //details.secure = true; TODO : Should we force secure attribute? 
+                if (key == 'samesite') {
+                    details[key] = String(value).toLowerCase() == 'none' ? details[key] = 'no_restriction' : details[key] = String(value).toLowerCase();
                 }
             }
         });
-        chrome.cookies.set(details);
+        try {
+            chrome.cookies.set(details);
+        } catch (error) {
+            console.error("Error in setcookie : " + error + details.sameSite);
+        }
     });
 
     return {
