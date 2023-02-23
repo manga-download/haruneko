@@ -179,6 +179,8 @@ export enum VariantResourceKey {
     Settings_NewContent_CheckPeriodInfo = 'Settings_NewContent_CheckPeriodInfo',
     Settings_NewContent_Notify = 'Settings_NewContent_Notify',
     Settings_NewContent_NotifyInfo = 'Settings_NewContent_NotifyInfo',
+    Settings_Global_RPCEnabled = 'Settings_Global_RPCEnabled',
+    Settings_Global_RPCEnabledInfo = 'Settings_Global_RPCEnabledInfo',
     Settings_Global_RPCPort = 'Settings_Global_RPCPort',
     Settings_Global_RPCPortInfo = 'Settings_Global_RPCPortInfo',
     Settings_Global_RPCSecret = 'Settings_Global_RPCSecret',

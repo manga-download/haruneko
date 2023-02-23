@@ -29,19 +29,33 @@ export class RPCServer {
         });
     }
 
-    public async Stop(): Promise<void> {
-        // TODO: Implement locking to prevent concurrent calls ...
+    private pendingUdpdateRPC?: NodeJS.Timeout | number;
+
+    private QueuePendingUpdateRPC(callback: () => Promise<void>) {
+        clearTimeout(this.pendingUdpdateRPC);
+        console.log('Timer Cleared:', this.pendingUdpdateRPC);
+        this.pendingUdpdateRPC = setTimeout(callback.bind(this), 2500);
+        console.log('Timer Queued:', this.pendingUdpdateRPC);
+    }
+
+    private Close(): Promise<void> {
         return new Promise<void>(resolve => this.httpd.close(() => resolve()));
         //return new Promise<void>(resolve => this.websocket.close(() => resolve()));
     }
 
+    public Stop(): void {
+        console.log('Queue: Stop');
+        this.QueuePendingUpdateRPC(this.Close.bind(this));
+    }
+
     public async Listen(port: number, secret: string, allowedOrigins: RegExp[]) {
-        // TODO: Implement locking to prevent concurrent calls ...
-        // TODO: Delay backpressure for to many consecutive invocations ...
-        this.token = createHash('SHA256').update(secret).digest('hex').toUpperCase();
-        this.allowedOrigins = allowedOrigins;
-        await this.Stop();
-        this.httpd.listen(port);
+        console.log('Queue: Listen');
+        this.QueuePendingUpdateRPC(async () => {
+            this.token = createHash('SHA256').update(secret).digest('hex').toUpperCase();
+            this.allowedOrigins = allowedOrigins;
+            await this.Close();
+            this.httpd.listen(port);
+        });
     }
 
     private DestroyConnection(request: IncomingMessage) {

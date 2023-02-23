@@ -18,6 +18,7 @@ export const enum Key {
     CheckNewContent = 'check-new-content',
     CheckNewContentPeriod = 'check-new-content-period',
     NotifyNewContent = 'notify-new-content',
+    RPCEnabled = 'RPCEnabled',
     RPCPort = 'RPCPort',
     RPCSecret = 'RPCSecret',
 }
@@ -104,6 +105,12 @@ export async function Initialize(settingsManager: SettingsManager): Promise<void
             Key.NotifyNewContent,
             R.Settings_NewContent_Notify,
             R.Settings_NewContent_NotifyInfo,
+            false
+        ),
+        new Check(
+            Key.RPCEnabled,
+            R.Settings_Global_RPCEnabled,
+            R.Settings_Global_RPCEnabledInfo,
             false
         ),
         new Numeric(

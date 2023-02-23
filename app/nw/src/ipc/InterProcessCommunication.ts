@@ -1,4 +1,4 @@
-import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC } from '../../../../web/src/engine/ipc/InterProcessCommunication';
+import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/ipc/InterProcessCommunication';
 import type { RPCServer } from '../rpc/Server';
 
 /**
@@ -44,7 +44,22 @@ export class IPC implements PlatformIPC {
         return this.RPC?.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
     }
 
+    public async SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void> {
+        //alert('SetCloudFlareBypass\n\n' + userAgent);
+        console.log('SetCloudFlareBypass', '=>', userAgent, cookies);
+        /*
+        for(const cookie of cookies) {
+            await chrome.cookies.set({ ...cookie, url: 'https://test.cloudscraper.ovh/managed' });
+        }
+        nw.Window.open('https://test.cloudscraper.ovh/managed', {
+            'user-agent': userAgent
+        } as NWJS_Helpers.WindowOpenOption);
+        */
+    }
+
     public async LoadMediaContainerFromURL(url: string) {
+        //alert('LoadMediaContainerFromURL\n\n' + url);
+        //console.log('LoadMediaContainerFromURL', '=>', url);
         return this.Send<void>('LoadMediaContainerFromURL', url);
     }
 }

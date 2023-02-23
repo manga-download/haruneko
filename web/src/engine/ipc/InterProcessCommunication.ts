@@ -1,5 +1,11 @@
 import type { JSONElement } from 'websocket-rpc/dist/types';
+import type { SettingsManager } from '../SettingsManager';
 import { NodeWebkitIPC } from './NodeWebkit';
+
+// See => chrome.cookies.Cookie
+export type TypeFromInterface<T> = {
+    [key in keyof T]: T[key];
+};
 
 export type IPCParameters = JSONElement[];
 
@@ -20,6 +26,7 @@ type Contract<T> = {
 export abstract class AppIPC implements Contract<AppIPC> {
     abstract StopRPC(): Promise<void>;
     abstract RestartRPC(port: number, secret: string): Promise<void>;
+    abstract SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void>;
 }
 
 /**
@@ -31,9 +38,9 @@ export abstract class WebIPC implements Contract<WebIPC> {
 
 export interface PlatformIPC extends AppIPC, WebIPC {}
 
-export function CreatePlatformIPC(): PlatformIPC {
+export function CreatePlatformIPC(settingsManager: SettingsManager): PlatformIPC {
     if(window.nw) {
-        return new NodeWebkitIPC();
+        return new NodeWebkitIPC(settingsManager);
     }
     /*
     if('electron' in window) {
