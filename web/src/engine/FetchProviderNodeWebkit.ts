@@ -60,7 +60,7 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
     //Handle Set-Cookie header according to https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
     const cookiesHeaders = details.responseHeaders.filter(header => header.name.toLowerCase() == 'set-cookie');
     //Multiple Set-Cookie headers can be sent in the same response.
-
+    /*
     const url = details.url;
     cookiesHeaders?.forEach(async header => {
         const details: chrome.cookies.SetDetails = { url: url };
@@ -76,7 +76,7 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
                 const value = keyPair.length > 0 ? keyPair.shift() : true;
                 details[key] = key == setCookieAttributes['expires'] ? Date.parse(String(value)) : value;
                 if (key == 'samesite') {
-                    details[key] = String(value).toLowerCase() == 'none' ? details[key] = 'no_restriction' : details[key] = String(value).toLowerCase();
+                    details[key] = String(value).trim().toLowerCase() == 'none' ? details[key] = 'no_restriction' : details[key] = String(value).toLowerCase().trim();
                 }
             }
         });
@@ -85,7 +85,7 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
         } catch (error) {
             console.error("Error in setcookie : " + error + details.sameSite);
         }
-    });
+    });/*/
 
     return {
         // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
