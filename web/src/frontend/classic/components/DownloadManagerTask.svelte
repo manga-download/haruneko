@@ -1,6 +1,6 @@
 <script lang="ts">
     //TODO: text-overflow not working
-    import { InlineLoading, ProgressBar } from 'carbon-components-svelte';
+    import { ProgressBar } from 'carbon-components-svelte';
     import { TrashCan } from 'carbon-icons-svelte';
 
     import { onMount, onDestroy } from 'svelte';
