@@ -16,7 +16,7 @@
     import Theme from './components/Theme.svelte';
     import MediaSelect from './components/MediaSelect.svelte';
     import MediaItemSelect from './components/MediaItemSelect.svelte';
-    import Jobs from './components/Jobs.svelte';
+    import Jobs from './components/DownloadManager.svelte';
     import Viewer from './components/viewer/Viewer.svelte';
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
@@ -37,7 +37,7 @@
         app.classList.add(uimode);
         // some delay for pre-rendering
         // Todo: find a way to detect if the UI is loaded
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener('DOMContentLoaded', () => {
             setTimeout(resolveFinishLoading, 2500);
         });
     });
@@ -54,7 +54,6 @@
         app.classList.remove(oldUimode);
         app.classList.add(uimode);
     }
-
 </script>
 
 <UserMessage />
@@ -66,7 +65,7 @@
         <MediaItemSelect />
         {#if uimode === 'ui-mode-content'}
             <div id="Content" transition:fade>
-                {#if $selectedItem }
+                {#if $selectedItem}
                     <Viewer item={$selectedItem} />
                 {:else if showHome}
                     <ContentPage />
@@ -74,8 +73,8 @@
             </div>
         {/if}
         <div id="Bottom" transition:fade>
-            <Accordion>
-                <AccordionItem title="Jobs">
+            <Accordion id="DownloadManager">
+                <AccordionItem title="DownloadManager">
                     <Jobs />
                 </AccordionItem>
             </Accordion>
@@ -128,9 +127,10 @@
         grid-area: Bottom;
         max-height: 20em;
     }
-
-    :global(#BottomTabs .bx--tab--content) {
-        padding: 0;
+    #Bottom :global(#DownloadManager .bx--accordion__content) {
+        padding-right: 3em;
+        background-color: var(--cds-field-01);
+        box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
     }
     :global(#Header) {
         -webkit-app-region: drag;
