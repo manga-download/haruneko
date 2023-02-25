@@ -274,7 +274,7 @@
         on:close
         hasForm
     >
-        <SettingsViewer settings={pluginToConfigure.Settings} />
+        <SettingsViewer settings={[...pluginToConfigure.Settings]} />
     </Modal>
 {/if}
 

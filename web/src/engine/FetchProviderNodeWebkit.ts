@@ -246,7 +246,7 @@ async function FetchWindow(request: FetchRequest, timeout: number, preload: Prel
     }));
 }
 
-export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay = 0, timeout?: number): Promise<T[]> {
+export async function FetchWindowCSS<T extends HTMLElement>(request: FetchRequest, query: string, delay = 0, timeout = 60_000): Promise<T[]> {
     const win = await FetchWindow(request, timeout);
     try {
         await Wait(delay);
@@ -257,7 +257,7 @@ export async function FetchWindowCSS<T extends HTMLElement>(request: FetchReques
     }
 }
 
-export async function FetchWindowScript<T>(request: FetchRequest, script: string, delay = 0, timeout?: number): Promise<T> {
+export async function FetchWindowScript<T>(request: FetchRequest, script: string, delay = 0, timeout = 60_000): Promise<T> {
     return FetchWindowPreloadScript(request, () => undefined, script, delay, timeout);
 }
 

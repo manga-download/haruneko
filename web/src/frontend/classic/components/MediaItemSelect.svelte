@@ -216,9 +216,9 @@
             'ItemList'
             'ItemCount';
         grid-area: Item;
-        overflow-x:hidden;
+        overflow-x: hidden;
         resize: horizontal;
-        min-width:19em;
+        min-width: 19em;
     }
     #LanguageFilter {
         grid-area: LanguageFilter;
@@ -231,6 +231,7 @@
     #ItemList {
         grid-area: ItemList;
         background-color: var(--cds-field-01);
+        box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
         overflow-x: hidden;
     }
     #ItemList .loading {

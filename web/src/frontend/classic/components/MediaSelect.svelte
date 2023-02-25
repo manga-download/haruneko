@@ -38,7 +38,7 @@
         fieldNormWeight: 0,
     });
     $selectedPlugin = HakuNeko.BookmarkPlugin;
-    let currentPlugin:IMediaContainer;
+    let currentPlugin: IMediaContainer;
     let loadPlugin: Promise<void>;
 
     // Todo : implement favorites
@@ -49,24 +49,25 @@
 
     orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
         return (
-            
-        // sort by favorite
+            // sort by favorite
             (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
                 (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
             //sort by string
             a.Title.localeCompare(b.Title)
         );
     });
-    pluginsCombo = [{
+    pluginsCombo = [
+        {
             id: HakuNeko.BookmarkPlugin.Identifier,
             text: '📚 Bookmarks',
         },
         ...orderedPlugins.map((plugin) => {
-        return {
-            id: plugin.Identifier,
-            text: plugin.Title,
-        };
-    })];
+            return {
+                id: plugin.Identifier,
+                text: plugin.Title,
+            };
+        }),
+    ];
 
     function pluginsComboText(item: ComboBoxItem): string {
         return pluginsFavorites.includes(item.id)
@@ -74,13 +75,13 @@
             : item.text;
     }
     $: {
-        const previousPlugin=currentPlugin;
+        const previousPlugin = currentPlugin;
         currentPlugin = $selectedPlugin;
-        if (! currentPlugin?.IsSameAs(previousPlugin)) loadMedia(currentPlugin);
+        if (!currentPlugin?.IsSameAs(previousPlugin)) loadMedia(currentPlugin);
     }
     $: pluginDropdownSelected = currentPlugin?.Identifier;
 
-    function loadMedia(media:IMediaContainer){
+    function loadMedia(media: IMediaContainer) {
         if (!media) return;
         medias = (media.Entries as IMediaContainer[]) ?? [];
         fuse = new Fuse(medias, {
@@ -115,8 +116,8 @@
     async function onUpdateMediaEntriesClick() {
         loadPlugin = $selectedPlugin?.Update();
         await loadPlugin;
-        $selectedMedia=undefined;
-        $selectedItem=undefined;
+        $selectedMedia = undefined;
+        $selectedItem = undefined;
         loadMedia($selectedPlugin);
     }
 
@@ -144,7 +145,7 @@
         }
     }
 
-    async function selectPlugin(id:string) {
+    async function selectPlugin(id: string) {
         $selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
             (plugin) => plugin.Identifier === id
         );
@@ -169,7 +170,7 @@
         <ComboBox
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
-            on:clear={()=> $selectedPlugin = undefined}
+            on:clear={() => ($selectedPlugin = undefined)}
             on:select={(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
             items={pluginsCombo}
@@ -236,9 +237,9 @@
             'MediaList'
             'MediaCount';
         grid-area: Media;
-        overflow-x:hidden;
+        overflow-x: hidden;
         resize: horizontal;
-        min-width:19em;
+        min-width: 19em;
     }
     #Plugin {
         grid-area: Plugin;
@@ -253,6 +254,7 @@
     #MediaList {
         grid-area: MediaList;
         background-color: var(--cds-field-01);
+        box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
         overflow: hidden;
         user-select: none;
     }
