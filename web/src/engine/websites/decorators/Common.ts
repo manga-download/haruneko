@@ -330,6 +330,21 @@ export function ChaptersSinglePageJS(script: string, delay = 0) {
     };
 }
 
+/**
+ * A class decorator that adds the ability to create a chapter from a manga (Same identifier, same title).
+ * This is useful when website doesnt have the notion of chapter or images are directly on chapter page (most likely for X-rated websites)
+ */
+export function ChaptersUniqueFromManga() {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
+        return class extends ctor {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+                return [new Chapter(this, manga, manga.Identifier, manga.Title)];
+            }
+        };
+    };
+}
+
+/**********************************************
 /**********************************************
  ******** Page List Extraction Methods ********
  **********************************************/
