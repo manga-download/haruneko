@@ -5,10 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 function IsImage(page: string) {
-    const link = page.toLowerCase();
-    let result = link.endsWith('.jpg') || link.endsWith('.jpeg');
-    result = result || link.endsWith('.png') || link.endsWith('.bmp') || link.endsWith('.avif') || link.endsWith('.webp') || link.endsWith('.bmp');
-    return result;
+    return ['png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp'].includes(page.toLowerCase().split('.').pop());
 }
 
 @Common.MangaCSS(/^https?:\/\/www\.mangasail\.net\/content\//, 'div.main-content-inner h1.page-header')
@@ -43,7 +40,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-        const data = await Common.FetchPagesSinglePageJS.call(this, chapter, 'Drupal.settings.showmanga.paths');
+        const data: Page[] = await Common.FetchPagesSinglePageJS.call(this, chapter, 'Drupal.settings.showmanga.paths');
         return data.filter(page => IsImage(page.Link.href)); //there may be junk element, like <div> or <script>
     }
 
