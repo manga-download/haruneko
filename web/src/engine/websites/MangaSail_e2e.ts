@@ -6,19 +6,21 @@ const config: Config = {
         title: 'MangaSail',
     },
     container: {
-        url: 'https://www.mangasail.net/content/seoul-station-necromancer',
-        id: '/content/seoul-station-necromancer',
-        title: 'Seoul Station Necromancer'
+        url: 'https://www.mangasail.net/content/rooster-fighter',
+        id: '/content/rooster-fighter',
+        title: 'Rooster Fighter',
+        //timeout: 15_000,
+
     },
     child: {
-        id: '/content/seoul-station-necromancer-82?page=all',
-        title: '82',
-        timeout: 20_000,
+        id: '/content/rooster-fighter-15?page=all',
+        title: '15',
+        timeout: 15_000,
 
     },
     entry: {
         index: 0,
-        size: 2_574_078,
+        size: 68_247,
         type: 'image/jpeg'
     }
 };

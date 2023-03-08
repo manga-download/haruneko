@@ -2,8 +2,8 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'mangasail',
-        title: 'MangaSail'
+        id: 'mangapill',
+        title: 'MangaPill'
     },
     container: {
         url: 'https://mangapill.com/manga/723/chainsaw-man',
@@ -16,8 +16,8 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 170_676,
-        type: 'image/jpeg'
+        size: 917_623,
+        type: 'image/png'
     }
 };
 

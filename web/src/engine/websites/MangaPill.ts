@@ -4,10 +4,11 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 let pathMangas = '/search?page={page}&';
-const genres = ['Action', 'Adventure', 'Cars', 'Comedy', 'Dementia', 'Demons', 'Doujinshi', 'Drama', 'Ecchi', 'Fantasy', 'Game', 'Gender Bender', 'Harem', 'Hentai'];
-genres.push(...['Historical', 'Horror', 'Isekai', 'Josei', 'Kids', 'Magic', 'Martial Arts', 'Mecha', 'Military', 'Music', 'Mystery','Parody', 'Police', 'Psychological']);
-genres.push(...['Romance', 'Samurai', 'School', 'Sci-Fi', 'Seinen', 'Shoujo', 'Shoujo Ai', 'Shounen', 'Shounen Ai', 'Slice of Life', 'Space', 'Sports', 'Super Power']);
-genres.push(...['Supernatural','Tragedy', 'Thriller', 'Vampire','Yaoi', 'Yuri']);
+const genres = ['Action', 'Adventure', 'Cars', 'Comedy', 'Dementia', 'Demons', 'Doujinshi', 'Drama', 'Ecchi', 'Fantasy', 'Game', 'Gender Bender', 'Harem', 'Hentai',
+    'Historical', 'Horror', 'Isekai', 'Josei', 'Kids', 'Magic', 'Martial Arts', 'Mecha', 'Military', 'Music', 'Mystery','Parody', 'Police', 'Psychological',
+    'Romance', 'Samurai', 'School', 'Sci-Fi', 'Seinen', 'Shoujo', 'Shoujo Ai', 'Shounen', 'Shounen Ai', 'Slice of Life', 'Space', 'Sports', 'Super Power',
+    'Supernatural', 'Tragedy', 'Thriller', 'Vampire', 'Yaoi', 'Yuri'
+];
 const search = new URLSearchParams({ 'q': '', 'type': '', 'status': ''});
 genres.forEach(genre => search.append('genre', genre));
 pathMangas += search.toString();
