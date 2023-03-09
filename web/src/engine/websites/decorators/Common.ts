@@ -61,9 +61,9 @@ export function AnchorInfoExtractor(useTitleAttribute = false, queryBloat: strin
     };
 }
 
-type ImageExtractor<E extends HTMLElement> = (this: MangaScraper, element: E) => string;
+type PageLinkExtractor<E extends HTMLElement> = (this: MangaScraper, element: E) => string;
 
-function DefaultImageExtractor<E extends HTMLImageElement>(this: MangaScraper, element: E): string {
+function DefaultPageLinkExtractor<E extends HTMLImageElement>(this: MangaScraper, element: E): string {
     return element.dataset.src || element.getAttribute('src') || ''; // TODO: Throw if none found?
 }
 
@@ -330,6 +330,21 @@ export function ChaptersSinglePageJS(script: string, delay = 0) {
     };
 }
 
+/**
+ * A class decorator that adds the ability to create a chapter from a manga (Same identifier, same title).
+ * This is useful when website doesnt have the notion of chapter or images are directly on chapter page (most likely for X-rated websites)
+ */
+export function ChaptersUniqueFromManga() {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
+        return class extends ctor {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+                return [new Chapter(this, manga, manga.Identifier, manga.Title)];
+            }
+        };
+    };
+}
+
+/**********************************************
 /**********************************************
  ******** Page List Extraction Methods ********
  **********************************************/
@@ -342,7 +357,7 @@ export function ChaptersSinglePageJS(script: string, delay = 0) {
  * @param query - A CSS query to locate the elements from which the page information shall be extracted
  * @param extract - A function to extract the page information from a single element (found with {@link query})
  */
-export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, query: string, extract = DefaultImageExtractor as ImageExtractor<E>): Promise<Page[]> {
+export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, query: string, extract = DefaultPageLinkExtractor as PageLinkExtractor<E>): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     const request = new FetchRequest(uri.href, {
         headers: {
@@ -362,11 +377,11 @@ export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: Manga
  * @param query - A CSS query to locate the elements from which the page information shall be extracted
  * @param extract - A function to extract the page information from a single element (found with {@link query})
  */
-export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract = DefaultImageExtractor as ImageExtractor<E>) {
+export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract = DefaultPageLinkExtractor as PageLinkExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageCSS.call(this, chapter, query, extract as ImageExtractor<HTMLElement>);
+                return FetchPagesSinglePageCSS.call(this, chapter, query, extract as PageLinkExtractor<HTMLElement>);
             }
         };
     };
