@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new FetchRequest(new URL('/chapter/' + chapter.Identifier, apiUrl).href);
         const data = await FetchJSON<APIChapter>(request);
-        const images = new Array(data.length).fill(0).map((page, index) => `${apiUrl}/media/${data.mangaId}/${chapter.Identifier}/${index + 1}.jpg?version=${data.version}`);
+        const images = Array.from({ length: data.length }, (_, i) => i + 1).map(index => `${apiUrl}/media/${data.mangaId}/${chapter.Identifier}/${index}.jpg?version=${data.version}`);
         return images.map(page => new Page(this, chapter, new URL(page)));
 
     }
