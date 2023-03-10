@@ -6,7 +6,7 @@ const config = {
         title: '1st Kiss Manga'
     },
     container: {
-        url: encodeURI('https://1stkissmanga.io/manga/blank。/').toLocaleLowerCase(),
+        url: encodeURI('https://1stkissmanga.me/manga/blank。/').toLocaleLowerCase(),
         id: JSON.stringify({ post: '156052', slug: encodeURI('/manga/blank。/').toLocaleLowerCase(), }),
         title: '[ blank。]'
     },
