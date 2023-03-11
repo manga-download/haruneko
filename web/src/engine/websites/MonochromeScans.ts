@@ -1,4 +1,3 @@
-@@ -0,0 +1,77 @@
 import { Tags } from '../Tags';
 import icon from './MonochromeScans.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from './../providers/MangaPlugin';
