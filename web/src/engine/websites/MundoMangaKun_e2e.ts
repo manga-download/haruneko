@@ -6,18 +6,18 @@ const config: Config = {
         title: 'Mundo Mangá-Kun'
     },
     container: {
-        url: 'https://mundomangakun.com.br/manga/a-perverts-daily-life/',
-        id: '/manga/a-perverts-daily-life/',
-        title: 'A Pervert’s Daily Life'
+        url: 'https://mundomangakun.com.br/manga/zui-wu-dao/',
+        id: '/manga/zui-wu-dao/',
+        title: 'Zui Wu Dao'
     },
     child: {
-        id: '/a-perverts-daily-life-capitulo/',
+        id: '/zui-wu-dao-capitulo-01/',
         title: 'Capítulo 01',
-        timeout : 23000
+        timeout : 13000
     },
     entry: {
         index: 1,
-        size: 1_036_204,
+        size: 833_606,
         type: 'image/jpeg'
     }
 };

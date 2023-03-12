@@ -2,7 +2,20 @@ import { Tags } from '../Tags';
 import icon from './NineHentai.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+
+const tokenScript = `
+    new Promise((resolve, reject) => {
+        const csrf = document.querySelector('meta[name="csrf-token"]').content.trim();
+        const xsrf = document.cookie.match(/XSRF-TOKEN=([\\S]+)/)[1];
+        resolve({csrf : csrf, xsrf : xsrf});
+   });
+`;
+
+type JSONTokens = {
+    csrf: string,
+    xsrf : string
+}
 
 type APIChapter = {
     status: boolean,
@@ -25,10 +38,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //First get CSRF token
-        const csrf = (await FetchCSS<HTMLMetaElement>(new FetchRequest(new URL(chapter.Identifier, this.URI).href), 'meta[name="csrf-token"]')).shift().content.trim();
-        // then get XSRFtoken from cookies
-        const XSRFtoken = await (await chrome.cookies.getAll({ url: this.URI.href })).find(cookie => cookie.name == 'XSRF-TOKEN').value;
+        const chapterurl = new URL(chapter.Identifier, this.URI).href;
+        //Get CSRF and XSRF tokens from meta tag and cookies
+        const tokens = await FetchWindowScript<JSONTokens>(new FetchRequest(chapterurl), tokenScript, 500);
+
         //Now call the API
         const url = new URL('/api/getBookByID', this.URI).href;
         const mangaid = chapter.Identifier.match(/\/g\/([\d]+)/)[1];
@@ -39,8 +52,8 @@ export default class extends DecoratableMangaScraper {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Origin': this.URI.href,
                 'Referer': new URL(chapter.Identifier, this.URI).href,
-                'X-XSRF-TOKEN': XSRFtoken,
-                'X-CRSF-TOKEN': csrf
+                'X-XSRF-TOKEN': tokens.xsrf,
+                'X-CRSF-TOKEN': tokens.csrf
             }
         });
         const data = await FetchJSON<APIChapter>(request);

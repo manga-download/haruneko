@@ -13,7 +13,6 @@ const config: Config = {
     child: {
         id: '/online/?manga=Ano+Natsu+de+Matteru&chapter=%5BNightowScans%5D+Ano+Natsu+de+Matteru+11',
         title: '11',
-        //timeout : 23000
     },
     entry: {
         index: 1,
