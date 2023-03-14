@@ -21,7 +21,7 @@ type Contract<T> = {
 }
 
 /**
- * Interface declaring methods that must be implemented in app context (background script).
+ * An interface that declares methods that must be implemented within the app context (background script / main process).
  */
 export abstract class AppIPC implements Contract<AppIPC> {
     abstract StopRPC(): Promise<void>;
@@ -30,7 +30,7 @@ export abstract class AppIPC implements Contract<AppIPC> {
 }
 
 /**
- * Interface declaring methods that must be implemented in web context (content script).
+ * An interface that declares methods that must be implemented within the web context (content script / render process).
  */
 export abstract class WebIPC implements Contract<WebIPC> {
     abstract LoadMediaContainerFromURL(url: string): Promise<void>;
@@ -45,9 +45,6 @@ export function CreatePlatformIPC(settingsManager: SettingsManager): PlatformIPC
     /*
     if('electron' in window) {
         return new ElectronIPC();
-    }
-    if(window.nw) {
-        return new BrowserIPC();
     }
     */
     // TODO: Localization ...
