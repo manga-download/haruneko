@@ -45,6 +45,9 @@
         class:active={$selectedItem?.Identifier === item?.Identifier}
         on:click
         on:contextmenu
+        on:mousedown
+        on:mouseup
+        on:mouseenter
     >
         <span
             class="download"
