@@ -123,16 +123,8 @@
             case 'mouseup':
                 multipleSelectionDragTo = filteredItems.indexOf(item);
                 if (multipleSelectionDragFrom === multipleSelectionDragTo) {
-                    console.log('simple click', item.Title);
                     onItemClick(item)(event);
                 } else {
-                    console.log(
-                        'drag to',
-                        item.Title,
-                        multipleSelectionDragFrom,
-                        multipleSelectionDragTo,
-                        event
-                    );
                     filteredItems.forEach((item, index) => {
                         // Select all items between first and last drag
                         if (
