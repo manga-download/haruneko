@@ -10,7 +10,7 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^https?:\/\/mangakatana\.com\/manga\//, 'meta[property="og:title"]')
-@Common.MangasMultiPageCSS('/manga/page/{page}?filter=1', 'div#book_list div.item div.text h3.title a', 1, 1, 1000)
+@Common.MangasMultiPageCSS('/manga/page/{page}?filter=1', 'div#book_list div.item div.text h3.title a', 1, 1, 1500)
 @Common.ChaptersSinglePageCSS('div.chapters table tbody tr td div.chapter a')
 @Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageDirect(true)
