@@ -44,10 +44,6 @@ export default class extends DecoratableMangaScraper {
         const id = new URL(url).pathname;
         return new Manga(this, provider, id, title);
     }
-    /*
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return [new Chapter(this, manga, manga.Identifier, manga.Title)];
-    }*/
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const mangaID = chapter.Identifier.match(/\/gallery\/([0-9]+)/)[1];
