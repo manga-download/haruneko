@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/pururin\.to/.test(url);
+        return /https?:\/\/pururin\.to\/gallery/.test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
             method: 'POST',
             body: JSON.stringify(params),
             headers: {
-                'x-origin': this.URI.href,
+                'x-origin': this.URI.origin,
                 'x-referer': this.URI.href,
                 'Content-Type': 'application/json;charset=UTF-8',
                 'X-Requested-With': 'XMLHttpRequest',
