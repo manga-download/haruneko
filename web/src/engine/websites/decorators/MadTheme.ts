@@ -5,7 +5,7 @@ import * as Common from './Common';
 const scriptImageLinks = `
     new Promise(resolve => {
         const images = window.chapImages.split(',');
-        resolve(images.map(image => window.mainServer + image));
+        resolve(images.map(image => window.mainServer ? window.mainServer+image : image));
     });
 `;
 
