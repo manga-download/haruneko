@@ -9,7 +9,7 @@ import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from
 const settingsKeyPrefix = 'plugin.';
 
 // See: https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
-const mimeFileExtension = {
+export const mimeFileExtension = {
     default: '.bin',
     'image/avif': '.avif',
     'image/webp': '.webp',

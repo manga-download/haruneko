@@ -1,6 +1,6 @@
 import { GetLocale } from '../../../i18n/Localization';
 import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchProvider';
-import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page, mimeFileExtension } from '../../providers/MangaPlugin';
 import type { IMediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 
@@ -435,11 +435,16 @@ export function PagesSinglePageJS(script: string, delay = 0) {
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
 export async function FetchImageDirect(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+
+    //infer accept header from filename
+    const inferedMime = Object.keys(mimeFileExtension).find(key => page.Link.href.toLowerCase().endsWith(mimeFileExtension[key]));
+
     return this.imageTaskPool.Add(async () => {
         const request = new FetchRequest(page.Link.href, {
             signal: signal,
             headers: {
-                Referer: page.Parameters?.Referer || page.Link.origin
+                Referer: page.Parameters?.Referer || page.Link.origin,
+                Accept: inferedMime ? inferedMime : '*/*'
             }
         });
         const response = await Fetch(request);
