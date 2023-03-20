@@ -28,8 +28,6 @@
     let filteredItems: IMediaContainer[] = [];
     let loadItem: Promise<void>;
     let selectedItems: IMediaContainer[] = [];
-    let multipleSelectionFrom: number = -1;
-    let multipleSelectionTo: number = -1;
 
     selectedItem.subscribe((item: IMediaContainer) => {
         const position = filteredItems.indexOf(item);
@@ -37,7 +35,41 @@
         $selectedItemNext = filteredItems[position - 1];
     });
 
-    async function onItemClick(item: IMediaContainer, event: any) {
+    const onItemView = (item: IMediaContainer) => (event: any) => {
+        selectedItems.push(item);
+        $selectedItem = item;
+    };
+
+    selectedMedia.subscribe(async (value) => {
+        items = [];
+        selectedItems = [];
+        loadItem = value?.Update().then(() => {
+            items = (value?.Entries as IMediaContainer[]) ?? [];
+        });
+    });
+
+    let itemNameFilter = '';
+    $: filteredItems = items?.filter((item) => {
+        return (
+            item.Parent?.Title.toLowerCase().indexOf(
+                itemNameFilter.toLowerCase()
+            ) !== -1
+        );
+    });
+
+    let itemsdiv: HTMLElement;
+
+    /*
+     * Multi Item Selection
+     * CTRL + click = individual add to selected list
+     * SHIFT + click = sequencial group add from last click
+     * Drag = multiple select from first mousedown
+     */
+
+    let multipleSelectionFrom: number = -1;
+    let multipleSelectionTo: number = -1;
+
+    const onItemClick = (item: IMediaContainer) => (event: any) => {
         if (event.shiftKey) {
             //range mode
             if (multipleSelectionFrom === -1) {
@@ -72,31 +104,54 @@
             multipleSelectionTo = multipleSelectionFrom;
             selectedItems = [item];
         }
-    }
+    };
 
-    function onItemView(item: IMediaContainer) {
-        selectedItems.push(item);
-        $selectedItem = item;
-    }
+    let multipleSelectionDragFrom: number = -1;
+    let multipleSelectionDragTo: number = -1;
+    let selectedDragItems: IMediaContainer[] = [];
 
-    selectedMedia.subscribe(async (value) => {
-        items = [];
-        selectedItems = [];
-        loadItem = value?.Update().then(() => {
-            items = (value?.Entries as IMediaContainer[]) ?? [];
-        });
-    });
+    const mouseHandler = (item: IMediaContainer) => (event: any) => {
+        switch (event.type) {
+            case 'mousedown':
+                multipleSelectionDragFrom = filteredItems.indexOf(item);
+                multipleSelectionDragTo = -1;
+                selectedDragItems = [];
+                break;
+            case 'mouseenter':
+                multipleSelectionDragTo = filteredItems.indexOf(item);
+                break;
+            case 'mouseup':
+                multipleSelectionDragTo = filteredItems.indexOf(item);
+                if (multipleSelectionDragFrom === multipleSelectionDragTo) {
+                    onItemClick(item)(event);
+                } else {
+                    filteredItems.forEach((item, index) => {
+                        // Select all items between first and last drag
+                        if (
+                            (index >= multipleSelectionDragFrom &&
+                                index <= multipleSelectionDragTo) ||
+                            (index >= multipleSelectionDragTo &&
+                                index <= multipleSelectionDragFrom)
+                        )
+                            selectedDragItems.push(item);
+                    });
 
-    let itemNameFilter = '';
-    $: filteredItems = items?.filter((item) => {
-        return (
-            item.Parent?.Title.toLowerCase().indexOf(
-                itemNameFilter.toLowerCase()
-            ) !== -1
-        );
-    });
-
-    let itemsdiv: HTMLElement;
+                    if (event.shiftKey || event.ctrlKey) {
+                        // Merge & dedupe
+                        selectedItems = [
+                            ...new Set([
+                                ...selectedItems,
+                                ...selectedDragItems,
+                            ]),
+                        ];
+                    } else {
+                        selectedItems = selectedDragItems;
+                    }
+                    selectedDragItems = [];
+                }
+                break;
+        }
+    };
 </script>
 
 <ContextMenu target={[itemsdiv]}>
@@ -186,13 +241,15 @@
                 <div>... items</div>
             </div>
         {:then}
-            {#each filteredItems as item}
+            {#each filteredItems as item (item.Identifier)}
                 <MediaItem
                     {item}
                     selected={selectedItems.includes(item)}
-                    on:view={() => onItemView(item)}
-                    on:click={(e) => onItemClick(item, e)}
-                    on:contextmenu={(e) => onItemClick(item, e)}
+                    on:view={onItemView(item)}
+                    on:contextmenu={onItemClick(item)}
+                    on:mousedown={mouseHandler(item)}
+                    on:mouseup={mouseHandler(item)}
+                    on:mouseenter={mouseHandler(item)}
                 />
             {/each}
         {/await}
