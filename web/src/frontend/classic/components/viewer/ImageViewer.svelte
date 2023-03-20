@@ -4,24 +4,33 @@
     // UI
     import { InlineNotification } from 'carbon-components-svelte';
     // engine
-    import type { IMediaContainer,IMediaItem } from '../../../../engine/providers/MediaPlugin';
+    import type {
+        IMediaContainer,
+        IMediaItem,
+    } from '../../../../engine/providers/MediaPlugin';
     // svelte component
     import ImageViewerWideSettings from './ImageViewerWideSettings.svelte';
     import Image from './Image.svelte';
     // stores
-    import { Key, ViewerModeValue, ViewerPadding, ViewerZoom, ViewerReverseDirectionValue } from '../../stores/Settings';
+    import {
+        Key,
+        ViewerMode,
+        ViewerPadding,
+        ViewerZoom,
+        ViewerReverseDirection,
+    } from '../../stores/Settings';
     import { selectedItemNext } from '../../stores/Stores';
     // others
     import { scrollSmoothly, scrollMagic } from './utilities';
 
     export let item: IMediaContainer;
-    export let currentImageIndex: number=-1;
-    export let wide:Boolean;
+    export let currentImageIndex: number = -1;
+    export let wide: Boolean;
 
-	onDestroy(() => {
+    onDestroy(() => {
         document.removeEventListener('keydown', onKeyDown);
         viewer?.removeEventListener('mousedown', onMouseDown);
-	});
+    });
 
     $: entries = item.Entries as IMediaItem[];
 
@@ -50,7 +59,7 @@
                     behavior: 'smooth',
                 });
                 break;
-            case event.code === 'ArrowRight' :
+            case event.code === 'ArrowRight':
                 dispatch('nextItem');
                 break;
             case event.code === 'ArrowLeft':
@@ -59,7 +68,7 @@
             case event.key === '*':
                 $ViewerZoom = 100;
                 break;
-            case event.key === '/' :
+            case event.key === '/':
                 ViewerZoom.reset();
                 break;
             case event.key === '+' && !event.ctrlKey:
@@ -90,8 +99,8 @@
         }
     }
 
-    let previousOffset = { x : 0, y : 0 };
-    let previousSize = { width : 0, height : 0 };
+    let previousOffset = { x: 0, y: 0 };
+    let previousSize = { width: 0, height: 0 };
 
     /**
      *
@@ -110,18 +119,22 @@
     }
 
     const zoomObserver = new ResizeObserver(function () {
-        switch ($ViewerModeValue){
-            case Key.ViewerMode_Longstrip : {
+        switch ($ViewerMode) {
+            case Key.ViewerMode_Longstrip: {
                 viewer.scrollTo({
-                    top: viewer.scrollHeight * (previousOffset.y/ previousSize.height),
-                    behavior: 'smooth'
+                    top:
+                        viewer.scrollHeight *
+                        (previousOffset.y / previousSize.height),
+                    behavior: 'smooth',
                 });
                 break;
             }
             case Key.ViewerMode_Paginated: {
                 viewer.scrollTo({
-                    left: viewer.scrollWidth * (previousOffset.x/ previousSize.width),
-                    behavior: 'smooth'
+                    left:
+                        viewer.scrollWidth *
+                        (previousOffset.x / previousSize.width),
+                    behavior: 'smooth',
                 });
                 break;
             }
@@ -129,8 +142,11 @@
     });
 
     function observeZoom() {
-        previousOffset = { x : viewer.scrollTop, y : viewer.scrollLeft };
-        previousSize = { width: viewer.scrollWidth, height : viewer.scrollHeight };
+        previousOffset = { x: viewer.scrollTop, y: viewer.scrollLeft };
+        previousSize = {
+            width: viewer.scrollWidth,
+            height: viewer.scrollHeight,
+        };
         zoomObserver.disconnect();
         // We observe the size of all children to detect the full container scrollHeight change
         for (var i = 0; i < viewer.children.length; i++) {
@@ -152,7 +168,6 @@
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
     function onMouseDown(e: MouseEvent) {
-        
         viewer.style.cursor = 'grabbing';
         viewer.style.userSelect = 'none';
         pos = {
@@ -186,34 +201,52 @@
         viewer.style.removeProperty('user-select');
     };
 
-	$: cssvars = {
-		'viewer-padding': `${$ViewerPadding}em`,
-	};
+    $: cssvars = {
+        'viewer-padding': `${$ViewerPadding}em`,
+    };
     $: cssVarStyles = Object.entries(cssvars)
-		.map(([key, value]) => `--${key}:${value}`)
-		.join(';');
+        .map(([key, value]) => `--${key}:${value}`)
+        .join(';');
 
-	$: if (wide) {
-            if(currentImageIndex != -1) {
-                // delay because of smooth transition
-                setTimeout(() => {
-                    const targetScrollImage = viewer.querySelectorAll('ImageViewer>img')[currentImageIndex];
-                    targetScrollImage?.scrollIntoView({behavior: 'smooth', inline:'center'});
-                    currentImageIndex=-1;
-                }, 200);
-            }
-            document.addEventListener('keydown', onKeyDown);
-            viewer?.addEventListener('mousedown', onMouseDown); 
+    $: if (wide) {
+        if (currentImageIndex != -1) {
+            // delay because of smooth transition
+            setTimeout(() => {
+                const targetScrollImage =
+                    viewer.querySelectorAll('ImageViewer>img')[
+                        currentImageIndex
+                    ];
+                targetScrollImage?.scrollIntoView({
+                    behavior: 'smooth',
+                    inline: 'center',
+                });
+                currentImageIndex = -1;
+            }, 200);
         }
-        else {
-            document.removeEventListener('keydown', onKeyDown);
-            viewer?.removeEventListener('mousedown', onMouseDown);
-            if(viewer) viewer.style.userSelect = 'none';
-        }
+        document.addEventListener('keydown', onKeyDown);
+        viewer?.addEventListener('mousedown', onMouseDown);
+    } else {
+        document.removeEventListener('keydown', onKeyDown);
+        viewer?.removeEventListener('mousedown', onMouseDown);
+        if (viewer) viewer.style.userSelect = 'none';
+    }
 </script>
-<div id="ImageViewer" bind:this={viewer} class="{wide?'wide':'thumbnail'} {$ViewerModeValue} {$ViewerReverseDirectionValue ? 'reverse':''}" style="{cssVarStyles}">
+
+<div
+    id="ImageViewer"
+    bind:this={viewer}
+    class="{wide ? 'wide' : 'thumbnail'} {$ViewerMode} {$ViewerReverseDirection
+        ? 'reverse'
+        : ''}"
+    style={cssVarStyles}
+>
     {#if wide}
-        <ImageViewerWideSettings {title} on:nextItem on:previousItem on:close={() => wide = false} />
+        <ImageViewerWideSettings
+            {title}
+            on:nextItem
+            on:previousItem
+            on:close={() => (wide = false)}
+        />
     {/if}
     {#if entries.length === 0}
         <div class="center" style="width:100%;height:100%;">
@@ -227,10 +260,16 @@
     {/if}
 
     {#each entries as content, index (index)}
-        <Image class="{wide?'wide':'thumbnail'}" alt="content_{index}" page={content}
-            on:click={() => {currentImageIndex = index; wide=true; }}
+        <Image
+            class={wide ? 'wide' : 'thumbnail'}
+            alt="content_{index}"
+            page={content}
+            on:click={() => {
+                currentImageIndex = index;
+                wide = true;
+            }}
         />
-    {/each} 
+    {/each}
     {#if autoNextItem && $selectedItemNext !== undefined}
         <InlineNotification
             kind="info"
@@ -248,8 +287,7 @@
         width: 100%;
         height: 100%;
     }
-    #ImageViewer.thumbnail
-    {
+    #ImageViewer.thumbnail {
         overflow-y: auto;
         display: flex;
         flex-wrap: wrap;
@@ -266,9 +304,9 @@
         width: 16em;
         height: 16em;
         min-width: 16em;
-        min-height:16em;
+        min-height: 16em;
         max-width: 16em;
-        max-height:16em;
+        max-height: 16em;
         cursor: pointer;
         object-fit: contain;
     }
@@ -276,7 +314,7 @@
         overflow: auto;
         background-color: var(--cds-ui-01);
         cursor: grab;
-        align-items:center;
+        align-items: center;
         transition: gap 0.2s ease-in-out;
         gap: var(--viewer-padding);
         min-width: 0;
@@ -285,16 +323,15 @@
     #ImageViewer.wide.longstrip {
         display: flex;
         flex-direction: column;
-        overflow-y:auto;
-
+        overflow-y: auto;
     }
     #ImageViewer.wide.paginated {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         align-items: center;
-        height:100%;
-        overflow-x:auto;
+        height: 100%;
+        overflow-x: auto;
     }
     /* TODO: implement RTL reading */
     #ImageViewer.wide.paginated.reverse {

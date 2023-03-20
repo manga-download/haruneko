@@ -22,7 +22,7 @@
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
     // UI: Stores
-    import { ContentPanelValue, ThemeValue } from './stores/Settings';
+    import { ContentPanel, Theme as ThemeSetting } from './stores/Settings';
     import { selectedItem } from './stores/Stores';
 
     let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
@@ -44,7 +44,7 @@
 
     let showHome = true;
 
-    $: uimode = $ContentPanelValue ? 'ui-mode-content' : 'ui-mode-download';
+    $: uimode = $ContentPanel ? 'ui-mode-content' : 'ui-mode-download';
 
     $: if (app) {
         const oldUimode =
@@ -58,7 +58,7 @@
 
 <UserMessage />
 
-<Theme theme={$ThemeValue}>
+<Theme theme={$ThemeSetting}>
     <AppBar on:home={() => ($selectedItem = null)} />
     <Content id="hakunekoapp">
         <MediaSelect />

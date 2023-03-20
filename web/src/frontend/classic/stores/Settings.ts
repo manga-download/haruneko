@@ -1,8 +1,9 @@
-import { type Readable, readable, writable, derived } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { type ILocale, VariantResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
-import { Check, Choice, type IValue, type Setting } from '../../../engine/SettingsManager';
+import { Check, Choice} from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
+import { CreateCountStore, CreateWritableStore, GetEngineSetting } from './Helpers';
 
 const scope = 'frontend.classic';
 
@@ -36,26 +37,15 @@ export const enum Key {
 
 export async function Initialize(): Promise<void> {
     const settings = HakuNeko.SettingsManager.OpenScope(scope);
-    await settings.Initialize(Theme, ContentPanel, ViewerMode, ViewerReverseDirection, ViewerDoublePage);
+    await settings.Initialize(Theme.setting, ContentPanel.setting, ViewerMode.setting, ViewerReverseDirection.setting, ViewerDoublePage.setting);
     HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).ValueChanged.Subscribe(() => Locale.set(GetLocale()));
 }
 
-/**
- * Create a readable svelte store that is coupled with the given setting
- * and updated whenever the value of the underlying setting is changed.
- */
-function CreateStore<T extends IValue>(setting: Setting<T>): Readable<T> {
-    return readable<T>(setting.Default, set => {
-        set(setting.Value); // => don't forget to assign current setting value to store
-        const callback = (_: typeof setting, value: T) => set(value);
-        setting.ValueChanged.Subscribe(callback);
-        return () => setting.ValueChanged.Unsubscribe(callback);
-    });
-}
+// Available Settings
 
 export const Locale = writable<ILocale>(GetLocale());
 
-export const Theme = new Choice(
+export const Theme= CreateWritableStore<string>(new Choice(
     Key.Theme,
     R.Frontend_Classic_Settings_Theme,
     R.Frontend_Classic_Settings_ThemeInfo,
@@ -66,67 +56,53 @@ export const Theme = new Choice(
     { key: Key.Theme_Gray90, label: R.Frontend_Classic_Settings_Theme_CarbonG90 },
     { key: Key.Theme_Gray100, label: R.Frontend_Classic_Settings_Theme_CarbonG100 },
     { key: Key.Theme_SheepyNeko, label: R.Frontend_Classic_Settings_Theme_SheepyNeko },
-);
-export const ThemeValue = CreateStore(Theme);
+));
 
-export const ContentPanel = new Check(
+export const ContentPanel = CreateWritableStore<boolean>(new Check(
     Key.ContentPanel,
     R.Frontend_Classic_Settings_ContentPanel,
     R.Frontend_Classic_Settings_ContentPanelInfo,
     true
-);
-export const ContentPanelValue = CreateStore(ContentPanel);
-export const FuzzySearch = new Check(
+));
+
+export const FuzzySearch= CreateWritableStore<boolean>(new Check(
     Key.FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearchInfo,
     true
-);
-export const FuzzySearchValue = CreateStore(FuzzySearch);
+));
 
-export const ViewerMode = new Choice(
+export const ViewerMode = CreateWritableStore<string>(new Choice(
     Key.ViewerMode,
     R.Frontend_Classic_Settings_ViewerMode,
     R.Frontend_Classic_Settings_ViewerModeInfo,
     Key.ViewerMode_Paginated,
     { key: Key.ViewerMode_Paginated, label: R.Frontend_Classic_Settings_ViewerMode_Paginated },
     { key: Key.ViewerMode_Longstrip, label: R.Frontend_Classic_Settings_ViewerMode_Longstrip },
-);
-export const ViewerModeValue = CreateStore(ViewerMode);
+));
 
-export const ViewerReverseDirection = new Check(
+export const ViewerReverseDirection = CreateWritableStore<boolean>( new Check(
     Key.ViewerReverseDirection,
     R.Frontend_Classic_Settings_ViewerReverseDirection,
     R.Frontend_Classic_Settings_ViewerReverseDirectionInfo,
     false
-);
-export const ViewerReverseDirectionValue = CreateStore(ViewerReverseDirection);
+));
 
-export const ViewerDoublePage = new Check(
+export const ViewerDoublePage = CreateWritableStore<boolean>(new Check(
     Key.ViewerDoublePage,
     R.Frontend_Classic_Settings_ViewerDoublePage,
     R.Frontend_Classic_Settings_ViewerDoublePageInfo,
     false
-);
-export const ViewerDoublePageValue = CreateStore(ViewerDoublePage);
+));
+
+export const checkNewContent = GetEngineSetting<boolean>(GlobalKey.CheckNewContent);
 
 // Non persistant settings
 /** Viewer **/
-function createCount(initialValue:number, increment:number,minimum = -Infinity, maximum = Infinity) {
-    const { subscribe, set, update } = writable(initialValue);
 
-    return {
-        subscribe,
-        set,
-        increment: () => update(n => n + increment <= maximum ? n + increment : n),
-        decrement: () => update(n => n - increment >= minimum ? n - increment : n),
-        reset: () => set(initialValue)
-    };
-}
-
-export const ViewerZoom = createCount(0,10,-100,100);
+export const ViewerZoom = CreateCountStore(0,10,-100,100);
 export const ViewerZoomRatio = derived(
     ViewerZoom,
     $ViewerZoom => (100 + $ViewerZoom) / 100
 );
-export const ViewerPadding = createCount(2,0.5,0);
+export const ViewerPadding = CreateCountStore(2, 0.5, 0);
