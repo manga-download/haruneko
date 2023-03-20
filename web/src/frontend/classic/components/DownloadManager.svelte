@@ -44,8 +44,10 @@
         {#each Object.entries(groupedJobs) as [media, mediajobs] (media)}
             <ExpandableTile>
                 <div slot="above">
-                    {mediajobs[0].Media.Parent.Parent.Title}
-                    - {mediajobs[0].Media.Parent.Title}
+                    <h6>
+                        {mediajobs[0].Media.Parent.Title} [{mediajobs[0].Media
+                            .Parent.Parent.Title}]
+                    </h6>
                 </div>
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div slot="below">
@@ -64,5 +66,6 @@
     #jobs {
         height: 100%;
         width: 100%;
+        overflow-y: scroll;
     }
 </style>
