@@ -45,12 +45,13 @@ export class IPC implements PlatformIPC {
     }
 
     public async SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void> {
-        //alert('SetCloudFlareBypass\n\n' + userAgent);
-        console.log('SetCloudFlareBypass', '=>', userAgent, cookies);
-        /*
+        // TODO: Update default user-agent?
+        // Seems only way to globally set UserAgent (all tabs, navigator.userAgent, request headers) is by command line => restart required
+        //chrome.debugger.
         for(const cookie of cookies) {
-            await chrome.cookies.set({ ...cookie, url: 'https://test.cloudscraper.ovh/managed' });
+            await chrome.cookies.set({ ...cookie, url: `https://${cookie.domain}${cookie.path}` });
         }
+        /*
         nw.Window.open('https://test.cloudscraper.ovh/managed', {
             'user-agent': userAgent
         } as NWJS_Helpers.WindowOpenOption);
