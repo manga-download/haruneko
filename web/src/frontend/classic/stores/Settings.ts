@@ -3,7 +3,7 @@ import { type ILocale, VariantResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
 import { Check, Choice} from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
-import { CreateCountStore, CreateWritableStore, GetEngineSetting } from './Helpers';
+import { CreateCountStore, CreateSettingStore, CreateExistingSettingStore } from './Helpers';
 
 const scope = 'frontend.classic';
 
@@ -45,7 +45,7 @@ export async function Initialize(): Promise<void> {
 
 export const Locale = writable<ILocale>(GetLocale());
 
-export const Theme= CreateWritableStore<string>(new Choice(
+export const Theme= CreateSettingStore<string>(new Choice(
     Key.Theme,
     R.Frontend_Classic_Settings_Theme,
     R.Frontend_Classic_Settings_ThemeInfo,
@@ -58,21 +58,21 @@ export const Theme= CreateWritableStore<string>(new Choice(
     { key: Key.Theme_SheepyNeko, label: R.Frontend_Classic_Settings_Theme_SheepyNeko },
 ));
 
-export const ContentPanel = CreateWritableStore<boolean>(new Check(
+export const ContentPanel = CreateSettingStore<boolean>(new Check(
     Key.ContentPanel,
     R.Frontend_Classic_Settings_ContentPanel,
     R.Frontend_Classic_Settings_ContentPanelInfo,
     true
 ));
 
-export const FuzzySearch= CreateWritableStore<boolean>(new Check(
+export const FuzzySearch= CreateSettingStore<boolean>(new Check(
     Key.FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearchInfo,
     true
 ));
 
-export const ViewerMode = CreateWritableStore<string>(new Choice(
+export const ViewerMode = CreateSettingStore<string>(new Choice(
     Key.ViewerMode,
     R.Frontend_Classic_Settings_ViewerMode,
     R.Frontend_Classic_Settings_ViewerModeInfo,
@@ -81,21 +81,21 @@ export const ViewerMode = CreateWritableStore<string>(new Choice(
     { key: Key.ViewerMode_Longstrip, label: R.Frontend_Classic_Settings_ViewerMode_Longstrip },
 ));
 
-export const ViewerReverseDirection = CreateWritableStore<boolean>( new Check(
+export const ViewerReverseDirection = CreateSettingStore<boolean>( new Check(
     Key.ViewerReverseDirection,
     R.Frontend_Classic_Settings_ViewerReverseDirection,
     R.Frontend_Classic_Settings_ViewerReverseDirectionInfo,
     false
 ));
 
-export const ViewerDoublePage = CreateWritableStore<boolean>(new Check(
+export const ViewerDoublePage = CreateSettingStore<boolean>(new Check(
     Key.ViewerDoublePage,
     R.Frontend_Classic_Settings_ViewerDoublePage,
     R.Frontend_Classic_Settings_ViewerDoublePageInfo,
     false
 ));
 
-export const checkNewContent = GetEngineSetting<boolean>(GlobalKey.CheckNewContent);
+export const checkNewContent = CreateExistingSettingStore<boolean>(GlobalKey.CheckNewContent);
 
 // Non persistant settings
 /** Viewer **/
