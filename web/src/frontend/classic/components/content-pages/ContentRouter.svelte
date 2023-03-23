@@ -1,6 +1,7 @@
 <script>
     import { Router, Route } from 'svelte-navigator';
 
+    import Bookmarks from './Bookmarks.svelte';
     import Home from './Home.svelte';
     import HowTo from './HowTo.svelte';
     import Ukraine from './Ukraine.svelte';
@@ -16,6 +17,9 @@
         <Route>
             <Home />
         </Route>
+        <Route path="bookmarks">
+            <Bookmarks />
+        </Route>
         <Route path="howto">
             <HowTo />
         </Route>
@@ -28,3 +32,13 @@
         </Route>
     </main>
 </Router>
+
+<style>
+    header {
+        height: 2.2em;
+    }
+    main {
+        height: calc(100% - 2.2em);
+        overflow-y: auto;
+    }
+</style>

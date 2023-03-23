@@ -4,7 +4,11 @@
     import BookmarkAdd from 'carbon-icons-svelte/lib/BookmarkAdd.svelte';
 
     import { EventWatcher } from '../stores/Events';
-    import { selectedPlugin, selectedMedia, selectedItem } from '../stores/Stores';
+    import {
+        selectedPlugin,
+        selectedMedia,
+        selectedItem,
+    } from '../stores/Stores';
 
     import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
 
@@ -12,6 +16,9 @@
 
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Check } from '../../../engine/SettingsManager';
+
+    import { useNavigate } from 'svelte-navigator';
+    const navigate = useNavigate();
 
     const settings = HakuNeko.SettingsManager.OpenScope();
     let checkNewContent = settings.Get<Check>(GlobalKey.CheckNewContent).Value;
@@ -47,7 +54,7 @@
 
 {#if checkNewContent}
     <Tile id="Suggestions" class="border">
-        <ClickableTile id="Continue" light>
+        <ClickableTile id="Continue" on:click={() => navigate('/bookmarks')}>
             <h4 style="text-align:center;">
                 Continue
                 <BookmarkAdd size={24} />
@@ -92,9 +99,7 @@
         grid-gap: 0.5em;
         overflow: hidden;
     }
-    :global(#Suggestions #Continue) {
-        background-color: var(--cds-background);
-    }
+
     :global(#Suggestions .suggesttile) {
         padding: 0;
     }
