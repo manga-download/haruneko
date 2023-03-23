@@ -4,8 +4,8 @@ import type { Key } from '../../../engine/SettingsGlobal';
 
 const globalsettings = HakuNeko.SettingsManager.OpenScope();
 
-interface SettingStore<T extends IValue> extends Writable<T> {
-    setting: Setting<IValue>,
+interface SettingStore<V extends IValue, S extends Setting<V>> extends Writable<V> {
+    setting: S,
     reset() : void
 }
 
@@ -14,16 +14,16 @@ interface SettingStore<T extends IValue> extends Writable<T> {
  * and updated whenever the value of the underlying setting is changed.
  * @param setting - a specific setting of the frontend
  */
-export function CreateSettingStore<T extends IValue>(setting:Setting<T>) : SettingStore<T> {
+export function CreateSettingStore<V extends IValue, S extends Setting<V>>(setting: S) : SettingStore<V,S> {
     const { subscribe, set, update } = writable(setting.Default);
 
     setting.ValueChanged.Subscribe(
-        (_: typeof setting, value: T) => set(value)
+        (_: typeof setting, value: V) => set(value)
     );
     return {
         subscribe,
         update,
-        set: (value: T) => { setting.Value = value; set(value); },
+        set: (value: V) => { setting.Value = value; set(value); },
         reset: () => { setting.Value = setting.Default; set(setting.Default); },
         setting : setting
     };
@@ -34,10 +34,10 @@ export function CreateSettingStore<T extends IValue>(setting:Setting<T>) : Setti
  * and updated whenever the value of the underlying setting is changed.
  * @param settingKey - an existing key (created in the engine)
  */
-export function CreateExistingSettingStore<T extends IValue>(settingKey: Key) : SettingStore<T> {
-    const setting: Setting<T> = globalsettings.Get(settingKey);
+export function CreateExistingSettingStore<V extends IValue, S extends Setting<V>>(settingKey: Key) : SettingStore<V,S> {
+    const setting: S = globalsettings.Get(settingKey);
     if (!setting) throw new Error(`Setting ${settingKey} does not exists`);
-    return CreateSettingStore<T>(setting);
+    return CreateSettingStore<V,S>(setting);
 }
 
 interface SettingCountStore extends Writable<number> {
@@ -52,9 +52,9 @@ interface SettingCountStore extends Writable<number> {
  * @param initialValue - value on creation
  * @param increment - step size when incrementing/decrementing
  * @param minimum - lowest value
- * @param maximum - highesrt value
+ * @param maximum - highest value
  */
-export function CreateCountStore(initialValue:number, increment:number,minimum = -Infinity, maximum = Infinity) : SettingCountStore {
+export function CreateCountStore(initialValue: number, increment: number,minimum = -Infinity, maximum = Infinity) : SettingCountStore {
     const { subscribe, set, update } = writable(initialValue);
 
     return {

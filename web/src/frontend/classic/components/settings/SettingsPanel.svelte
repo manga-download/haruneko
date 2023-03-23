@@ -11,10 +11,6 @@
         ViewerMode,
         ViewerReverseDirection,
     } from '../../stores/Settings';
-    import type { Choice } from '../../../../engine/SettingsManager';
-
-    const ThemeSetting = Theme.setting as Choice;
-    const ViewModeSetting = ViewerMode.setting as Choice;
 </script>
 
 <SettingItem
@@ -29,7 +25,7 @@
     helperText={$Locale[Theme.setting.Description]()}
 >
     <Select bind:selected={$Theme}>
-        {#each ThemeSetting.Options as option}
+        {#each Theme.setting.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
         {/each}
     </Select>
@@ -40,7 +36,7 @@
     helperText={$Locale[ViewerMode.setting.Description]()}
 >
     <Select bind:selected={$ViewerMode}>
-        {#each ViewModeSetting.Options as option}
+        {#each ViewerMode.setting.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
         {/each}
     </Select>
