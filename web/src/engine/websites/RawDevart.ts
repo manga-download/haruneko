@@ -4,17 +4,6 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 
-function generateKey(): string {
-    const anonkey = String('anon_______y____').split('').map(e => '_' === e ? function () {
-        let t = '';
-        const r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const n = r.length;
-        for (let o = 0; o < 1; o++) t += r.charAt(Math.floor(Math.random() * n));
-        return t;
-    }() : e).join('');
-    return anonkey;
-}
-
 const apiUrl = 'https://api.endevart.com/api/';
 
 type JSONManga = {
@@ -36,6 +25,17 @@ type JSONPages = {
 
 export default class extends DecoratableMangaScraper {
 
+    private generateKey(): string {
+        const anonkey = String('anon_______y____').split('').map(e => '_' === e ? function () {
+            let t = '';
+            const r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const n = r.length;
+            for (let o = 0; o < 1; o++) t += r.charAt(Math.floor(Math.random() * n));
+            return t;
+        }() : e).join('');
+        return anonkey;
+    }
+
     public constructor() {
         super('rawdevart', `RawDevart`, 'https://endevart.com', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
@@ -44,24 +44,24 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    private generateRequest(url: string, key: string): FetchRequest {
+    private generateRequest(url: string): FetchRequest {
         return new FetchRequest(url, {
             headers: {
                 'Referer': this.URI.href,
                 'Origin': this.URI.href,
-                'X-ReadAuth': key,
+                'X-ReadAuth': this.generateKey(),
             }
         });
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/endevart\.com\/comic\//.test(url);
+        return /https?:\/\/endevart\.com\/comic\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, _url: string): Promise<Manga> {
         const id = _url.split('/').pop();
         const url = new URL(`/api/comic/${id}/`, apiUrl).href;
-        const request = this.generateRequest(url, generateKey());
+        const request = this.generateRequest(url);
         const data = await FetchJSON<JSONManga>(request);
         return new Manga(this, provider, data.id, data.title.trim());
     }
@@ -69,29 +69,29 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider, generateKey());
+            const mangas = await this.getMangasFromPage(page, provider);
             mangas.length > 0 ? mangalist.push(...mangas) : run = false;
         }
         return mangalist;
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin, anonkey : string): Promise<Manga[]> {
-        const url = new URL(`/api/comic/?page_size=300&page=${page}`, apiUrl).href; // 300 is slow enough, wont use more per page
-        const request = this.generateRequest(url, anonkey);
+    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const url = new URL(`/api/comic/?page_size=50&page=${page}`, apiUrl).href; // 50 only and maybe less, website gives timeout
+        const request = this.generateRequest(url);
         const data = await FetchJSON<JSONMangas>(request);
         return data.results? data.results.map(element => new Manga(this, provider, element.id, element.title.trim())) : [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/api/chapter/?page_size=9999&comic=${manga.Identifier}&page=1`, apiUrl).href;
-        const request = this.generateRequest(url, generateKey());
+        const request = this.generateRequest(url);
         const data = await FetchJSON<JSONChapters>(request);
         return data.results ? data.results.map(element => new Chapter(this, manga, element.id, element.cstr_full.trim())) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(`/api/chapter/${chapter.Identifier}/?page_size=1000&fields=pages,pages.id,pages.order_number,pages.image_height,pages.image_width,pages.image&expand=pages`, apiUrl).href;
-        const request = this.generateRequest(url, generateKey());
+        const request = this.generateRequest(url);
         const data = await FetchJSON<JSONPages>(request);
         return data.pages.map(element => new Page(this, chapter, new URL(element.image)));
     }
