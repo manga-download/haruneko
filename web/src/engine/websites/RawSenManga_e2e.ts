@@ -16,8 +16,8 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 300_977,
-        type: 'image/jpeg' //In browser we get WEBP, in Haru JPEG because HARU use Accept : */* in headers, and not Accept : image/webp.
+        size: 122_414,
+        type: 'image/webp'
     }
 };
 
