@@ -9,6 +9,7 @@ const patterns = [
     '*://*.doubleclick.net/*',
     '*://*.onesignal.com/*',
     '*://*.ospicalad.buzz/*',
+    '*://*.papayads.net/*',
     '*://*.sentry.io/*',
     '*://*.yandex.ru/*.js',
     '*://*/js/ads*',
@@ -20,8 +21,7 @@ const patterns = [
     '*://crunchyscan.fr/node_modules/devtools-detect/*',
     '*://owewary.com/*',
     '*://pickupfaxmultitude.com/*',
-    '*://tumultmarten.com/*',
-    '*://*.papayads.net/*'
+    '*://tumultmarten.com/*'
 ];
 
 export function Initialize(info?: PlatformInfo): void {
