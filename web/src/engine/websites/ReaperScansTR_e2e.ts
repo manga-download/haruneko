@@ -4,7 +4,6 @@ const config: Config = {
     plugin: {
         id: 'reaperscanstr',
         title: 'Reaper Scans (Turkish)',
-        //timeout: 60000
     },
     container: {
         url: 'https://reaperscanstr.com/seri/hyper-luck/',
