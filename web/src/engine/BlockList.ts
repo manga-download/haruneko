@@ -21,7 +21,7 @@ const patterns = [
     '*://crunchyscan.fr/node_modules/devtools-detect/*',
     '*://owewary.com/*',
     '*://pickupfaxmultitude.com/*',
-    '*://tumultmarten.com/*'
+    '*://tumultmarten.com/*',
 ];
 
 export function Initialize(info?: PlatformInfo): void {
