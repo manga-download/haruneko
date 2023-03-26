@@ -21,6 +21,7 @@ const patterns = [
     '*://owewary.com/*',
     '*://pickupfaxmultitude.com/*',
     '*://tumultmarten.com/*',
+    '*://*papayads.net/*'
 ];
 
 export function Initialize(info?: PlatformInfo): void {
