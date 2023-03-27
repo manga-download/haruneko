@@ -35,7 +35,7 @@
         $selectedItemNext = filteredItems[position - 1];
     });
 
-    const onItemView = (item: IMediaContainer) => (event: any) => {
+    const onItemView = (item: IMediaContainer) => (_event: any) => {
         selectedItems.push(item);
         $selectedItem = item;
     };

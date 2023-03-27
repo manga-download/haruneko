@@ -41,6 +41,7 @@
         <ProgressBar
             labelText={job.Media.Title}
             status={StatusIcons[job.Status]}
+            size="sm"
             {value}
         />
     </div>
@@ -59,11 +60,20 @@
     .task {
         display: grid;
         grid-template-columns: 1fr 2em;
-        overflow: hidden;
+        width: 100%;
+    }
+    .task .progress :global(.bx--progress-bar) {
+        width: 100%;
+        max-width: 30em;
     }
     .task .progress :global(.bx--progress-bar__label) {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        padding-left: 2em;
+    }
+    .task .progress :global(.bx--progress-bar__label svg) {
+        left: 0;
+        position: absolute;
     }
 </style>

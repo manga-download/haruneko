@@ -23,7 +23,7 @@
         selectedMedia,
         selectedItem,
     } from '../stores/Stores';
-    import { FuzzySearchValue } from '../stores/Settings';
+    import { FuzzySearch } from '../stores/Settings';
     // Hakuneko Engine
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import type { IMediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
@@ -94,7 +94,7 @@
     }
 
     function filterMedia(mediaNameFilter: string): IMediaContainer[] {
-        if ($FuzzySearchValue)
+        if ($FuzzySearch)
             return fuse.search(mediaNameFilter).map((item) => item.item);
         else
             return medias.filter((item) =>

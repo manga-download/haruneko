@@ -3,89 +3,64 @@
     import SettingItem from './SettingItem.svelte';
     import {
         ContentPanel,
-        ContentPanelValue,
         Key,
         Locale,
         FuzzySearch,
-        FuzzySearchValue,
         Theme,
-        ThemeValue,
         ViewerDoublePage,
-        ViewerDoublePageValue,
         ViewerMode,
-        ViewerModeValue,
         ViewerReverseDirection,
-        ViewerReverseDirectionValue,
     } from '../../stores/Settings';
 </script>
 
 <SettingItem
-    labelText={$Locale[ContentPanel.Label]()}
-    helperText={$Locale[ContentPanel.Description]()}
+    labelText={$Locale[ContentPanel.setting.Label]()}
+    helperText={$Locale[ContentPanel.setting.Description]()}
 >
-    <Toggle
-        toggled={$ContentPanelValue}
-        on:toggle={(evt) => (ContentPanel.Value = evt.detail.toggled)}
-    />
+    <Toggle bind:toggled={$ContentPanel} />
 </SettingItem>
 
 <SettingItem
-    labelText={$Locale[Theme.Label]()}
-    helperText={$Locale[Theme.Description]()}
+    labelText={$Locale[Theme.setting.Label]()}
+    helperText={$Locale[Theme.setting.Description]()}
 >
-    <Select
-        selected={$ThemeValue}
-        on:update={(evt) => (Theme.Value = evt.detail.toString())}
-    >
-        {#each Theme.Options as option}
+    <Select bind:selected={$Theme}>
+        {#each Theme.setting.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
         {/each}
     </Select>
 </SettingItem>
 
 <SettingItem
-    labelText={$Locale[ViewerMode.Label]()}
-    helperText={$Locale[ViewerMode.Description]()}
+    labelText={$Locale[ViewerMode.setting.Label]()}
+    helperText={$Locale[ViewerMode.setting.Description]()}
 >
-    <Select
-        selected={$ViewerModeValue}
-        on:update={(evt) => (ViewerMode.Value = evt.detail.toString())}
-    >
-        {#each ViewerMode.Options as option}
+    <Select bind:selected={$ViewerMode}>
+        {#each ViewerMode.setting.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
         {/each}
     </Select>
 </SettingItem>
 
-{#if $ViewerModeValue === Key.ViewerMode_Paginated}
+{#if $ViewerMode === Key.ViewerMode_Paginated}
     <SettingItem
-        labelText={$Locale[ViewerReverseDirection.Label]()}
-        helperText={$Locale[ViewerReverseDirection.Description]()}
+        labelText={$Locale[ViewerReverseDirection.setting.Label]()}
+        helperText={$Locale[ViewerReverseDirection.setting.Description]()}
     >
-        <Toggle
-            toggled={$ViewerReverseDirectionValue}
-            on:toggle={(evt) =>
-                (ViewerReverseDirection.Value = evt.detail.toggled)}
-        />
+        <Toggle bind:toggled={$ViewerReverseDirection} />
     </SettingItem>
 
     <SettingItem
-        labelText={$Locale[ViewerDoublePage.Label]()}
-        helperText={$Locale[ViewerDoublePage.Description]()}
+        labelText={$Locale[ViewerDoublePage.setting.Label]()}
+        helperText={$Locale[ViewerDoublePage.setting.Description]()}
     >
-        <Toggle
-            toggled={$ViewerDoublePageValue}
-            on:toggle={(evt) => (ViewerDoublePage.Value = evt.detail.toggled)}
-        />
+        <Toggle bind:toggled={$ViewerDoublePage} />
     </SettingItem>
 {/if}
 
 <SettingItem
-    labelText={$Locale[FuzzySearch.Label]()}
-    helperText={$Locale[FuzzySearch.Description]()}
+    labelText={$Locale[FuzzySearch.setting.Label]()}
+    helperText={$Locale[FuzzySearch.setting.Description]()}
 >
-    <Toggle
-        toggled={$FuzzySearchValue}
-        on:toggle={(evt) => (FuzzySearch.Value = evt.detail.toggled)}
-    />
+    <Toggle bind:toggled={$FuzzySearch} />
 </SettingItem>

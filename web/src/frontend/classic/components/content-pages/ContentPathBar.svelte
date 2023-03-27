@@ -12,25 +12,26 @@
 <div id="contentpathbar">
     <Breadcrumb noTrailingSlash>
         <BreadcrumbItem isCurrentPage={path === '/'}>
-            <Link class="contentpath" to="/">Hakuneko</Link>
+            <Link class="contentpath" to="/"><h5>Hakuneko</h5></Link>
         </BreadcrumbItem>
         {#if path !== '/'}
             {#each steps as step, index}
-                    <BreadcrumbItem isCurrentPage={index === steps.length - 1}>
-                        <Link
-                            class="contentpath"
-                            to={path
-                                .split('/')
-                                .slice(0, index + 2)
-                                .join('/')}
-                        >
-                            {step.charAt(0).toUpperCase() + step.slice(1)}
-                        </Link>
-                    </BreadcrumbItem>
-            {/each} 
+                <BreadcrumbItem isCurrentPage={index === steps.length - 1}>
+                    <Link
+                        class="contentpath"
+                        to={path
+                            .split('/')
+                            .slice(0, index + 2)
+                            .join('/')}
+                    >
+                        <h5>{step.charAt(0).toUpperCase() + step.slice(1)}</h5>
+                    </Link>
+                </BreadcrumbItem>
+            {/each}
         {/if}
     </Breadcrumb>
 </div>
+
 <style>
     #contentpathbar :global(.contentpath) {
         color: var(--cds-text-01);
