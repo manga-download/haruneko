@@ -21,6 +21,7 @@
         "jest-junit": "^15.0.0",
         "jest-mock-extended": "^3.0.1",
         "jsdom": "^21.1.0",
+        "node-fetch": "^3.3.1",
         "puppeteer-core": "^16.2.0",
         "ts-jest": "^29.0.5",
         "ts-node": "^10.9.1",
