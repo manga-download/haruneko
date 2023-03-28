@@ -1,21 +1,23 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
     import {
+        Button,
+        ClickableTile,
         ContextMenu,
         ContextMenuDivider,
         ContextMenuOption,
     } from 'carbon-components-svelte';
-    import { PlayFilled } from 'carbon-icons-svelte';
+    import { Star, StarFilled, PlayFilled } from 'carbon-icons-svelte';
     import { selectedMedia } from '../stores/Stores';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
     export let media: IMediaContainer;
-    let selected: Boolean = false;
+    let selected: boolean = false;
     $: selected = $selectedMedia?.IsSameAs(media);
 
     //Bookmarks
-    let isBookmarked: Boolean = false;
+    let isBookmarked: boolean = false;
     $: isBookmarked = HakuNeko.BookmarkPlugin.isBookmarked(media);
     async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
@@ -61,45 +63,82 @@
     <ContextMenuDivider />
 </ContextMenu>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div
-    bind:this={mediadiv}
-    class="media"
-    in:fade
-    class:selected
-    on:click={() => ($selectedMedia = media)}
->
-    {#if isBookmarked}<span transition:fade class="bookmark">⭐</span>{/if}
-    <span title={media.Title} class="title">{media.Title}</span>
-    {#if unFlaggedItems.length > 0}<PlayFilled class="continue" />{/if}
+
+<div bind:this={mediadiv} class="media" in:fade class:selected>
+    {#if isBookmarked}
+        <Button
+            class="bookmarked"
+            size="small"
+            kind="ghost"
+            icon={StarFilled}
+            tooltipPosition="right"
+            tooltipAlignment="end"
+            iconDescription="Remove from bookmarks"
+            on:click={toggleBookmark}
+        />
+    {:else}
+        <Button
+            size="small"
+            kind="ghost"
+            icon={Star}
+            tooltipPosition="right"
+            tooltipAlignment="end"
+            iconDescription="Add to bookmarks"
+            on:click={toggleBookmark}
+        />
+    {/if}
+    <ClickableTile
+        class="title"
+        on:click={(e) => {
+            e.preventDefault();
+            $selectedMedia = media;
+        }}
+    >
+        <span title={media.Title}>{media.Title}</span>
+    </ClickableTile>
+    {#if unFlaggedItems.length > 0}
+        <Button
+            icon={PlayFilled}
+            kind="ghost"
+            size="small"
+            on:click={(e) => {
+                e.preventDefault();
+                $selectedMedia = media;
+            }}
+        />
+    {/if}
 </div>
 
 <style>
     .media {
-        padding-top: 2px;
-        padding-bottom: 2px;
-        cursor: pointer;
-        overflow: hidden;
         display: flex;
+        user-select: none;
     }
     .media:hover {
-        background-color: var(--cds-hover-ui);
+        background-color: var(--cds-hover-row);
+        --cds-ui-01: var(--cds-hover-row);
     }
     .media.selected {
-        background-color: var(--cds-active-ui);
+        background-color: var(--cds-selected-ui);
+        --cds-ui-01: var(--cds-selected-ui);
     }
-    .bookmark {
-        flex: initial;
-        display: inline-block;
-    }
-    .title {
+    .media :global(.title) {
         flex: auto;
-        white-space: nowrap;
         overflow: hidden;
+        white-space: nowrap;
         text-overflow: ellipsis;
+        min-height: unset;
+        display: flex;
+        align-items: center;
+        padding: 0;
     }
-    .media :global(.continue) {
-        flex: initial;
-        flex-shrink: 0;
-        color: var(--cds-interactive-01);
+    .media :global(button) {
+        min-height: unset;
+    }
+    .media :global(button.bookmarked) {
+        --cds-icon-01: var(--cds-support-03);
+    }
+    .media :global(button:hover) {
+        --cds-icon-01: var(--cds-hover-secondary);
     }
 </style>

@@ -165,6 +165,15 @@
 <div id="Media" transition:fade>
     <div id="MediaTitle">
         <h5>Media List</h5>
+        <Button
+            icon={CopyLink}
+            size="small"
+            kind="ghost"
+            tooltipPosition="right"
+            tooltipAlignment="center"
+            iconDescription="Paste media link"
+            on:click={onClipboardPaste}
+        />
     </div>
     <div id="Plugin">
         <ComboBox
@@ -190,14 +199,6 @@
 
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
-        <Button
-            icon={CopyLink}
-            size="small"
-            tooltipPosition="bottom"
-            tooltipAlignment="center"
-            iconDescription="Paste media link"
-            on:click={onClipboardPaste}
-        />
     </div>
     <div id="MediaList" class="list">
         {#await loadPlugin}

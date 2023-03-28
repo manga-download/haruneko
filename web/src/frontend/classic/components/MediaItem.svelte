@@ -4,6 +4,13 @@
 
     const dispatch = createEventDispatcher();
     import {
+        Button,
+        ClickableTile,
+        //ContextMenu,
+        //ContextMenuDivider,
+        //ContextMenuOption,
+    } from 'carbon-components-svelte';
+    import {
         BookmarkFilled as IconBookmarkFilled,
         View,
         ViewFilled,
@@ -16,8 +23,12 @@
 
     export let item: IMediaContainer;
     export let selected: boolean;
-    export let display = 'Row';
     let flag: FlagType;
+    const flagiconmap = new Map<FlagType, any>([
+        [FlagType.Viewed, ViewFilled],
+        [FlagType.Current, IconBookmarkFilled],
+    ]);
+    $: flagicon = flagiconmap.get(flag) || View;
 
     async function OnFlagChangedCallback(
         changedItem: IMediaContainer,
@@ -36,58 +47,83 @@
     });
 </script>
 
-{#if display === 'Row'}
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div
-        class="listitem"
-        in:fade
-        class:selected
-        class:active={$selectedItem?.Identifier === item?.Identifier}
-        on:click
-        on:contextmenu
-        on:mousedown
-        on:mouseup
-        on:mouseenter
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div
+    class="listitem"
+    in:fade
+    class:selected
+    class:active={$selectedItem?.Identifier === item?.Identifier}
+    on:click
+    on:contextmenu
+    on:mousedown
+    on:mouseup
+    on:mouseenter
+>
+    <Button
+        size="small"
+        kind="ghost"
+        icon={CloudDownload}
+        tooltipPosition="right"
+        tooltipAlignment="end"
+        iconDescription="Download"
+        on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
+    />
+    <Button
+        size="small"
+        kind="ghost"
+        icon={flagicon}
+        tooltipPosition="right"
+        tooltipAlignment="end"
+        iconDescription="View"
+        on:click={() => dispatch('view', item)}
+    />
+    <ClickableTile
+        class="title"
+        on:click={(e) => {
+            e.preventDefault();
+            dispatch('view', item);
+        }}
     >
-        <span
-            class="download"
-            on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
-            ><CloudDownload class="download" /></span
-        >
-        <span class="view" on:click={() => dispatch('view', item)}>
-            {#if flag === FlagType.Viewed}
-                <ViewFilled />
-            {:else if flag === FlagType.Current}
-                <IconBookmarkFilled />
-            {:else}
-                <View />
-            {/if}
-        </span>
         <span title={item.Title}>{item.Title}</span>
-    </div>
-{/if}
+    </ClickableTile>
+</div>
 
 <style>
     .listitem {
-        cursor: pointer;
+        display: flex;
         user-select: none;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
     }
     .listitem:hover {
         background-color: var(--cds-hover-row);
+        --cds-ui-01: var(--cds-hover-row);
     }
     .listitem.selected {
         background-color: var(--cds-selected-ui);
+        --cds-ui-01: var(--cds-selected-ui);
     }
     .listitem.active {
         background-color: var(--cds-active-ui);
+        --cds-ui-01: var(--cds-active-ui);
     }
-    .listitem .view:hover {
-        color: var(--cds-hover-ui);
+    .listitem :global(.title) {
+        flex: auto;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        min-height: unset;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        padding-left: 0.5em;
     }
-    .listitem .download:hover {
-        color: var(--cds-hover-ui);
+    .listitem :global(button) {
+        min-height: unset;
+        width: unset;
+        min-width: unset;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .listitem :global(button:hover) {
+        --cds-icon-01: var(--cds-hover-secondary);
     }
 </style>
