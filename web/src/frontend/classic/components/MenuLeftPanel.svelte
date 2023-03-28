@@ -36,6 +36,7 @@
         selectedMedia,
         selectedItem,
     } from '../stores/Stores';
+    import { SidenavTrail, SidenavIconsOnTop } from '../stores/Settings';
     export let isOpen: boolean;
 
     //Settings Modal
@@ -54,23 +55,25 @@
     bind:isModalOpen={isSettingsModalOpen}
     selectedTab={settingsSelectedTabs}
 />
-<SideNav bind:isOpen rail expansionBreakpoint={100000}>
+<SideNav bind:isOpen rail={$SidenavTrail} expansionBreakpoint={100000}>
     <span class="menuleftpanel">
         <SideNavItems>
-            <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Home()}
-                icon={Home}
-                on:click={() => dispatch('home')}
-            />
-            <SideNavLink
-                text={'Bookmarks'}
-                icon={Bookmark}
-                on:click={() => {
-                    $selectedPlugin=window.HakuNeko.BookmarkPlugin;
-                    $selectedMedia=undefined;
-                    $selectedItem=undefined;
-                }}
-            />
+            {#if !$SidenavIconsOnTop}
+                <SideNavLink
+                    text={$Locale.Frontend_Classic_Sidenav_Home()}
+                    icon={Home}
+                    on:click={() => dispatch('home')}
+                />
+                <SideNavLink
+                    text={'Bookmarks'}
+                    icon={Bookmark}
+                    on:click={() => {
+                        $selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                        $selectedMedia = undefined;
+                        $selectedItem = undefined;
+                    }}
+                />
+            {/if}
             <SideNavLink
                 text={$Locale.Frontend_Plugins()}
                 icon={PlugFilled}
