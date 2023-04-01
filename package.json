@@ -22,7 +22,7 @@
         "jest-mock-extended": "^3.0.4",
         "jsdom": "^21.1.1",
         "node-fetch": "^3.3.1",
-        "puppeteer-core": "^16.2.0",
+        "puppeteer-core": "^19.8.1",
         "ts-jest": "^29.0.5",
         "ts-node": "^10.9.1",
         "tslib": "^2.5.0",
