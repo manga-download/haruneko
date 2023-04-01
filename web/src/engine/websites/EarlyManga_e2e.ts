@@ -7,11 +7,11 @@ const config: Config = {
     },
     container: {
         url: 'https://earlym.org/manga/3104/i-took-over-the-demonic-ancestor',
-        id: '{\"id\":3104,\"slug\":\"i-took-over-the-demonic-ancestor\"}',
+        id: '{"id":3104,"slug":"i-took-over-the-demonic-ancestor"}',
         title: 'I Took Over the Demonic Ancestor'
     },
     child: {
-        id: '{\"id\":303732,\"slug\":\"44\"}',
+        id: '{"id":303732,"slug":"44"}',
         title: 'Chapter 44'
     },
     entry: {
