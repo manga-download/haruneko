@@ -40,6 +40,7 @@
     $selectedPlugin = HakuNeko.BookmarkPlugin;
     let currentPlugin: IMediaContainer;
     let loadPlugin: Promise<void>;
+    let disablePluginRefresh = false;
 
     // Todo : implement favorites
     let pluginsFavorites = ['sheep-scanlations'];
@@ -77,7 +78,9 @@
     $: {
         const previousPlugin = currentPlugin;
         currentPlugin = $selectedPlugin;
-        if (!currentPlugin?.IsSameAs(previousPlugin)) loadMedia(currentPlugin);
+        if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
+            loadMedia(currentPlugin);
+        if (disablePluginRefresh) disablePluginRefresh = false;
     }
     $: pluginDropdownSelected = currentPlugin?.Identifier;
 
@@ -129,13 +132,15 @@
                     link
                 )) as IMediaContainer;
                 if (media) {
+                    $selectedItem = undefined;
                     if (!$selectedPlugin?.IsSameAs(media.Parent)) {
+                        disablePluginRefresh = true;
                         $selectedPlugin = media.Parent;
                     }
                     if (!$selectedMedia?.IsSameAs(media)) {
                         $selectedMedia = media;
+                        medias = [media];
                     }
-                    $selectedItem = undefined;
                     return;
                 }
             }
@@ -211,6 +216,7 @@
                 <Media
                     media={item}
                     on:select={(e) => {
+                        console.log('selectMedia', e.detail);
                         $selectedMedia = e.detail;
                     }}
                 />
