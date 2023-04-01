@@ -1,16 +1,32 @@
 <script lang="ts">
     import {
+        Button,
         Header,
         HeaderUtilities,
         HeaderAction,
         HeaderGlobalAction,
         SkipToContent,
     } from 'carbon-components-svelte';
-    import { Checkbox, Close, Copy, Subtract } from 'carbon-icons-svelte';
+    import {
+        Bookmark,
+        Checkbox,
+        Close,
+        Copy,
+        Home,
+        Subtract,
+    } from 'carbon-icons-svelte';
     import MenuLeftPanel from './MenuLeftPanel.svelte';
-    import { WindowController } from '../stores/Stores';
+
+    import {
+        selectedPlugin,
+        selectedMedia,
+        selectedItem,
+        WindowController,
+    } from '../stores/Stores';
     import SettingsPanel from './settings/SettingsPanel.svelte';
-    import { Locale } from '../stores/Settings';
+    import { Locale, SidenavIconsOnTop } from '../stores/Settings';
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
 
     let isSideNavOpen: boolean = false;
 
@@ -46,10 +62,40 @@
     id="Header"
     expandedByDefault={false}
     persistentHamburgerMenu={true}
-    company={$Locale.Frontend_Product_Title()}
-    platformName={$Locale.Frontend_Product_Description()}
     bind:isSideNavOpen
 >
+    <div slot="platform">
+        {#if $SidenavIconsOnTop}
+            <Button
+                class="clickable"
+                icon={Home}
+                iconDescription={$Locale.Frontend_Classic_Sidenav_Home()}
+                kind="ghost"
+                tooltipPosition="bottom"
+                tooltipAlignment="center"
+                on:click={() => dispatch('home')}
+            />
+            <Button
+                class="clickable"
+                icon={Bookmark}
+                iconDescription={'Bookmarks'}
+                kind="ghost"
+                tooltipPosition="bottom"
+                tooltipAlignment="center"
+                on:click={() => {
+                    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                    $selectedMedia = undefined;
+                    $selectedItem = undefined;
+                }}
+            />
+        {/if}
+        <div id="AppTitle" class:padding-left={$SidenavIconsOnTop}>
+            {$Locale.Frontend_Product_Title()}
+            <span class="appdesc">{$Locale.Frontend_Product_Description()}</span
+            >
+        </div>
+    </div>
+
     <div slot="skip-to-content">
         <SkipToContent />
     </div>
@@ -81,3 +127,27 @@
 </Header>
 
 <MenuLeftPanel bind:isOpen={isSideNavOpen} on:home />
+
+<style>
+    :global(#Header) {
+        padding-left: 0;
+    }
+    div[slot='platform'] :global(.clickable) {
+        -webkit-app-region: no-drag;
+    }
+    div[slot='platform'] :global(button) {
+        padding-right: 0.2em;
+        padding-left: 0.2em;
+    }
+    #AppTitle:global(.padding-left) {
+        padding-left: 1em;
+    }
+    #AppTitle .appdesc {
+        font-weight: var(--cds-body-short-01-font-weight, 400);
+        padding-left: 1em;
+    }
+    div[slot='platform'] {
+        display: flex;
+        align-items: center;
+    }
+</style>

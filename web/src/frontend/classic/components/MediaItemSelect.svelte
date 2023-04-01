@@ -264,7 +264,7 @@
         display: grid;
         min-height: 0;
         height: 100%;
-        grid-template-rows: 2.2em 2em 2em 1fr 2em;
+        grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
             'ItemTitle'

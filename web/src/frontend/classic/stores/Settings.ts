@@ -23,6 +23,8 @@ export const enum Key {
     Theme_SheepyNeko = 'sheepyneko',
     //
     ContentPanel = 'content-panel',
+    SidenavTrail = 'sidenav-trail',
+    SidenavIconsOnTop = 'sidenav-icons-on-top',
     //
     FuzzySearch ='fuzzy-search',
     //
@@ -63,6 +65,20 @@ export const ContentPanel = CreateSettingStore<boolean,Check>(new Check(
     R.Frontend_Classic_Settings_ContentPanel,
     R.Frontend_Classic_Settings_ContentPanelInfo,
     true
+));
+
+export const SidenavTrail = CreateSettingStore<boolean,Check>(new Check(
+    Key.SidenavTrail,
+    R.Frontend_Classic_Settings_SidenavTrail,
+    R.Frontend_Classic_Settings_SidenavTrailInfo,
+    true
+));
+
+export const SidenavIconsOnTop = CreateSettingStore<boolean,Check>(new Check(
+    Key.SidenavIconsOnTop,
+    R.Frontend_Classic_Settings_SidenavIconsOnTop,
+    R.Frontend_Classic_Settings_SidenavIconsOnTopInfo,
+    false
 ));
 
 export const FuzzySearch= CreateSettingStore<boolean,Check>(new Check(

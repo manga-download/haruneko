@@ -12,6 +12,8 @@
     // Svelte
     import { fade } from 'svelte/transition';
     import { onMount } from 'svelte';
+    import { navigate } from 'svelte-navigator';
+
     // UI: Components
     import Theme from './components/Theme.svelte';
     import MediaSelect from './components/MediaSelect.svelte';
@@ -59,7 +61,12 @@
 <UserMessage />
 
 <Theme theme={$ThemeSetting}>
-    <AppBar on:home={() => ($selectedItem = null)} />
+    <AppBar
+        on:home={() => {
+            $selectedItem = null;
+            navigate('/');
+        }}
+    />
     <Content id="hakunekoapp">
         <MediaSelect />
         <MediaItemSelect />
