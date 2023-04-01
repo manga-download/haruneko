@@ -216,7 +216,6 @@
                 <Media
                     media={item}
                     on:select={(e) => {
-                        console.log('selectMedia', e.detail);
                         $selectedMedia = e.detail;
                     }}
                 />
