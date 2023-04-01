@@ -6,17 +6,17 @@ const config: Config = {
         title: 'EarlyManga'
     },
     container: {
-        url: 'https://earlym.org/manga/i-took-over-the-demonic-ancestor',
-        id: '/manga/i-took-over-the-demonic-ancestor',
+        url: 'https://earlym.org/manga/3104/i-took-over-the-demonic-ancestor',
+        id: '{"id":3104,"slug":"i-took-over-the-demonic-ancestor"}',
         title: 'I Took Over the Demonic Ancestor'
     },
     child: {
-        id: '/manga/i-took-over-the-demonic-ancestor/chapter-35',
-        title: 'Chapter 35'
+        id: '{"id":303732,"slug":"44"}',
+        title: 'Chapter 44'
     },
     entry: {
         index: 0,
-        size: 256_982,
+        size: 141_396,
         type: 'image/webp'
     }
 };
