@@ -17,7 +17,7 @@ const scriptChapterList = `
 @Common.MangasNotSupported()
 @Common.ChaptersSinglePageJS(scriptChapterList, 2500)
 @MangaStream.PagesSinglePageCSS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

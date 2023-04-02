@@ -8,7 +8,7 @@ import * as MadTheme from './decorators/MadTheme';
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
 @MadTheme.ChaptersSinglePageAJAX()
 @MadTheme.PagesSinglePageJS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

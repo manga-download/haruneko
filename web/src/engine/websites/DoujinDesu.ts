@@ -7,7 +7,7 @@ import { FetchCSS , FetchRequest} from '../FetchProvider';
 @Common.MangaCSS(/^https?:\/\/212\.32\.226\.234\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.ElementLabelExtractor('span.alter'))
 @Common.MangasMultiPageCSS('/komik-list/page/{page}/', '#main .relat div.animepost a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

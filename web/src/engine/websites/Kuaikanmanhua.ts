@@ -40,7 +40,7 @@ const pageScript = `
 @Common.MangasMultiPageCSS('/tag/0?page={page}', 'div.tagContent div a')
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageJS(pageScript, 500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

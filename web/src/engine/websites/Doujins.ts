@@ -10,7 +10,7 @@ function ImageExtractor(node: HTMLImageElement) {
 @Common.MangaCSS(/^https?:\/\/doujins\.com\/[^/]+/, 'head title')
 @Common.MangasNotSupported()
 @Common.PagesSinglePageCSS('img.doujin', ImageExtractor)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

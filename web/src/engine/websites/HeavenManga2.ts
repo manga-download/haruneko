@@ -30,7 +30,7 @@ const scriptPages = `
 @Common.MangaCSS(/https:\/\/heavenmanga\.com\//, 'div.site-content div.post-title h3')
 @Common.MangasMultiPageCSS('/top?page={page}', 'div.page-item-detail div.photo a.thumbnail', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageJS(scriptPages, 500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

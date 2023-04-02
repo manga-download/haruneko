@@ -14,7 +14,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^https?:\/\/www\.mangainn\.net/, 'h5.widget-heading')
 @Common.ChaptersSinglePageCSS('div#chapter_list ul.chapter-list li a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('div.inner-page img.img-responsive')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

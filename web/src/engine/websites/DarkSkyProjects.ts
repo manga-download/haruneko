@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 // TODO: Website moved to https://darkskyprojects.blogspot.com (redirect all chapters to lectortmo)
 export default class extends DecoratableMangaScraper {
 

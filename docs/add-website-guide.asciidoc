@@ -321,14 +321,14 @@ export default class extends DecoratableMangaScraper {
 ==== Using Decorator
 
 If the website is generic without any bells and whistles, the odds are high that an existing decorator can be used to extend the class with both methods.
-In case the page describes just a simple image, the `ImageDirect` decorator can be used to add the download ability.
+In case the page describes just a simple image, the `ImageAjax` or `ImageElement` decorator can be used to add the download ability.
 
 _MySampleMangas.ts_
 ```typescript
 /* Other Imports */
 import * as Common from './decorators/Common';
 
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     /* Other Implementations */
 }

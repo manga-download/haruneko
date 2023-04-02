@@ -21,7 +21,7 @@ type JSONPages = {
     pages: { id: string, image : string }[]
 }
 
-@Common.ImageDirect(true)
+@Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
 

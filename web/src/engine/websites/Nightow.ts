@@ -13,7 +13,7 @@ function InfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasSinglePageCSS('', 'div.selector2 div.options a', InfoExtractor)
 @Common.ChaptersSinglePageCSS('div.theList div.chapter b a', InfoExtractor)
 @Common.PagesSinglePageJS('imageArray.map(image => window.location.origin +"/online/"+ image);', 1000)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

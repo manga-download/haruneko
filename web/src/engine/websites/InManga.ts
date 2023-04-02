@@ -15,7 +15,7 @@ type APIChapter = {
     }[]
 }
 
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

@@ -9,7 +9,7 @@ import * as Common from './decorators/Common';
 @MangaStream.MangasSinglePageCSS('div.bsx a', '/list/')
 @MangaStream.ChaptersSinglePageCSS('div.eph-num a')
 @MangaStream.PagesSinglePageCSS([], 'img.ts-main-image.curdown')
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

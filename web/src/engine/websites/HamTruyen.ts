@@ -11,7 +11,7 @@ function ImageExtractor(img: HTMLImageElement) {
 @Common.MangasMultiPageCSS('/danhsach/P{page}/index.html', 'h4.story-name a')
 @Common.ChaptersSinglePageCSS('div.chap-item-info h5.name a')
 @Common.PagesSinglePageCSS('div.list-images img', ImageExtractor)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

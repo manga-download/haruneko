@@ -17,7 +17,7 @@ const scriptPages = `
 @Common.MangasMultiPageCSS('/manga/?page={page}', 'h3 a.animeTitle.oTitle')
 @Common.ChaptersSinglePageCSS('div#animeView div.expandable ul.chlist li h4 a')
 @Common.PagesSinglePageJS(scriptPages, 500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

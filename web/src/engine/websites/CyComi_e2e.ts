@@ -6,13 +6,13 @@ const config: Config = {
         title: 'CyComi'
     },
     container: {
-        url: 'https://cycomi.com/fw/cycomibrowser/chapter/title/156',
-        id: '/fw/cycomibrowser/chapter/title/156',
+        url: 'https://cycomi.com/title/156',
+        id: '156',
         title: 'あなたは私におとされたい'
     },
     child: {
-        id: '/fw/cycomibrowser/chapter/pages/12036',
-        title: '第１話'
+        id: '12036',
+        title: '第１話 - ジュウネンメノボクタチ'
     },
     entry: {
         index: 0,

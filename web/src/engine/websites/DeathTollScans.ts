@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @Foolslide.MangasMultiPageCSS()
 @Foolslide.ChaptersSinglePageCSS()
 @Foolslide.PagesSinglePageREGEX()
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

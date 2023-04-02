@@ -8,7 +8,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 @Common.MangasMultiPageCSS('/ajax/Search/AjaxLoadListManga?key=tatca&orderBy=1&p={page}', 'div.list p span.tiptip a', 1, 1, 200)
 @Common.ChaptersSinglePageCSS('div#list-chapters span.title a')
 @MangaStream.PagesSinglePageCSS([/donate/], 'article#content img:not([marginheight])')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

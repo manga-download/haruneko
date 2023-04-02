@@ -15,7 +15,7 @@ const pagesScript = `
 @Common.MangasMultiPageCSS('/list?offset={page}', 'div.tile div.desc h3 a', 0, 70, 0)
 @Common.ChaptersSinglePageCSS('tr.item-row a.chapter-link')
 @Common.PagesSinglePageJS(pagesScript, 500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

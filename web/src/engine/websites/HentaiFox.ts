@@ -22,7 +22,7 @@ const scriptPages = `
 @Common.MangaCSS(/https:\/\/hentaifox\.com\//, 'div.gallery_right div.info h1')
 @Common.MangasNotSupported()
 @Common.PagesSinglePageJS(scriptPages, 2500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

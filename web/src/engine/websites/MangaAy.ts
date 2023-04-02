@@ -17,7 +17,7 @@ function MangaInfoExtractor(element: HTMLElement) {
 @Common.MangasMultiPageCSS('/seriler/{page}', 'div.ecommerce-card', 1,1,0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.table-responsive a[title]')
 @Common.PagesSinglePageJS(pageScript, 500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
