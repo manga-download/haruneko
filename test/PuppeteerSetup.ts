@@ -5,9 +5,7 @@ import { spawn } from 'child_process';
 import puppeteer from 'puppeteer-core';
 //import type { Config } from '@jest/types';
 
-const nwURL = 'http://localhost:5000/';
-const nwApp = path.resolve('app', 'nw', 'build');
-const nwExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
+const appURL = 'http://localhost:5000/';
 const viteExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
 const tempDir = path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32));
 const userDir = path.resolve(tempDir, 'user-data');
@@ -25,12 +23,14 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 }
 
 async function LaunchNW() {
+    const nwApp = path.resolve('app', 'nw', 'build');
+    const nwExe = path.resolve('app', 'nw', 'node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: nwExe,
-        args: [ nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + nwURL ],
+        args: [ nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + appURL ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
@@ -38,7 +38,7 @@ async function LaunchNW() {
     const start = Date.now();
     while(Date.now() - start < 7500) {
         const pages = await browser.pages();
-        const page = pages.find(p => p.url() === nwURL);
+        const page = pages.find(p => p.url() === appURL);
         if(page) {
             console.log(new Date().toISOString(), '=>', 'Using Page:', [ page.url() ]);
             global.PAGE = page;
@@ -48,13 +48,13 @@ async function LaunchNW() {
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    throw new Error(`Could not find the web-application '${nwURL}' within the given timeout!`);
+    throw new Error(`Could not find the web-application '${appURL}' within the given timeout!`);
 }
 
 export default async function(/*config: Config.ConfigGlobals*/) {
     console.log(/* line break */);
-    if(!nwURL.includes('localhost:5000')) {
-        throw new Error(`Invalid startup URL '${nwURL}', make sure the application was build for production mode!`);
+    if(!appURL.includes('localhost:5000')) {
+        throw new Error(`Invalid startup URL '${appURL}', make sure the application was build for production mode!`);
     }
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
