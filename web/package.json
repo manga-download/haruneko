@@ -2,7 +2,7 @@
     "name": "hakuneko-web",
     "type": "module",
     "engines": {
-        "node": ">=18.15.0",
+        "node": ">=16.20.0",
         "npm": ">=9.5.0"
     },
     "dependencies": {},
