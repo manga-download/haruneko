@@ -11,7 +11,7 @@ function PageLinkExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/multporn-net/page/{page}/', 'div.entry-body header h3 a')
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('figure a', PageLinkExtractor)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

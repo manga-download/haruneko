@@ -10,7 +10,7 @@ const extractor = Common.AnchorInfoExtractor(true);
 @Common.MangasMultiPageCSS('/directory/{page}.html?az', 'div.manga-list-1 ul li p.manga-list-1-item-title a', 1, 1, 0, extractor)
 @Common.ChaptersSinglePageCSS('div#chapterlist ul li a', extractor)
 @DM5.PagesSinglePageScript()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -1,6 +1,6 @@
 import { GetLocale } from '../../../i18n/Localization';
 import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchProvider';
-import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page, mimeFileExtension } from '../../providers/MangaPlugin';
+import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { IMediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 
@@ -434,33 +434,47 @@ export function PagesSinglePageJS(script: string, delay = 0) {
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export async function FetchImageDirect(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-
-    //infer accept header from filename
-    const inferedMime = Object.keys(mimeFileExtension).find(key => page.Link.href.toLowerCase().endsWith(mimeFileExtension[key]));
-
+export async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, pretendImageElementSource = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const request = new FetchRequest(page.Link.href, {
             signal: signal,
             headers: {
                 Referer: page.Parameters?.Referer || page.Link.origin,
-                Accept: inferedMime ? inferedMime : '*/*'
             }
         });
+        if(pretendImageElementSource) {
+            request.headers.set('Accept', 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8');
+            request.headers.set('Sec-Fetch-Dest', 'image');
+            //request.headers.set('Sec-Fetch-Mode', 'no-cors');
+        }
         const response = await Fetch(request);
         return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
     }, priority, signal);
 }
 
 /**
- * A class decorator that adds the ability to get the image data for a given page.
+ * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export function ImageDirect(detectMimeType = false) {
+export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Constructor>(ctor: T): T {
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImageDirect.call(this, page, priority, signal, detectMimeType);
+                return FetchImage.call(this, page, priority, signal, detectMimeType, false);
+            }
+        };
+    };
+}
+
+/**
+ * A class decorator that adds the ability to get the image data for a given page by pretending to load the source via an `<IMG>` tag.
+ * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ */
+export function ImageElement(detectMimeType = false) {
+    return function DecorateClass<T extends Constructor>(ctor: T): T {
+        return class extends ctor {
+            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+                return FetchImage.call(this, page, priority, signal, detectMimeType, true);
             }
         };
     };

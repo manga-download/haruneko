@@ -25,7 +25,7 @@ type APIChapter = {
 @Common.MangaCSS(/^https?:\/\/9hentai\.to\/g\//, 'div#info h1')
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

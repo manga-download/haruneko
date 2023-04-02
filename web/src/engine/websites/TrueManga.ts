@@ -12,7 +12,7 @@ function ImageExtractor(element: HTMLImageElement): string {
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.list div.title h3 a', 1)
 @MadTheme.ChaptersSinglePageAJAX()
 @Common.PagesSinglePageCSS('div.chapter-image img', ImageExtractor)
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

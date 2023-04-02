@@ -8,7 +8,7 @@ import * as MangaNel from './decorators/MangaNel';
 @MangaNel.MangasMultiPageCSS('/manga-list/type-latest/ctg-all/state-all/page-{page}', 'div.story-item h3.story-name a')
 @MangaNel.ChaptersSinglePageCSS()
 @MangaNel.PagesSinglePageCSS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

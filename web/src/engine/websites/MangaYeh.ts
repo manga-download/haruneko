@@ -13,7 +13,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^https?:\/\/mangayeh\.com\/manga-info\//, 'div.content h1.title')
 @Common.MangasMultiPageCSS('/category/all?page={page}', 'div.media-content div.content > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('#chapterList td:nth-child(1) a')
-@Common.ImageDirect(true)
+@Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
 

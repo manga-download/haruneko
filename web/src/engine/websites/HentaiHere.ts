@@ -17,7 +17,7 @@ const script = `
 @Common.MangasMultiPageCSS('/directory?page={page}', 'div.item a.text-ellipsis')
 @Common.ChaptersSinglePageCSS('li.sub-chp a#chapterBlock', Common.AnchorInfoExtractor(false, 'i'))
 @Common.PagesSinglePageJS(script, 500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

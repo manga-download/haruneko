@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Madara.MangasMultiPageCSS(undefined, 1000, '/manga-list/page/{page}/')
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

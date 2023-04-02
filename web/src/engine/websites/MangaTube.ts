@@ -23,7 +23,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^https?:\/\/manga-tube\.me\/series\//, 'h1.series-title')
 @Common.ChaptersSinglePageCSS('div.vol-container ul.chapter-list li a[title]', ChapterExtractor)
 @Common.PagesSinglePageJS('manga_reader.pages.map(page => manga_reader.img_path + page.file_name);', 500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

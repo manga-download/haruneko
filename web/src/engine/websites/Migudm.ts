@@ -12,7 +12,7 @@ const script = `
 @Common.MangasMultiPageCSS('/comic/list_p{page}/', 'div.classificationList ul li div.clItemRight h4.title a')
 @Common.ChaptersSinglePageCSS('div.comic div#negCtSectionListBd div.titleList a.item', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageJS(script, 1000)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

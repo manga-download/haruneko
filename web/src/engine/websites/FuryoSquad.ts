@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Common.MangasSinglePageCSS('/mangas', 'div.fs-chap-container div.grid-item-container div.media-body a', Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div.list.fs-chapter-list div.title a', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div.fs-reader-page img')
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

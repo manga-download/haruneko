@@ -9,7 +9,7 @@ type APIMangas = { results: APIManga[] };
 type APIChapter = { name: string, volume: number, number: number, id: string, mangaId: string, version: number, length: number };
 const apiUrl = 'https://api.manga.d34d.one';
 
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

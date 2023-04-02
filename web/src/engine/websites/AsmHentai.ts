@@ -24,7 +24,7 @@ const script = `
 @Common.MangaCSS(/^https?:\/\/asmhentai\.com\/g\/[^/]+\/$/, 'div.book_page div.info h1')
 @Common.MangasNotSupported()
 @MangaStream.PagesSinglePageJS([], script)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

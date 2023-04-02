@@ -8,8 +8,7 @@ import { FetchRequest, FetchWindowScript } from './../FetchProvider';
 @Common.MangasMultiPageCSS('/directory?page={page}', 'div.item-info div.series-title a')
 @Common.ChaptersSinglePageCSS('ul.chapter-list li > a')
 @Common.PagesSinglePageCSS('div.reader img.picture')
-@Common.ImageDirect()
-
+@Common.ImageElement()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

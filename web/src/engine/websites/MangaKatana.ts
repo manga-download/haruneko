@@ -13,7 +13,7 @@ const pageScript = `
 @Common.MangasMultiPageCSS('/manga/page/{page}?filter=1', 'div#book_list div.item div.text h3.title a', 1, 1, 1500)
 @Common.ChaptersSinglePageCSS('div.chapters table tbody tr td div.chapter a')
 @Common.PagesSinglePageJS(pageScript, 2500)
-@Common.ImageDirect(true)
+@Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
 
