@@ -35,7 +35,7 @@ type JSONMangas = {
 }
 
 @Common.MangaCSS(/^https?:\/\/reaperscans\.net\/series\//, 'div.series-title > h1')
-@Common.ImageDirect(true)
+@Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
 
