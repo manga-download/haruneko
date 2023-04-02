@@ -8,7 +8,7 @@ import * as Madara from './decorators/WordPressMadara';
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageCSS()
 @Madara.PagesSinglePageCSS('div.page-break img[data-src]')
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
