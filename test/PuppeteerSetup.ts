@@ -24,7 +24,7 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 
 async function LaunchNW() {
     const nwApp = path.resolve('app', 'nw', 'build');
-    const nwExe = path.resolve('app', 'nw', 'node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
+    const nwExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
