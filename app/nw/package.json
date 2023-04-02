@@ -1,5 +1,5 @@
 {
-    "name": "haruneko",
+    "name": "hakuneko-app-nw",
     "title": "HaruNeko",
     "description": "Manga, Anime & Novel Downloader",
     "type": "module",
@@ -10,7 +10,7 @@
         "npm": ">=8.1.0"
     },
     "dependencies": {
-        "fs-extra": "11.1.0",
+        "fs-extra": "11.1.1",
         "websocket-rpc": "1.0.2",
         "yargs": "^17.6.2"
     },
@@ -18,6 +18,7 @@
         "@types/chrome": "^0.0.209",
         "@types/fs-extra": "^11.0.1",
         "@types/nw.js": "^0.13.16",
+        "node-fetch": "3.3.1",
         "nw": "0.73.0-sdk",
         "plist": "^3.0.6"
     },

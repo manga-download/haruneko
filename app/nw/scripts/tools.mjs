@@ -5,7 +5,7 @@ import { exec } from 'node:child_process';
 
 /**
  * Wait for a certain amount of timing before continuing processing.
- * @param time The time to wait in milliseconds
+ * @param time - The time to wait in milliseconds
  */
 export async function wait(time) {
     return new Promise(resolve => setTimeout(resolve, time));
@@ -21,8 +21,8 @@ export async function purge(directory) {
 
 /**
  * Download a file from an online resource.
- * @param source The URI from which the file shall be downloaded
- * @param target The file path where the source shall be stored locally
+ * @param source - The URI from which the file shall be downloaded
+ * @param target - The file path where the source shall be stored locally
  */
 export async function download(source, target) {
     const response = await fetch(source);
@@ -35,8 +35,8 @@ export async function download(source, target) {
 
 /**
  * Run the given command within a spawned shell.
- * @param command The command including arguments
- * @param cwd The current working directory for the spawned shell
+ * @param command - The command including arguments
+ * @param cwd - The current working directory for the spawned shell
  * @returns A promise that is resolved when the process finished succesfully, otherwise a rejected promise
  */
 export async function run(command, cwd) {
