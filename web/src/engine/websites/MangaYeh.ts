@@ -10,7 +10,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/mangayeh\.com\/manga-info\//, 'div.content h1.title')
+@Common.MangaCSS(/^https?:\/\/w13\.mangayeh\.com\/manga-info\//, 'div.content h1.title')
 @Common.MangasMultiPageCSS('/category/all?page={page}', 'div.media-content div.content > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('#chapterList td:nth-child(1) a')
 @Common.ImageAjax(true)
@@ -18,7 +18,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangayeh', `MangaYeh`, 'https://mangayeh.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangayeh', `MangaYeh`, 'https://w13.mangayeh.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
