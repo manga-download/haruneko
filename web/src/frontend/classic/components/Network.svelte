@@ -94,7 +94,6 @@
                         >{request.details}</StructuredListCell
                     >
                     <StructuredListCell class="action">
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <span on:click={() => alert('clicked')}><Image /></span>
                     </StructuredListCell>
                 </StructuredListRow>

@@ -49,7 +49,6 @@
                             .Parent.Parent.Title}]
                     </h6>
                 </div>
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div slot="below">
                     {#each mediajobs as job (job)}
                         <DownloadManagerTask {job} />

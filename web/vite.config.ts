@@ -5,7 +5,15 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [ vue(), react(), svelte() ],
+    plugins: [
+        vue(),
+        react(),
+        svelte({
+            onwarn: function(warning, handler) {
+                return warning.code.startsWith('a11y-') ? undefined : handler?.call(this, warning);
+            }
+        }),
+    ],
     publicDir: 'static',
     build: {
         sourcemap: true,
