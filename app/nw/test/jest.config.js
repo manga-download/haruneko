@@ -12,7 +12,8 @@ export default {
         'ts-jest': {
             tsconfig: {
                 allowJs: true,
-                esModuleInterop: true
+                esModuleInterop: true,
+                //verbatimModuleSyntax: false,
             }
         }
     }

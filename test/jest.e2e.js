@@ -16,7 +16,8 @@ export default {
         'ts-jest': {
             tsconfig: {
                 esModuleInterop: true,
-                allowSyntheticDefaultImports: true
+                allowSyntheticDefaultImports: true,
+                verbatimModuleSyntax: false,
             }
         }
     }
