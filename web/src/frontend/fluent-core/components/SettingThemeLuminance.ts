@@ -19,7 +19,7 @@ const styles: ElementStyles = css`
 `;
 
 const template: ViewTemplate<SettingThemeLuminance> = html`
-    <fluent-button appearance="stealth" @click=${() => S.SettingThemeLuminance = StandardLuminance.DarkMode}>${IconMoonlight}</fluent-button>
+    <fluent-button appearance="stealth" :innerHTML=${IconMoonlight} @click=${() => S.SettingThemeLuminance = StandardLuminance.DarkMode}></fluent-button>
     <fluent-slider id="slider" min="0" max="1" step="0.01" :valueAsNumber=${() => S.SettingThemeLuminance} @change=${(_, ctx) => S.SettingThemeLuminance = ctx.event.currentTarget['valueAsNumber']}>
         <fluent-slider-label position="0.00"></fluent-slider-label>
         <fluent-slider-label position="0.25"></fluent-slider-label>
@@ -27,7 +27,7 @@ const template: ViewTemplate<SettingThemeLuminance> = html`
         <fluent-slider-label position="0.75"></fluent-slider-label>
         <fluent-slider-label position="1.00"></fluent-slider-label>
     </fluent-slider>
-    <fluent-button appearance="stealth" @click=${() => S.SettingThemeLuminance = StandardLuminance.LightMode}>${IconSunlight}</fluent-button>
+    <fluent-button appearance="stealth" :innerHTML=${IconSunlight} @click=${() => S.SettingThemeLuminance = StandardLuminance.LightMode}></fluent-button>
 `;
 
 @customElement({ name: 'fluent-setting-theme-luminance', template, styles })

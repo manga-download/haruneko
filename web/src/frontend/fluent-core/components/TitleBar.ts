@@ -79,20 +79,20 @@ const styles: ElementStyles = css`
 
 const template: ViewTemplate<TitleBar> = html`
     <div id="menu">
-        <fluent-button id="menu-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Menu_Description()}" @click=${model => model.popup = !model.popup}>${IconMenu}</fluent-button>
+        <fluent-button id="menu-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Menu_Description()}" :innerHTML=${IconMenu} @click=${model => model.popup = !model.popup}></fluent-button>
         <div id="menu-overlay" style="display: ${model => model.popup ? 'block' : 'none'}" @click=${model => model.popup = false}></div>
         <fluent-menu id="menu-popup" style="display: ${model => model.popup ? 'block' : 'none'}">
             <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description()}" :checked=${() => S.SettingPanelBookmarks} @change=${(_, ctx) => S.SettingPanelBookmarks = ctx.event.currentTarget['checked']}>
-                <div slot="start">${IconBookmarkList}</div>
+                <div slot="start" :innerHTML=${IconBookmarkList}></div>
                 ${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label()}
             </fluent-menu-item>
             <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description()}" :checked=${() => S.SettingPanelDownloads} @change=${(_, ctx) => S.SettingPanelDownloads = ctx.event.currentTarget['checked']}>
-                <div slot="start">${IconDownloadManager}</div>
+                <div slot="start" :innerHTML=${IconDownloadManager}></div>
                 ${() => S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
             <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Description()}" @click=${model => model.ShowGlobalSettingsDialog()}>
-                <div slot="start">${IconSettings}</div>
+                <div slot="start" :innerHTML=${IconSettings}></div>
                 ${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
             </fluent-menu-item>
             <fluent-menu-item disabled title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ShowImportDialog()}>
@@ -104,9 +104,9 @@ const template: ViewTemplate<TitleBar> = html`
     </div>
     <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
     <div id="controls">
-        <fluent-anchor appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" @click="${model => model.window.Minimize()}">${IconMinimize}</fluent-anchor>
-        <fluent-anchor appearance="stealth" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize}></fluent-anchor>
-        <fluent-anchor id="close" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" @click=${model => model.window.Close()}>${IconClose}</fluent-anchor>
+        <fluent-anchor appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" :innerHTML=${IconMinimize} @click="${model => model.window.Minimize()}"></fluent-anchor>
+        <fluent-anchor appearance="stealth" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize} @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}"></fluent-anchor>
+        <fluent-anchor id="close" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" :innerHTML=${IconClose} @click=${model => model.window.Close()}></fluent-anchor>
     </div>
 `;
 

@@ -126,8 +126,8 @@ const listitem: ViewTemplate<IMediaContainer> = html`
         <div style="${styleTrim}"><!-- <fluent-checkbox></fluent-checkbox> --></div>
         <div style="${styleTrim}">${model => model.Title}</div>
         <div class="controls" style="${styleControls}">
-            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}" @click=${(model, ctx) => ctx.parent.parentNode.host.ShowPreview(model)}>${IconPreview}</fluent-button>
-            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}" @click=${(model, ctx) => ctx.parent.parentNode.host.Download(model)}>${IconDownload}</fluent-button>
+            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}" :innerHTML=${IconPreview} @click=${(model, ctx) => ctx.parent.parentNode.host.ShowPreview(model)}></fluent-button>
+            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}" :innerHTML=${IconDownload} @click=${(model, ctx) => ctx.parent.parentNode.host.Download(model)}></fluent-button>
         </div>
     </div>
 `;
