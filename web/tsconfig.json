@@ -2,9 +2,9 @@
 {
     "compilerOptions": {
         "strict": false,
-        "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "node",
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "verbatimModuleSyntax": true,
         "forceConsistentCasingInFileNames": true,
         "jsx": "react",
