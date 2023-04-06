@@ -5,7 +5,7 @@
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "node",
-        "importsNotUsedAsValues": "error",
+        "verbatimModuleSyntax": true,
         "forceConsistentCasingInFileNames": true,
         "strictBindCallApply": true,
         "removeComments": true
