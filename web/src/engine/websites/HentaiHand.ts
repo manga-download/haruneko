@@ -15,7 +15,7 @@ type APIPages = {
 }
 
 @Common.MangasNotSupported()
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

@@ -24,7 +24,7 @@ const script = `
 @Common.MangaCSS(/^https?:\/\/imhentai\.xxx/, 'div.right_details h1')
 @Common.MangasNotSupported()
 @Common.PagesSinglePageJS(script, 2500)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

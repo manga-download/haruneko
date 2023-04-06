@@ -6,7 +6,7 @@ const config: Config = {
         title: 'MangaYeh'
     },
     container: {
-        url: 'https://mangayeh.com/manga-info/mercenary-enrollment',
+        url: 'https://w13.mangayeh.com/manga-info/mercenary-enrollment',
         id: '/manga-info/mercenary-enrollment',
         title: 'Mercenary Enrollment'
     },

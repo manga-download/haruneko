@@ -8,7 +8,7 @@ const extractor = Common.AnchorInfoExtractor(true);
 @Common.MangasNotSupported()
 @Common.ChaptersSinglePageCSS('div#content div.gallery a.c-tile', extractor)
 @Common.PagesSinglePageCSS('div.gallery div.image img')
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @MangaNel.MangasMultiPageCSS('/manga_list?type=new&category=all&alpha=all&state=all&group=all&page={page}', 'div.truyen-list h3 a')
 @MangaNel.ChaptersSinglePageCSS()
 @MangaNel.PagesSinglePageCSS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

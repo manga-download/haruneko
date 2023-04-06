@@ -18,7 +18,7 @@ function ChapterInfoExtractor(element: HTMLElement) {
 @Common.MangaCSS(/^https?:\/\/readm\.org\/manga\//, 'h1.page-title')
 @Common.ChaptersSinglePageCSS('.episodes-list .item', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('div.ch-images img.img-responsive')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

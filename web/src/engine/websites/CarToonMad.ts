@@ -7,7 +7,7 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 @Common.MangaCSS(/^https?:\/\/(www\.)?cartoonmad\.com\/[^/]+/, 'td:nth-child(2)  tr:nth-child(3) > td:nth-child(2) > a:last-child')
 @Common.MangasMultiPageCSS('/comic99.0{page}.html', 'a.a1')
 @Common.ChaptersSinglePageCSS('#info td > a')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

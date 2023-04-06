@@ -2,7 +2,7 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 import decompress from 'decompress';
-import { download } from '../../../scripts/tools.mjs';
+import { download } from './tools.mjs';
 
 const pkgFile = 'package.json';
 const pkgConfig = await fs.readJSON(pkgFile);

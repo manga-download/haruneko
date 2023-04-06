@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 // TODO: Website moved to https://darkyuerealm.wixsite.com/darkyue-realm/mangas
 export default class extends DecoratableMangaScraper {
 

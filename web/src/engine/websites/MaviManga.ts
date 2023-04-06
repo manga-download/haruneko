@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Common.MangasMultiPageCSS('/manga-listesi/sayfa/{page}/', 'ul.manga-list li a')
 @Common.ChaptersSinglePageCSS('div.mangaep-list tbody tr td:first-of-type a')
 @Common.PagesSinglePageCSS('div.viewer-cnt div#all img.img-responsive')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

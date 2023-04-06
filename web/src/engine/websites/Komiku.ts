@@ -13,7 +13,7 @@ function MangaLabelExtractor(element: HTMLElement) {
 @Common.MangaCSS(/https:\/\/komiku\.id/, 'article header#Judul h1[itemprop="name"]', MangaLabelExtractor)
 @Common.ChaptersSinglePageCSS('table#Daftar_Chapter td.judulseries a')
 @Common.PagesSinglePageCSS('section#Baca_Komik img')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

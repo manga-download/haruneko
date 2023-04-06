@@ -22,7 +22,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/mangas&pagina={page}', 'div.mangas a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('ul#capitulos li.row > a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('div#capitulos_images img.img-responsive')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

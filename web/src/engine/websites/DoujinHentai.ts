@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/doujinhentai\.net\/manga-hentai\/[^/]+$/, 'div.post-content meta[itemprop="itemreviewed"]')
 @Madara.PagesSinglePageCSS('div#all img')
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

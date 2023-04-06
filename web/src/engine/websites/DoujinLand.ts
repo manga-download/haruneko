@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @MangaStream.MangasSinglePageCSS('div.mangalist-blc ul li a', '/manga-list/?list')
 @MangaStream.ChaptersSinglePageCSS('div.series-chapter ul.series-chapterlist li div.flexch-infoz a', 'span')
 @MangaStream.PagesSinglePageCSS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

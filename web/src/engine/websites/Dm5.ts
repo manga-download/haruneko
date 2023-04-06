@@ -11,7 +11,7 @@ const chapterExtractor = Common.AnchorInfoExtractor(false, 'div.cover, p.subtitl
 @Common.MangasMultiPageCSS('/manhua-list-p{page}/', 'ul li div.mh-item-detali h2.title a')
 @Common.ChaptersSinglePageCSS('div#chapterlistload ul li a', chapterExtractor)
 @DM5.PagesSinglePageScript()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -1,13 +1,13 @@
 {
-    "name": "haruneko",
+    "name": "hakuneko-app-nw",
     "title": "HaruNeko",
     "description": "Manga, Anime & Novel Downloader",
     "type": "module",
     "main": "App.js",
     "url": "https://haruneko.pages.dev",
     "engines": {
-        "node": ">=16.13.0",
-        "npm": ">=8.1.0"
+        "node": ">=16.20.0",
+        "npm": ">=9.5.0"
     },
     "dependencies": {
         "fs-extra": "11.1.1",
@@ -22,6 +22,7 @@
         "@types/fs-extra": "^11.0.1",
         "@types/nw.js": "^0.13.16",
         "@types/ws": "^8.5.4",
+        "node-fetch": "3.3.1",
         "nw": "0.74.0-sdk",
         "plist": "^3.0.6",
         "rollup": "^3.20.2"

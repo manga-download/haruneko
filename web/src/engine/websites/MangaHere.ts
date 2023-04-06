@@ -10,7 +10,7 @@ const extractor = Common.AnchorInfoExtractor(true);
 @Common.MangasSinglePageCSS('/mangalist/', 'div.browse-new-block-list div.browse-new-block p.browse-new-block-content a', extractor)
 @Common.ChaptersSinglePageCSS('div#chapterlist ul li a', extractor)
 @DM5.PagesSinglePageScript()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper /* MangaFox */ {
 
     public constructor() {

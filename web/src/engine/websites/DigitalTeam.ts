@@ -13,7 +13,7 @@ type APIResult = [
 @Common.MangaCSS(/^https?:\/\/dgtread\.com\/[^/]+/, 'div#manga_right div.title')
 @Common.MangasSinglePageCSS('/reader/series', 'div#series_list ul li.manga_block ul li.manga_info div.manga_title a')
 @Common.ChaptersSinglePageCSS('div.chapter_list ul li div.ch_top a')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

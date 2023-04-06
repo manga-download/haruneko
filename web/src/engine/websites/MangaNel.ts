@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @MangaNel.MangasMultiPageCSS()
 @MangaNel.ChaptersSinglePageCSS()
 @MangaNel.PagesSinglePageCSS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

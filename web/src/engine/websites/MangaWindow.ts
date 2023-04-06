@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @AnyACG.MangasMultiPageCSS('/browse?page={page}', 'div.series-list div.item-text', 'a.item-title', 'em.item-flag')
 @Common.ChaptersSinglePageCSS('div.episode-list div.main a.chapt')
 @AnyACG.PagesSinglePageJS()
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

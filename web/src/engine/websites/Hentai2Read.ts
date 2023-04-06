@@ -17,7 +17,7 @@ const scriptPages = `
 @Common.MangasMultiPageCSS('/hentai-list/all/any/all/name-az/{page}', 'div.book-grid div.overlay div.overlay-title a')
 @Common.ChaptersSinglePageCSS('ul.nav-chapters li div.media > a', Common.AnchorInfoExtractor(false, 'div'))
 @Common.PagesSinglePageJS(scriptPages)
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

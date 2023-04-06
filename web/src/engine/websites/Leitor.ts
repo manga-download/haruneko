@@ -31,7 +31,7 @@ type APIPages = {
     images: APIPage[]
 };
 
-@Common.ImageDirect()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

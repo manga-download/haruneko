@@ -24,7 +24,7 @@ type APIPages = {
 };
 
 @Common.MangaCSS(/^https?:\/\/dynasty-scans\.com\/[^/]+/, 'h2.tag-title b')
-@Common.ImageDirect()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

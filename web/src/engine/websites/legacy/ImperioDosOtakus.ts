@@ -5,7 +5,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 //import * as Common from './decorators/Common';
 
 // TODO: Moved to http://imperiodosotakus.epizy.com/
-//@Common.ImageDirect()
+//@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
