@@ -8,13 +8,13 @@ export default {
         'jest-junit',
         '../../../test/github-test-reporter'
     ],
-    globals: {
-        'ts-jest': {
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', {
             tsconfig: {
                 allowJs: true,
                 esModuleInterop: true,
                 //verbatimModuleSyntax: false,
             }
-        }
+        }]
     }
 };

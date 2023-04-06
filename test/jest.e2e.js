@@ -12,13 +12,13 @@ export default {
         '../../test/github-test-reporter'
     ],
     testTimeout: 5000,
-    globals: {
-        'ts-jest': {
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', {
             tsconfig: {
                 esModuleInterop: true,
                 allowSyntheticDefaultImports: true,
                 verbatimModuleSyntax: false,
             }
-        }
+        }]
     }
 };
