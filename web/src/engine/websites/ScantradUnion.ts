@@ -13,15 +13,14 @@ function ChapterInfoExtractor(element: HTMLDivElement) {
 }
 
 const pageScript = `
-    let result = [];
     if(window.obj) {
-        result = obj.images.map(page => [obj.site_url, obj.all_manga_dir, obj.title + '_' + page.manga_id, 'ch_' + page.chapter_number, page.image_name].join('/'));
+        obj.images.map(page => [obj.site_url, obj.all_manga_dir, obj.title + '_' + page.manga_id, 'ch_' + page.chapter_number, page.image_name].join('/'));
     } else {
-        result = [...document.querySelectorAll('div.current-image img.manga-image')].map(img => img.src);
+       [...document.querySelectorAll('div.current-image img.manga-image')].map(img => img.src);
     }
 `;
 
-@Common.MangaCSS(/^https?:\/\/scantrad-union\.com\//, 'div.projet-description > h2')
+@Common.MangaCSS(/^https?:\/\/scantrad-union\.com\/manga\//, 'div.projet-description > h2')
 @Common.MangasMultiPageCSS('/manga/page/{page}/', 'main article div.entry-post > h2 > a')
 @Common.ChaptersSinglePageCSS('div.name-chapter', ChapterInfoExtractor)
 @Common.PagesSinglePageJS(pageScript, 500)

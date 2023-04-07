@@ -34,7 +34,7 @@ type JSONMangas = {
     data: { id: number, title: string, series_slug : string}[]
 }
 
-@Common.MangaCSS(/^https?:\/\/reaperscans\.net\/series\//, 'div.series-title > h1')
+@Common.MangaCSS(/^https?:\/\/reaperscans\.net\/series\/[^/]+$/, 'div.series-title > h1')
 @Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {

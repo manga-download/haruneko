@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Madara from './decorators/WordPressMadara';
 
-@Madara.MangaCSS(/^https?:\/\/reaperscanstr\.com\/seri\//)
+@Madara.MangaCSS(/^https?:\/\/reaperscanstr\.com\/seri\/[\w-]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageCSS()
 @Madara.PagesSinglePageCSS('div.page-break img[data-src]')
