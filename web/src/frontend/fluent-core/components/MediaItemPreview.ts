@@ -40,7 +40,7 @@ const templateChapter: ViewTemplate<MediaItemPreview> = html`${repeat(model => m
 
 const template: ViewTemplate<MediaItemPreview> = html`
     <div id="heading">
-        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" @click=${model => model.ClosePreview()}>${IconClose}</fluent-button>
+        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${IconClose} @click=${model => model.ClosePreview()}></fluent-button>
         <div id="caption">${model => model.entry?.Title ?? ''}</div>
         <div></div>
     </div>

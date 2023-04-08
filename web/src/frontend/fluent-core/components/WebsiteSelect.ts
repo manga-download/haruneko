@@ -154,11 +154,11 @@ const styles: ElementStyles = css`
 `;
 
 const unstarred: ViewTemplate<WebsiteSelect> = html`
-    <fluent-button id="add-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${(model, ctx) => model.AddFavorite(ctx.event)}>${IconAddFavorite}</fluent-button>
+    <fluent-button id="add-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description()}" ?disabled=${model => !model.selected} :innerHTML=${IconAddFavorite} @click=${(model, ctx) => model.AddFavorite(ctx.event)}></fluent-button>
 `;
 
 const starred: ViewTemplate<WebsiteSelect> = html`
-    <fluent-button id="remove-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description()}" ?disabled=${model => !model.selected} @click=${(model, ctx) => model.RemoveFavorite(ctx.event)}>${IconRemoveFavorite}</fluent-button>
+    <fluent-button id="remove-favorite-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description()}" ?disabled=${model => !model.selected} :innerHTML=${IconRemoveFavorite} @click=${(model, ctx) => model.RemoveFavorite(ctx.event)}></fluent-button>
 `;
 
 // HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
@@ -178,9 +178,9 @@ const template: ViewTemplate<WebsiteSelect> = html`
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">
             <div class="hint">${model => model.updating ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>${IconSynchronize}</fluent-button>
+            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating} :innerHTML=${IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
             ${model => model.favorite ? starred : unstarred}
-            <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} @click="${(model, ctx) => model.OpenSettings(ctx.event)}">${IconSettings}</fluent-button>
+            <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} :innerHTML=${IconSettings} @click="${(model, ctx) => model.OpenSettings(ctx.event)}"></fluent-button>
         </div>
     </div>
     <div id="dropdown" ${ref('dropdown')}>
