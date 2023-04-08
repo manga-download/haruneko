@@ -1,25 +1,23 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+const fixture = new TestFixture({
     plugin: {
         id: 'manga3s',
         title: 'Manga3S'
-    }/*,
+    },
     container: {
-        url: 'https://manga3s.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manga3s.com/manga/divine-urban-god/',
+        id: JSON.stringify({ post: '3791', slug: '/manga/divine-urban-god/' }),
+        title: 'Divine Urban God'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/divine-urban-god/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 2,
+        size: 97_936,
         type: 'image/jpeg'
-    }*/
-};
-
-const fixture = new TestFixture(config);
+    }
+});
 describe(fixture.Name, () => fixture.AssertWebsite());
