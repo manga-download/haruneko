@@ -8,8 +8,6 @@ const imgURL = 'https://static.tapread.com';
 
 type APIMangas = {
     code: number
-    message: string
-    msg: string
     result: {
         moreDetailList: {
             comicId: number,
@@ -20,13 +18,10 @@ type APIMangas = {
 
 type APIChapters = {
     code: number
-    message: string
-    msg: string
     result: {
         chapterList: {
             chapterNo: number,
             chapterId: number,
-            comicId: number,
             chapterName: string
         }[]
     }
@@ -34,12 +29,9 @@ type APIChapters = {
 
 type APIPages = {
     code: number
-    message: string
-    msg: string
     result: {
         imgList: {
             imgUrl: string,
-            imgWebpUrl: string,
         }[]
     }
 };
