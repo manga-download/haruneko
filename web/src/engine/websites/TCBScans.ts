@@ -3,11 +3,9 @@ import icon from './TCBScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
     const title = anchor.querySelector<HTMLDivElement>('div.text-lg').textContent.trim() + ' : ' +anchor.querySelector<HTMLDivElement>('div.text-gray-500').textContent.trim();
-
     return { id, title };
 }
 
