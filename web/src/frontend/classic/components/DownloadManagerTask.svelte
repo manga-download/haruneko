@@ -35,7 +35,6 @@
     $: value = job.Status === Status.Processing ? 100 : job.Progress * 100;
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="task">
     <div class="progress">
         <ProgressBar
@@ -46,7 +45,6 @@
         />
     </div>
     <div class="action">
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
         <span
             on:click|preventDefault|stopPropagation={() =>
                 window.HakuNeko.DownloadManager.Dequeue(job)}

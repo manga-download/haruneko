@@ -21,7 +21,7 @@
     import { fade } from 'svelte/transition';
     // UI: Components
     import Chip from '../lib/Tag.svelte';
-    import { Tag, Tags } from '../../../engine/Tags';
+    import { type Tag, Tags } from '../../../engine/Tags';
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
