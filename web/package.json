@@ -37,6 +37,7 @@
         "vue-tsc": "^1.2.0"
     },
     "scripts": {
+        "update-website-index": "node ./scripts/website-index.mjs",
         "check": "eslint ./src ./test && svelte-check --tsconfig=tsconfig.json --compiler-warnings a11y-click-events-have-key-events:ignore && vue-tsc --skipLibCheck --noEmit",
         "build": "vite build",
         "test": "jest --detectOpenHandles --config=test/jest.config.js",
