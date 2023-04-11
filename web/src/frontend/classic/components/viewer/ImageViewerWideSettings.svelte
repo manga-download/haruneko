@@ -16,7 +16,6 @@
     export let title: string;
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div id="Buttons">
     <span class="title">{title}</span>
     <span class="button" on:click={() => dispatch('previousItem')}>

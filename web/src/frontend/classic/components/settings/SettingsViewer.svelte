@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ISetting, Check, Choice, Numeric, Directory, Secret, Text } from '../../../../engine/SettingsManager';
+    import { type ISetting, Check, Choice, Numeric, Directory, Secret, Text } from '../../../../engine/SettingsManager';
     import InputCheck from './InputCheck.svelte';
     import InputChoice from './InputChoice.svelte';
     import InputNumeric from './InputNumeric.svelte';

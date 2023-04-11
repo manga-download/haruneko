@@ -24,7 +24,6 @@
 {#await dataload}
     <InlineLoading class="imgpreview {$$props.class}"  on:click/>
 {:then data}
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
     {#if data?.type.startsWith('image')}
         <img
             class="imgpreview {$$props.class}"

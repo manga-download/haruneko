@@ -2,7 +2,7 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 import { spawn } from 'child_process';
-import puppeteer from 'puppeteer-core';
+import * as puppeteer from 'puppeteer-core';
 //import type { Config } from '@jest/types';
 
 const appURL = 'http://localhost:5000/';

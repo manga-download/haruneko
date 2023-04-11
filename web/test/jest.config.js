@@ -15,10 +15,12 @@ export default {
     },
     transform: {
         '\\.tsx?$': [
-            'ts-jest', {
+            'ts-jest',
+            {
                 tsconfig: {
                     allowJs: true,
-                    esModuleInterop: true
+                    esModuleInterop: true,
+                    verbatimModuleSyntax: false,
                 }
             }
         ]
