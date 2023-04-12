@@ -124,7 +124,8 @@
         loadMedia($selectedPlugin);
     }
 
-    async function onClipboardPaste() {
+    document.addEventListener('media-paste-url', onMediaPasteURL);
+    async function onMediaPasteURL(_event: Event) {
         try {
             const link = new URL(await navigator.clipboard.readText()).href;
             for (const website of HakuNeko.PluginController.WebsitePlugins) {
@@ -177,7 +178,7 @@
             tooltipPosition="right"
             tooltipAlignment="center"
             iconDescription="Paste media link"
-            on:click={onClipboardPaste}
+            on:click={onMediaPasteURL}
         />
     </div>
     <div id="Plugin">
