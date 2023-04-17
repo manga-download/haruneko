@@ -8,6 +8,7 @@
     import {
         App,
         Bookmark,
+        CopyLink,
         Debug,
         Doc,
         Document,
@@ -74,6 +75,12 @@
                     }}
                 />
             {/if}
+            <SideNavLink
+                text={'Paste Media URL'}
+                icon={CopyLink}
+                on:click={() =>
+                    document.dispatchEvent(new Event('media-paste-url'))}
+            />
             <SideNavLink
                 text={$Locale.Frontend_Plugins()}
                 icon={PlugFilled}

@@ -32,11 +32,7 @@
         (resolve) => (resolveFinishLoading = resolve)
     );
 
-    let app: HTMLElement;
-
     onMount(async () => {
-        app = document.getElementById('hakunekoapp')!;
-        app.classList.add(uimode);
         // some delay for pre-rendering
         // Todo: find a way to detect if the UI is loaded
         document.addEventListener('DOMContentLoaded', () => {
@@ -45,17 +41,6 @@
     });
 
     let showHome = true;
-
-    $: uimode = $ContentPanel ? 'ui-mode-content' : 'ui-mode-download';
-
-    $: if (app) {
-        const oldUimode =
-            uimode === 'ui-mode-content'
-                ? 'ui-mode-download'
-                : 'ui-mode-content';
-        app.classList.remove(oldUimode);
-        app.classList.add(uimode);
-    }
 </script>
 
 <UserMessage />
@@ -67,10 +52,13 @@
             navigate('/');
         }}
     />
-    <Content id="hakunekoapp">
+    <Content
+        id="hakunekoapp"
+        class={$ContentPanel ? 'ui-mode-content' : 'ui-mode-download'}
+    >
         <MediaSelect />
         <MediaItemSelect />
-        {#if uimode === 'ui-mode-content'}
+        {#if $ContentPanel}
             <div id="Content" transition:fade>
                 {#if $selectedItem}
                     <Viewer item={$selectedItem} />
