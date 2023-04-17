@@ -13,7 +13,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('unionmangas', `UnionMangas`, 'https://unionleitor.top', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Source.Scanlator);
+        super('unionmangas', `UnionMangas`, 'https://unionleitor.top', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
