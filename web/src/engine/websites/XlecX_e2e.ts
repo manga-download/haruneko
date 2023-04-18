@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '/32731-mayuyuus-laws.html',
-        title: 'Mayuyuu\'s Laws'
+        title: `Mayuyuu's Laws`
     },
     entry: {
         index: 0,
