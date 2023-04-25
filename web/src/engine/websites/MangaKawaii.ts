@@ -7,14 +7,9 @@ import { FetchCSS, FetchRequest, FetchWindowScript } from '../FetchProvider';
 const cdn = 'https://cdn.mangakawaii.pics';
 
 const pagesScript = `
-    new Promise((resolve, reject) => {
-        try {
-            resolve(pages.map(page => '${cdn}/uploads/manga/'+ oeuvre_slug +'/chapters_'+applocale+'/'+chapter_slug+ '/'+page.page_image));
-        }
-            catch(error) {
-                reject(error);
-            }
-        });
+    new Promise(resolve => {
+        resolve(pages.map(page => '${cdn}/uploads/manga/'+ oeuvre_slug +'/chapters_'+applocale+'/'+chapter_slug+ '/'+page.page_image));
+    });
 `;
 
 @Common.MangaCSS(/^https?:\/\/www\.mangakawaii\.io\/manga\/[^/]+$/, 'div.manga-view__header h1[itemprop="name headline"]')
@@ -45,23 +40,24 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const englishChapters = await this.getChaptersFromLanguage(manga, 'en');
-        const frenchChapters = await this.getChaptersFromLanguage(manga, 'fr');
-        return [...englishChapters, ...frenchChapters];
+        const languages = ['eng', 'fr'];
+        const chapters = [];
+        languages.forEach(async lang => chapters.push(await this.getChaptersFromLanguage(manga,lang)));
+        return chapters;
     }
 
     async getChaptersFromLanguage(manga: Manga, language: string): Promise<Chapter[]> {
         await this.changeLanguage(language);
-        const uri = new URL(manga.Identifier, this.URI);
-        const request = new FetchRequest(uri.href);
+        let uri = new URL(manga.Identifier, this.URI);
+        let request = new FetchRequest(uri.href);
         const firstChapter = await FetchCSS<HTMLAnchorElement>(request, 'table.table--manga tbody td.table__chapter a');
         if (typeof firstChapter[0] === 'undefined') {
             return [];
         }
 
-        const uri2 = new URL(firstChapter[0].pathname, this.URI);
-        const request2 = new FetchRequest(uri2.href);
-        const data = await FetchCSS<HTMLAnchorElement>(request2, '#dropdownMenuOffset+ul li a');
+        uri = new URL(firstChapter[0].pathname, this.URI);
+        request = new FetchRequest(uri.href);
+        const data = await FetchCSS<HTMLAnchorElement>(request, '#dropdownMenuOffset+ul li a');
         return data.map(element => {
             return new Chapter(this, manga, element.pathname, `${element.textContent.trim()} [${language}]`);
         });
