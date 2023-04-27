@@ -21,6 +21,10 @@ export function scrollSmoothly(element:HTMLElement, distance:number) {
 
 /**
  * Dynamically change the scrolling to stop at the end of images or skip to the start of the next image
+ * @param element - DOM Element to look into
+ * @param selector - CSS query to find items to scroll to
+ * @param defaultDistance - distance to scroll by when no snap point found
+ * @param nextItemCallback - callback function when end of items has been reached
  */
 export function scrollMagic(element: HTMLElement, selector:string, defaultDistance: number, nextItemCallback: () => void) {
     const images = element.querySelectorAll(selector);
