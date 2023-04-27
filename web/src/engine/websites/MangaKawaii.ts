@@ -42,7 +42,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const languages = ['eng', 'fr'];
         const chapters = [];
-        languages.forEach(async lang => chapters.push(await this.getChaptersFromLanguage(manga,lang)));
+        for (const lang of languages) {
+            chapters.push(await this.getChaptersFromLanguage(manga, lang));
+        }
         return chapters;
     }
 
