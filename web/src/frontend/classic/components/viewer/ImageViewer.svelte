@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { fade } from 'svelte/transition';
     import { createEventDispatcher, onDestroy } from 'svelte';
     const dispatch = createEventDispatcher();
     // UI
@@ -89,10 +90,11 @@
             case event.code === 'Space':
                 scrollMagic(
                     viewer,
-                    '.viewerimage',
+                    '.imgpreview',
                     window.innerHeight * 0.8,
                     onNextItemCallback
                 );
+                event.preventDefault();
                 break;
             default:
                 break;
@@ -271,14 +273,16 @@
         />
     {/each}
     {#if autoNextItem && $selectedItemNext !== undefined}
-        <InlineNotification
-            kind="info"
-            title="Bottom reached"
-            subtitle="Click or Press space again to go to next item."
-            on:click={() => dispatch('nextitem')}
-            on:close={() => (autoNextItem = false)}
-            style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
-        />
+        <div transition:fade>
+            <InlineNotification
+                kind="info"
+                title="Bottom reached"
+                subtitle="Click or Press space again to go to next item."
+                on:click={() => dispatch('nextitem')}
+                on:close={() => (autoNextItem = false)}
+                style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
+            />
+        </div>
     {/if}
 </div>
 
