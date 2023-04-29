@@ -5,11 +5,10 @@
     import { InlineLoading } from 'carbon-components-svelte';
     export let page: IMediaItem;
     export let alt: string;
-    let loaded=false;
+    let loaded = false;
     let dataload: Promise<Blob>;
-    let image:HTMLImageElement;
-    dataload = page
-        .Fetch(Priority.High, new AbortController().signal);
+    let image: HTMLImageElement;
+    dataload = page.Fetch(Priority.High, new AbortController().signal);
 
     onDestroy(() => {
         dataload.then((_src) => {
@@ -18,11 +17,12 @@
     });
 
     import { ViewerZoomRatio } from '../../stores/Settings';
-    $: loaded ? image.width=image.naturalWidth * $ViewerZoomRatio : 100;
-    $: loaded ? image.height=image.naturalHeight * $ViewerZoomRatio : 100;
+    $: loaded ? (image.width = image.naturalWidth * $ViewerZoomRatio) : 100;
+    $: loaded ? (image.height = image.naturalHeight * $ViewerZoomRatio) : 100;
 </script>
+
 {#await dataload}
-    <InlineLoading class="imgpreview {$$props.class}"  on:click/>
+    <InlineLoading class="imgpreview center {$$props.class}" on:click />
 {:then data}
     {#if data?.type.startsWith('image')}
         <img
@@ -32,11 +32,12 @@
             draggable="false"
             bind:this={image}
             on:click
-            on:load={() => loaded=true}
+            on:keypress
+            on:load={() => (loaded = true)}
         />
     {:else}
         <InlineLoading
-            class="imgpreview {$$props.class}"
+            class="imgpreview center {$$props.class}"
             status="error"
             description="Resource is not an image"
             on:click

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
+    import { crossfade, fade } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
     import { createEventDispatcher, onDestroy } from 'svelte';
     const dispatch = createEventDispatcher();
     // UI
@@ -232,11 +233,17 @@
         viewer?.removeEventListener('mousedown', onMouseDown);
         if (viewer) viewer.style.userSelect = 'none';
     }
+
+    const [send, receive] = crossfade({
+        duration: 1500,
+        easing: quintOut,
+    });
 </script>
 
 <div
     id="ImageViewer"
     bind:this={viewer}
+    transition:fade
     class="{wide ? 'wide' : 'thumbnail'} {$ViewerMode} {$ViewerReverseDirection
         ? 'reverse'
         : ''}"
@@ -262,15 +269,17 @@
     {/if}
 
     {#each entries as content, index (index)}
-        <Image
-            class={wide ? 'wide' : 'thumbnail'}
-            alt="content_{index}"
-            page={content}
-            on:click={() => {
-                currentImageIndex = index;
-                wide = true;
-            }}
-        />
+        <span in:send={{ key: index }} out:receive={{ key: index }}>
+            <Image
+                class={wide ? 'wide' : 'thumbnail'}
+                alt="content_{index}"
+                page={content}
+                on:click={() => {
+                    currentImageIndex = index;
+                    wide = true;
+                }}
+            />
+        </span>
     {/each}
     {#if autoNextItem && $selectedItemNext !== undefined}
         <div transition:fade>
