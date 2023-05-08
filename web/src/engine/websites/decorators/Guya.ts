@@ -2,15 +2,28 @@ import { FetchRequest, FetchJSON } from '../../FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import type * as Common from './Common';
 
-type APIManga = { title: string };
+type APISingleManga = { title: string };
+
+type APIManga = {
+    [id: string]: {
+        author: string,
+        artist: string,
+        slug: string,
+        groups: string[],
+    }
+};
 
 type APIChapters = {
-    preferred_sort : string[],
-    chapters: {
-        title: string,
-        folder: string,
-    }[]
+    preferred_sort: string[],
+    chapters: { [id: string]: APIChapter }
 };
+
+type APIChapter = {
+    title: string,
+    folder: string,
+    volume: string,
+    groups: { [id: string]: string[] }
+}
 
 /***********************************************
  ******** Manga Extraction Methods ********
@@ -24,7 +37,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
     const slug = new URL(url).pathname.match(/([^/]*)\/*$/)[1];
     const uri = new URL('/api/series/' + slug, this.URI);
     const request = new FetchRequest(uri.href);
-    const { title } = await FetchJSON<APIManga>(request);
+    const { title } = await FetchJSON<APISingleManga>(request);
     return new Manga(this, provider, slug, title);
 }
 
@@ -53,7 +66,7 @@ export function MangaAJAX(pattern: RegExp) {
 async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
     const uri = new URL('/api/get_all_series', this.URI);
     const request = new FetchRequest(uri.href);
-    const data = await FetchJSON(request);
+    const data = await FetchJSON<APIManga>(request);
     return Object.entries(data).map(([key, value]) => {
         return new Manga(this, provider, value.slug, key);
     });
@@ -117,13 +130,8 @@ export function PagesSinglePageAJAX() {
 async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
     const uri = new URL('/api/series/' + chapter.Parent.Identifier, this.URI);
     const request = new FetchRequest(uri.href);
-    const data = await FetchJSON <APIChapters>(request);
-    const [pages, group] = getPagesInfo(data, chapter);
-    return pages.map(page => new Page(this, chapter, new URL(`${this.URI}/media/manga/${chapter.Parent.Identifier}/chapters/${data.chapters[chapter.Identifier].folder}/${group}/${page}`)));
-}
-
-function getPagesInfo(data: APIChapters, chapter : Chapter) {
-    const groups = data.chapters[chapter.Identifier].groups;
-    const group = data.preferred_sort.shift() || Object.keys(groups).shift();
-    return [groups[group], group];
+    const data = await FetchJSON<APIChapters>(request);
+    const chap = data.chapters[chapter.Identifier];
+    const groupname = data.preferred_sort.shift() || Object.keys(chap.groups).shift();
+    return chap.groups[groupname].map(page => new Page(this, chapter, new URL(`/media/manga/${chapter.Parent.Identifier}/chapters/${data.chapters[chapter.Identifier].folder}/${groupname}/${page}`, this.URI)));
 }
