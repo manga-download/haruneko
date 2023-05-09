@@ -127,7 +127,10 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  * @param queryTitle - A CSS sub-query performed on each element found with {@link query} to extract the chapter title
  */
 export function ChaptersSinglePageCSS(query: string = queryChapterListLinks, queryTitle = queryChapterListTitle) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query, queryTitle);
@@ -166,7 +169,10 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
  * @param query - A CSS query to locate the elements from which the page information shall be extracted
  */
 export function PagesSinglePageCSS(exclude: RegExp[] = [], query = queryPageListLinks) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageCSS.call(this, chapter, exclude, query);
@@ -197,7 +203,10 @@ export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapte
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
 export function PagesSinglePageJS(exclude: RegExp[] = [], script = scriptPageListLinks, delay = 2500) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageJS.call(this, chapter, exclude, script, delay);
