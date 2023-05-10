@@ -133,5 +133,5 @@ async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): P
     const data = await FetchJSON<APIChapters>(request);
     const chap = data.chapters[chapter.Identifier];
     const groupname = data.preferred_sort.shift() || Object.keys(chap.groups).shift();
-    return chap.groups[groupname].map(page => new Page(this, chapter, new URL(`/media/manga/${chapter.Parent.Identifier}/chapters/${data.chapters[chapter.Identifier].folder}/${groupname}/${page}`, this.URI)));
+    return chap.groups[groupname].map(page => new Page(this, chapter, new URL(`/media/manga/${chapter.Parent.Identifier}/chapters/${chap.folder}/${groupname}/${page}`, this.URI)));
 }
