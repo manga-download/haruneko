@@ -62,14 +62,17 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
 }
 
 /**
- * A class decorator that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
+ * A class decorator factory that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
  * The `pathname` of the given {@link url} and the detected `postID` will be used as identifier for the extracted manga.
  * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
  * @param pattern - An expression to check if a manga can be extracted from an url or not
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
@@ -173,7 +176,10 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
  * @param path - An additional prefix for the ajax endpoint relative to the scraper's base url
  */
 export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, path = pathname) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageAJAX.call(this, provider, query, throttle, path);
@@ -221,7 +227,10 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export function ChaptersSinglePageCSS(query = queryChapterListLinks, extract = DefaultInfoExtractor) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query, extract);
@@ -262,7 +271,10 @@ export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: M
  * @param path - An additional prefix for the ajax endpoint relative to {@link this} scraper's base url
  */
 export function ChaptersSinglePageAJAXv1(query = queryChapterListLinks, path = pathname, extract = DefaultInfoExtractor) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageAJAXv1.call(this, manga, query, path, extract);
@@ -296,7 +308,10 @@ export async function FetchChaptersSinglePageAJAXv2(this: MangaScraper, manga: M
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks, extract = DefaultInfoExtractor) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageAJAXv2.call(this, manga, query, extract);
@@ -346,7 +361,10 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
  * @param query - A CSS query to locate the elements from which the page information shall be extracted
  */
 export function PagesSinglePageCSS(query = queryPageListLinks) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageCSS.call(this, chapter, query);

@@ -74,7 +74,10 @@ export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: Man
  * @param path - An additional prefix for the ajax endpoint relative to the scraper's base url
  */
 export function MangasSinglePageCSS(query = queryMangas, path = pathname) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasSinglePageCSS.call(this, provider, query, path);
