@@ -58,10 +58,12 @@ async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param path - An additional prefix for the endpoint relative to the scraper's base url
  * @param extract - A custom extractor for manga infos
-
- */
+  */
 export function MangasMultiPageCSS(query = queryMangas, path = pathname, extract = DefaultInfoExtractor ) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageCSS.call(this, provider, query, path, extract);
