@@ -43,8 +43,8 @@ export function scrollMagic(element: HTMLElement, selector:string, defaultDistan
     // If multiple images filtered, get the last one. If none use the top image
     const targetScrollImage = targetScrollImages[targetScrollImages.length - 1] || images[0];
 
-    // Is the target image top within view ? then scroll to the top of it
-    if (targetScrollImage.getBoundingClientRect().top > 1) {
+    // Is the target image top within view ? then scroll to the top of it (unless the bottom is also within view)
+    if (targetScrollImage.getBoundingClientRect().top > 1 && window.innerHeight > targetScrollImage.getBoundingClientRect().bottom) {
         targetScrollImage.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'start'});
     }
     // Do we stay within target ? (bottom is further than current view)

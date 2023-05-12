@@ -102,7 +102,10 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export function ChaptersSinglePageCSS(query: string = queryChapterListLinks) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query);
@@ -170,7 +173,10 @@ export async function FetchPagesSinglePageREGEX(this: MangaScraper, chapter: Cha
  * only the first regular expression that matches will be used
  */
 export function PagesSinglePageREGEX(...matchers: RegExp[]) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageREGEX.call(this, chapter, ...matchers);

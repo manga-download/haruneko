@@ -116,7 +116,10 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * @param includeHash - append Uri.hash to the manga identifier
  */
 export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelExtractor as LabelExtractor, includeSearch = false, includeHash = false) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
@@ -158,7 +161,10 @@ export async function FetchMangasNotSupported(): Promise<Manga[]> {
  * A class decorator that throws an error ... .
  */
 export function MangasNotSupported() {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper): Promise<Manga[]> {
                 return FetchMangasNotSupported();
@@ -196,7 +202,10 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
 export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasSinglePageCSS.call(this, provider, path, query, extract as InfoExtractor<HTMLElement>);
@@ -242,7 +251,10 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
 export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: string, start = 1, step = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageCSS.call(this, provider, path, query, start, step, throttle, extract as InfoExtractor<HTMLElement>);
@@ -284,7 +296,10 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
  */
 export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query, extract as InfoExtractor<HTMLElement>);
@@ -321,7 +336,10 @@ export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
 export function ChaptersSinglePageJS(script: string, delay = 0) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageJS.call(this, manga, script, delay);
@@ -335,7 +353,10 @@ export function ChaptersSinglePageJS(script: string, delay = 0) {
  * This is useful when website doesnt have the notion of chapter or images are directly on chapter page (most likely for X-rated websites)
  */
 export function ChaptersUniqueFromManga() {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return [new Chapter(this, manga, manga.Identifier, manga.Title)];
@@ -378,7 +399,10 @@ export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: Manga
  * @param extract - A function to extract the page information from a single element (found with {@link query})
  */
 export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract = DefaultPageLinkExtractor as PageLinkExtractor<E>) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageCSS.call(this, chapter, query, extract as PageLinkExtractor<HTMLElement>);
@@ -413,7 +437,10 @@ export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapte
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
 export function PagesSinglePageJS(script: string, delay = 0) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageJS.call(this, chapter, script, delay);
@@ -457,7 +484,10 @@ export async function FetchImage(this: MangaScraper, page: Page, priority: Prior
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
 export function ImageAjax(detectMimeType = false) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImage.call(this, page, priority, signal, detectMimeType, false);
@@ -471,7 +501,10 @@ export function ImageAjax(detectMimeType = false) {
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
 export function ImageElement(detectMimeType = false) {
-    return function DecorateClass<T extends Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImage.call(this, page, priority, signal, detectMimeType, true);
