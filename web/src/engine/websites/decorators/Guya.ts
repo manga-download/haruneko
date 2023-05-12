@@ -47,7 +47,10 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
  * @param pattern - An expression to check if a manga can be extracted from an url or not
  */
 export function MangaAJAX(pattern: RegExp) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
@@ -76,7 +79,10 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
  * A class decorator that adds the ability to extract a manga list using the website api.
  */
 export function MangasSinglePageAJAX() {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasSinglePageAJAX.call(this, provider);
@@ -101,7 +107,10 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, manga: Manga): Pro
  * A class decorator that adds the ability to extract chapter list from a manga using the website api.
  */
 export function ChaptersSinglePageAJAX() {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChapterSinglePageAJAX.call(this, manga);
@@ -118,7 +127,10 @@ export function ChaptersSinglePageAJAX() {
  * A class decorator that adds the ability to extract pages list from a chapter using the website api.
  */
 export function PagesSinglePageAJAX() {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageAJAX.call(this, chapter);
