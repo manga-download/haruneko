@@ -308,6 +308,7 @@ export { default as MangaSwat } from './MangaSwat';
 export { default as MangaSY } from './MangaSY';
 export { default as MangaTale } from './MangaTale';
 export { default as MangaTeca } from './MangaTeca';
+export { default as MangaTepesi } from './MangaTepesi';
 export { default as MangaTitan } from './MangaTitan';
 export { default as MangaTopya } from './MangaTopya';
 export { default as MangaToRead } from './MangaToRead';
