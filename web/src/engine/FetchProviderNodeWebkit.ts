@@ -12,6 +12,11 @@ const fetchApiForbiddenHeaders = [
     'Host'
 ];
 
+type GraphQLResult<T> = {
+    errors: { message: string, code: number }[],
+    data: T
+};
+
 export function RevealWebRequestHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webRequest.HttpHeader[] {
     function ContainsPrefixed(headers: chrome.webRequest.HttpHeader[], header: chrome.webRequest.HttpHeader): boolean {
         const prefixed = (fetchApiSupportedPrefix + header.name).toLowerCase();
@@ -147,6 +152,25 @@ export async function FetchJSON<TResult>(request: FetchRequest): Promise<TResult
 export async function FetchCSS<T extends HTMLElement>(request: FetchRequest, query: string): Promise<T[]> {
     const dom = await FetchHTML(request);
     return [...dom.querySelectorAll(query)] as T[];
+}
+
+export async function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: string): Promise<TResult> {
+
+    const graphQLRequest = new FetchRequest(request.url, {
+        body: JSON.stringify({ operationName, query, variables }),
+        method: 'POST',
+        headers: { 'content/type': 'application/json' }
+    });
+
+    const data = await FetchJSON<GraphQLResult<TResult>>(graphQLRequest);
+    if (data.errors) {
+        throw new Error('errors: ' + data.errors.map(error => error.message).join('\n'));
+    }
+    if (!data.data) {
+        throw new Error('No data available !');
+    }
+
+    return data.data;
 }
 
 /*
