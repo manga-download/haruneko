@@ -159,7 +159,7 @@ export async function FetchGraphQL<TResult>(request: FetchRequest, operationName
     const graphQLRequest = new FetchRequest(request.url, {
         body: JSON.stringify({ operationName, query, variables }),
         method: 'POST',
-        headers: { 'content/type': 'application/json' }
+        headers: { 'content-type': 'application/json', 'accept': '*/*' }
     });
 
     const data = await FetchJSON<GraphQLResult<TResult>>(graphQLRequest);
@@ -169,8 +169,7 @@ export async function FetchGraphQL<TResult>(request: FetchRequest, operationName
     if (!data.data) {
         throw new Error('No data available !');
     }
-
-    return data.data;
+    return data as TResult;
 }
 
 /*
