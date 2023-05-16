@@ -9,6 +9,7 @@
     } from 'carbon-components-svelte';
     import { Star, StarFilled, PlayFilled } from 'carbon-icons-svelte';
     import { selectedMedia } from '../stores/Stores';
+    import { coinflip } from '../lib/transitions';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 
@@ -65,26 +66,30 @@
 
 <div bind:this={mediadiv} class="media" in:fade class:selected>
     {#if isBookmarked}
-        <Button
-            class="bookmarked"
-            size="small"
-            kind="ghost"
-            icon={StarFilled}
-            tooltipPosition="right"
-            tooltipAlignment="end"
-            iconDescription="Remove from bookmarks"
-            on:click={toggleBookmark}
-        />
+        <span in:coinflip={{ duration: 200 }}>
+            <Button
+                class="bookmarked"
+                size="small"
+                kind="ghost"
+                icon={StarFilled}
+                tooltipPosition="right"
+                tooltipAlignment="end"
+                iconDescription="Remove from bookmarks"
+                on:click={toggleBookmark}
+            />
+        </span>
     {:else}
-        <Button
-            size="small"
-            kind="ghost"
-            icon={Star}
-            tooltipPosition="right"
-            tooltipAlignment="end"
-            iconDescription="Add to bookmarks"
-            on:click={toggleBookmark}
-        />
+        <span in:coinflip={{ duration: 200 }}>
+            <Button
+                size="small"
+                kind="ghost"
+                icon={Star}
+                tooltipPosition="right"
+                tooltipAlignment="end"
+                iconDescription="Add to bookmarks"
+                on:click={toggleBookmark}
+            />
+        </span>
     {/if}
     <ClickableTile
         class="title"
