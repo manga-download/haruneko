@@ -163,7 +163,7 @@ export async function FetchGraphQL<TResult>(request: FetchRequest, operationName
     });
 
     const data = await FetchJSON<GraphQLResult<TResult>>(graphQLRequest);
-    if (data.errors) {
+    if (data.errors && data.errors.length > 0) {
         throw new Error('errors: ' + data.errors.map(error => error.message).join('\n'));
     }
     if (!data.data) {
