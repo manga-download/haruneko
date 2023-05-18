@@ -162,6 +162,11 @@ export async function FetchGraphQL<TResult>(request: FetchRequest, operationName
         headers: { 'content-type': 'application/json', 'accept': '*/*' }
     });
 
+    //copy custom headers from parent request
+    for (const header of request.headers) {
+        graphQLRequest.headers.set(header[0], header[1]);
+    }
+
     const data = await FetchJSON<GraphQLResult<TResult>>(graphQLRequest);
     if (data.errors && data.errors.length > 0) {
         throw new Error('errors: ' + data.errors.map(error => error.message).join('\n'));
