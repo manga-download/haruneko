@@ -31,6 +31,15 @@ const queryPageListLinks = 'div.page-break img';
 
 const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapterListBloat);
 
+export const WPMangaProtectorPagesExtractorScript = `
+    new Promise((resolve, reject) => {
+        var imgdata = JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {
+            format: CryptoJSAesJson
+        }).toString(CryptoJS.enc.Utf8));
+        resolve(JSON.parse(imgdata));
+    });
+`;
+
 async function delay(milliseconds: number) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
