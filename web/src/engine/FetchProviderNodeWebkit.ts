@@ -174,7 +174,7 @@ export async function FetchGraphQL<TResult>(request: FetchRequest, operationName
     if (!data.data) {
         throw new Error('No data available !');
     }
-    return data as TResult;
+    return data.data;
 }
 
 /*
