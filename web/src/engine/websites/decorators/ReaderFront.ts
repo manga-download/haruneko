@@ -80,12 +80,12 @@ type APIPages = {
 /**
  * A class decorator that adds the ability to extract a manga from any {@link url}
  * The last part of the url will be used as an id to call the api and get the title
- * @param apiUrl : The url of the graphql api
+ * @param apiUrl - The url of the graphql api
  */
 async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: URL): Promise<Manga> {
     const uri = new URL(url);
-    const language = uri.pathname.match(/work\/([a-z]{2})\/([^\/]+)/)[1];
-    const slug = uri.pathname.match(/work\/([a-z]{2})\/([^\/]+)/)[2];
+    const language = uri.pathname.match(/work\/([a-z]{2})\/([^/]+)/)[1];
+    const slug = uri.pathname.match(/work\/([a-z]{2})\/([^/]+)/)[2];
 
     const gql = {
         operationName: 'Work',
@@ -184,8 +184,8 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
 
 /**
  * A class decorator that adds the ability to extract a manga list using the website api.
- *  @param apiUrl : The url of the graphql api
- *  @param languages : an array list of langage codes to fetch e.g ['en', 'es']. If empty, we get everything.
+ *  @param apiUrl - The url of the graphql api
+ *  @param languages - an array list of langage codes to fetch e.g ['en', 'es']. If empty, we get everything.
  */
 export function MangasSinglePageAJAX(apiUrl: URL, languages = DefaultLanguages) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
@@ -240,7 +240,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: URL, manga
 
 /**
  * A class decorator that adds the ability to extract chapter list from a manga using the website api url
- * @param apiUrl : The url of the graphql api
+ * @param apiUrl - The url of the graphql api
   */
 export function ChaptersSinglePageAJAX(apiUrl: URL) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
@@ -260,8 +260,8 @@ export function ChaptersSinglePageAJAX(apiUrl: URL) {
 
 /**
  * A class decorator that adds the ability to extract pages list from a chapter using the website api URL and CDN url
- * @param apiUrl : The url of the graphql api
- * @param cdnUrl : the base url where images are stored. It can be the same as {@link apiUrl}
+ * @param apiUrl - The url of the graphql api
+ * @param cdnUrl - the base url where images are stored. It can be the same as {@link apiUrl}
  */
 export function PagesSinglePageAJAX(apiUrl: URL, cdnUrl: URL) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
