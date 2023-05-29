@@ -1,6 +1,6 @@
 import { FetchRequest, FetchCSS } from '../../FetchProvider';
 import { type MangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
-import type * as Common from './Common';
+import * as Common from './Common';
 
 export function ChapterInfoExtractor(element: HTMLElement) {
     const anchor: HTMLAnchorElement = element instanceof HTMLAnchorElement ? element : element.querySelector('a');
@@ -9,7 +9,7 @@ export function ChapterInfoExtractor(element: HTMLElement) {
     return { id, title };
 }
 
-const queryMangas = [
+export const queryMangas = [
     'ul.manga-list li a',
     'ul.manga-list-text li a.alpha-link',
     'ul.price-list li a'
@@ -39,6 +39,7 @@ export const queryMangaTitle = [
 ].join(',');
 
 const pathname = '/';
+const DefaultInfoExtractor = Common.AnchorInfoExtractor(false);
 
 /***********************************************
  ******** Manga List Extraction Methods ********
@@ -50,37 +51,38 @@ const pathname = '/';
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param path - The path relative to {@link this} scraper's base url from which the mangas shall be extracted
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, query = queryMangas, path = pathname): Promise<Manga[]> {
+async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, query = queryMangas, path = pathname, extract = DefaultInfoExtractor): Promise<Manga[]> {
     const url = new URL(path + 'changeMangaList?type=text', this.URI);
     const request = new FetchRequest(url.href, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
         }
     });
-    const data = await FetchCSS<HTMLAnchorElement>(request, query);
+    const data = await FetchCSS<E>(request, query);
     return data.map(element => {
-        const id = element.pathname + element.search;
-        const title = element.textContent.trim();
-        return new Manga(this, provider, id, title.trim());
+        const { id, title } = extract.call(this, element);
+        return new Manga(this, provider, id, title);
     });
 }
 
 /**
  * A class decorator that adds the ability to extract multiple mangas from a range of pages using the given CSS {@link query}.
  * The range begins with 1 and is incremented until no more new mangas can be extracted.
- * This decorator utilizes the HTML pages provided by the **WordPress Admin AJAX endpoint** to extract the mangas.
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param path - An additional prefix for the ajax endpoint relative to the scraper's base url
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
+
  */
-export function MangasSinglePageCSS(query = queryMangas, path = pathname) {
+export function MangasSinglePageCSS(query = queryMangas, path = pathname, extract = DefaultInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
         }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasSinglePageCSS.call(this, provider, query, path);
+                return FetchMangasSinglePageCSS.call(this, provider, query, path, extract);
             }
         };
     };
