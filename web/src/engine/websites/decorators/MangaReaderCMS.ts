@@ -51,6 +51,7 @@ const DefaultInfoExtractor = Common.AnchorInfoExtractor(false);
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param path - The path relative to {@link this} scraper's base url from which the mangas shall be extracted
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
 async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, query = queryMangas, path = pathname, extract = DefaultInfoExtractor): Promise<Manga[]> {
     const url = new URL(path + 'changeMangaList?type=text', this.URI);
@@ -71,6 +72,8 @@ async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScrape
  * The range begins with 1 and is incremented until no more new mangas can be extracted.
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param path - An additional prefix for the ajax endpoint relative to the scraper's base url
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
+
  */
 export function MangasSinglePageCSS(query = queryMangas, path = pathname, extract = DefaultInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
