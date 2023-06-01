@@ -4,7 +4,6 @@ import { type Tag, Tags } from '../../Tags';
 import type * as Common from './Common';
 
 const languageMap = {
-    '': 0,
     'es': 1,
     'en': 2
 };
@@ -12,7 +11,6 @@ const languageMap = {
 const DefaultLanguages : string[] = [];
 
 const reverselanguageMap = {
-    0: '',
     1: 'es',
     2: 'en'
 };
