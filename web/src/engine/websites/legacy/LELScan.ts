@@ -1,107 +1,46 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './LELScan.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
+function ChapterExtractor(option: HTMLOptionElement) {
+    const id = new URL(option.value).pathname;
+    const title = option.text.trim();
+    return { id, title };
+}
+
+function MangaExtractor(anchor: HTMLAnchorElement) {
+    const id = anchor.pathname;
+    const title = anchor.title.replace(/lecture en ligne/, '').trim();
+    return { id, title };
+}
+
+@Common.MangaCSS(/^https?:\/\/lelscans\.net\/lecture[^/]+$/, 'meta[name="lelscan"]')
+@Common.MangasSinglePageCSS('', 'div.outil_lecture ul li a', MangaExtractor)
+@Common.ChaptersSinglePageCSS('div#header-image form select:first-of-type option', ChapterExtractor)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('lelscan', `LELScan`, 'https://lelscans.net' /*, Tags.Language.English, Tags ... */);
+        super('lelscan', `LELScan`, 'https://lelscans.net', Tags.Language.French, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class LELScan extends Connector {
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        let data = await FetchCSS<HTMLAnchorElement>(request, 'div#navigation a');
+        data = data.filter(element => parseInt(element.text.trim()));
+        const pages = [];
+        for (const url of data) {
+            const page = await FetchCSS<HTMLImageElement>(new FetchRequest(url.href), 'div#image img');
+            const image = new URL(page[0].src);
+            pages.push(new Page(this, chapter, new URL(image.pathname, this.URI)));
+        }
+        return pages;
 
-    /**
-     *
-     *
-    constructor() {
-        super();
-        super.id = 'lelscan';
-        super.label = 'LELScan';
-        this.tags = [ 'manga', 'high-quality', 'french', 'scanlation' ];
-        this.url = 'https://lelscans.net';
-    }
-
-    /**
-     *
-     *
-    _getMangaList( callback ) {
-        this.fetchDOM( this.url, 'div.outil_lecture ul li a' )
-            .then( data => {
-                let mangaList = data.map( element => {
-                    return {
-                        id: this.getRelativeLink( element ),
-                        title: element.text.replace( 'scan', '' ).trim()
-                    };
-                } );
-                callback( null, mangaList );
-            } )
-            .catch( error => {
-                console.error( error, this );
-                callback( error, undefined );
-            } );
-    }
-
-    /**
-     *
-     *
-    _getChapterList( manga, callback ) {
-        this.fetchDOM( this.url + manga.id, 'div#header-image form select:first-of-type option' )
-            .then( data => {
-                let chapterList = data.map( element => {
-                    let uri = new URL( element.value, this.url );
-                    return {
-                        id: uri.pathname + uri.search,
-                        title: element.text.trim(),
-                        language: 'fr'
-                    };
-                } );
-                callback( null, chapterList );
-            } )
-            .catch( error => {
-                console.error( error, manga );
-                callback( error, undefined );
-            } );
-    }
-
-    /**
-     *
-     *
-    _getPageList( manga, chapter, callback ) {
-        let request = new Request( this.url + chapter.id, this.requestOptions );
-        this.fetchDOM( request, 'div#navigation a' )
-            .then( data => {
-                let pageList = data
-                    .filter( element => parseInt( element.text.trim() ) )
-                    .map( element => this.createConnectorURI( this.getAbsolutePath( element, request.url ) ) );
-                callback( null, pageList );
-            } )
-            .catch( error => {
-                console.error( error, chapter );
-                callback( error, undefined );
-            } );
-    }
-
-    /**
-     *
-     *
-    _handleConnectorURI( payload ) {
-        let request = new Request( payload, this.requestOptions );
-        /*
-         * TODO: only perform requests when from download manager
-         * or when from browser for preview and selected chapter matches
-         *
-        return this.fetchDOM( request, 'div#image source' )
-            .then( data => super._handleConnectorURI( this.getAbsolutePath( data[0], request.url ) ) );
     }
 }
-*/

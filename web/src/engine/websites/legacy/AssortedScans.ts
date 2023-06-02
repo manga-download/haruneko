@@ -1,96 +1,33 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './AssortedScans.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
+@Common.MangaCSS(/^https?:\/\/assortedscans\.com\/reader\/[^/]+\/$/, '#series-title')
+@Common.MangasSinglePageCSS('/reader/', 'section.series h2.series-title a')
+@Common.ChaptersSinglePageCSS('div.chapter > a')
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('assortedscans', `assortedscans`, 'https://assortedscans.com' /*, Tags.Language.English, Tags ... */);
+        super('assortedscans', `Assorted Scans`, 'https://assortedscans.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class AssortedScans extends Connector {
-    constructor() {
-        super();
-        super.id = 'assortedscans';
-        super.label = 'assortedscans';
-        this.tags = ['manga', 'english'];
-        this.url = 'https://assortedscans.com';
-    }
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        let request = new FetchRequest(new URL(chapter.Identifier+'1/', this.URI).href);
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'li.dropdown-element.page-details a');
+        const pages: Page[] = [];
+        for (const pagelink of data) {
+            request = new FetchRequest(new URL(pagelink.pathname, this.URI).href);
+            const img = await FetchCSS<HTMLImageElement>(request, '#page-image');
+            pages.push(new Page(this, chapter, new URL(img[0].src)));
+        }
+        return pages;
 
-    async _getMangaFromURI(uri) {
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, '#series-title');
-        const title = data['0'].text.trim();
-        const id = uri.pathname + uri.search;
-        return Manga(this, id, title);
-    }
-
-    async _getMangas() {
-        const request = new Request(new URL('/reader/', this.url), this.requestOptions);
-        const data = await this.fetchDOM(request, 'section.series h2.series-title a');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.text.trim(),
-            };
-        });
-    }
-
-    async _getChapters(manga) {
-        const id = this.getId(manga.id);
-        const request = new Request(new URL(id, this.url), this.requestOptions);
-        const data = await this.fetchDOM(request, 'div.chapter > a');
-        return data
-            .map(element => {
-                return {
-                    id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                    title: element.title
-                };
-            });
-    }
-
-    getId(url) {
-        return url.match(/\/reader\/.*\/?/)[0];
-    }
-
-    async _getMaxSite(chapterId) {
-        const id = this.getId(chapterId);
-        const request = new Request(new URL(id + '1/', this.url), this.requestOptions);
-        const data = await this.fetchDOM(request, 'li.dropdown-element.page-details:last-child a');
-        const maxSite = data['0'].text.match(/Page (\d+)/)[1];
-        return [id, parseInt(maxSite)];
-    }
-
-    async _getPages(chapter) {
-
-        const id = this.getId(chapter.id);
-        const request = new Request(new URL(id + '1/', this.url), this.requestOptions);
-        const data = await this.fetchDOM(request, 'li.dropdown-element.page-details a');
-        return data.map(element => {
-            const maxPage = element.text.match(/Page (\d+)/)[1];
-            return this.createConnectorURI(this.url + id + maxPage);
-        });
-    }
-
-    async _handleConnectorURI(payload) {
-        const request = new Request(payload, this.requestOptions);
-        const data = await this.fetchDOM(request, 'source#page-image');
-        const link = this.getAbsolutePath(data[0], request.url);
-        const response = await fetch(link, this.requestOptions);
-        const blob = await response.blob();
-        const buffer = await this._blobToBuffer(blob);
-        this._applyRealMime(buffer);
-        return buffer;
     }
 }
-*/
