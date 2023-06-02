@@ -1,72 +1,86 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './MangaCross.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchJSON, FetchRequest } from '../../FetchProvider';
 
+type APIMangas = {
+    comics: APIManga[]
+}
+
+type APIManga = {
+    dir_name: string,
+    title: string,
+}
+
+type APIChapters = {
+    comic: {
+        episodes: APIChapter[]
+    }
+}
+
+type APIChapter = {
+    id: number,
+    volume: string,
+    title: string,
+    status: string
+    page_url: string,
+}
+
+type APIPages = {
+    episode_pages: {
+        image: {
+            pc_url : string
+        }
+    }[]
+}
+
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangacross', `MangaCross`, 'https://mangacross.jp' /*, Tags.Language.English, Tags ... */);
+        super('mangacross', `MangaCross`, 'https://mangacross.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class MangaCross extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'mangacross';
-        super.label = 'MangaCross';
-        this.tags = [ 'manga', 'japanese' ];
-        this.url = 'https://mangacross.jp';
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExp(/^https?:\/\/mangacross\.jp\/comics\/[^/]+\/$/).test(url);
     }
 
-    async _getMangaFromURI(uri) {
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'head title');
-        let id = uri.pathname.split('/').pop();
-        let title = data[0].textContent.split('|')[0].trim();
-        return new Manga(this, id, title);
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const uri = new URL(url);
+        const id = uri.pathname.match(/comics\/([^/]+)\//)[1];
+        const request = new FetchRequest(uri.href);
+        const data = await FetchCSS<HTMLHeadElement>(request, 'head title');
+        const title = data[0].textContent.split('|')[0].trim();
+        return new Manga(this, provider, id, title);
     }
 
-    async _getMangas() {
-        let uri = new URL('/api/comics.json', this.url);
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchJSON(request);
-        return data.comics.map(comic => {
-            return {
-                id: comic.dir_name,
-                title: comic.title.trim()
-            };
-        });
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const uri = new URL('/api/comics.json', this.URI);
+        const request = new FetchRequest(uri.href);
+        const data = await FetchJSON<APIMangas>(request);
+        return data.comics.map(comic => new Manga(this, provider, comic.dir_name, comic.title.trim()));
     }
 
-    async _getChapters(manga) {
-        let uri = new URL('/api/comics/' + manga.id + '.json', this.url);
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchJSON(request);
-        // Is there a way to access the "private" chapters ? Logging in didn't change anything...
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const uri = new URL(`/api/comics/${manga.Identifier}.json`, this.URI);
+        const request = new FetchRequest(uri.href);
+        const data = await FetchJSON<APIChapters>(request);
         return data.comic.episodes.filter(episode => episode.status == 'public').map(episode => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(episode.page_url, this.url),
-                title: episode.volume.trim(),
-                language: ''
-            };
+            let title = episode.volume + ' ';
+            title += episode.title ? episode.title : '';
+            return new Chapter(this, manga, episode.page_url, title.trim());
         });
     }
 
-    async _getPages(chapter) {
-        let uri = new URL(chapter.id + '/viewer.json', this.url);
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchJSON(request);
-        return data.episode_pages.map(page => this.createConnectorURI(this.getAbsolutePath(page.image.pc_url, this.url)));
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const uri = new URL(`${chapter.Identifier}/viewer.json`, this.URI);
+        const request = new FetchRequest(uri.href);
+        const data = await FetchJSON<APIPages>(request);
+        return data.episode_pages.map(page => new Page(this, chapter, new URL(page.image.pc_url)));
     }
 }
-*/
