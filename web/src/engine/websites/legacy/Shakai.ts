@@ -18,8 +18,8 @@ type APIMangas = {
 
 type APIPages = {
     respond: string;
-    data:  {
-        'data-first': string;  //chapter id
+    data: {
+        'data-first': string; //chapter id
         'data-second': string[] //pages url
     }[]
 
@@ -56,7 +56,7 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
 
-    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]>{
+    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL('/take/catalog/request/shakai', this.URI);
         const form = new FormData();
         form.append('dataRun', 'catalog');
