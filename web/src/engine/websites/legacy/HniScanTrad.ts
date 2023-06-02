@@ -1,31 +1,22 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './HniScanTrad.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import * as FoolSlide from '../decorators/FoolSlide';
+import * as Common from '../decorators/Common';
+
+@FoolSlide.MangaCSS(/^https?:\/\/hni-scantrad\.com\/lel\/series\/[^/]+\/?$/)
+@FoolSlide.MangasMultiPageCSS('/lel/directory/{page}/')
+@FoolSlide.ChaptersSinglePageCSS()
+@FoolSlide.PagesSinglePageREGEX()
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hniscantrad', `HNI-Scantrad`, 'http://hni-scantrad.com' /*, Tags.Language.English, Tags ... */);
+        super('hniscantrad', `HNI-Scantrad`, 'http://hni-scantrad.com', Tags.Language.French, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class HniScanTrad extends FoolSlide {
-    constructor() {
-        super();
-        super.id = 'hniscantrad';
-        super.label = 'HNI-Scantrad';
-        this.tags = [ 'manga', 'french', 'scanlation' ];
-        this.url = 'http://hni-scantrad.com';
-        this.path = '/lel/directory/';
-    }
-}
-*/
