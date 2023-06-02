@@ -1,83 +1,29 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './KissComic.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
 
+@Common.MangaCSS(/^https?:\/\/readcomiconline.li\/Comic\/[^/]+$/, 'div.barContent a.bigChar')
+@Common.MangasMultiPageCSS('/ComicList?page={page}', 'div.list-comic div.item a, div.item-list div.group div.col.info a')
+@Common.ChaptersSinglePageCSS('div.episodeList table.listing tr td:first-of-type a, div.section ul.list li a')
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kisscomic', `KissComic (ReadComicOnline)`, 'https://readcomiconline.li' /*, Tags.Language.English, Tags ... */);
+        super('kisscomic', `KissComic (ReadComicOnline)`, 'https://readcomiconline.li', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class KissComic extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'kisscomic';
-        super.label = 'KissComic (ReadComicOnline)';
-        this.tags = [ 'comic', 'english' ];
-        this.url = 'https://readcomiconline.li';
-    }
-
-    async _getMangaFromURI(uri) {
-        const request = new Request(new URL(uri), this.requestOptions);
-        const data = await this.fetchDOM(request, 'div.barContent a.bigChar');
-        return new Manga(this, uri.pathname, data[0].text.trim());
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        for (let page = 1, run = true; run; page++) {
-            let mangas = await this._getMangasFromPage(page);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    async _getMangasFromPage(page) {
-        const uri = new URL('/ComicList?page=' + page, this.url);
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'table.listing tr td > a');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, request.url),
-                title: element.text.trim()
-            };
-        });
-    }
-
-    async _getChapters(manga) {
-        const uri = new URL(manga.id, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, 'div.episodeList table.listing tr td:first-of-type a, div.section ul.list li a');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.text.replace(/read online/i, '').replace(manga.title, '').trim(),
-                language: 'en'
-            };
-        });
-    }
-
-    async _getPages(chapter) {
-        const script = `
-            new Promise(resolve => resolve(lstImages));
-        `;
-
-        const uri = new URL(chapter.id, this.url);
-        uri.searchParams.set('readType', 1);
-        uri.searchParams.set('quality', 'hq');
-        let request = new Request(uri, this.requestOptions);
-        return Engine.Request.fetchUI(request, script);
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const url = new URL(chapter.Identifier, this.URI);
+        url.searchParams.set('readType', '1');
+        url.searchParams.set('quality', 'hq');
+        const request = new FetchRequest(url.href);
+        const data = await FetchWindowScript<string[]>(request, 'lstImages');
+        return data.map(image => new Page(this, chapter, new URL(image)));
     }
 }
-*/
