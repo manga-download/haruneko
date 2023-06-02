@@ -1,72 +1,51 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './ComicRyu.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchRequest } from '../../FetchProvider';
+
+const pageScript =`
+    new Promise(resolve => {
+        resolve(photoArray.map(photo => new URL(photoDir + photo[0], window.location).href));
+    });
+`;
+
+function MangaExtractor(element: HTMLImageElement) {
+    return element.alt.trim();
+}
+
+function MangaInfoExtractor(element: HTMLElement) {
+    const id = element.querySelector<HTMLAnchorElement>('a').pathname;
+    const title = element.querySelector('h1.m-lineup-piece-title').textContent.trim();
+    return { id, title };
+}
+
+@Common.MangaCSS(/^https?:\/\/www\.comic-ryu\.jp\/_[^/]+\/index.html/, 'div#detail div.titlepage h2 img', MangaExtractor)
+@Common.MangasSinglePageCSS('/lineup/', 'article.m-lineup-piece', MangaInfoExtractor)
+@Common.PagesSinglePageJS(pageScript)
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicryu', `COMICリュウ`, 'https://www.comic-ryu.jp' /*, Tags.Language.English, Tags ... */);
+        super('comicryu', `COMICリュウ`, 'https://www.comic-ryu.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class ComicRyu extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'comicryu';
-        super.label = 'COMICリュウ';
-        this.tags = [ 'manga', 'japanese' ];
-        this.url = 'https://www.comic-ryu.jp';
+    public async Initialize(): Promise<void> {
+        return;
     }
 
-    async _getMangaFromURI(uri) {
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'div#detail div.titlepage h2 source');
-        let id = uri.pathname + uri.search;
-        let title = data[0].getAttribute('alt').trim();
-        return new Manga(this, id, title);
-    }
-
-    async _getMangas() {
-        let request = new Request(new URL('/lineup/', this.url), this.requestOptions);
-        let data = await this.fetchDOM(request, 'div#main div.lineuparea div.linkbox');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element.querySelector('a'), request.url),
-                title: element.querySelector('p.title').textContent.trim()
-            };
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const chapters = await FetchCSS<HTMLAnchorElement>(request, 'div#read ul.readlist li p.readbtn a');
+        return chapters.map(anchor => {
+            const url = manga.Identifier.replace('/index.html', anchor.pathname);
+            const title = anchor.text.trim();
+            return new Chapter(this, manga, url, title);
         });
     }
-
-    async _getChapters(manga) {
-        let request = new Request(new URL(manga.id, this.url), this.requestOptions);
-        let data = await this.fetchDOM(request, 'div#read ul.readlist li p.readbtn a');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, request.url),
-                title: element.text.trim(),
-                language: ''
-            };
-        });
-    }
-
-    async _getPages(chapter) {
-        let script = `
-            new Promise(resolve => {
-                resolve(photoArray.map(photo => new URL(photoDir + photo[0], window.location).href));
-            });
-        `;
-        let request = new Request(new URL(chapter.id, this.url), this.requestOptions);
-        return Engine.Request.fetchUI(request, script);
-    }
 }
-*/
