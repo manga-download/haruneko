@@ -1,33 +1,19 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './MintManga.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { DecoratableMangaScraper} from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import * as ReadM from '../decorators/ReadMangaLive';
 
+@Common.MangaCSS(/^https?:\/\/mintmanga\.live\/[^/]+$/, ReadM.queryMangaTitle)
+@Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, ReadM.pageMangaOffset, 0, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS(ReadM.queryChapters)
+@ReadM.PagesSinglePageJS()
+@ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
-        super('mintmanga', `MintManga`, 'https://mintmanga.live' /*, Tags.Language.English, Tags ... */);
+        super('mintmanga', `MintManga`, 'https://mintmanga.live', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
-
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MintManga extends ReadManga {
-
-    constructor() {
-        super();
-        super.id = 'mintmanga';
-        super.label = 'MintManga';
-        this.tags = [ 'manga', 'webtoon', 'russian' ];
-        this.url = 'https://mintmanga.live';
-
-        this.preferSubtitleAsMangaTitle = true;
-    }
-}
-*/
