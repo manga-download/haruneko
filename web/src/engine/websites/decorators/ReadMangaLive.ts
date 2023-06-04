@@ -97,7 +97,7 @@ export function ImageAjax(detectMimeType = false) {
 async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, pretendImageElementSource = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
 
-        //1st : try to get the url directly : page.parameters.picture
+        //1st : try to get the url directly
         const request = cookImageRequest(page, signal, pretendImageElementSource);
         let response = undefined;
         let failed = false;
