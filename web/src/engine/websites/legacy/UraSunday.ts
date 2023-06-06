@@ -1,6 +1,6 @@
 import { Tags } from '../../Tags';
 import icon from './UraSunday.webp';
-import { Chapter, DecoratableMangaScraper, Page, type Manga, type MangaPlugin } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
