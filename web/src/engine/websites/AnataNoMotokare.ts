@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as FoolSlide from './decorators/FoolSlide';
 import * as Common from './decorators/Common';
 
-@FoolSlide.MangaCSS(/^https?:\/\/motokare.xyz\/reader\/series\/[^/]+\/?$/)
+@FoolSlide.MangaCSS(/^https?:\/\/motokare\.xyz\/reader\/series\/[^/]+\/?$/)
 @FoolSlide.MangasMultiPageCSS('/reader/directory/{page}/')
 @FoolSlide.ChaptersSinglePageCSS()
 @FoolSlide.PagesSinglePageREGEX()
