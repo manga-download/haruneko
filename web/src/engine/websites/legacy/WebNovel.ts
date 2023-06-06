@@ -1,122 +1,117 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './WebNovel.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import * as Common from '../decorators/Common';
 
+let token = '';
+
+type APIComic = {
+    comicId: number,
+    comicName: string
+}
+
+type APIResult<T> = {
+    code: number,
+    data: T,
+    msg: string
+}
+
+type APIBooklist = {
+    items: {
+        bookId: string,
+        bookName: string
+    }[]
+}
+
+type APIChapterList = {
+    comicChapters: {
+        chapterId: string,
+        chapterName: string,
+        chapterIndex: number
+    }[]
+}
+
+type APIPageList = {
+    chapterInfo: {
+        chapterPage: {
+            url : string
+        }[]
+    }
+}
+
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('webnovel', `Webnovel Comics`, 'https://www.webnovel.com' /*, Tags.Language.English, Tags ... */);
+        super('webnovel', `Webnovel Comics`, 'https://www.webnovel.com', Tags.Language.English, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Official);
     }
-
     public override get Icon() {
         return icon;
     }
-}
-
-// Original Source
-/*
-class WebNovel extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'webnovel';
-        super.label = 'Webnovel Comics';
-        this.tags = [ 'webtoon', 'english' ];
-        this.url = 'https://www.webnovel.com';
-
-        this.token = '';
+    public override async Initialize(): Promise<void> {
+        const request = new FetchRequest(this.URI.href);
+        const data = await FetchWindowScript<string>(request, `new Promise( resolve => resolve( decodeURIComponent( document.cookie ).match( /_csrfToken=([^;]+);/ )[1] ) )`);
+        token = data;
     }
 
-    async _initializeConnector() {
-        let uri = new URL( this.url );
-        let request = new Request( uri.href, this.requestOptions );
-        return Engine.Request.fetchUI( request, `new Promise( resolve => resolve( decodeURIComponent( document.cookie ).match( /_csrfToken=([^;]+);/ )[1] ) )` )
-            .then( data => this.token = data );
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExp(/^https?:\/\/www\.webnovel\.com\/comic\/\S+_\d+$/).test(url);
     }
 
-    async _getMangaFromURI(uri) {
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'div.det-info h2');
-        let id = uri.pathname.split('/').pop();
-        let title = data[0].textContent.trim();
-        return new Manga(this, id, title);
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const request = new FetchRequest(url);
+        const data = await FetchWindowScript<APIComic>(request, `new Promise( resolve => resolve( window.g_data.book.comicInfo));`);
+        return new Manga(this, provider, String(data.comicId), data.comicName.trim());
     }
 
-    _getMangaListFromPages( page ) {
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList = [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this._getMangasFromPage(page, provider);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
+    }
+    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         page = page || 1;
-        let uri = new URL( '/go/pcm/category/categoryAjax', this.url );
-        uri.searchParams.set( 'pageIndex', page );
-        uri.searchParams.set( '_csrfToken', this.token );
-        uri.searchParams.set( 'categoryId', 0 );
-        uri.searchParams.set( 'categoryType', 2 );
-        let request = new Request( uri.href, this.requestOptions );
-        return this.fetchJSON( request )
-            .then( data => {
-                let mangaList = data.data.items.map( manga => {
-                    return {
-                        id: manga.bookId,
-                        title: manga.bookName
-                    };
-                } );
-                if( mangaList.length > 0 ) {
-                    return this._getMangaListFromPages( page + 1 )
-                        .then( mangas => mangaList.concat( mangas ) );
-                } else {
-                    return Promise.resolve( mangaList );
-                }
-            } );
+        const uri = new URL('/go/pcm/category/categoryAjax', this.URI);
+        const params = new URLSearchParams({
+            pageIndex: String(page),
+            _csrfToken: token,
+            categoryId: '0',
+            categoryType: '2',
+        });
+        uri.search = params.toString();
+        const request = new FetchRequest(uri.href);
+        const data = await FetchJSON<APIResult<APIBooklist>>(request);
+        return data.code == 0 ? data.data.items.map(manga => new Manga(this, provider, manga.bookId, manga.bookName.trim())) : [];
     }
 
-    _getMangaList( callback ) {
-        this._getMangaListFromPages()
-            .then( data => callback( null, data ) )
-            .catch( error => {
-                console.error( error, this );
-                callback( error, undefined );
-            } );
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const uri = new URL('/go/pcm/comic/getChapterList', this.URI);
+        const params = new URLSearchParams({
+            _csrfToken: token,
+            comicId: manga.Identifier
+        });
+        uri.search = params.toString();
+        const request = new FetchRequest(uri.href);
+        const data = await FetchJSON<APIResult<APIChapterList>>(request);
+        return data.code == 0 ? data.data.comicChapters.map(chapter => new Chapter(this, manga, chapter.chapterId, chapter.chapterIndex + ' : ' + chapter.chapterName)) : [];
     }
 
-    _getChapterList( manga, callback ) {
-        let uri = new URL( '/go/pcm/comic/getChapterList', this.url );
-        uri.searchParams.set( 'comicId', manga.id );
-        uri.searchParams.set( '_csrfToken', this.token );
-        let request = new Request( uri.href, this.requestOptions );
-        this.fetchJSON( request )
-            .then( data => {
-                let chapterList = data.data.comicChapters.map( chapter => {
-                    return {
-                        id: chapter.chapterId,
-                        title: chapter.chapterName,
-                        language: ''
-                    };
-                } );
-                callback( null, chapterList );
-            } )
-            .catch( error => {
-                console.error( error, manga );
-                callback( error, undefined );
-            } );
-    }
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const uri = new URL('/go/pcm/comic/getContent', this.URI);
+        const params = new URLSearchParams({
+            width : '1920',
+            _csrfToken: token,
+            comicId: chapter.Parent.Identifier,
+            chapterid: chapter.Identifier
 
-    _getPageList( manga, chapter, callback ) {
-        let uri = new URL( '/go/pcm/comic/getContent', this.url );
-        uri.searchParams.set('width', 1920);
-        uri.searchParams.set( 'comicId', manga.id );
-        uri.searchParams.set( 'chapterId', chapter.id );
-        uri.searchParams.set( '_csrfToken', this.token );
-        let request = new Request( uri.href, this.requestOptions );
-        this.fetchJSON( request )
-            .then( data => {
-                let pageList = data.data.chapterInfo.chapterPage.map( page => this.getAbsolutePath( page.url, request.url ) );
-                callback( null, pageList );
-            } )
-            .catch( error => {
-                console.error( error, chapter );
-                callback( error, undefined );
-            } );
+        });
+        uri.search = params.toString();
+        const request = new FetchRequest(uri.href);
+        const data = await FetchJSON<APIResult<APIPageList>>(request);
+        return data.code == 0 ? data.data.chapterInfo.chapterPage.map(page => new Page(this, chapter, new URL(page.url))) : [];
     }
 }
-*/

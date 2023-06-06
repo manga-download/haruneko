@@ -1,104 +1,86 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './Tsumino.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
+
+type APIMangas = {
+    pageNumber: number,
+    pageCount: number,
+    data: APIMangaEntry[]
+}
+
+type APIMangaEntry = {
+    entry: {
+        id: number,
+        title: string,
+        duration: number;
+    }
+}
+
+@Common.MangaCSS(/^https?:\/\/www\.tsumino\.com\/entry\/\d+$/, 'head meta[property="og:title"]')
+@Common.ChaptersUniqueFromManga()
+@Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tsumino', `Tsumino`, 'https://www.tsumino.com' /*, Tags.Language.English, Tags ... */);
+        super('tsumino', `Tsumino`, 'https://www.tsumino.com', Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class Tsumino extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'tsumino';
-        super.label = 'Tsumino';
-        this.tags = [ 'hentai', 'english' ];
-        this.url = 'https://www.tsumino.com';
-        this.links = {
-            login: 'https://www.tsumino.com/Account/Login'
-        };
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList = [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this.getMangasFromPage(provider, page);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
     }
 
-    async _getMangaFromURI(uri) {
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'head meta[property="og:title"]');
-        let id = parseInt(uri.pathname.split('/').pop());
-        let title = data[0].content.trim();
-        return new Manga(this, id, title);
-    }
-
-    async _getMangaListPage(uri) {
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchJSON(request);
-        return data.data.map(manga => {
-            return {
-                id: manga.entry.id,
-                title: manga.entry.title
-            };
+    async getMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
+        const uri = new URL('/Search/Operate/', this.URI);
+        const params = new URLSearchParams({
+            type: 'Book',
+            PageNumber: String(page),
+            Text: '',
+            Sort: 'Alphabetical',
+            List: '0',
+            Length: '0',
+            MinimumRating: '0',
+            ExcludeList: '0',
+            CompletelyExcludeHated: 'false'
         });
-    }
 
-    async _getMangaList( callback ) {
-        let uri = new URL('/Search/Operate/', this.url);
-        uri.searchParams.set('type', 'Book');
-        uri.searchParams.set('PageNumber', 0);
-        uri.searchParams.set('Text', '');
-        uri.searchParams.set('Sort', 'Alphabetical');
-        uri.searchParams.set('List', 0);
-        uri.searchParams.set('Length', 0);
-        uri.searchParams.set('MinimumRating', 0);
-        uri.searchParams.set('ExcludeList', 0);
-        uri.searchParams.set('CompletelyExcludeHated', false);
-        try {
-            let mangaList = [];
-            let request = new Request(uri, this.requestOptions);
-            let data = await this.fetchJSON(request);
-            let pageCount = data.pageCount;
-            for(let page = 1; page <= pageCount; page++) {
-                uri.searchParams.set('PageNumber', page);
-                let mangas = await this._getMangaListPage(uri);
-                mangaList.push(...mangas);
+        uri.search = params.toString();
+        const request = new FetchRequest(uri.href, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
             }
-            callback(null, mangaList);
-        } catch(error) {
-            console.error(error, this);
-            callback(error, undefined);
+        });
+        try {
+            const data = await FetchJSON<APIMangas>(request);
+            return data.data.map(manga => new Manga(this, provider, `/entry/${String(manga.entry.id)}`, manga.entry.title.trim()));
+        } catch {
+        //
         }
+        return [];
     }
 
-    async _getChapterList( manga, callback ) {
-        try {
-            let chapterList = [ Object.assign({ language: '' }, manga) ];
-            callback(null, chapterList);
-        } catch(error) {
-            console.error(error, manga);
-            callback(error, undefined);
-        }
-    }
-
-    async _getPageList(manga, chapter, callback) {
-        try {
-            let script = `
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        let script = `
                 new Promise(resolve => {
                     let link = document.querySelector('div.book-line div.book-data a#btnReadOnline');
                     resolve(link.href);
                 });
             `;
-            let referer = new Request(this.url + '/entry/' + manga.id, this.requestOptions);
-            let link = await Engine.Request.fetchUI(referer, script);
-            script = `
+        const referer = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const link = await FetchWindowScript<string>(referer, script);
+        script = `
                 new Promise(async (resolve, reject) => {
                     try {
                         let element = document.querySelector('div#image-container');
@@ -124,49 +106,9 @@ class Tsumino extends Connector {
                     }
                 });
             `;
-            let request = new Request(link, this.requestOptions);
-            request.headers.set('x-referer', referer.url);
-            let pageList = await this._captchaFetchUI(request, script);
-            callback(null, pageList);
-        } catch(error) {
-            console.error(error, chapter);
-            callback(error, undefined);
-        }
-    }
+        const request = new FetchRequest(link);
+        const pages = await FetchWindowScript<string[]>(request, script, 500);
+        return pages.map(page => new Page(this, chapter, new URL(page), { Referer: referer.url }));
 
-    async _captchaFetchUI(request, script) {
-        let captcha = `
-            new Promise(resolve => {
-                let element = document.querySelector('div.auth-page');
-                resolve(!element);
-            });
-        `;
-        let success = await Engine.Request.fetchUI(request, captcha);
-        if(success) {
-            return Engine.Request.fetchUI(request, script);
-        } else {
-            return new Promise((resolve, reject) => {
-                let win = window.open(request.url);
-                win.eval(`
-                    [...document.querySelectorAll('nav.tsumino-nav, div.ads-area')].forEach(element => element.parentElement.removeChild(element));
-                `);
-                let timer = setInterval(() => {
-                    if(win.closed) {
-                        clearTimeout(timeout);
-                        clearInterval(timer);
-                        resolve(Engine.Request.fetchUI(request, script));
-                    } else {
-                        //console.log('OPEN:', win.location.href);
-                    }
-                }, 750);
-                let timeout = setTimeout(() => {
-                    clearTimeout(timeout);
-                    clearInterval(timer);
-                    win.close();
-                    reject(new Error('Captcha has not been solved within the given timeout!'));
-                }, 120 * 1000);
-            });
-        }
     }
 }
-*/
