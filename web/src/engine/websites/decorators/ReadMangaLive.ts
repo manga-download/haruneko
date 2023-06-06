@@ -120,7 +120,7 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
                 } catch {
                     failed = true;
                 }
-                if ( failed || response.status === 200) {
+                if ( !failed && response.status == 200) {
                     break;
                 }
             }
