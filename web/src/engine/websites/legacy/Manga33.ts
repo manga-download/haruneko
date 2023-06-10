@@ -1,69 +1,30 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './Manga33.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import * as FlatManga from '../decorators/FlatManga';
 
+@Common.MangaCSS(/^https?:\/\/www\.manga33\.com\/manga\/\S+\.html$/, FlatManga.queryMangaTitle)
+@Common.MangasMultiPageCSS('/list/lastdotime-{page}.html', FlatManga.queryMangas, 0)
+@Common.PagesSinglePageCSS(FlatManga.queryPages)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manga33', `Manga33`, 'https://www.manga33.com' /*, Tags.Language.English, Tags ... */);
+        super('manga33', `Manga33`, 'https://www.manga33.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class Manga33 extends FlatManga {
-
-    constructor() {
-        super();
-        super.id = 'manga33';
-        super.label = 'Manga33';
-        this.tags = [ 'manga', 'webtoon', 'english' ];
-        this.url = 'https://www.manga33.com';
-        this.path = '/list/lastdotime-0.html';
-        this.requestOptions.headers.set('x-referer', this.url);
-
-        this.queryMangaTitle = 'head meta[name="description"]';
-        this.queryMangas = 'div.media div.media-body h3.media-heading a';
-        this.queryPages = 'div.chapter-content source';
-        this.language = 'en';
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        const uri = new URL(this.path, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, 'ul.pagination li:last-of-type a');
-        const pageCount = parseInt(data[0].href.match(/(\d+)\.html$/)[1]);
-        for(let page = 0; page <= pageCount; page++) {
-            let mangas = await this._getMangasFromPage(page);
-            mangaList.push(...mangas);
-        }
-        return mangaList;
-    }
-
-    async _getMangasFromPage(page) {
-        const uri = new URL(`/list/lastdotime-${page}.html`, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryMangas);
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.text.trim()
-            };
-        });
-    }
-
-    async _getChapters(manga) {
-        const chapters = await super._getChapters(manga);
-        chapters.forEach(chapter => chapter.id = chapter.id.replace(/-\d+.html$/, '-all.html'));
-        return chapters;
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const chapters = await FlatManga.FetchChaptersSinglePageCSS.call(this, manga, FlatManga.queryChapters);
+        const fixedChapters = chapters.map(chapter => new Chapter(this, manga, chapter.Identifier.replace(/-\d+.html$/, '-all.html'), chapter.Title));
+        const uniqueChapters = fixedChapters.filter(
+            (obj, index) =>
+                fixedChapters.findIndex((item) => item.Identifier === obj.Identifier) === index
+        );
+        return uniqueChapters;
     }
 }
-*/
