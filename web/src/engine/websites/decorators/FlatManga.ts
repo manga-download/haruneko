@@ -1,5 +1,5 @@
 import { FetchCSS, FetchRequest } from "../../FetchProvider";
-import { Chapter, Manga, MangaScraper} from "../../providers/MangaPlugin";
+import { Chapter, type Manga, type MangaScraper} from "../../providers/MangaPlugin";
 import { Page } from "../../providers/MangaPlugin";
 import type * as Common from './Common';
 
@@ -36,7 +36,6 @@ export const queryPages = [
     'div.chapter-content img'
 ].join(',');
 
-
 /**********************************************
  ******** Chapters List Extraction Methods ******
  **********************************************/
@@ -67,7 +66,7 @@ export function ChaptersSinglePageCSS(query = queryChapters) {
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapters): Promise<Chapter[]> {
-    const url = new URL(manga.Identifier, this.URI)
+    const url = new URL(manga.Identifier, this.URI);
     const request = new FetchRequest(url.href);
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
 
@@ -78,8 +77,8 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
         const id = anchor.pathname;
         const titleElement = anchor.querySelector(queryChapterTitle);
         let title = titleElement ? titleElement.textContent.trim() : anchor.text.trim();
-        let mangaTitle = manga.Title.replace(/\s*-\s*RAW$/, '');
-    //escape all special characters used in Javascript regexes
+        const mangaTitle = manga.Title.replace(/\s*-\s*RAW$/, '');
+        //escape all special characters used in Javascript regexes
         title = title.replace(new RegExp(mangaTitle.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&')), '');
         title = title.replace(/^\s*-\s*/, '');
         title = title.replace(/-\s*-\s*Read\s*Online\s*$/, '').trim();
