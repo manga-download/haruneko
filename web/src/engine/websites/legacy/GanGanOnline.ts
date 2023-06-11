@@ -1,94 +1,118 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './GanGanOnline.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
+type NEXTDATA<T> = {
+    props: {
+        pageProps: {
+            data: T
+        }
+    }
+}
+
+type APIMangas = {
+    titleSections: {
+        titles: {
+            titleId: number,
+            header: string,
+        }[]
+    }[]
+}
+
+type APIManga = {
+    default: {
+        chapters: {
+            status: number,
+            id: number,
+            mainText: string,
+            subText: string
+        }[],
+        titleId: number,
+        titleName: string
+    }
+}
+
+type APIPages = {
+    pages: {
+        image: {
+            imageUrl
+        },
+        linkImage: {
+            imageUrl
+        }
+    }[]
+}
+
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ganganonline', `ガンガンONLINE (Gangan Online)`, 'https://www.ganganonline.com' /*, Tags.Language.English, Tags ... */);
+        super('ganganonline', `ガンガンONLINE (Gangan Online)`, 'https://www.ganganonline.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class GanGanOnline extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'ganganonline';
-        super.label = 'ガンガンONLINE (Gangan Online)';
-        this.tags = [ 'manga', 'japanese' ];
-        this.url = 'https://www.ganganonline.com';
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExp(`^${this.URI.origin}/title/\\d+$`).test(url);
     }
 
-    async _getEmbeddedJSON(uri) {
-        const request = new Request(uri, this.requestOptions);
-        const scripts = await this.fetchDOM(request, 'script#__NEXT_DATA__');
-        const data = JSON.parse(scripts[0].text);
-        return data.props.pageProps.data;
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const data = await this._getEmbeddedJSON<APIManga>(new URL(url));
+        return new Manga(this, provider, String(data.default.titleId), data.default.titleName);
     }
 
-    async _getMangaFromURI(uri) {
-        const data = await this._getEmbeddedJSON(uri);
-        return new Manga(this, data.default.titleId, data.default.titleName);
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        const slugs = [ '/finish', '/rensai' ];
-        for(const slug of slugs) {
-            const mangas = await this._getMangasFromPage(slug);
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList = [];
+        const slugs = ['/finish', '/rensai'];
+        for (const slug of slugs) {
+            const mangas = await this._getMangasFromPage(slug, provider);
             mangaList.push(...mangas);
         }
         return mangaList;
     }
 
-    async _getMangasFromPage(path) {
-        const uri = new URL(path, this.url);
-        const data = await this._getEmbeddedJSON(uri);
+    private async _getMangasFromPage(slug: string, provider: MangaPlugin): Promise<Manga[]> {
+        const uri = new URL(slug, this.URI);
+        const data = await this._getEmbeddedJSON<APIMangas>(uri);
         return data.titleSections.reduce((accumulator, section) => {
             const mangas = section.titles.map(title => {
-                return {
-                    id: title.titleId,
-                    title: title.header
-                };
+                return new Manga(this, provider, String(title.titleId), title.header);
             });
             return accumulator.concat(mangas);
         }, []);
     }
 
-    async _getChapters(manga) {
-        const uri = new URL('/title/' + manga.id, this.url);
-        const data = await this._getEmbeddedJSON(uri);
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const uri = new URL('/title/' + manga.Identifier, this.URI);
+        const data = await this._getEmbeddedJSON<APIManga>(uri);
         return data.default.chapters
             .filter(chapter => {
-                if(!chapter.id) {
+                if (!chapter.id) {
                     return false;
                 }
-                if(chapter.status !== undefined && chapter.status < 4) {
+                if (chapter.status !== undefined && chapter.status < 4) {
                     return false;
                 }
                 return true;
             })
-            .map(chapter => {
-                return {
-                    id: chapter.id,
-                    title: chapter.mainText + (chapter.subText ? ' - ' + chapter.subText : '')
-                };
-            });
+            .map(chapter => new Chapter(this, manga, String(chapter.id), chapter.mainText + (chapter.subText ? ' - ' + chapter.subText : '')));
+
     }
 
-    async _getPages(chapter) {
-        const uri = new URL(`/title/${chapter.manga.id}/chapter/${chapter.id}`, this.url);
-        const data = await this._getEmbeddedJSON(uri);
-        return data.pages.map(page => this.getAbsolutePath((page.image || page.linkImage).imageUrl, uri.href));
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const uri = new URL(`/title/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI);
+        const data = await this._getEmbeddedJSON<APIPages>(uri);
+        return data.pages.map(page => new Page(this, chapter, new URL((page.image || page.linkImage).imageUrl, uri.href)));
+    }
+
+    async _getEmbeddedJSON<T>(uri: URL) {
+        const request = new FetchRequest(uri.href);
+        const scripts = await FetchCSS<HTMLScriptElement>(request, 'script#__NEXT_DATA__');
+        const data: NEXTDATA<T> = JSON.parse(scripts[0].text);
+        return data.props.pageProps.data;
     }
 }
-*/

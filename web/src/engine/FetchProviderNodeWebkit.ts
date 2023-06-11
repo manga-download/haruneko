@@ -149,6 +149,44 @@ export async function FetchCSS<T extends HTMLElement>(request: FetchRequest, que
     return [...dom.querySelectorAll(query)] as T[];
 }
 
+export async function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: string): Promise<TResult> {
+
+    const graphQLRequest = new FetchRequest(request.url, {
+        body: JSON.stringify({ operationName, query, variables }),
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'accept': '*/*' }
+    });
+
+    //copy custom headers from parent request
+    for (const header of request.headers) {
+        graphQLRequest.headers.set(header[0], header[1]);
+    }
+
+    const data = await FetchJSON<GraphQLResult<TResult>>(graphQLRequest);
+    if (data.errors && data.errors.length > 0) {
+        throw new Error('errors: ' + data.errors.map(error => error.message).join('\n'));
+    }
+    if (!data.data) {
+        throw new Error('No data available !');
+    }
+    return data.data;
+}
+
+export async function FetchRegex(request: FetchRequest, regex: RegExp): Promise<string[]> {
+    if (regex.flags.indexOf('g') == -1) {
+        throw new Error('The provided RegExp must contain the global "g" modifier!');
+    }
+    const response = await fetch(request);
+    const data = await response.text();
+    const result : string[] = [];
+    let match = undefined;
+    // eslint-disable-next-line no-cond-assign
+    while (match = regex.exec(data)) {
+        result.push(match[1]);
+    }
+    return result;
+}
+
 /*
 public async FetchXPATH(request: FetchRequest, xpath: string): Promise<Node[]> {
     const dom = await this.FetchHTML(request);
