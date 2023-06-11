@@ -12,6 +12,11 @@ const fetchApiForbiddenHeaders = [
     'Host'
 ];
 
+type GraphQLResult<T> = {
+    errors: { message: string, code: number }[],
+    data: T
+};
+
 export function RevealWebRequestHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webRequest.HttpHeader[] {
     function ContainsPrefixed(headers: chrome.webRequest.HttpHeader[], header: chrome.webRequest.HttpHeader): boolean {
         const prefixed = (fetchApiSupportedPrefix + header.name).toLowerCase();
