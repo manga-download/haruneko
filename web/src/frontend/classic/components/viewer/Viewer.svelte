@@ -8,31 +8,62 @@
         selectedItemPrevious,
         selectedItemNext,
     } from '../../stores/Stores';
+    import { FlagType } from '../../../../engine/ItemflagManager';
 
-    export let mode: 'Image'| 'Video' = 'Image';
+    export let mode: 'Image' | 'Video' = 'Image';
     export let item: IMediaContainer;
-    let displayedItem:IMediaContainer;
+    let displayedItem: IMediaContainer;
     let currentImageIndex: number = -1;
 
     let updating: Promise<void> | undefined;
     $: refresh(item);
-    async function refresh(item:IMediaContainer){
+    async function refresh(item: IMediaContainer) {
         updating = item.Update();
         await updating;
-        displayedItem=item;
+        displayedItem = item;
     }
 
     function onPreviousItem() {
-        currentImageIndex=-1;
+        currentImageIndex = -1;
         $selectedItem = $selectedItemPrevious;
     }
     function onNextItem() {
-        currentImageIndex=-1;
+        currentImageIndex = -1;
+        if (wide && !$selectedItemNext) markAsCurrent(item);
         $selectedItem = $selectedItemNext;
     }
-    let wide=false;
+    function onClose() {
+        markAsCurrent(item);
+    }
+
+    async function markAsCurrent(itemtoflag: IMediaContainer) {
+        let currentIndex = -1;
+        let itemtoflagIndex = -1;
+        const flags = await HakuNeko.ItemflagManager.GetContainerItemsFlags(
+            itemtoflag.Parent
+        );
+
+        await Promise.all(
+            item.Parent.Entries.map(async (entry: IMediaContainer, index) => {
+                if ((entry as IMediaContainer).IsSameAs(itemtoflag))
+                    itemtoflagIndex = index;
+                const flag = await HakuNeko.ItemflagManager.GetItemFlagType(
+                    entry
+                );
+                if (flag === FlagType.Current) currentIndex = index;
+            })
+        );
+
+        const isCurrentBookmarkAfter = itemtoflagIndex < currentIndex;
+        HakuNeko.ItemflagManager.FlagItem(
+            itemtoflag,
+            isCurrentBookmarkAfter ? FlagType.Current : FlagType.Viewed
+        );
+    }
+    let wide = false;
 </script>
-<div id="Viewer" class="{mode} center" class:wide={wide}>
+
+<div id="Viewer" class="{mode} center" class:wide>
     {#await updating}
         <div class="info loading">
             <div class="center"><Loading withOverlay={false} /></div>
@@ -45,11 +76,12 @@
         {#key displayedItem}
             {#if mode === 'Image'}
                 <ImageViewer
-                item={displayedItem}
-                {currentImageIndex}
-                bind:wide
-                on:nextItem={() => onNextItem()}
-                on:previousItem={() => onPreviousItem()}
+                    item={displayedItem}
+                    {currentImageIndex}
+                    bind:wide
+                    on:nextItem={onNextItem}
+                    on:previousItem={onPreviousItem}
+                    on:close={onClose}
                 />
             {:else if mode === 'Video'}
                 <VideoViewer />
@@ -80,10 +112,10 @@
         position: absolute;
         z-index: 10000;
         -webkit-app-region: no-drag;
-        padding:0;
+        padding: 0;
         background-color: var(--cds-ui-01);
     }
-    #Viewer .info  {
+    #Viewer .info {
         position: absolute;
         z-index: 10001;
     }

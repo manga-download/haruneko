@@ -67,3 +67,11 @@ export function scrollMagic(element: HTMLElement, selector:string, defaultDistan
         nextScrollImage.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'start'});
     }
 }
+
+export function toggleFullScreen() {
+    if (!window.document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+    }
+}
