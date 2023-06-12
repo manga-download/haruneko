@@ -126,7 +126,7 @@ export default class extends DecoratableMangaScraper {
 
     async cookPictureUrl(page: ApiImage): Promise<string> {
         const AESKey = 'a7fc9dc89f2c873d79397f8a0028a4cd';
-        const iv = new Uint8Array(16).buffer;
+        const iv = new Uint8Array(16).buffer;//empty IV, just a 16 bytes buffer
         const passPhrase = Buffer.from(AESKey, 'utf-8');
         const secretKey = await crypto.subtle.importKey(
             'raw',
