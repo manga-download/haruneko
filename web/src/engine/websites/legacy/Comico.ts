@@ -1,106 +1,175 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './Comico.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import { Fetch, FetchRequest } from '../../FetchProvider';
+import * as Common from '../decorators/Common';
 
+type APIResult<T> = {
+    result: {
+        code: number
+    },
+    data: T
+}
+
+type ApiMangas = {
+    contents: {
+        id: number,
+        type: string,
+        name: string
+    }[]
+}
+
+type ApiChapter = {
+    activity: {
+        rented: boolean,
+        unlocked: boolean
+    },
+    salesConfig: {
+        free: boolean
+    },
+    id: number,
+    name: string
+}
+
+type ApiChapters = {
+    episode: {
+        content: {
+            chapters: ApiChapter[]
+            name?: string,
+        }
+    },
+    volume: {
+        content: {
+            chapters: ApiChapter[]
+            name?: string,
+        }
+    }
+}
+
+type ApiPage = {
+    content: {
+        chapterFileFormat: string
+    },
+    chapter: {
+        images: ApiImage[]
+    }
+}
+
+type ApiImage = {
+    url: string,
+    parameter: string
+}
+
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
+    private readonly api = 'https://api.comico.jp';
+
     public constructor() {
-        super('comico', `Comico (コミコ)`, 'https://www.comico.jp' /*, Tags.Language.English, Tags ... */);
+        super('comico', `Comico (コミコ)`, 'https://comico.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class Comico extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'comico';
-        super.label = 'Comico (コミコ)';
-        this.tags = [ 'webtoon', 'japanese' ];
-        this.url = 'https://www.comico.jp';
-
-        this.categories = [
-            'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'finish',
-            null // magic key for challenge endpoint
-        ];
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExp(/^https?:\/\/comico.jp\/\S+\/\d+$/).test(url);
     }
 
-    _getTitleNumber(href) {
-        let uri = new URL(href, this.url);
-        return uri.searchParams.get('titleNo');
+    //good manga to test : https://comico.jp/comic/9331
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const id = new URL(url).pathname;
+        const response = await this._fetchPOST(id);
+        const data: APIResult<ApiChapters> = JSON.parse(response);
+        const title = data.data.volume.content != null ? data.data.volume.content.name : data.data.episode.content.name;
+        return new Manga(this, provider, id, title);
     }
 
-    async _fetchPOST(path, parameters) {
-        let uri = new URL(path, this.url);
-        let request = new Request(uri, {
-            method: 'POST',
-            body: new URLSearchParams(parameters).toString(),
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded'
-            }
-        });
-        let response = await fetch(request);
-        return response.json();
-    }
-
-    async _getMangaFromURI(uri) {
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'h1.article-hero09__ttl');
-        let id = this._getTitleNumber(uri.href);
-        let title = data[0].textContent.trim();
-        return new Manga(this, id, title);
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        for(let category of this.categories) {
-            for(let page = 1, run = true; run; page++) {
-                let mangas = await this._getMangasFromPage(category, page);
-                mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-            }
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList = [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this._getMangasFromPage(page, provider);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async _getMangasFromPage(day, page) {
-        let endpoint = day ? '/official' : '/challenge';
-        let data = await this._fetchPOST(endpoint + '/updateList.nhn', { day, page });
-        return !data.result ? [] : data.result.list.map(manga => {
-            return {
-                id: this._getTitleNumber(manga.title_url),
-                title: manga.title_name
-            };
+    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const response = await this._fetchPOST('/all_comic/new_release?pageNo=' + page + '&pageSize=50');
+        const data: APIResult<ApiMangas> = JSON.parse(response);
+        return data.result.code != 200 ? [] : data.data.contents.map(manga => new Manga(this, provider, '/' + manga.type + '/' + manga.id, manga.name));
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const response = await this._fetchPOST(manga.Identifier);
+        const data: APIResult<ApiChapters> = JSON.parse(response);
+        //episode or volume?
+        const element = data.data.episode.content != null ? data.data.episode.content : data.data.volume.content;
+        return element.chapters
+            .filter(chapter => chapter.activity.rented || chapter.activity.unlocked || chapter.salesConfig.free)
+            .map(chapter => new Chapter(this, manga, String(chapter.id), chapter.name));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const response = await this._fetchPOST(chapter.Parent.Identifier + '/chapter/' + chapter.Identifier + '/product');
+        const data: APIResult<ApiPage> = JSON.parse(response);
+        if (data.data.content.chapterFileFormat == 'epub') {
+            throw Error('This chapter is an Epub :/');
+        }
+        const pages = [];
+        for (const page of data.data.chapter.images) {
+            pages.push(await this.cookPictureUrl(page));
+        }
+        return pages.map(image => new Page(this, chapter, new URL(image)));
+    }
+
+    async cookPictureUrl(page: ApiImage): Promise<string> {
+        const AESKey = 'a7fc9dc89f2c873d79397f8a0028a4cd';
+        const iv = new Uint8Array(16).buffer;
+        const passPhrase = Buffer.from(AESKey, 'utf-8');
+        const secretKey = await crypto.subtle.importKey(
+            'raw',
+            passPhrase,
+            {
+                name: 'AES-CBC',
+                length: 128
+            }, true, ['encrypt', 'decrypt']);
+
+        const decrypted = await crypto.subtle.decrypt({
+            name: 'AES-CBC',
+            iv: iv
+        }, secretKey, Buffer.from(page.url, 'base64'),);
+
+        return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
+    }
+
+    async _fetchPOST(path: string): Promise<string> {
+        const webkey = '9241d2f090d01716feac20ae08ba791a';
+        const ip = '0.0.0.0';
+        const tm = Math.round(new Date().getTime() / 1000);
+        const plaintext = new TextEncoder().encode(webkey + ip + String(tm));
+        const hash = await crypto.subtle.digest('SHA-256', plaintext);
+        const checksum = Buffer.from(hash).toString('hex');
+        const uri = new URL(path, this.api);
+        const request = new FetchRequest(uri.href, {
+            method: 'GET',
+            headers: {
+                'x-referer': this.URI.href,
+                'x-origin': this.URI.href,
+                'accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'ja-JP',
+                'X-comico-client-os': 'other',
+                'X-comico-client-store': 'other',
+                'X-comico-request-time': String(tm),
+                'X-comico-check-sum': checksum,
+                'X-comico-timezone-id': 'Europe/Paris',
+                'X-comico-client-immutable-uid': '0.0.0.0',
+                'X-comico-client-platform': 'web',
+                'X-comico-client-accept-mature': 'Y',
+            }
         });
-    }
-
-    async _getChapters(manga) {
-        let data = await this._fetchPOST('/api/getArticleList.nhn', { titleNo: manga.id });
-        return data.result.list
-            .filter(chapter => chapter.isPurchased || chapter.freeFlg === 'Y')
-            .map(chapter => {
-                return {
-                    id: chapter.articleNo,
-                    title: chapter.subtitle,
-                    language: ''
-                };
-            });
-    }
-
-    async _getPages(chapter) {
-        let uri = new URL('/detail.nhn', this.url);
-        uri.searchParams.set('titleNo', chapter.manga.id);
-        uri.searchParams.set('articleNo', chapter.id);
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'div.comic-image source.comic-image__image');
-        return data.map(image => this.getAbsolutePath(image, request.url));
+        const response = await Fetch(request);
+        return await response.text();
     }
 }
-*/

@@ -1,67 +1,61 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './Mangaz.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import { FetchCSS, FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import * as Common from '../decorators/Common';
+import { type Priority } from '../../taskpool/TaskPool';
 
+type ImgObj = {
+    img: string[],
+    b: {
+        Enc: {
+            key: string,
+            iv: string
+        }
+    }
+}
+
+@Common.MangaCSS(/^https?:\/\/www\.mangaz\.com\/series\/detail\/\d+$/, 'li.title')
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaz', `Manga Library Z (マンガ図書館Z)`, 'https://www.mangaz.com' /*, Tags.Language.English, Tags ... */);
+        super('mangaz', `Manga Library Z (マンガ図書館Z)`, 'https://www.mangaz.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class Mangaz extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'mangaz';
-        super.label = 'Manga Library Z (マンガ図書館Z)';
-        this.tags = ['manga', 'japanese'];
-        this.url = 'https://www.mangaz.com';
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        for(let page = 0, run = true; run; page++) {
-            let mangas = await this._getMangasFromPage(page);
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList = [];
+        for (let page = 0, run = true; run; page++) {
+            const mangas = await this._getMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async _getMangasFromPage(page) {
-        const request = new Request(new URL('/title/addpage_renewal?query=&page='+page, this.url), {
-            method:'GET',
+    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const request = new FetchRequest(new URL('/title/addpage_renewal?query=&page=' + page, this.URI).href, {
+            method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         });
-        const data = await this.fetchDOM(request, 'h4 > a');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, request.url),
-                title: element.text.trim()
-            };
-        });
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'h4 > a');
+        return data.map(element => new Manga(this, provider, element.pathname, element.text.trim()));
     }
 
-    async _getMangaFromURI(uri) {
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, 'li.title');
-        const id = uri.pathname + uri.search;
-        const title = data[0].textContent.trim();
-        return new Manga(this, id, title);
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const data = await FetchCSS(request, 'body');
+        return data[0].querySelector("li.box") ?
+            [...data[0].querySelectorAll("li.box")].map(ele => new Chapter(this, manga, ele.querySelector('button').dataset['url'].replace('navi', 'virgo/view'), ele.querySelector('span').textContent.trim()))
+            :
+            [new Chapter(this, manga, data[0].querySelector('button').dataset['url'].replace('navi', 'virgo/view'), manga.Title)];
     }
 
-    async _getPages(chapter) {
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const script = `
             new Promise(async (resolve,reject) => {
                 let g = JCOMI.namespace("JCOMI.document")
@@ -70,43 +64,33 @@ class Mangaz extends Connector {
                 resolve({img:img,b:b});
             });
         `;
-        const request = new Request(new URL(chapter.id, this.url), this.requestOptions);
-        const data = await Engine.Request.fetchUI(request, script);
-        return data.img.map(ele => this.createConnectorURI({
-            url:this.getAbsolutePath(ele, request.url),
-            key:data.b.Enc.key,
-            iv:data.b.Enc.iv
-        }));
+        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const data = await FetchWindowScript<ImgObj>(request, script);
+        return data.img.map(ele => new Page(this, chapter, new URL(ele), data.b.Enc));
     }
 
-    async _handleConnectorURI(payload) {
-        const response = await fetch(payload.url);
-        const encrypted = CryptoJS.lib.WordArray.create(await response.arrayBuffer());
-        const iv = CryptoJS.enc.Base64.parse(btoa(payload.iv));
-        const key = CryptoJS.enc.Utf8.parse(payload.key);
-        let decrypted = CryptoJS.AES.decrypt({ ciphertext: encrypted }, key, { iv: iv });
-        decrypted = decrypted.toString(CryptoJS.enc.Utf8);
-        decrypted = Uint8Array.from(atob(decrypted), char => char.charCodeAt(0));
-        decrypted = {
-            mimeType: response.headers.get('content-type'),
-            data: decrypted
-        };
-        this._applyRealMime(decrypted);
-        return decrypted;
-    }
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const data = await Common.FetchImage.call(this, page, priority, signal);
+        const encrypted = await new Response(data).arrayBuffer();
+        const iv = Buffer.from(window.btoa(page.Parameters.iv as string), 'base64');
+        const key = Buffer.from(page.Parameters.key as string, 'utf-8');
 
-    async _getChapters(manga) {
-        const request = new Request(new URL(manga.id, this.url), this.requestOptions);
-        const data = await this.fetchDOM(request, 'body');
-        return data[0].querySelector("li.box") ? [...data[0].querySelectorAll("li.box")].map(ele => {
-            return{
-                id:ele.querySelector('button').dataset['url'].replace('navi', 'virgo/view'),
-                title:ele.querySelector('span').textContent.trim()
-            };
-        }): [{
-            id:data[0].querySelector('button').dataset['url'].replace('navi', 'virgo/view'),
-            title:manga.title
-        }];
+        const secretKey = await crypto.subtle.importKey(
+            'raw',
+            key,
+            {
+                name: 'AES-CBC',
+                length: 128
+            }, true, ['encrypt', 'decrypt']);
+
+        let decrypted = await crypto.subtle.decrypt({
+            name: 'AES-CBC',
+            iv: iv,
+        }, secretKey, encrypted,);
+
+        const sdecrypted = new TextDecoder('utf-8').decode(decrypted);
+        decrypted = Uint8Array.from(window.atob(sdecrypted), char => char.charCodeAt(0));
+        return await Common.GetTypedData(decrypted);
+
     }
 }
-*/
