@@ -77,7 +77,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
         const id = anchor.pathname;
         const titleElement = anchor.querySelector(queryChapterTitle);
         let title = titleElement ? titleElement.textContent.trim() : anchor.text.trim();
-        const mangaTitle = manga.Title.replace(/\s*-\s*RAW$/, '');
+        const mangaTitle = manga.Title.replace(/\s*-\s*RAW$/i, '');
         //escape all special characters used in Javascript regexes
         title = title.replace(new RegExp(mangaTitle.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&')), '');
         title = title.replace(/^\s*-\s*/, '');
