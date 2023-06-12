@@ -80,7 +80,7 @@ type APIPages = {
  * The last part of the url will be used as an id to call the api and get the title
  * @param apiUrl - The url of the graphql api
  */
-async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: URL): Promise<Manga> {
+async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: string): Promise<Manga> {
     const uri = new URL(url);
     const language = uri.pathname.match(/work\/([a-z]{2})\/([^/]+)/)[1];
     const slug = uri.pathname.match(/work\/([a-z]{2})\/([^/]+)/)[2];
@@ -101,7 +101,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
                }`
     };
 
-    const request = new FetchRequest(apiUrl.href);
+    const request = new FetchRequest(apiUrl);
     const data = await FetchGraphQL<APIManga>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
     const id = JSON.stringify({
         id: data.work.id,
@@ -123,7 +123,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
  * @param pattern - An expression to check if a manga can be extracted from an url or not
  * @param apiUrl - The url of the graphql api
  */
-export function MangaAJAX(pattern: RegExp, apiUrl: URL) {
+export function MangaAJAX(pattern: RegExp, apiUrl: string) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
@@ -142,7 +142,7 @@ export function MangaAJAX(pattern: RegExp, apiUrl: URL) {
 /***********************************************
  ******** Manga List Extraction Methods ********
  ***********************************************/
-async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: URL, languages : string[]): Promise<Manga[]> {
+async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: string, languages : string[]): Promise<Manga[]> {
     const mappedLanguages: number[] = [];
     for (const lang of languages) {
         mappedLanguages.push(languageMap[lang]);
@@ -163,7 +163,7 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
                     }`
     };
 
-    const request = new FetchRequest(apiUrl.href);
+    const request = new FetchRequest(apiUrl);
     const data = await FetchGraphQL<APIMangas>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
     return data.works.map(manga => {
         const id = JSON.stringify({
@@ -185,7 +185,7 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
  *  @param apiUrl - The url of the graphql api
  *  @param languages - an array list of langage codes to fetch e.g ['en', 'es']. If empty, we get everything.
  */
-export function MangasSinglePageAJAX(apiUrl: URL, languages = DefaultLanguages) {
+export function MangasSinglePageAJAX(apiUrl: string, languages = DefaultLanguages) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
@@ -202,7 +202,7 @@ export function MangasSinglePageAJAX(apiUrl: URL, languages = DefaultLanguages) 
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
-async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: URL, manga: Manga): Promise<Chapter[]> {
+async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, manga: Manga): Promise<Chapter[]> {
     const mangaObj: MangaIdentifier = JSON.parse(manga.Identifier);
     const gql = {
         operationName: 'Work',
@@ -224,7 +224,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: URL, manga
                         }
                     }`
     };
-    const request = new FetchRequest(apiUrl.href);
+    const request = new FetchRequest(apiUrl);
     const data = await FetchGraphQL<APIChapters>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
     return data.work.chapters.map(chapter => {
         const title = `Vol. ${chapter.volume} Ch. ${chapter.chapter}.${chapter.subchapter} - ${chapter.name}`;
@@ -240,7 +240,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: URL, manga
  * A class decorator that adds the ability to extract chapter list from a manga using the website api url
  * @param apiUrl - The url of the graphql api
   */
-export function ChaptersSinglePageAJAX(apiUrl: URL) {
+export function ChaptersSinglePageAJAX(apiUrl: string) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
@@ -261,7 +261,7 @@ export function ChaptersSinglePageAJAX(apiUrl: URL) {
  * @param apiUrl - The url of the graphql api
  * @param cdnUrl - the base url where images are stored. It can be the same as {@link apiUrl}
  */
-export function PagesSinglePageAJAX(apiUrl: URL, cdnUrl: URL) {
+export function PagesSinglePageAJAX(apiUrl: string, cdnUrl: string) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
@@ -274,7 +274,7 @@ export function PagesSinglePageAJAX(apiUrl: URL, cdnUrl: URL) {
     };
 }
 
-async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: URL, cdnUrl: URL, chapter: Chapter): Promise<Page[]> {
+async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnUrl: string, chapter: Chapter): Promise<Page[]> {
     const gql = {
         operationName: 'ChapterById',
         variables: {
@@ -293,10 +293,10 @@ async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: URL, cdnUrl:
                         }
                     }`
     };
-    const request = new FetchRequest(apiUrl.href);
+    const request = new FetchRequest(apiUrl);
     const data = await FetchGraphQL<APIPages>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
     return data.chapterById.pages.map(page => {
-        const uri = new URL(['/works', data.chapterById.work.uniqid, data.chapterById.uniqid, page.filename].join('/'), cdnUrl.href);
+        const uri = new URL(['/works', data.chapterById.work.uniqid, data.chapterById.uniqid, page.filename].join('/'), cdnUrl);
         return new Page(this, chapter, uri);
     });
 

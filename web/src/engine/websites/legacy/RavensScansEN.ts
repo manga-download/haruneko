@@ -1,38 +1,25 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './RavensScansEN.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import * as ReaderFront from '../decorators/ReaderFront';
+
+const apiUrl = 'https://api.ravens-scans.com';
+const cdnUrl = 'https://img-cdn1.ravens-scans.com';
+
+@ReaderFront.MangaAJAX(/^https?:\/\/ravens-scans\.com\/work\/[a-z]{2}\/[^/]+/, apiUrl)
+@ReaderFront.MangasSinglePageAJAX(apiUrl)
+@ReaderFront.ChaptersSinglePageAJAX(apiUrl)
+@ReaderFront.PagesSinglePageAJAX(apiUrl, cdnUrl)
+@Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
-
+    //TODO : Delete RavenscansES and change ids to ravensscans, because we fetch EN and ES content
     public constructor() {
-        super('ravensscans-en', `RavensScans (English)`, 'https://ravens-scans.com' /*, Tags.Language.English, Tags ... */);
+        super('ravensscans-en', `RavensScans`, 'https://ravens-scans.com', Tags.Language.Multilingual, Tags.Source.Scanlator, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class RavensScansEN extends ReaderFront {
-
-    constructor() {
-        super();
-        super.id = 'ravensscans-en';
-        super.label = 'RavensScans (English)';
-        this.tags = [ 'manga', 'high-quality', 'english', 'scanlation' ];
-        this.url = 'https://ravens-scans.com';
-        this.cdn = 'https://img-cdn1.ravens-scans.com';
-        this.apiURL = 'https://api.ravens-scans.com';
-        this.language = 'en';
-    }
-
-    canHandleURI(uri) {
-        return uri.origin === this.url && uri.pathname.includes('/en/');
-    }
-}
-*/
