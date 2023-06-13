@@ -843,6 +843,7 @@ export { default as MangaStreamToday } from './legacy/MangaStreamToday';
 export { default as MangaSubES } from './legacy/MangaSubES';
 export { default as MangaSusu } from './legacy/MangaSusu';
 export { default as MangaTail } from './legacy/MangaTail';
+export { default as MangaTales } from './legacy/MangaTales';
 export { default as Mangatellers } from './legacy/Mangatellers';
 export { default as MangaTensei } from './legacy/MangaTensei';
 export { default as MangaToonCN } from './legacy/MangaToonCN';
