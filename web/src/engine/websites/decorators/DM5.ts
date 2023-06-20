@@ -75,7 +75,10 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
  * @param endpoint - An URL path providing the protected image link data (for each image)
  */
 export function PagesSinglePageScript(endpoint = pathname) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T): T {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        if (context && context.kind !== 'class') {
+            throw new Error(context.name);
+        }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageScript.call(this, chapter, endpoint);

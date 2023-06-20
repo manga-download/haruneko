@@ -1,7 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './ReadM.webp';
-import { DecoratableMangaScraper, type Manga, type MangaPlugin, type MangaScraper } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import * as MangaInn from './decorators/MangaInn';
 
 function MangaInfosExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -15,9 +16,10 @@ function ChapterInfoExtractor(element: HTMLElement) {
     return { id, title };
 
 }
-@Common.MangaCSS(/^https?:\/\/readm\.org\/manga\//, 'h1.page-title')
-@Common.ChaptersSinglePageCSS('.episodes-list .item', ChapterInfoExtractor)
-@Common.PagesSinglePageCSS('div.ch-images img.img-responsive')
+@Common.MangaCSS(/^https?:\/\/readm\.org\/manga\//, MangaInn.queryMangaTitle)
+@MangaInn.MangasMultiPageCSS(MangaInn.queryMangas, MangaInn.pathname, MangaInfosExtractor)
+@Common.ChaptersSinglePageCSS(MangaInn.queryChapters, ChapterInfoExtractor)
+@Common.PagesSinglePageCSS(MangaInn.queryPages)
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
@@ -29,14 +31,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
-    public override async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-        const mangalist = [];
-        const paths = [''].concat('abcdefghijklmnopqrstuvwxyz'.split(''));
-        for (const path of paths) {
-            mangalist.push(... await Common.FetchMangasSinglePageCSS.call(this, provider, '/manga-list/' + path, '.poster a', MangaInfosExtractor));
-        }
-        return mangalist;
-    }
-
 }

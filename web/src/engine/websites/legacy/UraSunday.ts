@@ -1,19 +1,75 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './UraSunday.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
+const pageScript = `
+     pages.filter(page => page.src).map(page => page.src);
+`;
+
+function MangaExtractor(anchor: HTMLAnchorElement) {
+    const id = anchor.pathname;
+    const title = anchor.querySelector('img').getAttribute('alt').split('「').pop().split('」').shift().trim();
+    return { id, title };
+}
+
+@Common.MangaCSS(/^https?:\/\/urasunday\.com\/title\/\d+$/, 'div.title div.detail div.info h1')
+@Common.PagesSinglePageJS(pageScript, 500)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('urasunday', `裏サンデー (Ura Sunday)`, 'https://urasunday.com' /*, Tags.Language.English, Tags ... */);
+        super('urasunday', `裏サンデー (Ura Sunday)`, 'https://urasunday.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
         return icon;
     }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList = [];
+        for (const page of ['/serial_title', '/complete_title']) {
+            const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, page,'div.title-all-list ul li a', MangaExtractor );
+            mangaList.push(...mangas);
+        }
+        return mangaList;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        let data = await FetchCSS<HTMLAnchorElement>(request, 'div.title div.detail div.chapter ul li a');
+        data = data.filter(element => element.pathname.includes('/title/'));
+        return data.map(element => {
+            const number = element.querySelector('div > div:first-of-type').textContent.trim();
+            const title = element.querySelector('div > div:nth-of-type(2)').textContent.trim();
+            return new Chapter(this, manga, element.pathname, (number + ' - ' + title).trim());
+        });
+    }
+
+    /* IT SEEM Website only uses ZAO now. I did many tests, moreover tokyo-cdn.com is dead.
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const response = await Fetch(request);
+        const data = await response.text();
+        if (data.includes('dist/js/zao.js')) {
+            console.log('ZAO'); //get JS variable "pages" with src property
+        }
+        if (data.includes('../js/comic_write')) {
+            console.log('ComicWrite');
+        }
+        if (data.includes('urasunday/js/comic_write.js')) {
+            console.log('Webarena');
+        }
+        if (data.includes('urasunday/js/comic_write_new.js')) {
+            console.log('WebarenaNew');
+        }
+        if (data.includes('urasunday/js/comic_write_mapon.js')) {
+            console.log('Mapon');
+        }
+
+        return [];
+    }*/
 }
 
 // Original Source

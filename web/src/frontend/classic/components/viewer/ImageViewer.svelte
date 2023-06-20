@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { crossfade, fade } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
     import { createEventDispatcher, onDestroy } from 'svelte';
     const dispatch = createEventDispatcher();
     // UI
@@ -21,7 +23,7 @@
     } from '../../stores/Settings';
     import { selectedItemNext } from '../../stores/Stores';
     // others
-    import { scrollSmoothly, scrollMagic } from './utilities';
+    import { scrollSmoothly, scrollMagic, toggleFullScreen } from './utilities';
 
     export let item: IMediaContainer;
     export let currentImageIndex: number = -1;
@@ -36,6 +38,11 @@
 
     const title = item?.Title ?? 'unkown';
     let viewer: HTMLElement;
+
+    function onClose() {
+        wide = false;
+        dispatch('close');
+    }
 
     function onKeyDown(event: KeyboardEvent) {
         switch (true) {
@@ -84,15 +91,16 @@
                 ViewerPadding.decrement();
                 break;
             case event.code === 'Escape':
-                wide = false;
+                onClose();
                 break;
             case event.code === 'Space':
                 scrollMagic(
                     viewer,
-                    '.viewerimage',
+                    '.imgpreview',
                     window.innerHeight * 0.8,
                     onNextItemCallback
                 );
+                event.preventDefault();
                 break;
             default:
                 break;
@@ -230,11 +238,18 @@
         viewer?.removeEventListener('mousedown', onMouseDown);
         if (viewer) viewer.style.userSelect = 'none';
     }
+
+    const [send, receive] = crossfade({
+        duration: 1500,
+        easing: quintOut,
+    });
 </script>
 
 <div
     id="ImageViewer"
     bind:this={viewer}
+    on:dblclick={() => toggleFullScreen()}
+    transition:fade
     class="{wide ? 'wide' : 'thumbnail'} {$ViewerMode} {$ViewerReverseDirection
         ? 'reverse'
         : ''}"
@@ -245,7 +260,7 @@
             {title}
             on:nextItem
             on:previousItem
-            on:close={() => (wide = false)}
+            on:close={onClose}
         />
     {/if}
     {#if entries.length === 0}
@@ -260,25 +275,29 @@
     {/if}
 
     {#each entries as content, index (index)}
-        <Image
-            class={wide ? 'wide' : 'thumbnail'}
-            alt="content_{index}"
-            page={content}
-            on:click={() => {
-                currentImageIndex = index;
-                wide = true;
-            }}
-        />
+        <span in:send={{ key: index }} out:receive={{ key: index }}>
+            <Image
+                class={wide ? 'wide' : 'thumbnail'}
+                alt="content_{index}"
+                page={content}
+                on:click={() => {
+                    currentImageIndex = index;
+                    wide = true;
+                }}
+            />
+        </span>
     {/each}
     {#if autoNextItem && $selectedItemNext !== undefined}
-        <InlineNotification
-            kind="info"
-            title="Bottom reached"
-            subtitle="Click or Press space again to go to next item."
-            on:click={() => dispatch('nextitem')}
-            on:close={() => (autoNextItem = false)}
-            style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
-        />
+        <div transition:fade>
+            <InlineNotification
+                kind="info"
+                title="Bottom reached"
+                subtitle="Click or Press space again to go to next item."
+                on:click={() => dispatch('nextitem')}
+                on:close={() => (autoNextItem = false)}
+                style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
+            />
+        </div>
     {/if}
 </div>
 

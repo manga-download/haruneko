@@ -1,68 +1,114 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './ComicK.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
+
+const apiUrl = 'https://api.comick.app';
+
+type NEXTDATA = {
+    props: {
+        pageProps: {
+            comic: APIManga
+        }
+    }
+}
+
+type APIManga = {
+    hid: string,
+    title : string
+}
+
+type APIChapters = {
+    chapters: {
+        hid: string,
+        title: string,
+        id: number,
+        vol: number,
+        chap: number,
+        slug: string,
+        group_name: string[],
+        lang: string,
+    }[]
+}
+
+type APIChapter = {
+    chapter: {
+        md_images: {
+            b2key: string
+        }[]
+    }
+}
+
+const langMap = {
+    'ar': Tags.Language.Arabic,
+    'en': Tags.Language.English,
+    //'uk': Tags.Language.Ukrainian,
+    'es': Tags.Language.Spanish,
+    'es-419': Tags.Language.Spanish,
+    'ru': Tags.Language.Russian,
+    'pt-br': Tags.Language.Portuguese,
+    'pt': Tags.Language.Portuguese,
+    'th': Tags.Language.Thai,
+    'it': Tags.Language.Italian,
+    'id': Tags.Language.Indonesian,
+    'fr': Tags.Language.French,
+    'zh': Tags.Language.Chinese,
+    'zh-hk': Tags.Language.Chinese,
+    'de': Tags.Language.German,
+    'tr': Tags.Language.Turkish,
+    'pl': Tags.Language.Polish,
+    'vi': Tags.Language.Vietnamese,
+    'ja': Tags.Language.Japanese,
+    //'cz': Tags.Language
+};
+
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comick', `ComicK`, 'https://comick.fun' /*, Tags.Language.English, Tags ... */);
+        super('comick', `ComicK`, 'https://comick.app' , Tags.Language.Multilingual, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class ComicK extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'comick';
-        super.label = 'ComicK';
-        this.tags = [ 'manga', 'english' ];
-        this.url = 'https://comick.fun';
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExp(`^${this.URI.origin}/comic/[^/]+$`).test(url);
     }
 
-    async _getEmbeddedJSON(uri) {
-        const request = new Request(uri, this.requestOptions);
-        const scripts = await this.fetchDOM(request, 'script#__NEXT_DATA__');
-        const data = JSON.parse(scripts[0].text);
-        return data.props.pageProps;
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const request = new FetchRequest(url);
+        const comicdata = await FetchWindowScript<NEXTDATA>(request, '__NEXT_DATA__');
+        return new Manga(this, provider, comicdata.props.pageProps.comic.hid, comicdata.props.pageProps.comic.title.trim());
     }
 
-    async _getMangaFromURI(uri) {
-        const data = await this._getEmbeddedJSON(uri);
-        return new Manga(this, data.comic.id, data.comic.title.trim());
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        for (let page = 0, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(page);
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList = [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this._getMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async _getMangasFromPage(page) {
-        const uri = new URL('/api/get_newest_chapters?page=' + page, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchJSON(request);
-        return !data.data ? [] : data.data.map(item => {
-            return {
-                id: item.md_comics.id,
-                title: item.md_comics.title.trim()
-            };
-        });
+    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]>{
+        try {
+            const uri = new URL('/search?page=' + page, apiUrl);
+            const request = new FetchRequest(uri.href);
+            const data = await FetchJSON<APIManga[]>(request);
+            return data.map(item => {
+                return new Manga(this, provider, item.hid, item.title.trim());
+            });
+        } catch (error) {
+            return [];
+        }
     }
 
-    async _getChapters(manga) {
-        let chapterList = [];
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const chapterList = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this._getChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
@@ -70,43 +116,40 @@ class ComicK extends Connector {
         return chapterList;
     }
 
-    async _getChaptersFromPage(manga, page) {
-        const uri = new URL('/api/get_chapters', this.url);
-        uri.searchParams.set('comicid', manga.id);
-        uri.searchParams.set('page', page);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchJSON(request);
-        return data.data.chapters.map(item => {
-            let title = [];
-            if(item.vol) {
-                title.push('Vol.', item.vol);
+    private async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
+        const uri = new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, apiUrl);
+        const request = new FetchRequest(uri.href);
+        const data = await FetchJSON<APIChapters>(request);
+        return data.chapters.map(item => {
+            let title = '';
+            if (item.vol) {
+                title += `Vol. ${item.vol} `;
             }
-            title.push('Ch.', item.chap);
-            if(item.title) {
-                title.push('-', item.title);
+            if (item.chap) {
+                title += `Ch. ${item.chap}`;
             }
-            title.push('(' + item.iso639_1 + ')');
-            if(item.md_groups && item.md_groups.length) {
-                title.push('[' + item.md_groups.map(g => g.title).join(', ') + ']');
+            if (item.title) {
+                title += ` - ${item.title}`;
             }
-            return {
-                id: [ item.hid, 'chapter', item.chap, item.iso639_1 ].join('-'), // item.id
-                title: title.join(' '),
-                language: item.langName
-            };
+            title += ` (${item.lang})`;
+            if (item.group_name && item.group_name.length) {
+                title += ` [${item.group_name.join(', ')}]`;
+            }
+            const chap = new Chapter(this, manga, item.hid, title);
+            try {
+                chap.Tags.push(langMap[item.lang]);
+            }
+            catch {
+                console.log('ComicK : unable to map language ' + item.lang);
+            }
+            return chap;
         });
     }
 
-    async _getPages(chapter) {
-        const uri = new URL([ '', 'comic', chapter.manga.id, chapter.id ].join('/'), this.url);
-        const data = await this._getEmbeddedJSON(uri);
-        return data.chapter.md_images.map(image => {
-            if(image.gpurl) {
-                return 'https://lh3.googleusercontent.com/' + image.gpurl + '=w0-h0';
-            } else {
-                return 'https://' + [ data.chapter.server, data.chapter.hash, image.name ].join('/');
-            }
-        });
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const uri = new URL('/chapter/' + chapter.Identifier, apiUrl);
+        const request = new FetchRequest(uri.href);
+        const data = await FetchJSON<APIChapter>(request);
+        return data.chapter.md_images.map(image => new Page(this, chapter, new URL(`https://meo.comick.pictures/${image.b2key}`), { Referer : this.URI.href }));
     }
 }
-*/

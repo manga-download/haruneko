@@ -1,87 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './KissmangaORG.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+
+@Common.MangaCSS(/^https?:\/\/kissmanga\.org\/manga\/[^/]+$/, 'strong.bigChar')
+@Common.MangasMultiPageCSS('/manga_list?page={page}&action=list&q=', 'div.listing div.item_movies_in_cat div a.item_movies_link', 1,1)
+@Common.ChaptersSinglePageCSS('div#leftside div.full div.episodeList div.full div.listing.full div div h3 a')
+@Common.PagesSinglePageCSS('div.barContent div.full div.full.watch_container div#centerDivVideo img')
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kissmangaorg', `Kissmanga.org`, 'https://kissmanga.org' /*, Tags.Language.English, Tags ... */);
+        super('kissmangaorg', `Kissmanga.org`, 'https://kissmanga.org', Tags.Language.English, Tags.Source.Aggregator, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class KissmangaORG extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'kissmangaorg';
-        super.label = 'Kissmanga.org';
-        this.tags = [ 'manga', 'webtoon', 'english' ];
-        this.url = 'https://kissmanga.org';
-        this.path = '/manga_list/';
-
-        this.queryMangas = 'div.listing div.item_movies_in_cat div a.item_movies_link';
-        this.queryChapters = 'div#leftside div.full div.episodeList div.full div.listing.full div div h3 a';
-        this.queryPages = 'div.barContent div.full div.full.watch_container div#centerDivVideo source';
-        this.queryMangaTitle = 'div.bigBarContainer div.barContent div.full h2';
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        for(let page = 1, run = true; run; page++) {
-            let mangas = await this._getMangasFromPage(page);
-            mangas.length ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    async _getMangasFromPage(page) {
-        const uri = new URL(this.path, this.url);
-        uri.searchParams.set('page', page);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryMangas);
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.text.trim()
-            };
-        });
-    }
-
-    async _getChapters(manga) {
-        const uri = new URL(manga.id, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryChapters);
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.text.replace(manga.title + ' -', '').trim()
-            };
-        });
-    }
-
-    async _getPages(manga) {
-        const uri = new URL(manga.id, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryPages);
-        return data.map(element => this.getAbsolutePath(element.src, this.url));
-    }
-
-    async _getMangaFromURI(uri) {
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryMangaTitle);
-        const id = uri.pathname;
-        const title = data[0].textContent.trim();
-        return new Manga(this, id, title);
-    }
-
-}
-*/
