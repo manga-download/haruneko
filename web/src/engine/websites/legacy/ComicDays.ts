@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const series = await this._getMangaListFromPages(provider, '/series', 'section.daily ul.daily-series > li.daily-series-item a.link', 'img');
         const magazines = await this._getMangaListFromPages(provider, '/magazine', 'a.barayomi-magazine-list-link-latest', 'img.barayomi-magazine-series-image');
-        const mangas = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/oneshot', '/newcomer', '/daysneo'], CoreView.queryMangas, undefined, 'div.yomikiri-link-title h4');
+        const mangas = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/oneshot', '/newcomer', '/daysneo'], 'div.yomikiri-container ul.yomikiri-items > li.yomikiri-item-box > a.yomikiri-link', undefined, 'div.yomikiri-link-title h4');
         const mangaList = [...series, ...magazines, ...mangas];
         // remove mangas with same title but different ID
         return mangaList.filter(manga => manga === mangaList.find(m => m.Title === manga.Title));

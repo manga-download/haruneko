@@ -5,7 +5,7 @@ import * as CoreView from '../decorators/CoreView';
 import * as Common from '../decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/comic-gardo\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.MangasMultiPageCSS(['/series'])
+@CoreView.MangasMultiPageCSS(['/series'], 'div.series ul.series-section-list li.series-section-item a.series-section-item-link')
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageDescrambler()

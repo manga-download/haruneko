@@ -7,18 +7,7 @@ export const mangaPaths = ['/series', '/series/oneshot', '/series/finished'];
 export const queryMangaTitleFromURI = '.series-header-title';
 
 // The query to select *all* required data for *one* manga
-export const queryMangas = [
-    'article.series-list-wrapper ul.series-list > li.series-list-item > a',
-    'article.serial-series-contents ul.serial-series-list > li.serial-series-item > a',
-    'div.series-items ul.daily-series > li.daily-series-item > a',
-    'ul.webry-series-list > li.webry-series-item > a',
-    'section.series ul.series-series-list > li.series-series-item',
-    'div.serial-contents ul.series-table-list > li.subpage-table-list-item > a',
-    'div.series ul.series-section-list li.series-section-item a.series-section-item-link',
-    'div.yomikiri-container ul.yomikiri-items > li.yomikiri-item-box > a.yomikiri-link',
-    'div.serial-contents section div.series-item h4 > a',
-    'section.series-section ul.series-items > li.series-item > a',
-].join(',');
+export const queryMangas = 'article.series-list-wrapper ul.series-list > li.series-list-item > a';
 
 const queryMangaURI: string = undefined;
 // The query to retrieve the single manga title from inside of this.queryManga

@@ -5,7 +5,7 @@ import * as CoreView from '../decorators/CoreView';
 import * as Common from '../decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/www\.sunday-webry\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.MangasMultiPageCSS(['/series', '/series/oneshot', '/series/yoru-sunday'])
+@CoreView.MangasMultiPageCSS(['/series', '/series/oneshot', '/series/yoru-sunday'], 'ul.webry-series-list > li.webry-series-item > a')
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageDescrambler()

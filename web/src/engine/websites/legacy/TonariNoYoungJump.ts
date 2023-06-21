@@ -5,7 +5,7 @@ import * as CoreView from '../decorators/CoreView';
 import * as Common from '../decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/tonarinoyj\.jp\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.MangasMultiPageCSS(['/series', '/series/oneshot', '/series/trial'], CoreView.queryMangas, undefined, 'h4.title')
+@CoreView.MangasMultiPageCSS(['/series', '/series/oneshot', '/series/trial'], 'div.serial-contents ul.series-table-list > li.subpage-table-list-item > a', undefined, 'h4.title')
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageDescrambler()

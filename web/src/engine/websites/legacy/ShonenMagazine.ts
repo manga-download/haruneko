@@ -4,9 +4,9 @@ import { DecoratableMangaScraper, type Manga, /*type MangaPlugin*/ } from '../..
 import * as CoreView from '../decorators/CoreView';
 //import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
-function MangaExtractor(element: HTMLElement, queryMgURI: string, queryMgtitle: string) {
-    const id = queryMgURI ? element.querySelector<HTMLAnchorElement>(queryMgURI).pathname : (element as HTMLAnchorElement).href; //HREF NOT PATHNAME
-    const title = queryMgtitle ? element.querySelector<HTMLElement>(queryMgtitle).textContent.trim() : element.textContent.trim();
+function MangaExtractor(element: HTMLElement, queryURI: string, queryTitle: string) {
+    const id = (element.querySelector<HTMLAnchorElement>(queryURI) || element as HTMLAnchorElement).href;//HREF NOT PATHNAME
+    const title = (element.querySelector<HTMLElement>(queryTitle) || element).textContent.trim();
     return { id, title };
 }
 function ChapterExtractor(element: HTMLElement, manga: Manga) {
@@ -15,7 +15,7 @@ function ChapterExtractor(element: HTMLElement, manga: Manga) {
     return { id, title };
 }
 
-@CoreView.MangasMultiPageCSS(['/series/smaga', '/series/bmaga', '/series/others'], CoreView.queryMangas, undefined, CoreView.queryMangaTitle, MangaExtractor)
+@CoreView.MangasMultiPageCSS(['/series/smaga', '/series/bmaga', '/series/others'], 'article.serial-series-contents ul.serial-series-list > li.serial-series-item > a', undefined, CoreView.queryMangaTitle, MangaExtractor)
 @CoreView.ChaptersSinglePageCSS(CoreView.queryChapters, ChapterExtractor)
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageDescrambler()

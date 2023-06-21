@@ -5,7 +5,7 @@ import * as CoreView from '../decorators/CoreView';
 import * as Common from '../decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/pocket\.shonenmagazine\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.MangasMultiPageCSS(['/series'])
+@CoreView.MangasMultiPageCSS(['/series'], 'div.series-items ul.daily-series > li.daily-series-item > a')
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageDescrambler()
