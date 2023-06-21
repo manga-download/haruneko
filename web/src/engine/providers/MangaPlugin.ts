@@ -208,7 +208,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
 type Parameters = {
     readonly Referer?: string;
-    readonly [key: string]: string | number | ArrayBuffer;
+    readonly [key: string]: string | number | ArrayBuffer | boolean;
 }
 
 export class Page extends MediaItem {

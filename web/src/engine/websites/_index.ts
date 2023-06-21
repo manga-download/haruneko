@@ -629,6 +629,7 @@ export { default as ComicBoost } from './legacy/ComicBoost';
 export { default as ComicBorder } from './legacy/ComicBorder';
 export { default as ComicBrise } from './legacy/ComicBrise';
 export { default as ComicBunch } from './legacy/ComicBunch';
+export { default as ComicBushi } from './legacy/ComicBushi';
 export { default as ComicClear } from './legacy/ComicClear';
 export { default as ComicDays } from './legacy/ComicDays';
 export { default as ComicEarthStar } from './legacy/ComicEarthStar';
