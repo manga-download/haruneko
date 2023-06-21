@@ -1,3 +1,4 @@
+import { GetLocale } from '../../../i18n/Localization';
 import { FetchRequest, FetchCSS } from '../../FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
@@ -163,16 +164,11 @@ async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, qu
     const dataElement = await FetchCSS(request, query);
     const data: ChapterJSON = JSON.parse(dataElement[0].dataset.value);
     if (!data.readableProduct.isPublic && !data.readableProduct.hasPurchased) {
-        throw new Error(`The chapter '${chapter.Title}' is neither public, nor purchased!`);
+        throw new Error(GetLocale().Plugin_Common_ChapterNotAvailable());
     }
     return data.readableProduct.pageStructure.pages.filter(page => page.type === 'main').map(page => {
         // NOTE: 'usagi' is not scrambled
-        let parameters = {};
-        if (data.readableProduct.pageStructure.choJuGiga === 'baku') {
-            parameters = { Referer: this.URI.href, scrambled: 1 };
-        } else {
-            parameters = { Referer: this.URI.href, scrambled: 0 };
-        }
+        const parameters = { Referer: this.URI.href, scrambled: data.readableProduct.pageStructure.choJuGiga === 'baku' };
         return new Page(this, chapter, new URL(page.src, request.url), parameters);
     });
 }
@@ -208,7 +204,7 @@ export function PagesSinglePageJSON(query = queryEpisodeJSON) {
  */
 async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, pretendImageElementSource = false): Promise<Blob> {
     const data: Blob = await Common.FetchImage.call(this, page, priority, signal, detectMimeType, pretendImageElementSource);
-    return page.Parameters.scrambled == 1 ? await descrambleImage(data) : data;
+    return page.Parameters.scrambled ? await descrambleImage(data) : data;
 }
 async function descrambleImage(data: Blob): Promise<Blob> {
     const bitmap = await createImageBitmap(data);
