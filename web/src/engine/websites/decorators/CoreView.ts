@@ -46,9 +46,9 @@ type ChapterJSON = {
         }
     }
 }
-function MangaExtractor(element: HTMLElement, queryMgURI: string, queryMgtitle: string) {
-    const id = queryMgURI ? element.querySelector<HTMLAnchorElement>(queryMgURI).pathname : (element as HTMLAnchorElement).pathname;
-    const title = queryMgtitle ? element.querySelector<HTMLElement>(queryMgtitle).textContent.trim() : element.textContent.trim();
+function MangaExtractor(element: HTMLElement, queryURI: string, queryTitle: string) {
+    const id = (element.querySelector<HTMLAnchorElement>(queryURI) || element as HTMLAnchorElement).pathname;
+    const title = (element.querySelector<HTMLElement>(queryTitle) || element).textContent.trim();
     return { id, title };
 }
 
@@ -73,17 +73,19 @@ function ChapterExtractor(element: HTMLElement, manga: Manga) {
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param paths - A collection of path relative to {@link this} scraper's base url from which the mangas shall be extracted
- * @param queryMgURI - Optional query to pinpoint the URI inside of {@link query} . Most sites don't need this
- * @param queryMgtitle - The query to retrieve the single manga title from inside of {@link query}
+ * @param queryURI - Optional query to pinpoint the URI inside of {@link query} . Most sites don't need this
+ * @param queryTitle - The query to retrieve the single manga title from inside of {@link query}
+ * @param extractor - An Extractor to get manga infos
+
  */
-export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, paths = mangaPaths, query = queryMangas, queryMgURI = queryMangaURI, queryMgtitle = queryMangaTitle, extractor = MangaExtractor): Promise<Manga[]> {
+export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, paths = mangaPaths, query = queryMangas, queryURI = queryMangaURI, queryTitle = queryMangaTitle, extractor = MangaExtractor): Promise<Manga[]> {
     const mangaList = [];
     for (const page of paths) {
         const uri = new URL(page, this.URI).href;
         const request = new FetchRequest(uri);
         const data = await FetchCSS(request, query);
         const mangas= data.map(element => {
-            const { id, title } = extractor.call(this, element, queryMgURI, queryMgtitle);
+            const { id, title } = extractor.call(this, element, queryURI, queryTitle);
             return new Manga(this, provider, id, title);
         });
 
@@ -96,17 +98,18 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
  * A class decorator that adds the ability to extract multiple mangas from a range of pages using the given CSS {@link query}.
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param paths - A collection of path relative to {@link this} scraper's base url from which the mangas shall be extracted
- * @param queryMgURI - Optional query to pinpoint the URI inside of {@link query} . Most sites don't need this
- * @param queryMgtitle - The query to retrieve the single manga title from inside of {@link query}
+ * @param queryURI - Optional query to pinpoint the URI inside of {@link query} . Most sites don't need this
+ * @param queryTitle - The query to retrieve the single manga title from inside of {@link query}
+ * @param extractor - An Extractor to get manga infos
   */
-export function MangasMultiPageCSS(paths = mangaPaths, query = queryMangas, queryMgURI = queryMangaURI, queryMgtitle = queryMangaTitle, extractor = MangaExtractor) {
+export function MangasMultiPageCSS(paths = mangaPaths, query = queryMangas, queryURI = queryMangaURI, queryTitle = queryMangaTitle, extractor = MangaExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
         }
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasMultiPageCSS.call(this, provider, paths, query, queryMgURI, queryMgtitle, extractor);
+                return FetchMangasMultiPageCSS.call(this, provider, paths, query, queryURI, queryTitle, extractor);
             }
         };
     };
@@ -122,6 +125,7 @@ export function MangasMultiPageCSS(paths = mangaPaths, query = queryMangas, quer
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
+ * @param extractor - An Extractor to get chapter infos
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
     const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
@@ -139,6 +143,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
  * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
+ * @param extractor - An Extractor to get chapter infos
  */
 export function ChaptersSinglePageCSS(query: string = queryChapters, extractor = ChapterExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
