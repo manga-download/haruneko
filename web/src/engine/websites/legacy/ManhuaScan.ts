@@ -24,7 +24,7 @@ const pageScript = `
 
 @Common.MangaCSS(/^https?:\/\/manhuascan\.io\/manga\/[^/]+$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS('/manga-list?page={page}', FlatManga.queryMangas)
-@FlatManga.ChaptersSinglePageCSS(FlatManga.queryChapters)
+@FlatManga.ChaptersSinglePageCSS()
 @Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

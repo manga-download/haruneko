@@ -6,7 +6,7 @@ import * as FlatManga from '../decorators/FlatManga';
 
 @Common.MangaCSS(/^https?:\/\/welovemanga\.one\/\S+\/$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS('/manga-list.html?page={page}', FlatManga.queryMangas)
-@FlatManga.ChaptersSinglePageCSS(FlatManga.queryChapters)
+@FlatManga.ChaptersSinglePageCSS()
 @Common.PagesSinglePageCSS(FlatManga.queryPages)
 @Common.ImageAjax()
 
