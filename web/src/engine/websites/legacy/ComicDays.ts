@@ -1,66 +1,46 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './ComicDays.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as CoreView from '../decorators/CoreView';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
+@Common.MangaCSS(/^https?:\/\/comic-days\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+//@CoreView.MangasMultiPageCSS(['/oneshot', '/newcomer', '/daysneo'])
+@CoreView.ChaptersSinglePageCSS()
+@CoreView.PagesSinglePageJSON()
+@CoreView.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicdays', `コミックDAYS (Comic Days)`, 'https://comic-days.com' /*, Tags.Language.English, Tags ... */);
+        super('comicdays', `コミックDAYS (Comic Days)`, 'https://comic-days.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class ComicDays extends CoreView {
-
-    constructor() {
-        super();
-        super.id = 'comicdays';
-        super.label = 'コミックDAYS (Comic Days)';
-        this.tags = [ 'manga', 'japanese' ];
-        this.url = 'https://comic-days.com';
-
-        this.path = [ '/oneshot', '/newcomer', '/daysneo' ];
-        this.queryManga = 'div.yomikiri-container ul.yomikiri-items > li.yomikiri-item-box > a.yomikiri-link';
-        this.queryMangaTitle = 'div.yomikiri-link-title h4';
-    }
-
-    async _getMangaListFromPages(path, queryLink, queryTitle) {
-        let request = new Request(this.url + path, this.requestOptions);
-        let data = await this.fetchDOM(request, queryLink);
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, request.url),
-                title: element.querySelector(queryTitle).getAttribute('alt').trim()
-            };
-        });
-    }
-
-    async _getMangas() {
-        let series = await this._getMangaListFromPages('/series', 'section.daily ul.daily-series > li.daily-series-item a.link', 'source');
-        let magazines = await this._getMangaListFromPages('/magazine', 'a.barayomi-magazine-list-link-latest', 'source.barayomi-magazine-series-image');
-        let mangas = await super._getMangas();
-        let mangaList = [...series, ...magazines, ...mangas];
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const series = await this._getMangaListFromPages(provider, '/series', 'section.daily ul.daily-series > li.daily-series-item a.link', 'img');
+        const magazines = await this._getMangaListFromPages(provider, '/magazine', 'a.barayomi-magazine-list-link-latest', 'img.barayomi-magazine-series-image');
+        const mangas = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/oneshot', '/newcomer', '/daysneo'], 'div.yomikiri-container ul.yomikiri-items > li.yomikiri-item-box > a.yomikiri-link', undefined, 'div.yomikiri-link-title h4');
+        const mangaList = [...series, ...magazines, ...mangas];
         // remove mangas with same title but different ID
-        return mangaList.filter(manga => manga === mangaList.find(m => m.title === manga.title));
+        return mangaList.filter(manga => manga === mangaList.find(m => m.Title === manga.Title));
+    }
+    private async _getMangaListFromPages(provider: MangaPlugin, path: string, query: string, queryimg: string): Promise<Manga[]> {
+        const request = new FetchRequest(new URL(path, this.URI).href);
+        const data = await FetchCSS<HTMLAnchorElement>(request, query);
+        return data.map(element => new Manga(this, provider, element.pathname, element.querySelector(queryimg).getAttribute('alt').trim()));
     }
 
-    async _getChapters(manga) {
-        if(/^\/magazine\/\d+$/.test(manga.id)) {
-            return [{
-                id: manga.id,
-                title: manga.title
-            }];
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        if (/^\/magazine\/\d+$/.test(manga.Identifier)) {
+            const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+            const data = await FetchCSS(request, '.episode-header-title');
+            return [new Chapter(this, manga, manga.Identifier, data[0].textContent.replace(manga.Title, "").trim())];
         } else {
-            return super._getChapters(manga);
+            return CoreView.FetchChaptersSinglePageCSS.call(this, manga);
         }
     }
 }
-*/

@@ -12,20 +12,16 @@
     "dependencies": {
         "fs-extra": "11.1.1",
         "websocket-rpc": "1.0.2",
-        "yargs": "17.7.1"
+        "yargs": "17.7.2"
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "24.0.1",
-        "@rollup/plugin-node-resolve": "15.0.1",
-        "@rollup/plugin-typescript": "11.0.0",
-        "@types/chrome": "^0.0.227",
+        "@types/chrome": "^0.0.237",
         "@types/fs-extra": "^11.0.1",
         "@types/nw.js": "^0.13.16",
         "@types/ws": "^8.5.4",
         "node-fetch": "3.3.1",
-        "nw": "0.75.0-sdk",
-        "plist": "^3.0.6",
-        "rollup": "^3.20.2"
+        "nw": "0.77.0-sdk",
+        "plist": "^3.0.6"
     },
     "scripts": {
         "check": "eslint ./src",
