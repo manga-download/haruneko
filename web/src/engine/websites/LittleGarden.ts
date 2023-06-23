@@ -43,7 +43,17 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const slug = manga.Identifier.split('/').pop();
         const operationName = 'chapters';
-        const query = 'query chapters($slug: String, $limit: Float, $skip: Float, $order: Float!, $isAdmin: Boolean!) {\n  chapters(limit: $limit, skip: $skip, where: {deleted: false, published: $isAdmin, manga: {slug: $slug, published: $isAdmin, deleted: false}}, order: [{field: "number", order: $order}]) {\n    published\n    likes\n    id\n    number\n    thumb\n    manga {\n      id\n      name\n      slug\n      __typename\n    }\n    __typename\n  }\n}\n';
+        const query = `query chapters($slug: String, $limit: Float, $skip: Float, $order: Float!, $isAdmin: Boolean!) {
+            chapters(limit: $limit, skip: $skip, where: {
+                deleted: false, published: $isAdmin, manga: {
+                    slug: $slug, published: $isAdmin, deleted: false
+                }
+            }, order: [{ field: "number", order: $order }]) {
+                id
+                number
+                __typename
+            }
+        }`;
 
         const variables = {
             slug: slug,
@@ -65,7 +75,22 @@ export default class extends DecoratableMangaScraper {
         const mangaSlug = chapter.Parent.Identifier.split('/').pop();
         const chapterid: ChapterIdentifier = JSON.parse(chapter.Identifier);
         const operationName = 'chapter';
-        const query = 'query chapter($slug: String, $number: Float) {  chapter(where: {deleted: false, published: true, number: $number, manga: {deleted: false, published: true, slug: $slug}}) {    likes    id    number    pages {      colored      original      __typename    }    manga {      id      name      slug      __typename    }    members {      name      twitter      instagram      id      image      role      __typename    }    nextChapter {      number      manga {        slug        __typename      }      __typename    }    __typename  }}';
+        const query = `query chapter($slug: String, $number: Float) {
+                  chapter(
+                    where: {
+                      deleted: false
+                      published: true
+                      number: $number
+                      manga: { deleted: false, published: true, slug: $slug }
+                    }
+                  ) {
+                    pages {
+                      original
+                      __typename
+                    }
+                    __typename
+                  }
+                }`;
         const variables = {
             slug: mangaSlug,
             number: chapterid.number,
