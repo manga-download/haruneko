@@ -4,36 +4,27 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { FetchGraphQL, FetchRequest } from '../FetchProvider';
 
-type APIMangas = {
-    getProjects: {
-        projects: {
-            id: number,
-            name: string
-        }[]
-    }
-};
-
-type APIManga = {
-    project: {
-        name: string,
-        id: number,
-        getChapters: {
-            id: number,
-            number: number,
-            title: string
-        }[]
+type ApiResult<T> = {
+    [id: string]: {
+        [id: string]: T
     }
 }
 
+type ApiSingleResult<T> = {
+    [id: string]: T
+}
+
+type APIManga = {
+    name: string,
+    id: number,
+    getChapters: APIChapter[]
+}
+
 type APIChapter = {
-    getChapters: {
-        chapters: {
-            id: number,
-            number: number,
-            title: string
-            images: string[]
-        }[]
-    }
+    id: number,
+    number: number,
+    title: string
+    images: string[]
 }
 
 @Common.ImageAjax()
@@ -63,8 +54,9 @@ export default class extends DecoratableMangaScraper {
         `;
         const vars = { id: id };
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<APIManga>(request, 'project', gql, JSON.stringify(vars));
-        const title = data.project.name;
+        const operationName = 'project';
+        const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, JSON.stringify(vars));
+        const title = data[operationName].name;
         return new Manga(this, provider, String(id), title.trim());
     }
 
@@ -88,32 +80,32 @@ export default class extends DecoratableMangaScraper {
             }
         `;
         const vars = {
-            "filters": {
-                "operator": "AND",
-                "childExpressions": [{
-                    "operator": "AND",
-                    "filters": [{
-                        "op": "GE",
-                        "field": "Project.id",
-                        "values": ["1"]
+            filters: {
+                operator: "AND",
+                childExpressions: [{
+                    operator: "AND",
+                    filters: [{
+                        op: "GE",
+                        field: "Project.id",
+                        values: ["1"]
                     }]
                 }]
             },
-            "orders": {
-                "orders": [{
-                    "or": "ASC",
-                    "field": "Project.name"
+            orders: {
+                orders: [{
+                    or: "ASC",
+                    field: "Project.name"
                 }]
             },
-            "pagination": {
-                "limit": 100,
-                "page": page
+            pagination: {
+                limit: 100,
+                page: page
             }
         };
 
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<APIMangas>(request, 'latestProjects', gql, JSON.stringify(vars));
-        return data.getProjects.projects.map(manga => new Manga(this, provider, String(manga.id), manga.name));
+        const data = await FetchGraphQL<ApiResult<APIManga[]>>(request, 'latestProjects', gql, JSON.stringify(vars));
+        return data['getProjects']['projects'].map(manga => new Manga(this, provider, String(manga.id), manga.name));
 
     }
 
@@ -127,10 +119,11 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = { "id": parseInt(manga.Identifier) };
+        const vars = { id: parseInt(manga.Identifier) };
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<APIManga>(request, 'project', gql, JSON.stringify(vars));
-        return data.project.getChapters.map(chapter => {
+        const operationName = 'project';
+        const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, JSON.stringify(vars));
+        return data[operationName].getChapters.map(chapter => {
             const title = `Ch. ${chapter.number} - ${chapter.title}`;
             return new Chapter(this, manga, String(chapter.id), title.trim());
         });
@@ -147,34 +140,34 @@ export default class extends DecoratableMangaScraper {
             }
         `;
         const vars = {
-            "filters": {
-                "operator": "AND",
-                "filters": [{
-                    "op": "EQ",
-                    "field": "Chapter.id",
-                    "values": [String(chapter.Identifier)]
+            filters: {
+                operator: "AND",
+                filters: [{
+                    op: "EQ",
+                    field: "Chapter.id",
+                    values: [String(chapter.Identifier)]
                 }],
-                "childExpressions": {
-                    "operator": "AND",
-                    "filters": {
-                        "op": "GE",
-                        "field": "Project.id",
-                        "relationField": "Chapter.project",
-                        "values": ["1"]
+                childExpressions: {
+                    operator: "AND",
+                    filters: {
+                        op: "GE",
+                        field: "Project.id",
+                        relationField: "Chapter.project",
+                        values: ["1"]
                     }
                 }
             },
-            "orders": {
-                "orders": {
-                    "or": "ASC",
-                    "field": "Chapter.id"
+            orders: {
+                orders: {
+                    or: "ASC",
+                    field: "Chapter.id"
                 }
             }
         };
 
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<APIChapter>(request, 'getChapter', gql, JSON.stringify(vars));
-        return data.getChapters.chapters[0].images.map(image => new Page(this, chapter, new URL(`images/${chapter.Parent.Identifier}/${image}`, this.URI)));
+        const data = await FetchGraphQL<ApiResult<APIChapter[]>>(request, 'getChapter', gql, JSON.stringify(vars));
+        return data['getChapters']['chapters'][0].images.map(image => new Page(this, chapter, new URL(`images/${chapter.Parent.Identifier}/${image}`, this.URI)));
 
     }
 }
