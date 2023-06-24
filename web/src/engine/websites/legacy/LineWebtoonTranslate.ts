@@ -45,7 +45,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @LineW.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com' /*, Tags.Language.English, Tags ... */);
+        super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
     }
     public override get Icon() {
         return icon;
