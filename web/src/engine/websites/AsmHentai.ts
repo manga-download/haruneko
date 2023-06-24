@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './AsmHentai.webp';
-import { DecoratableMangaScraper, Chapter, type Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 
@@ -23,6 +23,7 @@ const script = `
 
 @Common.MangaCSS(/^https?:\/\/asmhentai\.com\/g\/[^/]+\/$/, 'div.book_page div.info h1')
 @Common.MangasNotSupported()
+@Common.ChaptersUniqueFromManga()
 @MangaStream.PagesSinglePageJS([], script)
 @Common.ImageAjax()
 
@@ -34,9 +35,5 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return [new Chapter(this, manga, manga.Identifier, manga.Title)];
     }
 }
