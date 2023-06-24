@@ -1,5 +1,5 @@
 import { Tags } from '../../Tags';
-import icon from './RavensScansEN.webp';
+import icon from './RavensScans.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import * as ReaderFront from '../decorators/ReaderFront';
@@ -14,9 +14,8 @@ const cdnUrl = 'https://img-cdn1.ravens-scans.com';
 @Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
-    //TODO : Delete RavenscansES and change ids to ravensscans, because we fetch EN and ES content
     public constructor() {
-        super('ravensscans-en', `RavensScans`, 'https://ravens-scans.com', Tags.Language.Multilingual, Tags.Source.Scanlator, Tags.Media.Manga);
+        super('ravensscans', `RavensScans`, 'https://ravens-scans.com', Tags.Language.Multilingual, Tags.Source.Scanlator, Tags.Media.Manga);
     }
 
     public override get Icon() {
