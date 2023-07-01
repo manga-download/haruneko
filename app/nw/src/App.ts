@@ -1,4 +1,3 @@
-import * as fs from 'fs-extra';
 import yargs from 'yargs';
 import { RPCServer } from './rpc/Server';
 import { Contract } from './rpc/Contract';
@@ -23,9 +22,7 @@ async function GetDefaultURL(): Promise<string|undefined> {
         type Manifest = {
             url?: string;
         }
-        // TODO: Is it possible to read a relative path in bundled NW application?
-        const manifest: Manifest = await fs.readJSON('package.json');
-        return manifest.url;
+        return (nw.App.manifest as Manifest).url;
     } catch {
         return undefined;
     }

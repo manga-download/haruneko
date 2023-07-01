@@ -10,14 +10,12 @@
         "npm": ">=9.5.0"
     },
     "dependencies": {
-        "fs-extra": "11.1.1",
         "websocket-rpc": "1.0.2",
         "yargs": "17.7.2"
     },
     "devDependencies": {
         "@rollup/plugin-typescript": "^11.1.1",
         "@types/chrome": "^0.0.237",
-        "@types/fs-extra": "^11.0.1",
         "@types/nw.js": "^0.13.16",
         "@types/ws": "^8.5.4",
         "node-fetch": "3.3.1",
