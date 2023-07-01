@@ -56,16 +56,24 @@ export class IPC implements PlatformIPC {
         // => chrome.debugger.
 
         for(const cookie of cookies) {
-            await chrome.cookies.set({ ...cookie, url: `https://${cookie.domain}${cookie.path}` });
+            await chrome.cookies.set({
+                domain: cookie.domain,
+                path: cookie.path,
+                url: `https://${cookie.domain}${cookie.path}`,
+                name: cookie.name,
+                value: cookie.value,
+                expirationDate: cookie.expirationDate,
+                httpOnly: cookie.httpOnly,
+                secure: cookie.secure,
+                sameSite: cookie.sameSite,
+                //storeId: cookie.storeId,
+            });
         }
 
         if(userAgent !== navigator.userAgent) {
-            type Manifest = {
-                'user-agent'?: string;
-            }
-            (nw.App.manifest as Manifest)['user-agent'] = userAgent;
+            const manifest = { ...nw.App.manifest, 'user-agent': userAgent };
             // TODO: Is it possible to read a relative path in bundled NW application?
-            await fs.writeFile('package.json', JSON.stringify(nw.App.manifest, null, 2), 'utf-8');
+            await fs.writeFile('package.json', JSON.stringify(manifest, null, 2), 'utf-8');
             // Show restart application message
         }
 
