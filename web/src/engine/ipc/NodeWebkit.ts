@@ -27,7 +27,7 @@ export class NodeWebkitIPC implements PlatformIPC {
             this[payload.method].call<AppIPC, IPCParameters, Promise<IPCResponse>>(this, ...payload.parameters).then(callback);
             return true;
         } else {
-            console.error('No IPC callback handler found for:', payload.method);
+            //console.error('No IPC callback handler found for:', payload.method);
         }
     }
 
