@@ -1,5 +1,6 @@
 import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/ipc/InterProcessCommunication';
 import type { RPCServer } from '../rpc/Server';
+import * as fs from 'node:fs/promises';
 
 /**
  * Inter Process Communication for NodeWebkit (background page)
@@ -53,9 +54,21 @@ export class IPC implements PlatformIPC {
         // - Client Hint request headers (optional)
         // Another approach would be network conitions, but this is per tab only
         // => chrome.debugger.
+
         for(const cookie of cookies) {
             await chrome.cookies.set({ ...cookie, url: `https://${cookie.domain}${cookie.path}` });
         }
+
+        if(userAgent !== navigator.userAgent) {
+            type Manifest = {
+                'user-agent'?: string;
+            }
+            (nw.App.manifest as Manifest)['user-agent'] = userAgent;
+            // TODO: Is it possible to read a relative path in bundled NW application?
+            await fs.writeFile('package.json', JSON.stringify(nw.App.manifest, null, 2), 'utf-8');
+            // Show restart application message
+        }
+
         /*
         nw.Window.open('https://test.cloudscraper.ovh/managed', {
             'user-agent': userAgent

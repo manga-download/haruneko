@@ -1,4 +1,4 @@
-import type { JSONElement } from 'websocket-rpc/dist/types';
+import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
 import type { SettingsManager } from '../SettingsManager';
 import { NodeWebkitIPC } from './NodeWebkit';
 

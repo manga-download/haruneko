@@ -34,7 +34,8 @@
         "svelte-preprocess": "^5.0.4",
         "vite": "^4.3.9",
         "vue": "^3.3.4",
-        "vue-tsc": "^1.8.1"
+        "vue-tsc": "^1.8.1",
+        "websocket-rpc": "^1.0.2"
     },
     "scripts": {
         "update-website-index": "node ./scripts/website-index.mjs",
