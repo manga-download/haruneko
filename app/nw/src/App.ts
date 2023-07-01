@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const fs = require('fs-extra'); //import * as fs from 'fs-extra';
 const yargs = require('yargs'); //import yargs from 'yargs';
 
 async function GetArgumentURL(): Promise<string|undefined> {
@@ -19,9 +18,7 @@ async function GetDefaultURL(): Promise<string|undefined> {
         type Manifest = {
             url?: string;
         }
-        // TODO: Is it possible to read a relative path in bundeld NW application?
-        const manifest: Manifest = await fs.readJSON('package.json');
-        return manifest.url;
+        return (nw.App.manifest as Manifest).url;
     } catch {
         return undefined;
     }

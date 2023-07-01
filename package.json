@@ -10,6 +10,7 @@
         "app/nw"
     ],
     "devDependencies": {
+        "@types/fs-extra": "^11.0.1",
         "@types/jest": "^29.5.2",
         "@types/jsdom": "^21.1.1",
         "@typescript-eslint/eslint-plugin": "^5.60.0",
