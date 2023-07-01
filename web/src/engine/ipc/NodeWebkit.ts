@@ -17,12 +17,12 @@ export class NodeWebkitIPC implements PlatformIPC {
     }
 
     private async Send<R extends IPCResponse>(method: keyof AppIPC, ...parameters: IPCParameters): Promise<R> {
-        console.log(`Web::IPC.Send::${method}`, parameters);
+        //console.log(`Web::IPC.Send::${method}`, parameters);
         return new Promise<R>(resolve => chrome.runtime.sendMessage<IPCPayload<AppIPC>, R>({ method, parameters }, resolve));
     }
 
     private Listen(payload: IPCPayload<WebIPC>, sender: chrome.runtime.MessageSender, callback: (response: IPCResponse) => void): boolean | void {
-        console.log('Web::IPC.Received', payload, sender, callback);
+        //console.log('Web::IPC.Received', payload, sender, callback);
         if(payload.method in this) {
             this[payload.method].call<AppIPC, IPCParameters, Promise<IPCResponse>>(this, ...payload.parameters).then(callback);
             return true;
@@ -58,10 +58,10 @@ export class NodeWebkitIPC implements PlatformIPC {
         for(const website of HakuNeko.PluginController.WebsitePlugins) {
             const media = await website.TryGetEntry(url);
             if(media) {
-                console.log('LoadMediaContainerFromURL() => Found:', media);
+                //console.log('LoadMediaContainerFromURL() => Found:', media);
                 return;
             }
         }
-        console.log('LoadMediaContainerFromURL() => Found:', undefined);
+        //console.log('LoadMediaContainerFromURL() => Found:', undefined);
     }
 }

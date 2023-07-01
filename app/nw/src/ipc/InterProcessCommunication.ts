@@ -19,7 +19,7 @@ export class IPC implements PlatformIPC {
         const tab = tabs.length > 0 ? tabs.shift() : undefined;
         return new Promise<R>(resolve => {
             if(tab?.id) {
-                console.log(`App::IPC.Send::${method}`, parameters);
+                //console.log(`App::IPC.Send::${method}`, parameters);
                 chrome.tabs.sendMessage<IPCPayload<WebIPC>, R>(tab.id, { method, parameters }, resolve);
             } else {
                 throw new Error(/* TODO: Message */);
@@ -28,7 +28,7 @@ export class IPC implements PlatformIPC {
     }
 
     private Listen(payload: IPCPayload<AppIPC>, sender: chrome.runtime.MessageSender, callback: (response: IPCResponse) => void): boolean | void {
-        console.log('App::IPC.Received', payload, sender, callback);
+        //console.log('App::IPC.Received', payload, sender, callback);
         if(payload.method in this) {
             this[payload.method].call<WebIPC, IPCParameters, Promise<IPCResponse>>(this, ...payload.parameters).then(callback);
             return true;
@@ -46,20 +46,11 @@ export class IPC implements PlatformIPC {
     }
 
     public async SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void> {
-        // TODO: Update default user-agent?
-        // Seems only way to globally set UserAgent (all tabs, navigator.userAgent, request headers) is by command line => restart required
-        // - navigator.userAgent
-        // - navigator.appVersion
-        // - User-Agent request header
-        // - Client Hint request headers (optional)
-        // Another approach would be network conitions, but this is per tab only
-        // => chrome.debugger.
-
         for(const cookie of cookies) {
             await chrome.cookies.set({
                 domain: cookie.domain,
                 path: cookie.path,
-                url: `https://${cookie.domain}${cookie.path}`,
+                url: `https://${ cookie.domain.replace(/^\./, '') }${ cookie.path }`,
                 name: cookie.name,
                 value: cookie.value,
                 expirationDate: cookie.expirationDate,
@@ -71,22 +62,17 @@ export class IPC implements PlatformIPC {
         }
 
         if(userAgent !== navigator.userAgent) {
-            const manifest = { ...nw.App.manifest, 'user-agent': userAgent };
-            // TODO: Is it possible to read a relative path in bundled NW application?
-            await fs.writeFile('package.json', JSON.stringify(manifest, null, 2), 'utf-8');
-            // Show restart application message
+            // TODO: Is it safe to assume this is always correct manifest path?
+            const file = 'package.json';
+            const manifest = JSON.parse(await fs.readFile(file, 'utf-8'));
+            manifest['user-agent'] = userAgent;
+            await fs.writeFile(file, JSON.stringify(manifest, null, 2), 'utf-8');
+            // Show 'Restart Application' message
+            //alert('UA changed, please restart ...');
         }
-
-        /*
-        nw.Window.open('https://test.cloudscraper.ovh/managed', {
-            'user-agent': userAgent
-        } as NWJS_Helpers.WindowOpenOption);
-        */
     }
 
     public async LoadMediaContainerFromURL(url: string) {
-        //alert('LoadMediaContainerFromURL\n\n' + url);
-        //console.log('LoadMediaContainerFromURL', '=>', url);
         return this.Send<void>('LoadMediaContainerFromURL', url);
     }
 }
