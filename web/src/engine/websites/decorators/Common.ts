@@ -454,21 +454,22 @@ export function PagesSinglePageJS(script: string, delay = 0) {
  * Use this when the chapter is made from multiples pages and each "sub pages" get a single or more images
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param querySubPages - A CSS query to locate the HtmlSelectElement from which the subpages location shall be extracted. Only the first will be used.
+ * @param queryList - A CSS selector to the element containing all subpages : Typically a <select> element
+ * @param querySubPages - A CSS query to match all elements from {@link queryList}. Ie. 'option'
  * @param queryPages - A CSS query to locate the images in each subpage
  * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link query})
  * @param extractPages - A function to extract the page information from a single element (found with {@link query})
   * */
-export async function FetchPagesSubPagesCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, querySubPages: string, queryPages: string, extractSubPages: PageLinkExtractor<HTMLElement>, extractPages = DefaultPageLinkExtractor as PageLinkExtractor<E>): Promise<Page[]> {
+export async function FetchPagesSubPagesCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, queryList: string, querySubPages: string, queryPages: string, extractSubPages: PageLinkExtractor<HTMLElement>, extractPages = DefaultPageLinkExtractor as PageLinkExtractor<E>): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     let request = new FetchRequest(uri.href, {
         headers: {
             Referer: GetParentReferer(chapter, this.URI).href
         }
     });
-    let data = await FetchCSS<HTMLElement>(request, querySubPages); //Here we got the sub pages list NODES
-    //Since the CSS selector is supposed to match a <select> element with the list of subpages but reader may have more than one, we take only the first
-    const subpages = [...data[0].querySelectorAll('option')].map(element => extractSubPages.call(this, element));
+    let data = await FetchCSS<HTMLElement>(request, queryList); //Here we got the sub pages list NODES
+    //There may be MORE than one page list element on the page, we need only one !
+    const subpages = [...data[0].querySelectorAll(querySubPages)].map(element => extractSubPages.call(this, element));
 
     const pagelist: Page[] = [];
     for (const subpage of subpages) {
@@ -489,19 +490,20 @@ export async function FetchPagesSubPagesCSS<E extends HTMLElement>(this: MangaSc
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter using the given CSS {@link query}.
  * Use this when the chapter is made from multiples pages and each "sub pages" get a single or more images
- * @param querySubPages - A CSS query to locate the HtmlSelectElement from which the subpages location shall be extracted. Only the first will be used.
+ * @param queryList - A CSS selector to the element containing all subpages : Typically a <select> element
+ * @param querySubPages - A CSS query to match all elements from {@link queryList}. Ie. 'option'
  * @param queryPages - A CSS query to locate the images in each subpage
  * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link query})
  * @param extractPages - A function to extract the page information from a single element (found with {@link query})
  */
-export function PagesSubPagesCSS<E extends HTMLElement>(querySubPages: string, queryPages: string, extractSubPages :PageLinkExtractor<E>, extractPages = DefaultPageLinkExtractor as PageLinkExtractor<E>) {
+export function PagesSubPagesCSS<E extends HTMLElement>(queryList : string, querySubPages: string, queryPages: string, extractSubPages :PageLinkExtractor<E>, extractPages = DefaultPageLinkExtractor as PageLinkExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
         }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSubPagesCSS.call(this, chapter, querySubPages, queryPages, extractSubPages as PageLinkExtractor<HTMLElement>, extractPages as PageLinkExtractor<HTMLElement>);
+                return FetchPagesSubPagesCSS.call(this, chapter, queryList, querySubPages, queryPages, extractSubPages as PageLinkExtractor<HTMLElement>, extractPages as PageLinkExtractor<HTMLElement>);
             }
         };
     };
