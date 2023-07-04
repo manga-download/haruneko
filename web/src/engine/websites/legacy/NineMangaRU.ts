@@ -1,31 +1,19 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './NineMangaRU.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import * as TAADD from '../decorators/TAADD';
+import * as Common from '../decorators/Common';
 
+@Common.MangaCSS(/^https?:\/\/ru\.ninemanga\.com\/manga\/\S+\.html/, 'div.manga div.ttline h1', TAADD.MangaLabelExtractor)
+@Common.MangasMultiPageCSS(TAADD.mangaPath, TAADD.queryMangas)
+@TAADD.ChaptersSinglePageCSS()
+@TAADD.PagesMultiPageCSS()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
-        super('ninemanga-ru', `NineMangaRU`, 'https://ru.ninemanga.com' /*, Tags.Language.English, Tags ... */);
+        super('ninemanga-ru', `NineMangaRU`, 'https://ru.ninemanga.com', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
-
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class NineMangaRU extends NineManga {
-
-    constructor() {
-        super();
-        super.id = 'ninemanga-ru';
-        super.label = 'NineMangaRU';
-        this.tags = [ 'manga', 'russian' ];
-        this.url = 'https://ru.ninemanga.com';
-    }
-}
-*/
