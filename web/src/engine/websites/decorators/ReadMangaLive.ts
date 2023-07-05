@@ -18,7 +18,7 @@ export const queryMangas = [
 ].join(',');
 
 export const queryChapters = [
-    'div#mangaBox div.chapters-link table tr td a',
+    'a.chapter-link.cp-l'
 ].join(',');
 
 export const queryPages = [

@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './MintManga.webp';
-import { DecoratableMangaScraper} from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as ReadM from '../decorators/ReadMangaLive';
+import { DecoratableMangaScraper} from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as ReadM from './decorators/ReadMangaLive';
 
 @Common.MangaCSS(/^https?:\/\/mintmanga\.live\/[^/]+$/, ReadM.queryMangaTitle)
 @Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, ReadM.pageMangaOffset, 0, Common.AnchorInfoExtractor(true))
