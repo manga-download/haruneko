@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ScyllaScans.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as ReaderFront from '../decorators/ReaderFront';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as ReaderFront from './decorators/ReaderFront';
 
 const apiUrl = 'https://api.scyllascans.org';
 

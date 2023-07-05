@@ -227,7 +227,8 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
     const request = new FetchRequest(apiUrl);
     const data = await FetchGraphQL<APIChapters>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
     return data.work.chapters.map(chapter => {
-        const title = `Vol. ${chapter.volume} Ch. ${chapter.chapter}.${chapter.subchapter} - ${chapter.name}`;
+        let title = `Vol. ${chapter.volume} Ch. ${chapter.chapter}.${chapter.subchapter}`;
+        title += chapter.name ? ` - ${chapter.name}`: '';
         const chap = new Chapter(this, manga, String(chapter.id), title);
         const languageTag: Tag = tagsLanguageMap[mangaObj.language];
         chap.Tags.push(languageTag);
