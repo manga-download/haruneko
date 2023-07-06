@@ -11,12 +11,12 @@ const config: Config = {
         title: 'Emperor And The Female Knight'
     },
     child: {
-        id: '/1664788/s-emperor-and-the-female-knight-184/',
+        id: '/1664788/1/emperor-and-the-female-knight-184/',
         title: 'الفصل رقم: 184 FREE',
     },
     entry: {
         index: 1,
-        size: 846_705,
+        size: 997_392,
         type: 'image/jpeg'
     }
 };
