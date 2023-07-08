@@ -1,6 +1,4 @@
 import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
-import type { SettingsManager } from '../SettingsManager';
-import { NodeWebkitIPC } from './NodeWebkit';
 
 // See => chrome.cookies.Cookie
 export type TypeFromInterface<T> = {
@@ -37,16 +35,3 @@ export abstract class WebIPC implements Contract<WebIPC> {
 }
 
 export interface PlatformIPC extends AppIPC, WebIPC {}
-
-export function CreatePlatformIPC(settingsManager: SettingsManager): PlatformIPC {
-    if(window.nw) {
-        return new NodeWebkitIPC(settingsManager);
-    }
-    /*
-    if('electron' in window) {
-        return new ElectronIPC();
-    }
-    */
-    // TODO: Localization ...
-    throw new Error('Platform not supported!');
-}

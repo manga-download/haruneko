@@ -8,7 +8,7 @@ import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
 import { SettingsManager } from './SettingsManager';
-import { CreatePlatformIPC } from './ipc/InterProcessCommunication';
+import { CreatePlatformIPC } from './ipc/InterProcessCommunicationFactory';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
