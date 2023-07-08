@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaTales.webp';
-import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../../providers/MangaPlugin';
-import * as GManga from '../decorators/GManga';
-import { FetchCSS, FetchJSON, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
+import * as GManga from './decorators/GManga';
+import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
 
 const apiUrl = 'https://mangatales.com/';
 

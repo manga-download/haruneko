@@ -1,7 +1,7 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './GManga.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as GManga from '../decorators/GManga';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as GManga from './decorators/GManga';
 
 const apiUrl = 'https://api.gmanga.me/';
 
