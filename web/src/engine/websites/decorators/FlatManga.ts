@@ -15,6 +15,7 @@ export function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
+export const DefaultExcludes = [/3282f6a4b7_o/, /donate/];
 export const pathSinglePageManga = '/manga-list.html?listType=allABC';
 export const queryChapterLanguage = 'ul.manga-info h1 span.flag-icon';
 export const queryChapterLanguageClassRX = /flag-icon-([a-zA-Z]+)/;
@@ -93,7 +94,6 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
         const mangaTitle = manga.Title.replace(/\s*-\s*RAW$/i, '').replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&');
         title = title.replace(new RegExp(mangaTitle, 'i'), '');
         title = title.replace(/^\s*-\s*/, '');
-
         title = title.replace(/-\s*-\s*Read\s*Online\s*$/, '').trim();
         return new Chapter(this, manga, id, title);
     });
@@ -110,7 +110,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param query - CSS query to get chapter link
  */
-export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query = queryPages): Promise<Page[]> {
+export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query: string = queryPages, exclude: RegExp[] = DefaultExcludes): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     const request = new FetchRequest(uri.href);
     const data = await FetchCSS<HTMLImageElement>(request, query);
@@ -133,8 +133,7 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
             } catch (_) { /* ignore */ }
             return element.dataset.aload || element.dataset.src || element.dataset.srcset || element.dataset.original || element.dataset.pagespeedLazySrc || element.src;
         });
-    return pages.filter(url => !url.includes('3282f6a4b7_o') && !url.includes('donate')).map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.href }));
-
+    return pages.filter(url => !exclude.some(pattern => pattern.test(url))).map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.href }));
 }
 
 /**
@@ -142,14 +141,14 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
  * @param query - CSS query to get chapter link
  */
-export function PagesSinglePageCSS(query = queryPages) {
+export function PagesSinglePageCSS(query : string = queryPages, excludes : RegExp[] = DefaultExcludes) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
         }
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageCSS.call(this, chapter, query);
+                return FetchPagesSinglePageCSS.call(this, chapter, query, excludes);
             }
         };
     };

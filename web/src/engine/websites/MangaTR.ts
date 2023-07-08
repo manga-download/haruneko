@@ -1,22 +1,21 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaTR.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
-import { FetchCSS, FetchRequest, FetchWindowScript } from '../../FetchProvider';
-import * as Common from '../decorators/Common';
-import * as FlatManga from '../decorators/FlatManga';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { FetchCSS, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import * as Common from './decorators/Common';
+import * as FlatManga from './decorators/FlatManga';
 function MangaLabelExtractor(element: HTMLTitleElement) {
-    return element.text.split(' - ')[0];
+    return element.text.split(' - ')[0].trim();
 }
 
-@Common.MangaCSS(/^https?:\/\/manga-tr\.com\/\S+\.html$/, 'body title', MangaLabelExtractor)
+@Common.MangaCSS(/^https?:\/\/manga-tr\.com\/manga-\S+\.html$/, 'body title', MangaLabelExtractor)
 @Common.MangasSinglePageCSS('/manga-list.html', FlatManga.queryMangas)
-@FlatManga.PagesSinglePageCSS()
+@FlatManga.PagesSinglePageCSS('img.chapter-img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('mangatr', `Manga-TR`, 'https://manga-tr.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Source.Aggregator);
     }
-
     public override get Icon() {
         return icon;
     }
@@ -50,7 +49,7 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS<HTMLAnchorElement>(request, 'table.table tr td.table-bordered:first-of-type > a');
         const esc = manga.Title.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
         const reg = new RegExp(esc, 'i');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.replace(reg, '')));
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.replace(reg, '').trim()));
     }
 
 }
