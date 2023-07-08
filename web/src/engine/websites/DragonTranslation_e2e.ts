@@ -6,17 +6,17 @@ const config: Config = {
         title: 'DragonTranslation'
     },
     container: {
-        url: 'https://dragontranslation.com/manga/tissue-thief/',
-        id: JSON.stringify({ post: '3736', slug: '/manga/tissue-thief/' }),
+        url: 'https://dragontranslation.net/manga/tissue-thief',
+        id: '/manga/tissue-thief',
         title: 'Tissue Thief'
     },
     child: {
-        id: '/manga/tissue-thief/capitulo-1-00/',
-        title: 'Capítulo 1.00'
+        id: '/leer/tissue-thief-1.00',
+        title: 'Capitulo 1.00'
     },
     entry: {
         index: 1,
-        size: 98_236,
+        size: 82_768,
         type: 'image/jpeg'
     }
 };
