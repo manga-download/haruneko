@@ -3,6 +3,18 @@ import { Chapter, type Manga, type MangaScraper} from "../../providers/MangaPlug
 import { Page } from "../../providers/MangaPlugin";
 import type * as Common from './Common';
 
+export function MangaLabelExtractor(element: HTMLElement) {
+    let title = element.getAttribute('text') ? element.getAttribute('text') : element.textContent;
+    title = title.replace(/\s*-\s*RAW$/i, '');
+    return title;
+}
+export function MangaExtractor(anchor: HTMLAnchorElement) {
+    const id = anchor.pathname;
+    let title = anchor.getAttribute('text') ? anchor.getAttribute('text') : anchor.textContent;
+    title = title.replace(/\s*-\s*RAW$/i, '');
+    return { id, title };
+}
+
 export const pathSinglePageManga = '/manga-list.html?listType=allABC';
 export const queryChapterLanguage = 'ul.manga-info h1 span.flag-icon';
 export const queryChapterLanguageClassRX = /flag-icon-([a-zA-Z]+)/;
@@ -77,10 +89,11 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
         const id = anchor.pathname;
         const titleElement = anchor.querySelector(queryChapterTitle);
         let title = titleElement ? titleElement.textContent.trim() : anchor.text.trim();
-        const mangaTitle = manga.Title.replace(/\s*-\s*RAW$/i, '');
         //escape all special characters used in Javascript regexes
-        title = title.replace(new RegExp(mangaTitle.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&')), '');
+        const mangaTitle = manga.Title.replace(/\s*-\s*RAW$/i, '').replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&');
+        title = title.replace(new RegExp(mangaTitle, 'i'), '');
         title = title.replace(/^\s*-\s*/, '');
+
         title = title.replace(/-\s*-\s*Read\s*Online\s*$/, '').trim();
         return new Chapter(this, manga, id, title);
     });

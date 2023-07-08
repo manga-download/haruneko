@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ManhuaScan.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as FlatManga from '../decorators/FlatManga';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as FlatManga from './decorators/FlatManga';
 
 const pageScript = `
             new Promise(async resolve => {

@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Manga33.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as FlatManga from '../decorators/FlatManga';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as FlatManga from './decorators/FlatManga';
 
 @Common.MangaCSS(/^https?:\/\/www\.manga33\.com\/manga\/\S+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS('/list/lastdotime-{page}.html', FlatManga.queryMangas, 0)
