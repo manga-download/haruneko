@@ -263,7 +263,7 @@ function _adjustTextLayerVisibility(layer: ImageLayer, textLayer: HTMLImageEleme
     }
 }
 
-async function _loadImage(url): Promise<HTMLImageElement> {
+async function _loadImage(url: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const uri = new URL(url);
         uri.searchParams.delete('type');

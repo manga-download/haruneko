@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './DongManManhua.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as LineW from '../decorators/LineWebtoon';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as LineW from './decorators/LineWebtoon';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname + anchor.search;

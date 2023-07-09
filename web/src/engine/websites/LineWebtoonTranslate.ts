@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './LineWebtoonTranslate.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as LineW from '../decorators/LineWebtoon';
-import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as LineW from './decorators/LineWebtoon';
+import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 
 const pageScript = `
        new Promise(async resolve => {
