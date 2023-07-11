@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './iqiyi.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as MH from '../decorators/MH';
-import { FetchJSON, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as MH from './decorators/MH';
+import { FetchJSON, FetchRequest } from '../FetchProvider';
 
 type APIChapters = {
     data: {

@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './kuimh.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as MH from '../decorators/MH';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as MH from './decorators/MH';
 
 @Common.MangaCSS(/^https?:\/\/www\.kuimh\.com\/book\/\S+$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS(MH.mangaPath, MH.queryMangas)
