@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './TAADD.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as TAADD from '../decorators/TAADD';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as TAADD from './decorators/TAADD';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/www\.taadd\.com\/book\/\S+\.html$/, TAADD.queryMangaTitleFromURI, TAADD.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(TAADD.mangaPath, TAADD.queryMangas)

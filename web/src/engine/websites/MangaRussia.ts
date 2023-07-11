@@ -1,8 +1,8 @@
-﻿import { Tags } from '../../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './MangaRussia.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as TAADD from '../decorators/TAADD';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as TAADD from './decorators/TAADD';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/www\.mangarussia\.com\/manga\/\S+\.html$/, 'div.mangabookbox div.bookmessagebox h1', TAADD.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(TAADD.mangaPath, TAADD.queryMangas, 1, 1, 0, Common.AnchorInfoExtractor(true))

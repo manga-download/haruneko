@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './TenManga.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as TAADD from '../decorators/TAADD';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as TAADD from './decorators/TAADD';
+import * as Common from './decorators/Common';
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const title = anchor.getElementsByClassName('chp-idx')[0].textContent.trim();
     const id = anchor.pathname;

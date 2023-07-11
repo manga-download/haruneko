@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './NineMangaDE.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as TAADD from '../decorators/TAADD';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as TAADD from './decorators/TAADD';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/de\.ninemanga\.com\/manga\/\S+\.html/, 'div.manga div.ttline h1', TAADD.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(TAADD.mangaPath, TAADD.queryMangas)
