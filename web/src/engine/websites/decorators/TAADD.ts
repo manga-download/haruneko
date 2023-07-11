@@ -69,7 +69,8 @@ async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, quer
     data = await FetchCSS(request, query);
     return data.map(element => {
         const { id, title } = extractor.call(this, element);
-        let finaltitle = title.replace(manga.Title, '') === '' ? title : title.replace(manga.Title, '');
+        const mangaTitle = manga.Title.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&'); //escape special regex chars in manga name
+        let finaltitle = title.replace(new RegExp(mangaTitle, 'i'), '') === '' ? title : title.replace(new RegExp(mangaTitle, 'i'), '');//replace manga title in chapter title
         finaltitle = finaltitle.replace(/\s*new$/, '').trim();
         return new Chapter(this, manga, id, finaltitle );
     });
