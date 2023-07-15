@@ -93,7 +93,7 @@ export async function FetchPagesSinglePage(this: MangaScraper, chapter: Chapter,
         return await getPageList_v016452(this, chapter, el.dataset.ptbinb, url.href);
     }
     if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && uri.searchParams.get('u1')) {
-        return await getPageList_v016201(chapter, el.dataset.ptbinb, url.href);
+        return await getPageList_v016201(this, chapter, el.dataset.ptbinb, url.href);
     }
     if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo')) {
         return await getPageList_v016130(this, chapter.Identifier, el.dataset.ptbinb, url.href, chapter);
@@ -200,7 +200,7 @@ async function getPageLinksSBC_v016452(scraper : MangaScraper, configuration: Co
 *************************
 */
 
-async function getPageList_v016201(chapter: Chapter, apiURL: string, baseURL: string): Promise<Page[]> {
+async function getPageList_v016201(scraper: MangaScraper,chapter: Chapter, apiURL: string, baseURL: string): Promise<Page[]> {
     const cid = new URL(chapter.Identifier, baseURL).searchParams.get('cid');
     const u = new URL(chapter.Identifier, baseURL).searchParams.get('u1');
     const sharingKey = _tt(cid);
@@ -211,21 +211,21 @@ async function getPageList_v016201(chapter: Chapter, apiURL: string, baseURL: st
     uri.searchParams.set('u1', u);
     const request = new FetchRequest(uri.href);
     const data: JSONPageData_v016452 = await FetchJSON(request);
-    return await getPageLinks_v016201(data.items[0], sharingKey, u, chapter);
+    return await getPageLinks_v016201(scraper, data.items[0], sharingKey, u, chapter);
 }
 
-async function getPageLinks_v016201(configuration: Configuration_v016452, sharingKey: string, u: string, chapter: Chapter): Promise<Page[]> {
+async function getPageLinks_v016201(scraper : MangaScraper, configuration: Configuration_v016452, sharingKey: string, u: string, chapter: Chapter): Promise<Page[]> {
     const cid = configuration.ContentID;
     configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl);
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl);
     //configuration.ServerType = parseInt(configuration.ServerType);
 
     if (configuration['ServerType'] === 2) {
-        return await _getPageLinksContent_v016201(configuration, u, chapter);
+        return await _getPageLinksContent_v016201(scraper, configuration, u, chapter);
     }
     return Promise.reject(new Error('Content server type not supported!'));
 }
-async function _getPageLinksContent_v016201(configuration: Configuration_v016452, u: string, chapter: Chapter): Promise<Page[]> {
+async function _getPageLinksContent_v016201(scraper: MangaScraper, configuration: Configuration_v016452, u: string, chapter: Chapter): Promise<Page[]> {
     const uri = new URL(configuration['ContentsServer']);
     uri.pathname += uri.pathname.endsWith('/') ? '' : '/';
     uri.pathname += 'content';
@@ -236,7 +236,7 @@ async function _getPageLinksContent_v016201(configuration: Configuration_v016452
     const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
         const src = img.getAttribute('src');
         uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl, configuration.ptbl)));
-        return new Page(this, chapter, new URL(uri.href.replace('/content', '/img/' + src)));
+        return new Page(scraper, chapter, new URL(uri.href.replace('/content', '/img/' + src)));
     });
     return pageLinks;
 }
