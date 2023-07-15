@@ -1,106 +1,55 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './Ohtabooks.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, type Page } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import * as SpeedBind from '../decorators/SpeedBind';
+import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
+function MangaExtractor(anchor: HTMLAnchorElement) {
+    const id = anchor.pathname;
+    const title = anchor.querySelector('.title').textContent.trim();
+    return { id, title };
+}
+
+@Common.MangaCSS(/^https?:\/\/webcomic\.ohtabooks\.com\/\S+\/$/, 'h2.contentTitle')
+@Common.MangasSinglePageCSS('/list/', 'div.bnrList ul li a', MangaExtractor)
+@SpeedBind.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ohtabooks', `Ohtabooks`, 'http://webcomic.ohtabooks.com' /*, Tags.Language.English, Tags ... */);
+        super('ohtabooks', `Ohtabooks`, 'http://webcomic.ohtabooks.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class Ohtabooks extends SpeedBinb {
-
-    /**
-     *
-     *
-    constructor() {
-        super();
-        super.id = 'ohtabooks';
-        super.label = 'Ohtabooks';
-        this.tags = [ 'manga', 'japanese' ];
-        this.url = 'http://webcomic.ohtabooks.com';
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        //find real reader url to send to Speedbind, since redirection is done by Javascript
+        const data = await FetchCSS<HTMLBodyElement>(new FetchRequest(chapter.Identifier), 'body');
+        const reallink = data[0].innerHTML.match(/location.href='(.*)'/)[1];
+        return await SpeedBind.FetchPagesSinglePage.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
     }
 
-    /**
-     *
-     *
-    _getMangaList( callback ) {
-        let uri = this.url + '/list/';
-        this.fetchDOM( uri, 'div.bnrList ul li a' )
-            .then( data => {
-                let mangaList = data.map( element => {
-                    return {
-                        id: this.getRootRelativeOrAbsoluteLink( element, uri ),
-                        title: element.querySelector( '.title' ).textContent.trim()
-                    };
-                } );
-                callback( null, mangaList );
-            } )
-            .catch( error => {
-                console.error( error, this );
-                callback( error, undefined );
-            } );
-    }
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const uri = new URL(manga.Identifier, this.URI);
+        const data = await FetchCSS(new FetchRequest(uri.href), 'a[onClick^="return !openBook("]');
+        let chapterList = data.map(element => {
+            let partId = element.getAttribute('onclick');
+            partId = partId.match(/\d+/)[0];
 
-    /**
-     *
-     *
-    _getChapterList( manga, callback ) {
-        let uri = this.url + manga.id;
-        this.fetchDOM( uri, 'a[onClick^="return !openBook("]' )
-            .then( data => {
-                let chapterList = data.map( element => {
-                    let partId = element.getAttribute( 'onclick' );
-                    partId = partId.match(/\d+/);
+            let title = element.querySelector('.title') ? element.querySelector('.title').textContent : element.querySelector('btnMini') ? element.querySelector('btnMini').textContent : 'マンガをよむ';
+            title = title.trim();
+            return {
+                id: 'https://yondemill.jp/contents/' + partId + '?view=1&u0=1',
+                title: title
+            };
+        });
+        // Remove duplicates
+        chapterList = chapterList.reverse().filter((chapter, index) => {
+            return index === chapterList.findIndex(c => c.id === chapter.id);
+        });
 
-                    let title = element.querySelector( '.title' );
-                    if( title ) {
-                        title = title.textContent;
-                    } else if( element.classList.contains( 'btnMini' ) ) {
-                        title = element.textContent;
-                    }
-
-                    return {
-                        id: this.getRootRelativeOrAbsoluteLink( 'https://yondemill.jp/contents/' + partId + '?view=1&u0=1', uri ),
-                        title: title ? title.trim() : 'マンガをよむ',
-                        language: 'ja'
-                    };
-                } );
-
-                // Remove duplicates
-                chapterList = chapterList.reverse().filter( ( chapter, index ) => {
-                    return index === chapterList.findIndex( c => c.id === chapter.id );
-                } );
-
-                callback( null, chapterList );
-            } )
-            .catch( error => {
-                console.error( error, manga );
-                callback( error, undefined );
-            } );
-    }
-
-    _getPageList( manga, chapter, callback ) {
-        this.fetchDOM( chapter.id, 'script[type="text/javascript"]' )
-            .then( data => {
-                data = data[0].innerHTML;
-                let ch = {
-                    id: data.substring( data.indexOf('\'') + 1, data.lastIndexOf('\'') ),
-                    title: chapter.title,
-                    language: chapter.language
-                };
-                super._getPageList( manga, ch, callback );
-            } );
+        return chapterList.map(chapter => new Chapter(this, manga, chapter.id, chapter.title));
     }
 }
-*/
