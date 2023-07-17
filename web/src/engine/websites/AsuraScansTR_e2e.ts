@@ -3,20 +3,20 @@
 const config: Config = {
     plugin: {
         id: 'asurascans-tr',
-        title: 'Asura Scans (TR)'
+        title: 'Asura Scans (TR)',
     },
     container: {
-        url: 'https://asurascanstr.com/manga/leveling-with-the-gods/',
-        id: '/manga/leveling-with-the-gods/',
-        title: 'Leveling With The Gods'
+        url: 'https://asurascanstr.com/manga/kuduz-hancerin-intikami/',
+        id: '/manga/kuduz-hancerin-intikami/',
+        title: 'Kuduz Hançerin İntikamı',
     },
     child: {
-        id: '/leveling-with-the-gods-bolum-1/',
-        title: 'Bölüm 1 - Kaybettik'
+        id: '/kuduz-hancerin-intikami-bolum-1/',
+        title: 'Bölüm 1',
     },
     entry: {
-        index: 0,
-        size: 424_905,
+        index: 1,
+        size: 3_309_983,
         type: 'image/jpeg'
     }
 };
