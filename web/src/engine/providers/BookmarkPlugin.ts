@@ -24,6 +24,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
         const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID);
+        if (!parent) return undefined; //if plugin is not found, invalidate bookmark
         const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
@@ -41,7 +42,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     private async Load() {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
-        this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
+        this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark)).filter(entry => entry);//remove invalid bookmark
         this.EntriesUpdated.Dispatch(this, this.Entries);
     }
 
