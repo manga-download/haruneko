@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/www\.asurascans\.com\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^https?:\/\/asura\.gg\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS([ /ENDING-PAGE/i ], 'div#readerarea p img')
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('asurascans', 'Asura Scans', 'https://www.asurascans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('asurascans', 'Asura Scans', 'https://asura.gg', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
