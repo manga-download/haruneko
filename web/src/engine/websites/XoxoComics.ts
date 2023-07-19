@@ -12,7 +12,7 @@ function ImageExtractor(img: HTMLImageElement) {
     return img.dataset.original;
 }
 
-@Common.MangaCSS(/^https?:\/\/xoxocomics\.com\/comic\/[\da-z-]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
+@Common.MangaCSS(/^https?:\/\/xoxocomics\.net\/comic\/[\da-z-]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
 @Common.MangasMultiPageCSS('/comic-list/alphabet?c=&page={page}', 'div.chapter > a')
 @Common.PagesSinglePageCSS('div.page-chapter img', ImageExtractor)
 @Common.ImageAjax()
@@ -20,7 +20,7 @@ function ImageExtractor(img: HTMLImageElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('xoxocomics', `XoxoComics`, 'https://xoxocomics.com', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
+        super('xoxocomics', `XoxoComics`, 'https://xoxocomics.net', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
