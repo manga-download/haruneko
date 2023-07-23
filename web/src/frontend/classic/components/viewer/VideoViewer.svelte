@@ -13,9 +13,8 @@
 <div id="FullScreen">
     <!-- disablePictureInPicture controlsList="nodownload nofullscreen" -->
     <video id="Video" controls>
-        <!-- dummy tracks to show subtitle menu in video player -->
+        <!-- dummy tracks to show subtitle menu in video player
         <template is="dom-repeat" items="[[ media.subtitles ]]">
-            <!-- dummy tracks to show subtitle menu in video player -->
             <track
                 kind="captions"
                 src="data:text/vtt,WEBVTT"
@@ -23,6 +22,7 @@
                 srclang="[[ item.locale ]]"
             />
         </template>
+        -->
     </video>
 </div>
 

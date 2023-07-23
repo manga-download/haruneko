@@ -16,7 +16,7 @@ const styles: ElementStyles = css`
         padding: calc(var(--base-height-multiplier) * 1px);
         gap: calc(var(--base-height-multiplier) * 1px);
         display: grid;
-        align-items: start;
+        align-items: center;
         grid-template-columns: auto;
         grid-template-rows: max-content minmax(0, 1fr) max-content;
     }
@@ -28,16 +28,21 @@ const styles: ElementStyles = css`
     }
 
     #content {
-        height: 100%;
+        align-self: stretch;
+        overflow-x: hidden;
+        overlow-y: auto;
+    }
+
+    #settings {
         gap: calc(var(--base-height-multiplier) * 1px);
+        padding-top: calc(var(--base-height-multiplier) * 1px);
+        padding-bottom: calc(var(--base-height-multiplier) * 1px);
         display: grid;
         align-items: center;
         grid-template-columns: max-content max-content;
         align-items: center;
         align-content: center;
         justify-content: space-evenly;
-        overflow-y: scroll;
-        overflow-x: hidden;
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
         border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
     }
@@ -84,7 +89,7 @@ const templateChoice: ViewTemplate<Choice> = html`
 const templateDirectory: ViewTemplate<Directory> = html`
     <fluent-text-field readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
     <div slot="end" style="display: flex; align-items: center;">
-        <fluent-button appearance="stealth" style="height: fit-content;" :innerHTML=${IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
+        <fluent-button appearance="stealth" style="height: fit-content;" :innerHTML=${() => IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
     </div>
     </fluent-text-field>
 `;
@@ -111,7 +116,9 @@ const template: ViewTemplate<SettingsDialog> = html`
             -->
             <div id="header">${() => S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
             <div id="content">
-                ${repeat(model => model.settings, templateSettingRow)}
+                <div id="settings">
+                    ${repeat(model => model.settings, templateSettingRow)}
+                </div>
             </div>
             <div id="footer">
                 <fluent-button id="settings-close-button" appearance="accent" @click=${model => model.hidden = true}>${() => S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}</fluent-button>
