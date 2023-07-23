@@ -11,9 +11,9 @@
 </script>
 
 <div id="FullScreen">
-    <!-- disablePictureInPicture controlsList="nodownload nofullscreen" -->
+    <!-- disablePictureInPicture controlsList="nodownload nofullscreen" 
     <video id="Video" controls>
-        <!-- dummy tracks to show subtitle menu in video player
+        dummy tracks to show subtitle menu in video player
         <template is="dom-repeat" items="[[ media.subtitles ]]">
             <track
                 kind="captions"
@@ -22,8 +22,9 @@
                 srclang="[[ item.locale ]]"
             />
         </template>
-        -->
+        
     </video>
+    -->
 </div>
 
 <style>
@@ -32,6 +33,7 @@
         height: 100%;
         background-color: var(--cds-ui-01);
     }
+    /*
     #Video {
         width: 100%;
         height: 100%;
@@ -41,7 +43,7 @@
     video::-webkit-media-controls-fullscreen-button {
         display: none;
     }
-
+    */
     /* hack to allow video to expand size when wrapped in subtitle container 
         .ASS-container,.ASS-container svg
     */

@@ -37,7 +37,9 @@
         <svelte:fragment slot="content">
             <TabContent class="settingtab">
                 <SettingsViewer
-                    settings={[...window.HakuNeko.SettingsManager.OpenScope(Scope)]}
+                    settings={[
+                        ...window.HakuNeko.SettingsManager.OpenScope(Scope),
+                    ]}
                 />
             </TabContent>
             <TabContent class="settingtab">
