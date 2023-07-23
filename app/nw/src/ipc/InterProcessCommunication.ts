@@ -67,6 +67,7 @@ export class IPC implements PlatformIPC {
             const manifest = JSON.parse(await fs.readFile(file, 'utf-8'));
             manifest['user-agent'] = userAgent;
             await fs.writeFile(file, JSON.stringify(manifest, null, 2), 'utf-8');
+            // TODO: This will not work in development mode, because a restart means a new generated package.json file
             // Show 'Restart Application' message
             //alert('UA changed, please restart ...');
         }
