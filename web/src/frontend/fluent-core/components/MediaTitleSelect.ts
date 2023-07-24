@@ -154,11 +154,11 @@ const styles: ElementStyles = css`
 `;
 
 const unstarred: ViewTemplate<MediaTitleSelect> = html`
-    <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description()}" :innerHTML=${IconAddBookmark} @click=${(model, ctx) => model.AddBookmark(ctx.event)}></fluent-button>
+    <fluent-button id="add-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description()}" :innerHTML=${() => IconAddBookmark} @click=${(model, ctx) => model.AddBookmark(ctx.event)}></fluent-button>
 `;
 
 const starred: ViewTemplate<MediaTitleSelect> = html`
-    <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description()}" :innerHTML=${IconRemoveBookmark} @click=${(model, ctx) => model.RemoveBookmark(ctx.event)}></fluent-button>
+    <fluent-button id="remove-favorite-button" appearance="stealth" ?disabled=${model => !model.selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description()}" :innerHTML=${() => IconRemoveBookmark} @click=${(model, ctx) => model.RemoveBookmark(ctx.event)}></fluent-button>
 `;
 
 // HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
@@ -178,9 +178,9 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">
             <div class="hint">${model => model.updating || model.pasting ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating || model.pasting} :innerHTML=${IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
+            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating || model.pasting} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
             ${model => model.bookmark ? starred : unstarred}
-            <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} :innerHTML=${IconClipboard} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}"></fluent-button>
+            <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} :innerHTML=${() => IconClipboard} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}"></fluent-button>
         </div>
     </div>
     <div id="dropdown" ${ref('dropdown')}>
