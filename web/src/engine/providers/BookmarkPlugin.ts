@@ -3,6 +3,8 @@ import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaP
 import { type StorageController, Store } from '../StorageController';
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
+import { DecoratableMangaScraper } from './MangaPlugin';
+import { SettingsManager } from '../SettingsManager';
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
@@ -23,8 +25,17 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
-        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID);
-        if (!parent) return undefined; //if plugin is not found, invalidate bookmark
+        let parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID);
+        const dummyPluginName = `deleted_${serialized.Media.ProviderID}`;
+        if (!parent) {
+            //try find dummy_deleted plugin
+            parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === dummyPluginName);
+            if (!parent) {
+                const plugin = (new DecoratableMangaScraper(dummyPluginName, `Website deleted : ${serialized.Media.ProviderID}`, 'about:blank').CreatePlugin(this.storage, new SettingsManager(this.storage)) as IMediaContainer);
+                this.plugins.WebsitePlugins.push(plugin);
+                parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === dummyPluginName);
+            }
+        }
         const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
