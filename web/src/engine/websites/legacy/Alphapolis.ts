@@ -20,8 +20,6 @@ function ChaptersExtractor(element: HTMLDivElement) {
 @Common.MangaCSS(/^https?:\/\/www\.alphapolis\.co\.jp\/manga\/official\/\d+/, 'div.manga-detail-description > div.title')
 @Common.MangasMultiPageCSS(`/manga/official/search?page={page}`, 'div.official-manga-panel > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.episode-unit', ChaptersExtractor)
-//@Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -43,6 +41,7 @@ export default class extends DecoratableMangaScraper {
         }
     }
 
+    //Since high resolution is not always available, use the real picture url instead of the forces one in case of failure
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         let blob = await Common.FetchImage.call(this, page, priority, signal);
         if (!blob.type.startsWith('image')) {
