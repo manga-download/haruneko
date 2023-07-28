@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, ref, when } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
 import type { WebsiteSelect, MediaTitleSelect } from './components/_index';
 import S from './services/StateService';
@@ -80,81 +80,66 @@ const templateWidgets: ViewTemplate<App> = html`
         ${when(() => S.SettingPanelBookmarks || S.SettingPanelDownloads, templateSidePanel)}
         <div id="mainpanel">
             <fluent-card>
-                <fluent-website-select id="website-select" ${ref('elementWebsiteSelect')} :selected=${model => model.website}
-                    @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event.currentTarget as WebsiteSelect)}
-                    @entriesUpdated=${(model, ctx) => model.WebsiteEntriesUpdated(ctx.event.currentTarget as WebsiteSelect)}>
+                <fluent-website-select id="website-select" :entries=${() => HakuNeko.PluginController.WebsitePlugins} :selected=${model => model.selectedWebsite}
+                    @selectedChanged=${(model, ctx) => model.WebsiteSelectedChanged(ctx.event.currentTarget as WebsiteSelect)}>
                 </fluent-website-select>
             </fluent-card>
             <fluent-card>
-                <fluent-media-title-select id="media-title-select" ${ref('elementMediaSelect')} :entries=${model => model.titles}
-                    @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event.currentTarget as MediaTitleSelect)}
-                    @entriesUpdated=${(model, ctx) => model.MediaTitleEntriesUpdated(ctx.event.currentTarget as MediaTitleSelect)}>
+                <fluent-media-title-select id="media-title-select" :container=${model => model.selectedWebsite} :selected=${model => model.selectedTitle}
+                    @selectedChanged=${(model, ctx) => model.MediaTitleSelectedChanged(ctx.event.currentTarget as MediaTitleSelect)}>
                 </fluent-media-title-select>
             </fluent-card>
             <fluent-card>
-                <fluent-media-item-list id="media-item-list" :entries=${model => model.items} @previewClicked=${(model, ctx) => model.PreviewClicked(ctx.event)}></fluent-media-item-list>
+                <fluent-media-item-list id="media-item-list" :container=${model => model.selectedTitle}
+                    @previewClicked=${(model, ctx) => model.PreviewClicked(ctx.event)}></fluent-media-item-list>
             </fluent-card>
         </div>
     </div>
 `;
 
 const templatePreview: ViewTemplate<App> = html`
-    <fluent-media-item-preview id="preview" :entry=${model => model.item} @previewClosed=${model => model.PreviewClosed()}></fluent-media-item-preview>
+    <fluent-media-item-preview id="preview" :entry=${model => model.selectedItem} @previewClosed=${model => model.PreviewClosed()}></fluent-media-item-preview>
 `;
 
 const template: ViewTemplate<App> = html`
     <fluent-settings-dialog></fluent-settings-dialog>
     <fluent-titlebar id="titlebar"></fluent-titlebar>
-    ${when(model => !model.item, templateWidgets)}
-    ${when(model => model.item, templatePreview)}
+    ${when(model => !model.selectedItem, templateWidgets)}
+    ${when(model => model.selectedItem, templatePreview)}
 `;
 
 @customElement({ name: 'fluent-app', template, styles })
 export default class App extends FASTElement {
 
-    elementWebsiteSelect: WebsiteSelect;
-    elementMediaSelect: MediaTitleSelect;
-    @observable website: IMediaContainer;
-    @observable titles: IMediaContainer[];
-    @observable items: IMediaContainer[];
-    @observable item: IMediaContainer;
+    @observable selectedWebsite: IMediaContainer;
+    @observable selectedTitle: IMediaContainer;
+    @observable selectedItem: IMediaContainer;
 
     public WebsiteSelectedChanged(target: WebsiteSelect) {
-        this.website = target?.selected;
-        this.titles = this.website?.Entries as IMediaContainer[];
-        if(!this.website?.IsSameAs(this.elementMediaSelect.selected?.Parent)) {
-            this.elementMediaSelect.selected = undefined;
-        }
-    }
-
-    public WebsiteEntriesUpdated(target: WebsiteSelect) {
-        if(this.website?.IsSameAs(target?.selected)) { // currently always true
-            this.titles = this.website?.Entries as IMediaContainer[];
+        this.selectedWebsite = target?.selected;
+        if(!this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
+            this.selectedTitle = undefined;
         }
     }
 
     public MediaTitleSelectedChanged(target: MediaTitleSelect) {
-        this.items = target?.selected?.Entries as IMediaContainer[];
-        if(target?.selected && !target?.selected?.Parent?.IsSameAs(this.elementWebsiteSelect.selected)) {
-            this.elementWebsiteSelect.selected = target?.selected?.Parent;
+        this.selectedTitle = target?.selected;
+        if(this.selectedTitle && !this.selectedTitle?.Parent?.IsSameAs(this.selectedWebsite)) {
+            this.selectedWebsite = this.selectedTitle?.Parent;
         }
-    }
-
-    public MediaTitleEntriesUpdated(target: MediaTitleSelect) {
-        this.items = target?.selected?.Entries as IMediaContainer[];
     }
 
     public BookmarkClicked(event: Event) {
         const bookmark = (event as CustomEvent<IMediaContainer>).detail;
-        this.elementWebsiteSelect.selected = bookmark?.Parent;
-        this.elementMediaSelect.selected = bookmark;
+        this.selectedWebsite = bookmark?.Parent;
+        this.selectedTitle = bookmark;
     }
 
     public PreviewClicked(event: Event) {
-        this.item = (event as CustomEvent<IMediaContainer>).detail;
+        this.selectedItem = (event as CustomEvent<IMediaContainer>).detail;
     }
 
     public PreviewClosed() {
-        this.item = undefined;
+        this.selectedItem = undefined;
     }
 }
