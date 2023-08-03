@@ -5,11 +5,12 @@ import * as Common from './decorators/Common';
 import * as ReaderFront from './decorators/ReaderFront';
 
 const apiUrl = 'https://api.scyllascans.org';
+const cdnUrl = apiUrl;
 
 @ReaderFront.MangaAJAX(/^https?:\/\/scyllascans\.org\/work\/[a-z]{2}\/[^/]+/, apiUrl)
 @ReaderFront.MangasSinglePageAJAX(apiUrl)
 @ReaderFront.ChaptersSinglePageAJAX(apiUrl)
-@ReaderFront.PagesSinglePageAJAX(apiUrl, apiUrl)
+@ReaderFront.PagesSinglePageAJAX(apiUrl, cdnUrl)
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {

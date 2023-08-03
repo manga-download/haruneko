@@ -1,3 +1,7 @@
+// Readerfornt template : https://github.com/dvaJi/ReaderFront
+//Ajax / GraphQL based
+// Support EN and ES language content
+
 import { FetchRequest, FetchGraphQL } from '../../FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { type Tag, Tags } from '../../Tags';
