@@ -3,8 +3,8 @@ import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaP
 import { type StorageController, Store } from '../StorageController';
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
-import { DecoratableMangaScraper } from './MangaPlugin';
-import { SettingsManager } from '../SettingsManager';
+import type { ISettings } from '../SettingsManager';
+import type { Tag } from '../Tags';
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
@@ -25,17 +25,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
-        let parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID);
-        const dummyPluginName = `deleted_${serialized.Media.ProviderID}`;
-        if (!parent) {
-            //try find dummy_deleted plugin
-            parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === dummyPluginName);
-            if (!parent) {
-                const plugin = (new DecoratableMangaScraper(dummyPluginName, `Website deleted : ${serialized.Media.ProviderID}`, 'about:blank').CreatePlugin(this.storage, new SettingsManager(this.storage)) as IMediaContainer);
-                this.plugins.WebsitePlugins.push(plugin);
-                parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === dummyPluginName);
-            }
-        }
+        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? this._createInvalidParent('[DELETED] ' + serialized.Media.EntryID, serialized.Media.ProviderID);
         const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
@@ -49,6 +39,62 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         );
         bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
         return bookmark;
+    }
+
+    _createInvalidParent(name: string, identifier: string): IMediaContainer {
+        const fakePlugin: IMediaContainer = {
+            Identifier: identifier,
+            Title: name,
+            get Entries(): [] {
+                return [];
+            },
+
+            get Settings(): ISettings {
+                return null;
+            },
+            get Icon(): string {
+                return null;
+            },
+
+            get Tags(): Tag[] {
+                return [];
+            },
+
+            IsSameAs(other: IMediaContainer): boolean {
+                if (!this.Identifier || !other?.Identifier) {
+                    return false;
+                }
+                if (this.Identifier !== other.Identifier) {
+                    return false;
+                }
+                if (this.Parent && other.Parent) {
+                    return this.Parent.IsSameAs(other.Parent);
+                }
+                return true;
+            },
+
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
+            CreateEntry(_identifier: string, _title: string): IMediaChild {
+                return;
+            },
+
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
+            TryGetEntry(_url: string): Promise<IMediaChild> {
+                return;
+            },
+
+            Update(): Promise<void> {
+                return;
+            },
+
+            *[Symbol.iterator](): Iterator<IMediaChild> {
+                for (const entry of this.Entries) {
+                    yield entry;
+                }
+            }
+
+        };
+        return fakePlugin;
     }
 
     private async Load() {
