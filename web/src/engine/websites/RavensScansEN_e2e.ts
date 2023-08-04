@@ -2,26 +2,26 @@
 
 const config = {
     plugin: {
-        id: 'ravensscans',
-        title: 'RavensScans'
+        id: 'ravensscans-en',
+        title: 'RavensScans (English)'
     },
     container: {
-        url: 'https://ravens-scans.com/work/es/karada_sagashi',
+        url: 'https://ravens-scans.com/work/en/blattodea',
         id: JSON.stringify({
-            id: 163,
-            language: 1,
-            stub: 'karada_sagashi'
+            id: 103,
+            language: 2,
+            stub: 'blattodea'
 
         }),
-        title: 'Karada Sagashi [es]'
+        title: 'Blattodea [en]'
     },
     child: {
-        id: '3152',
-        title: 'Vol. 1 Ch. 1.0'
+        id: '3235',
+        title: 'Vol. 4 Ch. 15.0 - Fujii Alice is hesitating'
     },
     entry: {
         index: 1,
-        size: 880_274,
+        size: 676_089,
         type: 'image/jpeg'
     }
 };
