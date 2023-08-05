@@ -501,6 +501,7 @@ export { default as SetsuScans } from './SetsuScans';
 export { default as ShadowMangas } from './ShadowMangas';
 export { default as SheaManga } from './SheaManga';
 export { default as SheepManga } from './SheepManga';
+export { default as SheepMangaBroken } from './SheepMangaBroken';
 export { default as ShieldManga } from './ShieldManga';
 export { default as ShimadaScans } from './ShimadaScans';
 export { default as ShinzooScans } from './ShinzooScans';
