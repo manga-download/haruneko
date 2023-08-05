@@ -23,7 +23,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
-        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? this._createInvalidParent('[DELETED] ' + serialized.Media.EntryID, serialized.Media.ProviderID);
+        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? this._createInvalidParent('[DELETED] ' + serialized.Media.ProviderID, serialized.Media.ProviderID);
         const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
