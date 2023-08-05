@@ -49,29 +49,17 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             Tags: [],
 
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
-            IsSameAs(other: IMediaContainer): boolean {
-                return false;
-            },
+            IsSameAs: (other: IMediaContainer) => { return false; },
 
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
-            CreateEntry(_identifier: string, _title: string): IMediaChild {
-                return;
-            },
+            CreateEntry: (_: string, __: string) => { throw new Error(); },
 
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
-            TryGetEntry(_url: string): Promise<IMediaChild> {
-                return;
-            },
+            TryGetEntry: (_: string) => { throw new Error(); },
 
-            Update(): Promise<void> {
-                return;
-            },
+            Update: () => { throw new Error(); },
 
-            *[Symbol.iterator](): Iterator<IMediaChild> {
-                for (const entry of this.Entries) {
-                    yield entry;
-                }
-            }
+            [Symbol.iterator]: function* () { },
 
         };
         return fakePlugin;
