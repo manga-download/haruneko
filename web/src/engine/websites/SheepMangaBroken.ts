@@ -19,7 +19,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public ValidateMangaURL(url: string): boolean {
-        return /\/sheep-scanlations\/\d+\.json/.test(url);
+        return /\/sheep-scanlations-broken\/\d+\.json/.test(url);
     }
 
     public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
