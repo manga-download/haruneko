@@ -3,8 +3,6 @@ import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaP
 import { type StorageController, Store } from '../StorageController';
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
-import type { ISettings } from '../SettingsManager';
-import type { Tag } from '../Tags';
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
@@ -45,32 +43,14 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         const fakePlugin: IMediaContainer = {
             Identifier: identifier,
             Title: name,
-            get Entries(): [] {
-                return [];
-            },
+            Entries: [],
+            Settings: null,
+            Icon: null,
+            Tags: [],
 
-            get Settings(): ISettings {
-                return null;
-            },
-            get Icon(): string {
-                return null;
-            },
-
-            get Tags(): Tag[] {
-                return [];
-            },
-
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
             IsSameAs(other: IMediaContainer): boolean {
-                if (!this.Identifier || !other?.Identifier) {
-                    return false;
-                }
-                if (this.Identifier !== other.Identifier) {
-                    return false;
-                }
-                if (this.Parent && other.Parent) {
-                    return this.Parent.IsSameAs(other.Parent);
-                }
-                return true;
+                return false;
             },
 
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
