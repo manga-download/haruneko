@@ -117,7 +117,8 @@ export class MangaPlugin extends MediaContainer<Manga> {
     public async TryGetEntry(url: string): Promise<Manga> {
         if(this.scraper.ValidateMangaURL(url)) {
             await this.Initialize();
-            return this.scraper.FetchManga(this, url);
+            const manga = await this.scraper.FetchManga(this, url);
+            return this.Entries.find((entry) => entry.IsSameAs(manga)) ?? manga;
         }
     }
 
