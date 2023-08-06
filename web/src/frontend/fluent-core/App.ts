@@ -118,7 +118,6 @@ export default class App extends FASTElement {
 
     public SelectedWebsiteChanged(event: CustomEvent<IMediaContainer>) {
         this.selectedWebsite = event.detail;
-        //console.log('Title Parent:', this.selectedTitle?.Parent);
         if(!this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
             this.selectedTitle = undefined;
         }
