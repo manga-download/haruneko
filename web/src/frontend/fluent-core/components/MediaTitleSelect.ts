@@ -220,7 +220,7 @@ export class MediaTitleSelect extends FASTElement {
     @observable filtered: IMediaContainer[] = [];
     @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
-        if((current || previous) && !current?.IsSameAs(previous)) {
+        if(current !== previous) {
             //console.log('Selected Title Changed:', previous?.Title, '=>', current?.Title, '|', 'emit:', true);
             this.BookmarksChanged(HakuNeko.BookmarkPlugin);
             this.$emit('selectedChanged', this.selected);
