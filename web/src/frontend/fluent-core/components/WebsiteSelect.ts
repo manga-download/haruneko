@@ -205,9 +205,9 @@ export class WebsiteSelect extends FASTElement {
     @observable filtered: IMediaContainer[] = [];
     @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
-        //console.log('Selected Website Changed:', previous?.Title, '=>', current?.Title);
-        if(!previous || !previous.IsSameAs(current)) {
-            this.$emit('selectedChanged');
+        if((current || previous) && !current?.IsSameAs(previous)) {
+            //console.log('Selected Website Changed:', previous?.Title, '=>', current?.Title, '|', 'emit:', true);
+            this.$emit('selectedChanged', this.selected);
         }
     }
     @observable expanded = false;

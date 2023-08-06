@@ -210,7 +210,7 @@ export class MediaTitleSelect extends FASTElement {
     @observable container?: IMediaContainer;
     containerChanged() {
         this.entries = (this.container?.Entries ?? []) as IMediaContainer[];
-        if(!this.entries.includes(this.selected)) {
+        if((this.container || this.selected?.Parent) && !this.container?.IsSameAs(this.selected?.Parent)) {
             this.selected = undefined;
         }
     }
@@ -226,10 +226,10 @@ export class MediaTitleSelect extends FASTElement {
     @observable filtered: IMediaContainer[] = [];
     @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
-        //console.log('Selected Title Changed:', previous?.Title, '=>', current?.Title);
-        if(!previous || !previous.IsSameAs(current)) {
+        if((current || previous) && !current?.IsSameAs(previous)) {
+            //console.log('Selected Title Changed:', previous?.Title, '=>', current?.Title, '|', 'emit:', true);
             this.BookmarksChanged(HakuNeko.BookmarkPlugin);
-            this.$emit('selectedChanged');
+            this.$emit('selectedChanged', this.selected);
         }
     }
     @observable expanded = false;
@@ -258,7 +258,6 @@ export class MediaTitleSelect extends FASTElement {
         try {
             this.updating = true;
             await this.selected?.Update();
-            //this.$emit('entriesUpdated');
         } catch(error) {
             console.warn(error);
         } finally {
@@ -288,6 +287,7 @@ export class MediaTitleSelect extends FASTElement {
     public async PasteClipboard(event: Event) {
         event.stopPropagation();
         try {
+            /*
             this.pasting = true;
             const link = new URL(await navigator.clipboard.readText()).href;
             for(const website of HakuNeko.PluginController.WebsitePlugins) {
@@ -303,6 +303,7 @@ export class MediaTitleSelect extends FASTElement {
                 }
             }
             throw new Error(`No matching website found for '${link}'`);
+            */
         } catch(error) {
             console.warn(error);
         }
