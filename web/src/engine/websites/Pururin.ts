@@ -1,15 +1,16 @@
 import { Tags } from '../Tags';
 import icon from './Pururin.webp';
-import { type Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import {FetchJSON, FetchRequest } from './../FetchProvider';
+import {FetchCSS, FetchRequest } from './../FetchProvider';
 
-type APIChapter = {
-    gallery: { total_pages: number, image_extension : string, title: string }
+type jsonImg = {
+    directory: string,
+        images: {
+            page: number,
+            filename: string
+        }[]
 }
-
-const CDN = 'https://cdn.pururin.to/assets/images/data';
-const apiPath = '/api/contribute/gallery/info';
 
 function MangaInfoExTractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -17,8 +18,8 @@ function MangaInfoExTractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
+@Common.MangaCSS(/^https?:\/\/pururin.to\/gallery\/\d+\//, 'div.title h1 span')
 @Common.MangasMultiPageCSS('/browse/title?page={page}', 'a.card.card-gallery', 1, 1, 0, MangaInfoExTractor)
-@Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
@@ -31,49 +32,22 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/pururin\.to\/gallery/.test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaID = url.match(/\/gallery\/([0-9]+)/)[1];
-        const req = new URL(apiPath, this.URI);
-        const request = this.getApiRequest(req.href, mangaID);
-        const data = await FetchJSON<APIChapter>(request);
-        const title = data.gallery.title;
-        const id = new URL(url).pathname;
-        return new Manga(this, provider, id, title);
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const uri = new URL(manga.Identifier, this.URI);
+        const request = new FetchRequest(uri.href);
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'div.gallery-action a:first-of-type'); //button "Read Online"
+        return [new Chapter(this, manga, data[0].pathname, 'Chapter')];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaID = chapter.Identifier.match(/\/gallery\/([0-9]+)/)[1];
-        const uri = new URL(apiPath, this.URI);
-        const request = this.getApiRequest(uri.href, mangaID);
-        const data = await FetchJSON<APIChapter>(request);
-        const pagesMax = data.gallery.total_pages;
-        const extension = data.gallery.image_extension;
-        //https://cdn.pururin.to/assets/images/data/<mangaid>/<i>.image_extension
-        return [...new Array(pagesMax).keys()].map(page => {
-            return new Page(this, chapter, new URL(`${CDN}/${mangaID}/${page + 1}.${extension}`));
-        });
+        const uri = new URL(chapter.Identifier, this.URI);
+        const request = new FetchRequest(uri.href);
+        const data = await FetchCSS(request, '.img-viewer');
+        const imgdata: jsonImg = JSON.parse(data[0].dataset['img']);
+        const server = data[0].dataset['svr'];
+        const directory = imgdata.directory;
+        return imgdata.images.map(page => new Page(this, chapter, new URL(`${directory}/${page.filename}`, server)));
 
     }
 
-    private getApiRequest(url: string, id: string): FetchRequest {
-        const params = {
-            id: id,
-            type: 2
-        };
-        return new FetchRequest(url, {
-            method: 'POST',
-            body: JSON.stringify(params),
-            headers: {
-                'x-origin': this.URI.origin,
-                'x-referer': this.URI.href,
-                'Content-Type': 'application/json;charset=UTF-8',
-                'X-Requested-With': 'XMLHttpRequest',
-            }
-        });
-
-    }
 }
