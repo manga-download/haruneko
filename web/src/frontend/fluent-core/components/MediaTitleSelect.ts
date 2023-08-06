@@ -178,9 +178,9 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">
             <div class="hint">${model => model.updating || model.pasting ? '┄' : (model.filtered?.length ?? '') + '／' + (model.entries?.length ?? '')}</div>
-            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.container || model.updating || model.pasting} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
+            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => model.updating || model.pasting} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
             ${model => model.bookmark ? starred : unstarred}
-            <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} :innerHTML=${() => IconClipboard} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}"></fluent-button>
+            <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => !model.selected?.Parent || model.updating || model.pasting} :innerHTML=${() => IconClipboard} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}"></fluent-button>
         </div>
     </div>
     <div id="dropdown" ${ref('dropdown')}>
@@ -207,16 +207,10 @@ export class MediaTitleSelect extends FASTElement {
 
     dropdown: HTMLDivElement;
 
-    @observable container?: IMediaContainer;
-    containerChanged() {
-        this.entries = (this.container?.Entries ?? []) as IMediaContainer[];
-        if((this.container || this.selected?.Parent) && !this.container?.IsSameAs(this.selected?.Parent)) {
-            this.selected = undefined;
-        }
-    }
-
     @observable entries: IMediaContainer[] = [];
     entriesChanged() {
+        const entry = this.entries.find((entry: IMediaContainer) => entry.Identifier === this.selected?.Identifier) as IMediaContainer;
+        this.selected = entry ?? this.selected;
         this.FilterEntries();
     }
     @observable match: (text: string) => boolean = () => true;
@@ -257,7 +251,8 @@ export class MediaTitleSelect extends FASTElement {
         event.stopPropagation();
         try {
             this.updating = true;
-            await this.selected?.Update();
+            await this.selected?.Parent?.Update();
+            this.entries = this.selected?.Parent?.Entries as IMediaContainer[] ?? [];
         } catch(error) {
             console.warn(error);
         } finally {
@@ -287,23 +282,24 @@ export class MediaTitleSelect extends FASTElement {
     public async PasteClipboard(event: Event) {
         event.stopPropagation();
         try {
-            /*
             this.pasting = true;
             const link = new URL(await navigator.clipboard.readText()).href;
             for(const website of HakuNeko.PluginController.WebsitePlugins) {
                 const media = await website.TryGetEntry(link) as IMediaContainer;
                 if(media) {
+                    /*
                     if(!this.container || !this.container.IsSameAs(media.Parent)) {
                         this.container = media.Parent;
                     }
+                    */
+                    await this.UpdateEntries(event);
                     if(!this.selected || !this.selected.IsSameAs(media)) {
                         this.selected = media;
                     }
-                    return this.UpdateEntries(event);
+                    return;
                 }
             }
             throw new Error(`No matching website found for '${link}'`);
-            */
         } catch(error) {
             console.warn(error);
         }
