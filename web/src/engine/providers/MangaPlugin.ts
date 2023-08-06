@@ -5,6 +5,7 @@ import { SanitizeFileName, type StorageController, Store } from '../StorageContr
 import type { Tag } from '../Tags';
 import { type Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
+import icon from '../../img/manga.webp';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -140,6 +141,10 @@ export class Manga extends MediaContainer<Chapter> {
 
     constructor(private readonly scraper: MangaScraper, parent: MediaContainer<Manga>, identifier: string, title: string) {
         super(identifier, title, parent);
+    }
+
+    public override get Icon() {
+        return icon;
     }
 
     public CreateEntry(identifier: string, title: string): Chapter {

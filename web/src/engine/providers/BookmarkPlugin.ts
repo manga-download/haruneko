@@ -161,6 +161,13 @@ export class Bookmark extends MediaContainer<IMediaChild> {
     }
 
     /**
+     * Directly pass-through the icon from the shared parent.
+     */
+    public override get Icon(): string {
+        return this.Origin.Icon;
+    }
+
+    /**
      * Directly pass-through the entries from the shared parent.
      */
     public override get Entries(): IMediaContainer[] {

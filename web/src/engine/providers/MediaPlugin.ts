@@ -1,9 +1,9 @@
 import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { ISetting, ISettings, SettingsManager } from '../SettingsManager';
 import type { StorageController } from '../StorageController';
-import icon from '../../img/media.webp';
 import type { Tag } from '../Tags';
 import type { Priority } from '../taskpool/TaskPool';
+import icon from '../../img/media.webp';
 
 export type IMediaChild = IMediaContainer | IMediaItem;
 
