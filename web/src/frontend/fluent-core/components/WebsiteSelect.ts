@@ -3,7 +3,7 @@ import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
-//import IconFavorite from '@fluentui/svg-icons/icons/star_20_regular.svg?raw';
+import IconBrowse from '@fluentui/svg-icons/icons/open_20_regular.svg?raw';
 import IconAddFavorite from '@fluentui/svg-icons/icons/star_off_20_regular.svg?raw';
 import IconRemoveFavorite from '@fluentui/svg-icons/icons/star_20_filled.svg?raw';
 
@@ -176,7 +176,8 @@ const template: ViewTemplate<WebsiteSelect> = html`
         <img id="logo" src="${model => model.selected?.Icon}"></img>
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">
-        <div class="hint">${model => (model.filtered?.length ?? '') + '／' + (model.entries?.length ?? '')}</div>
+            <div class="hint">${model => (model.filtered?.length ?? '') + '／' + (model.entries?.length ?? '')}</div>
+            <fluent-button id="button-browse" appearance="stealth" title="${model => model.selected?.URI?.href}" ?disabled=${model => !model.selected?.URI} :innerHTML=${() => IconBrowse} @click="${(model, ctx) => model.OpenBrowser(ctx.event)}"></fluent-button>
             ${model => model.favorite ? starred : unstarred}
             <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} :innerHTML=${() => IconSettings} @click="${(model, ctx) => model.OpenSettings(ctx.event)}"></fluent-button>
         </div>
@@ -244,6 +245,13 @@ export class WebsiteSelect extends FASTElement {
         event.stopPropagation();
         if(this.selected?.Settings) {
             S.ShowSettingsDialog(...this.selected.Settings);
+        }
+    }
+
+    public OpenBrowser(event: Event) {
+        event.stopPropagation();
+        if(this.selected?.URI) {
+            window.open(this.selected.URI);
         }
     }
 }
