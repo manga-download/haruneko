@@ -145,18 +145,19 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         return `${this.Parent.Identifier} :: ${this.Identifier}`;
     }
 
+    private origin: IMediaContainer;
     /**
      * Get the origin entry related to this bookmark from the shared parent.
-     * If the origin entry does not yet exist, it will be created and added to the entries of the parent for future access.
-     * NOTE: The parent may overwrite the added entry whenever its entries are updated (e.g. Update() call).
+     * If the origin entry does not yet exist, a stand in origin entry will be used.
      */
     private get Origin(): IMediaContainer {
-        let entry = (this.Parent.Entries as IMediaContainer[]).find(entry => entry.Identifier === this.Identifier);
-        if(!entry) {
-            entry = this.Parent.CreateEntry(this.Identifier, this.Title) as IMediaContainer;
-            this.Parent.Entries.push(entry);
+        const entry = (this.Parent.Entries as IMediaContainer[]).find(entry => entry.Identifier === this.Identifier) ?? this.origin;
+        if(entry) {
+            return entry;
+        } else {
+            this.origin = this.Parent.CreateEntry(this.Identifier, this.Title) as IMediaContainer;
+            return this.origin;
         }
-        return entry;
     }
 
     /**
