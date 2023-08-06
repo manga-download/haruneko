@@ -85,7 +85,7 @@ const templateWidgets: ViewTemplate<App> = html`
                 </fluent-website-select>
             </fluent-card>
             <fluent-card>
-                <fluent-media-title-select id="media-title-select" :entries=${model => model.selectedWebsite?.Entries ?? []} :selected=${model => model.selectedTitle}
+                <fluent-media-title-select id="media-title-select" :container=${model => model.selectedWebsite} :selected=${model => model.selectedTitle}
                     @selectedChanged=${(model, ctx) => model.SelectedMediaTitleChanged(ctx.event as CustomEvent<IMediaContainer>)}>
                 </fluent-media-title-select>
             </fluent-card>
@@ -125,7 +125,7 @@ export default class App extends FASTElement {
 
     public SelectedMediaTitleChanged(event: CustomEvent<IMediaContainer>) {
         this.selectedTitle = event.detail;
-        if((this.selectedWebsite || this.selectedTitle?.Parent) && !this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
+        if(this.selectedTitle && (this.selectedWebsite || this.selectedTitle?.Parent) && !this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
             this.selectedWebsite = this.selectedTitle?.Parent;
         }
     }
