@@ -178,9 +178,9 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">
             <div class="hint">${model => model.updating || model.pasting ? '┄' : (model.filtered?.length ?? '') + '／' + (model.entries?.length ?? '')}</div>
-            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => model.updating || model.pasting} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
+            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected?.Parent || model.updating || model.pasting} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
             ${model => model.bookmark ? starred : unstarred}
-            <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => !model.selected?.Parent || model.updating || model.pasting} :innerHTML=${() => IconClipboard} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}"></fluent-button>
+            <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} :innerHTML=${() => IconClipboard} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}"></fluent-button>
         </div>
     </div>
     <div id="dropdown" ${ref('dropdown')}>
@@ -221,7 +221,6 @@ export class MediaTitleSelect extends FASTElement {
     @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
         if(current !== previous) {
-            //console.log('Selected Title Changed:', previous?.Title, '=>', current?.Title, '|', 'emit:', true);
             this.BookmarksChanged(HakuNeko.BookmarkPlugin);
             this.$emit('selectedChanged', this.selected);
         }
@@ -285,14 +284,10 @@ export class MediaTitleSelect extends FASTElement {
             this.pasting = true;
             const link = new URL(await navigator.clipboard.readText()).href;
             for(const website of HakuNeko.PluginController.WebsitePlugins) {
-                const media = await website.TryGetEntry(link) as IMediaContainer;
+                let media = await website.TryGetEntry(link) as IMediaContainer;
                 if(media) {
-                    /*
-                    if(!this.container || !this.container.IsSameAs(media.Parent)) {
-                        this.container = media.Parent;
-                    }
-                    */
-                    await this.UpdateEntries(event);
+                    media = HakuNeko.BookmarkPlugin.Entries.find(entry => entry.IsSameAs(media)) ?? media;
+                    await media.Update();
                     if(!this.selected || !this.selected.IsSameAs(media)) {
                         this.selected = media;
                     }
