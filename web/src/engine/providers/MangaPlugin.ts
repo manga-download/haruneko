@@ -105,6 +105,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
         return this.scraper.Tags;
     }
 
+    public get URI(): URL {
+        return this.scraper.URI;
+    }
+
     public async Initialize(): Promise<void> {
         await this.scraper.Initialize();
         return super.Initialize();

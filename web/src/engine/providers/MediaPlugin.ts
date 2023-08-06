@@ -27,6 +27,7 @@ export interface IMediaContainer {
     readonly Settings: ISettings;
     readonly Icon: string;
     readonly Tags: Tag[];
+    readonly URI?: URL;
     readonly Entries: IMediaChild[];
     [Symbol.iterator](): Iterator<IMediaChild>;
     IsSameAs(other: IMediaContainer): boolean;
