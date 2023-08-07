@@ -36,7 +36,6 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             serialized.Info.EntryID
         );
         bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
-        console.log('is orphaned : '+ this.isOrphaned(bookmark));
         return bookmark;
     }
 
