@@ -91,7 +91,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     public isBookmarked(entry: IMediaContainer): boolean {
-        return this.Find(entry)!==undefined;
+        return !!this.Find(entry);
     }
 
     /*
@@ -161,10 +161,10 @@ export class Bookmark extends MediaContainer<IMediaChild> {
     }
 
     /**
-     * Directly pass-through the icon from the shared parent.
+     * Directly pass-through the icon from the media container.
      */
     public override get Icon(): string {
-        return this.Origin.Icon;
+        return this.Origin?.Icon ?? super.Icon;
     }
 
     /**

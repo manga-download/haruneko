@@ -54,7 +54,7 @@ const styles: ElementStyles = css`
         display: grid;
         align-items: center;
         grid-template-rows: min-content;
-        grid-template-columns: min-content 1fr;
+        grid-template-columns: min-content min-content 1fr;
     }
 
     ul#entries li > div {
@@ -76,7 +76,8 @@ const styles: ElementStyles = css`
 
 const listitem: ViewTemplate<IMediaContainer> = html`
     <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
-        <img class="icon" src="${model => model.Parent?.Icon}"></img>
+        <img class="icon" src="${model => model.Parent.Icon}"></img>
+        <img class="icon" src="${model => model.Icon}"></img>
         <div>${model => model.Title}</div>
     </li>
 `;
