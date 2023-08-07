@@ -36,6 +36,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             serialized.Info.EntryID
         );
         bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
+        console.log('is orphaned : '+ this.isOrphaned(bookmark));
         return bookmark;
     }
 
@@ -48,13 +49,13 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             Icon: null,
             Tags: [],
 
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
             IsSameAs: (other: IMediaContainer) => { return false; },
 
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
             CreateEntry: (_: string, __: string) => { throw new Error(); },
 
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
             TryGetEntry: (_: string) => { throw new Error(); },
 
             Update: () => { throw new Error(); },
@@ -63,6 +64,10 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
         };
         return fakePlugin;
+    }
+
+    public isOrphaned(bookmark: Bookmark) {
+        return !this.plugins.WebsitePlugins.some(plugin => plugin.IsSameAs(bookmark.Parent));
     }
 
     private async Load() {
