@@ -95,6 +95,7 @@ export { default as FinalScans } from './FinalScans';
 export { default as FirstKissManga } from './FirstKissManga';
 export { default as FirstKissManhua } from './FirstKissManhua';
 export { default as FlameScansORG } from './FlameScansORG';
+export { default as FMTeam } from './FMTeam';
 export { default as FranxxMangas } from './FranxxMangas';
 export { default as FreeComicOnline } from './FreeComicOnline';
 export { default as FreeManga } from './FreeManga';
