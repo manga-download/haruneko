@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Dmzj.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchJSON, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON, FetchRequest } from '../FetchProvider';
 
 type APIResult<T> = {
     errno: number,
@@ -41,9 +41,14 @@ type APIChapter = {
     page_url: string[]
 }
 
+type MangaID = {
+    comicPy: string,
+    comicId: number
+}
+
 type ChapterID = {
-    comic: string,
-    chapter: string
+    comicId: number,
+    chapterId: number
 }
 
 @Common.ImageAjax(true)
@@ -63,7 +68,7 @@ export default class extends DecoratableMangaScraper {
         const comicPy = url.match(/\/info\/(\S+)\.html$/)[1];
         const request = new FetchRequest(new URL(`/api/v1/comic1/comic/detail?comic_py=${comicPy}`, this.URI).href);
         const data = await FetchJSON<APIResult<APIComicSingle>>(request);
-        return new Manga(this, provider, data.data.comicInfo.comicPy, data.data.comicInfo.title.trim());
+        return new Manga(this, provider, JSON.stringify({ comicPy : data.data.comicInfo.comicPy, comicId: data.data.comicInfo.id }), data.data.comicInfo.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -77,18 +82,19 @@ export default class extends DecoratableMangaScraper {
     private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const request = new FetchRequest(new URL(`/api/v1/comic1/filter?page=${page}&size=100`, this.URI).href);
         const data = await FetchJSON<APIResult<APIComicList>>(request);
-        return data.errno != 0 || !data.data.comicList ? [] : data.data.comicList.map(manga => new Manga(this, provider, manga.comic_py, manga.name.trim()));
+        return data.errno != 0 || !data.data.comicList ? [] : data.data.comicList.map(manga => new Manga(this, provider, JSON.stringify({ comicPy: manga.comic_py, comicId: manga.id }), manga.name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(`/api/v1/comic1/comic/detail?comic_py=${manga.Identifier}`, this.URI).href);
+        const comicId: MangaID = JSON.parse(manga.Identifier);
+        const request = new FetchRequest(new URL(`/api/v1/comic1/comic/detail?comic_py=${comicId.comicPy}`, this.URI).href);
         const data = await FetchJSON<APIResult<APIComicSingle>>(request);
-        return data.errno != 0 ? [] : data.data.comicInfo.chapterList[0].data.map(chapter => new Chapter(this, manga, JSON.stringify({ comic: data.data.comicInfo.id, chapter: chapter.chapter_id }), chapter.chapter_title.trim()));
+        return data.errno != 0 ? [] : data.data.comicInfo.chapterList[0].data.map(chapter => new Chapter(this, manga, JSON.stringify({ comicId: data.data.comicInfo.id, chapterId: chapter.chapter_id }), chapter.chapter_title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterId: ChapterID = JSON.parse(chapter.Identifier);
-        const request = new FetchRequest(new URL(`/api/v1/comic1/chapter/detail?comic_id=${chapterId.comic}&chapter_id=${chapterId.chapter}`, this.URI).href);
+        const request = new FetchRequest(new URL(`/api/v1/comic1/chapter/detail?comic_id=${chapterId.comicId}&chapter_id=${chapterId.chapterId}`, this.URI).href);
         const data = await FetchJSON<APIResult<APIChapterInfo>>(request);
         return data.errno != 0 ? [] : (data.data.chapterInfo.page_url_hd || data.data.chapterInfo.page_url).map(page => new Page(this, chapter, new URL(page)));
     }
