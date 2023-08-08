@@ -64,7 +64,7 @@ export function CreateLocale(resource: IVariantResource): ILocale {
  * Search the localized resource for the given language code.
  * If no language code is given, it is determined from the global settings.
  */
-export function GetLocale(code: LocaleID = null): ILocale {
+export function GetLocale(code?: LocaleID): ILocale {
     if(code) {
         return resources[code];
     } else {

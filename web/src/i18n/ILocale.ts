@@ -171,23 +171,30 @@ export enum VariantResourceKey {
     Settings_Global_DescramblingFormat_WEBP = 'Settings_Global_DescramblingFormat_WEBP',
     Settings_Global_DescramblingQuality = 'Settings_Global_DescramblingQuality',
     Settings_Global_DescramblingQualityInfo = 'Settings_Global_DescramblingQualityInfo',
+    Settings_Global_UserAgent = 'Settings_Global_UserAgent',
+    Settings_Global_UserAgentInfo = 'Settings_Global_UserAgentInfo',
     Settings_Global_HCaptchaToken = 'Settings_Global_HCaptchaToken',
     Settings_Global_HCaptchaTokenInfo = 'Settings_Global_HCaptchaTokenInfo',
     Settings_Global_PostCommand = 'Settings_Global_PostCommand',
     Settings_Global_PostCommandInfo = 'Settings_Global_PostCommandInfo',
-
-    SettingsManager_Settings_AlreadyInitializedError = 'SettingsManager_Settings_AlreadyInitializedError',
-
-    FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
-    FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
-    FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
-
     Settings_NewContent_Check = 'Settings_NewContent_Check',
     Settings_NewContent_CheckInfo = 'Settings_NewContent_CheckInfo',
     Settings_NewContent_CheckPeriod = 'Settings_NewContent_CheckPeriod',
     Settings_NewContent_CheckPeriodInfo = 'Settings_NewContent_CheckPeriodInfo',
     Settings_NewContent_Notify = 'Settings_NewContent_Notify',
     Settings_NewContent_NotifyInfo = 'Settings_NewContent_NotifyInfo',
+    Settings_Global_RPCEnabled = 'Settings_Global_RPCEnabled',
+    Settings_Global_RPCEnabledInfo = 'Settings_Global_RPCEnabledInfo',
+    Settings_Global_RPCPort = 'Settings_Global_RPCPort',
+    Settings_Global_RPCPortInfo = 'Settings_Global_RPCPortInfo',
+    Settings_Global_RPCSecret = 'Settings_Global_RPCSecret',
+    Settings_Global_RPCSecretInfo = 'Settings_Global_RPCSecretInfo',
+
+    SettingsManager_Settings_AlreadyInitializedError = 'SettingsManager_Settings_AlreadyInitializedError',
+
+    FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
+    FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
+    FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
 }
 
 // [SECTION]: Tags
@@ -255,6 +262,7 @@ export enum VariantResourceKey {
     Plugin_Settings_Throttling = 'Plugin_Settings_Throttling',
     Plugin_Settings_ThrottlingInfo = 'Plugin_Settings_ThrottlingInfo',
     Plugin_Common_MangasNotSupported = 'Plugin_Common_MangasNotSupported',
+    Plugin_Common_ChapterNotAvailable = 'Plugin_Common_ChapterNotAvailable'
 }
 
 // [SECTION]: Website SheepScanlations

@@ -135,7 +135,7 @@ export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelE
  ******** Manga List Extraction Methods ********
  ***********************************************/
 
-function EndsWith(target: Manga[], source: Manga[]) {
+export function EndsWith(target: Manga[], source: Manga[]) {
     if (target.length < source.length) {
         return false;
     }

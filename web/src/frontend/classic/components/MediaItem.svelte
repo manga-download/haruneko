@@ -47,8 +47,10 @@
     });
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
     class="listitem"
+    role="listitem"
     in:fade
     class:selected
     class:active={$selectedItem?.Identifier === item?.Identifier}
@@ -57,6 +59,7 @@
     on:mousedown
     on:mouseup
     on:mouseenter
+    on:keypress
 >
     <Button
         size="small"

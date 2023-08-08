@@ -18,39 +18,43 @@
 
 <div id="Buttons">
     <span class="title">{title}</span>
-    <span class="button" on:click={() => dispatch('previousItem')}>
+    <button class="button" on:click={() => dispatch('previousItem')}>
         <ChevronLeft size={24} title="Preview item (ArrowLeft)" />
-    </span>
-    <span class="button" on:click={() => dispatch('nextItem')}>
+    </button>
+    <button class="button" on:click={() => dispatch('nextItem')}>
         <ChevronRight size={24} title="Next item (ArrowRight)" />
-    </span>
+    </button>
     &nbsp;
-    <span class="button" on:click={ViewerPadding.decrement}>
+    <button class="button" on:click={ViewerPadding.decrement}>
         <RowDelete
             size={24}
             title="Decrease spacing between images (CTRL ➖)"
         />
-    </span>
-    <span class="button" on:click={ViewerPadding.increment}>
+    </button>
+    <button class="button" on:click={ViewerPadding.increment}>
         <RowInsert
             size={24}
             title="Increase spacing between images (CTRL ➕)"
         />
-    </span>
+    </button>
     &nbsp;
-    <span class="button" on:click={ViewerZoom.increment}>
+    <button class="button" on:click={ViewerZoom.increment}>
         <ZoomIn size={24} title="Zoom In (➕)" />
-    </span>
-    <span class="button" on:click={ViewerZoom.decrement}>
+    </button>
+    <button class="button" on:click={ViewerZoom.decrement}>
         <ZoomOut size={24} title="Zoom Out (➖)" />
-    </span>
+    </button>
     &nbsp
-    <span class="button" on:click={() => dispatch('close')}>
+    <button class="button" on:click={() => dispatch('close')}>
         <Misuse size={24} title="Close (ESC)" />
-    </span>
+    </button>
 </div>
 
 <style>
+    button {
+        all: unset;
+        cursor: pointer;
+    }
     #Buttons {
         display: flex;
         align-content: center;
