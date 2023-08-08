@@ -35,18 +35,18 @@ const styles: ElementStyles = css`
 `;
 
 const templateCaseSensivity: ViewTemplate<SearchBox> = html`
-    <fluent-button appearance="${model => model.caseenabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${IconCase} @click=${model => model.caseenabled = !model.caseenabled}></fluent-button>
+    <fluent-button appearance="${model => model.caseenabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${() => IconCase} @click=${model => model.caseenabled = !model.caseenabled}></fluent-button>
 `;
 
 const templateRegularExpression: ViewTemplate<SearchBox> = html`
-    <fluent-button appearance="${model => model.regexenabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${IconRegex} @click=${model => model.regexenabled = !model.regexenabled}></fluent-button>
+    <fluent-button appearance="${model => model.regexenabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${() => IconRegex} @click=${model => model.regexenabled = !model.regexenabled}></fluent-button>
 `;
 
 const template: ViewTemplate<SearchBox> = html`
     <fluent-text-field id="searchpattern" appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.needle} @input=${(model, ctx) => model.needle = ctx.event.currentTarget['value']}>
-        <div slot="start" :innerHTML=${IconSearch}></div>
+        <div slot="start" :innerHTML=${() => IconSearch}></div>
         <div slot="end">
-            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${IconClear} @click=${model => model.needle = ''}></fluent-button>
+            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.needle = ''}></fluent-button>
             ${when(model => model.allowcase, templateCaseSensivity)}
             ${when(model => model.allowregex, templateRegularExpression)}
         </div>

@@ -4,8 +4,6 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from '../decorators/Common';
 import { FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
 
-const apiUrl = 'https://api.comick.app';
-
 type NEXTDATA = {
     props: {
         pageProps: {
@@ -67,6 +65,8 @@ const langMap = {
 
 export default class extends DecoratableMangaScraper {
 
+    private readonly apiUrl = 'https://api.comick.app';
+
     public constructor() {
         super('comick', `ComicK`, 'https://comick.app' , Tags.Language.Multilingual, Tags.Media.Manga, Tags.Source.Aggregator);
     }
@@ -96,7 +96,7 @@ export default class extends DecoratableMangaScraper {
 
     private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]>{
         try {
-            const uri = new URL('/search?page=' + page, apiUrl);
+            const uri = new URL('/v1.0/search?page=' + page, this.apiUrl);
             const request = new FetchRequest(uri.href);
             const data = await FetchJSON<APIManga[]>(request);
             return data.map(item => {
@@ -117,7 +117,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const uri = new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, apiUrl);
+        const uri = new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl);
         const request = new FetchRequest(uri.href);
         const data = await FetchJSON<APIChapters>(request);
         return data.chapters.map(item => {
@@ -147,7 +147,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL('/chapter/' + chapter.Identifier, apiUrl);
+        const uri = new URL('/chapter/' + chapter.Identifier, this.apiUrl);
         const request = new FetchRequest(uri.href);
         const data = await FetchJSON<APIChapter>(request);
         return data.chapter.md_images.map(image => new Page(this, chapter, new URL(`https://meo.comick.pictures/${image.b2key}`), { Referer : this.URI.href }));

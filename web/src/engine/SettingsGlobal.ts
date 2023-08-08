@@ -12,11 +12,15 @@ export const enum Key {
     UseWebsiteSubDirectory = 'website-subdirectory',
     DescramblingFormat = 'descrambling-format',
     DescramblingQuality = 'descrambling-quality',
+    UserAgent = 'UserAgent',
     CaptchaToken = 'captcha-token',
     PostCommand = 'post-command',
     CheckNewContent = 'check-new-content',
     CheckNewContentPeriod = 'check-new-content-period',
     NotifyNewContent = 'notify-new-content',
+    RPCEnabled = 'RPCEnabled',
+    RPCPort = 'RPCPort',
+    RPCSecret = 'RPCSecret',
 }
 
 export async function Initialize(settingsManager: SettingsManager): Promise<void> {
@@ -67,6 +71,12 @@ export async function Initialize(settingsManager: SettingsManager): Promise<void
             R.Settings_Global_DescramblingQualityInfo,
             95, 25, 100
         ),
+        new Text(
+            Key.UserAgent,
+            R.Settings_Global_UserAgent,
+            R.Settings_Global_UserAgentInfo,
+            null
+        ),
         new Secret(
             Key.CaptchaToken,
             R.Settings_Global_HCaptchaToken,
@@ -96,6 +106,24 @@ export async function Initialize(settingsManager: SettingsManager): Promise<void
             R.Settings_NewContent_Notify,
             R.Settings_NewContent_NotifyInfo,
             false
+        ),
+        new Check(
+            Key.RPCEnabled,
+            R.Settings_Global_RPCEnabled,
+            R.Settings_Global_RPCEnabledInfo,
+            false
+        ),
+        new Numeric(
+            Key.RPCPort,
+            R.Settings_Global_RPCPort,
+            R.Settings_Global_RPCPortInfo,
+            27544, 1024, 65535
+        ),
+        new Text(
+            Key.RPCSecret,
+            R.Settings_Global_RPCSecret,
+            R.Settings_Global_RPCSecretInfo,
+            'Connection#Secret'
         ),
     );
 }
