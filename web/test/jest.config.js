@@ -14,13 +14,16 @@ export default {
         '\\.(png|jpg|webp|ico|gif)$': '<rootDir>/img/mock.ts'
     },
     transform: {
-        '^.+\\.tsx?$': ['ts-jest', {
-            tsconfig: {
-                allowJs: true,
-                esModuleInterop: true,
-                verbatimModuleSyntax: false,
+        '\\.tsx?$': [
+            'ts-jest',
+            {
+                tsconfig: {
+                    allowJs: true,
+                    esModuleInterop: true,
+                    verbatimModuleSyntax: false,
+                }
             }
-        }]
+        ]
     },
     globals: {
         'Request': Request
