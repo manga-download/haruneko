@@ -1,13 +1,17 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const yargs = require('yargs'); //import yargs from 'yargs';
+import yargs from 'yargs';
+import { RPCServer } from './rpc/Server';
+import { Contract } from './rpc/Contract';
+import { IPC } from './ipc/InterProcessCommunication';
 
 async function GetArgumentURL(): Promise<string|undefined> {
     try {
+        /*
         type Arguments = {
             origin?: string;
         }
-        const argv: Arguments = await yargs(nw.App.argv).argv;
-        return argv.origin;
+        */
+        const argv/*: Arguments*/ = await yargs(nw.App.argv).argv;
+        return argv.origin as string;
     } catch {
         return undefined;
     }
@@ -25,6 +29,10 @@ async function GetDefaultURL(): Promise<string|undefined> {
 }
 
 async function OpenWindow() {
+
+    const ipc = new IPC();
+    ipc.RPC = new RPCServer('/hakuneko', new Contract(ipc));
+
     const url = await GetArgumentURL() ?? await GetDefaultURL();
 
     const win = await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(url ?? 'about:blank', {
