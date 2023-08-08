@@ -94,7 +94,9 @@
                         >{request.details}</StructuredListCell
                     >
                     <StructuredListCell class="action">
-                        <span on:click={() => alert('clicked')}><Image /></span>
+                        <button on:click={() => alert('clicked')}
+                            ><Image /></button
+                        >
                     </StructuredListCell>
                 </StructuredListRow>
             {/each}
@@ -103,6 +105,10 @@
 </div>
 
 <style>
+    button {
+        all: unset;
+        cursor: pointer;
+    }
     #network {
         height: 100%;
         overflow-y: scroll;

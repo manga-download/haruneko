@@ -31,8 +31,6 @@
             src={URL.createObjectURL(data)}
             draggable="false"
             bind:this={image}
-            on:click
-            on:keypress
             on:load={() => (loaded = true)}
         />
     {:else}
