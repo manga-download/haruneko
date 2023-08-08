@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './ComicTrail.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import * as CoreView from '../decorators/CoreView';
+import * as Common from '../decorators/Common';
 
+@Common.MangaCSS(/^https?:\/\/comic-trail\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@CoreView.MangasMultiPageCSS(['/series'], '#page-comicTrail-serial-serial > div div a',undefined, 'h4')
+@CoreView.ChaptersSinglePageCSS()
+@CoreView.PagesSinglePageJSON()
+@CoreView.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comictrail', `Comic Trail (コミックトレイル)`, 'https://comic-trail.com' /*, Tags.Language.English, Tags ... */);
+        super('comictrail', `Comic Trail (コミックトレイル)`, 'https://comic-trail.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class ComicTrail extends CoreView {
-
-    constructor() {
-        super();
-        super.id = 'comictrail';
-        super.label = 'Comic Trail (コミックトレイル)';
-        this.tags = [ 'manga', 'japanese' ];
-        this.url = 'https://comic-trail.com';
-
-        this.path = [ '/series' ];
-        this.queryManga = '#page-comicTrail-serial-serial > div div a';
-        this.queryMangaTitle = 'h4';
-    }
-
-}
-*/
