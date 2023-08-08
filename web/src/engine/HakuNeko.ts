@@ -8,6 +8,7 @@ import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
 import { SettingsManager } from './SettingsManager';
+import { CreatePlatformIPC } from './ipc/InterProcessCommunicationFactory';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
@@ -35,6 +36,7 @@ export class HakuNeko {
 
     public async Initialze(): Promise<void> {
         await InitGlobalSettings(this.SettingsManager);
+        /*const ipc = */CreatePlatformIPC(this.#settingsManager);
         // Preload bookmarks flags to show content to view
         const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;
         this.BookmarkPlugin.Entries.map(async (media) => {
@@ -62,6 +64,7 @@ export class HakuNeko {
     public get ItemflagManager(): ItemflagManager {
         return this.#itemflagManager;
     }
+
     public get DownloadManager(): DownloadManager {
         return this.#downloadManager;
     }
