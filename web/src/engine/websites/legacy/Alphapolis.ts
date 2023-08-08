@@ -3,6 +3,7 @@ import icon from './Alphapolis.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import type { Priority } from '../../taskpool/TaskPool';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -19,8 +20,6 @@ function ChaptersExtractor(element: HTMLDivElement) {
 @Common.MangaCSS(/^https?:\/\/www\.alphapolis\.co\.jp\/manga\/official\/\d+/, 'div.manga-detail-description > div.title')
 @Common.MangasMultiPageCSS(`/manga/official/search?page={page}`, 'div.official-manga-panel > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.episode-unit', ChaptersExtractor)
-@Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -36,9 +35,19 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS(request, 'viewer-manga-horizontal');
         try {
             const pages = JSON.parse(data[0].getAttribute('v-bind:pages'));
-            return pages.filter(element => typeof element != 'object' && !element.match('white_page')).map(element => new Page(this, chapter, new URL(element.replace(/\/[0-9]+x[0-9]+.([\w]+)/, '/1080x1536.$1'))));
+            return pages.filter(element => typeof element != 'object' && !element.match('white_page')).map(element => new Page(this, chapter, new URL(element.replace(/\/[0-9]+x[0-9]+.([\w]+)/, '/1080x1536.$1')), {fallbackURL : element}));
         } catch (error) {
             throw new Error(`The chapter '${chapter.Title}' is neither public, nor purchased!`);
         }
+    }
+
+    //Since high resolution is not always available, use the real picture url instead of the forces one in case of failure
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        let blob = await Common.FetchImage.call(this, page, priority, signal);
+        if (!blob.type.startsWith('image')) {
+            const fakepage = new Page(this, page.Parent as Chapter, new URL(page.Parameters.fallbackURL as string));
+            blob = await Common.FetchImage.call(this, fakepage, priority, signal);
+        }
+        return blob;
     }
 }

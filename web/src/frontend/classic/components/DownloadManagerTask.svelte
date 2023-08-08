@@ -45,12 +45,13 @@
         />
     </div>
     <div class="action">
-        <span
+        <button
             on:click|preventDefault|stopPropagation={() =>
                 window.HakuNeko.DownloadManager.Dequeue(job)}
+            on:keypress
         >
             <TrashCan size={20} />
-        </span>
+        </button>
     </div>
 </div>
 
