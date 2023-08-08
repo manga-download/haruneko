@@ -8,11 +8,11 @@ const config: Config = {
     container: {
         url: 'https://pururin.to/gallery/65780/the-rough-tempered-big-breasted-pirate-whos-addicted-to-sex',
         id: '/gallery/65780/the-rough-tempered-big-breasted-pirate-whos-addicted-to-sex',
-        title: 'The Rough Tempered Big Breasted Pirate Who\'s Addicted To Sex'
+        title: 'The Rough Tempered Big Breasted Pirate Who\'s Addicted To Sex / 気性が荒い爆乳海賊はえっちにハマる'
     },
     child: {
-        id: '/gallery/65780/the-rough-tempered-big-breasted-pirate-whos-addicted-to-sex',
-        title: 'The Rough Tempered Big Breasted Pirate Who\'s Addicted To Sex'
+        id: '/read/65780/01/the-rough-tempered-big-breasted-pirate-whos-addicted-to-sex',
+        title: 'Chapter'
     },
     entry: {
         index: 0,

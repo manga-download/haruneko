@@ -52,6 +52,14 @@ async function InitializeNodeWebkit(info: PlatformInfo) {
     nwWindow.window.HakuNeko = new HakuNeko(info);
     await window.HakuNeko.Initialze();
     new FrontendController(window.HakuNeko.SettingsManager.OpenScope());
+
+    nw.App.registerGlobalHotKey(new nw.Shortcut({
+        key: "F11",
+        active: function () {
+            nw.Window.get().toggleFullscreen();
+        },
+        failed: () => { console.log('F11 failed'); }
+    }));
 }
 
 async function InitializeBrowser(info: PlatformInfo) {

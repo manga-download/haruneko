@@ -23,6 +23,7 @@ async function createApplicationManifest() {
             'page-cache': false
         },
         */
+        'user-agent': null,
         dependencies: pkgConfig.dependencies
     };
     const file = path.resolve(dirBuild, pkgFile);

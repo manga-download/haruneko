@@ -23,7 +23,7 @@
     } from '../../stores/Settings';
     import { selectedItemNext } from '../../stores/Stores';
     // others
-    import { scrollSmoothly, scrollMagic } from './utilities';
+    import { scrollSmoothly, scrollMagic, toggleFullScreen } from './utilities';
 
     export let item: IMediaContainer;
     export let currentImageIndex: number = -1;
@@ -38,6 +38,11 @@
 
     const title = item?.Title ?? 'unkown';
     let viewer: HTMLElement;
+
+    function onClose() {
+        wide = false;
+        dispatch('close');
+    }
 
     function onKeyDown(event: KeyboardEvent) {
         switch (true) {
@@ -86,7 +91,7 @@
                 ViewerPadding.decrement();
                 break;
             case event.code === 'Escape':
-                wide = false;
+                onClose();
                 break;
             case event.code === 'Space':
                 scrollMagic(
@@ -243,6 +248,9 @@
 <div
     id="ImageViewer"
     bind:this={viewer}
+    role="button"
+    tabindex="-1"
+    on:dblclick={() => toggleFullScreen()}
     transition:fade
     class="{wide ? 'wide' : 'thumbnail'} {$ViewerMode} {$ViewerReverseDirection
         ? 'reverse'
@@ -254,7 +262,7 @@
             {title}
             on:nextItem
             on:previousItem
-            on:close={() => (wide = false)}
+            on:close={onClose}
         />
     {/if}
     {#if entries.length === 0}
@@ -269,17 +277,21 @@
     {/if}
 
     {#each entries as content, index (index)}
-        <span in:send={{ key: index }} out:receive={{ key: index }}>
+        <button
+            on:click={() => {
+                currentImageIndex = index;
+                wide = true;
+            }}
+            on:keypress
+            in:send={{ key: index }}
+            out:receive={{ key: index }}
+        >
             <Image
                 class={wide ? 'wide' : 'thumbnail'}
                 alt="content_{index}"
                 page={content}
-                on:click={() => {
-                    currentImageIndex = index;
-                    wide = true;
-                }}
             />
-        </span>
+        </button>
     {/each}
     {#if autoNextItem && $selectedItemNext !== undefined}
         <div transition:fade>
@@ -296,6 +308,10 @@
 </div>
 
 <style>
+    button {
+        all: unset;
+        cursor: pointer;
+    }
     #ImageViewer {
         width: 100%;
         height: 100%;
