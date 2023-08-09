@@ -114,6 +114,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImage.call(this, page, priority, signal);
+        if (page.Link.href.includes('/end_page/')) return data; //https://cycomi.com/title/191 got unencrypted end page
         const encrypted = await new Response(data).arrayBuffer();
         const passphrase = page.Link.pathname.split('/').filter(part => /^[0-9a-zA-Z]{32}$/.test(part)).shift() as string;
         const decrypted = Decrypt(new Uint8Array(encrypted), passphrase);
