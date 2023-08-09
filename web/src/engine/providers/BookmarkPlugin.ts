@@ -23,7 +23,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
-        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID);
+        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? this._createInvalidParent('[DELETED] ' + serialized.Media.ProviderID, serialized.Media.ProviderID);
         const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
@@ -39,9 +39,39 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         return bookmark;
     }
 
+    _createInvalidParent(name: string, identifier: string): IMediaContainer {
+        const fakePlugin: IMediaContainer = {
+            Identifier: identifier,
+            Title: name,
+            Entries: [],
+            Settings: null,
+            Icon: null,
+            Tags: [],
+
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+            IsSameAs: (other: IMediaContainer) => { return false; },
+
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+            CreateEntry: (_: string, __: string) => { throw new Error(); },
+
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+            TryGetEntry: (_: string) => { throw new Error(); },
+
+            Update: () => { throw new Error(); },
+
+            [Symbol.iterator]: function* () { },
+
+        };
+        return fakePlugin;
+    }
+
+    public isOrphaned(bookmark: Bookmark) {
+        return !this.plugins.WebsitePlugins.some(plugin => plugin.IsSameAs(bookmark.Parent));
+    }
+
     private async Load() {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
-        this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
+        this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark)).filter(entry => entry);//remove invalid bookmark
         this.EntriesUpdated.Dispatch(this, this.Entries);
     }
 
