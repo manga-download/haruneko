@@ -177,8 +177,8 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         <img id="logo" src="${model => model.selected?.Icon}"></img>
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">
-            <div class="hint">${model => model.updating || model.pasting ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating || model.pasting} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
+            <div class="hint">${model => model.updating || model.pasting ? '┄' : (model.filtered?.length ?? '') + '／' + (model.container?.Entries.length ?? '')}</div>
+            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.container || model.updating || model.pasting} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
             ${model => model.bookmark ? starred : unstarred}
             <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} :innerHTML=${() => IconClipboard} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}"></fluent-button>
         </div>
@@ -207,8 +207,10 @@ export class MediaTitleSelect extends FASTElement {
 
     dropdown: HTMLDivElement;
 
-    @observable entries: IMediaContainer[] = [];
-    entriesChanged() {
+    @observable container: IMediaContainer;
+    containerChanged() {
+        const entry = this.container?.Entries.find((entry: IMediaContainer) => entry.Identifier === this.selected?.Identifier) as IMediaContainer;
+        this.selected = entry ?? this.selected;
         this.FilterEntries();
     }
     @observable match: (text: string) => boolean = () => true;
@@ -218,9 +220,9 @@ export class MediaTitleSelect extends FASTElement {
     @observable filtered: IMediaContainer[] = [];
     @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
-        if(!previous || !previous.IsSameAs(current)) {
+        if(current !== previous) {
             this.BookmarksChanged(HakuNeko.BookmarkPlugin);
-            this.$emit('selectedChanged');
+            this.$emit('selectedChanged', this.selected);
         }
     }
     @observable expanded = false;
@@ -235,7 +237,7 @@ export class MediaTitleSelect extends FASTElement {
     @observable pasting = false;
 
     public async FilterEntries() {
-        this.filtered = this.entries?.filter(entry => this.match(entry.Title)) ?? [];
+        this.filtered = this.container?.Entries?.filter((entry: IMediaContainer) => this.match(entry.Title)) as IMediaContainer[] ?? [];
     }
 
     public SelectEntry(entry: IMediaContainer) {
@@ -248,12 +250,13 @@ export class MediaTitleSelect extends FASTElement {
         event.stopPropagation();
         try {
             this.updating = true;
-            await this.selected?.Update();
+            await this.container?.Update();
+            // TODO: Magic string property name is troublesome for refactoring, find a `nameof` replacement
+            Observable.getNotifier(this).notify('container');
         } catch(error) {
             console.warn(error);
         } finally {
             this.updating = false;
-            this.$emit('entriesUpdated');
         }
     }
 
@@ -282,12 +285,14 @@ export class MediaTitleSelect extends FASTElement {
             this.pasting = true;
             const link = new URL(await navigator.clipboard.readText()).href;
             for(const website of HakuNeko.PluginController.WebsitePlugins) {
-                const media = await website.TryGetEntry(link) as IMediaContainer;
+                let media = await website.TryGetEntry(link) as IMediaContainer;
                 if(media) {
+                    media = HakuNeko.BookmarkPlugin.Entries.find(entry => entry.IsSameAs(media)) ?? media;
+                    await media.Update();
                     if(!this.selected || !this.selected.IsSameAs(media)) {
                         this.selected = media;
                     }
-                    return this.UpdateEntries(event);
+                    return;
                 }
             }
             throw new Error(`No matching website found for '${link}'`);
