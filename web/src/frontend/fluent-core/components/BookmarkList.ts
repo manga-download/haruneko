@@ -1,5 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
 import S from '../services/StateService';
 
 const styles: ElementStyles = css`
@@ -29,6 +30,10 @@ const styles: ElementStyles = css`
 
     .hint {
         color: var(--neutral-foreground-hint);
+    }
+
+    .missing {
+        opacity: 0.5;
     }
 
     #searchcontrol {
@@ -75,9 +80,11 @@ const styles: ElementStyles = css`
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
+    <li class=${model => (model as Bookmark)?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
         <img class="icon" src="${model => model.Parent.Icon}"></img>
+        <!--
         <img class="icon" src="${model => model.Icon}"></img>
+        -->
         <div>${model => model.Title}</div>
     </li>
 `;

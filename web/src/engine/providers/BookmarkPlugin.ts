@@ -3,6 +3,7 @@ import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaP
 import { type StorageController, Store } from '../StorageController';
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
+import icon from '../../img/warning.webp';
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
@@ -23,7 +24,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
-        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? this._createInvalidParent('[DELETED] ' + serialized.Media.ProviderID, serialized.Media.ProviderID);
+        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? new MissingWebsite(serialized.Media.ProviderID);
         const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
@@ -39,39 +40,13 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         return bookmark;
     }
 
-    _createInvalidParent(name: string, identifier: string): IMediaContainer {
-        const fakePlugin: IMediaContainer = {
-            Identifier: identifier,
-            Title: name,
-            Entries: [],
-            Settings: null,
-            Icon: null,
-            Tags: [],
-
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-            IsSameAs: (other: IMediaContainer) => { return false; },
-
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-            CreateEntry: (_: string, __: string) => { throw new Error(); },
-
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-            TryGetEntry: (_: string) => { throw new Error(); },
-
-            Update: () => { throw new Error(); },
-
-            [Symbol.iterator]: function* () { },
-
-        };
-        return fakePlugin;
-    }
-
     public isOrphaned(bookmark: Bookmark) {
-        return !this.plugins.WebsitePlugins.some(plugin => plugin.IsSameAs(bookmark.Parent));
+        return bookmark.IsOrphaned;
     }
 
     private async Load() {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
-        this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark)).filter(entry => entry);//remove invalid bookmark
+        this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
         this.EntriesUpdated.Dispatch(this, this.Entries);
     }
 
@@ -144,6 +119,35 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 }
 
 /**
+ * A dummy representation for a bookmark's origin (media title), which is no longer available.
+ */
+class MissingWebsiteEntry extends MediaContainer<IMediaContainer> {
+    constructor(identifier: string, title: string) {
+        super(identifier, title, null);
+    }
+    public override get Icon(): string {
+        return icon;
+    }
+    public override async Update(): Promise<void> { throw new Error(); }
+}
+
+/**
+ * A dummy representation for a bookmark's parent (website), which has been removed.
+ */
+class MissingWebsite extends MediaContainer<IMediaContainer> {
+    constructor(identifier: string) {
+        super(identifier, identifier, null);
+    }
+    public override get Icon(): string {
+        return icon;
+    }
+    public override CreateEntry(identifier: string, title: string): IMediaContainer {
+        return new MissingWebsiteEntry(identifier, title);
+    }
+    public override async Update(): Promise<void> { throw new Error();}
+}
+
+/**
  * A bookmark is more or less a proxy/facade for a media container.
  */
 export class Bookmark extends MediaContainer<IMediaChild> {
@@ -210,6 +214,10 @@ export class Bookmark extends MediaContainer<IMediaChild> {
 
     public get InfoID(): string {
         return this.infoID;
+    }
+
+    public get IsOrphaned(): boolean {
+        return this.Parent instanceof MissingWebsite;
     }
 
     /**
