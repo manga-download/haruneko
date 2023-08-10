@@ -40,10 +40,6 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         return bookmark;
     }
 
-    public isOrphaned(bookmark: Bookmark) {
-        return bookmark.IsOrphaned;
-    }
-
     private async Load() {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
         this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
