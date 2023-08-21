@@ -6,12 +6,12 @@ const config = {
         title: 'HentaiZone'
     },
     container: {
-        url: 'https://hentaizone.xyz/manga/new-town/',
-        id: JSON.stringify({ post: '1801', slug: '/manga/new-town/' }),
+        url: 'https://hentaizone.xyz/manga/8-new-town/',
+        id: JSON.stringify({ post: '1801', slug: '/manga/8-new-town/' }),
         title: 'New Town'
     },
     child: {
-        id: '/manga/new-town/chapitre-1/',
+        id: '/manga/8-new-town/chapitre-1/',
         title: 'Chapitre 1'
     },
     entry: {

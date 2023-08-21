@@ -3,10 +3,10 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'evascans',
-        title: 'EvaScans'
+        title: 'ManWe'
     },
     container: {
-        url: 'https://evascans.com/manga/meow-rangers/',
+        url: 'https://manwe.pro/manga/meow-rangers/',
         id: JSON.stringify({ post: '4920', slug: '/manga/meow-rangers/' }),
         title: 'Meow Rangers'
     },

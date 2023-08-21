@@ -7,7 +7,7 @@ const config: Config = {
     },
     container: {
         url: 'https://hipercool.xyz/manga/nama-hone-josou/',
-        id: '{"post":"19381","slug":"/manga/nama-hone-josou/"}',
+        id: JSON.stringify({slug: '/manga/nama-hone-josou/' }),
         title: 'Nama-Hone Josou'
     },
     child: {

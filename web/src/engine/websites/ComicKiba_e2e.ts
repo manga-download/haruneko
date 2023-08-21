@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'comickiba',
-        title: 'Comic Kiba'
+        title: 'Manhua Gold'
     },
     container: {
         url: 'https://comickiba.com/manga/isekai-kenkokuki/',

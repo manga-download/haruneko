@@ -4,15 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/evascans.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="EvaScans"])')
+@Madara.MangaCSS(/^https?:\/\/manwe.pro\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('evascans', 'EvaScans', 'https://evascans.com', Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Language.Turkish);
+        super('evascans', 'ManWe', 'https://manwe.pro', Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Language.Turkish);
     }
 
     public override get Icon() {

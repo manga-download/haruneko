@@ -9,10 +9,12 @@ import * as Common from './decorators/Common';
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS('div.page-break img, li.blocks-gallery-item img')
 @Common.ImageAjax()
+
+// TODO Website is similar to MangareaderTO, and Mangasect. Make a template for MangareaderTO websites
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comickiba', 'Comic Kiba', 'https://comickiba.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('comickiba', 'Manhua Gold', 'https://manhuagold.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
