@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './HentaiRead.webp';
-import { Chapter, DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 const pageScript = `new Promise(resolve => {
@@ -13,7 +13,6 @@ const pageScript = `new Promise(resolve => {
     }));
 });
 `;
-
 
 @Common.MangaCSS(/^https?:\/\/hentairead\.com\/hentai\/[^/]+\/$/, 'div.post-title h1')
 @Common.MangasMultiPageCSS('/hentai/page/{page}/','div.post-title a')

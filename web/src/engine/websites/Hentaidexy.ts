@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './Hentaidexy.webp';
-import { Chapter, DecoratableMangaScraper, Manga, MangaPlugin, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 
