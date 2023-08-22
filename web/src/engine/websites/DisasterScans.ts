@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './DisasterScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga, MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
 
@@ -20,15 +20,6 @@ type JSONMangas = {
         comics: { id: string, ComicTitle: string }[]
     }
 }
-
-type JSONChapter = {
-    pageProps: {
-        chapter: {
-            pages: string;
-        }
-    }
-}
-
 
 @Common.PagesSinglePageCSS('main > div.maxWidth.container img')
 @Common.ImageAjax()
@@ -54,7 +45,6 @@ export default class extends DecoratableMangaScraper {
         return /https?:\/\/disasterscans\.com\/comics\/[^/]+/.test(url);
     }
 
-    
     public override async FetchManga(provider: MangaPlugin, _url: string): Promise<Manga> {
         const slug = _url.split('/').pop();
         const url = new URL('/_next/data/' + this.nextBuild + '/comics/' + slug + '.json?slug=' + slug, this.URI).href;
@@ -62,7 +52,7 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchJSON<JSONManga>(request);
         return new Manga(this, provider, data.pageProps.comic.id, data.pageProps.comic.ComicTitle.trim());
     }
-    
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL('/comics', this.URI).href;
         const request = new FetchRequest(url);
@@ -84,9 +74,5 @@ export default class extends DecoratableMangaScraper {
     computeMangaSlug(manga: Manga) {
         return manga.Identifier + '-' + manga.Title.toLowerCase().split(' ').join('-');
     }
-
-
-
-
 
 }
