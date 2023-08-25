@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'topmanhuanet',
-        title: 'LatestManga'
+        title: 'Top ManhuaNET'
     },
     container: {
-        url: 'https://latest-manga.com/manga/jujutsu-kaisen/',
-        id: JSON.stringify({ post: '1902', slug: '/manga/jujutsu-kaisen/' }),
-        title: 'Jujutsu Kaisen'
+        url: 'https://topmanhua.net/manga/murim-login/',
+        id: JSON.stringify({ post: '2198', slug: '/manga/murim-login/' }),
+        title: 'Murim Login'
     },
     child: {
-        id: '/manga/jujutsu-kaisen/vol-01/ch-001_3/',
-        title: 'Ch.001'
+        id: '/manga/murim-login/chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
         index: 1,
-        size: 183_751,
-        type: 'image/jpeg'
+        size: 1_257_966,
+        type: 'image/png'
     }
 };
 

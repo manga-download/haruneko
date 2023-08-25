@@ -2,21 +2,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangagreat',
-        title: 'MANGAGREAT'
+        id: 'readmanhwa',
+        title: 'ManhwaHentai.to'
     },
     container: {
-        url: 'https://mangagreat.org/manga/dragon-devouring-mage/',
-        id: JSON.stringify({ post: '23257', slug: '/manga/dragon-devouring-mage/' }),
-        title: 'Dragon Devouring Mage'
+        url: 'https://manhwahentai.to/pornhwa/ice-love/',
+        id: JSON.stringify({ post: '329', slug: '/pornhwa/ice-love/' }),
+        title: 'Ice Love'
     },
     child: {
-        id: '/manga/dragon-devouring-mage/chapter-1/',
+        id: '/pornhwa/ice-love/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 581_846,
+        size: 830_187,
         type: 'image/webp'
     }
 };

@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Mangaboss.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/mangaboss\.org\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.MangaCSS(/^https?:\/\/manhuauss\.com\/manga\/[^/]+\/$/, 'div.post-title')
+@Madara.MangasMultiPageCSS()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaboss', 'Mangaboss', 'https://mangaboss.org'/*, Tags.Media., Tags.Language.*/);
+        super('mangaboss', 'Manhuas-S', 'https://manhuauss.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class Mangaboss extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangaboss';
-        super.label = 'Mangaboss';
-        this.tags = [ 'manga', 'english', 'webtoon' ];
-        this.url = 'https://mangaboss.org';
-    }
-}
-*/

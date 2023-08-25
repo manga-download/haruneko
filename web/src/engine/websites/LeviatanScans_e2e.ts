@@ -6,13 +6,14 @@ const config = {
         title: 'LeviatanScans'
     },
     container: {
-        url: 'https://en.leviatanscans.com/manga/my-dad-is-too-strong/',
-        id: JSON.stringify({ post: '218', slug: '/manga/my-dad-is-too-strong/' }),
+        url: 'https://en.leviatanscans.com/manga/my-dad-is-too-strong-1/',
+        id: JSON.stringify({ post: '218', slug: '/manga/my-dad-is-too-strong-1/' }),
         title: 'My Dad is Too Strong'
     },
     child: {
-        id: '/manga/my-dad-is-too-strong/chapter-1/',
-        title: 'Chapter 1'
+        id: '/manga/my-dad-is-too-strong-1/chapter-1/',
+        title: 'Chapter 1',
+        timeout : 15000
     },
     entry: {
         index: 0,

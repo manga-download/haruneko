@@ -12,7 +12,7 @@ import * as Common from '../decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('goldenmanga', 'المانجا الذهبية (Golden Manga)', 'https://golden-manga.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
+        super('goldenmanga', 'المانجا الذهبية (Golden Manga)', 'https://golden-manga.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
