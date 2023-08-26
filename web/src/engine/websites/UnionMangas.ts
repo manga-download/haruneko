@@ -6,7 +6,6 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 
 @Common.MangaCSS(/^https?:\/\/guimah\.com\/perfil\//, 'div.perfil-manga div.row div.col-md-12 h2')
 @Common.MangasMultiPageCSS('/lista-mangas/visualizacoes/{page}', 'div.tamanho-bloco-perfil div.lista-mangas-novos > a:last-of-type')
-//@Common.ChaptersSinglePageCSS('div.perfil-manga div.capitulos div:first-of-type > a')
 @MangaStream.PagesSinglePageCSS([/banner_/], 'img.img-manga')
 @Common.ImageAjax()
 
