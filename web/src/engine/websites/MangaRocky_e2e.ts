@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangarocky',
         title: 'Manga Rocky'
-    }/*,
+    },
     container: {
-        url: 'https://mangarocky.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangarocky.com/manga/kanojo-okarishimasu/',
+        id: JSON.stringify({ post: '2798', slug: '/manga/kanojo-okarishimasu/' }),
+        title: 'Kanojo, Okarishimasu'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/kanojo-okarishimasu/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 182_422,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
