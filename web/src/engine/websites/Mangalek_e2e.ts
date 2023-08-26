@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'mangalek',
         title: 'مانجا ليك (Mangalek)'
-    }/*,
+    },
     container: {
-        url: 'https://mangalek.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangalek.com/manga/against-the-gods/',
+        id: JSON.stringify({ post: '47', slug: '/manga/against-the-gods/' }),
+        title: 'Against The Gods'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/against-the-gods/00/',
+        title: '00'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 2,
+        size: 129_845,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
