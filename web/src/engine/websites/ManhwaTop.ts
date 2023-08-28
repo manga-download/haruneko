@@ -1,11 +1,10 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './ManhwaTop.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/manhwatop\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/manhwatop\.com\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manhwatop', 'MANHWATOP', 'https://manhwatop.com'/*, Tags.Media., Tags.Language.*/);
+        super('manhwatop', 'MANHWATOP', 'https://manhwatop.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class ManhwaTop extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'manhwatop';
-        super.label = 'MANHWATOP';
-        this.tags = [ 'manga', 'webtoon', 'english' ];
-        this.url = 'https://manhwatop.com';
-    }
-}
-*/

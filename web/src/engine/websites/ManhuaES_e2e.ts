@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'manhuaes',
         title: 'ManhuaES'
-    }/*,
+    },
     container: {
-        url: 'https://manhuaes.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manhuaaz.com/manga/the-secret-of-the-partner-next-to-you/',
+        id: JSON.stringify({ post: '39812', slug: '/manga/the-secret-of-the-partner-next-to-you/' }),
+        title: 'The Secret Of The Partner Next To You'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/the-secret-of-the-partner-next-to-you/chapter-1/',
+        title: 'chapter 1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 223_573,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

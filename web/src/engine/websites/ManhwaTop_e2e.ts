@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'manhwatop',
         title: 'MANHWATOP'
-    }/*,
+    },
     container: {
-        url: 'https://manhwatop.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manhwatop.com/manga/i-gave-birth-to-a-murderers-child-series/',
+        id: JSON.stringify({ post: '26544', slug: '/manga/i-gave-birth-to-a-murderers-child-series/' }),
+        title: 'I Gave Birth To A Murderer’s Child'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/i-gave-birth-to-a-murderers-child-series/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 87_910,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

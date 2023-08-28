@@ -19,17 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaRead extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangaread';
-        super.label = 'MangaRead';
-        this.tags = [ 'webtoon', 'english' ];
-        this.url = 'https://www.mangaread.org';
-    }
-}
-*/
