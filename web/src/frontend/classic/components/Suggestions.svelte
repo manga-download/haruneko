@@ -123,7 +123,8 @@
     .mediaitem {
         height: 100%;
         position: relative;
-        background-size: cover;
+        background-position: center;
+        background-size: contain;
         background-repeat: no-repeat;
     }
 </style>

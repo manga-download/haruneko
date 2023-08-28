@@ -2,9 +2,8 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
-import IconSynchronize from '@vscode/codicons/src/icons/refresh.svg?raw'; // sync.svg
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
-//import IconFavorite from '@fluentui/svg-icons/icons/star_20_regular.svg?raw';
+import IconBrowse from '@fluentui/svg-icons/icons/open_20_regular.svg?raw';
 import IconAddFavorite from '@fluentui/svg-icons/icons/star_off_20_regular.svg?raw';
 import IconRemoveFavorite from '@fluentui/svg-icons/icons/star_20_filled.svg?raw';
 
@@ -177,8 +176,8 @@ const template: ViewTemplate<WebsiteSelect> = html`
         <img id="logo" src="${model => model.selected?.Icon}"></img>
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">
-            <div class="hint">${model => model.updating ? '┄' : model.selected?.Entries?.length ?? ''}</div>
-            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.selected || model.updating} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
+            <div class="hint">${model => (model.filtered?.length ?? '') + '／' + (model.entries?.length ?? '')}</div>
+            <fluent-button id="button-browse" appearance="stealth" title="${model => model.selected?.URI?.href}" ?disabled=${model => !model.selected?.URI} :innerHTML=${() => IconBrowse} @click="${(model, ctx) => model.OpenBrowser(ctx.event)}"></fluent-button>
             ${model => model.favorite ? starred : unstarred}
             <fluent-button id="button-settings" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.selected} :innerHTML=${() => IconSettings} @click="${(model, ctx) => model.OpenSettings(ctx.event)}"></fluent-button>
         </div>
@@ -187,7 +186,7 @@ const template: ViewTemplate<WebsiteSelect> = html`
         <div id="searchcontrol">
             <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-        <fluent-lazy-scroll id="entries" :items=${model => model.entries} :template=${listitem}></fluent-lazy-scroll>
+        <fluent-lazy-scroll id="entries" :items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
     </div>
 `;
 
@@ -196,15 +195,19 @@ export class WebsiteSelect extends FASTElement {
 
     dropdown: HTMLDivElement;
 
-    @observable entries = HakuNeko.PluginController.WebsitePlugins;
+    @observable entries: IMediaContainer[] = [];
+    entriesChanged() {
+        this.FilterEntries();
+    }
     @observable match: (text: string) => boolean = () => true;
     matchChanged() {
         this.FilterEntries();
     }
+    @observable filtered: IMediaContainer[] = [];
     @observable selected: IMediaContainer;
     selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
-        if(!previous || !previous.IsSameAs(current)) {
-            this.$emit('selectedChanged');
+        if((current || previous) && !current?.IsSameAs(previous)) {
+            this.$emit('selectedChanged', this.selected);
         }
     }
     @observable expanded = false;
@@ -217,26 +220,13 @@ export class WebsiteSelect extends FASTElement {
     @observable favorite = false;
 
     public async FilterEntries() {
-        this.entries = HakuNeko.PluginController.WebsitePlugins.filter(entry => this.match(entry.Title));
+        this.filtered = this.entries.filter(entry => this.match(entry.Title));
     }
 
     public SelectEntry(entry: IMediaContainer) {
         this.selected = entry;
         this.expanded = false;
         Observable.notify(this, 'expanded'); // force update of UI even when property not changed
-    }
-
-    public async UpdateEntries(event: Event): Promise<void> {
-        event.stopPropagation();
-        try {
-            this.updating = true;
-            await this.selected?.Update();
-        } catch(error) {
-            console.warn(error);
-        } finally {
-            this.updating = false;
-            this.$emit('entriesUpdated');
-        }
     }
 
     public AddFavorite(event: Event) {
@@ -255,6 +245,13 @@ export class WebsiteSelect extends FASTElement {
         event.stopPropagation();
         if(this.selected?.Settings) {
             S.ShowSettingsDialog(...this.selected.Settings);
+        }
+    }
+
+    public OpenBrowser(event: Event) {
+        event.stopPropagation();
+        if(this.selected?.URI) {
+            window.open(this.selected.URI);
         }
     }
 }
