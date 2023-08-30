@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Muctau.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/muctau\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/bibimanga\.com\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('muctau', 'Muctau', 'https://muctau.com'/*, Tags.Media., Tags.Language.*/);
+        super('muctau', 'BibiManga', 'https://bibimanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class Muctau extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'muctau';
-        super.label = 'Muctau';
-        this.tags = ['webtoon', 'english', ];
-        this.url = 'https://muctau.com';
-    }
-}
-*/

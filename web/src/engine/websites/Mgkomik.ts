@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Mgkomik.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/mgkomik\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/mgkomik\.id\/komik\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mgkomik', 'MGKOMIK', 'https://mgkomik.com'/*, Tags.Media., Tags.Language.*/);
+        super('mgkomik', 'MGKOMIK', 'https://mgkomik.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class Mgkomik extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mgkomik';
-        super.label = 'MGKOMIK';
-        this.tags = [ 'webtoon', 'indonesian' ];
-        this.url = 'https://mgkomik.com';
-    }
-}
-*/

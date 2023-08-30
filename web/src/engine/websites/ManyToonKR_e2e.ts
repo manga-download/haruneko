@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'manytoonkr',
         title: 'ManyToonKR'
-    }/*,
+    },
     container: {
-        url: 'https://manytoon.club/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manytoon.club/manhwa-raw/fantasyland/',
+        id: JSON.stringify({ post: '11119', slug: '/manhwa-raw/fantasyland/' }),
+        title: 'Fantasyland'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manhwa-raw/fantasyland/chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 248_416,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './ManyToon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/manytoon\.me\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/manytoon\.me\/manhwa\/[^/]+\/$/, 'div.post-title')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manytoon', 'ManyToon', 'https://manytoon.me'/*, Tags.Media., Tags.Language.*/);
+        super('manytoon', 'ManyToon', 'https://manytoon.me', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class ManyToon extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'manytoon';
-        super.label = 'ManyToon';
-        this.tags = [ 'webtoon', 'hentai', 'english' ];
-        this.url = 'https://manytoon.me'; // Miror?: https://manytoon.com
-    }
-}
-*/
