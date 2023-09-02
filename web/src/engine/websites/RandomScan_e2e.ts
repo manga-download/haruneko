@@ -1,4 +1,4 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,12 +6,12 @@ const config = {
         title: 'Random Scans'
     },
     container: {
-        url: 'https://randomscans.com/manga/inthenight8/',
-        id: JSON.stringify({ post: '73', slug: '/manga/inthenight8/' }),
-        title: 'In The Night Consumed By Blades, I Walk'
+        url: 'https://randomscanlators.net/manga/eu-caminho-na-noite-consumido-pelas-laminas/',
+        id: JSON.stringify({ post: '73', slug: '/manga/eu-caminho-na-noite-consumido-pelas-laminas/' }),
+        title: 'Eu Caminho na Noite consumido Pelas Lâminas'
     },
     child: {
-        id: '/manga/inthenight8/cap-01/',
+        id: '/manga/eu-caminho-na-noite-consumido-pelas-laminas/cap-01/',
         title: 'Cap. 01'
     },
     entry: {
