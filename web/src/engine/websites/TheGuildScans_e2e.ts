@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'theguildscans',
         title: 'The Guild Scans'
-    }/*,
+    },
     container: {
-        url: 'https://theguildscans.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://theguildscans.com/manga/castle-2-pinnacle/',
+        id: JSON.stringify({ post: '2149', slug: '/manga/castle-2-pinnacle/' }),
+        title: 'Castle 2: Pinnacle'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/castle-2-pinnacle/prologue/',
+        title: 'Prologue'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 3_305_927,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);
