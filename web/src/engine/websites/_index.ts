@@ -427,8 +427,6 @@ export { default as Turktoon } from './Turktoon';
 export { default as TvYManga } from './TvYManga';
 export { default as UnionMangas } from './UnionMangas';
 export { default as UzayManga } from './UzayManga';
-export { default as VapoScan } from './VapoScan';
-export { default as Visbellum } from './Visbellum';
 export { default as WakaScan } from './WakaScan';
 export { default as WantedTeam } from './WantedTeam';
 export { default as WarQueenScan } from './WarQueenScan';
