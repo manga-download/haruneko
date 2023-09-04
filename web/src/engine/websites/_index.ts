@@ -455,7 +455,6 @@ export { default as YugenMangasES } from './YugenMangasES';
 export { default as YugenMangasPT } from './YugenMangasPT';
 export { default as YuriVerso } from './YuriVerso';
 export { default as ZinManga } from './ZinManga';
-export { default as ZManga } from './ZManga';
 // Legacy Websites
 export { default as AkaiYuhiMun } from './legacy/AkaiYuhiMun';
 export { default as AllHentai } from './legacy/AllHentai';
