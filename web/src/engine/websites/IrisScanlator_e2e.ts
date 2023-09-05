@@ -7,16 +7,17 @@ const config = {
     },
     container: {
         url: 'https://irisscanlator.com.br/manga/orenchi-no-maid-san/',
-        id: JSON.stringify({ post: '82', slug: '/manga/orenchi-no-maid-san/' }),
+        id: '/manga/orenchi-no-maid-san/',
         title: 'Orenchi no Maid-san'
     },
     child: {
-        id: '/manga/orenchi-no-maid-san/capitulo-01/',
-        title: 'Capítulo 01'
+        id: '/orenchi-no-maid-san-capitulo-01/',
+        title: 'Chapter 01',
+        timeout : 15000
     },
     entry: {
         index: 0,
-        size: 407_663,
+        size: 383_954,
         type: 'image/jpeg'
     }
 };
