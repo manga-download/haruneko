@@ -65,7 +65,6 @@ export { default as Doujins } from './Doujins';
 export { default as DragonTea } from './DragonTea';
 export { default as DragonTranslation } from './DragonTranslation';
 export { default as DropeScan } from './DropeScan';
-export { default as DropeScanSensainaYuri } from './DropeScanSensainaYuri';
 export { default as DuniaKomik } from './DuniaKomik';
 export { default as DynastyScans } from './DynastyScans';
 export { default as EarlyManga } from './EarlyManga';

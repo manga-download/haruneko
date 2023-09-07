@@ -6,8 +6,8 @@ const config = {
         title: 'GateManga'
     },
     container: {
-        url: 'https://gatemanga.com/ar/kimetsu-no-yaiba/',
-        id: JSON.stringify({ post: '1936', slug: '/ar/kimetsu-no-yaiba/' }),
+        url: 'https://gatemanga.com/ar/kimetsu-no-yaiba-ar/',
+        id: JSON.stringify({ post: '1936', slug: '/ar/kimetsu-no-yaiba-ar/' }),
         title: 'Kimetsu No Yaiba'
     },
     child: {
