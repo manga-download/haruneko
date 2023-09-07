@@ -4,10 +4,23 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
+const pageScripts = `
+    new Promise((resolve, reject) => {
+        let t = new RocketLazyLoadScripts;
+        t._loadEverythingNow();
+        setTimeout(() => {
+            var imgdata = JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {
+                format: CryptoJSAesJson
+            }).toString(CryptoJS.enc.Utf8));
+            resolve(JSON.parse(imgdata));
+        }, 2500);
+    });
+`;
+
 @Madara.MangaCSS(/^https?:\/\/gourmetscans\.net\/project\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Gourmet Scans"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript)
+@Common.PagesSinglePageJS(pageScripts)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
