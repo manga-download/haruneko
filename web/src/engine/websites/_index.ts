@@ -112,7 +112,6 @@ export { default as Hiperdex } from './Hiperdex';
 export { default as HManhwa } from './HManhwa';
 export { default as HqNow } from './HqNow';
 export { default as HunterScan } from './HunterScan';
-export { default as IchirinNoHanaYuri } from './IchirinNoHanaYuri';
 export { default as IMHentai } from './IMHentai';
 export { default as ImmortalUpdates } from './ImmortalUpdates';
 export { default as ImperfectComic } from './ImperfectComic';
