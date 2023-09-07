@@ -6,7 +6,7 @@ const config = {
         title: 'Hentai3z'
     },
     container: {
-        url: 'https://hentai3z.com/manga/secret-class-1016/',
+        url: 'https://hentai3z.xyz/manga/secret-class-1016/',
         id: JSON.stringify({ post: '2662', slug: '/manga/secret-class-1016/' }),
         title: 'Secret Class'
     },
