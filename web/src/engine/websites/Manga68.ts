@@ -5,7 +5,7 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/manga68\.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MANGA68"])')
-@Madara.MangasMultiPageAJAX()
+@Madara.MangasMultiPageCSS()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()

@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'mangagreat',
-        title: 'MANGAGREAT'
+        title: 'MangaGreat'
     },
     container: {
         url: 'https://mangagreat.org/manga/dragon-devouring-mage/',

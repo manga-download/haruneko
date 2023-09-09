@@ -19,17 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaWeebs extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangaweebs';
-        super.label = 'Manga Weebs';
-        this.tags = [ 'webtoon', 'portuguese' ];
-        this.url = 'https://mangaweebs.in';
-    }
-}
-*/

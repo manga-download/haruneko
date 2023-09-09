@@ -3,7 +3,7 @@
 const config = {
     plugin: {
         id: 'manhwatop',
-        title: 'MANHWATOP'
+        title: 'ManhwaTop'
     },
     container: {
         url: 'https://manhwatop.com/manga/i-gave-birth-to-a-murderers-child-series/',

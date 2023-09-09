@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'manytoon',
-        title: 'ManyToon',
+        title: 'ManyToon(.me)',
         timeout : 30000
     },
     container: {
