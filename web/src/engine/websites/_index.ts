@@ -333,7 +333,6 @@ export { default as PiedPiper } from './PiedPiper';
 export { default as PijamaliKoi } from './PijamaliKoi';
 export { default as PlatinumScans } from './PlatinumScans';
 export { default as PMScans } from './PMScans';
-export { default as PMScansArchive } from './PMScansArchive';
 export { default as PojokManga } from './PojokManga';
 export { default as PornComix } from './PornComix';
 export { default as PornComixOnline } from './PornComixOnline';

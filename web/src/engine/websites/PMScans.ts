@@ -1,37 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './PMScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/rackusreader\.org\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@Madara.MangaCSS(/^https?:\/\/rackusreads\.com\/manga\/[^/]+\/$/)
+@Madara.MangasMultiPageAJAX()
+@Madara.ChaptersSinglePageAJAXv2()
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('pmscans', 'Rackus', 'https://rackusreader.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('pmscans', 'Rackus', 'https://rackusreads.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class PMScans extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'pmscans';
-        super.label = 'Rackus';
-        this.tags = [ 'manga', 'webtoon', 'scanlation', 'english' ];
-        this.url = 'https://rackusreader.org';
-        this.path = '/manga/list-mode/';
-    }
-}
-*/
