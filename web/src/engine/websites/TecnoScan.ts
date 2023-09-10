@@ -1,13 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './TecnoScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/tecnoscann\.com\/manga\/[^/]+\/$/, 'div.post-title h1')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@MangaStream.MangaCSS(/^https?:\/\/tecnoscann\.com\/manga\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS()
+@MangaStream.ChaptersSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
