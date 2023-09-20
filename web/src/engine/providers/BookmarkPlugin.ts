@@ -3,6 +3,7 @@ import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaP
 import { type StorageController, Store } from '../StorageController';
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
+import icon from '../../img/warning.webp';
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
@@ -23,7 +24,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
-        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID);
+        const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? new MissingWebsite(serialized.Media.ProviderID);
         const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
@@ -91,7 +92,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     public isBookmarked(entry: IMediaContainer): boolean {
-        return this.Find(entry)!==undefined;
+        return !!this.Find(entry);
     }
 
     /*
@@ -111,6 +112,35 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         ));
         return this.Entries.filter((_, index) => results[index]);
     }
+}
+
+/**
+ * A dummy representation for a bookmark's origin (media title), which is no longer available.
+ */
+class MissingWebsiteEntry extends MediaContainer<IMediaContainer> {
+    constructor(identifier: string, title: string) {
+        super(identifier, title, null);
+    }
+    public override get Icon(): string {
+        return icon;
+    }
+    public override async Update(): Promise<void> { throw new Error(); }
+}
+
+/**
+ * A dummy representation for a bookmark's parent (website), which has been removed.
+ */
+class MissingWebsite extends MediaContainer<IMediaContainer> {
+    constructor(identifier: string) {
+        super(identifier, identifier, null);
+    }
+    public override get Icon(): string {
+        return icon;
+    }
+    public override CreateEntry(identifier: string, title: string): IMediaContainer {
+        return new MissingWebsiteEntry(identifier, title);
+    }
+    public override async Update(): Promise<void> { throw new Error();}
 }
 
 /**
@@ -145,18 +175,26 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         return `${this.Parent.Identifier} :: ${this.Identifier}`;
     }
 
+    private origin: IMediaContainer;
     /**
      * Get the origin entry related to this bookmark from the shared parent.
-     * If the origin entry does not yet exist, it will be created and added to the entries of the parent for future access.
-     * NOTE: The parent may overwrite the added entry whenever its entries are updated (e.g. Update() call).
+     * If the origin entry does not yet exist, a stand in origin entry will be used.
      */
     private get Origin(): IMediaContainer {
-        let entry = (this.Parent.Entries as IMediaContainer[]).find(entry => entry.Identifier === this.Identifier);
-        if(!entry) {
-            entry = this.Parent.CreateEntry(this.Identifier, this.Title) as IMediaContainer;
-            this.Parent.Entries.push(entry);
+        const entry = (this.Parent.Entries as IMediaContainer[]).find(entry => entry.Identifier === this.Identifier) ?? this.origin;
+        if(entry) {
+            return entry;
+        } else {
+            this.origin = this.Parent.CreateEntry(this.Identifier, this.Title) as IMediaContainer;
+            return this.origin;
         }
-        return entry;
+    }
+
+    /**
+     * Directly pass-through the icon from the media container.
+     */
+    public override get Icon(): string {
+        return this.Origin?.Icon ?? super.Icon;
     }
 
     /**
@@ -172,6 +210,10 @@ export class Bookmark extends MediaContainer<IMediaChild> {
 
     public get InfoID(): string {
         return this.infoID;
+    }
+
+    public get IsOrphaned(): boolean {
+        return this.Parent instanceof MissingWebsite;
     }
 
     /**

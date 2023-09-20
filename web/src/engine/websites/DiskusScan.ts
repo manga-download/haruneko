@@ -1,13 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './DiskusScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/diskusscan\.com\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
+@MangaStream.MangaCSS(/^https?:\/\/diskusscan\.com\/manga\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS()
+@MangaStream.ChaptersSinglePageCSS()
+@MangaStream.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
