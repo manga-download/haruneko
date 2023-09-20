@@ -1,60 +1,47 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './OneTwoThreeHon.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import * as SpeedBind from '../decorators/SpeedBind';
+import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
+function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+    console.log(anchor.pathname);
+    const id = anchor.pathname;
+    const title = anchor.pathname.match(/[\w]+\/web-comic\/([\S]+)\//)[1];
+    return { id, title };
+}
+
+@Common.MangaCSS(/^https?:\/\/www\.123hon\.com\/[\S]+\/web-comic\/[\S]+\/$/, 'div.title-area h2')
+@SpeedBind.PagesSinglePage()
+@SpeedBind.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('onetwothreehon', `123hon`, 'https://www.123hon.com' /*, Tags.Language.English, Tags ... */);
+        super('onetwothreehon', `123hon`, 'https://www.123hon.com', Tags.Media.Manga, Tags.Language.Japanese );
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class OneTwoThreeHon extends SpeedBinb {
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangalist = [];
+        for (const path of ['/polca/web-comic/', '/nova/web-comic']) {
+            const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, path, 'ul.comic__list > li > a', MangaInfoExtractor);
+            mangalist.push(...mangas);
+        }
+        return mangalist;
 
-    constructor() {
-        super();
-        super.id = 'onetwothreehon';
-        super.label = '123hon';
-        this.tags = [ 'manga', 'japanese' ];
-        this.url = 'https://www.123hon.com';
-        this.mangaList = '/polca/web-comic/';
-
-        this.queryMangas = 'ul.comic__list > li > a';
-        this.queryChapters = 'div.read-episode li';
     }
 
-    async _getMangas() {
-        const request = new Request(new URL(this.mangaList, this.url), this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryMangas);
-        return data.map(link => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(link, this.url),
-                title: link.href.match(/(\w+)\/?$/)[1] // Rather crude, but there are no text titles on the listing
-            };
-        });
-    }
-
-    async _getChapters(manga) {
-        const request = new Request(new URL(manga.id, this.url), this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryChapters);
-
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const data = await FetchCSS(request, 'div.read-episode li');
         return data.map(element => {
             if (element.querySelector('a')) { // otherwise chapter not available
-                return {
-                    id: element.querySelector('a').href,
-                    title: element.innerText.match(/\s*(.*?)\s+/)[1]
-                };
+                return new Chapter(this, manga, new URL(element.querySelector('a').href.replace(/index.html$/, ''), this.URI).href, element.innerText.match(/\s*(.*?)\s+/)[1]);
             }
-        }).filter(element => element !== undefined);
+        }).filter(element => element !== undefined).filter(element => !/#comics-store/.test(element.Identifier));
     }
 }
-*/

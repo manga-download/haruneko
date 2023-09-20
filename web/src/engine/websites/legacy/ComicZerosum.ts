@@ -1,61 +1,56 @@
-import { Tags } from '../../Tags';
+// Auto-Generated export from HakuNeko Legacy
+// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
+
+//import { Tags } from '../../Tags';
 import icon from './ComicZerosum.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as SpeedBind from '../decorators/SpeedBind';
-import { FetchJSON, FetchRequest } from '../../FetchProvider';
+import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 
-type MangaJson = {
-    Work: {
-        Name: string,
-        Tag: string;
-        Stories?: {
-            Url: string,
-            Name: string
-        }[]
-    }
-}
-
-type MangaList = {
-    Stories: {
-        Work: {
-            Name: string,
-            Tag : string
-        }
-    }[]
-}
-
-@SpeedBind.PagesSinglePage()
-@SpeedBind.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
-    private readonly data_url = 'https://zerosumonline.com/json/zerosum/';
+
     public constructor() {
-        super('comiczerosum', `Comic ゼロサム (Comic ZEROSUM)`, 'https://zerosumonline.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('comiczerosum', `Comic ゼロサム (Comic ZEROSUM)`, 'https://online.ichijinsha.co.jp/zerosum' /*, Tags.Language.English, Tags ... */);
     }
+
     public override get Icon() {
         return icon;
     }
+}
 
-    public override ValidateMangaURL(url: string) : boolean {
-        return /^https?:\/\/zerosumonline\.com\/zerosum\/comic\/[^/]+$/.test(url);
+// Original Source
+/*
+class ComicZerosum extends SpeedBinb {
+
+    constructor() {
+        super();
+        super.id = 'comiczerosum';
+        super.label = 'Comic ゼロサム (Comic ZEROSUM)';
+        this.tags = ['manga', 'japanese'];
+        this.url = 'https://online.ichijinsha.co.jp/zerosum';
+        this.data_url = 'https://online.ichijinsha.co.jp/json/zerosum';
     }
 
-    public override async FetchManga(provider: MangaPlugin, url: string) : Promise<Manga> {
-        const id = url.match(/\/zerosum\/comic\/([^/]+)$/)[1];
-        const request = new FetchRequest(`${this.data_url}/works/${id}.json`);
-        const data: MangaJson = await FetchJSON(request);
-        return new Manga(this, provider, id, data.Work.Name);
+    async _getMangas() {
+        const request = new Request(`${this.data_url}/list/name.json`, this.requestOptions);
+        const data = await this.fetchJSON(request);
 
+        return data.Stories.map(story => {
+            return {
+                id: story.Work.Tag,
+                title: story.Work.Name
+            };
+        });
     }
 
-    public override async FetchMangas(provider : MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(`${this.data_url}/list/name.json`);
-        const data: MangaList = await FetchJSON(request);
-        return data.Stories.map(story => new Manga(this, provider, story.Work.Tag, story.Work.Name));
-    }
+    async _getChapters(manga) {
+        const request = new Request(`${this.data_url}/works/${manga.id}.json`, this.requestOptions);
+        const data = await this.fetchJSON(request);
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(`${this.data_url}/works/${manga.Identifier}.json`);
-        const data: MangaJson = await FetchJSON(request);
-        return data.Work.Stories.map(story => new Chapter(this, manga, story.Url, story.Name));
+        return data.Work.Stories.map(story => {
+            return {
+                id: story.Url,
+                title: story.Name
+            };
+        });
     }
 }
+*/

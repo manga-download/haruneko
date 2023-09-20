@@ -133,8 +133,13 @@ export function PagesSinglePage(baseUrl = '') {
 */
 async function _getPageList_v016061(scraper : MangaScraper, imageConfigurations: HTMLDivElement[], url: string, parent: Chapter): Promise<Page[]> {
     return imageConfigurations.map(element => {
-        //Zerosum & digital margaret fix ("index.html" or missing "/")
+        //Zerosum & digital margaret, 123hon fix (missing "/").. Other ending must have been filtered from the plugin itself (like "/index.html")
         const baseURI = new URL(url);
+
+        if (!baseURI.href.endsWith('/') && !element.dataset.ptimg.startsWith('/')) {
+            baseURI.href += '/';
+        }
+
         return new Page(scraper, parent, new URL(element.dataset.ptimg, baseURI.href));
     });
 }
