@@ -1,37 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './UzayManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/uzaymanga\.com\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
+@MangaStream.MangaCSS(/^https?:\/\/uzaymanga\.com\/manga\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS()
+@MangaStream.ChaptersSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('uzaymanga', 'Uzay Manga', 'https://uzaymanga.com'/*, Tags.Media., Tags.Language.*/);
+        super('uzaymanga', 'Uzay Manga', 'https://uzaymanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class UzayManga extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'uzaymanga';
-        super.label = 'Uzay Manga';
-        this.tags = [ 'webtoon', 'turkish', 'scanlation' ];
-        this.url = 'https://uzaymanga.com';
-        this.requestOptions.headers.set('x-referer', this.url);
-    }
-}
-*/

@@ -6,7 +6,7 @@ const config: Config = {
         title: 'RealmScans'
     },
     container: {
-        url: 'https://realmscans.xyz/m050523/series/demonic-master-of-mount-kunlun',
+        url: 'https://realmscans.to/m050523/series/demonic-master-of-mount-kunlun',
         id: '/m050523/series/demonic-master-of-mount-kunlun',
         title: 'Demonic Master of Mount Kunlun'
     },
