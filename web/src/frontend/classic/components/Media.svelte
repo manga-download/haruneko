@@ -7,22 +7,29 @@
         ContextMenuDivider,
         ContextMenuOption,
     } from 'carbon-components-svelte';
-    import { Star, StarFilled, PlayFilled } from 'carbon-icons-svelte';
+    import {
+        Star,
+        StarFilled,
+        PlayFilled,
+        WarningAltInverted,
+    } from 'carbon-icons-svelte';
     import { selectedMedia } from '../stores/Stores';
     import { coinflip } from '../lib/transitions';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import { Bookmark } from '../../../engine/providers/BookmarkPlugin';
 
     export let media: IMediaContainer;
     let selected: boolean = false;
     $: selected = $selectedMedia?.IsSameAs(media);
 
     //Bookmarks
-    let isBookmarked: boolean = false;
     $: isBookmarked = HakuNeko.BookmarkPlugin.isBookmarked(media);
     async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
     }
+    $: isOrphaned =
+        isBookmarked && (media as Bookmark).IsOrphaned ? true : false;
 
     //Context menu
     let mediadiv: HTMLElement;
@@ -65,7 +72,20 @@
 </ContextMenu>
 
 <div bind:this={mediadiv} class="media" in:fade class:selected>
-    {#if isBookmarked}
+    {#if isOrphaned}
+        <span in:coinflip={{ duration: 200 }}>
+            <Button
+                class="orphaned"
+                size="small"
+                kind="ghost"
+                icon={WarningAltInverted}
+                tooltipPosition="right"
+                tooltipAlignment="end"
+                iconDescription="Plugin missing : remove"
+                on:click={toggleBookmark}
+            />
+        </span>
+    {:else if isBookmarked}
         <span in:coinflip={{ duration: 200 }}>
             <Button
                 class="bookmarked"
@@ -139,8 +159,12 @@
     .media :global(button) {
         min-height: unset;
     }
+
     .media :global(button.bookmarked) {
         --cds-icon-01: var(--cds-support-03);
+    }
+    .media :global(button.orphaned) {
+        --cds-icon-01: var(--cds-button-danger-secondary);
     }
     .media :global(button:hover) {
         --cds-icon-01: var(--cds-hover-secondary);

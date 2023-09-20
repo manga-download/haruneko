@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'mangashiro',
         title: 'MangaShiro'
-    }/*,
+    },
     container: {
-        url: 'https://mangashiro.co/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://mangashiro.me/manga/star-martial-god-technique/',
+        id: '/manga/star-martial-god-technique/',
+        title: 'Star Martial God Technique'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/star-martial-god-technique-chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 2,
+        size: 115_931,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

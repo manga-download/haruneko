@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangasy',
         title: 'Manga SY'
-    }/*,
+    },
     container: {
-        url: 'https://www.mangasy.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://www.mangasy.com/manga/his-thousands-romantic-tricks/',
+        id: JSON.stringify({ post: '9476', slug: '/manga/his-thousands-romantic-tricks/' }),
+        title: 'His Thousands Romantic Tricks'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/his-thousands-romantic-tricks/chapter-157-the-end/',
+        title: 'Chapter 157-The End',
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 73_444,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);

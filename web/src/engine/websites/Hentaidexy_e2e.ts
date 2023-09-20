@@ -6,17 +6,17 @@ const config = {
         title: 'Hentaidexy'
     },
     container: {
-        url: 'https://hentaidexy.com/reads/second-life-ranker/',
-        id: JSON.stringify({ post: '1425', slug: '/reads/second-life-ranker/' }),
+        url: 'https://hentaidexy.net/manga/638755355c636ee1bff6222b/second-life-ranker',
+        id: '638755355c636ee1bff6222b',
         title: 'Second Life Ranker'
     },
     child: {
-        id: '/reads/second-life-ranker/second-life-ranker/chapter-1/',
-        title: 'Chapter 1'
+        id: '649e79432081fe6c7fa67d92',
+        title: 'Chapter 161'
     },
     entry: {
         index: 0,
-        size: 440_071,
+        size: 933_472,
         type: 'image/jpeg'
     }
 };
