@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './SinensisScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/sinensisscan\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/sinensisscans\.com\/inicio1\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
+@Madara.ChaptersSinglePageAJAXv2()
+@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sinensisscan', 'Sinenis Scan', 'https://sinensisscan.com'/*, Tags.Media., Tags.Language.*/);
+        super('sinensisscan', 'Sinensis Scans', 'https://sinensisscans.com', Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class SinensisScan extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'sinensisscan';
-        super.label = 'Sinenis Scan';
-        this.tags = [ 'manga', 'webtoon', 'portuguese', 'scanlation' ];
-        this.url = 'https://sinensisscan.com';
-    }
-}
-*/

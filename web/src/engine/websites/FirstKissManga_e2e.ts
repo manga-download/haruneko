@@ -3,20 +3,20 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'firstkiss',
-        title: '1st Kiss Manga'
+        title: 'LikeManga'
     },
     container: {
-        url: encodeURI('https://1stkissmanga.me/manga/blank。/').toLocaleLowerCase(),
-        id: JSON.stringify({ post: '156052', slug: encodeURI('/manga/blank。/').toLocaleLowerCase(), }),
-        title: '[ blank。]'
+        url: 'https://likemanga.io/my-eternal-reign-4250/',
+        id: '/my-eternal-reign-4250/',
+        title: 'My Eternal Reign'
     },
     child: {
-        id: encodeURI('/manga/blank。/chapter-0/').toLocaleLowerCase(),
-        title: 'Chapter 0'
+        id: '/my-eternal-reign-4250/chapter-9-314555/',
+        title: 'Chapter 9'
     },
     entry: {
         index: 0,
-        size: 11_488,
+        size: 126_0603,
         type: 'image/jpeg'
     }
 };
