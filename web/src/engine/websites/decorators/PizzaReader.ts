@@ -39,7 +39,7 @@ type APIChapter = {
  */
 async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
     const slug = new URL(url).pathname.match(/([^/]*)\/*$/)[1];
-    const uri = new URL('/api/comics/' + slug, this.URI);
+    const uri = new URL(`/api/comics/${slug}`, this.URI);
     const request = new FetchRequest(uri.href);
     const data = await FetchJSON<APISingleManga>(request);
     return new Manga(this, provider, slug, data.comic.title);
