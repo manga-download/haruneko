@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Mangacim.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/www\.mangacim\.com\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
+@MangaStream.MangaCSS(/^https?:\/\/mangacim\.com\/manga\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS()
+@MangaStream.ChaptersSinglePageCSS()
+@MangaStream.PagesSinglePageCSS()
 @Common.ImageAjax()
+
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangacim', 'Mangacim', 'https://www.mangacim.com'/*, Tags.Media., Tags.Language.*/);
+        super('mangacim', 'Mangacim', 'https://mangacim.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
     }
-
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class Mangacim extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangacim';
-        super.label = 'Mangacim';
-        this.tags = [ 'manga', 'webtoon', 'turkish' ];
-        this.url = 'https://www.mangacim.com';
-    }
-}
-*/
