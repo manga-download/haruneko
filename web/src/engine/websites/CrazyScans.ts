@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^https?:\/\/mangacultivator\.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MangaCultivator"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

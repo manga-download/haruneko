@@ -109,7 +109,7 @@ describe('Bookmark', () => {
             expect(fixture.MockParent.CreateEntry).toHaveBeenCalledTimes(0);
         });
 
-        it('Should create non-existing origin in parent and pass-through entries from origin', async () => {
+        it('Should create non-existing origin once and pass-through the same instance', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateSparseTestee();
 
@@ -122,11 +122,12 @@ describe('Bookmark', () => {
             fixture.MockParent.CreateEntry.calledWith(testee.Identifier, testee.Title).mockReturnValue(origin);
             Object.defineProperty(fixture.MockParent, 'Entries', { get: () => children });
 
-            const actual = testee.Entries;
+            // Multiple calls to internal `Origin` getter to verify that `CreateEntry` is only called once
+            const actual = testee.Entries || testee.Entries || testee.Entries;
 
             expect(actual).toBe(entries);
-            expect(children[0]).toBe(origin);
-            expect(fixture.MockParent.Entries[0]).toBe(origin);
+            expect(children.length).toBe(0);
+            expect(fixture.MockParent.Entries.length).toBe(0);
             expect(fixture.MockParent.CreateEntry).toHaveBeenCalledTimes(1);
             expect(fixture.MockParent.CreateEntry).toHaveBeenCalledWith(testee.Identifier, testee.Title);
         });

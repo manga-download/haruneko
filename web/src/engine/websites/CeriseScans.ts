@@ -4,10 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/cerisescans\.com\/inicio\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/cerisescans\.com\/home\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

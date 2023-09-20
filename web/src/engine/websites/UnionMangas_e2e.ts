@@ -7,12 +7,12 @@ const config = {
         //timeout : 25000 //homepage load is damn slow in real browser
     },
     container: {
-        url: 'https://unionleitor.top/pagina-manga/one-piece',
-        id: '/pagina-manga/one-piece',
+        url: 'https://guimah.com/perfil/V1lmMXhZa1NEdWJicUhxYUdRPT0=',
+        id: '/perfil/V1lmMXhZa1NEdWJicUhxYUdRPT0=',
         title: 'One Piece'
     },
     child: {
-        id: '/leitor/One_Piece/1080',
+        id: '/leitor/THQzczVyWVZEcWpPdldQQlNBPT0=/1080',
         title: 'Cap. 1080'
     },
     entry: {
