@@ -1,5 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
 import S from '../services/StateService';
 
 const styles: ElementStyles = css`
@@ -31,6 +32,10 @@ const styles: ElementStyles = css`
         color: var(--neutral-foreground-hint);
     }
 
+    .missing {
+        opacity: 0.5;
+    }
+
     #searchcontrol {
         padding: calc(var(--base-height-multiplier) * 1px);
         border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
@@ -54,7 +59,7 @@ const styles: ElementStyles = css`
         display: grid;
         align-items: center;
         grid-template-rows: min-content;
-        grid-template-columns: min-content 1fr;
+        grid-template-columns: min-content min-content 1fr;
     }
 
     ul#entries li > div {
@@ -75,8 +80,11 @@ const styles: ElementStyles = css`
 `;
 
 const listitem: ViewTemplate<IMediaContainer> = html`
-    <li @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
-        <img class="icon" src="${model => model.Parent?.Icon}"></img>
+    <li class=${model => (model as Bookmark)?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
+        <img class="icon" src="${model => model.Parent.Icon}"></img>
+        <!--
+        <img class="icon" src="${model => model.Icon}"></img>
+        -->
         <div>${model => model.Title}</div>
     </li>
 `;

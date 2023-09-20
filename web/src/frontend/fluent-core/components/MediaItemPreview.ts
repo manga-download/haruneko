@@ -40,7 +40,7 @@ const templateChapter: ViewTemplate<MediaItemPreview> = html`${repeat(model => m
 
 const template: ViewTemplate<MediaItemPreview> = html`
     <div id="heading">
-        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.ClosePreview()}></fluent-button>
+        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.entry = undefined}></fluent-button>
         <div id="caption">${model => model.entry?.Title ?? ''}</div>
         <div></div>
     </div>
@@ -59,10 +59,7 @@ export class MediaItemPreview extends FASTElement {
             await this.entry?.Update();
         }
         this.items = (this.entry?.Entries ?? []) as IMediaItem[];
+        this.$emit('entryChanged', this.entry);
     }
     @observable items: IMediaItem[];
-
-    public async ClosePreview() {
-        this.$emit('previewClosed');
-    }
 }
