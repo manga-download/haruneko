@@ -5,6 +5,7 @@ import { SanitizeFileName, type StorageController, Store } from '../StorageContr
 import type { Tag } from '../Tags';
 import { type Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
+import icon from '../../img/manga.webp';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -105,6 +106,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
         return this.scraper.Tags;
     }
 
+    public get URI(): URL {
+        return this.scraper.URI;
+    }
+
     public async Initialize(): Promise<void> {
         await this.scraper.Initialize();
         return super.Initialize();
@@ -117,7 +122,8 @@ export class MangaPlugin extends MediaContainer<Manga> {
     public async TryGetEntry(url: string): Promise<Manga> {
         if(this.scraper.ValidateMangaURL(url)) {
             await this.Initialize();
-            return this.scraper.FetchManga(this, url);
+            const manga = await this.scraper.FetchManga(this, url);
+            return this.Entries.find((entry) => entry.IsSameAs(manga)) ?? manga;
         }
     }
 
@@ -135,6 +141,10 @@ export class Manga extends MediaContainer<Chapter> {
 
     constructor(private readonly scraper: MangaScraper, parent: MediaContainer<Manga>, identifier: string, title: string) {
         super(identifier, title, parent);
+    }
+
+    public override get Icon() {
+        return icon;
     }
 
     public CreateEntry(identifier: string, title: string): Chapter {

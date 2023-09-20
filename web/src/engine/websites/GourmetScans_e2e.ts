@@ -8,11 +8,12 @@ const config = {
     container: {
         url: 'https://gourmetscans.net/project/an-unseemly-lady/',
         id: JSON.stringify({ post: '4484', slug: '/project/an-unseemly-lady/' }),
-        title: 'An Unseemly Lady'
+        title: 'An Unseemly Lady',
     },
     child: {
         id: '/project/an-unseemly-lady/chapter-0/',
-        title: 'Chapter 0 - Prologue'
+        title: 'Chapter 0 - Prologue',
+        timeout : 20000
     },
     entry: {
         index: 0,

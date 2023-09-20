@@ -10,7 +10,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return {id, title};
 }
 
-@MangaStream.MangaCSS(/^https?:\/\/realmscans\.xyz\/\S+\/series\/[^/]+$/)
+@MangaStream.MangaCSS(/^https?:\/\/realmscans\.to\/\S+\/series\/[^/]+$/)
 @Common.MangasSinglePageCSS('/series', 'div.bsx a', MangaExtractor)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
@@ -18,7 +18,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('realmscans', 'RealmScans', 'https://realmscans.xyz', Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
+        super('realmscans', 'RealmScans', 'https://realmscans.to', Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
