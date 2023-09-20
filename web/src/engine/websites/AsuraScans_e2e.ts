@@ -6,12 +6,12 @@ const config: Config = {
         title: 'Asura Scans',
     },
     container: {
-        url: 'https://asura.nacm.xyz/manga/7095619279-reaper-of-the-drifting-moon/',
-        id: '/manga/7095619279-reaper-of-the-drifting-moon/',
+        url: 'https://asuracomics.com/manga/4243005272-reaper-of-the-drifting-moon/',
+        id: '/manga/4243005272-reaper-of-the-drifting-moon/',
         title: 'Reaper of the Drifting Moon',
     },
     child: {
-        id: '/6356366271-reaper-of-the-drifting-moon-chapter-0/',
+        id: '/4533579728-reaper-of-the-drifting-moon-chapter-0/',
         title: 'Chapter 0',
     },
     entry: {

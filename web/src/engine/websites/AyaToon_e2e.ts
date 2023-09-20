@@ -7,16 +7,17 @@ const config = {
     },
     container: {
         url: 'https://ayatoon.com/manga/the-peerless-sword-god/',
-        id: JSON.stringify({ post: '264', slug: '/manga/the-peerless-sword-god/' }),
+        id: '/manga/the-peerless-sword-god/',
         title: 'The Peerless Sword God'
     },
     child: {
-        id: '/manga/the-peerless-sword-god/bolum-1/',
-        title: 'Bölüm 1'
+        id: '/the-peerless-sword-god-bolum-1/',
+        title: 'Bölüm 1',
+        timeout : 10000
     },
     entry: {
         index: 0,
-        size: 696_347,
+        size: 669_130,
         type: 'image/jpeg'
     }
 };
