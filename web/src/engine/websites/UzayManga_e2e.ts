@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'uzaymanga',
         title: 'Uzay Manga'
-    }/*,
+    },
     container: {
-        url: 'https://uzaymanga.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://uzaymanga.com/manga/acimasiz-egitmen/',
+        id: '/manga/acimasiz-egitmen/',
+        title: 'Acımasız Eğitmen'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/okula-basla-1/',
+        title: 'Bölüm 1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 1_105_733,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

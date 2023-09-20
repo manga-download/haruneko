@@ -7,6 +7,7 @@ import S from '../services/StateService';
 //import IconSortDescending from '@fluentui/svg-icons/icons/text_sort_descending_20_regular.svg?raw';
 //import IconPreview from '@vscode/codicons/src/icons/preview.svg?raw'; // eye
 //import IconDownload from '@vscode/codicons/src/icons/cloud-download.svg?raw';
+import IconSynchronize from '@vscode/codicons/src/icons/refresh.svg?raw'; // sync.svg
 import IconPreview from '@fluentui/svg-icons/icons/eye_20_regular.svg?raw'; // preview_link
 import IconDownload from '@fluentui/svg-icons/icons/arrow_circle_down_20_regular.svg?raw';
 //import IconCheckBoxChecked from '@fluentui/svg-icons/icons/checkbox_checked_20_regular.svg?raw';
@@ -64,8 +65,15 @@ const styles: ElementStyles = css`
         text-overflow: ellipsis;
     }
 
-    .hint {
+    #controls {
+        display: flex;
+        align-items: center;
+    }
+
+    #controls .hint {
         color: var(--neutral-foreground-hint);
+        margin-left: calc(var(--design-unit) * 1px);
+        margin-right: calc(var(--design-unit) * 1px);
     }
 
     #searchcontrol {
@@ -135,7 +143,10 @@ const listitem: ViewTemplate<IMediaContainer> = html`
 const template: ViewTemplate<MediaItemList> = html`
     <div id="header">
         <div id="title">${() => S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
-        <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
+        <div id="controls">
+            <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
+            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.container || model.updating} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
+        </div>
     </div>
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
@@ -145,6 +156,11 @@ const template: ViewTemplate<MediaItemList> = html`
 
 @customElement({ name: 'fluent-media-item-list', template, styles })
 export class MediaItemList extends FASTElement {
+
+    @observable container?: IMediaContainer;
+    containerChanged() {
+        this.entries = (this.container?.Entries ?? []) as IMediaContainer[];
+    }
 
     @observable entries: IMediaContainer[] = [];
     entriesChanged() {
@@ -159,6 +175,19 @@ export class MediaItemList extends FASTElement {
 
     public async FilterEntries() {
         this.filtered = this.entries?.filter(entry => this.match(entry.Title)) ?? [];
+    }
+
+    public async UpdateEntries(event: Event): Promise<void> {
+        event.stopPropagation();
+        try {
+            this.updating = true;
+            await this.container?.Update();
+            this.containerChanged();
+        } catch(error) {
+            console.warn(error);
+        } finally {
+            this.updating = false;
+        }
     }
 
     public async ShowPreview(entry: IMediaContainer) {
