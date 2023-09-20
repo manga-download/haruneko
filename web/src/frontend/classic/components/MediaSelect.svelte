@@ -117,10 +117,10 @@
     }
 
     async function onUpdateMediaEntriesClick() {
-        loadPlugin = $selectedPlugin?.Update();
-        await loadPlugin;
         $selectedMedia = undefined;
         $selectedItem = undefined;
+        loadPlugin = $selectedPlugin?.Update();
+        await loadPlugin;
         loadMedia($selectedPlugin);
     }
 
@@ -141,6 +141,7 @@
                     if (!$selectedMedia?.IsSameAs(media)) {
                         $selectedMedia = media;
                         medias = [media];
+                        loadPlugin = Promise.resolve();
                     }
                     return;
                 }

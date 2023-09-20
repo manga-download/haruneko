@@ -1,37 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './ShimadaScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/shimadascans\.com\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
+@MangaStream.MangaCSS(/^https?:\/\/shimascans\.com\/series\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS(undefined, '/series/list-mode/')
+@MangaStream.ChaptersSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('shimadascans', 'Shimadascans', 'https://shimadascans.com'/*, Tags.Media., Tags.Language.*/);
+        super('shimadascans', 'Shimadascans', 'https://shimascans.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class ShimadaScans extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'shimadascans';
-        super.label = 'Shimadascans';
-        this.tags = [ 'webtoon', 'english', 'scanlation' ];
-        this.url = 'https://shimadascans.com';
-        this.requestOptions.headers.set('x-referer', this.url);
-    }
-}
-*/
