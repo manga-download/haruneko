@@ -102,7 +102,6 @@ export { default as GDScans } from './GDScans';
 export { default as GloryManga } from './GloryManga';
 export { default as GloryScansTR } from './GloryScansTR';
 export { default as GodsRealmScan } from './GodsRealmScan';
-export { default as GogoManga } from './GogoManga';
 export { default as GoldenMangas } from './GoldenMangas';
 export { default as GoofFansub } from './GoofFansub';
 export { default as GourmetScans } from './GourmetScans';
