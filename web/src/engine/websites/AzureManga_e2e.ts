@@ -5,8 +5,6 @@ const config: Config = {
         id: 'azuremanga',
         title: 'Azure Manga'
     },
-    // Mangas cannot be listed on the website itself (but direct chapter links work)
-    /*
     container: {
         url: 'https://azuremanga.com/manga/the-last-human/',
         id: '/manga/the-last-human/',
@@ -20,7 +18,7 @@ const config: Config = {
         index: 1,
         size: 1_578_321,
         type: 'image/png'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

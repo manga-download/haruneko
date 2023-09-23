@@ -1,5 +1,4 @@
 // Implemented Websites
-export { default as AceScans } from './AceScans';
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as AHStudios } from './AHStudios';
 export { default as AiinScan } from './AiinScan';
@@ -7,14 +6,12 @@ export { default as AkuManga } from './AkuManga';
 export { default as AkuzenaiArt } from './AkuzenaiArt';
 export { default as AlliedFansub } from './AlliedFansub';
 export { default as AllPornComic } from './AllPornComic';
-export { default as AlphaScans } from './AlphaScans';
 export { default as AnataNoMotokare } from './AnataNoMotokare';
 export { default as Anikiga } from './Anikiga';
 export { default as Anisamanga } from './Anisamanga';
 export { default as AnshScans } from './AnshScans';
 export { default as AnubisScans } from './AnubisScans';
 export { default as ApollComics } from './ApollComics';
-export { default as ApolloTeam } from './ApolloTeam';
 export { default as ApollToons } from './ApollToons';
 export { default as AquaManga } from './AquaManga';
 export { default as AresManga } from './AresManga';

@@ -6,12 +6,12 @@ const config: Config = {
         title: 'Ares Manga'
     },
     container: {
-        url: 'https://aresmanga.com/manga/martial-god-asura/',
+        url: 'https://aresnov.org/manga/martial-god-asura/',
         id: '/manga/martial-god-asura/',
         title: 'Martial God Asura'
     },
     child: {
-        id: '/martial-god-asura-chapter-1/',
+        id: '/45454-martial-god-asura-chapter-1/',
         title: 'الفصل 1'
     },
     entry: {
