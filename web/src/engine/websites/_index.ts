@@ -69,8 +69,6 @@ export { default as Dm5 } from './Dm5';
 export { default as Doujin69 } from './Doujin69';
 export { default as DoujinDesu } from './DoujinDesu';
 export { default as DoujinHentai } from './DoujinHentai';
-export { default as DoujinLand } from './DoujinLand';
-export { default as DoujinMitai } from './DoujinMitai';
 export { default as Doujins } from './Doujins';
 export { default as DragonTea } from './DragonTea';
 export { default as DragonTranslation } from './DragonTranslation';
