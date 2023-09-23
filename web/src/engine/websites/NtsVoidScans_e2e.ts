@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'ntsvoidscans',
         title: 'Void Scans'
-    }/*,
+    },
     container: {
-        url: 'https://voidscans.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://void-scans.com/manga/99-reinforced-wooden-stick/',
+        id: '/manga/99-reinforced-wooden-stick/',
+        title: '+99 Reinforced Wooden Stick'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/99-reinforced-wooden-stick-chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        index: 1,
+        size: 303_264,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);
