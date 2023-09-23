@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'komikstation',
         title: 'KomikStation'
-    }/*,
+    },
     container: {
-        url: 'https://www.komikstation.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://komikstation.co/manga/hack-g-u/',
+        id: '/manga/hack-g-u/',
+        title: '.hack//G.U.+'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/hack-g-u-chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 110_866,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

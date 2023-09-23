@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'katakomik',
         title: 'Katakomik'
-    }/*,
+    },
     container: {
-        url: 'https://www.katakomik.my.id/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://katakomik.online/manga/shark/',
+        id: '/manga/shark/',
+        title: 'Shark'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/shark-chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 299_718,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

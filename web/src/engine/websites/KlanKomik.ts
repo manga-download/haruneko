@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './KlanKomik.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -20,19 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class KlanKomik extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'klankomik';
-        super.label = 'KlanKomik';
-        this.tags = [ 'webtoon', 'indonesian' ];
-        this.url = 'https://klankomik.com';
-        this.path = '/manga/list-mode/';
-    }
-
-}
-*/
