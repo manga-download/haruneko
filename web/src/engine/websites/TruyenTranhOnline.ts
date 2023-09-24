@@ -1,6 +1,6 @@
 // Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
-import icon from './TruyenTranhAudioOnline.webp';
+import icon from './TruyenTranhOnline.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
