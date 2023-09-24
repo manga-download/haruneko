@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'prismahentai',
         title: 'Prisma Hentai'
-    }/*,
+    },
     container: {
-        url: 'https://prismahentai.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://prismahentai.com/manga/607/',
+        id: JSON.stringify({ post: '607', slug: '/manga/607/' }),
+        title: 'A Rental Housekeeper'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/607/cap-01/',
+        title: 'Cap. 01'
     },
     entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        index: 1,
+        size: 1_646_0499,
+        type: 'image/jpg'
+    }
 };
 
 const fixture = new TestFixture(config);

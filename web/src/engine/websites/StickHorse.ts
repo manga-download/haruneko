@@ -1,11 +1,10 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './StickHorse.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/www\.stickhorse\.cl\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/www\.stickhorse\.cl\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Stick Horse"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('stickhorse', 'Stick Horse', 'https://www.stickhorse.cl'/*, Tags.Media., Tags.Language.*/);
+        super('stickhorse', 'Stick Horse', 'https://www.stickhorse.cl', Tags.Media.Comic, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class StickHorse extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'stickhorse';
-        super.label = 'Stick Horse';
-        this.tags = [ 'manga', 'webtoon', 'comic', 'spanish' ];
-        this.url = 'https://www.stickhorse.cl';
-    }
-}
-*/

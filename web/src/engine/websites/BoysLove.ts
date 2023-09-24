@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/boyslove\.me\/boyslove\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
+@Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
