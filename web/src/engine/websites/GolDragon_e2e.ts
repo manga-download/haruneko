@@ -2,22 +2,22 @@
 
 const config: Config = {
     plugin: {
-        id: 'mangaswat',
-        title: 'SWAT Manga'
+        id: 'goldragon',
+        title: 'GolDragon'
     },
     container: {
-        url: 'https://swatop.club/manga/emperor-and-the-female-knight/',
-        id: '/manga/emperor-and-the-female-knight/',
+        url: 'https://goldragon.me/manga/emperor-and-the-female-knight',
+        id: '/manga/emperor-and-the-female-knight',
         title: 'Emperor And The Female Knight'
     },
     child: {
-        id: '/1664788/1/emperor-and-the-female-knight-184/',
+        id: '/manga/emperor-and-the-female-knight/emperor-and-the-female-knight-184',
         title: 'الفصل رقم: 184 FREE',
     },
     entry: {
         index: 1,
-        size: 997_392,
-        type: 'image/jpeg'
+        size: 218_922,
+        type: 'image/webp'
     }
 };
 

@@ -2,20 +2,22 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'manhwaland',
-        title: 'Manhwaland'
+        id: 'tenshiid',
+        title: 'Tenshi.ID'
     },
     container: {
-        url: 'https://manhwaland.lat/manga/got-a-room-uncensored/',
-        id: '/manga/got-a-room-uncensored/',
-        title: 'Got a Room? (Uncensored)'
+        url: 'https://tenshi.id/komik/a-bad-person/',
+        id: '/komik/a-bad-person/',
+        title: 'A Bad Person'
     },
     child: {
-        id: '/got-a-room-uncensored-chapter-1-a/',
-        title: 'Chapter 1a' },
+        id: '/a-bad-person-chapter-01-bahasa-indonesia/',
+        title: 'Chapter 01',
+        timeout : 15000
+    },
     entry: {
         index: 0,
-        size: 143_057,
+        size: 70_363,
         type: 'image/jpeg'
     }
 };

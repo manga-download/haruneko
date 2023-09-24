@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaSwat.webp';
+import icon from './GolDragon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -14,15 +14,15 @@ const pageScripts = `
     });
 `;
 
-@MangaStream.MangaCSS(/^https?:\/\/swatop\.club\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/manga/list-mode/')
-@MangaStream.ChaptersSinglePageCSS('div.bxcl ul li span.lchx a')
-@MangaStream.PagesSinglePageJS([], pageScripts)
+@MangaStream.MangaCSS(/^https?:\/\/goldragon\.me\/manga\/[^/]+$/, 'div.infox h1')
+@MangaStream.MangasSinglePageCSS('div.soralist ul li a.series', '/manga/list-mode')
+@MangaStream.ChaptersSinglePageCSS('div.bixbox.bxcl ul li span.lchx a')
+@Common.PagesSinglePageJS(pageScripts)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaswat', 'SWAT Manga', 'https://swatop.club', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
+        super('goldragon', 'GolDragon', 'https://goldragon.me', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
     }
 
     public override get Icon() {
