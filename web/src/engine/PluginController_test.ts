@@ -37,11 +37,22 @@ describe('PluginController', () => {
 
     describe('WebsitePlugins', () => {
 
-        it('Should have unique website plugin identifiers', async () => {
+        it('Should have unique website identifiers', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
             const actual = testee.WebsitePlugins.map(plugin => plugin.Identifier);
+            const expected = [...new Set(actual).values()];
+
+            expect(actual.length).toBeGreaterThan(0);
+            expect(actual).toStrictEqual(expected);
+        });
+
+        it('Should have unique website titles', async () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+
+            const actual = testee.WebsitePlugins.map(plugin => plugin.Title);
             const expected = [...new Set(actual).values()];
 
             expect(actual.length).toBeGreaterThan(0);
