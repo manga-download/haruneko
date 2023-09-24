@@ -62,12 +62,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         const request = new FetchRequest(uri.href);
-        const mangaObj = await FetchWindowScript <APIManga>(request, mangaClipboardScript);
-        const slug = mangaObj.slug;
-        const mangatype = mangaObj.type;
-        const title = mangaObj.name.trim();
-        const id = JSON.stringify({ slug: slug, type: mangatype });
-        return new Manga(this,provider, id, title);
+        const { slug, type, name } = await FetchWindowScript<APIManga>(request, mangaClipboardScript);
+        const id = JSON.stringify({ slug: slug, type: type });
+        return new Manga(this, provider, id, name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -95,17 +92,17 @@ export default class extends DecoratableMangaScraper {
         return chapterslist;
     }
 
-    private async getChaptersFromPage(page: number, manga: Manga) : Promise<Chapter[]> {
-        const mangaData = JSON.parse(manga.Identifier);
-        const uri = new URL(`/api/series/${mangaData.slug}/chapters?page=${page}&direction=desc&type=${mangaData.type}`, this.apiUrl);
+    private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
+        const { slug, type } = JSON.parse(manga.Identifier) as APIManga;
+        const uri = new URL(`/api/series/${slug}/chapters?page=${page}&direction=desc&type=${type}`, this.apiUrl);
         const request = new FetchRequest(uri.href);
-        const data = await FetchJSON <APIChapters>(request);
+        const data = await FetchJSON<APIChapters>(request);
         return data.data.map(element => new Chapter(this, manga, String(element.id), element.name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaData = JSON.parse(chapter.Parent.Identifier);
-        const uri = new URL(`/api/series/${mangaData.slug}/chapters/${chapter.Identifier}?type=${mangaData.type}`, this.apiUrl);
+        const { slug, type } = JSON.parse(chapter.Parent.Identifier) as APIManga;
+        const uri = new URL(`/api/series/${slug}/chapters/${chapter.Identifier}?type=${type}`, this.apiUrl);
         const request = new FetchRequest(uri.href);
         const data = await FetchJSON<APIPages>(request);
         return data.chapter.pages.map(page => new Page(this, chapter, new URL(page)));
