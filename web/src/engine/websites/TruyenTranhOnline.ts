@@ -1,11 +1,11 @@
 // Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './TruyenTranhAudioOnline.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/truyentranhaudio\.online\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/protruyen\.xyz\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('truyentranhaudioonline', 'Truyện tranh audio', 'https://truyentranhaudio.online'/*, Tags.Media., Tags.Language.*/);
+        super('truyentranhaudioonline', 'Truyện tranh online', 'https://protruyen.xyz', Tags.Media.Manhwa, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
