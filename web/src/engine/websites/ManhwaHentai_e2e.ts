@@ -2,21 +2,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'manhuas',
-        title: 'Manhua Mix'
+        id: 'manhwahentai',
+        title: 'ManhwaHentai'
     },
     container: {
-        url: 'https://manhuamix.com/manhua/the-knight-king-who-returned-with-a-god/',
-        id: JSON.stringify({ post: '2951', slug: '/manhua/the-knight-king-who-returned-with-a-god/' }),
-        title: 'The Knight King Who Returned with a God'
+        url: 'https://manhwahentai.to/pornhwa/secret-class-uncensored/',
+        id: JSON.stringify({ post: '66098', slug: '/pornhwa/secret-class-uncensored/' }),
+        title: 'Secret Class Uncensored'
     },
     child: {
-        id: '/manhua/the-knight-king-who-returned-with-a-god/knight-king-who-returned-with-a-god-chapter-1/',
-        title: 'Knight King Who Returned with a God chapter 1'
+        id: '/pornhwa/secret-class-uncensored/chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
         index: 0,
-        size: 686_261,
+        size: 170_686,
         type: 'image/jpeg'
     }
 };

@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './ReaperScansID.webp';
+import icon from './ShinigamiID.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Madara from './decorators/WordPressMadara';
@@ -12,7 +12,7 @@ import * as Madara from './decorators/WordPressMadara';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('reaperscansid', `Shinigami ID`, 'https://shinigami.ae', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('shinigamiid', `Shinigami ID`, 'https://shinigami.ae', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

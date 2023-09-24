@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './PMScans.webp';
+import icon from './ManWe.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/rackusreads\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/manwe.pro\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('pmscans', 'Rackus', 'https://rackusreads.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('manwe', 'ManWe', 'https://manwe.pro', Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Language.Turkish);
     }
 
     public override get Icon() {

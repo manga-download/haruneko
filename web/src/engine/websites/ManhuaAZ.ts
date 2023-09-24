@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './EvaScans.webp';
+import icon from './ManhuaAZ.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/manwe.pro\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/manhuaaz\.com\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
+@Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('evascans', 'ManWe', 'https://manwe.pro', Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Language.Turkish);
+        super('manhuaaz', 'ManhuaAZ', 'https://manhuaaz.com', Tags.Media.Manga, Tags.Language.English);
     }
 
     public override get Icon() {

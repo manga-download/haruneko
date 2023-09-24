@@ -2,21 +2,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'muctau',
-        title: 'BibiManga'
+        id: 'manhuagold',
+        title: 'Manhua Gold'
     },
     container: {
-        url: 'https://bibimanga.com/manga/insanely-radiant/',
-        id: JSON.stringify({ post: '195988', slug: '/manga/insanely-radiant/' }),
-        title: 'Insanely Radiant'
+        url: 'https://comickiba.com/manga/isekai-kenkokuki/',
+        id: JSON.stringify({ post: '13858', slug: '/manga/isekai-kenkokuki/' }),
+        title: 'Isekai Kenkokuki'
     },
     child: {
-        id: '/manga/insanely-radiant/chapter-1/',
+        id: '/manga/isekai-kenkokuki/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 181_762,
+        size: 139_550,
         type: 'image/jpeg'
     }
 };

@@ -2,8 +2,8 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'manhuaes',
-        title: 'ManhuaES'
+        id: 'manhuaaz',
+        title: 'ManhuaAZ'
     },
     container: {
         url: 'https://manhuaaz.com/manga/the-secret-of-the-partner-next-to-you/',

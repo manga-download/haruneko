@@ -2,7 +2,7 @@
 
 const config: Config = {
     plugin: {
-        id: 'reaperscansid',
+        id: 'shinigamiid',
         title: 'Shinigami ID',
     },
     container: {

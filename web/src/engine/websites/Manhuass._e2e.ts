@@ -2,7 +2,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangaboss',
+        id: 'manhuass',
         title: 'Manhuas-S'
     },
     container: {
