@@ -65,7 +65,7 @@ export default class extends DecoratableMangaScraper {
         const { slug, type, name } = await FetchWindowScript <APIManga>(request, mangaClipboardScript);
         const id = JSON.stringify({ slug: slug, type: type });
         return new Manga(this,provider, id, name.trim());
-    }
+
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];

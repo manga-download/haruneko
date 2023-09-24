@@ -6,17 +6,17 @@ const config: Config = {
         title: 'Allied Fansub'
     },
     container: {
-        url: 'https://alliedfansub.online/manga/love-is-an-illusion/',
-        id: '/manga/love-is-an-illusion/',
-        title: 'Love Is an Illusion!'
+        url: 'https://alliedfansub.net/manga/the-priest-dreaming-of-a-dragon/',
+        id: JSON.stringify({ post: '57188', slug: '/manga/the-priest-dreaming-of-a-dragon/'}),
+        title: 'The Priest Dreaming of a Dragon'
     },
     child: {
-        id: '/love-is-an-illusion-bolum-1/',
-        title: 'Bölüm 1'
+        id: '/manga/the-priest-dreaming-of-a-dragon/bolum-4/',
+        title: 'Bölüm 4'
     },
     entry: {
-        index: 0,
-        size: 54_192,
+        index: 2,
+        size: 312_620,
         type: 'image/jpeg'
     }
 };
