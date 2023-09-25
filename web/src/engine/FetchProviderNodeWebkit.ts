@@ -1,6 +1,7 @@
 import { GetLocale } from '../i18n/Localization';
 import type { PreloadAction } from './FetchProvider';
 import { FetchRedirection, CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';
+import * as protobuf from 'protobufjs';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -190,6 +191,14 @@ export async function FetchRegex(request: FetchRequest, regex: RegExp): Promise<
         result.push(match[1]);
     }
     return result;
+}
+
+export async function FetchProto<TResult>(request: FetchRequest, prototypes: string, responsetype: string) : Promise<TResult>{
+    const Root = (await protobuf.load(prototypes)).lookupType(responsetype);
+    const response = await fetch(request);
+    let data = await response.arrayBuffer();
+    data = Root.decode(new Uint8Array(data));
+    return Root.toObject(data);
 }
 
 /*

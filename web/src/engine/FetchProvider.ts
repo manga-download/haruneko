@@ -47,6 +47,11 @@ export function FetchRegex(request: FetchRequest, regex: RegExp) {
     return fetchRegex(request, regex);
 }
 
+let fetchProto: <TResult>(request: FetchRequest, prototypes: string, responsetype: string) => Promise<TResult> = fail;
+export function FetchProto(request: FetchRequest, prototypes: string, responsetype: string) {
+    return fetchProto(request, prototypes, responsetype);
+}
+
 let fetchWindowCSS: <T extends HTMLElement>(request: FetchRequest, query: string, delay: number, timeout?: number) => Promise<T[]> = fail;
 /**
  * Open the given {@link request} in a new browser window and execute the given {@link query}.
@@ -100,6 +105,7 @@ export function Initialize(info?: PlatformInfo): void {
         fetchWindowPreloadScript = FetchProviderNodeWebkit.FetchWindowPreloadScript;
         fetchGraphQL = FetchProviderNodeWebkit.FetchGraphQL;
         fetchRegex = FetchProviderNodeWebkit.FetchRegex;
+        fetchProto = FetchProviderNodeWebkit.FetchProto;
         return;
     }
 
@@ -115,6 +121,7 @@ export function Initialize(info?: PlatformInfo): void {
         fetchWindowPreloadScript = FetchProviderBrowser.FetchWindowPreloadScript;
         fetchGraphQL = FetchProviderNodeWebkit.FetchGraphQL;
         fetchRegex = FetchProviderNodeWebkit.FetchRegex;
+        fetchProto = FetchProviderNodeWebkit.FetchProto;
         return;
     }
 
