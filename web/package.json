@@ -23,7 +23,6 @@
         "fuse.js": "^6.6.2",
         "jest": "^29.7.0",
         "lit": "^2.8.0",
-        "protobufjs": "^7.2.5",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "svelte": "^4.2.1",
@@ -42,5 +41,8 @@
         "test": "jest --detectOpenHandles --config=test/jest.config.js",
         "serve:dev": "vite --port=3000 --strictPort",
         "serve:prod": "npm run build && vite preview --port=5000 --strictPort"
+    },
+    "dependencies": {
+        "protobufjs": "^7.2.5"
     }
 }
