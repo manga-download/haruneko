@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './TatakaeScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/tatakaescan\.xyz\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/tatakaescan\.com\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tatakaescan', 'Tatakae Scan', 'https://tatakaescan.xyz'/*, Tags.Media., Tags.Language.*/);
+        super('tatakaescan', 'Tatakae Scan', 'https://tatakaescan.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class TatakaeScan extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'tatakaescan';
-        super.label = 'Tatakae Scan';
-        this.tags = [ 'webtoon', 'manga', 'portuguese', 'scanlation' ];
-        this.url = 'https://tatakaescan.xyz';
-    }
-}
-*/

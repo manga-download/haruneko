@@ -1,11 +1,10 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaForFree.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/mangaforfree\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/mangaforfree\.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MangaForFree"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaforfree', 'MangaForFree', 'https://mangaforfree.com'/*, Tags.Media., Tags.Language.*/);
+        super('mangaforfree', 'MangaForFree', 'https://mangaforfree.com', Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Multilingual, Tags.Rating.Erotica);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaForFree extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangaforfree';
-        super.label = 'MangaForFree';
-        this.tags = ['webtoon', 'english', 'hentai'];
-        this.url = 'https://mangaforfree.com';
-    }
-}
-*/

@@ -1,5 +1,4 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './TonizuToon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -7,31 +6,16 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/tonizutoon\.com\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tonizutoon', 'Tonizu Toon', 'https://tonizutoon.com'/*, Tags.Media., Tags.Language.*/);
+        super('tonizutoon', 'Tonizu Toon', 'https://tonizutoon.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class TonizuToon extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'tonizutoon';
-        super.label = 'Tonizu Toon';
-        this.tags = [ 'webtoon', 'turkish', 'scanlation' ];
-        this.url = 'https://tonizutoon.com';
-        this.requestOptions.headers.set('x-referer', this.url);
-    }
-}
-*/

@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangaweebs',
         title: 'Manga Weebs'
-    }/*,
+    },
     container: {
-        url: 'https://mangaweebs.in/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangaweebs.in/manga/demon-magic-emperor/',
+        id: JSON.stringify({ post: '2006', slug: '/manga/demon-magic-emperor/' }),
+        title: 'Demon Magic Emperor'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/demon-magic-emperor/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        index: 1,
+        size: 34_016,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);

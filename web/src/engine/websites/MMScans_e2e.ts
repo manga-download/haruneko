@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mmscans',
         title: 'MMSCANS'
-    }/*,
+    },
     container: {
-        url: 'https://mm-scans.org/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mm-scans.org/manga/eleceed12312/',
+        id: JSON.stringify({ post: '1862', slug: '/manga/eleceed12312/' }),
+        title: 'Eleceed'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/eleceed12312/1/86/',
+        title: 'Chapter 86'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 5_265_933,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);
