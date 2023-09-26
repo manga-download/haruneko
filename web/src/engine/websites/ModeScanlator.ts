@@ -52,13 +52,11 @@ export default class extends DecoratableMangaScraper {
                 const zipdata = await response.arrayBuffer();
                 const zipfile = await JSZip.loadAsync(zipdata);
                 const fileNames = Object.keys(zipfile.files).sort((a, b) => this.extractNumber(a) - this.extractNumber(b));
-
                 for (const fileName of fileNames) {
                     const zipEntry = zipfile.files[fileName];
-                    const imagebuffer = await zipEntry.async('nodebuffer');
-                    let data = imagebuffer.toString('base64');
                     if (zipEntry.name.match(/\.(avif)$/i)) {
-                        data = 'data:image/avif;base64,' + data;
+                        const imagebuffer = await zipEntry.async('nodebuffer');
+                        const data = 'data:image/avif;base64,'+ imagebuffer.toString('base64');
                         pages.push(new Page(this, chapter, new URL(data)));
                     }
                 }
