@@ -320,7 +320,6 @@ export { default as ReadManga } from './ReadManga';
 export { default as ReadManhua } from './ReadManhua';
 export { default as ReadMNG } from './ReadMNG';
 export { default as RealmScans } from './RealmScans';
-export { default as RealmScansArabic } from './RealmScansArabic';
 export { default as ReaperScans } from './ReaperScans';
 export { default as ReaperScansBR } from './ReaperScansBR';
 export { default as ReaperScansFR } from './ReaperScansFR';
