@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/mangalek\.com\/manga\/[^/]+\/$/, 'div.post-title')
+@Madara.MangaCSS(/^https?:\/\/mangaleku\.com\/manga\/[^/]+\/$/, 'div.post-title')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangalek', 'مانجا ليك (Mangalek)', 'https://mangalek.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Arabic);
+        super('mangalek', 'مانجا ليك (Mangalek)', 'https://mangaleku.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Arabic);
     }
 
     public override get Icon() {
