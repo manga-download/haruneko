@@ -285,7 +285,6 @@ export { default as NineHentai } from './NineHentai';
 export { default as NiveraFansub } from './NiveraFansub';
 export { default as NovelMic } from './NovelMic';
 export { default as OlympusScanlation } from './OlympusScanlation';
-export { default as OniScans } from './OniScans';
 export { default as OnMangaMe } from './OnMangaMe';
 export { default as Opiatoon } from './Opiatoon';
 export { default as OzulScans } from './OzulScans';
