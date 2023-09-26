@@ -48,7 +48,7 @@ export function FetchRegex(request: FetchRequest, regex: RegExp) {
 }
 
 let fetchProto: <TResult>(request: FetchRequest, prototypes: string, responsetype: string) => Promise<TResult> = fail;
-export function FetchProto(request: FetchRequest, prototypes: string, responsetype: string) {
+export function FetchProto<TResult>(request: FetchRequest, prototypes: string, responsetype: string): Promise<TResult> {
     return fetchProto(request, prototypes, responsetype);
 }
 

@@ -198,7 +198,7 @@ export async function FetchProto<TResult>(request: FetchRequest, prototypes: str
     const response = await fetch(request);
     const data = await response.arrayBuffer();
     const message = Root.decode(new Uint8Array(data));
-    return Root.toObject(message);
+    return Root.toObject(message) as TResult;
 }
 
 /*
