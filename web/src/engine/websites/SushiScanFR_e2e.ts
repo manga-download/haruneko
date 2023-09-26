@@ -2,23 +2,23 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'scansmangasxyz',
-        title: 'ScansMangas (XYZ)'
-    }/*,
+        id: 'sushiscanfr',
+        title: 'Sushi Scans (FR)'
+    },
     container: {
-        url: 'https://scansmangas.xyz/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://sushiscan.fr/manga/sakamoto-days/',
+        id: '/manga/sakamoto-days/',
+        title: 'Sakamoto Days'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/sakamoto-days-chapitre-136/',
+        title: 'Chapitre 136'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 333_194,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

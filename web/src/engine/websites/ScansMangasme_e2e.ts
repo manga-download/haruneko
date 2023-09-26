@@ -2,22 +2,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'sekaikomik',
-        title: 'SekaiKomik'
+        id: 'scansmangasme',
+        title: 'ScansMangas (ME)'
     },
     container: {
-        url: 'https://sekaikomik.bio/manga/circles/',
-        id: '/manga/circles/',
-        title: 'Circles'
+        url: 'https://scansmangas.me/manga/a-fantasy-lazy-life/',
+        id: '/manga/a-fantasy-lazy-life/',
+        title: 'A Fantasy Lazy Life'
     },
     child: {
-        id: '/circles-chapter-01/',
-        title: 'Chapter 01',
-        timeout : 15000
+        id: '/scan-risou-no-himo-seikatsu-56/',
+        title: 'Scan Chapitre 56'
     },
     entry: {
         index: 0,
-        size: 106_232,
+        size: 889_427,
         type: 'image/jpeg'
     }
 };
