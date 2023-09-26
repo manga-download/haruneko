@@ -1,14 +1,13 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './PijamaliKoi.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/pijamalikoi\.com\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/m/manga/list-mode/')
+@MangaStream.MangaCSS(/^https?:\/\/pijamalikoi\.com\/m\/seri\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS(undefined, '/m/manga/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -20,18 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class PijamaliKoi extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'pijamalikoi';
-        super.label = 'Pijamalı Koi';
-        this.tags = [ 'manga', 'webtoon', 'turkish', 'scanlation' ];
-        this.url = 'https://pijamalikoi.com';
-        this.path = '/m/manga/list-mode/';
-    }
-}
-*/
