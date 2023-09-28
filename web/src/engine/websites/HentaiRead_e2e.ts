@@ -7,16 +7,16 @@ const config = {
     },
     container: {
         url: 'https://hentairead.com/hentai/meccha-kimochi-yokattassho/',
-        id: JSON.stringify({ post: '63295', slug: '/hentai/meccha-kimochi-yokattassho/' }),
+        id: '/hentai/meccha-kimochi-yokattassho/',
         title: 'Meccha Kimochi Yokattassho?'
     },
     child: {
         id: '/hentai/meccha-kimochi-yokattassho/english/',
-        title: 'English'
+        title: 'Meccha Kimochi Yokattassho?'
     },
     entry: {
         index: 0,
-        size: 185_694,
+        size: 177_123,
         type: 'image/jpeg'
     }
 };

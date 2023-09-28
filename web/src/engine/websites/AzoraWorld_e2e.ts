@@ -6,7 +6,7 @@ const config = {
         title: 'ازورا مانجا (AZORA MANGA)'
     },
     container: {
-        url: 'https://azoraworld.com/series/return-of-the-unrivaled-spear-knight/',
+        url: 'https://azoranov.com/series/return-of-the-unrivaled-spear-knight/',
         id: JSON.stringify({ post: '36485', slug: '/series/return-of-the-unrivaled-spear-knight/' }),
         title: 'Return of The Unrivaled Spear Knight'
     },

@@ -6,18 +6,18 @@ const config = {
         title: 'YugenMangas (PT)'
     },
     container: {
-        url: 'https://yugenmangas.com.br/series/obscene-baguette/',
-        id: JSON.stringify({ post: '19607', slug: '/series/obscene-baguette/' }),
-        title: 'Obscene Baguette'
+        url: 'https://yugenmangas.com.br/series/para-amar-seu-inimigo/',
+        id: JSON.stringify({ post: '17954', slug: '/series/para-amar-seu-inimigo/' }),
+        title: 'Para Amar seu Inimigo'
     },
     child: {
-        id: '/series/obscene-baguette/capitulo-0/',
-        title: 'Capítulo 0'
+        id: '/series/para-amar-seu-inimigo/capitulo-31/',
+        title: 'Capítulo 31'
     },
     entry: {
         index: 1,
-        size: 90_370,
-        type: 'image/jpeg'
+        size: 117_205,
+        type: 'image/png'
     }
 };
 

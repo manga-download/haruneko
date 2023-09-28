@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangastarz',
         title: 'مانجا ستارز (Mangastarz)'
-    }/*,
+    },
     container: {
-        url: 'https://mangastarz.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangastarz.com/manga/getter-robo-go/',
+        id: JSON.stringify({ post: '82737', slug: '/manga/getter-robo-go/' }),
+        title: 'Getter Robo Go'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/getter-robo-go/1/',
+        title: '1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 358_957,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
