@@ -6,12 +6,12 @@ const fixture = new TestFixture({
         title: 'Manga3S'
     },
     container: {
-        url: 'https://manga3s.com/manga/divine-urban-god/',
-        id: JSON.stringify({ post: '3791', slug: '/manga/divine-urban-god/' }),
+        url: 'https://manga3s.com/page/divine-urban-god/',
+        id: JSON.stringify({ post: '3791', slug: '/page/divine-urban-god/' }),
         title: 'Divine Urban God'
     },
     child: {
-        id: '/manga/divine-urban-god/chapter-1/',
+        id: '/page/divine-urban-god/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {

@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'randomscan',
-        title: 'Random Scan'
-    }/*,
+        title: 'Random Scans'
+    },
     container: {
-        url: 'https://randomscan.online/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://randomscanlators.net/manga/eu-caminho-na-noite-consumido-pelas-laminas/',
+        id: JSON.stringify({ post: '73', slug: '/manga/eu-caminho-na-noite-consumido-pelas-laminas/' }),
+        title: 'Eu Caminho na Noite consumido Pelas Lâminas'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/eu-caminho-na-noite-consumido-pelas-laminas/cap-01/',
+        title: 'Cap. 01'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 574_291,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

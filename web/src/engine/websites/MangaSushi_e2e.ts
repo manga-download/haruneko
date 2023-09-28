@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangasushi',
         title: 'Mangasushi'
-    }/*,
+    },
     container: {
-        url: 'https://mangasushi.net/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangasushi.org/manga/lonely-attack-on-the-different-world/',
+        id: JSON.stringify({ post: '1909', slug: '/manga/lonely-attack-on-the-different-world/' }),
+        title: 'Lonely Attack on the Different World'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/lonely-attack-on-the-different-world/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 2_332_355,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);

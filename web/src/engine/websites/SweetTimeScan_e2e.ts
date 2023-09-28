@@ -6,17 +6,17 @@ const config = {
         title: 'Sweet Time Scan'
     },
     container: {
-        url: 'https://sweetscan.net/manga/the-monster-duches/',
-        id: '{"post":"24","slug":"/manga/the-monster-duches/"}',
-        title: 'The Monster Duchess And Contract Princess'
+        url: 'https://sweetscan.net/manga/the-monster-duchess-and-contract-princess/',
+        id: JSON.stringify({ post: "44", slug: "/manga/the-monster-duchess-and-contract-princess/"}),
+        title: 'The Monster Duchess and Contract Princess'
     },
     child: {
-        id: '/manga/the-monster-duches/cap-110/',
-        title: 'Cap. 110 - Capítulo 110'
+        id: '/manga/the-monster-duchess-and-contract-princess/1/',
+        title: '1 - Capítulo 1'
     },
     entry: {
-        index: 0,
-        size: 2_104_152,
+        index: 1,
+        size: 913_896,
         type: 'image/jpeg'
     }
 };

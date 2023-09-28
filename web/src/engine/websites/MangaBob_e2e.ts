@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangabob',
         title: 'MangaBob'
-    }/*,
+    },
     container: {
-        url: 'https://mangabob.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangabob.com/manga/my-eight-husbands-are-here/',
+        id: JSON.stringify({ post: '14263', slug: '/manga/my-eight-husbands-are-here/' }),
+        title: 'My Eight Husbands Are Here!'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/my-eight-husbands-are-here/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 50_409,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

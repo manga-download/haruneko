@@ -1,5 +1,5 @@
 // Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MiniTwoScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('minitwoscan', 'MiniTwo Scan', 'https://minitwoscan.com'/*, Tags.Media., Tags.Language.*/);
+        super('minitwoscan', 'MiniTwo Scan', 'https://minitwoscan.com'/*, Tags.Media., Tags.Language.*/, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
