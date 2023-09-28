@@ -1,5 +1,5 @@
 // Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './NeoxScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('neoxscan', 'Neox Scanlator', 'https://neoxscans.net'/*, Tags.Media., Tags.Language.*/);
+        super('neoxscan', 'Neox Scanlator', 'https://neoxscans.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

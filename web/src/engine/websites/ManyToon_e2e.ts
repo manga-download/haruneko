@@ -3,22 +3,23 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'manytoon',
-        title: 'ManyToon'
-    }/*,
+        title: 'ManyToon(.me)',
+        timeout : 30000
+    },
     container: {
-        url: 'https://manytoon.me/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manytoon.me/manhwa/fantasyland/',
+        id: JSON.stringify({ post: '65382', slug: '/manhwa/fantasyland/' }),
+        title: 'Fantasyland'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manhwa/fantasyland/chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 248_416,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangakik',
         title: 'MangaKik'
-    }/*,
+    },
     container: {
-        url: 'https://mangakik.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangakik.biz/manga/age-of-terror/',
+        id: JSON.stringify({ post: '2376', slug: '/manga/age-of-terror/' }),
+        title: 'Age of Terror'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/age-of-terror/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 291_837,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

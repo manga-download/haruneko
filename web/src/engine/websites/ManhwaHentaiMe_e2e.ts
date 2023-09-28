@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'manhwahentaime',
         title: 'ManhwaHentai.me'
-    }/*,
+    },
     container: {
-        url: 'https://manhwahentai.me/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manhwahentai.me/webtoon/boarding-school/',
+        id: JSON.stringify({ post: '52232', slug: '/webtoon/boarding-school/' }),
+        title: 'Boarding School'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/webtoon/boarding-school/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 898_037,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

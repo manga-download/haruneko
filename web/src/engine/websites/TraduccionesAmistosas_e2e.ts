@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'traduccionesamistosas',
         title: 'Traducciones Amistosas'
-    }/*,
+    },
     container: {
-        url: 'https://nartag.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://nartag.com/l/el-retorno-del-jugador',
+        id: '/l/el-retorno-del-jugador',
+        title: 'El retorno del jugador'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/v/el-retorno-del-jugador/capitulo-135',
+        title: 'Capitulo 135'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 2,
+        size: 1_027_155,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

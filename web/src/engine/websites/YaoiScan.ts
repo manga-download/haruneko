@@ -1,36 +1,21 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './YaoiScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/yaoiscan\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/yaoiscan\.com\/read\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yaoiscan', 'YaoiScan', 'https://yaoiscan.com'/*, Tags.Media., Tags.Language.*/);
+        super('yaoiscan', 'YaoiScan', 'https://yaoiscan.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class YaoiScan extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'yaoiscan';
-        super.label = 'YaoiScan';
-        this.tags = [ 'webtoon', 'hentai', 'english' ];
-        this.url = 'https://yaoiscan.com';
-    }
-}
-*/

@@ -1,13 +1,23 @@
 import { Tags } from '../Tags';
 import icon from './HentaiRead.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/hentairead\.com\/hentai\/[^/]+\/$/, 'div.post-title h1')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
+const pageScript = `new Promise(resolve => {
+    const pagelist = chapter_preloaded_images;
+    resolve(pagelist.map(link => {
+        let uri = new URL(link);
+        uri.searchParams.set('quality', '100');
+        uri.searchParams.delete('w');
+        return uri.href;
+    }));
+});
+`;
+
+@Common.MangaCSS(/^https?:\/\/hentairead\.com\/hentai\/[^/]+\/$/, 'div.post-title h1')
+@Common.MangasMultiPageCSS('/hentai/page/{page}/','div.post-title a')
+@Common.ChaptersSinglePageCSS('div.summary_image > a')
+@Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -18,4 +28,5 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
+
 }

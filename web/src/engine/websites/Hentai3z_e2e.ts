@@ -6,12 +6,12 @@ const config = {
         title: 'Hentai3z'
     },
     container: {
-        url: 'https://hentai3z.com/manga/secret-class-8/',
-        id: JSON.stringify({ post: '1464', slug: '/manga/secret-class-8/' }),
+        url: 'https://hentai3z.xyz/manga/secret-class-1016/',
+        id: JSON.stringify({ post: '2662', slug: '/manga/secret-class-1016/' }),
         title: 'Secret Class'
     },
     child: {
-        id: '/manga/secret-class-8/chapter-1/',
+        id: '/manga/secret-class-1016/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
