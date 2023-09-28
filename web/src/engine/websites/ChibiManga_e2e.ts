@@ -8,7 +8,7 @@ const config: Config = {
     },
     container: {
         url: 'https://www.cmreader.info/manga/teens-house/',
-        id: JSON.stringify({ post: '2212', slug: '/manga/teens-house/' }),
+        id: JSON.stringify({ post: '2315', slug: '/manga/teens-house/' }),
         title: 'Teens House',
         timeout: 15_000
     },

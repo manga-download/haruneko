@@ -1,5 +1,4 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './NijiTranslations.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nijitranslations', 'مدونة نيجي (Niji Translations)', 'https://niji-translations.com'/*, Tags.Media., Tags.Language.*/);
+        super('nijitranslations', 'مدونة نيجي (Niji Translations)', 'https://niji-translations.com', Tags.Media.Manga, Tags.Language.Arabic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class NijiTranslations extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'nijitranslations';
-        super.label = 'مدونة نيجي (Niji Translations)';
-        this.tags = [ 'manga', 'arabic' ];
-        this.url = 'https://niji-translations.com';
-    }
-}
-*/

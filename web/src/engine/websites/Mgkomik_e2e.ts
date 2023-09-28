@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mgkomik',
         title: 'MGKOMIK'
-    }/*,
+    },
     container: {
-        url: 'https://mgkomik.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mgkomik.id/komik/the-life-after-god-of-martial-lived-in-seclusion/',
+        id: JSON.stringify({ post: '7180', slug: '/komik/the-life-after-god-of-martial-lived-in-seclusion/' }),
+        title: 'The Life After God Of Martial Lived In Seclusion'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/komik/the-life-after-god-of-martial-lived-in-seclusion/chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        index: 1,
+        size: 251_852,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);

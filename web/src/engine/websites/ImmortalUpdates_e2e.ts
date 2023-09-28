@@ -6,12 +6,12 @@ const config = {
         title: 'Immortal Updates'
     },
     container: {
-        url: 'https://immortalupdates.com/manga/the-era-of-superhuman-one/',
-        id: JSON.stringify({ post: '3229', slug: '/manga/the-era-of-superhuman-one/' }),
+        url: 'https://immortalupdates.com/manga/the-era-of-superhuman-manhwa/',
+        id: JSON.stringify({ post: '3229', slug: '/manga/the-era-of-superhuman-manhwa/' }),
         title: 'Superhuman Era'
     },
     child: {
-        id: '/manga/the-era-of-superhuman-one/chapter-0/',
+        id: '/manga/the-era-of-superhuman-manhwa/chapter-0/',
         title: 'Chapter 0'
     },
     entry: {
