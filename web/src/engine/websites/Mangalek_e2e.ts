@@ -6,7 +6,7 @@ const config = {
         title: 'مانجا ليك (Mangalek)'
     },
     container: {
-        url: 'https://mangalek.com/manga/against-the-gods/',
+        url: 'https://mangaleku.com/manga/against-the-gods/',
         id: JSON.stringify({ post: '47', slug: '/manga/against-the-gods/' }),
         title: 'Against The Gods'
     },
