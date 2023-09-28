@@ -6,18 +6,18 @@ const config = {
         title: 'Its Your Right Manhua'
     },
     container: {
-        url: 'https://itsyourightmanhua.com/manga/magic-scroll-merchant-zio/',
-        id: JSON.stringify({ post: '851', slug: '/manga/magic-scroll-merchant-zio/' }),
-        title: 'Magic Scroll Merchant Zio'
+        url: 'https://itsyourightmanhua.com/manga/shen-yin-wang-zuo/',
+        id: JSON.stringify({ post: '167', slug: '/manga/shen-yin-wang-zuo/' }),
+        title: 'Shen Yin Wang Zuo'
     },
     child: {
-        id: '/manga/magic-scroll-merchant-zio/chapter-000/',
-        title: 'Chapter 000'
+        id: '/manga/shen-yin-wang-zuo/227/',
+        title: '227  - (RAW -511)'
     },
     entry: {
         index: 1,
-        size: 1_497_921,
-        type: 'image/png'
+        size: 370_276,
+        type: 'image/webp'
     }
 };
 

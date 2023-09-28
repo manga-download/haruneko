@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'milftoon',
         title: 'Milftoon Comics'
-    }/*,
+    },
     container: {
-        url: 'https://milftoon.xxx/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://milftoon.xxx/comics/thankstaking/',
+        id: JSON.stringify({ post: '786', slug: '/comics/thankstaking/' }),
+        title: 'Thankstaking'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/comics/thankstaking/issue-1/',
+        title: 'Issue 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 197_651,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

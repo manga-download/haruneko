@@ -3,22 +3,22 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 const config: Config = {
     plugin: {
         id: 'kumascans',
-        title: 'Kuma Scans'
-    }/*,
+        title: 'Retsu'
+    },
     container: {
-        url: 'https://kumascans.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://retsu.org/manga/hajimete-no-gal/',
+        id: JSON.stringify({ post: '2485', slug: '/manga/hajimete-no-gal/'}),
+        title: 'Hajimete no Gal'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/hajimete-no-gal/vol-01/ch-001/',
+        title: 'Ch.001 - The First Prostrate'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 215_936,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

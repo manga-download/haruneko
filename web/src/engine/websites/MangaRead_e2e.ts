@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangaread',
         title: 'MangaRead'
-    }/*,
+    },
     container: {
-        url: 'https://www.mangaread.org/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://www.mangaread.org/manga/maou-sama-retry-r/',
+        id: JSON.stringify({ post: '87650', slug: '/manga/maou-sama-retry-r/' }),
+        title: 'Maou-Sama, Retry! R'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/maou-sama-retry-r/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 123_364,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

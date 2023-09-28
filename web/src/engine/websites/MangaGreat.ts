@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/mangagreat\.org\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/mangagreat\.org\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MANGAGREAT"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangagreat', 'MANGAGREAT', 'https://mangagreat.org', Tags.Media.Manhwa, Tags.Language.English);
+        super('mangagreat', 'MangaGreat', 'https://mangagreat.org', Tags.Media.Manhwa, Tags.Language.English);
     }
 
     public override get Icon() {
