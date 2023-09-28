@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('fenixscan', 'Manga Fenix', 'https://manga-fenix.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish);
+        super('fenixscan', 'Manga Fenix', 'https://manga-fenix.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

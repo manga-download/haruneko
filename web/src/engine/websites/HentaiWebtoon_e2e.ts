@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://hentaiwebtoon.com/manga/not-friends-raw/',
-        id: JSON.stringify({ post: '5959', slug: '/manga/not-friends-raw/' }),
+        id: JSON.stringify({ post: '65252', slug: '/manga/not-friends-raw/' }),
         title: 'Not Friends Raw'
     },
     child: {

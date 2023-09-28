@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'olympusscanlation',
         title: 'Olympus Scanlation'
-    }/*,
+    },
     container: {
-        url: 'https://olympusscanlation.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://olympusv2.gg/series/comic-jugador-devorador-de-acero',
+        id: JSON.stringify({ slug: 'jugador-devorador-de-acero', type: 'comic' }),
+        title: 'Jugador devorador de acero'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '74801',
+        title: '1'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 243_244,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);

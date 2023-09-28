@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'tritiniascans',
         title: 'Tritinia Scans'
-    }/*,
+    },
     container: {
-        url: 'https://tritinia.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://tritinia.org/manga/we-may-be-an-inexperienced-couple-but/',
+        id: JSON.stringify({ post: '1958', slug: '/manga/we-may-be-an-inexperienced-couple-but/' }),
+        title: 'We May Be an Inexperienced Couple but…'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/we-may-be-an-inexperienced-couple-but/volume-14/vol-14-ch-108/',
+        title: 'Vol. 14. Ch. 108'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 455_563,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

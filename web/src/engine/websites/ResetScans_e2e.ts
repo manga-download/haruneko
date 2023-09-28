@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'resetscans',
         title: 'Reset Scans'
-    }/*,
+    },
     container: {
-        url: 'https://reset-scans.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://reset-scans.com/manga/the-ultimate-of-all-ages/',
+        id: JSON.stringify({ post: '2313', slug: '/manga/the-ultimate-of-all-ages/' }),
+        title: 'The Ultimate of All Ages'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/the-ultimate-of-all-ages/chapter-001/',
+        title: 'Chapter 001'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 3_230_931,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
