@@ -355,6 +355,7 @@ export { default as Shqqaa } from './Shqqaa';
 export { default as SilenceScan } from './SilenceScan';
 export { default as SilentSkyScans } from './SilentSkyScans';
 export { default as SinensisScan } from './SinensisScan';
+export { default as SirenKomik } from './SirenKomik';
 export { default as Siyahmelek } from './Siyahmelek';
 export { default as StickHorse } from './StickHorse';
 export { default as SushiScanFR } from './SushiScanFR';
