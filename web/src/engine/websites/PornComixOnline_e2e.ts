@@ -1,22 +1,22 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'porncomixonline',
-        title: 'PornComix'
-    }/*,
+        title: 'PornComix Online'
+    },
     container: {
-        url: 'https://www.porncomixonline.net/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://www.porncomixonline.net/m-comic/shockabuki-hermione-and-grimoire-of-lust/',
+        id: JSON.stringify({ post: '6220732', slug: '/m-comic/shockabuki-hermione-and-grimoire-of-lust/' }),
+        title: 'Hermione and Grimoire of lust'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
-    },
+        id: '/m-comic/shockabuki-hermione-and-grimoire-of-lust/shockabuki-hermione-and-grimoire-of-lust/',
+        title: 'Shockabuki – Hermione and Grimoire of lust'
+    },/*
     entry: {
         index: 0,
-        size: -1,
+        size: 234_596, //picture size alternate between 226_729 and 234_596
         type: 'image/jpeg'
     }*/
 };

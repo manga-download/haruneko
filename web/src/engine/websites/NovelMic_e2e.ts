@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'novelmic',
         title: 'NovelMic'
-    }/*,
+    },
     container: {
-        url: 'https://novelmic.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://novelmic.com/comic/i-picked-up-an-attribute-hot-free-comics/',
+        id: JSON.stringify({ post: '3132', slug: '/comic/i-picked-up-an-attribute-hot-free-comics/' }),
+        title: 'I Picked Up An Attribute'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/comic/i-picked-up-an-attribute-hot-free-comics/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 61_252,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

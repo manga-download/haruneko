@@ -7,7 +7,7 @@ const config: Config = {
         timeout: 60_000
     },
     container: {
-        url: 'https://apollcomics.xyz/manga/the-girls-nest/',
+        url: 'https://apollcomics.com/manga/the-girls-nest/',
         id: JSON.stringify({ post: '1168', slug: '/manga/the-girls-nest/' }),
         title: 'The Girls Nest'
     },

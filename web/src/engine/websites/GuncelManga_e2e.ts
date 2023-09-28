@@ -6,7 +6,7 @@ const config = {
         title: 'Güncel Manga'
     },
     container: {
-        url: 'https://guncelmanga.com/manga/the-promised-queen/',
+        url: 'https://guncelmanga.net/manga/the-promised-queen/',
         id: JSON.stringify({ post: '11215', slug: '/manga/the-promised-queen/' }),
         title: 'The Promised Queen'
     },

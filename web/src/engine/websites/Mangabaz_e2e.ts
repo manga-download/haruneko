@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangabaz',
         title: 'Mangabaz'
-    }/*,
+    },
     container: {
-        url: 'https://mangabaz.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangabaz.com/mangas/i-am-really-not-the-demon-lord/',
+        id: JSON.stringify({ post: '15387', slug: '/mangas/i-am-really-not-the-demon-lord/' }),
+        title: 'I Am Really Not the Demon Lord!'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/mangas/i-am-really-not-the-demon-lord/chapter-0/',
+        title: 'Chapter 0'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 123_134,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);

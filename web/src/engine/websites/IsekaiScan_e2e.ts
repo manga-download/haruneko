@@ -6,17 +6,17 @@ const config = {
         title: 'Isekai Scan'
     },
     container: {
-        url: 'https://isekaiscan.com/manga/magic-emperor/',
-        id: JSON.stringify({ post: '16763', slug: '/manga/magic-emperor/' }),
+        url: 'https://m.isekaiscan.to/mangax/magic-emperor-43/',
+        id: JSON.stringify({ post: '2282', slug: '/mangax/magic-emperor-43/' }),
         title: 'Magic Emperor'
     },
     child: {
-        id: '/manga/magic-emperor/chapter-1/',
-        title: 'chapter 1'
+        id: '/mangax/magic-emperor-43/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 56_861,
+        size: 47_882,
         type: 'image/jpeg'
     }
 };

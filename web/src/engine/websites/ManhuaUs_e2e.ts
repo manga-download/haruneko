@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'manhuaus',
         title: 'Manhua Us'
-    }/*,
+    },
     container: {
-        url: 'https://manhuaus.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manhuaus.com/manga/beware-of-obsession/',
+        id: JSON.stringify({ post: '1356687', slug: '/manga/beware-of-obsession/' }),
+        title: 'Beware of Obsession'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/beware-of-obsession/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 241_696,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);

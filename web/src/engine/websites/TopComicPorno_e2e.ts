@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'topcomicporno',
         title: 'Top Comic Porno'
-    }/*,
+    },
     container: {
-        url: 'https://topcomicporno.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://topcomicporno.com/manga/netorare-manga-no-kuzu-otoko-ni-tensei-shita-hazu-ga-heroine-ga-yottekuru-ken/',
+        id: JSON.stringify({ post: '13977', slug: '/manga/netorare-manga-no-kuzu-otoko-ni-tensei-shita-hazu-ga-heroine-ga-yottekuru-ken/' }),
+        title: 'Netorare Manga no Kuzu Otoko ni Tensei shita Hazu ga Heroine ga Yottekuru Ken'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/netorare-manga-no-kuzu-otoko-ni-tensei-shita-hazu-ga-heroine-ga-yottekuru-ken/capitulo-1/',
+        title: 'Capitulo 1'
     },
     entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        index: 3,
+        size: 319_468,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);
