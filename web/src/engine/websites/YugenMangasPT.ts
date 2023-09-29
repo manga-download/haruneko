@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './YugenMangas.webp';
+import icon from './YugenMangasPT.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
