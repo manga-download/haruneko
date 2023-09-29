@@ -7,7 +7,7 @@ const config: Config = {
     },
     container: {
         url: 'https://reaperscanstr.com/seri/hyper-luck/',
-        id: '{"post":"1161","slug":"/seri/hyper-luck/"}',
+        id: JSON.stringify({post : "1161", slug : "/seri/hyper-luck/"}),
         title: 'Hyper Luck'
     },
     child: {

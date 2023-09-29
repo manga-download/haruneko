@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'mangawt',
         title: 'MangaWT'
-    }/*,
+    },
     container: {
-        url: 'https://www.mangawt.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangawt.com/manga/it-starts-with-a-mountain/',
+        id: JSON.stringify({ post: '2044', slug: '/manga/it-starts-with-a-mountain/' }),
+        title: 'It Starts With A Mountain'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/it-starts-with-a-mountain/bolum-0/',
+        title: 'Bölüm 0'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 1_114_714,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

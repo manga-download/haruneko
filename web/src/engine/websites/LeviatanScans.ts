@@ -4,15 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/en\.leviatanscans\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/lscomic\.com\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript)
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('leviatanscans', 'LeviatanScans', 'https://en.leviatanscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('leviatanscans', 'LeviatanScans', 'https://lscomic.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

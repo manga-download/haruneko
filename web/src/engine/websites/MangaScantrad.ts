@@ -5,7 +5,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/manga-scantrad\.net\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/manga-scantrad\.io\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manga-scantrad', 'Manga-Scantrad', 'https://manga-scantrad.net'/*, Tags.Media., Tags.Language.*/);
+        super('manga-scantrad', 'Manga-Scantrad', 'https://manga-scantrad.io'/*, Tags.Media., Tags.Language.*/);
     }
 
     public override get Icon() {

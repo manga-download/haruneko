@@ -1,11 +1,10 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaSpark.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/mangaspark\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^https?:\/\/mangaspark\.com\/manga\/[^/]+\/$/, 'div.post-title')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaspark', 'مانجا سبارك (MangaSpark)', 'https://mangaspark.com'/*, Tags.Media., Tags.Language.*/);
+        super('mangaspark', 'مانجا سبارك (MangaSpark)', 'https://mangaspark.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Arabic);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaSpark extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangaspark';
-        super.label = 'مانجا سبارك (MangaSpark)';
-        this.tags = [ 'manga', 'webtoon', 'arabic' ];
-        this.url = 'https://mangaspark.com';
-    }
-}
-*/

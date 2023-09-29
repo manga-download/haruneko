@@ -1,4 +1,4 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,12 +6,12 @@ const config = {
         title: 'Colored Manga'
     },
     container: {
-        url: 'https://coloredmanga.com/manga/kaguya-sama-love-is-war-anime/',
-        id: JSON.stringify({ post: '2753', slug: '/manga/kaguya-sama-love-is-war-anime/' }),
-        title: 'Kaguya-sama: Love is War'
+        url: 'https://coloredmanga.com/mangas/love-is-war-by-kaguya/',
+        id: JSON.stringify({ post: '2753', slug: '/mangas/love-is-war-by-kaguya/' }),
+        title: 'Kaguya-sama: Love is War – Full Color — {Official TL} (EN)'
     },
     child: {
-        id: '/manga/kaguya-sama-love-is-war-anime/volume-01/chapter-01/',
+        id: '/mangas/love-is-war-by-kaguya/volume-01/chapter-01/',
         title: 'Chapter 01'
     },
     entry: {

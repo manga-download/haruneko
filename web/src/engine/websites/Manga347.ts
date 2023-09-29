@@ -10,6 +10,8 @@ import * as Common from './decorators/Common';
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
+
+//TODO : use mangareaderto Template
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
