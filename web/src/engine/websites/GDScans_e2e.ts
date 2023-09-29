@@ -6,18 +6,18 @@ const config = {
         title: 'GD Scans'
     },
     container: {
-        url: 'https://gdstmp.site/manga/sex-and-dungeon/',
-        id: JSON.stringify({ post: '3279', slug: '/manga/sex-and-dungeon/' }),
-        title: 'Sex and Dungeon'
+        url: 'https://gdscans.com/manga/peerless/',
+        id: JSON.stringify({ post: '692', slug: '/manga/peerless/' }),
+        title: 'Peerless Reincarnated Demon Lord in Hero Academy'
     },
     child: {
-        id: '/manga/sex-and-dungeon/volume-7/chapter-25/',
-        title: 'Chapter 25'
+        id: '/manga/peerless/volume-1/ch-1/',
+        title: 'Ch.1 - Demon Lord, Reincarnates'
     },
     entry: {
         index: 0,
-        size: 721_987,
-        type: 'image/jpeg'
+        size: 114_342,
+        type: 'image/webp'
     }
 };
 

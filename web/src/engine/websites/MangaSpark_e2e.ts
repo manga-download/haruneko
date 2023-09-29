@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangaspark',
         title: 'مانجا سبارك (MangaSpark)'
-    }/*,
+    },
     container: {
-        url: 'https://mangaspark.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangaspark.com/manga/the-unlikely-gods/',
+        id: JSON.stringify({ post: '83566', slug: '/manga/the-unlikely-gods/' }),
+        title: 'The Unlikely Gods'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/the-unlikely-gods/1/',
+        title: '1'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 260_405,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);

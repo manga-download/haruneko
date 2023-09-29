@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'webtoontrcom',
         title: 'Webtoon TR'
-    }/*,
+    },
     container: {
-        url: 'https://webtoon-tr.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://webtoontr.net/webtoon/dreaming-freedom-5/',
+        id: JSON.stringify({ post: '9028', slug: '/webtoon/dreaming-freedom-5/' }),
+        title: 'Dreaming Freedom'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/webtoon/dreaming-freedom-5/bolum-1/',
+        title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 318_969,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

@@ -11,12 +11,12 @@ const config = {
         title: 'Dragon Master'
     },
     child: {
-        id: '/manga/dragon-master/bolum-1/',
+        id: '/manga/dragon-master/dragon-master-blm-1261553b9c2600d31971091860a599322/',
         title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: 240_765,
+        size: 2_754_583,
         type: 'image/jpeg'
     }
 };
