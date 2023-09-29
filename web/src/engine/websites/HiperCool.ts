@@ -4,9 +4,9 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/https:\/\/hipercool\.xyz/, 'div.post-title')
+@Madara.MangaCSS(/https:\/\/hipercool\.xyz/, 'div#manga-title')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2('div.chapter-name > a')
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 

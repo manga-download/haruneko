@@ -6,13 +6,13 @@ const config = {
         title: 'Hunters Scan'
     },
     container: {
-        url: 'https://huntersscan.xyz/series/grand-general/',
-        id: JSON.stringify({ post: '182', slug: '/series/grand-general/' }),
+        url: 'https://huntersscan.xyz/series/grand-general2232/',
+        id: JSON.stringify({ post: '182', slug: '/series/grand-general2232/' }),
         title: 'Grand General'
     },
     child: {
-        id: '/series/grand-general/capitulo-00/',
-        title: 'Capítulo 00'
+        id: '/series/grand-general2232/capitulo-00-5/',
+        title: 'Capítulo 00.5'
     },
     entry: {
         index: 0,

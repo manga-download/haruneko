@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'mangahentai',
         title: 'Manga Hentai'
-    }/*,
+    },
     container: {
-        url: 'https://mangahentai.me/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://mangahentai.me/manga-hentai/an-outsiders-way-in/',
+        id: JSON.stringify({ post: '153760', slug: '/manga-hentai/an-outsiders-way-in/' }),
+        title: 'An Outsider’s Way In'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga-hentai/an-outsiders-way-in/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 14_291,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

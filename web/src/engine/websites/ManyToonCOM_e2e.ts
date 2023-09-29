@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'manytooncom',
         title: 'ManyToon'
-    }/*,
+    },
     container: {
-        url: 'https://manytoon.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manytoon.com/comic/boarding-school/',
+        id: JSON.stringify({ post: '222638', slug: '/comic/boarding-school/' }),
+        title: 'Boarding School'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/comic/boarding-school/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 898_037,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
