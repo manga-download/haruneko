@@ -4,8 +4,14 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
+function MangaExtractor(anchor: HTMLAnchorElement) {
+    const id = anchor.pathname;
+    const title = anchor.querySelector('div.postDetail').textContent.trim();
+    return { id, title };
+}
+
 @Common.MangaCSS(/^https?:\/\/www\.readmng\.com\/[^/]+$/, 'div.titleArea > h1')
-@Common.MangasSinglePageCSS('/manga-list', '.mangaSliderCard a')
+@Common.MangasMultiPageCSS('/manga-list/{page}?', '.mangaSliderCard a', 1,1,0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div#chapters-tabContent div.checkBoxCard a.chnumber', Common.AnchorInfoExtractor(false, 'i'))
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()

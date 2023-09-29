@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^https?:\/\/mangakyo\.org\/komik\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/komik/list-mode/')
+@MangaStream.MangasSinglePageCSS(undefined, '/komik/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()

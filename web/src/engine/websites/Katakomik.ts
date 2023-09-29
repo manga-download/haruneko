@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^https?:\/\/katakomik\.online\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div.bsx a', '/list/')
+@MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS('div.eph-num a')
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()

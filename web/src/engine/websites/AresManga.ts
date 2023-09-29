@@ -4,8 +4,8 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/aresnov\.org\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
+@MangaStream.MangaCSS(/^https?:\/\/aresnov\.org\/series\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS(undefined, '/series/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
