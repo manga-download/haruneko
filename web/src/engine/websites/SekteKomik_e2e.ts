@@ -3,22 +3,22 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 const config: Config = {
     plugin: {
         id: 'sektekomik',
-        title: 'SEKTEKOMIK.COM'
-    }/*,
+        title: 'SEKTEKOMIK.XYZ'
+    },
     container: {
-        url: 'https://sektekomik.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://sektekomik.xyz/manga/existence',
+        id: '/manga/existence',
+        title: 'Existence'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/existence/ch/62',
+        title: 'Ch 62'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 526_546,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

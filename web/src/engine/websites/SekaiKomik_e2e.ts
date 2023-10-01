@@ -4,21 +4,22 @@ const config: Config = {
     plugin: {
         id: 'sekaikomik',
         title: 'SekaiKomik'
-    }/*,
+    },
     container: {
-        url: 'https://www.sekaikomik.site/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://sekaikomik.bio/manga/circles/',
+        id: '/manga/circles/',
+        title: 'Circles'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/circles-chapter-01/',
+        title: 'Chapter 01',
+        timeout : 15000
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 106_232,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

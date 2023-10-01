@@ -1,24 +1,24 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
         id: 'turktoon',
         title: 'Turktoon'
-    }/*,
+    },
     container: {
-        url: 'https://turktoon.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://turktoon.com/manga/martial-peak/',
+        id: '/manga/martial-peak/',
+        title: 'Martial Peak'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/martial-peak-1/',
+        title: 'Bölüm 1 -'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 401_710,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
