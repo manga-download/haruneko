@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'shadowmangas',
         title: 'ShadowMangas'
-    }/*,
+    },
     container: {
-        url: 'https://shadowmangas.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://shadowmangas.com/manga/realmente-no-soy-el-vasallo-del-dios-demonio/',
+        id: '/manga/realmente-no-soy-el-vasallo-del-dios-demonio/',
+        title: 'Realmente no soy el vasallo del dios demonio'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/realmente-no-soy-el-vasallo-del-dios-demonio-capitulo-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 912_450,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

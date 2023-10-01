@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './KomikIndo.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -20,18 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class KomikIndo extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'komikindo';
-        super.label = 'KomikIndo';
-        this.tags = [ 'manga', 'indonesian' ];
-        this.url = 'https://komikindo.co';
-        this.path = '/manga-list/?list';
-    }
-}
-*/
