@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './RaikiScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -8,7 +7,7 @@ import * as Common from './decorators/Common';
 @MangaStream.MangaCSS(/^https?:\/\/raikiscan\.com\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -20,18 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class RaikiScan extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'raikiscan';
-        super.label = 'Raiki Scan';
-        this.tags = [ 'manga', 'webtoon', 'spanish' ];
-        this.url = 'https://raikiscan.com';
-        this.path = '/manga/list-mode/';
-    }
-}
-*/

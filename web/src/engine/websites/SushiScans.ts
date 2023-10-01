@@ -5,7 +5,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/sushiscan\.su\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^https?:\/\/sushiscan\.net\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sushiscans', 'Sushi Scans', 'https://sushiscan.su', Tags.Media.Manga, Tags.Language.French);
+        super('sushiscans', 'Sushi Scans (NET)', 'https://sushiscan.net', Tags.Media.Manga, Tags.Language.French);
     }
 
     public override get Icon() {
@@ -30,7 +30,7 @@ class SushiScans extends WordPressMangastream {
         super.id = 'sushiscans';
         super.label = 'Sushi Scans';
         this.tags = [ 'manga', 'french' ];
-        this.url = 'https://sushiscan.su';
+        this.url = 'https://sushiscan.net';
         this.path = '/manga/list-mode/';
     }
 

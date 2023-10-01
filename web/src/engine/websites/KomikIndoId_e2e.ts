@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'komikindoid',
         title: 'KomikIndoId'
-    }/*,
+    },
     container: {
-        url: 'https://komikindo.id/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://komikindo.tv/komik/50kg-cinderella/',
+        id: '/komik/50kg-cinderella/',
+        title: '-50kg Cinderella'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/50kg-cinderella-chapter-1-1/',
+        title: 'Chapter 1.1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 2,
+        size: 57_750,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
