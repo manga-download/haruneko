@@ -4,6 +4,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import * as JSZip from 'jszip';
+import type { Priority } from '../taskpool/TaskPool';
 
 const pagescript = `
     new Promise((resolve, reject) => {
@@ -25,7 +26,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^https?:\/\/modescanlator\.com\/[^/]+\/$/, 'h1.desc__titulo__comic')
 @Common.MangasSinglePageCSS('/todas-as-obras/', 'div.comics__all__box a.titulo__comic__allcomics')
 @Common.ChaptersSinglePageCSS('ul.capitulos__lista a.link__capitulos', ChapterExtractor)
-@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
@@ -53,11 +53,8 @@ export default class extends DecoratableMangaScraper {
                 const zipfile = await JSZip.loadAsync(zipdata);
                 const fileNames = Object.keys(zipfile.files).sort((a, b) => this.extractNumber(a) - this.extractNumber(b));
                 for (const fileName of fileNames) {
-                    const zipEntry = zipfile.files[fileName];
-                    if (zipEntry.name.match(/\.(avif)$/i)) {
-                        const imagebuffer = await zipEntry.async('nodebuffer');
-                        const data = 'data:image/avif;base64,'+ imagebuffer.toString('base64');
-                        pages.push(new Page(this, chapter, new URL(data)));
+                    if (!fileName.match(/\.(s)$/i)) { //if extension is not .s (for svg), its a picture
+                        pages.push(new Page(this, chapter, new URL(zipurl, this.URI), { filename: fileName }));
                     }
                 }
             }
@@ -68,9 +65,20 @@ export default class extends DecoratableMangaScraper {
         }
 
     }
-
     extractNumber(fileName) : number {
         return parseInt(fileName.split(".")[0]);
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        if (page.Link.href.endsWith('.zip')) {
+            const request = new FetchRequest(new URL(page.Link, this.URI).href);
+            const response = await Fetch(request);
+            const zipdata = await response.arrayBuffer();
+            const zipfile = await JSZip.loadAsync(zipdata);
+            const zipEntry = zipfile.files[page.Parameters['filename'] as string];
+            const imagebuffer = await zipEntry.async('nodebuffer');
+            return await Common.GetTypedData(imagebuffer);
+        } else return await Common.FetchImage.call(this, page, priority, signal);
     }
 
 }
