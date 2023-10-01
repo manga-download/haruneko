@@ -2,7 +2,7 @@
 import icon from './MangaPlanet.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 import { FetchCSS, FetchRequest, FetchWindowScript } from '../../FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
@@ -13,8 +13,8 @@ function MangaExtractor(element: HTMLElement) {
 
 @Common.MangaCSS(/^https?:\/\/mangaplanet\.com\/comic\/\S+$/, '.card-body.book-detail h3')
 @Common.MangasMultiPageCSS('/browse/title?ttlpage={page}', 'div#Title .row.book-list',1,1,0, MangaExtractor)
-@SpeedBind.PagesSinglePage()
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.PagesSinglePage()
+@SpeedBinb.ImageDescrambler()
 
 export default class extends DecoratableMangaScraper {
     public constructor() {

@@ -2,7 +2,7 @@ import { Tags } from '../../Tags';
 import icon from './ComicValkyrie.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
@@ -19,8 +19,8 @@ function ChapterExtractor(element: HTMLElement) {
 
 @Common.MangasSinglePageCSS('/list', '.box_wrap .box', MangaExtractor)
 @Common.ChaptersSinglePageCSS('#new_story .title, #back_number .title', ChapterExtractor)
-@SpeedBind.PagesSinglePage()
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.PagesSinglePage()
+@SpeedBinb.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('comicvalkyrie', `Comic Valkyrie`, 'https://www.comic-valkyrie.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);

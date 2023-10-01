@@ -2,7 +2,7 @@ import { Tags } from '../../Tags';
 import icon from './Ohtabooks.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
@@ -13,7 +13,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^https?:\/\/webcomic\.ohtabooks\.com\/\S+\/$/, 'h2.contentTitle')
 @Common.MangasSinglePageCSS('/list/', 'div.bnrList ul li a', MangaExtractor)
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -25,10 +25,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //find real reader url to send to Speedbind, since redirection is done by Javascript
+        //find real reader url to send to SpeedBinb, since redirection is done by Javascript
         const data = await FetchCSS<HTMLBodyElement>(new FetchRequest(chapter.Identifier), 'body');
         const reallink = data[0].innerHTML.match(/location.href='(.*)'/)[1];
-        return await SpeedBind.FetchPagesSinglePage.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
+        return await SpeedBinb.FetchPagesSinglePage.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

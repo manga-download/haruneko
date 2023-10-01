@@ -2,7 +2,7 @@ import { Tags } from '../../Tags';
 import icon from './ComicPolaris.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
@@ -13,8 +13,8 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^https?:\/\/comic-polaris\.jp\/[^/]+\/$/, 'div#contents div.h2_area_comic h2.h2ttl_comic')
 @Common.MangasMultiPageCSS('/wp-admin/admin-ajax.php?action=get_flex_titles_for_toppage&get_num=64&page={page}', 'div.update_work_size div.update_work_info_img a', 1, 1, 0, MangaExtractor)
-@SpeedBind.PagesSinglePage()
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.PagesSinglePage()
+@SpeedBinb.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

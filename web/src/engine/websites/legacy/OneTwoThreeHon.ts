@@ -2,7 +2,7 @@ import { Tags } from '../../Tags';
 import icon from './OneTwoThreeHon.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
@@ -13,8 +13,8 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^https?:\/\/www\.123hon\.com\/[\S]+\/web-comic\/[\S]+\/$/, 'div.title-area h2')
-@SpeedBind.PagesSinglePage()
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.PagesSinglePage()
+@SpeedBinb.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

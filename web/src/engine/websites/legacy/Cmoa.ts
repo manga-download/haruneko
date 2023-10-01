@@ -2,7 +2,7 @@
 import icon from './Cmoa.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 function MangaLabelExtractor(body: HTMLBodyElement) {
     const title = body.querySelector('#GA_this_page_title_name').textContent.trim();
@@ -11,8 +11,8 @@ function MangaLabelExtractor(body: HTMLBodyElement) {
 
 @Common.MangaCSS(/^https?:\/\/www\.cmoa\.jp\/title\/\d+\/$/, 'body', MangaLabelExtractor)
 @Common.MangasNotSupported()
-@SpeedBind.PagesSinglePage()
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.PagesSinglePage()
+@SpeedBinb.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('cmoa', `コミックシーモア (Cmoa)`, 'https://www.cmoa.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);

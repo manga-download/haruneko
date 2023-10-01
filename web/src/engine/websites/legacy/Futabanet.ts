@@ -2,7 +2,7 @@ import { Tags } from '../../Tags';
 import icon from './Futabanet.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
     const title = anchor.querySelector('.m-result-list__title').textContent.trim();
@@ -17,8 +17,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^https?:\/\/gaugau\.futabanet\.jp\/list\/work\/\S+$/, 'h1.detail-ex__title')
 @Common.MangasMultiPageCSS('/list/works?page={page}', 'div.m-result-list__item a', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('section.detail-sec.detail-ex div.detail-ex__btn-item a[href*="reader.futabanet"]', ChapterExtractor)
-@SpeedBind.PagesSinglePage('https://reader.futabanet.jp')
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.PagesSinglePage('https://reader.futabanet.jp')
+@SpeedBinb.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

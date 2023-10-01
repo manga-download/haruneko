@@ -2,7 +2,7 @@
 import icon from './DigitalMargaret.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -18,8 +18,8 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangaCSS(/^https?:\/\/digitalmargaret\.jp\/detail\/\S+\/$/, 'section#product div.content h3')
 @Common.MangasSinglePageCSS('/', 'section#serial ul.serial-list li a', MangaExtractor)
 @Common.ChaptersSinglePageCSS('section#product div.list div.box div.number',ChapterExtractor)
-@SpeedBind.PagesSinglePage()
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.PagesSinglePage()
+@SpeedBinb.ImageDescrambler()
 
 export default class extends DecoratableMangaScraper {
     public constructor() {

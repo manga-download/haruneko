@@ -2,13 +2,13 @@ import { Tags } from '../../Tags';
 import icon from './ComicBrise.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import * as SpeedBind from '../decorators/SpeedBind';
+import * as SpeedBinb from '../decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/www\.comic-brise\.com\/contents\/\S+\/$/, '.post-title')
 @Common.MangasSinglePageCSS('/titlelist', '.list-works a')
-@SpeedBind.PagesSinglePage()
-@SpeedBind.ImageDescrambler()
+@SpeedBinb.PagesSinglePage()
+@SpeedBinb.ImageDescrambler()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('comicbrise', `Comic-Brise`, 'https://www.comic-brise.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
