@@ -1,24 +1,24 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
         id: 'komikcast',
         title: 'KomikCast'
-    }/*,
+    },
     container: {
-        url: 'https://komikcast.me/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://komikcast.vip/komik/swordmasters-youngest-son/',
+        id: '/komik/swordmasters-youngest-son/',
+        title: 'Swordmaster’s Youngest Son'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/chapter/swordmasters-youngest-son-chapter-01-bahasa-indonesia/',
+        title: 'Chapter 01-fix'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 1_133_808,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);

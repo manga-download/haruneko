@@ -2,18 +2,19 @@
 import { Tags } from '../Tags';
 import icon from './MangaKid.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+//import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-
+/*
 @MangaStream.MangaCSS(/^https?:\/\/mangakid\.site\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/manga-lists/')
 @MangaStream.ChaptersSinglePageCSS('div.cl ul li span.leftoff a')
 @MangaStream.PagesSinglePageCSS()
+*/
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangakid', 'MangaKid', 'https://mangakid.site', Tags.Media.Manga, Tags.Language.Indonesian);
+        super('mangakid', 'MangaKid', 'https://mangakid.us', Tags.Media.Manga, Tags.Language.Indonesian);
     }
 
     public override get Icon() {
