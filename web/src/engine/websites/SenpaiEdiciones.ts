@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './SenpaiEdiciones.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -20,18 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class SenpaiEdiciones extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'senpaiediciones';
-        super.label = 'Senpai Ediciones';
-        this.tags = [ 'webtoon', 'spanish' ];
-        this.url = 'https://senpaiediciones.com';
-        this.path = '/manga/list-mode/';
-    }
-}
-*/

@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'readkomik',
         title: 'ReadKomik'
-    }/*,
+    },
     container: {
-        url: 'https://www.readkomik.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://readkomik.com/manga/superhuman-battlefield/',
+        id: '/manga/superhuman-battlefield/',
+        title: 'Superhuman Battlefield'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/shb-chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 77_262,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

@@ -1,14 +1,34 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './ManhwasNet.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/manhwas\.net\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div.listttl ul li a', '/manga-list/?list')
-@MangaStream.ChaptersSinglePageCSS('div#chapter_list span.eps a')
-@MangaStream.PagesSinglePageCSS()
+const pagesScript = `
+new Promise((resolve, reject) => {
+        try {
+            const images = [...document.querySelectorAll('div#chapter_imgs img[src]:not([src=""])')].map(image => image.src);
+            resolve(images);
+        } catch (error) {
+            reject(error);
+        }
+});
+`;
+function MangaExtractor(anchor: HTMLAnchorElement) {
+    const id = anchor.pathname;
+    const title = anchor.querySelector('h3.title').textContent.trim();
+    return { id, title };
+}
+
+function ChapterExtractor(anchor: HTMLAnchorElement) {
+    const id = anchor.pathname;
+    const title = anchor.querySelector('p span').textContent.trim();
+    return { id, title };
+}
+
+@Common.MangaCSS(/^https?:\/\/manhwas\.net\/manga\/[^/]+$/, 'article.anime-single h1.title')
+@Common.MangasMultiPageCSS('/biblioteca?page={page}', 'article.anime a', 1, 1, 0, MangaExtractor)
+@Common.ChaptersSinglePageCSS('li a.fa-book', ChapterExtractor)
+@Common.PagesSinglePageJS(pagesScript, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -20,23 +40,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class ManhwasNet extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'manhwasnet';
-        super.label = 'Manhwas';
-        this.tags = [ 'webtoon', 'hentai', 'spanish' ];
-        this.url = 'https://manhwas.net';
-        this.path = '/manga-list/?list';
-
-        this.queryMangas = 'div.listttl ul li a';
-        this.queryChapters = 'div#chapter_list span.eps a';
-        this.queryChaptersTitle = undefined;
-        this.queryPages = 'div.reader-area img[src]:not([src=""])';
-    }
-}
-*/
