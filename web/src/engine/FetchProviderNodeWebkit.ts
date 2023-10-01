@@ -194,7 +194,7 @@ export async function FetchRegex(request: FetchRequest, regex: RegExp): Promise<
 }
 
 export async function FetchProto<TResult>(request: FetchRequest, prototypes: string, responsetype: string) : Promise<TResult>{
-    const Root = (await protobuf.load(prototypes)).lookupType(responsetype);
+    const Root = protobuf.parse(prototypes, { keepCase: true }).root.lookupType(responsetype);
     const response = await fetch(request);
     const data = await response.arrayBuffer();
     const message = Root.decode(new Uint8Array(data));
