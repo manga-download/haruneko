@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicBrise.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as SpeedBinb from '../decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as SpeedBinb from './decorators/SpeedBinb';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/www\.comic-brise\.com\/contents\/\S+\/$/, '.post-title')
 @Common.MangasSinglePageCSS('/titlelist', '.list-works a')

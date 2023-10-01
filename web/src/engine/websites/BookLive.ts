@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './BookLive.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as SpeedBinb from '../decorators/SpeedBinb';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as SpeedBinb from './decorators/SpeedBinb';
 function ChapterExtractor(element: HTMLElement) {
     const id = '/bviewer/s/?cid=' + element.dataset.title + '_' + element.dataset.vol;
     const title = element.dataset.vol.trim();

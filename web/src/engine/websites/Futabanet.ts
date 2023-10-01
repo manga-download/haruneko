@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Futabanet.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as SpeedBinb from '../decorators/SpeedBinb';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as SpeedBinb from './decorators/SpeedBinb';
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
     const title = anchor.querySelector('.m-result-list__title').textContent.trim();

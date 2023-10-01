@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './OneTwoThreeHon.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as SpeedBinb from '../decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as SpeedBinb from './decorators/SpeedBinb';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     console.log(anchor.pathname);

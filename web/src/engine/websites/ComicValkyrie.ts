@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicValkyrie.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as SpeedBinb from '../decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as SpeedBinb from './decorators/SpeedBinb';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
     const id = new URL(element.querySelector('a').href).pathname.replace('/new.html', '').slice(1);

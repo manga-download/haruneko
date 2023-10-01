@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Ohtabooks.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, type Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as SpeedBinb from '../decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, type Manga, type Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as SpeedBinb from './decorators/SpeedBinb';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;

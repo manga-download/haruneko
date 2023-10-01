@@ -1,9 +1,9 @@
-﻿import { Tags } from '../../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './Cmoa.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as SpeedBinb from '../decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as SpeedBinb from './decorators/SpeedBinb';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 function MangaLabelExtractor(body: HTMLBodyElement) {
     const title = body.querySelector('#GA_this_page_title_name').textContent.trim();
     return title;
