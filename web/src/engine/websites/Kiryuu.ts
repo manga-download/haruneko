@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './Kiryuu.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -20,29 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class Kiryuu extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'kiryuu';
-        super.label = 'Kiryuu';
-        this.tags = [ 'manga', 'indonesian' ];
-        this.url = 'https://kiryuu.id';
-        this.path = '/manga/list-mode/';
-    }
-
-    async _getPages(chapter) {
-        const fakeLinkPatterns = [
-            /[.,]5\.(jpg|png)$/i,
-            /iklan\.(jpg|png)$/i,
-            /zz\.(jpg|png)$/i,
-            /\.filerun\./i
-        ];
-        let pageList = await super._getPages(chapter);
-        return pageList.filter(link => !fakeLinkPatterns.some(pattern => pattern.test(link)));
-    }
-}
-*/

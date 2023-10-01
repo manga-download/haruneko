@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'legacyscans',
         title: 'Legacy-Scans'
-    }/*,
+    },
     container: {
-        url: 'https://legacy-scans.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://legacy-scans.com/comics/reaper-of-the-drifting-moon',
+        id: '/comics/reaper-of-the-drifting-moon',
+        title: 'Reaper of the Drifting Moon'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/comics/reaper-of-the-drifting-moon/chapter/55',
+        title: 'Chapitre 55'
     },
     entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        index: 1,
+        size: 111_768,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);

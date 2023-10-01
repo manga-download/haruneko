@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './MangaKita.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -8,7 +7,7 @@ import * as Common from './decorators/Common';
 @MangaStream.MangaCSS(/^https?:\/\/mangakita\.net\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -20,29 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaKita extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'mangakita';
-        super.label = 'MangaKita';
-        this.tags = [ 'manga', 'indonesian' ];
-        this.url = 'https://mangakita.net';
-        this.path = '/manga/list-mode/';
-    }
-
-    async _getPages(chapter) {
-        const fakeLinkPatterns = [
-            /[.,]5\.(jpg|png)$/i,
-            /iklan\.(jpg|png)$/i,
-            /zz\.(jpg|png)$/i,
-            /\.filerun\./i
-        ];
-        let pageList = await super._getPages(chapter);
-        return pageList.filter(link => !fakeLinkPatterns.some(pattern => pattern.test(link)));
-    }
-}
-*/
