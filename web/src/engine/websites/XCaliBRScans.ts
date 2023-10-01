@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
         const piclist = data.imagz.map(link => link.replace(/\/i\d+\.wp\.com/, '')).filter(link => !link.includes('histats.com'));
         switch (data.scrambled) {
 
-            case 0: //return piclist.map(pic => new Page(this, chapter, new URL(pic, this.URI)));
+            case 0:
             case 1: //Flip each picture, no grouping
                 return piclist.map(pic => {
                     return new Page(this, chapter, new URL(pic, this.URI), { scrambled: data.scrambled });
@@ -110,11 +110,11 @@ export default class extends DecoratableMangaScraper {
         const bitmaps: ImageBitmap[] = [];
 
         switch (page.Parameters.scrambled) {
-            case 0: return blobMainImage;
-            case 1:
+            case 0: return blobMainImage; //No scrambling, return image
+            case 1: //Flip picture
                 bitmaps.push(await createImageBitmap(blobMainImage));
                 return await this.composePuzzle(bitmaps, page.Parameters.scrambled);
-            case 2:
+            case 2://Combine/Flip 2 pictures
             {
                 bitmaps.push(await createImageBitmap(blobMainImage));
                 //fetch second image
