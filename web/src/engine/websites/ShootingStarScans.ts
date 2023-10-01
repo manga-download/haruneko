@@ -1,14 +1,13 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './ShootingStarScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/shootingstarscans\.com\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@Madara.MangaCSS(/^https?:\/\/shootingstarscans\.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="ShootingStar"]')
+@Madara.MangasMultiPageAJAX()
+@Madara.ChaptersSinglePageAJAXv2()
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -20,18 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class ShootingStarScans extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'shootingstarscans';
-        super.label = 'Shooting Star Scans';
-        this.tags = [ 'webtoon', 'english', 'scanlation' ];
-        this.url = 'https://shootingstarscans.com';
-        this.path = '/manga/list-mode/';
-    }
-}
-*/

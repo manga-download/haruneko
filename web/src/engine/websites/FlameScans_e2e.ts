@@ -6,12 +6,12 @@ const config: Config = {
         title: 'Flame Scans'
     },
     container: {
-        url: 'https://flamescans.org/series/1659283321-solo-necromancy/',
-        id: '/series/1659283321-solo-necromancy/',
+        url: 'https://flamescans.org/series/1695463322-solo-necromancy/',
+        id: '/series/1695463322-solo-necromancy/',
         title: 'Solo Necromancy'
     },
     child: {
-        id: '/1659283261-solo-necromancy-chapter-1/',
+        id: '/1695463262-solo-necromancy-chapter-1/',
         title: 'Chapter 1'
     },
     entry: {

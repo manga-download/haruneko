@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'nekomik',
         title: 'Nekomik'
-    }/*,
+    },
     container: {
-        url: 'https://nekomik.com//manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://nekomik.me/manga/peerless-dad/',
+        id: '/manga/peerless-dad/',
+        title: 'Peerless Dad'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/peerless-dad-chapter-00/',
+        title: 'Chapter 00'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 57_374,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
