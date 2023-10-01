@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hikariscan', 'Hikari Scan', 'https://hikariscan.com.br', Tags.Media.Manga, Tags.Language.Portuguese);
+        super('hikariscan', 'Hikari Scan', 'https://hikariscan.com.br', Tags.Media.Manga, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

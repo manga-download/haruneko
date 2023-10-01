@@ -4,21 +4,20 @@ const config: Config = {
     plugin: {
         id: 'manhwaland',
         title: 'Manhwaland'
-    }/*,
+    },
     container: {
-        url: 'https://manhwaland.org/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://manhwaland.lat/manga/got-a-room-uncensored/',
+        id: '/manga/got-a-room-uncensored/',
+        title: 'Got a Room? (Uncensored)'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
-    },
+        id: '/got-a-room-uncensored-chapter-1-a/',
+        title: 'Chapter 1a' },
     entry: {
         index: 0,
-        size: -1,
+        size: 143_057,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
