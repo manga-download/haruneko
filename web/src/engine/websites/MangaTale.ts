@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^https?:\/\/mangatale\.co\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/manga/?list')
+@MangaStream.MangasSinglePageCSS(undefined, '/manga/?list')
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
 @Common.ImageAjax()
