@@ -93,6 +93,7 @@ export { default as FuryoSquad } from './FuryoSquad';
 export { default as Futabanet } from './Futabanet';
 export { default as GateManga } from './GateManga';
 export { default as GDScans } from './GDScans';
+export { default as Getsuaku } from './Getsuaku';
 export { default as GloryManga } from './GloryManga';
 export { default as GogoManga } from './GogoManga';
 export { default as GoldenMangas } from './GoldenMangas';

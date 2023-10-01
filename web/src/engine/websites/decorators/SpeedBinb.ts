@@ -82,6 +82,7 @@ export async function FetchPagesSinglePage(this: MangaScraper, chapter: Chapter,
             Referer: this.URI.href
         } });//referer needed for ManpaPlanet
     const data = await FetchCSS(request, 'div#content.pages');
+    if (data.length == 0) return []; //chapter may be paywalled, no need to throw an error, so quit gracefully
     const el = data[0];
 
     if (el.dataset['ptbinb'] && el.dataset['ptbinbCid']) {
@@ -128,7 +129,7 @@ export function PagesSinglePage(baseUrl = '') {
 /**
 *************************
 *** SpeedBinb v01.6061 ***
-* ** Comic Meteor, Comic Valkyrie, ZeroSum, DigitalMargaRet, ComicBrise
+* ** Comic Meteor, Comic Valkyrie, ZeroSum, DigitalMargaRet, ComicBrise, ComicRide
 *************************
 */
 async function _getPageList_v016061(scraper : MangaScraper, imageConfigurations: HTMLDivElement[], url: string, parent: Chapter): Promise<Page[]> {
@@ -148,6 +149,7 @@ async function _getPageList_v016061(scraper : MangaScraper, imageConfigurations:
  *************************
  *** SpeedBinb v01.6113 ***
  * ** Ohtabooks, Futabanet***
+ * Getsuaku, which is v01.6700
  *************************
  */
 async function getPageList_v016113(scraper: MangaScraper, chapterID: string, apiURL: string, baseURL: string, chapter: Chapter): Promise<Page[]> {
@@ -180,7 +182,7 @@ async function getPageLinks_v016452(scraper: MangaScraper, configuration: Config
     configuration.ctbl = _pt(params.cid, params.sharingKey, configuration.ctbl);
     configuration.ptbl = _pt(params.cid, params.sharingKey, configuration.ptbl);
     //configuration.ServerType = parseInt(configuration.ServerType);
-    if (configuration['ServerType'] === 0) {
+    if (configuration.ServerType === 0) {
         return await getPageLinksSBC_v016452(scraper, configuration, params, baseURL, chapter);
     }
     return Promise.reject(new Error('Content server type not supported!'));
@@ -231,10 +233,10 @@ async function getPageLinks_v016201(scraper : MangaScraper, configuration: Confi
     return Promise.reject(new Error('Content server type not supported!'));
 }
 async function _getPageLinksContent_v016201(scraper: MangaScraper, configuration: Configuration_v016452, u: string, chapter: Chapter): Promise<Page[]> {
-    const uri = new URL(configuration['ContentsServer']);
+    const uri = new URL(configuration.ContentsServer);
     uri.pathname += uri.pathname.endsWith('/') ? '' : '/';
     uri.pathname += 'content';
-    uri.searchParams.set('dmytime', configuration['ContentDate']);
+    uri.searchParams.set('dmytime', configuration.ContentDate);
     uri.searchParams.set('u1', u);
     const data: SBCDATA = await FetchJSON(new FetchRequest(uri.href));
     const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
@@ -281,13 +283,13 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl);
     //configuration.ServerType = parseInt(configuration.ServerType);
 
-    if (configuration['ServerType'] === 0) { //Booklive
+    if (configuration.ServerType === 0) { //Booklive
         return await getPageLinksSBC_v016130(scraper, configuration, baseURL, chapter);
     }
-    if (configuration['ServerType'] === 1) {//Futabanet
+    if (configuration.ServerType === 1) {//Futabanet
         return await getPageLinksContentJS_v016130(scraper, configuration, chapter);
     }
-    if (configuration['ServerType'] === 2) {//MangaPlanet
+    if (configuration.ServerType === 2) {//MangaPlanet
         return await getPageLinksContent_v016130(scraper, configuration, chapter);
     }
     return Promise.reject(new Error('Content server type not supported!'));
@@ -392,10 +394,9 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
 async function process_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     const data: JSONImageData_v016061 = await FetchJSON(new FetchRequest(page.Link.href));
     const fakepage = new Page(scraper, page.Parent as Chapter, new URL(data.resources.i.src, page.Link.href));
-    const views = data.views;
     const imagedata: Blob = await Common.FetchImage.call(scraper, fakepage, priority, signal, detectMimeType);
     const bmpdata = await createImageBitmap(imagedata);
-    return await descramble_v016061(bmpdata, views);
+    return await descramble_v016061(bmpdata, data.views);
 }
 
 async function descramble_v016061(bitmap: ImageBitmap, views: PageView_v016061[]): Promise<Blob> {
