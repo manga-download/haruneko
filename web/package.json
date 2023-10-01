@@ -44,5 +44,6 @@
     },
     "dependencies": {
         "protobufjs": "^7.2.5"
+        "jszip": "^3.10.1"
     }
 }
