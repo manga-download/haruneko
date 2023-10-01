@@ -6,18 +6,18 @@ const config: Config = {
         title: 'Mode Scanlator'
     },
     container: {
-        url: 'https://modescanlator.com/manga/eternal-first-son-in-law/',
-        id: '/manga/eternal-first-son-in-law/',
+        url: 'https://modescanlator.com/eternal-first-son-in-law/',
+        id: '/eternal-first-son-in-law/',
         title: 'Eternal First Son-In-Law',
     },
     child: {
-        id: '/eternal-first-son-in-law-capitulo-277/',
-        title: 'Capítulo 277',
+        id: '/eternal-first-son-in-law/299/',
+        title: 'Capítulo 299',
     },
     entry: {
         index: 0,
-        size: 951_458,
-        type: 'image/jpeg'
+        size: 157_765,
+        type: 'image/avif'
     }
 };
 
