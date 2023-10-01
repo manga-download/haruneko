@@ -1,14 +1,19 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './ReadMNG.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/www\.readmng\.com\/manga\/[^/]+\/$/, 'div.titleArea > h2')
-@MangaStream.MangasSinglePageCSS('.mangaSliderCard a', '/list/')
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+function MangaExtractor(anchor: HTMLAnchorElement) {
+    const id = anchor.pathname;
+    const title = anchor.querySelector('div.postDetail').textContent.trim();
+    return { id, title };
+}
+
+@Common.MangaCSS(/^https?:\/\/www\.readmng\.com\/[^/]+$/, 'div.titleArea > h1')
+@Common.MangasMultiPageCSS('/manga-list/{page}?', '.mangaSliderCard a', 1,1,0, MangaExtractor)
+@Common.ChaptersSinglePageCSS('div#chapters-tabContent div.checkBoxCard a.chnumber', Common.AnchorInfoExtractor(false, 'i'))
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -20,55 +25,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class ReadMNG extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'readmng';
-        super.label = 'ReadMangaToday';
-        this.tags = [ 'manga', 'english' ];
-        this.url = 'https://www.readmng.com';
-        this.requestOptions.headers.set( 'x-referer', this.url);
-
-        this.queryMangas = '.mangaSliderCard a';
-        this.querMangaTitleFromURI = 'div.titleArea > h2';
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(page);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    async _getMangasFromPage(page) {
-        const uri = new URL('/manga-list/' + page, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryMangas);
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.querySelector('.postDetail h2').textContent.trim()
-            };
-        });
-    }
-
-    async _getChapters(manga) {
-        const uri = new URL(manga.id, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, 'a.chnumber');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.childNodes[0].textContent.trim(),
-                language: ''
-            };
-        });
-    }
-}
-*/

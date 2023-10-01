@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './SilenceScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -20,18 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class SilenceScan extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'silencescan';
-        super.label = 'Silence Scan';
-        this.tags = [ 'manga', 'webtoon', 'portuguese', 'scanlation' ];
-        this.url = 'https://silencescan.com.br';
-        this.path = '/manga/list-mode/';
-    }
-}
-*/

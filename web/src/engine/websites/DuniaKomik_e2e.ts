@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Dunia Komik'
     },
     container: {
-        url: 'https://duniakomik.id/manga/please-go-home-akutsu-san/',
+        url: 'https://duniakomik.org/manga/please-go-home-akutsu-san/',
         id: '/manga/please-go-home-akutsu-san/',
         title: 'Please Go Home, Akutsu-san!'
     },

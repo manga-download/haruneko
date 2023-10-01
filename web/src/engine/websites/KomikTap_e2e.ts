@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'komiktap',
         title: 'KomikTap'
-    }/*,
+    },
     container: {
-        url: 'https://komiktap.in/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://komiktap.me/manga/a-sober-and-quiet-mother/',
+        id: '/manga/a-sober-and-quiet-mother/',
+        title: 'A Sober And Quiet Mother'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/a-sober-and-quiet-mother-chapter-1/',
+        title: 'Chapter 1 End',
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 323_135,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

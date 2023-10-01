@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'lelmanga',
         title: 'LELManga'
-    }/*,
+    },
     container: {
-        url: 'https://www.lelmanga.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://www.lelmanga.com/manga/jujutsu-kaisen',
+        id: '/manga/jujutsu-kaisen',
+        title: 'Jujutsu Kaisen'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/jujutsu-kaisen-1/',
+        title: 'Chapitre 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 614_256,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
