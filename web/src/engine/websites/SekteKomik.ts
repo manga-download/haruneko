@@ -1,64 +1,36 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './SekteKomik.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import { type Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/sektekomik\.com\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@Common.MangaCSS(/^https?:\/\/sektekomik\.xyz\/manga\/[^/]+$/, 'div.anime__details__title h3')
+@Common.PagesSinglePageCSS('div.container img[onerror]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sektekomik', 'SEKTEKOMIK.COM', 'https://sektekomik.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
+        super('sektekomik', 'SEKTEKOMIK.XYZ', 'https://sektekomik.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
     }
 
     public override get Icon() {
         return icon;
     }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]>
+    {
+        let mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, '/manga?page={page}', 'div.product__page__content div:not([class*="swiper"]) div div.product__item div.product__item__text a');
+        mangas = mangas.filter((value, index, self) =>
+            index === self.findIndex((t) =>t.Identifier === value.Identifier )
+        );
+        return mangas;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        let chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div.anime__details__episodes a');
+        chapters = chapters.filter((value, index, self) =>
+            index === self.findIndex((t) =>t.Identifier === value.Identifier)
+        );
+        return chapters;
+    }
+
 }
-
-// Original Source
-/*
-class SekteKomik extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'sektekomik';
-        super.label = 'SEKTEKOMIK.COM';
-        this.tags = [ 'webtoon', 'indonesian' ];
-        this.url = 'https://sektekomik.com';
-        this.path = '/manga/list-mode/';
-        this.requestOptions.headers.set('x-referer', this.url);
-    }
-
-    async _getMangas() {
-        let mangaList = [];
-        for (let page = 1, run = true; run; page++) {
-            let mangas = await this._getMangasFromPage(page);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    async _getMangasFromPage(page) {
-        const uri = new URL('/manga/?page=' + page, this.url);
-        const request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'div.listupd div.bs div.bsx > a');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, request.url),
-                title: element.title.trim()
-            };
-        });
-    }
-
-    async _getPages(chapter) {
-        const pages = await super._getPages(chapter);
-        return pages.map(page => this.createConnectorURI(page));
-    }
-}
-*/

@@ -1,37 +1,34 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './PairOfTwo.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/pairof2\.com\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+const pageScript = `
+    new Promise((resolve, reject) => {
+        const pages = [...document.querySelectorAll('div.swiper-slide img')].map(image=> image.src);
+        resolve(pages);
+    })
+`;
+
+function MangaExtractor(element: HTMLDivElement) {
+    return {
+        id: element.querySelector<HTMLAnchorElement>('a').pathname,
+        title: element.querySelector('h2').getAttribute('title').trim()
+    };
+}
+
+@Common.MangaCSS(/^https?:\/\/po2scans\.com\/series\/[^/]+$/, 'div.series-information div.title')
+@Common.MangasSinglePageCSS('/series', 'div.series-list', MangaExtractor)
+@Common.ChaptersSinglePageCSS('div.chap-section div.chap a')
+@Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('pairoftwo', 'Pair of 2', 'https://pairof2.com', Tags.Media.Manga, Tags.Language.English);
+        super('pairoftwo', 'Pair of 2', 'https://po2scans.com', Tags.Media.Manga, Tags.Language.English);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class PairOfTwo extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'pairoftwo';
-        super.label = 'Pair of 2';
-        this.tags = [ 'manga', 'english' ];
-        this.url = 'https://pairof2.com';
-        this.path = '/manga/list-mode/';
-    }
-}
-*/
