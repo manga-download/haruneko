@@ -77,8 +77,8 @@ export default class extends DecoratableMangaScraper {
             const zipfile = await JSZip.loadAsync(zipdata);
             const zipEntry = zipfile.files[page.Parameters['filename'] as string];
             const imagebuffer = await zipEntry.async('nodebuffer');
-            return await Common.GetTypedData(imagebuffer);
-        } else return await Common.FetchImage.call(this, page, priority, signal);
+            return Common.GetTypedData(imagebuffer);
+        } else return Common.FetchImage.call(this, page, priority, signal);
     }
 
 }
