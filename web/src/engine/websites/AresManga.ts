@@ -4,15 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/aresmanga\.com\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
+@MangaStream.MangaCSS(/^https?:\/\/aresnov\.org\/series\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS(undefined, '/series/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('aresmanga', 'Ares Manga', 'https://aresmanga.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
+        super('aresmanga', 'Ares Manga', 'https://aresnov.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
     }
 
     public override get Icon() {
