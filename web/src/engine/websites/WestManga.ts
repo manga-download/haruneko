@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './WestManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -8,7 +7,7 @@ import * as Common from './decorators/Common';
 @MangaStream.MangaCSS(/^https?:\/\/westmanga\.info\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -20,18 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class WestManga extends WordPressMangastream {
-
-    constructor() {
-        super();
-        super.id = 'westmanga';
-        super.label = 'WestManga';
-        this.tags = [ 'manga', 'indonesian' ];
-        this.url = 'https://westmanga.info';
-        this.path = '/manga/list-mode/';
-    }
-}
-*/

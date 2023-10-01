@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
-    const title = anchor.querySelector('div.tt').textContent.trim();
+    const title = anchor.getAttribute('title').trim();
     return {id, title};
 }
 
