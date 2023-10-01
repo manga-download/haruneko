@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Shinigami ID',
     },
     container: {
-        url: 'https://shinigami.ae/series/sss-class-suicide-hunter/',
+        url: 'https://shinigami.sh/series/sss-class-suicide-hunter/',
         id: JSON.stringify({ post: "641", slug: "/series/sss-class-suicide-hunter/" }),
         title: 'SSS-Class Suicide Hunter'
     },

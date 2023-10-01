@@ -12,11 +12,12 @@ const config: Config = {
     },
     child: {
         id: '/chainsaw-man-1/',
-        title: 'Bölüm 1'
+        title: 'Bölüm 1',
+        timeout: 15000
     },
     entry: {
         index: 1,
-        size: 289_310,
+        size: 328_785,
         type: 'image/jpeg'
     }
 };
