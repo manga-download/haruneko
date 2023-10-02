@@ -43,6 +43,7 @@
         "serve:prod": "npm run build && vite preview --port=5000 --strictPort"
     },
     "dependencies": {
+        "protobufjs": "^7.2.5",
         "jszip": "^3.10.1"
     }
 }
