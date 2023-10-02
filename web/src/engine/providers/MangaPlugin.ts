@@ -39,6 +39,9 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
     public abstract FetchPages(chapter: Chapter): Promise<Page[]>;
     public abstract FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
+    public abstract FilterMangas(list: Manga[]): Promise<Manga[]>;
+    public abstract FilterChapters(list: Chapter[]): Promise<Chapter[]>;
+
 }
 
 /**
@@ -75,6 +78,20 @@ export class DecoratableMangaScraper extends MangaScraper {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchImage(_page: Page, _priority: Priority, _signal: AbortSignal): Promise<Blob> {
         throw new Error();
+    }
+
+    public async FilterChapters(list: Chapter[]): Promise<Chapter[]> {
+        return list.filter(
+            (obj, index) =>
+                list.findIndex((item) => item.Identifier === obj.Identifier) === index
+        );
+    }
+
+    public async FilterMangas(list: Manga[]): Promise<Manga[]> {
+        return list.filter(
+            (obj, index) =>
+                list.findIndex((item) => item.Identifier === obj.Identifier) === index
+        );
     }
 }
 
@@ -129,7 +146,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        this._entries = await this.scraper.FetchMangas(this);
+        this._entries = await this.scraper.FilterMangas(await this.scraper.FetchMangas(this));
         const mangas = this._entries.map(entry => {
             return { id: entry.Identifier, title: entry.Title };
         });
@@ -153,7 +170,7 @@ export class Manga extends MediaContainer<Chapter> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        this._entries = await this.scraper.FetchChapters(this);
+        this._entries = await this.scraper.FilterChapters(await this.scraper.FetchChapters(this));
     }
 }
 
