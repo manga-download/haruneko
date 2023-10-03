@@ -12,7 +12,7 @@ import IconClose from '@fluentui/svg-icons/icons/dismiss_square_20_filled.svg?ra
 import IconMenu from '@vscode/codicons/src/icons/menu.svg?raw';
 import IconBookmarkList from '@fluentui/svg-icons/icons/bookmark_multiple_20_regular.svg?raw'; // star_line_horizontal_3_20_regular
 import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw'; // arrow_swap_2-_regular
-import IconWindow from '@fluentui/svg-icons/icons/window_20_regular.svg?raw';
+import IconWindowAd from '@fluentui/svg-icons/icons/window_ad_20_filled.svg?raw';
 import IconSettings from '@vscode/codicons/src/icons/settings.svg?raw';
 import IconMinimize from '@vscode/codicons/src/icons/chrome-minimize.svg?raw';
 import IconMaximize from '@vscode/codicons/src/icons/chrome-maximize.svg?raw';
@@ -76,6 +76,10 @@ const styles: ElementStyles = css`
         position: absolute;
         z-index: 2147483647;
     }
+
+    fluent-menu-item div[slot="start"] {
+        display: flex;
+    }
 `;
 
 const template: ViewTemplate<TitleBar> = html`
@@ -93,7 +97,7 @@ const template: ViewTemplate<TitleBar> = html`
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
             <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Description()}" :checked=${() => window.localStorage.getItem('hakuneko-nosplash') !== 'true'} @change=${(_, ctx) => window.localStorage.setItem('hakuneko-nosplash', (!ctx.event.currentTarget['checked']).toString())}>
-                <div slot="start" :innerHTML=${() => IconWindow}></div>
+                <div slot="start" :innerHTML=${() => IconWindowAd}></div>
                 ${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Label()}
             </fluent-menu-item>
             <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Description()}" @click=${model => model.ShowGlobalSettingsDialog()}>
