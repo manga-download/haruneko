@@ -133,4 +133,9 @@ export abstract class MediaScraper<T extends IMediaContainer> {
     public get Icon(): string {
         return icon;
     }
+
+    public GetUniqueMediaItems<T extends IMediaContainer>(items: Array<T>): Array<T> {
+        return [...new Set(items.map(item => item.Identifier))].map(id => items.find(item => item.Identifier === id));
+    }
+
 }
