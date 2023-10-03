@@ -6,6 +6,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
+import DeProxify from '../transformers/ImageLinkDeProxifier';
 
 type pageScriptResult = {
     imagz: string[],
@@ -74,9 +75,8 @@ export default class extends DecoratableMangaScraper {
 
         const uri = new URL(chapter.Identifier, this.URI);
         const request = new FetchRequest(uri.href);
-        const data = await FetchWindowScript<pageScriptResult>(request, pagescript,2500);
-        // HACK: bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
-        const piclist = data.imagz.map(link => link.replace(/\/i\d+\.wp\.com/, '')).filter(link => !link.includes('histats.com'));
+        const data = await FetchWindowScript<pageScriptResult>(request, pagescript, 2500);
+        const piclist = data.imagz.map(link => DeProxify(new URL(link)).href);
         switch (data.scrambled) {
 
             case 0:
@@ -112,8 +112,7 @@ export default class extends DecoratableMangaScraper {
         switch (page.Parameters.scrambled) {
             case 0: return blobMainImage; //No scrambling, return image
             case 1: //Flip picture
-                bitmaps.push(await createImageBitmap(blobMainImage));
-                return await this.composePuzzle(bitmaps, page.Parameters.scrambled);
+                return await this.flipPicture(await createImageBitmap(blobMainImage));
             case 2://Combine/Flip 2 pictures
             {
                 bitmaps.push(await createImageBitmap(blobMainImage));
@@ -123,41 +122,41 @@ export default class extends DecoratableMangaScraper {
                 const response = await Fetch(request);
                 const data = await response.blob();
                 bitmaps.push(await createImageBitmap(data));
-                return await this.composePuzzle(bitmaps, page.Parameters.scrambled);
+                return await this.composePuzzle(bitmaps);
             }
             default :
         }
 
     }
-    async composePuzzle(bitmaps: ImageBitmap[], scrambleMode : number): Promise<Blob> {
-        switch (scrambleMode) {
-            case 1: //flip the only picture
-                return new Promise(resolve => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = bitmaps[0].width;
-                    canvas.height = bitmaps[0].height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(bitmaps[0], 0, 0, -bitmaps[0].width, bitmaps[0].height);
-                    canvas.toBlob(data => {
-                        resolve(data);
-                    }, 'image/png', parseFloat('90') / 100);
-                });
-            case 2: //flip and combine 2 pictures
-                return new Promise(resolve => {
-                    const canvas = document.createElement('canvas');
-                    const b1 = bitmaps[0];
-                    const b2 = bitmaps[1];
-                    canvas.width = b1.width + b2.width;
-                    canvas.height = b1.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(b2, 0, 0, -b2.width, b2.height);
-                    ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
-                    canvas.toBlob(data => {
-                        resolve(data);
-                    }, 'image/png', parseFloat('90') / 100);
-                });
-        }
+
+    async flipPicture(bitmap: ImageBitmap): Promise<Blob> {
+        return new Promise(resolve => {
+            const canvas = document.createElement('canvas');
+            canvas.width = bitmap.width;
+            canvas.height = bitmap.height;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(-1, 1);
+            ctx.drawImage(bitmap, 0, 0, -bitmap.width, bitmap.height);
+            canvas.toBlob(data => {
+                resolve(data);
+            }, 'image/png', parseFloat('90') / 100);
+        });
+    }
+
+    async composePuzzle(bitmaps: ImageBitmap[]): Promise<Blob> {
+        return new Promise(resolve => {
+            const canvas = document.createElement('canvas');
+            const b1 = bitmaps[0];
+            const b2 = bitmaps[1];
+            canvas.width = b1.width + b2.width;
+            canvas.height = b1.height;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(-1, 1);
+            ctx.drawImage(b2, 0, 0, -b2.width, b2.height);
+            ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
+            canvas.toBlob(data => {
+                resolve(data);
+            }, 'image/png', parseFloat('90') / 100);
+        });
     }
 }
