@@ -6,7 +6,7 @@ const config: Config = {
         title: 'BacaKomik'
     },
     container: {
-        url: 'https://bacakomik.co/komik/tokyo-revengers/',
+        url: 'https://bacakomik.me/komik/tokyo-revengers/',
         id: '/komik/tokyo-revengers/',
         title: 'Tokyo卍Revengers'
     },

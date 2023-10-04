@@ -190,6 +190,7 @@ export function PagesSinglePageJSON(query = queryEpisodeJSON) {
         };
     };
 }
+
 /***********************************************
  ******** Image Data Extraction Methods ********
  ***********************************************/
@@ -202,10 +203,11 @@ export function PagesSinglePageJSON(query = queryEpisodeJSON) {
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, pretendImageElementSource = false): Promise<Blob> {
-    const data: Blob = await Common.FetchImage.call(this, page, priority, signal, detectMimeType, pretendImageElementSource);
+async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+    const data: Blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
     return page.Parameters.scrambled ? await descrambleImage(data) : data;
 }
+
 async function descrambleImage(data: Blob): Promise<Blob> {
     const bitmap = await createImageBitmap(data);
     return new Promise(resolve => {
@@ -250,7 +252,7 @@ export function ImageDescrambler(detectMimeType = false) {
         }
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal, detectMimeType, false);
+                return FetchImage.call(this, page, priority, signal, detectMimeType);
             }
         };
     };

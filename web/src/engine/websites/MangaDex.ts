@@ -234,7 +234,7 @@ export default class extends MangaScraper {
 
         async function download(this: MangaScraper, page: Page, server: string): Promise<Blob> {
             const source = new Page(this, page.Parent as Chapter, new URL(server + page.Parameters.Slug), page.Parameters);
-            const blob: Blob = await Common.FetchImage.call(this, source, priority, signal, false);
+            const blob: Blob = await Common.FetchImageAjax.call(this, source, priority, signal, false);
             (await createImageBitmap(blob)).close();
             return blob;
         }
