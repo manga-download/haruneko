@@ -43,10 +43,10 @@ export default class extends DecoratableMangaScraper {
 
     //Since high resolution is not always available, use the real picture url instead of the forces one in case of failure
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        let blob = await Common.FetchImage.call(this, page, priority, signal);
+        let blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         if (!blob.type.startsWith('image')) {
             const fakepage = new Page(this, page.Parent as Chapter, new URL(page.Parameters.fallbackURL as string));
-            blob = await Common.FetchImage.call(this, fakepage, priority, signal);
+            blob = await Common.FetchImageAjax.call(this, fakepage, priority, signal);
         }
         return blob;
     }

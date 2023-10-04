@@ -5,7 +5,6 @@
         "node": ">=16.20.0",
         "npm": ">=9.5.0"
     },
-    "dependencies": {},
     "devDependencies": {
         "@fluentui/svg-icons": "^1.1.218",
         "@fluentui/web-components": "^2.5.16",
@@ -42,5 +41,9 @@
         "test": "jest --detectOpenHandles --config=test/jest.config.js",
         "serve:dev": "vite --port=3000 --strictPort",
         "serve:prod": "npm run build && vite preview --port=5000 --strictPort"
+    },
+    "dependencies": {
+        "protobufjs": "^7.2.5",
+        "jszip": "^3.10.1"
     }
 }

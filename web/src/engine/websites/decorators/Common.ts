@@ -454,14 +454,14 @@ export function PagesSinglePageJS(script: string, delay = 0) {
  ***********************************************/
 
 /**
- * An extension method to get the image data for the given {@link page}.
+ * An extension method to get the image data for the given {@link page} according to an XHR based-approach.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param page - A reference to the {@link Page} containing the necessary information to acquire the image data
  * @param priority - The importance level for ordering the request for the image data within the internal task pool
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, pretendImageElementSource = false): Promise<Blob> {
+export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const request = new FetchRequest(page.Link.href, {
             signal: signal,
@@ -469,11 +469,6 @@ export async function FetchImage(this: MangaScraper, page: Page, priority: Prior
                 Referer: page.Parameters?.Referer || page.Link.origin,
             }
         });
-        if(pretendImageElementSource) {
-            request.headers.set('Accept', 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8');
-            request.headers.set('Sec-Fetch-Dest', 'image');
-            //request.headers.set('Sec-Fetch-Mode', 'no-cors');
-        }
         const response = await Fetch(request);
         return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
     }, priority, signal);
@@ -490,24 +485,52 @@ export function ImageAjax(detectMimeType = false) {
         }
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal, detectMimeType, false);
+                return FetchImageAjax.call(this, page, priority, signal, detectMimeType);
             }
         };
     };
 }
 
 /**
- * A class decorator that adds the ability to get the image data for a given page by pretending to load the source via an `<IMG>` tag.
+ * An extension method to get the image data for the given {@link page} simulating a request via `<img>` tag in a browser.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param page - A reference to the {@link Page} containing the necessary information to acquire the image data
+ * @param priority - The importance level for ordering the request for the image data within the internal task pool
+ * @param signal - An abort signal that can be used to cancel the request for the image data
+ * @param includeRefererHeader - Corresponds to the `referrerpolicy` attribute of the `<img>` tag, to determine if the Referer header shall be included
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export function ImageElement(detectMimeType = false) {
+export async function FetchImageElement(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, includeRefererHeader = true, detectMimeType = false): Promise<Blob> {
+    return this.imageTaskPool.Add(async () => {
+        const request = new FetchRequest(page.Link.href, {
+            signal: signal,
+            headers: {
+                'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                //'Sec-Fetch-Mode': 'no-cors',
+                'Sec-Fetch-Dest': 'image',
+            }
+        });
+        if (includeRefererHeader) {
+            request.headers.set('Referer', page.Parameters?.Referer ?? page.Link.origin);
+        }
+        const response = await Fetch(request);
+        return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
+    }, priority, signal);
+}
+
+/**
+ * A class decorator that adds the ability to get the image data for a given page by pretending to load the source via an `<IMG>` tag.
+ * @param includeRefererHeader - Corresponds to the `referrerpolicy` attribute of the `<img>` tag, to determine if the Referer header shall be included
+ * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ */
+export function ImageElement(includeRefererHeader = true, detectMimeType = false) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
         }
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal, detectMimeType, true);
+                return FetchImageElement.call(this, page, priority, signal, includeRefererHeader, detectMimeType);
             }
         };
     };
