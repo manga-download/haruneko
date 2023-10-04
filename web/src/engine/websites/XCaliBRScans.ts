@@ -106,7 +106,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blobMainImage = await Common.FetchImage.call(this, page, priority, signal);
+        const blobMainImage = await Common.FetchImageAjax.call(this, page, priority, signal);
         const bitmaps: ImageBitmap[] = [];
 
         switch (page.Parameters.scrambled) {
