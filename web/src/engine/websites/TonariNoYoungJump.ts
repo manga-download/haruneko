@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './TonariNoYoungJump.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as CoreView from '../decorators/CoreView';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as CoreView from './decorators/CoreView';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/tonarinoyj\.jp\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.MangasMultiPageCSS(['/series', '/series/oneshot', '/series/trial'], 'div.serial-contents ul.series-table-list > li.subpage-table-list-item > a', undefined, 'h4.title')
