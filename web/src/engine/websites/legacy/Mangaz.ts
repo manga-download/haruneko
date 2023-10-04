@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImage.call(this, page, priority, signal);
+        const data = await Common.FetchImageAjax.call(this, page, priority, signal);
         const encrypted = await new Response(data).arrayBuffer();
         const iv = Buffer.from(window.btoa(page.Parameters.iv as string), 'base64');
         const key = Buffer.from(page.Parameters.key as string, 'utf-8');

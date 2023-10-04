@@ -48,32 +48,26 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
  */
 export class DecoratableMangaScraper extends MangaScraper {
 
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public ValidateMangaURL(_url: string): boolean {
         return false;
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchManga(_provider: MangaPlugin, _url: string): Promise<Manga> {
         throw new Error();
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchMangas(_provider: MangaPlugin): Promise<Manga[]> {
         throw new Error();
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchChapters(_manga: Manga): Promise<Chapter[]> {
         throw new Error();
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchPages(_chapter: Chapter): Promise<Page[]> {
         throw new Error();
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Base class default implementation
     public FetchImage(_page: Page, _priority: Priority, _signal: AbortSignal): Promise<Blob> {
         throw new Error();
     }
