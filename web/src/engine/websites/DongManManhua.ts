@@ -14,7 +14,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasSinglePageCSS('/dailySchedule', 'div.daily_lst ul.daily_card li a.daily_card_item', MangaExtractor)
 @LineW.ChaptersMultiPageCSS()
 @LineW.PagesSinglePageJS()
-@LineW.ImageDescrambler()
+@LineW.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

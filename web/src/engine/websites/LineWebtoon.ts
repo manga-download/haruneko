@@ -8,7 +8,7 @@ import * as LineW from './decorators/LineWebtoon';
 @Common.MangasNotSupported()
 @LineW.ChaptersMultiPageCSS()
 @LineW.PagesSinglePageJS()
-@LineW.ImageDescrambler()
+@LineW.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 

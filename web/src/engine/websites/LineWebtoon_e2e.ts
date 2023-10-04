@@ -6,13 +6,15 @@ const config = {
         title: 'Line Webtoon',
     },
     container: {
-        url: 'https://translate.webtoons.com/translate/status?webtoonNo=109&episodeNo=458&teamVersion=0&language=ARA',
+        url: 'https://www.webtoons.com/en/romance/lore-olympus/list?title_no=1320',
         id: '/en/romance/lore-olympus/list?title_no=1320' ,
         title: 'Lore Olympus',
+        timeout : 15000
     },
     child: {
         id: '/en/romance/lore-olympus/s3-episode-250/viewer?title_no=1320&episode_no=255',
         title: '#255 - (S3) Episode 250',
+        timeout: 15000
     },
     entry: {
         index: 1,

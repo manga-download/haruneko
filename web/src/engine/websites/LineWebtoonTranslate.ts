@@ -42,7 +42,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a',1,1,0, MangaExtractor)
 @LineW.ChaptersMultiPageCSS()
 @LineW.PagesSinglePageJS(pageScript)
-@LineW.ImageDescrambler()
+@LineW.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);

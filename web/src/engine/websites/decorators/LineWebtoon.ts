@@ -201,8 +201,8 @@ export function PagesSinglePageJS(script = pageScript) {
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, pretendImageElementSource = false): Promise<Blob> {
-    return !page.Parameters ? await Common.FetchImage.call(this, page, priority, signal, detectMimeType, pretendImageElementSource) : await descrambleImage(page);
+async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+    return !page.Parameters ? await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType) : await descrambleImage(page);
 }
 async function descrambleImage(page: Page): Promise<Blob> {
     const canvas = document.createElement('canvas');
@@ -278,14 +278,14 @@ async function _loadImage(url: string): Promise<HTMLImageElement> {
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export function ImageDescrambler(detectMimeType = false) {
+export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);
         }
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal, detectMimeType, false);
+                return FetchImageAjax.call(this, page, priority, signal, detectMimeType);
             }
         };
     };
