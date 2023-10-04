@@ -4,21 +4,22 @@ const config: Config = {
     plugin: {
         id: 'xcalibrscans',
         title: 'xCaliBR Scans'
-    }/*,
+    },
     container: {
-        url: 'https://xcalibrscans.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://xcalibrscans.com/webcomics/manga/above-ten-thousand-people/',
+        id: '/webcomics/manga/above-ten-thousand-people/',
+        title: 'Above Ten Thousand'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/above-ten-thousand-people-chapter-175/',
+        title: 'Chapter 175',
+        timeout : 15000
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        size: 5_771_792,
+        type: 'image/png'
+    }
 };
 
 const fixture = new TestFixture(config);
