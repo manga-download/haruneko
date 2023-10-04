@@ -78,9 +78,11 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Settings_ThemeLuminance_Label: "Theme Helligkeit",
   Frontend_FluentCore_Settings_ThemeLuminance_Description: "Ändert die Helligkeit des Themas",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Liste der Lesezeichen",
-  Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list',
+  Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list on/off',
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: 'Download Manager',
-  Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: 'Toggle the visibility of the download manager',
+  Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: 'Toggle the visibility of the download manager on/off',
+  Frontend_FluentCore_Settings_ShowSplashScreen_Label: 'Show Splash Screen',
+  Frontend_FluentCore_Settings_ShowSplashScreen_Description: 'Toggle the splash screen during application start on/off',
   //
   Frontend_FluentCore_SettingsDialog_Title: "Einstellungen",
   Frontend_FluentCore_SettingsDialog_CloseButton_Label: "Fertig",
