@@ -6,17 +6,17 @@ const config: Config = {
         title: 'Asura Scans',
     },
     container: {
-        url: 'https://asuracomics.com/manga/4243005272-reaper-of-the-drifting-moon/',
-        id: '/manga/4243005272-reaper-of-the-drifting-moon/',
-        title: 'Reaper of the Drifting Moon',
+        url: 'https://asuratoon.com/manga/3787011421-dragon-devouring-mage/',
+        id: '/manga/3787011421-dragon-devouring-mage/',
+        title: 'Dragon-Devouring Mage',
     },
     child: {
-        id: '/4533579728-reaper-of-the-drifting-moon-chapter-0/',
-        title: 'Chapter 0',
+        id: '/5337927378-dragon-devouring-mage-1/',
+        title: 'Chapter 1',
     },
     entry: {
         index: 1,
-        size: 3_140_564,
+        size: 4_377_432,
         type: 'image/jpeg'
     }
 };

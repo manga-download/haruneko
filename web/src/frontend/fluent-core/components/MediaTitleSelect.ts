@@ -251,8 +251,7 @@ export class MediaTitleSelect extends FASTElement {
         try {
             this.updating = true;
             await this.container?.Update();
-            // TODO: Magic string property name is troublesome for refactoring, find a `nameof` replacement
-            Observable.getNotifier(this).notify('container');
+            this.containerChanged();
         } catch(error) {
             console.warn(error);
         } finally {
