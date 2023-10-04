@@ -256,12 +256,12 @@ async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter): Pr
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-    let data = await Common.FetchImage.call(this, page, priority, signal);
+async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    let data = await Common.FetchImageAjax.call(this, page, priority, signal);
     if (data.type === 'text/html') {
         const newUrl = new URL(page.Link.href.replace('/hq', '/mq'));
         const newpage = new Page(this, page.Parent as Chapter, newUrl);
-        data = await Common.FetchImage.call(this, newpage, priority, signal);
+        data = await Common.FetchImageAjax.call(this, newpage, priority, signal);
     }
     return data;
 }
@@ -276,7 +276,7 @@ export function ImageAjax() {
         }
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal);
+                return FetchImageAjax.call(this, page, priority, signal);
             }
         };
     };
