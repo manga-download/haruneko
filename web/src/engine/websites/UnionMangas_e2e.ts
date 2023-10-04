@@ -7,8 +7,8 @@ const config = {
         //timeout : 25000 //homepage load is damn slow in real browser
     },
     container: {
-        url: 'https://guimah.com/perfil/V1lmMXhZa1NEdWJicUhxYUdRPT0=',
-        id: '/perfil/V1lmMXhZa1NEdWJicUhxYUdRPT0=',
+        url: 'https://guimah.com/manga/one-piece',
+        id: '/manga/one-piece',
         title: 'One Piece'
     },
     child: {
