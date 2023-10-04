@@ -110,6 +110,8 @@ export enum VariantResourceKey {
     Frontend_FluentCore_Settings_ShowBookmarksPanel_Description = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Description',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Label = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Label',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Description = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Description',
+    Frontend_FluentCore_Settings_ShowSplashScreen_Label = 'Frontend_FluentCore_Settings_ShowSplashScreen_Label',
+    Frontend_FluentCore_Settings_ShowSplashScreen_Description = 'Frontend_FluentCore_Settings_ShowSplashScreen_Description',
 
     Frontend_FluentCore_SettingsDialog_Title = 'Frontend_FluentCore_SettingsDialog_Title',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label = 'Frontend_FluentCore_SettingsDialog_CloseButton_Label',

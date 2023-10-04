@@ -87,9 +87,11 @@ const translations: IVariantResource = {
     Frontend_FluentCore_Settings_ThemeLuminance_Label: 'Theme Luminance',
     Frontend_FluentCore_Settings_ThemeLuminance_Description: 'Change the lightness/darkness of the theme',
     Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: 'Bookmark List',
-    Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list',
+    Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list on/off',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: 'Download Manager',
-    Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: 'Toggle the visibility of the download manager',
+    Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: 'Toggle the visibility of the download manager on/off',
+    Frontend_FluentCore_Settings_ShowSplashScreen_Label: 'Show Splash Screen',
+    Frontend_FluentCore_Settings_ShowSplashScreen_Description: 'Toggle the splash screen during application start on/off',
     //
     Frontend_FluentCore_SettingsDialog_Title: 'Settings',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label: 'Done',

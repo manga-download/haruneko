@@ -43,7 +43,7 @@ async function InitializeNodeWebkit(info: PlatformInfo) {
 
     const nwWindow = nw.Window.get();
 
-    if(window.localStorage.getItem('hakuneko-dev-nosplash') === 'true') {
+    if(window.localStorage.getItem('hakuneko-nosplash') === 'true') {
         nwWindow.show();
     } else {
         ShowNodeWebkitSplashScreen(nwWindow, FrontendController.FrontendLoaded, 7500);
