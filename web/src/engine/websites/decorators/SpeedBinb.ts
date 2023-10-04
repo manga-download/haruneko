@@ -394,7 +394,7 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
 async function process_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     const data: JSONImageData_v016061 = await FetchJSON(new FetchRequest(page.Link.href));
     const fakepage = new Page(scraper, page.Parent as Chapter, new URL(data.resources.i.src, page.Link.href));
-    const imagedata: Blob = await Common.FetchImage.call(scraper, fakepage, priority, signal, detectMimeType);
+    const imagedata: Blob = await Common.FetchImageAjax.call(scraper, fakepage, priority, signal, detectMimeType);
     const bmpdata = await createImageBitmap(imagedata);
     return await descramble_v016061(bmpdata, data.views);
 }
@@ -425,7 +425,7 @@ async function descramble_v016061(bitmap: ImageBitmap, views: PageView_v016061[]
 }
 
 async function process_v016130(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType: boolean): Promise<Blob> {
-    const imagedata: Blob = await Common.FetchImage.call(scraper, page, priority, signal, detectMimeType);
+    const imagedata: Blob = await Common.FetchImageAjax.call(scraper, page, priority, signal, detectMimeType);
     const descrambleKeyPair: DescrambleKP = JSON.parse(window.atob(page.Link.hash.slice(1)));
     const bmpdata = await createImageBitmap(imagedata);
     return await descramble_v016130(bmpdata, descrambleKeyPair);
