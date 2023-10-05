@@ -222,7 +222,7 @@ export default class extends DecoratableMangaScraper {
             if (data.pages) {
                 return data.pages
                     .filter(page => page.image && page.image.imageUrl)
-                    .map(page => new Page(this, chapter, new URL(page.image.imageUrl), { encryptionKey: page.image.encryptionKey }));//this.createConnectorURI(page.image));
+                    .map(page => new Page(this, chapter, new URL(page.image.imageUrl), { encryptionKey: page.image.encryptionKey }));
             }
         }
 
