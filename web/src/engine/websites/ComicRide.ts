@@ -21,7 +21,7 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangasSinglePageCSS('/', 'ul li.p-update-list__item', MangaExtractor)
 @Common.ChaptersSinglePageCSS('article.p-modal-org', ChapterExtractor)
 @SpeedBinb.PagesSinglePage()
-@SpeedBinb.ImageDescrambler()
+@SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('comicride', `ComicRide`, 'https://www.comicride.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);

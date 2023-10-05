@@ -18,7 +18,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/list/works?page={page}', 'div.m-result-list__item a', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('section.detail-sec.detail-ex div.detail-ex__btn-item a[href*="reader.futabanet"]', ChapterExtractor)
 @SpeedBinb.PagesSinglePage('https://reader.futabanet.jp')
-@SpeedBinb.ImageDescrambler()
+@SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

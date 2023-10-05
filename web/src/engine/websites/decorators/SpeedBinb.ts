@@ -458,7 +458,7 @@ async function descramble_v016130(bitmap: ImageBitmap, keys: DescrambleKP): Prom
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export function ImageDescrambler(detectMimeType = false) {
+export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         if (context && context.kind !== 'class') {
             throw new Error(context.name);

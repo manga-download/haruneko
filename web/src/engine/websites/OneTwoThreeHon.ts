@@ -14,7 +14,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^https?:\/\/www\.123hon\.com\/[\S]+\/web-comic\/[\S]+\/$/, 'div.title-area h2')
 @SpeedBinb.PagesSinglePage()
-@SpeedBinb.ImageDescrambler()
+@SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -40,8 +40,8 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS(request, 'div.read-episode li');
         return data.map(element => {
             if (element.querySelector('a')) { // otherwise chapter not available
-                return new Chapter(this, manga, new URL(element.querySelector('a').href.replace(/index.html$/, ''), this.URI).href, element.innerText.match(/\s*(.*?)\s+/)[1]);
+                return new Chapter(this, manga, new URL(element.querySelector('a').pathname.replace(/index.html$/, ''), this.URI).pathname, element.innerText.match(/\s*(.*?)\s+/)[1]);
             }
-        }).filter(element => element !== undefined).filter(element => !/#comics-store/.test(element.Identifier));
+        }).filter(element => element !== undefined).filter(element => element.Identifier != '/');
     }
 }

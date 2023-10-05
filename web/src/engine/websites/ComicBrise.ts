@@ -8,7 +8,7 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 @Common.MangaCSS(/^https?:\/\/www\.comic-brise\.com\/contents\/\S+\/$/, '.post-title')
 @Common.MangasSinglePageCSS('/titlelist', '.list-works a')
 @SpeedBinb.PagesSinglePage()
-@SpeedBinb.ImageDescrambler()
+@SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('comicbrise', `Comic-Brise`, 'https://www.comic-brise.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
         const request = new FetchRequest(uri.href);
         const data = await FetchCSS(request, '.modal.modal-chapter .modal-body');
         return data.reverse()
-            .filter(e => e.querySelector(".banner-trial img").getAttribute("alt") == "FREE")
+            //.filter(e => e.querySelector(".banner-trial img").getAttribute("alt") == "FREE") //dont filter for free chapter
             .map(element => new Chapter(this, manga, element.querySelector<HTMLAnchorElement>('.banner-trial a').pathname, element.querySelector('.primary-title').textContent.trim()));
     }
 }
