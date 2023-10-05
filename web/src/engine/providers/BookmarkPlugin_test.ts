@@ -4,6 +4,7 @@ import { Bookmark, BookmarkPlugin } from './BookmarkPlugin';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import { Store, type StorageController } from '../StorageController';
 import type { PluginController } from '../PluginController';
+import type { InteractiveFileContentProvider } from '../InteractiveFileContentProvider';
 
 class TestFixture {
 
@@ -193,7 +194,7 @@ describe('BookmarkPlugin', () => {
             ] });
 
             let updatedEntries: Bookmark[];
-            const testee = new BookmarkPlugin(mockStorageController, mockPluginController);
+            const testee = new BookmarkPlugin(mockStorageController, mockPluginController, mock<InteractiveFileContentProvider>());
             testee.EntriesUpdated.Subscribe((_, args) => updatedEntries = args);
             await new Promise(resolve => setTimeout(resolve, 50));
 

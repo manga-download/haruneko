@@ -7,6 +7,7 @@ import { PluginController } from './PluginController';
 import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
+import { InteractiveFileContentProvider } from './InteractiveFileContentProvider';
 import { SettingsManager } from './SettingsManager';
 import { CreatePlatformIPC } from './ipc/InterProcessCommunicationFactory';
 import { DownloadManager } from './DownloadManager';
@@ -29,7 +30,7 @@ export class HakuNeko {
         this.#storageController = CreateStorageController(info);
         this.#settingsManager = new SettingsManager(this.#storageController);
         this.#pluginController = new PluginController(this.#storageController, this.#settingsManager);
-        this.#bookmarkPlugin = new BookmarkPlugin(this.#storageController, this.#pluginController);
+        this.#bookmarkPlugin = new BookmarkPlugin(this.#storageController, this.#pluginController, new InteractiveFileContentProvider());
         this.#itemflagManager = new ItemflagManager(this.#storageController);
         this.#downloadManager = new DownloadManager(this.#storageController);
     }

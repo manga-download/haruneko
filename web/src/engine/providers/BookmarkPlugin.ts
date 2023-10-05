@@ -1,21 +1,29 @@
 import type { PluginController } from '../PluginController';
 import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaPlugin';
 import { type StorageController, Store } from '../StorageController';
+import type { InteractiveFileContentProvider } from '../InteractiveFileContentProvider';
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import icon from '../../img/warning.webp';
+
+const defaultBookmarkFileType = {
+    description: 'HakuNeko Bookmarks',
+    accept: {
+        'application/json': [ '.bookmarks' ]
+    }
+};
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     public readonly EntriesUpdated: Event<typeof this, Bookmark[]> = new Event<typeof this, Bookmark[]>();
 
-    constructor(private readonly storage: StorageController, private readonly plugins: PluginController) {
+    constructor(private readonly storage: StorageController, private readonly plugins: PluginController, private readonly fileIO: InteractiveFileContentProvider) {
         super('bookmarks', 'Bookmarks');
         this.Load();
     }
 
     public get Entries(): Bookmark[] {
-        return this._entries.sort((a, b) => a.Title.localeCompare(b.Title));
+        return this._entries.sort((self, other) => self.Title.localeCompare(other.Title));
     }
 
     private OnBookmarkChangedCallback(sender: Bookmark): void {
@@ -44,6 +52,38 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
         this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
         this.EntriesUpdated.Dispatch(this, this.Entries);
+    }
+
+    public async Import() {
+        // TODO: Error Handling
+        const data = await this.fileIO.LoadFile({
+            types: [ defaultBookmarkFileType ]
+        });
+        const entries = JSON.parse(await data.text()) as Array<unknown>;
+        // TODO: Detect bookmark format and select converter (e.g., HakuNeko Legacy)
+        const bookmarks = entries
+            .map(entry => this.Deserialize(entry as BookmarkSerialized))
+            .filter(entry => !this.Entries.some(bookmark => bookmark.IsSameAs(entry)));
+        for(const bookmark of bookmarks) {
+            await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
+        }
+        await this.Load();
+    }
+
+    public async Export() {
+        // TODO: Error Handling
+        const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
+        /*
+        bookmarks.forEach(bookmark => {
+            bookmark.LastKnownEntries.IdentifierHashes = [];
+            bookmark.LastKnownEntries.TitleHashes = [];
+        });
+        */
+        const data = new Blob([ JSON.stringify(bookmarks, null, 2) ], { type: 'application/json' });
+        await this.fileIO.SaveFile(data, {
+            suggestedName: `HakuNeko (${new Date().toISOString().split('T').shift()}).bookmarks`,
+            types: [ defaultBookmarkFileType ]
+        });
     }
 
     private Serialize(bookmark: Bookmark): BookmarkSerialized {
