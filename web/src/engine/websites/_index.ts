@@ -413,6 +413,7 @@ export { default as YawarakaSpirits } from './YawarakaSpirits';
 export { default as YugenMangasES } from './YugenMangasES';
 export { default as YugenMangasPT } from './YugenMangasPT';
 export { default as YuriVerso } from './YuriVerso';
+export { default as Zebrack } from './Zebrack';
 export { default as ZinManga } from './ZinManga';
 // Legacy Websites
 export { default as AkaiYuhiMun } from './legacy/AkaiYuhiMun';
