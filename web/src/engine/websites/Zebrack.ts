@@ -110,13 +110,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/zebrack-comic\.shueisha\.co\.jp\/(title|gravure|magazine)\/\d+(\/(issue|volume)\/\d+)?/.test(url);
+        return /https?:\/\/zebrack-comic\.shueisha\.co\.jp\/(title|gravure|magazine)\/\d+(\/(issue|volume|volume_list)\/\d+)?/.test(url);
     }
-
-    //title : https://zebrack-comic.shueisha.co.jp/title/5123
-    ///gravure : https://zebrack-comic.shueisha.co.jp/gravure/2188
-    //Magazine : https://zebrack-comic.shueisha.co.jp/magazine/1/issue/14486/detail
-    //Volume : https://zebrack-comic.shueisha.co.jp/title/46119/volume/178046
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
@@ -216,7 +211,8 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const [type, titleId, chapterId] = chapter.Identifier.split('/');
         const request = new FetchRequest(this.URI.href);
-        const secretKey = await FetchWindowScript<string>(request, 'localStorage.getItem("device_secret_key") || ""');
+        const secretKey = await FetchWindowScript<string>(request, `localStorage.getItem('device_secret_key') || ''`);
+
         if (type === 'chapter') {
             const data = await this.fetchChapterViewer(titleId, chapterId, secretKey);
             if (data.pages) {
@@ -324,7 +320,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const key: string = page.Parameters ? page.Parameters['encryptionKey'] as string : undefined;
+        const key: string = page.Parameters['encryptionKey'] as string;
         if (!key) return data;
         const encrypted = await new Response(data).arrayBuffer();
         const decrypted = XORDecrypt(new Uint8Array(encrypted), key);

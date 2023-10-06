@@ -1,6 +1,7 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+const fixtureMagazine = new TestFixture ({
+
     plugin: {
         id: 'zebrack',
         title: 'Zebrack(ゼブラック)'
@@ -19,7 +20,74 @@ const config: Config = {
         size: 485_738,
         type: 'image/jpeg'
     }
-};
+});
+describe(fixtureMagazine.Name, () => fixtureMagazine.AssertWebsite());
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+const fixtureTitle = new TestFixture({
+    plugin: {
+        id: 'zebrack',
+        title: 'Zebrack(ゼブラック)'
+    },
+    container: {
+        url: 'https://zebrack-comic.shueisha.co.jp/title/5123',
+        id: '/title/5123',
+        title: 'アオのハコ'
+    },
+    child: {
+        id: 'chapter/5123/132107',
+        title: '#1 千夏先輩'
+    },
+    entry: {
+        index: 0,
+        size: 88_836,
+        type: 'image/jpeg'
+    }
+
+});
+describe(fixtureTitle.Name, () => fixtureTitle.AssertWebsite());
+
+const fixtureGravure = new TestFixture({
+    plugin: {
+        id: 'zebrack',
+        title: 'Zebrack(ゼブラック)'
+    },
+    container: {
+        url: 'https://zebrack-comic.shueisha.co.jp/gravure/2188',
+        id: '/gravure/2188',
+        title: '馬場ふみか 「Asian Rendez-Vous」'
+    },
+    child: {
+        id: 'gravure/2188',
+        title: '馬場ふみか 「Asian Rendez-Vous」'
+    },
+    entry: {
+        index: 0,
+        size: 197_698,
+        type: 'image/jpeg'
+    }
+
+});
+describe(fixtureGravure.Name, () => fixtureGravure.AssertWebsite());
+
+const fixtureVolume = new TestFixture({
+    plugin: {
+        id: 'zebrack',
+        title: 'Zebrack(ゼブラック)'
+    },
+    container: {
+        url: 'https://zebrack-comic.shueisha.co.jp/title/46119/volume/178046',
+        id: '/title/46119/volume/178046',
+        title: ''
+    },
+    child: {
+        id: 'volume/46119/178046',
+        title: 'テンマクキネマ 1'
+    },
+    entry: {
+        index: 0,
+        size: 276_381,
+        type: 'image/jpeg'
+    }
+
+});
+describe(fixtureVolume.Name, () => fixtureGravure.AssertWebsite());
