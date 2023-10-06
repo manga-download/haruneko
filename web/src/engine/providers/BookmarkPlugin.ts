@@ -307,7 +307,7 @@ export class Bookmark extends MediaContainer<IMediaChild> {
     }
 }
 
-type BookmarkSerialized = {
+export type BookmarkSerialized = {
     Created: number,
     Updated: number,
     Title: string,
