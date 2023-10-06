@@ -1,6 +1,7 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const fixtureMagazine = new TestFixture ({
+
     plugin: {
         id: 'zebrack',
         title: 'Zebrack(ゼブラック)'

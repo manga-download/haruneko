@@ -212,6 +212,7 @@ export default class extends DecoratableMangaScraper {
         const [type, titleId, chapterId] = chapter.Identifier.split('/');
         const request = new FetchRequest(this.URI.href);
         const secretKey = await FetchWindowScript<string>(request, `localStorage.getItem('device_secret_key') || ''`);
+
         if (type === 'chapter') {
             const data = await this.fetchChapterViewer(titleId, chapterId, secretKey);
             if (data.pages) {
