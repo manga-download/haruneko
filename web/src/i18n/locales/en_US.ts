@@ -237,8 +237,8 @@ const translations: IVariantResource = {
 
     // [SECTION]: Plugins
 
-    Plugin_Settings_Throttling: 'Throttle Downloads [ms]',
-    Plugin_Settings_ThrottlingInfo: '...',
+    Plugin_Settings_ThrottlingDownloads: 'Throttle Downloads [ms]',
+    Plugin_Settings_ThrottlingDownloadsInfo: '...',
 
     Plugin_Common_MangasNotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
     Plugin_Common_ChapterNotAvailable : 'The chapter is not available (not purchased/unlocked/public) !',
