@@ -18,7 +18,7 @@ function ChapterExtractor(element: HTMLElement, manga: Manga) {
 @CoreView.MangasMultiPageCSS(['/series/smaga', '/series/bmaga', '/series/others'], 'article.serial-series-contents ul.serial-series-list > li.serial-series-item > a', undefined, CoreView.queryMangaTitle, MangaExtractor)
 @CoreView.ChaptersSinglePageCSS(CoreView.queryChapters, ChapterExtractor)
 @CoreView.PagesSinglePageJSON()
-@CoreView.ImageDescrambler()
+@CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
