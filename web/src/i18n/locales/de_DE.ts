@@ -212,6 +212,8 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   // [SECTION]: Plugins
   Plugin_Settings_ThrottlingDownloads: 'Throttle Downloads [ms]',
   Plugin_Settings_ThrottlingDownloadsInfo: '...',
+  Plugin_Settings_ThrottlingInteraction: 'Interaction Rate Limit [requests/minute]',
+  Plugin_Settings_ThrottlingInteractionInfo: 'Limit the number of requests to this website to prevent being blocked or banned',
   Plugin_Common_MangasNotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
   Plugin_Common_ChapterNotAvailable: 'The chapter is not available (not purchased/unlocked/public) !',
   Plugin_SheepScanlations_Settings_Username: 'Username',
