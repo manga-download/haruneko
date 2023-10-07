@@ -3,6 +3,7 @@ export { default as AGCScanlation } from './AGCScanlation';
 export { default as AkuManga } from './AkuManga';
 export { default as AlliedFansub } from './AlliedFansub';
 export { default as AllPornComic } from './AllPornComic';
+export { default as Alphapolis } from './Alphapolis';
 export { default as AnataNoMotokare } from './AnataNoMotokare';
 export { default as Anikiga } from './Anikiga';
 export { default as Anisamanga } from './Anisamanga';
@@ -418,7 +419,6 @@ export { default as ZinManga } from './ZinManga';
 // Legacy Websites
 export { default as AkaiYuhiMun } from './legacy/AkaiYuhiMun';
 export { default as AllHentai } from './legacy/AllHentai';
-export { default as Alphapolis } from './legacy/Alphapolis';
 export { default as AMAScan } from './legacy/AMAScan';
 export { default as AnimaRegia } from './legacy/AnimaRegia';
 export { default as AnimeCenterScan } from './legacy/AnimeCenterScan';
