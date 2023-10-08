@@ -9,9 +9,9 @@ function ImageExtractor(node: HTMLImageElement) {
 
 @Common.MangaCSS(/^https?:\/\/doujins\.com\/[^/]+/, 'head title')
 @Common.MangasNotSupported()
+// TODO: Consider using decorator Common.ChaptersUniqueFromManga(...)
 @Common.PagesSinglePageCSS('img.doujin', ImageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

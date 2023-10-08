@@ -261,8 +261,10 @@ export enum VariantResourceKey {
 
 // [SECTION]: Websites (Common)
 export enum VariantResourceKey {
-    Plugin_Settings_Throttling = 'Plugin_Settings_Throttling',
-    Plugin_Settings_ThrottlingInfo = 'Plugin_Settings_ThrottlingInfo',
+    Plugin_Settings_ThrottlingDownloads = 'Plugin_Settings_ThrottlingDownloads',
+    Plugin_Settings_ThrottlingDownloadsInfo = 'Plugin_Settings_ThrottlingDownloadsInfo',
+    Plugin_Settings_ThrottlingInteraction = 'Plugin_Settings_ThrottlingInteraction',
+    Plugin_Settings_ThrottlingInteractionInfo = 'Plugin_Settings_ThrottlingInteractionInfo',
     Plugin_Common_MangasNotSupported = 'Plugin_Common_MangasNotSupported',
     Plugin_Common_ChapterNotAvailable = 'Plugin_Common_ChapterNotAvailable'
 }
