@@ -3,7 +3,6 @@ import icon from './UnionMangas.webp';
 import { type Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
-import { Fetch, FetchRequest } from '../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/unionmangasbr\.top\/manga\//, 'div.manga-perfil-novo div.row div.col-md-12 h2')
 @Common.MangasMultiPageCSS('/lista-mangas/visualizacoes/{page}', 'div.tamanho-bloco-perfil div.lista-itens > a:last-of-type')
@@ -22,7 +21,6 @@ export default class extends DecoratableMangaScraper {
 
     //override Initialize because website is so damn slow, probably because ads and tracking
     public override async Initialize(): Promise<void> {
-        await Fetch(new FetchRequest(this.URI.href));
     }
 
     //chapters filtering because there are dupe, try My hero Academia
