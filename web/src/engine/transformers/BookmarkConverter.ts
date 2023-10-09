@@ -1,4 +1,4 @@
-import type { BookmarkSerialized } from "../providers/BookmarkPlugin";
+import type { BookmarkSerialized } from '../providers/BookmarkPlugin';
 
 const legacyWebsiteIdentifierMap = {
     'heavenmanga': 'mytoon',
@@ -15,21 +15,25 @@ type BookmarkLegacy = {
     };
 };
 
-function GetKeys(data: unknown): string {
-    return Object.keys(data).sort().join('|');
+function GetKeys(data: unknown, prefix = ''): string {
+    return Object.keys(data).map(key => {
+        const value = data[key];
+        const isObject = typeof value === 'object' && !Array.isArray(value) && value !== null;
+        return isObject ? GetKeys(value, key + '.') : prefix + key;
+    }).sort().join(', ');
 }
 
-function IsSerializedBookmarkFormat(data: unknown): boolean {
-    return GetKeys(data) === 'Created|Info|LastKnownEntries|Media|Title|Updated';
+function IsSerializedBookmarkFormat(data: unknown): data is BookmarkSerialized {
+    return GetKeys(data) === 'Created, Info.EntryID, Info.ProviderID, LastKnownEntries.IdentifierHashes, LastKnownEntries.TitleHashes, Media.EntryID, Media.ProviderID, Title, Updated';
 }
 
-function IsLegacyBookmarkFormat(data: unknown): boolean {
-    return GetKeys(data) === 'key|title';
+function IsLegacyBookmarkFormat(data: unknown): data is BookmarkLegacy {
+    return GetKeys(data) === 'key.connector, key.manga, title.connector, title.manga';
 }
 
 export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
     if(IsSerializedBookmarkFormat(data)) {
-        return data as BookmarkSerialized;
+        return data;
     }
 
     const bookmark: BookmarkSerialized = {
@@ -51,10 +55,9 @@ export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
     };
 
     if(IsLegacyBookmarkFormat(data)) {
-        const entry = data as BookmarkLegacy;
-        bookmark.Media.ProviderID = legacyWebsiteIdentifierMap[entry.key.connector] ?? entry.key.connector;
-        bookmark.Media.EntryID = entry.key.manga;
-        bookmark.Title = entry.title.manga;
+        bookmark.Media.ProviderID = legacyWebsiteIdentifierMap[data.key.connector] ?? data.key.connector;
+        bookmark.Media.EntryID = data.key.manga;
+        bookmark.Title = data.title.manga;
         return bookmark;
     }
 
