@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './GekkouScans.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Madara from '../decorators/WordPressMadara';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Madara from './decorators/WordPressMadara';
+import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^https?:\/\/gekkou\.com\.br\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
