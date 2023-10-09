@@ -1,8 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './LELScan.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
+import type { Priority } from '../taskpool/TaskPool';
 
 function ChapterExtractor(option: HTMLOptionElement) {
     const id = new URL(option.value).pathname;
@@ -19,7 +20,6 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^https?:\/\/lelscans\.net\/lecture[^/]+$/, 'meta[name="lelscan"]')
 @Common.MangasSinglePageCSS('', 'div.outil_lecture ul li a', MangaExtractor)
 @Common.ChaptersSinglePageCSS('div#header-image form select:first-of-type option', ChapterExtractor)
-@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -34,13 +34,13 @@ export default class extends DecoratableMangaScraper {
         const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
         let data = await FetchCSS<HTMLAnchorElement>(request, 'div#navigation a');
         data = data.filter(element => parseInt(element.text.trim()));
-        const pages = [];
-        for (const url of data) {
-            const page = await FetchCSS<HTMLImageElement>(new FetchRequest(url.href), 'div#image img');
-            const image = new URL(page[0].src);
-            pages.push(new Page(this, chapter, new URL(image.pathname, this.URI)));
-        }
-        return pages;
-
+        return data.map(page => new Page(this, chapter, new URL(page.pathname, this.URI)));
     }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const fakechapter = new Chapter(this, page.Parent.Parent as Manga, page.Link.href, '');
+        const image = (await Common.FetchPagesSinglePageCSS.call(this, fakechapter, 'div#image img'))[0];
+        return await Common.FetchImageAjax.call(this, image, priority, signal, false);
+    }
+
 }

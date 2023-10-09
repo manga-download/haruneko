@@ -1,7 +1,7 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicExtra.webp';
-import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname + '/full';
