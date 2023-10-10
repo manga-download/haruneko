@@ -2,6 +2,8 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import S from '../services/StateService';
 
 // See: https://icon-sets.iconify.design/fluent/
+import BookmarksImport from '@fluentui/svg-icons/icons/arrow_import_20_filled.svg?raw';
+import BookmarksExport from '@fluentui/svg-icons/icons/arrow_export_20_filled.svg?raw';
 /*
 import IconMinimize from '@fluentui/svg-icons/icons/subtract_20_filled.svg?raw';
 import IconMaximize from '@fluentui/svg-icons/icons/window_20_filled.svg?raw'; // full_screen_maximize, maximize, square
@@ -105,9 +107,11 @@ const template: ViewTemplate<TitleBar> = html`
                 ${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
             </fluent-menu-item>
             <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ImportBookmarks()}>
+                <div slot="start" :innerHTML=${() => BookmarksImport}></div>    
                 ${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
             </fluent-menu-item>
             <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Description()}" @click=${model => model.ExportBookmarks()}>
+                <div slot="start" :innerHTML=${() => BookmarksExport}></div>   
                 ${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
