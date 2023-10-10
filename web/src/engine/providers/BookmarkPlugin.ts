@@ -5,6 +5,7 @@ import type { InteractiveFileContentProvider } from '../InteractiveFileContentPr
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import icon from '../../img/warning.webp';
+import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
 
 const defaultBookmarkFileType = {
     description: 'HakuNeko Bookmarks',
@@ -59,10 +60,11 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         const data = await this.fileIO.LoadFile({
             types: [ defaultBookmarkFileType ]
         });
-        const entries = JSON.parse(await data.text()) as Array<unknown>;
-        // TODO: Detect bookmark format and select converter (e.g., HakuNeko Legacy)
-        const bookmarks = entries
-            .map(entry => this.Deserialize(entry as BookmarkSerialized))
+        if (!data.text) {
+            return;
+        }
+        const bookmarks = (JSON.parse(await data.text()) as Array<unknown>)
+            .map(entry => this.Deserialize(ConvertToSerializedBookmark(entry)))
             .filter(entry => !this.Entries.some(bookmark => bookmark.IsSameAs(entry)));
         for(const bookmark of bookmarks) {
             await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
