@@ -70,10 +70,12 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Die Anwendung schließen",
   //
   Frontend_FluentCore_Menu_Description: "Das Anwendungsmenü anzeigen",
-  Frontend_FluentCore_Menu_OpenSettings_Label: "Einstellungen...",
+  Frontend_FluentCore_Menu_OpenSettings_Label: "Einstellungen…",
   Frontend_FluentCore_Menu_OpenSettings_Description: "Einstellungen der Anwendung bearbeiten",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Lesezeichen importieren...",
-  Frontend_FluentCore_Menu_ImportBookmarks_Description: "Öffne den Dialog zum Importieren von Lesezeichen aus der vorherigen Version(en)",
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Lesezeichen importieren…",
+  Frontend_FluentCore_Menu_ImportBookmarks_Description: "Importieren aller Lesezeichen aus einer Datei (vorhandene Lesezeichen bleiben bestehen)",
+  Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Lesezeichen exportieren…',
+  Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Exportieren aller Lesezeichen in eine Datei (z.B. als Backup)',
   //
   Frontend_FluentCore_Settings_ThemeLuminance_Label: "Theme Helligkeit",
   Frontend_FluentCore_Settings_ThemeLuminance_Description: "Ändert die Helligkeit des Themas",

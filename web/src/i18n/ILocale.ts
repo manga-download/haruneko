@@ -103,6 +103,8 @@ export enum VariantResourceKey {
     Frontend_FluentCore_Menu_OpenSettings_Description = 'Frontend_FluentCore_Menu_OpenSettings_Description',
     Frontend_FluentCore_Menu_ImportBookmarks_Label = 'Frontend_FluentCore_Menu_ImportBookmarks_Label',
     Frontend_FluentCore_Menu_ImportBookmarks_Description = 'Frontend_FluentCore_Menu_ImportBookmarks_Description',
+    Frontend_FluentCore_Menu_ExportBookmarks_Label = 'Frontend_FluentCore_Menu_ExportBookmarks_Label',
+    Frontend_FluentCore_Menu_ExportBookmarks_Description = 'Frontend_FluentCore_Menu_ExportBookmarks_Description',
 
     Frontend_FluentCore_Settings_ThemeLuminance_Label = 'Frontend_FluentCore_Settings_ThemeLuminance_Label',
     Frontend_FluentCore_Settings_ThemeLuminance_Description = 'Frontend_FluentCore_Settings_ThemeLuminance_Description',

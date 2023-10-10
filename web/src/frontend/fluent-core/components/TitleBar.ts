@@ -104,8 +104,11 @@ const template: ViewTemplate<TitleBar> = html`
                 <div slot="start" :innerHTML=${() => IconSettings}></div>
                 ${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
             </fluent-menu-item>
-            <fluent-menu-item disabled title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ShowImportDialog()}>
+            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ImportBookmarks()}>
                 ${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
+            </fluent-menu-item>
+            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Description()}" @click=${model => model.ExportBookmarks()}>
+                ${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
             <fluent-setting-theme-luminance></fluent-setting-theme-luminance>
@@ -132,8 +135,15 @@ export class TitleBar extends FASTElement {
         S.ShowSettingsDialog(...HakuNeko.SettingsManager.OpenScope());
     }
 
-    public ShowImportDialog()
+    public async ImportBookmarks()
     {
         this.popup = false;
+        await HakuNeko.BookmarkPlugin.Import();
+    }
+
+    public async ExportBookmarks()
+    {
+        this.popup = false;
+        await HakuNeko.BookmarkPlugin.Export();
     }
 }
