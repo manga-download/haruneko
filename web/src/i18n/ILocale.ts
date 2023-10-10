@@ -197,6 +197,8 @@ export enum VariantResourceKey {
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
+
+    BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',
 }
 
 // [SECTION]: Tags

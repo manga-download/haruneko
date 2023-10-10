@@ -1,3 +1,4 @@
+import { GetLocale } from '../../i18n/Localization';
 import type { BookmarkSerialized } from '../providers/BookmarkPlugin';
 
 const legacyWebsiteIdentifierMap = {
@@ -15,8 +16,15 @@ type BookmarkLegacy = {
     };
 };
 
+class BookmarkFormatError extends Error {
+    constructor(message?: string) {
+        super(message);
+        this.name = BookmarkFormatError.name;
+    }
+}
+
 function GetKeys(data: unknown, prefix = ''): string {
-    return Object.keys(data).map(key => {
+    return Object.keys(data ?? {}).map(key => {
         const value = data[key];
         const isObject = typeof value === 'object' && !Array.isArray(value) && value !== null;
         return isObject ? GetKeys(value, key + '.') : prefix + key;
@@ -61,5 +69,5 @@ export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
         return bookmark;
     }
 
-    throw new Error();
+    throw new BookmarkFormatError(GetLocale().BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError());
 }
