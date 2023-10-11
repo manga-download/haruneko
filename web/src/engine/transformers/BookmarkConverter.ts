@@ -1,5 +1,5 @@
 import { GetLocale } from '../../i18n/Localization';
-import type { BookmarkSerialized } from '../providers/BookmarkPlugin';
+import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
     'heavenmanga': 'mytoon',

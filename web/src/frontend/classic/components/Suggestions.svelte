@@ -10,7 +10,7 @@
         selectedItem,
     } from '../stores/Stores';
 
-    import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
+    import type { Bookmark } from '../../../engine/providers/Bookmark';
 
     import MediaIcon from '../../../img/media.webp';
 

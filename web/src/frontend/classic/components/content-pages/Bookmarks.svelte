@@ -8,7 +8,7 @@
         selectedItem,
     } from './../../stores/Stores';
     import MediaIcon from '../../../../img/media.webp';
-    import type { Bookmark } from '../../../../engine/providers/BookmarkPlugin';
+    import type { Bookmark } from '../../../../engine/providers/Bookmark';
 
     //export let onlyNewContent = false;
 
