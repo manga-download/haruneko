@@ -74,7 +74,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     public async Export() {
         // TODO: Error Handling
-        const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
+        const bookmarks = this._entries.map(bookmark => this.Serialize(bookmark));
         /*
         bookmarks.forEach(bookmark => {
             bookmark.LastKnownEntries.IdentifierHashes = [];
@@ -99,8 +99,8 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
                 EntryID: bookmark.Identifier
             },
             Info: {
-                ProviderID: bookmark.Tracker?.Identifier,
-                EntryID: bookmark.InfoID
+                ProviderID: bookmark.Tracker?.Identifier ?? null,
+                EntryID: bookmark.InfoID ?? null
             },
             LastKnownEntries: bookmark.LastKnownEntries,
         };
@@ -248,11 +248,11 @@ export class Bookmark extends MediaContainer<IMediaChild> {
     }
 
     public get Tracker(): IMediaInfoTracker {
-        return this.tracker;
+        return this.tracker ?? null;
     }
 
-    public get InfoID(): string {
-        return this.infoID;
+    public get InfoID(): string | null {
+        return this.infoID ?? null;
     }
 
     public get IsOrphaned(): boolean {
@@ -324,6 +324,6 @@ type EntryHashes = {
 }
 
 type Provider = {
-    ProviderID: string,
-    EntryID: string
+    ProviderID?: string,
+    EntryID?: string
 }
