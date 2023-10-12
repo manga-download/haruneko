@@ -1,15 +1,28 @@
 import { Tags } from '../Tags';
 import icon from './AsuraScans.webp';
-import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
+
+type TS_reader = source[];
+
+type source = {
+    images: string[];
+}
+
+const excludes = [
+    /panda_gif_large/i,
+    /2021\/04\/page100-10\.jpg/i,
+    /2021\/03\/20-ending-page-\.jpg/i,
+    /ENDING-PAGE/i
+];
 
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS([ /ENDING-PAGE/i ], 'div#readerarea p img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     public constructor() {
         super('asurascans', 'Asura Scans', 'https://asuratoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
@@ -29,5 +42,19 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(this: DecoratableMangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
         return MangaStream.FetchMangaCSS.call(this, provider, url);
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        let images: string[] = [];
+        try {
+            const response = await Fetch(new FetchRequest(new URL(chapter.Identifier, this.URI).href));
+            const data = await response.text();
+            const tsreader: TS_reader = JSON.parse(data.match(/"sources":(\[[^;]+\]}\])/m)[1]);
+            images = tsreader.shift().images.filter(link => !excludes.some(rgx => rgx.test(link)));
+            return images.map(image => new Page(this, chapter, new URL(image)));
+        } catch (error) {
+            return MangaStream.FetchPagesSinglePageCSS.call(this, chapter, excludes, 'div#readerarea p img');
+        }
+
     }
 }
