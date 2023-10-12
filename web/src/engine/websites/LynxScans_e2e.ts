@@ -2,7 +2,7 @@
 
 const config: Config = {
     plugin: {
-        id: 'secretscans',
+        id: 'lynxscans',
         title: 'Lynx Scans'
     },
     container: {
