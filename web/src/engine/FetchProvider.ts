@@ -8,10 +8,10 @@ const fail = function() {
     throw new Error();
 };
 
-let request: new (input: RequestInfo, init?: RequestInit) => FetchRequest;
+let request: new (input: URL | RequestInfo, init?: RequestInit) => FetchRequest;
 
 export class FetchRequest extends Request {
-    public constructor(input: RequestInfo, init?: RequestInit) {
+    public constructor(input: URL | RequestInfo, init?: RequestInit) {
         super(input, init);
         return new request(input, init);
     }
