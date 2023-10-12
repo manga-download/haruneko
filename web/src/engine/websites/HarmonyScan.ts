@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './BananaScan.webp';
+import icon from './HarmonyScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
