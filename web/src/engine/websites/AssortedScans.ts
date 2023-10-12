@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './AssortedScans.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
@@ -26,9 +26,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const fakechapter = new Chapter(this, page.Parent.Parent as Manga, page.Link.href, '');
-        const image = (await Common.FetchPagesSinglePageCSS.call(this, fakechapter, '#page-image'))[0];
-        image.Link.href = DeProxify(image.Link).href;
+        const image = await this.imageTaskPool.Add(async () => {
+            const request = new FetchRequest(page.Link.href, {
+                signal: signal
+            });
+            const realimage = (await FetchCSS<HTMLImageElement>(request, '#page-image'))[0].src;
+            return new Page(this, page.Parent as Chapter, new URL(DeProxify(new URL(realimage, this.URI)).href));
+        }, priority, signal);
+
         return await Common.FetchImageAjax.call(this, image, priority, signal, false);
     }
 }
