@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
 
-type TS_reader = source[];
+type TSReader = source[];
 
 type source = {
     images: string[];
@@ -49,7 +49,7 @@ export default class extends DecoratableMangaScraper {
         try {
             const response = await Fetch(new FetchRequest(new URL(chapter.Identifier, this.URI).href));
             const data = await response.text();
-            const tsreader: TS_reader = JSON.parse(data.match(/"sources":(\[[^;]+\]}\])/m)[1]);
+            const tsreader: TSReader = JSON.parse(data.match(/"sources":(\[[^;]+\]}\])/m)[1]);
             images = tsreader.shift().images.filter(link => !excludes.some(rgx => rgx.test(link)));
             return images.map(image => new Page(this, chapter, new URL(image)));
         } catch (error) {
