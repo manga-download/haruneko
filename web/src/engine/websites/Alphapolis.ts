@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Alphapolis.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
-import type { Priority } from '../../taskpool/TaskPool';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
+import type { Priority } from '../taskpool/TaskPool';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;

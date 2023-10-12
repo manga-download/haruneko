@@ -1,6 +1,6 @@
 import { mock, mockClear, mockFn } from 'jest-mock-extended';
 import { RevealWebRequestHeaders, FetchRequest, Fetch } from './FetchProviderNodeWebkit';
-global.fetch = mockFn<(input: RequestInfo, init?: RequestInit) => Promise<Response>>();
+global.fetch = mockFn<typeof global.fetch>();
 const cookies = mock<typeof chrome.cookies>();
 global.chrome = { cookies: cookies } as unknown as typeof chrome;
 

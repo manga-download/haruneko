@@ -69,7 +69,7 @@ export class IPC implements PlatformIPC {
             await fs.writeFile(file, JSON.stringify(manifest, null, 2), 'utf-8');
             // TODO: This will not work in development mode, because a restart means a new generated package.json file
             // Show 'Restart Application' message
-            //alert('UA changed, please restart ...');
+            alert('[I18N] User-Agent ID for CloudFlare Bypass updated, please restart the application to take effect.');
         }
     }
 
