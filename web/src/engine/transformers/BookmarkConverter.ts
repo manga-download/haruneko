@@ -2,7 +2,12 @@ import { GetLocale } from '../../i18n/Localization';
 import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
-    'heavenmanga': 'mytoon',
+    'bananascan': 'harmonyscan',
+    'heavenmanga': 'beetoon', // (future zbulu PR)
+    'heavenmanga2': 'heavenmanga', // (future zbulu PR)
+    'mangaswat': 'goldragon',
+    'muctau': 'bibimanga',
+    'secretscans': 'lynxscans',
 };
 
 type BookmarkLegacy = {
