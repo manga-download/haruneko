@@ -92,7 +92,7 @@ export function Initialize(): void {
 export class FetchRequest extends Request {
 
     // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-    public constructor(input: URL | RequestInfo, init?: RequestInit) {
+    public constructor(input: RequestInfo, init?: RequestInit) {
         super(input, init);
         this.ConcealFetchHeaders(init?.headers);
     }

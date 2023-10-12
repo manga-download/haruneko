@@ -4,7 +4,7 @@ export function Initialize(): void {
 
 export class FetchRequest extends Request {
 
-    public constructor(input: URL | RequestInfo, init?: RequestInit) {
+    public constructor(input: RequestInfo, init?: RequestInit) {
         super(input, init);
     }
 }
