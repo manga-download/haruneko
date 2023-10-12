@@ -6,7 +6,7 @@ import { Event } from '../Event';
 import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
 import { Bookmark, MissingWebsite, type BookmarkSerialized } from './Bookmark';
 
-const defaultBookmarkFileType = {
+const defaultBookmarkFileType: FilePickerAcceptType = {
     description: 'HakuNeko Bookmarks',
     accept: {
         'application/json': [ '.bookmarks' ]
