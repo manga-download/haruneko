@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicK.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
 
 type NEXTDATA = {
     props: {
@@ -81,7 +81,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const request = new FetchRequest(url);
-        const comicdata = await FetchWindowScript<NEXTDATA>(request, '__NEXT_DATA__');
+        const comicdata = await FetchWindowScript<NEXTDATA>(request, '__NEXT_DATA__', 2000);
         return new Manga(this, provider, comicdata.props.pageProps.comic.hid, comicdata.props.pageProps.comic.title.trim());
     }
 
