@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './Doujins.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 function ImageExtractor(node: HTMLImageElement) {
@@ -9,7 +9,7 @@ function ImageExtractor(node: HTMLImageElement) {
 
 @Common.MangaCSS(/^https?:\/\/doujins\.com\/[^/]+/, 'head title')
 @Common.MangasNotSupported()
-// TODO: Consider using decorator Common.ChaptersUniqueFromManga(...)
+@Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('img.doujin', ImageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -22,7 +22,4 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return [new Chapter(this, manga, manga.Identifier, manga.Title)];
-    }
 }
