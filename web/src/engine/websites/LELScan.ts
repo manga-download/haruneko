@@ -1,9 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './LELScan.webp';
-import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
+import DeProxify from '../transformers/ImageLinkDeProxifier';
 
 function ChapterExtractor(option: HTMLOptionElement) {
     const id = new URL(option.value).pathname;
@@ -38,8 +39,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const fakechapter = new Chapter(this, page.Parent.Parent as Manga, page.Link.href, '');
-        const image = (await Common.FetchPagesSinglePageCSS.call(this, fakechapter, 'div#image img'))[0];
+        const image = await this.imageTaskPool.Add(async () => {
+            const request = new FetchRequest(page.Link.href, {
+                signal: signal
+            });
+            const realimage = new URL((await FetchCSS<HTMLImageElement>(request, 'div#image img'))[0].src).pathname;
+            return new Page(this, page.Parent as Chapter, new URL(DeProxify(new URL(realimage, page.Link.origin)).href));
+        }, priority, signal);
+
         return await Common.FetchImageAjax.call(this, image, priority, signal, false);
     }
 
