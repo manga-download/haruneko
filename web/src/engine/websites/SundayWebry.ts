@@ -40,9 +40,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters : Chapter[] = [];
         let request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        //endpoint links have parameters that must not exceed max chapter of the manga, we cant guess the numbers so we just fetch them
         const endPointlinks = await FetchWindowScript<string[]>(request, chapterScript);
         //0 : first chapters url
-        //1 : more chapters url
+        //1 : more chapters url (loop)
         //2 : last chapters url
 
         //fetch first chapters
@@ -51,9 +52,9 @@ export default class extends DecoratableMangaScraper {
         chapters.push(...result.chapters);
 
         //fetch MORE (paginated)
-        let run = true;
         request = new FetchRequest(endPointlinks[1]);
-        while (run) {
+
+        for (let run = true; run;) {
             result = await this.extractChapters(manga, request);
             result.chapters.length > 0 ? chapters.push(...result.chapters): run = false;
             request = new FetchRequest(result.nextUrl);
