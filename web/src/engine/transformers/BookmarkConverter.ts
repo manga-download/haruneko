@@ -8,6 +8,7 @@ const legacyWebsiteIdentifierMap = {
     'mangaswat': 'goldragon',
     'muctau': 'bibimanga',
     'secretscans': 'lynxscans',
+    'shonenmagazine-pocket': 'shonenmagazine',
 };
 
 type BookmarkLegacy = {
