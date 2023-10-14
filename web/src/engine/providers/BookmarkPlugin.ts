@@ -50,7 +50,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             serialized.Title,
             serialized.LastKnownEntries,
             tracker,
-            serialized.Info.EntryID
+            serialized.Info?.EntryID
         );
         bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
         return bookmark;
