@@ -19,7 +19,7 @@ const chapterScript = `
     new Promise((resolve, reject) => {
         const listNode = document.querySelector('.js-readable-product-list');
         const morebtn = document.querySelector('button[data-read-more-endpoint]');
-        resolve([ listNode.dataset.firstListEndpoint,morebtn.dataset.readMoreEndpoint , listNode.dataset.latestListEndpoint   ])
+        resolve([ listNode.dataset.firstListEndpoint, morebtn.dataset.readMoreEndpoint, listNode.dataset.latestListEndpoint ])
     });
 `;
 
@@ -53,8 +53,8 @@ export default class extends DecoratableMangaScraper {
 
         //fetch MORE (paginated)
         request = new FetchRequest(endPointlinks[1]);
-
-        for (let run = true; run;) {
+        let run = true;
+        while (run) {
             result = await this.extractChapters(manga, request);
             result.chapters.length > 0 ? chapters.push(...result.chapters): run = false;
             request = new FetchRequest(result.nextUrl);

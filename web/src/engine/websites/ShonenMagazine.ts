@@ -1,9 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './ShonenMagazine.webp';
-import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/pocket\.shonenmagazine\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.ChaptersSinglePageCSS(CoreView.queryChapters)
@@ -21,18 +20,17 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
 
-        //fetch from pocket.shonenmagazine.com [/series]
-        const mangas = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/series'], 'div.series-items ul.daily-series > li.daily-series-item > a');
-
-        //fetch from shonenmagazine.com
-        for (const path of ['/series/smaga', '/series/bmaga', '/series/others']) {
-            const request = new FetchRequest(new URL(path, 'https://shonenmagazine.com').href);
-            const data = await FetchCSS<HTMLAnchorElement>(request, 'article.serial-series-contents ul.serial-series-list > li.serial-series-item > a');
-            for (const anchor of data) {
-                const manga = new Manga(this, provider, anchor.pathname, anchor.querySelector(CoreView.queryMangaTitle).textContent.trim());
-                mangas.push(manga);
-            }
+        //fetch from pocket.shonenmagazine.com
+        const mangas1 = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/series'], 'div.series-items ul.daily-series > li.daily-series-item > a');
+        let mangas2 = [];
+        try {
+            //fetch from shonenmagazine.com
+            this.URI.href = 'https://shonenmagazine.com';
+            mangas2 = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/series/smaga', '/series/bmaga', '/series/others'], 'article.serial-series-contents ul.serial-series-list > li.serial-series-item > a');
+        } catch (error) {
+            //
         }
-        return mangas;
+        this.URI.href = 'https://pocket.shonenmagazine.com';
+        return [...mangas1, ...mangas2];
     }
 }
