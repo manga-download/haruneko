@@ -306,12 +306,13 @@ describe('BookmarkPlugin', () => {
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
+            const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
             const testee = await fixture.CreateTestee();
             await testee.Export();
 
             // TODO: Is it possible to assert the text() of the Blob?
             expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalledWith(new Blob(), {
-                suggestedName: 'HakuNeko (2023-10-14).bookmarks',
+                suggestedName: `HakuNeko (${today}).bookmarks`,
                 types: [
                     {
                         accept: {
