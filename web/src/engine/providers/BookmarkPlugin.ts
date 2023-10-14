@@ -55,11 +55,19 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     public async Import() {
-        // TODO: Error Handling
-        const data = await this.fileIO.LoadFile({
-            types: [ defaultBookmarkFileType ]
-        });
-        if (!data.text) {
+        let data: Blob;
+        try {
+            data = await this.fileIO.LoadFile({
+                types: [ defaultBookmarkFileType ]
+            });
+        } catch(error) {
+            if(error instanceof DOMException && error.name === 'AbortError') {
+                return;
+            } else {
+                throw error;
+            }
+        }
+        if (!data?.text) {
             return;
         }
         const bookmarks = (JSON.parse(await data.text()) as Array<unknown>)
@@ -82,10 +90,18 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         */
         const data = new Blob([ JSON.stringify(bookmarks, null, 2) ], { type: 'application/json' });
         const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
-        await this.fileIO.SaveFile(data, {
-            suggestedName: `HakuNeko (${today}).bookmarks`,
-            types: [ defaultBookmarkFileType ]
-        });
+        try {
+            await this.fileIO.SaveFile(data, {
+                suggestedName: `HakuNeko (${today}).bookmarks`,
+                types: [ defaultBookmarkFileType ]
+            });
+        } catch(error) {
+            if(error instanceof DOMException && error.name === 'AbortError') {
+                return;
+            } else {
+                throw error;
+            }
+        }
     }
 
     private Serialize(bookmark: Bookmark): BookmarkSerialized {
