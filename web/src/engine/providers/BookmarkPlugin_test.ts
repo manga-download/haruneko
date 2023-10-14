@@ -282,6 +282,10 @@ describe('BookmarkPlugin', () => {
             const actual = await testee.Import();
 
             expect(actual.cancelled).toBe(true);
+            expect(actual.found).toBe(0);
+            expect(actual.imported).toBe(0);
+            expect(actual.skipped).toBe(0);
+            expect(actual.broken).toBe(0);
             expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
         });
 
@@ -308,8 +312,10 @@ describe('BookmarkPlugin', () => {
                 .SetupInfoTrackers();
             const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
             const testee = await fixture.CreateTestee();
-            await testee.Export();
+            const actual = await testee.Export();
 
+            expect(actual.cancelled).toBe(false);
+            expect(actual.exported).toBe(3);
             // TODO: Is it possible to assert the text() of the Blob?
             expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalledWith(new Blob(), {
                 suggestedName: `HakuNeko (${today}).bookmarks`,
@@ -330,8 +336,10 @@ describe('BookmarkPlugin', () => {
                 .SetupInfoTrackers();
             fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
             const testee = await fixture.CreateTestee();
-            await testee.Export();
+            const actual = await testee.Export();
 
+            expect(actual.cancelled).toBe(true);
+            expect(actual.exported).toBe(0);
             expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalled();
         });
 

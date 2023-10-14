@@ -14,6 +14,11 @@ type BookmarkImportResult = {
     broken: number;
 }
 
+type BookmarkExportResult = {
+    cancelled: boolean;
+    exported: number;
+}
+
 const defaultBookmarkFileType: FilePickerAcceptType = {
     description: 'HakuNeko Bookmarks',
     accept: {
@@ -96,8 +101,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         return result;
     }
 
-    public async Export(): Promise<void> {
-        // TODO: Error Handling
+    public async Export(): Promise<BookmarkExportResult> {
         const bookmarks = this._entries.map(bookmark => this.Serialize(bookmark));
         /*
         bookmarks.forEach(bookmark => {
@@ -105,6 +109,10 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             bookmark.LastKnownEntries.TitleHashes = [];
         });
         */
+        const result: BookmarkExportResult = {
+            cancelled: false,
+            exported: 0
+        };
         const data = new Blob([ JSON.stringify(bookmarks, null, 2) ], { type: 'application/json' });
         const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
         try {
@@ -112,9 +120,12 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
                 suggestedName: `HakuNeko (${today}).bookmarks`,
                 types: [ defaultBookmarkFileType ]
             });
+            result.exported = bookmarks.length;
+            return result;
         } catch(error) {
             if(error instanceof DOMException && error.name === 'AbortError') {
-                return;
+                result.cancelled = true;
+                return result;
             } else {
                 throw error;
             }
