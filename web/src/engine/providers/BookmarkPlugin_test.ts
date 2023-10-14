@@ -9,7 +9,7 @@ import { MissingWebsite, type Bookmark, type BookmarkSerialized } from './Bookma
 
 class TestFixture {
 
-    public readonly DefaultStoredEntries: BookmarkSerialized[] = [
+    public static readonly DefaultStoredEntries: BookmarkSerialized[] = [
         {
             Created: 1.1,
             Updated: 1.2,
@@ -62,14 +62,14 @@ class TestFixture {
             },
         },
     ];
-    public DefaultWebsitePlugins: IMediaContainer[] = [
+    public static readonly DefaultWebsitePlugins: IMediaContainer[] = [
         {
             Identifier: 'website-01',
             Title: 'Website 01',
             IsSameAs: MediaContainer.prototype.IsSameAs
         } as IMediaContainer
     ];
-    public DefaultInfoTrackers: IMediaInfoTracker[] = [
+    public static readonly DefaultInfoTrackers: IMediaInfoTracker[] = [
         {
             Identifier: 'tracker-01',
             Title: 'Tracker 01',
@@ -79,23 +79,25 @@ class TestFixture {
     public readonly mockStorageController = mock<StorageController>();
     public readonly mockPluginController = mock<PluginController>();
 
-    public SetupStoredBookmarks(bookmarks?: BookmarkSerialized[]): TestFixture {
-        this.mockStorageController.LoadPersistent.calledWith(Store.Bookmarks, undefined).mockResolvedValue(bookmarks ?? this.DefaultStoredEntries);
+    public SetupStoredBookmarks(bookmarks?: BookmarkSerialized[], delay = 0): TestFixture {
+        this.mockStorageController.LoadPersistent.calledWith(Store.Bookmarks, undefined).mockReturnValue(new Promise(resolve => setTimeout(() => resolve(bookmarks ?? TestFixture.DefaultStoredEntries), delay)));
         return this;
     }
 
     public SetupWebsitePlugins(plugins?: IMediaContainer[]): TestFixture {
-        Object.defineProperty(this.mockPluginController, 'WebsitePlugins', { get: () => plugins ?? this.DefaultWebsitePlugins });
+        Object.defineProperty(this.mockPluginController, 'WebsitePlugins', { get: () => plugins ?? TestFixture.DefaultWebsitePlugins });
         return this;
     }
 
     public SetupInfoTrackers(trackers?: IMediaInfoTracker[]): TestFixture {
-        Object.defineProperty(this.mockPluginController, 'InfoTrackers', { get: () => trackers ?? this.DefaultInfoTrackers });
+        Object.defineProperty(this.mockPluginController, 'InfoTrackers', { get: () => trackers ?? TestFixture.DefaultInfoTrackers });
         return this;
     }
 
-    public CreateTestee() {
-        return new BookmarkPlugin(this.mockStorageController, this.mockPluginController, this.mockInteractiveFileContentProvider);
+    public async CreateTestee(delay = 25): Promise<BookmarkPlugin> {
+        const testee = new BookmarkPlugin(this.mockStorageController, this.mockPluginController, this.mockInteractiveFileContentProvider);
+        await new Promise(resolve => setTimeout(resolve, delay)); // Make sure bookmarks are loaded from async storage provider
+        return testee;
     }
 }
 
@@ -105,11 +107,11 @@ describe('BookmarkPlugin', () => {
 
         test('Should load bookmarks from persistent storage', async () => {
             const fixture = new TestFixture()
-                .SetupStoredBookmarks()
+                .SetupStoredBookmarks(TestFixture.DefaultStoredEntries, 25)
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
             let updatedEntries: Bookmark[];
-            const testee = fixture.CreateTestee();
+            const testee = await fixture.CreateTestee(0);
             testee.EntriesUpdated.Subscribe((_, args) => updatedEntries = args);
             await new Promise(resolve => setTimeout(resolve, 50));
 
@@ -175,7 +177,7 @@ describe('BookmarkPlugin', () => {
                     "LastKnownEntries": { "IdentifierHashes": [], "TitleHashes": [] }
                 }
             ]`);
-            const testee = fixture.CreateTestee();
+            const testee = await fixture.CreateTestee();
             fixture.mockStorageController.LoadPersistent.mockClear();
             const actual = await testee.Import();
 
@@ -242,7 +244,7 @@ describe('BookmarkPlugin', () => {
                     }
                 }
             ]`);
-            const testee = fixture.CreateTestee();
+            const testee = await fixture.CreateTestee();
             fixture.mockStorageController.LoadPersistent.mockClear();
             const actual = await testee.Import();
 
@@ -276,50 +278,72 @@ describe('BookmarkPlugin', () => {
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
             fixture.mockInteractiveFileContentProvider.LoadFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
-            const testee = fixture.CreateTestee();
+            const testee = await fixture.CreateTestee();
             const actual = await testee.Import();
 
             expect(actual.cancelled).toBe(true);
             expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
         });
 
-        test('Should throw when importing invalid bookmarks', async () => {
+        test('Should throw on unexpected error', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
-            const file = mock<Blob>();
-            fixture.mockInteractiveFileContentProvider.LoadFile.mockResolvedValue(file);
-            file.text.mockResolvedValue('');
-            const testee = fixture.CreateTestee();
+            const expected = new Error('😈');
+            fixture.mockInteractiveFileContentProvider.LoadFile.mockRejectedValue(expected);
+            const testee = await fixture.CreateTestee();
 
-            expect(testee.Import()).rejects.toBeInstanceOf(SyntaxError);
+            expect(testee.Import()).rejects.toBe(expected);
             expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
         });
     });
-    /*
+
     describe('Export', () => {
 
-        test('Should successfully export supported bookmarks', async () => {
-            const fixture = new TestFixture().SetupStoredBookmarks();
-            const testee = fixture.CreateTestee();
+        test('Should successfully export bookmarks', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const testee = await fixture.CreateTestee();
             await testee.Export();
 
-            // TODO: Verify exported bookmarks ...
-        });
-
-        test('Should throw when exporting invalid bookmarks', async () => {
-            const fixture = new TestFixture().SetupStoredBookmarks([]);
-            const testee = fixture.CreateTestee();
-            await testee.Export();
+            // TODO: Is it possible to assert the text() of the Blob?
+            expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalledWith(new Blob(), {
+                suggestedName: 'HakuNeko (2023-10-14).bookmarks',
+                types: [
+                    {
+                        accept: {
+                            'application/json': [ '.bookmarks' ]
+                        },
+                        description: 'HakuNeko Bookmarks'
+                    }
+                ]});
         });
 
         test('Should do nothing when export is cancelled by user', async () => {
-            const fixture = new TestFixture().SetupStoredBookmarks([]);
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
             fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
-            const testee = fixture.CreateTestee();
-            await testee.Import();
+            const testee = await fixture.CreateTestee();
+            await testee.Export();
+
+            expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalled();
+        });
+
+        test('Should throw on unexpected error', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const expected = new Error('😈');
+            fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(expected);
+            const testee = await fixture.CreateTestee();
+
+            expect(testee.Export()).rejects.toBe(expected);
         });
     });
-    */
 });
