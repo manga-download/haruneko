@@ -4,6 +4,8 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
+import { Exception } from '../Error';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -37,7 +39,7 @@ export default class extends DecoratableMangaScraper {
             const pages = JSON.parse(data[0].getAttribute('v-bind:pages'));
             return pages.filter(element => typeof element != 'object' && !element.match('white_page')).map(element => new Page(this, chapter, new URL(element.replace(/\/[0-9]+x[0-9]+.([\w]+)/, '/1080x1536.$1')), {fallbackURL : element}));
         } catch (error) {
-            throw new Error(`The chapter '${chapter.Title}' is neither public, nor purchased!`);
+            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
     }
 

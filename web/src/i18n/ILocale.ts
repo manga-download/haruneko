@@ -45,6 +45,7 @@ export enum VariantResourceKey {
     Frontend_Media_List = 'Frontend_Media_List',
     Frontend_Media_Select = 'Frontend_Media_Select',
     Frontend_Media_Selection = 'Frontend_Media_Selection',
+    Frontend_Media_PasteLink_NotFoundError = 'Frontend_Media_PasteLink_NotFoundError',
     Frontend_Item = 'Frontend_Item',
     Frontend_Items = 'Frontend_Items',
     Frontend_Item_List = 'Frontend_Item_List',
@@ -194,6 +195,8 @@ export enum VariantResourceKey {
 
     SettingsManager_Settings_AlreadyInitializedError = 'SettingsManager_Settings_AlreadyInitializedError',
 
+    FetchProvider_FetchGraphQL_AggregateError = 'FetchProvider_FetchGraphQL_AggregateError',
+    FetchProvider_FetchGraphQL_MissingDataError = 'FetchProvider_FetchGraphQL_MissingDataError',
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
@@ -265,8 +268,11 @@ export enum VariantResourceKey {
     Plugin_Settings_ThrottlingDownloadsInfo = 'Plugin_Settings_ThrottlingDownloadsInfo',
     Plugin_Settings_ThrottlingInteraction = 'Plugin_Settings_ThrottlingInteraction',
     Plugin_Settings_ThrottlingInteractionInfo = 'Plugin_Settings_ThrottlingInteractionInfo',
-    Plugin_Common_MangasNotSupported = 'Plugin_Common_MangasNotSupported',
-    Plugin_Common_ChapterNotAvailable = 'Plugin_Common_ChapterNotAvailable'
+    Plugin_Common_MangaIndex_NotSupported = 'Plugin_Common_MangaIndex_NotSupported',
+    Plugin_Common_Chapter_InvalidError = 'Plugin_Common_Chapter_InvalidError',
+    Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',
+    Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
+    Plugin_MissingWebsiteEntry_UpdateError = 'Plugin_MissingWebsiteEntry_UpdateError',
 }
 
 // [SECTION]: Website SheepScanlations

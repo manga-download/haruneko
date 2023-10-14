@@ -2,6 +2,8 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import S from '../services/StateService';
+import { Exception } from '../../../engine/Error';
+import { VariantResourceKey as R } from '../../../i18n/ILocale';
 
 import IconSynchronize from '@vscode/codicons/src/icons/refresh.svg?raw'; // sync.svg
 import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.svg?raw';
@@ -313,7 +315,7 @@ export class MediaTitleSelect extends FASTElement {
                     return;
                 }
             }
-            throw new Error(`No matching website found for '${link}'`);
+            throw new Exception(R.Frontend_Media_PasteLink_NotFoundError, link);
         } catch(error) {
             console.warn(error);
         }

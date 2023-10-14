@@ -1,6 +1,7 @@
 import { type Writable, writable } from 'svelte/store';
 import type { IValue, Setting} from '../../../engine/SettingsManager';
 import type { Key } from '../../../engine/SettingsGlobal';
+import { InternalError } from '../../../engine/Error';
 
 const globalsettings = HakuNeko.SettingsManager.OpenScope();
 
@@ -36,7 +37,7 @@ export function CreateSettingStore<V extends IValue, S extends Setting<V>>(setti
  */
 export function CreateExistingSettingStore<V extends IValue, S extends Setting<V>>(settingKey: Key) : SettingStore<V,S> {
     const setting: S = globalsettings.Get(settingKey);
-    if (!setting) throw new Error(`Setting ${settingKey} does not exists`);
+    if (!setting) throw new InternalError(`Setting ${settingKey} does not exists`);
     return CreateSettingStore<V,S>(setting);
 }
 
