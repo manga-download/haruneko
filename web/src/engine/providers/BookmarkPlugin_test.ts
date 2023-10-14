@@ -126,6 +126,12 @@ describe('BookmarkPlugin', () => {
             const testee = fixture.CreateTestee();
             await testee.Import();
         });
+
+        test('Should not throw when user cancels import', async () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+            await testee.Import();
+        });
     });
 
     describe('Export', () => {
@@ -140,6 +146,12 @@ describe('BookmarkPlugin', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
             await testee.Export();
+        });
+
+        test('Should not throw when user cancels export', async () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+            await testee.Import();
         });
     });
 });
