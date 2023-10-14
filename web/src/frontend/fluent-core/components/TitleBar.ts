@@ -141,13 +141,24 @@ export class TitleBar extends FASTElement {
 
     public async ImportBookmarks()
     {
-        this.popup = false;
-        await HakuNeko.BookmarkPlugin.Import();
+        try {
+            this.popup = false;
+            const summary = await HakuNeko.BookmarkPlugin.Import();
+            console.log(summary);
+        } catch(error) {
+            // TODO: Show error to user
+            console.error(error);
+        }
     }
 
     public async ExportBookmarks()
     {
-        this.popup = false;
-        await HakuNeko.BookmarkPlugin.Export();
+        try {
+            this.popup = false;
+            await HakuNeko.BookmarkPlugin.Export();
+        } catch(error) {
+            // TODO: Show error to user
+            console.error(error);
+        }
     }
 }
