@@ -1,7 +1,7 @@
 // https://foolcode.github.io/FoOlSlide/
 
 import { FetchRequest, Fetch, FetchCSS } from '../../FetchProvider';
-import { type MangaScraper, type MangaPlugin, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
 const pathpaged = '/directory/{page}/';
@@ -27,7 +27,15 @@ const regexPageListEntries = [
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
-    return Common.FetchMangaCSS.call(this, provider, url, query);
+    const request = new FetchRequest(url, {
+        method: 'POST',
+        body: 'adult=true',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+    const data = (await FetchCSS<HTMLElement>(request, query)).shift();
+    return new Manga(this, provider, new URL(url).pathname, Common.ElementLabelExtractor().call(this, data));
 }
 
 /**
@@ -38,7 +46,17 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
-    return Common.MangaCSS(pattern, query);
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public ValidateMangaURL(this: MangaScraper, url: string): boolean {
+                return pattern.test(url);
+            }
+            public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
+                return FetchMangaCSS.call(this, provider, url, query);
+            }
+        };
+    };
 }
 
 /***********************************************

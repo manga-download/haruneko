@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './HniScanTrad.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as FoolSlide from '../decorators/FoolSlide';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as FoolSlide from './decorators/FoolSlide';
+import * as Common from './decorators/Common';
 
 @FoolSlide.MangaCSS(/^https?:\/\/hni-scantrad\.com\/lel\/series\/[^/]+\/?$/)
 @FoolSlide.MangasMultiPageCSS('/lel/directory/{page}/')
