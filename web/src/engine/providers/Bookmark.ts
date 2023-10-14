@@ -2,6 +2,8 @@ import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaP
 import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import icon from '../../img/warning.webp';
+import { Exception } from '../Error';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
 
 /**
  * A dummy representation for a bookmark's origin (media title), which is no longer available.
@@ -13,7 +15,9 @@ class MissingWebsiteEntry extends MediaContainer<IMediaContainer> {
     public override get Icon(): string {
         return icon;
     }
-    public override async Update(): Promise<void> { throw new Error(); }
+    public override async Update(): Promise<void> {
+        throw new Exception(R.Plugin_MissingWebsiteEntry_UpdateError);
+    }
 }
 
 /**
@@ -29,7 +33,9 @@ export class MissingWebsite extends MediaContainer<IMediaContainer> {
     public override CreateEntry(identifier: string, title: string): IMediaContainer {
         return new MissingWebsiteEntry(identifier, title);
     }
-    public override async Update(): Promise<void> { throw new Error();}
+    public override async Update(): Promise<void> {
+        throw new Exception(R.Plugin_MissingWebsite_UpdateError);
+    }
 }
 
 /**

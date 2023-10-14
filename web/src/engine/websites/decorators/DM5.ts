@@ -2,7 +2,7 @@
 
 import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
-import type * as Common from './Common';
+import * as Common from './Common';
 
 const pathname = 'chapterfun.ashx';
 
@@ -76,9 +76,7 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
  */
 export function PagesSinglePageScript(endpoint = pathname) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageScript.call(this, chapter, endpoint);
