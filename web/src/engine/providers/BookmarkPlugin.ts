@@ -7,6 +7,7 @@ import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
 import { Bookmark, MissingWebsite, type BookmarkSerialized } from './Bookmark';
 
 type BookmarkImportResult = {
+    cancelled: boolean;
     found: number;
     imported: number;
     skipped: number;
@@ -63,36 +64,39 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     public async Import(): Promise<BookmarkImportResult> {
         let data: Blob;
+        const result: BookmarkImportResult = {
+            cancelled: false,
+            found: 0,
+            imported: 0,
+            skipped: 0,
+            broken: 0,
+        };
         try {
             data = await this.fileIO.LoadFile({
                 types: [ defaultBookmarkFileType ]
             });
         } catch(error) {
             if(error instanceof DOMException && error.name === 'AbortError') {
-                return;
+                result.cancelled = true;
+                return result;
             } else {
                 throw error;
             }
         }
-        if (!data?.text) {
-            return;
-        }
         const found = (JSON.parse(await data.text()) as Array<unknown>).map(entry => this.Deserialize(ConvertToSerializedBookmark(entry)));
+        result.found = found.length;
         const imported = found.filter(entry => !this.Entries.some(bookmark => bookmark.IsSameAs(entry)));
         for(const bookmark of imported) {
             await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
         }
         await this.Load();
-
-        return {
-            found: found.length,
-            imported: imported.length,
-            skipped: found.length - imported.length,
-            broken: imported.filter(entry => entry.Parent instanceof MissingWebsite).length,
-        };
+        result.imported = imported.length;
+        result.skipped = found.length - imported.length;
+        result.broken = imported.filter(entry => entry.Parent instanceof MissingWebsite).length;
+        return result;
     }
 
-    public async Export() {
+    public async Export(): Promise<void> {
         // TODO: Error Handling
         const bookmarks = this._entries.map(bookmark => this.Serialize(bookmark));
         /*
