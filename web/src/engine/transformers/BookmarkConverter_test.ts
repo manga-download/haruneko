@@ -60,7 +60,13 @@ describe('BookmarkConverter', () => {
         });
 
         it.each<{ sourceID: string, targetID: string }>([
-            { sourceID: 'heavenmanga', targetID: 'mytoon' },
+            { sourceID: 'bananascan', targetID: 'harmonyscan' },
+            { sourceID: 'heavenmanga', targetID: 'beetoon' },
+            { sourceID: 'heavenmanga2', targetID: 'heavenmanga' },
+            { sourceID: 'mangaswat', targetID: 'goldragon' },
+            { sourceID: 'muctau', targetID: 'bibimanga' },
+            { sourceID: 'secretscans', targetID: 'lynxscans' },
+            { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
             // TODO: Add all test cases from BookmarkConverter::legacyWebsiteIdentifierMap ...
         ])('Should migrate website ID from legacy bookmark', async (data) => {
             const actual = testee.ConvertToSerializedBookmark({
