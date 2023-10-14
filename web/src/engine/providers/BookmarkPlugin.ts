@@ -6,6 +6,13 @@ import { Event } from '../Event';
 import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
 import { Bookmark, MissingWebsite, type BookmarkSerialized } from './Bookmark';
 
+type BookmarkImportResult = {
+    found: number;
+    imported: number;
+    skipped: number;
+    broken: number;
+}
+
 const defaultBookmarkFileType: FilePickerAcceptType = {
     description: 'HakuNeko Bookmarks',
     accept: {
@@ -54,7 +61,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         this.EntriesUpdated.Dispatch(this, this.Entries);
     }
 
-    public async Import() {
+    public async Import(): Promise<BookmarkImportResult> {
         let data: Blob;
         try {
             data = await this.fileIO.LoadFile({
@@ -70,13 +77,19 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         if (!data?.text) {
             return;
         }
-        const bookmarks = (JSON.parse(await data.text()) as Array<unknown>)
-            .map(entry => this.Deserialize(ConvertToSerializedBookmark(entry)))
-            .filter(entry => !this.Entries.some(bookmark => bookmark.IsSameAs(entry)));
-        for(const bookmark of bookmarks) {
+        const found = (JSON.parse(await data.text()) as Array<unknown>).map(entry => this.Deserialize(ConvertToSerializedBookmark(entry)));
+        const imported = found.filter(entry => !this.Entries.some(bookmark => bookmark.IsSameAs(entry)));
+        for(const bookmark of imported) {
             await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
         }
         await this.Load();
+
+        return {
+            found: found.length,
+            imported: imported.length,
+            skipped: found.length - imported.length,
+            broken: imported.filter(entry => entry.Parent instanceof MissingWebsite).length,
+        };
     }
 
     public async Export() {
