@@ -71,10 +71,10 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Uygulamayı kapat",
   //
   Frontend_FluentCore_Menu_Description: "Uygulama menüsünü göster",
-  Frontend_FluentCore_Menu_OpenSettings_Label: 'Settings…',
+  Frontend_FluentCore_Menu_OpenSettings_Label: "Ayarlar…",
   Frontend_FluentCore_Menu_OpenSettings_Description: "Uygulama ayarlarını düzenle",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: 'Import Bookmarks…',
-  Frontend_FluentCore_Menu_ImportBookmarks_Description: 'Import all bookmarks from a file (existing bookmarks will be kept)',
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Yer İmlerini İçe Aktar…",
+  Frontend_FluentCore_Menu_ImportBookmarks_Description: "Önceki sürümlerden yer imlerini içe aktarmak için diyalog kutusunu aç",
   Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
   Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
