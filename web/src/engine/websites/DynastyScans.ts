@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './DynastyScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga,type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import * as Common from './decorators/Common';
 
@@ -29,7 +29,7 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dynasty-scans', `DynastyScans`, 'https://dynasty-scans.com' , Tags.Language.English, Tags.Media.Manga, Tags.Source.Scanlator);
+        super('dynasty-scans', `DynastyScans`, 'https://dynasty-scans.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

@@ -14,7 +14,7 @@ const script = `
 @MangaStream.MangaCSS(/^https?:\/\/mangacanblog\.com\/[^/]+$/)
 @MangaStream.MangasSinglePageCSS('div.blix ul li a.series', '/daftar-komik-manga-bahasa-indonesia.html')
 @MangaStream.ChaptersSinglePageCSS()
-@Common.PagesSinglePageJS(script,5000) //pages list html is encrypted
+@Common.PagesSinglePageJS(script, 5000) //pages list html is encrypted
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

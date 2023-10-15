@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://tvymanga2.com/goblin-slayer-year-one/',
-        id: '/goblin-slayer-year-one/' ,
+        id: '/goblin-slayer-year-one/',
         title: 'Goblin Slayer: Year One'
     },
     child: {

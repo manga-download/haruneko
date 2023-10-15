@@ -47,7 +47,7 @@ export async function Initialize(): Promise<void> {
 
 export const Locale = writable<ILocale>(GetLocale());
 
-export const Theme= CreateSettingStore<string,Choice>(new Choice(
+export const Theme= CreateSettingStore<string, Choice>(new Choice(
     Key.Theme,
     R.Frontend_Classic_Settings_Theme,
     R.Frontend_Classic_Settings_ThemeInfo,
@@ -60,35 +60,35 @@ export const Theme= CreateSettingStore<string,Choice>(new Choice(
     { key: Key.Theme_SheepyNeko, label: R.Frontend_Classic_Settings_Theme_SheepyNeko },
 ));
 
-export const ContentPanel = CreateSettingStore<boolean,Check>(new Check(
+export const ContentPanel = CreateSettingStore<boolean, Check>(new Check(
     Key.ContentPanel,
     R.Frontend_Classic_Settings_ContentPanel,
     R.Frontend_Classic_Settings_ContentPanelInfo,
     true
 ));
 
-export const SidenavTrail = CreateSettingStore<boolean,Check>(new Check(
+export const SidenavTrail = CreateSettingStore<boolean, Check>(new Check(
     Key.SidenavTrail,
     R.Frontend_Classic_Settings_SidenavTrail,
     R.Frontend_Classic_Settings_SidenavTrailInfo,
     true
 ));
 
-export const SidenavIconsOnTop = CreateSettingStore<boolean,Check>(new Check(
+export const SidenavIconsOnTop = CreateSettingStore<boolean, Check>(new Check(
     Key.SidenavIconsOnTop,
     R.Frontend_Classic_Settings_SidenavIconsOnTop,
     R.Frontend_Classic_Settings_SidenavIconsOnTopInfo,
     false
 ));
 
-export const FuzzySearch= CreateSettingStore<boolean,Check>(new Check(
+export const FuzzySearch= CreateSettingStore<boolean, Check>(new Check(
     Key.FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearchInfo,
     true
 ));
 
-export const ViewerMode = CreateSettingStore<string,Choice>(new Choice(
+export const ViewerMode = CreateSettingStore<string, Choice>(new Choice(
     Key.ViewerMode,
     R.Frontend_Classic_Settings_ViewerMode,
     R.Frontend_Classic_Settings_ViewerModeInfo,
@@ -97,26 +97,26 @@ export const ViewerMode = CreateSettingStore<string,Choice>(new Choice(
     { key: Key.ViewerMode_Longstrip, label: R.Frontend_Classic_Settings_ViewerMode_Longstrip },
 ));
 
-export const ViewerReverseDirection = CreateSettingStore<boolean,Check>( new Check(
+export const ViewerReverseDirection = CreateSettingStore<boolean, Check>( new Check(
     Key.ViewerReverseDirection,
     R.Frontend_Classic_Settings_ViewerReverseDirection,
     R.Frontend_Classic_Settings_ViewerReverseDirectionInfo,
     false
 ));
 
-export const ViewerDoublePage = CreateSettingStore<boolean,Check>(new Check(
+export const ViewerDoublePage = CreateSettingStore<boolean, Check>(new Check(
     Key.ViewerDoublePage,
     R.Frontend_Classic_Settings_ViewerDoublePage,
     R.Frontend_Classic_Settings_ViewerDoublePageInfo,
     false
 ));
 
-export const checkNewContent = CreateExistingSettingStore<boolean,Check>(GlobalKey.CheckNewContent);
+export const checkNewContent = CreateExistingSettingStore<boolean, Check>(GlobalKey.CheckNewContent);
 
 // Non persistant settings
 /** Viewer **/
 
-export const ViewerZoom = CreateCountStore(0,10,-100,100);
+export const ViewerZoom = CreateCountStore(0, 10, -100, 100);
 export const ViewerZoomRatio = derived(
     ViewerZoom,
     $ViewerZoom => (100 + $ViewerZoom) / 100

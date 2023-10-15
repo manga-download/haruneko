@@ -4,7 +4,7 @@ const config = {
     plugin: {
         id: 'sinensisscan',
         title: 'Sinensis Scans',
-        timeout : 35000, //warning : WEBSITE IS SLOW IN BROWSER
+        timeout: 35000, //warning : WEBSITE IS SLOW IN BROWSER
     },
     container: {
         url: 'https://sinensisscans.com/inicio1/manga/a-budgies-life/',

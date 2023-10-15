@@ -13,7 +13,7 @@ const config = {
     child: {
         id: '/the-peerless-sword-god-bolum-1/',
         title: 'Bölüm 1',
-        timeout : 10000
+        timeout: 10000
     },
     entry: {
         index: 0,

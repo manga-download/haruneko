@@ -1,4 +1,5 @@
-import { GetLocale } from '../../../i18n/Localization';
+import { VariantResourceKey as R } from '../../../i18n/ILocale';
+import { Exception } from '../../Error';
 import { FetchRequest, FetchCSS } from '../../FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
@@ -94,9 +95,7 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
   */
 export function MangasMultiPageCSS(paths = mangaPaths, query = queryMangas, queryURI = queryMangaURI, queryTitle = queryMangaTitle, extractor = MangaExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageCSS.call(this, provider, paths, query, queryURI, queryTitle, extractor);
@@ -137,9 +136,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  */
 export function ChaptersSinglePageCSS(query: string = queryChapters, extractor = ChapterExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query, extractor);
@@ -164,7 +161,7 @@ async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, qu
     const dataElement = await FetchCSS(request, query);
     const data: ChapterJSON = JSON.parse(dataElement[0].dataset.value);
     if (!data.readableProduct.isPublic && !data.readableProduct.hasPurchased) {
-        throw new Error(GetLocale().Plugin_Common_ChapterNotAvailable());
+        throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
     }
     return data.readableProduct.pageStructure.pages.filter(page => page.type === 'main').map(page => {
         // NOTE: 'usagi' is not scrambled
@@ -180,9 +177,7 @@ async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, qu
  */
 export function PagesSinglePageJSON(query = queryEpisodeJSON) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageJSON.call(this, chapter, query);
@@ -237,7 +232,7 @@ async function descrambleImage(data: Blob): Promise<Blob> {
 
         canvas.toBlob(data => {
             resolve(data);
-        },'image/png', parseFloat('90') / 100);
+        }, 'image/png', parseFloat('90') / 100);
     });
 }
 
@@ -245,11 +240,9 @@ async function descrambleImage(data: Blob): Promise<Blob> {
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export function ImageDescrambler(detectMimeType = false) {
+export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImage.call(this, page, priority, signal, detectMimeType);
