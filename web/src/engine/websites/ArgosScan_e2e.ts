@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://argosscan.com/obras/159/battle-frenzy-webtoon-',
-        id: '159' ,
+        id: '159',
         title: 'Battle Frenzy (Webtoon)'
     },
     child: {

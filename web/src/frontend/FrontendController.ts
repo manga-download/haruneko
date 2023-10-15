@@ -6,6 +6,7 @@ import { Info as InfoFluentCore } from './fluent-core/FrontendInfo';
 import { CreateWindowController } from './WindowController';
 import type { Choice, ISettings } from '../engine/SettingsManager';
 import { Key } from '../engine/SettingsGlobal';
+import { InternalError } from '../engine/Error';
 
 const frontendSelector = '#app';
 export const FrontendList: IFrontendInfo[] = [
@@ -37,7 +38,7 @@ export class FrontendController {
         if(info) {
             return info;
         } else {
-            throw new Error(`The frontend information could not be found in the list of available frontends!`);
+            throw new InternalError(`The frontend information could not be found in the list of available frontends!`);
         }
     }
 
@@ -46,7 +47,7 @@ export class FrontendController {
         if(info) {
             return info.LoadModule();
         } else {
-            throw new Error(`The frontend could not be found in the list of available frontends!`);
+            throw new InternalError(`The frontend could not be found in the list of available frontends!`);
         }
     }
 

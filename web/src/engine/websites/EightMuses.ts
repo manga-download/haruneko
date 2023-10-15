@@ -15,7 +15,7 @@ function ImageExtractor(element: HTMLImageElement): string {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('8muses', `8 MUSES`, 'https://comics.8muses.com' , Tags.Media.Manga, Tags.Media.Comic, Tags.Language.English, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('8muses', `8 MUSES`, 'https://comics.8muses.com', Tags.Media.Manga, Tags.Media.Comic, Tags.Language.English, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

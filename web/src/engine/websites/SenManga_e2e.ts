@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.senmanga.com/title/31b701a7-78bd-4bb5-931a-6308c807df88',
-        id: '31b701a7-78bd-4bb5-931a-6308c807df88' ,
+        id: '31b701a7-78bd-4bb5-931a-6308c807df88',
         title: 'Childhood Friendship Is Hard'
     },
     child: {

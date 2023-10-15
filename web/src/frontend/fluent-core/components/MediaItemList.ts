@@ -134,8 +134,18 @@ const listitem: ViewTemplate<IMediaContainer> = html`
         <div style="${styleTrim}"><!-- <fluent-checkbox></fluent-checkbox> --></div>
         <div style="${styleTrim}">${model => model.Title}</div>
         <div class="controls" style="${styleControls}">
-            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}" :innerHTML=${() => IconPreview} @click=${(model, ctx) => ctx.parent.parentNode.host.ShowPreview(model)}></fluent-button>
-            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}" :innerHTML=${() => IconDownload} @click=${(model, ctx) => ctx.parent.parentNode.host.Download(model)}></fluent-button>
+            <fluent-button
+                appearance="stealth"
+                title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
+                :innerHTML=${() => IconPreview}
+                @click=${(model, ctx) => ctx.parent.parentNode.host.ShowPreview(model)}>
+            </fluent-button>
+            <fluent-button
+                appearance="stealth"
+                title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
+                :innerHTML=${() => IconDownload}
+                @click=${(model, ctx) => ctx.parent.parentNode.host.Download(model)}>
+            </fluent-button>
         </div>
     </div>
 `;
@@ -145,7 +155,15 @@ const template: ViewTemplate<MediaItemList> = html`
         <div id="title">${() => S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
         <div id="controls">
             <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
-            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.container || model.updating} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
+            <fluent-button
+                id="button-update-entries"
+                appearance="stealth"
+                class="${model => model.updating.includes(model.container?.Identifier) ? 'updating' : ''}"
+                title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}"
+                ?disabled=${model => !model.container || model.updating.includes(model.container?.Identifier)}
+                :innerHTML=${() => IconSynchronize}
+                @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>
+            </fluent-button>
         </div>
     </div>
     <div id="searchcontrol">
@@ -171,7 +189,7 @@ export class MediaItemList extends FASTElement {
         this.FilterEntries();
     }
     @observable filtered: IMediaContainer[] = [];
-    @observable updating = false;
+    @observable updating: Array<string> = [];
 
     public async FilterEntries() {
         this.filtered = this.entries?.filter(entry => this.match(entry.Title)) ?? [];
@@ -179,14 +197,17 @@ export class MediaItemList extends FASTElement {
 
     public async UpdateEntries(event: Event): Promise<void> {
         event.stopPropagation();
+        const container = this.container;
         try {
-            this.updating = true;
-            await this.container?.Update();
-            this.containerChanged();
+            if(!this.updating.includes(container.Identifier)) {
+                this.updating = [ ...this.updating, container.Identifier ];
+                await container?.Update();
+                this.containerChanged();
+            }
         } catch(error) {
             console.warn(error);
         } finally {
-            this.updating = false;
+            this.updating = this.updating.filter(id => id !== container.Identifier);
         }
     }
 

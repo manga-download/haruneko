@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @CoreView.MangasMultiPageCSS(['/series', '/series/oneshot', '/series/trial'], 'div.serial-contents ul.series-table-list > li.subpage-table-list-item > a', undefined, 'h4.title')
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
-@CoreView.ImageDescrambler()
+@CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

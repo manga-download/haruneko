@@ -11,7 +11,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^https?:\/\/www\.readmng\.com\/[^/]+$/, 'div.titleArea > h1')
-@Common.MangasMultiPageCSS('/manga-list/{page}?', '.mangaSliderCard a', 1,1,0, MangaExtractor)
+@Common.MangasMultiPageCSS('/manga-list/{page}?', '.mangaSliderCard a', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div#chapters-tabContent div.checkBoxCard a.chnumber', Common.AnchorInfoExtractor(false, 'i'))
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()

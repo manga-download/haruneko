@@ -60,8 +60,8 @@ describe('Settings', () => {
             new Secret('[ID]:Secret', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, '{SECRET}'),
             new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, 50, 0, 100),
             new Choice('[ID]:Choice', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, '{CHOICE}', ...[
-                { key: '{CHOICE}', label : null as VariantResourceKey },
-                { key: '{STORED-CHOICE}', label : null as VariantResourceKey }
+                { key: '{CHOICE}', label: null as VariantResourceKey },
+                { key: '{STORED-CHOICE}', label: null as VariantResourceKey }
             ]),
             new Directory('[ID]:Path', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, null),
         ];
@@ -384,7 +384,7 @@ describe('Numeric', () => {
 
     describe('Constructor', () => {
 
-        it.each([-1, 0 , 1 ])('Should construct with correct parameters', async (value: number) => {
+        it.each([-1, 0, 1 ])('Should construct with correct parameters', async (value: number) => {
             const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as VariantResourceKey, '[RES]:Description' as VariantResourceKey, value, -1, 1);
 
             expect(testee.Max).toBe(1);

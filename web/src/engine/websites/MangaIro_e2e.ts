@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://w.mangairo.com/story-aq248676',
-        id: '/story-aq248676' ,
+        id: '/story-aq248676',
         title: 'TSUKI GA MICHIBIKU ISEKAI DOUCHUU'
     },
     child: {

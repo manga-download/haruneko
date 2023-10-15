@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://xlecx.one/32731-mayuyuus-laws.html',
-        id: '/32731-mayuyuus-laws.html' ,
+        id: '/32731-mayuyuus-laws.html',
         title: 'Mayuyuu\'s Laws'
     },
     child: {

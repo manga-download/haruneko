@@ -13,7 +13,7 @@ const config = {
     child: {
         id: '/project/an-unseemly-lady/chapter-0/',
         title: 'Chapter 0 - Prologue',
-        timeout : 20000
+        timeout: 20000
     },
     entry: {
         index: 0,

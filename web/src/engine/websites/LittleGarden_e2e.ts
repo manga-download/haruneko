@@ -7,11 +7,11 @@ const config = {
     },
     container: {
         url: 'https://littlexgarden.com/tokyo-revengers',
-        id: '/tokyo-revengers' ,
+        id: '/tokyo-revengers',
         title: 'Tokyo Revengers'
     },
     child: {
-        id: JSON.stringify( { id:3255 , number: 5}),
+        id: JSON.stringify( { id: 3255, number: 5}),
         title: '5'
     },
     entry: {

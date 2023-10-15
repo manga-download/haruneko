@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://manga-chan.me/manga/97358-hagure_roji.html',
-        id: '/manga/97358-hagure_roji.html' ,
+        id: '/manga/97358-hagure_roji.html',
         title: '#hagure_roji (#приют_отшельников)'
     },
     child: {
