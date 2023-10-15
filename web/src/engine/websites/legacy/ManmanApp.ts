@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
             method: 'POST',
             body: new URLSearchParams({ id: manga.Identifier, sort: '0', page: String(page) }).toString(),
             headers: {
-                'X-Requested-With' : 'XMLHttpRequest',
+                'X-Requested-With': 'XMLHttpRequest',
             }
         });
         const datt = await FetchJSON<APIChapter>(request);

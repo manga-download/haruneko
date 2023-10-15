@@ -4,7 +4,7 @@ const config: Config = {
     plugin: {
         id: 'reaperscansbr',
         title: 'Reaper Scans (Portuguese)',
-        timeout : 35000,//website takes around this time to load in real browser o_o
+        timeout: 35000, //website takes around this time to load in real browser o_o
     },
     container: {
         url: 'https://reaperscans.net/series/max-level-player-1679526000038',

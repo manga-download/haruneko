@@ -4,10 +4,11 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
+// TODO Add novel support
 @Madara.MangaCSS(/^https?:\/\/cerisescan\.com\/home1\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Cerise Scan"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript)
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
