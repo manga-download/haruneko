@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.taadd.com/book/One+Piece.html',
-        id: '/book/One+Piece.html' ,
+        id: '/book/One+Piece.html',
         title: 'One Piece',
     },
     child: {

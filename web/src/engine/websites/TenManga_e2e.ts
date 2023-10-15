@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.tenmanga.com/book/Yoroizuka-san+wo+Baburasetai.html',
-        id: '/book/Yoroizuka-san+wo+Baburasetai.html' ,
+        id: '/book/Yoroizuka-san+wo+Baburasetai.html',
         title: 'Yoroizuka-san wo Baburasetai',
     },
     child: {

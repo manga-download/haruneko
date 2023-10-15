@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.mangarussia.com/manga/%D0%94%D0%B0%D0%BD%D0%B4%D0%B0%D0%B4%D0%B0%D0%BD.html',
-        id: '/manga/%D0%94%D0%B0%D0%BD%D0%B4%D0%B0%D0%B4%D0%B0%D0%BD.html' ,
+        id: '/manga/%D0%94%D0%B0%D0%BD%D0%B4%D0%B0%D0%B4%D0%B0%D0%BD.html',
         title: 'Дандадан',
     },
     child: {

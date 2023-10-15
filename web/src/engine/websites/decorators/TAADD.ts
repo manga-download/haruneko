@@ -34,7 +34,7 @@ export const queryMangas = [
 
 export const queryChapters = [
     'div.chapter_list table tr td:first-of-type a',
-    'div.chapterbox ul li a.chapter_list_a',//NineManga
+    'div.chapterbox ul li a.chapter_list_a', //NineManga
 ].join(',');
 export const queryPages = 'select#page';
 export const querySubPages = 'option';
