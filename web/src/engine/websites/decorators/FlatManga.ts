@@ -1,7 +1,7 @@
 import { FetchCSS, FetchRequest } from "../../FetchProvider";
 import { Chapter, type Manga, type MangaScraper} from "../../providers/MangaPlugin";
 import { Page } from "../../providers/MangaPlugin";
-import type * as Common from './Common';
+import * as Common from './Common';
 
 export function MangaLabelExtractor(element: HTMLElement) {
     let title = element.getAttribute('text') ? element.getAttribute('text') : element.textContent;
@@ -60,9 +60,8 @@ export const queryPages = [
  */
 export function ChaptersSinglePageCSS(query = queryChapters) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query);
@@ -143,9 +142,8 @@ export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapt
  */
 export function PagesSinglePageCSS(query : string = queryPages, excludes : RegExp[] = DefaultExcludes) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageCSS.call(this, chapter, query, excludes);
