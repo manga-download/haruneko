@@ -25,9 +25,7 @@ const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapterListB
  */
 export function ChaptersSinglePageAJAX(query = queryChapterListLinks, extract = DefaultInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageAJAX.call(this, manga, query, extract);
@@ -67,9 +65,7 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
  */
 export function PagesSinglePageJS(script = scriptImageLinks, delay = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return Common.FetchPagesSinglePageJS.call(this, chapter, script, delay);

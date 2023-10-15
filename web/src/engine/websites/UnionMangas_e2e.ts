@@ -4,10 +4,9 @@ const config = {
     plugin: {
         id: 'unionmangas',
         title: 'UnionMangas',
-        //timeout : 25000 //homepage load is damn slow in real browser
     },
     container: {
-        url: 'https://guimah.com/manga/one-piece',
+        url: 'https://unionmangasbr.top/manga/one-piece',
         id: '/manga/one-piece',
         title: 'One Piece'
     },

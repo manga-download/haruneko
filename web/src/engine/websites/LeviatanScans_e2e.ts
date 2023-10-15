@@ -13,7 +13,7 @@ const config = {
     child: {
         id: '/manga/my-dad-is-too-strong/chapter-1/',
         title: 'Chapter 1',
-        timeout : 15000
+        timeout: 15000
     },
     entry: {
         index: 0,

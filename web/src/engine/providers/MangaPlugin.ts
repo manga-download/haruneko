@@ -1,4 +1,4 @@
-import { GetLocale } from '../../i18n/Localization';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
 import { Key, Scope } from '../SettingsGlobal';
 import type { Check, Directory, ISettings, SettingsManager } from '../SettingsManager';
 import { SanitizeFileName, type StorageController, Store } from '../StorageController';
@@ -6,6 +6,7 @@ import type { Tag } from '../Tags';
 import { type Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 import icon from '../../img/manga.webp';
+import { Exception, NotImplementedError } from '../Error';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -52,23 +53,23 @@ export class DecoratableMangaScraper extends MangaScraper {
     }
 
     public FetchManga(_provider: MangaPlugin, _url: string): Promise<Manga> {
-        throw new Error();
+        throw new NotImplementedError();
     }
 
     public FetchMangas(_provider: MangaPlugin): Promise<Manga[]> {
-        throw new Error();
+        throw new NotImplementedError();
     }
 
     public FetchChapters(_manga: Manga): Promise<Chapter[]> {
-        throw new Error();
+        throw new NotImplementedError();
     }
 
     public FetchPages(_chapter: Chapter): Promise<Page[]> {
-        throw new Error();
+        throw new NotImplementedError();
     }
 
     public FetchImage(_page: Page, _priority: Priority, _signal: AbortSignal): Promise<Blob> {
-        throw new Error();
+        throw new NotImplementedError();
     }
 }
 
@@ -171,10 +172,10 @@ export class Chapter extends StoreableMediaContainer<Page> {
         const settings = HakuNeko.SettingsManager.OpenScope(Scope);
         let directory = settings.Get<Directory>(Key.MediaDirectory).Value;
         if(!directory) {
-            throw new Error(GetLocale().Settings_Global_MediaDirectory_UnsetError());
+            throw new Exception(R.Settings_Global_MediaDirectory_UnsetError);
         }
         if(await directory.requestPermission() !== 'granted') {
-            throw new Error(GetLocale().Settings_Global_MediaDirectory_PermissionError());
+            throw new Exception(R.Settings_Global_MediaDirectory_PermissionError);
         }
         if(settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {
             const website = SanitizeFileName(this.Parent?.Parent?.Title);

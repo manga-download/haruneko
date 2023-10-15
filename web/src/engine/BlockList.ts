@@ -11,6 +11,7 @@ const patterns = [
     '*://*.ospicalad.buzz/*',
     '*://*.papayads.net/*',
     '*://*.sentry.io/*',
+    '*://*.twitch.tv/*', //prevent test timeout on seinagi & pzykosis666hfansub
     '*://*.yandex.ru/*.js',
     '*://*/js/ads*',
     '*://captivatepestilentstormy.com/*',

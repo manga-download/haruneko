@@ -1,7 +1,8 @@
-import { GetLocale } from '../i18n/Localization';
+import { VariantResourceKey as R } from '../i18n/ILocale';
 import type { PreloadAction } from './FetchProvider';
 import { FetchRedirection, CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';
 import * as protobuf from 'protobufjs';
+import { Exception, InternalError } from './Error';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -170,17 +171,17 @@ export async function FetchGraphQL<TResult>(request: FetchRequest, operationName
 
     const data = await FetchJSON<GraphQLResult<TResult>>(graphQLRequest);
     if (data.errors && data.errors.length > 0) {
-        throw new Error('errors: ' + data.errors.map(error => error.message).join('\n'));
+        throw new Exception(R.FetchProvider_FetchGraphQL_AggregateError, data.errors.map(error => error.message).join('\n'));
     }
     if (!data.data) {
-        throw new Error('No data available !');
+        throw new Exception(R.FetchProvider_FetchGraphQL_MissingDataError);
     }
     return data.data;
 }
 
 export async function FetchRegex(request: FetchRequest, regex: RegExp): Promise<string[]> {
     if (regex.flags.indexOf('g') == -1) {
-        throw new Error('The provided RegExp must contain the global "g" modifier!');
+        throw new InternalError(`The provided RegExp must contain the global 'g' modifier!`);
     }
     const response = await fetch(request);
     const data = await response.text();
@@ -263,7 +264,7 @@ async function FetchWindow(request: FetchRequest, timeout: number, preload: Prel
                 console.warn(`FetchWindow() timed out without <loaded> event being invoked!`);
             }
             console.log('FetchWindow()::invocations', invocations);
-            reject(new Error(GetLocale().FetchProvider_FetchWindow_TimeoutError()));
+            reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
         };
 
         let cancellation = setTimeout(destroy, timeout);
@@ -330,7 +331,7 @@ export async function FetchWindowPreloadScript<T>(request: FetchRequest, preload
         // wait for completion, otherwise finally block will be executed before the result is received
         return await Promise.race<T>([
             result,
-            new Promise<T>((_, reject) => setTimeout(reject, timeout - elapsed, new Error(GetLocale().FetchProvider_FetchWindow_TimeoutError())))
+            new Promise<T>((_, reject) => setTimeout(reject, timeout - elapsed, new Exception(R.FetchProvider_FetchWindow_TimeoutError)))
         ]);
     } finally {
         win.close();
