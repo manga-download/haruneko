@@ -115,9 +115,8 @@ export async function FetchPagesSinglePage(this: MangaScraper, chapter: Chapter,
  */
 export function PagesSinglePage(baseUrl = '') {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePage.call(this, chapter, baseUrl);
@@ -207,7 +206,7 @@ async function getPageLinksSBC_v016452(scraper : MangaScraper, configuration: Co
 *************************
 */
 
-async function getPageList_v016201(scraper: MangaScraper,chapter: Chapter, apiURL: string, baseURL: string): Promise<Page[]> {
+async function getPageList_v016201(scraper: MangaScraper, chapter: Chapter, apiURL: string, baseURL: string): Promise<Page[]> {
     const cid = new URL(chapter.Identifier, baseURL).searchParams.get('cid');
     const u = new URL(chapter.Identifier, baseURL).searchParams.get('u1');
     const sharingKey = _tt(cid);
@@ -460,9 +459,8 @@ async function descramble_v016130(bitmap: ImageBitmap, keys: DescrambleKP): Prom
  */
 export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImage.call(this, page, priority, signal, detectMimeType);
@@ -575,8 +573,8 @@ function _lt_002(s, u) {
 const _speedbinb_f = function () {
     function s(t, i) {
         this.Mt = null;
-        const n = t.match(/^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/)
-            , r = i.match(/^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/);
+        const n = t.match(/^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/),
+            r = i.match(/^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/);
 
         if (null !== n && null !== r && n[1] === r[1] && n[2] === r[2] && n[4] === r[4] && "+" === n[3] && "-" === r[3] && (this.C = parseInt(n[1], 10),
         this.I = parseInt(n[2], 10),
@@ -584,8 +582,8 @@ const _speedbinb_f = function () {
         !(8 < this.C || 8 < this.I || 64 < this.C * this.I))) {
             const e = this.C + this.I + this.C * this.I;
             if (n[5].length === e && r[5].length === e) {
-                const s = this.yt(n[5])
-                    , u = this.yt(r[5]);
+                const s = this.yt(n[5]),
+                    u = this.yt(r[5]);
                 this.xt = s.n,
                 this.Et = s.t,
                 this.It = u.n,
@@ -601,8 +599,8 @@ const _speedbinb_f = function () {
     }
     ,
     s.prototype.bt = function (t) {
-        const i = 2 * this.C * this.jt
-            , n = 2 * this.I * this.jt;
+        const i = 2 * this.C * this.jt,
+            n = 2 * this.I * this.jt;
         return t.width >= 64 + i && t.height >= 64 + n && t.width * t.height >= (320 + i) * (320 + n);
     }
     ,
@@ -635,16 +633,16 @@ const _speedbinb_f = function () {
             u = n - (this.I - 1) * s;
 
         for (let o = 0; o < this.C * this.I; ++o) {
-            const a = o % this.C
-                , f = Math.floor(o / this.C)
-                , c = this.jt + a * (r + 2 * this.jt) + (this.It[f] < a ? e - r : 0)
-                , l = this.jt + f * (s + 2 * this.jt) + (this.St[a] < f ? u - s : 0)
-                , v = this.Mt[o] % this.C
-                , d = Math.floor(this.Mt[o] / this.C)
-                , g = v * r + (this.xt[d] < v ? e - r : 0)
-                , p = d * s + (this.Et[v] < d ? u - s : 0)
-                , b = this.It[f] === a ? e : r
-                , m = this.St[a] === f ? u : s;
+            const a = o % this.C,
+                f = Math.floor(o / this.C),
+                c = this.jt + a * (r + 2 * this.jt) + (this.It[f] < a ? e - r : 0),
+                l = this.jt + f * (s + 2 * this.jt) + (this.St[a] < f ? u - s : 0),
+                v = this.Mt[o] % this.C,
+                d = Math.floor(this.Mt[o] / this.C),
+                g = v * r + (this.xt[d] < v ? e - r : 0),
+                p = d * s + (this.Et[v] < d ? u - s : 0),
+                b = this.It[f] === a ? e : r,
+                m = this.St[a] === f ? u : s;
             0 < i && 0 < n && h.push({
                 xsrc: c,
                 ysrc: l,
@@ -723,8 +721,8 @@ const _speedbinb_a = function () {
                 ydest: 0
             }];
         for (let a = 0; a < o; a++) {
-            const f = this.mt.piece[a]
-                , c = this.wt.piece[a];
+            const f = this.mt.piece[a],
+                c = this.wt.piece[a];
             i.push({
                 xsrc: Math.floor(f.x / 2) * r + f.x % 2 * e,
                 ysrc: Math.floor(f.y / 2) * u + f.y % 2 * h,
@@ -734,8 +732,8 @@ const _speedbinb_a = function () {
                 ydest: Math.floor(c.y / 2) * u + c.y % 2 * h
             });
         }
-        const l = r * (this.mt.ndx - 1) + e
-            , v = u * (this.mt.ndy - 1) + h;
+        const l = r * (this.mt.ndx - 1) + e,
+            v = u * (this.mt.ndy - 1) + h;
         return l < t.width && i.push({
             xsrc: l,
             ysrc: 0,
@@ -761,9 +759,9 @@ const _speedbinb_a = function () {
         const i = t.split("-");
         if (3 != i.length)
             return null;
-        const n = parseInt(i[0], 10)
-            , r = parseInt(i[1], 10)
-            , e = i[2];
+        const n = parseInt(i[0], 10),
+            r = parseInt(i[1], 10),
+            e = i[2];
         if (e.length != n * r * 2)
             return null;
         const v = [];
@@ -775,7 +773,7 @@ const _speedbinb_a = function () {
         for (let s, u, h, o, d = 0;d < n * r;d++)
             s = this.Ot(e.charAt(2 * d)),
             u = this.Ot(e.charAt(2 * d + 1)),
-            d <= a ? o = h = 2 : d <= f ? (h = 2,o = 1) : d <= c ? (h = 1,o = 2) : d <= l && (o = h = 1),
+            d <= a ? o = h = 2 : d <= f ? (h = 2, o = 1) : d <= c ? (h = 1, o = 2) : d <= l && (o = h = 1),
             v.push({
                 x: s,
                 y: u,

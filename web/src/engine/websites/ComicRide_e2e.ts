@@ -4,7 +4,7 @@ const config: Config = {
     plugin: {
         id: 'comicride',
         title: 'ComicRide',
-        timeout : 45000
+        timeout: 45000
     },
     container: {
         url: 'https://www.comicride.jp/book/kamihatsu/',

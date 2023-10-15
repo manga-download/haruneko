@@ -9,7 +9,7 @@ const config: Config = {
         url: 'https://getsuaku.com/episode/001_gaw_maidragon',
         id: '/episode/001_gaw_maidragon',
         title: '小林さんちのメイドラゴン',
-        timeout : 15000
+        timeout: 15000
     },
     child: {
         id: '/episode/001_gaw_maidragon',
