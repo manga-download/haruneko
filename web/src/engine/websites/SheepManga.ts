@@ -14,7 +14,7 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('sheep-scanlations', `Sheep's Awesome Mangas`, 'https://hakuneko.download/sample-websites/sheep-scanlations/', Tags.Media.Comic, Tags.Source.Official, Tags.Rating.Safe, Tags.Language.Multilingual);
-        this.Settings.throttle = new Numeric('throttle', R.Plugin_Settings_Throttling, R.Plugin_Settings_ThrottlingInfo, 0, 250, 5000);
+        this.Settings.throttle = new Numeric('throttle', R.Plugin_Settings_ThrottlingDownloads, R.Plugin_Settings_ThrottlingDownloadsInfo, 0, 250, 5000);
         this.Settings.username = new Text('username', R.Plugin_SheepScanlations_Settings_Username, R.Plugin_SheepScanlations_Settings_UsernameInfo, '');
         this.Settings.password = new Secret('password', R.Plugin_SheepScanlations_Settings_Password, R.Plugin_SheepScanlations_Settings_PasswordInfo, '');
     }

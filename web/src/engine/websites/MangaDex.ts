@@ -2,8 +2,11 @@ import { Tags } from '../Tags';
 import icon from './MangaDex.webp';
 import { FetchRequest, FetchJSON } from '../FetchProvider';
 import { MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
-import type { Priority } from '../taskpool/TaskPool';
+import { TaskPool, Priority } from '../taskpool/TaskPool';
+import { RateLimit } from '../taskpool/RateLimit';
 import * as Common from './decorators/Common';
+import { Numeric } from '../SettingsManager';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
 
 type APIContainer<T> = {
     data: T
@@ -97,8 +100,13 @@ export default class extends MangaScraper {
         '8d8ecf83-8d42-4f8c-add8-60963f9f28d9' // Comikey
     ];
 
+    private readonly mangasTaskPool = new TaskPool(1, new RateLimit(12, 60));
+    private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
+
     public constructor() {
         super('mangadex', 'MangaDex', 'https://mangadex.org', Tags.Language.Multilingual);
+        this.Settings.throttle = new Numeric('throttle.mangas', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 60, 6, 240);
+        this.Settings.throttle.ValueChanged.Subscribe((_, value: number) => this.mangasTaskPool.RateLimit = new RateLimit(value, 60));
     }
 
     public override get Icon() {
@@ -123,22 +131,20 @@ export default class extends MangaScraper {
         const mangaList: Manga[] = [];
         const limit = 100;
         let lastCreatedAt = '2000-01-01T00:00:00';
-        let throttle = Promise.resolve();
         while(lastCreatedAt) {
-            await throttle;
-            throttle = new Promise(resolve => setTimeout(resolve, 250));
-
-            const uri = new URL('/manga', this.api);
-            uri.searchParams.set('limit', `${limit}`);
-            uri.searchParams.set('order[createdAt]', 'asc');
-            uri.searchParams.set('createdAtSince', lastCreatedAt);
-            uri.searchParams.append('contentRating[]', 'safe');
-            uri.searchParams.append('contentRating[]', 'suggestive');
-            uri.searchParams.append('contentRating[]', 'erotica');
-            uri.searchParams.append('contentRating[]', 'pornographic');
-
-            const request = new FetchRequest(uri.href, { headers: { Referer: this.URI.href }});
-            const { data } = await FetchJSON<APIContainer<APIManga[]>>(request);
+            const data = await this.mangasTaskPool.Add(async () => {
+                const uri = new URL('/manga', this.api);
+                uri.searchParams.set('limit', `${limit}`);
+                uri.searchParams.set('order[createdAt]', 'asc');
+                uri.searchParams.set('createdAtSince', lastCreatedAt);
+                uri.searchParams.append('contentRating[]', 'safe');
+                uri.searchParams.append('contentRating[]', 'suggestive');
+                uri.searchParams.append('contentRating[]', 'erotica');
+                uri.searchParams.append('contentRating[]', 'pornographic');
+                const request = new FetchRequest(uri.href, { headers: { Referer: this.URI.href }});
+                const { data } = await FetchJSON<APIContainer<APIManga[]>>(request);
+                return data;
+            }, Priority.Normal);
 
             lastCreatedAt = data.length === limit ? data.pop().attributes.createdAt.split('+').shift() : null;
 
@@ -155,11 +161,8 @@ export default class extends MangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
-        let throttle = Promise.resolve();
         for(let page = 0, run = true; run; page++) {
-            await throttle;
-            throttle = new Promise(resolve => setTimeout(resolve, 250));
-            const chapters = await this.FetchChaptersFromPage(manga, page);
+            const chapters = await this.chaptersTaskPool.Add(() => this.FetchChaptersFromPage(manga, page), Priority.Normal);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;

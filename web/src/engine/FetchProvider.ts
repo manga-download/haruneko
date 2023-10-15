@@ -1,11 +1,12 @@
 import { type PlatformInfo, Runtime, DetectPlatform, CreateUnsupportedPlatformError } from './Platform';
 import * as FetchProviderNodeWebkit from './FetchProviderNodeWebkit';
 import * as FetchProviderBrowser from './FetchProviderBrowser';
+import { NotImplementedError } from './Error';
 
 export type PreloadAction = (win: typeof window, frame: typeof window) => void;
 
 const fail = function() {
-    throw new Error();
+    throw new NotImplementedError();
 };
 
 let request: new (input: RequestInfo, init?: RequestInit) => FetchRequest;

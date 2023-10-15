@@ -4,6 +4,7 @@ import type { StorageController } from '../StorageController';
 import type { Tag } from '../Tags';
 import type { Priority } from '../taskpool/TaskPool';
 import icon from '../../img/media.webp';
+import { NotImplementedError } from '../Error';
 
 export type IMediaChild = IMediaContainer | IMediaItem;
 
@@ -88,11 +89,11 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
     }
 
     public CreateEntry(_identifier: string, _title: string): T {
-        throw new Error(/* Not implemented! */);
+        throw new NotImplementedError();
     }
 
     public TryGetEntry(_url: string): Promise<T> {
-        throw new Error(/* Not implemented! */);
+        throw new NotImplementedError();
     }
 
     public abstract Update(): Promise<void>;

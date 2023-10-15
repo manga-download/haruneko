@@ -4,7 +4,7 @@ const config = {
     plugin: {
         id: 'manytoon',
         title: 'ManyToon(.me)',
-        timeout : 30000
+        timeout: 30000
     },
     container: {
         url: 'https://manytoon.me/manhwa/fantasyland/',

@@ -4,7 +4,7 @@ const config: Config = {
     plugin: {
         id: 'asurascans-tr',
         title: 'Asura Scans (TR)',
-        timeout : 30000
+        timeout: 30000
     },
     container: {
         url: 'https://armoniscans.com/manga/kuduz-hancerin-intikami/',
@@ -14,7 +14,7 @@ const config: Config = {
     child: {
         id: '/kuduz-hancerin-intikami-bolum-1/',
         title: 'Bölüm 1',
-        timeout : 25000
+        timeout: 25000
     },
     entry: {
         index: 1,

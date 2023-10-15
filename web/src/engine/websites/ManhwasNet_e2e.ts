@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/leer/las-constelaciones-son-mis-discipulos-36.00',
         title: 'Capítulo 36.00',
-        timeout : 15000
+        timeout: 15000
     },
     entry: {
         index: 0,

@@ -54,9 +54,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);

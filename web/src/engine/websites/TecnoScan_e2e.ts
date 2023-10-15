@@ -13,7 +13,7 @@ const config = {
     child: {
         id: '/su-bao-tiene-tres-anos-y-medio-y-esta-siendo-mimada-por-sus-ocho-tios-capitulo-2/',
         title: 'Capítulo 2',
-        timeout : 25000
+        timeout: 25000
     },
     entry: {
         index: 2,

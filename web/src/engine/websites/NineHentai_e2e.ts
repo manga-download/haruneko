@@ -18,7 +18,7 @@ const config: Config = {
         index: 0,
         size: 344_537,
         type: 'image/jpeg',
-        timeout : 30000 //tried to find manga that download faster. First was 45s.
+        timeout: 30000 //tried to find manga that download faster. First was 45s.
 
     }
 };

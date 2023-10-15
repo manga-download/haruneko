@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/above-ten-thousand-people-chapter-175/',
         title: 'Chapter 175',
-        timeout : 15000
+        timeout: 15000
     },
     entry: {
         index: 0,

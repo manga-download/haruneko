@@ -39,7 +39,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 //no endpoint found for manga listing. That said, there is the javascript __NUXT__ variable. But it needs more coding and
 //default MangasMultiPageCSS works fine.
 
-@Common.MangasMultiPageCSS('/genres/All/All/Popular/{page}', 'div.list-item a',1,1,0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('/genres/All/All/Popular/{page}', 'div.list-item a', 1, 1, 0, MangaInfoExtractor)
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
