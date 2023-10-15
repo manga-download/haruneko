@@ -1,8 +1,8 @@
-import type { IResource } from '../i18n/ILocale';
+import { type IResource, VariantResourceKey as R } from '../i18n/ILocale';
 import { type StorageController, Store } from './StorageController';
 import { Event } from './Event';
-import { GetLocale } from '../i18n/Localization';
 import { Scope } from './SettingsGlobal';
+import { Exception } from './Error';
 
 //const secret = 'E8463362D9B817D3956F054D01093EC6'; // MD5('simple.encryption.key.for.secret.settings')
 
@@ -193,7 +193,8 @@ class Settings implements Iterable<ISetting> {
                 this.settings[setting.ID] = setting;
             }
         }
-        this.Initialize = () => Promise.reject(new Error(GetLocale().SettingsManager_Settings_AlreadyInitializedError(this.scope)));
+        // TODO: Can this just be ignored with a `Promise.resolve()` instead of raising an error?
+        this.Initialize = () => Promise.reject(new Exception(R.SettingsManager_Settings_AlreadyInitializedError, this.scope));
     }
 
     /**

@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.comick.app';
 
     public constructor() {
-        super('comick', `ComicK`, 'https://comick.app' , Tags.Language.Multilingual, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('comick', `ComicK`, 'https://comick.app', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -150,6 +150,6 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/chapter/' + chapter.Identifier, this.apiUrl);
         const request = new FetchRequest(uri.href);
         const data = await FetchJSON<APIChapter>(request);
-        return data.chapter.md_images.map(image => new Page(this, chapter, new URL(`https://meo.comick.pictures/${image.b2key}`), { Referer : this.URI.href }));
+        return data.chapter.md_images.map(image => new Page(this, chapter, new URL(`https://meo.comick.pictures/${image.b2key}`), { Referer: this.URI.href }));
     }
 }

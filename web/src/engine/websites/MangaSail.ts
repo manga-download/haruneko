@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './MangaSail.webp';
-import { Chapter, DecoratableMangaScraper, type Manga,type MangaScraper, type Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, type MangaScraper, type Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 

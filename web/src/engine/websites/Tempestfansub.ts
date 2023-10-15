@@ -9,7 +9,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @MangaStream.MangaCSS(/^https?:\/\/tempestfansub\.com\/manga\/[^/]+\/$/)
-@Common.MangasMultiPageCSS('/manga/?page={page}', 'div.bs div.bsx > a',1,1,0,MangaExtractor )
+@Common.MangasMultiPageCSS('/manga/?page={page}', 'div.bs div.bsx > a', 1, 1, 0, MangaExtractor )
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
