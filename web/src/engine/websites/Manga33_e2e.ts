@@ -6,8 +6,8 @@ const config = {
         title: 'Manga33'
     },
     container: {
-        url: 'https://www.manga33.com/manga/yuan-zun.html',
-        id: '/manga/yuan-zun.html' ,
+        url: 'https://www.manga333.com/manga/yuan-zun.html',
+        id: '/manga/yuan-zun.html',
         title: 'Yuan Zun'
     },
     child: {

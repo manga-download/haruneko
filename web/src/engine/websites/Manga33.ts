@@ -4,14 +4,14 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
 
-@Common.MangaCSS(/^https?:\/\/www\.manga33\.com\/manga\/\S+\.html$/, FlatManga.queryMangaTitle)
+@Common.MangaCSS(/^https?:\/\/www\.manga333\.com\/manga\/\S+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS('/list/lastdotime-{page}.html', FlatManga.queryMangas, 0)
 @Common.PagesSinglePageCSS(FlatManga.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manga33', `Manga33`, 'https://www.manga33.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('manga33', `Manga33`, 'https://www.manga333.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

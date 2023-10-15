@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://manga-tr.com/manga-mairimashita-iruma-kun.html',
-        id: '/manga-mairimashita-iruma-kun.html' ,
+        id: '/manga-mairimashita-iruma-kun.html',
         title: 'Mairimashita! Iruma-kun'
     },
     child: {

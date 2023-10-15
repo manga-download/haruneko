@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://truyentranhlh.net/truyen-tranh/tho-ren-huyen-thoai',
-        id: '/truyen-tranh/tho-ren-huyen-thoai' ,
+        id: '/truyen-tranh/tho-ren-huyen-thoai',
         title: 'Thợ Rèn Huyền Thoại'
     },
     child: {
