@@ -71,10 +71,12 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Uygulamayı kapat",
   //
   Frontend_FluentCore_Menu_Description: "Uygulama menüsünü göster",
-  Frontend_FluentCore_Menu_OpenSettings_Label: "Ayarlar...",
+  Frontend_FluentCore_Menu_OpenSettings_Label: "Ayarlar…",
   Frontend_FluentCore_Menu_OpenSettings_Description: "Uygulama ayarlarını düzenle",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Yer İmlerini İçe Aktar...",
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Yer İmlerini İçe Aktar…",
   Frontend_FluentCore_Menu_ImportBookmarks_Description: "Önceki sürümlerden yer imlerini içe aktarmak için diyalog kutusunu aç",
+  Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
+  Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
   Frontend_FluentCore_Settings_ThemeLuminance_Label: "Tema Parlaklığı",
   Frontend_FluentCore_Settings_ThemeLuminance_Description: "Temanın açıklığını/koyuluğunu değiştirin",
@@ -166,6 +168,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   FetchProvider_FetchWindow_TimeoutError: "İstek, belirtilen süre içerisinde yerine getirilemedi!",
   FetchProvider_FetchWindow_CloudFlareError: "İstek aşağıdaki CloudFlare Hatası nedeniyle başarısız oldu: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "Lütfen Captcha'yı çözün ve ardından uygulamanın ilerlemesini bekleyin (Captcha'yı çözdükten sonra web sitesini kapatmayın)!",
+  BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
   // [SECTION]: Tags
   Tags_Media: "Medya",
   Tags_Media_Manga: 'Manga',

@@ -71,10 +71,12 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Tutup aplikasi",
   //
   Frontend_FluentCore_Menu_Description: "Tampilkan menu aplikasi",
-  Frontend_FluentCore_Menu_OpenSettings_Label: "Pengaturan...",
+  Frontend_FluentCore_Menu_OpenSettings_Label: "Pengaturan…",
   Frontend_FluentCore_Menu_OpenSettings_Description: "Edit pengaturan aplikasi",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Impor Bookmark...",
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Impor Bookmark…",
   Frontend_FluentCore_Menu_ImportBookmarks_Description: "Buka dialog untuk mengimpor bookmark dari versi sebelumnya",
+  Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
+  Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
   Frontend_FluentCore_Settings_ThemeLuminance_Label: "Tema Luminance",
   Frontend_FluentCore_Settings_ThemeLuminance_Description: "Ubah tema terang/gelap",
@@ -166,6 +168,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   FetchProvider_FetchWindow_TimeoutError: "Permintaan tidak dapat dipenuhi dalam batas waktu yang diberikan!",
   FetchProvider_FetchWindow_CloudFlareError: "Permintaan gagal karena Error CloudFlare berikut: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "Silakan selesaikan Captcha dan kemudian tunggu aplikasi untuk melanjutkan (jangan tutup situs web setelah menyelesaikan Captcha)!",
+  BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
   // [SECTION]: Tags
   Tags_Media: 'Media',
   Tags_Media_Manga: 'Manga',
