@@ -104,9 +104,8 @@ async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: str
  */
 export function MangaCSS(pattern: RegExp) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
@@ -154,7 +153,6 @@ async function _getMangasFromPage(provider: MangaPlugin, page: number, apiUrl: s
 export function MangasMultiPageAJAX(apiUrl : string) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
-
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageAJAX.call(this, provider, apiUrl);
