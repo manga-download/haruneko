@@ -2,6 +2,8 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import S from '../services/StateService';
 
 // See: https://icon-sets.iconify.design/fluent/
+import BookmarksImport from '@fluentui/svg-icons/icons/arrow_import_20_filled.svg?raw';
+import BookmarksExport from '@fluentui/svg-icons/icons/arrow_export_20_filled.svg?raw';
 /*
 import IconMinimize from '@fluentui/svg-icons/icons/subtract_20_filled.svg?raw';
 import IconMaximize from '@fluentui/svg-icons/icons/window_20_filled.svg?raw'; // full_screen_maximize, maximize, square
@@ -104,8 +106,13 @@ const template: ViewTemplate<TitleBar> = html`
                 <div slot="start" :innerHTML=${() => IconSettings}></div>
                 ${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
             </fluent-menu-item>
-            <fluent-menu-item disabled title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ShowImportDialog()}>
+            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ImportBookmarks()}>
+                <div slot="start" :innerHTML=${() => BookmarksImport}></div>    
                 ${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
+            </fluent-menu-item>
+            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Description()}" @click=${model => model.ExportBookmarks()}>
+                <div slot="start" :innerHTML=${() => BookmarksExport}></div>   
+                ${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
             <fluent-setting-theme-luminance></fluent-setting-theme-luminance>
@@ -132,8 +139,27 @@ export class TitleBar extends FASTElement {
         S.ShowSettingsDialog(...HakuNeko.SettingsManager.OpenScope());
     }
 
-    public ShowImportDialog()
+    public async ImportBookmarks()
     {
-        this.popup = false;
+        try {
+            this.popup = false;
+            const summary = await HakuNeko.BookmarkPlugin.Import();
+            console.log(summary);
+        } catch(error) {
+            // TODO: Show error to user
+            console.error(error);
+        }
+    }
+
+    public async ExportBookmarks()
+    {
+        try {
+            this.popup = false;
+            const summary = await HakuNeko.BookmarkPlugin.Export();
+            console.log(summary);
+        } catch(error) {
+            // TODO: Show error to user
+            console.error(error);
+        }
     }
 }
