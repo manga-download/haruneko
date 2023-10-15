@@ -37,7 +37,7 @@ describe('BookmarkConverter', () => {
                 Title: 'media-title',
                 Media: { ProviderID: 'website-key', EntryID: 'media-key' },
                 Info: { ProviderID: 'tracker-key', EntryID: 'item-key' },
-                LastKnownEntries: { IdentifierHashes: [ 1, 2 , 3 ], TitleHashes: [ 3, 2, 1 ] }
+                LastKnownEntries: { IdentifierHashes: [ 1, 2, 3 ], TitleHashes: [ 3, 2, 1 ] }
             };
             const actual = testee.ConvertToSerializedBookmark(expected);
             expect(actual).toBe(expected);
