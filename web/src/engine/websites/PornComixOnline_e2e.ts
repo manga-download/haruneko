@@ -13,7 +13,7 @@ const config = {
     child: {
         id: '/m-comic/shockabuki-hermione-and-grimoire-of-lust/shockabuki-hermione-and-grimoire-of-lust/',
         title: 'Shockabuki – Hermione and Grimoire of lust'
-    },/*
+    }, /*
     entry: {
         index: 0,
         size: 234_596, //picture size alternate between 226_729 and 234_596

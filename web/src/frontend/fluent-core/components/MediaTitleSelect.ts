@@ -2,6 +2,8 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import S from '../services/StateService';
+import { Exception } from '../../../engine/Error';
+import { VariantResourceKey as R } from '../../../i18n/ILocale';
 
 import IconSynchronize from '@vscode/codicons/src/icons/refresh.svg?raw'; // sync.svg
 import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.svg?raw';
@@ -177,10 +179,25 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         <img id="logo" src="${model => model.selected?.Icon}"></img>
         <div id="title">${model => model.selected?.Title ?? '…'}</div>
         <div id="controls">
-            <div class="hint">${model => model.updating || model.pasting ? '┄' : (model.filtered?.length ?? '') + '／' + (model.container?.Entries.length ?? '')}</div>
-            <fluent-button id="button-update-entries" appearance="stealth" class="${model => model.updating || model.pasting ? 'updating' : ''}" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}" ?disabled=${model => !model.container || model.updating || model.pasting} :innerHTML=${() => IconSynchronize} @click=${(model, ctx) => model.UpdateEntries(ctx.event)}></fluent-button>
+            <div class="hint">${model => model.updating.includes(model.container?.Identifier) || model.pasting ? '┄' : (model.filtered?.length ?? '') + '／' + (model.container?.Entries.length ?? '')}</div>
+            <fluent-button
+                id="button-update-entries"
+                appearance="stealth"
+                class="${model => model.updating.includes(model.container?.Identifier) || model.pasting ? 'updating' : ''}"
+                title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}"
+                ?disabled=${model => !model.container || model.updating.includes(model.container?.Identifier) || model.pasting}
+                :innerHTML=${() => IconSynchronize}
+                @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>
+            </fluent-button>
             ${model => model.bookmark ? starred : unstarred}
-            <fluent-button id="paste-clipboard-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}" ?disabled=${model => model.updating || model.pasting} :innerHTML=${() => IconClipboard} @click="${(model, ctx) => model.PasteClipboard(ctx.event)}"></fluent-button>
+            <fluent-button
+                id="paste-clipboard-button"
+                appearance="stealth"
+                title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}"
+                ?disabled=${model => model.updating.includes(model.container?.Identifier) || model.pasting}
+                :innerHTML=${() => IconClipboard}
+                @click="${(model, ctx) => model.PasteClipboard(ctx.event)}">
+            </fluent-button>
         </div>
     </div>
     <div id="dropdown" ${ref('dropdown')}>
@@ -231,8 +248,9 @@ export class MediaTitleSelect extends FASTElement {
             this.dropdown.style.display = this.expanded ? 'block' : 'none';
         }
     }
+
+    @observable updating: Array<string> = [];
     @observable bookmark = false;
-    @observable updating = false;
     @observable scanning = false;
     @observable pasting = false;
 
@@ -248,14 +266,17 @@ export class MediaTitleSelect extends FASTElement {
 
     public async UpdateEntries(event: Event): Promise<void> {
         event.stopPropagation();
+        const container = this.container;
         try {
-            this.updating = true;
-            await this.container?.Update();
-            this.containerChanged();
+            if(!this.updating.includes(container.Identifier)) {
+                this.updating = [ ...this.updating, container.Identifier ];
+                await container?.Update();
+                this.containerChanged();
+            }
         } catch(error) {
             console.warn(error);
         } finally {
-            this.updating = false;
+            this.updating = this.updating.filter(id => id !== container.Identifier);
         }
     }
 
@@ -294,7 +315,7 @@ export class MediaTitleSelect extends FASTElement {
                     return;
                 }
             }
-            throw new Error(`No matching website found for '${link}'`);
+            throw new Exception(R.Frontend_Media_PasteLink_NotFoundError, link);
         } catch(error) {
             console.warn(error);
         }

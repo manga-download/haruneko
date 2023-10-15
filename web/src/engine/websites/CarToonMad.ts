@@ -22,7 +22,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const referer = new URL(chapter.Identifier, this.URI).href;
         const request = new FetchRequest(new URL(chapter.Identifier, this.URI.href.replace('.com', '.cc')).href, {
-            headers : { 'referer' : referer}
+            headers: { 'referer': referer}
         });
         const data = await FetchCSS(request, 'body');
         const maxpage = parseInt(data[0].querySelector('a:nth-last-of-type(2).pages').textContent);

@@ -103,7 +103,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL('/go/pcm/comic/getContent', this.URI);
         const params = new URLSearchParams({
-            width : '1920',
+            width: '1920',
             _csrfToken: token,
             comicId: chapter.Parent.Identifier,
             chapterid: chapter.Identifier

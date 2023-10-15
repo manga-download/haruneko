@@ -13,7 +13,7 @@ const config = {
     child: {
         id: '/orenchi-no-maid-san-capitulo-01/',
         title: 'Chapter 01',
-        timeout : 15000
+        timeout: 15000
     },
     entry: {
         index: 0,
