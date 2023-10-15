@@ -52,9 +52,8 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  */
 export function MangaCSS(pattern: RegExp, query: string = queryManga, titleFilter: RegExp = mangaTitleFilter) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
@@ -190,12 +189,11 @@ export function EndsWith(target: Chapter[], source: Chapter[]) {
 export function ChaptersMultiPageCSS(path: string = chapterPath, query: string = queryChapters, titleFilter = chapterTitleFilter, chaptertitleQuery = queryChaptertitle,
     start: number = 1, step: number = 1, throttle: number = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return await FetchChaptersMultiPageCSS.call(this, manga, path, query, titleFilter, chaptertitleQuery ,start, step, throttle);
+                return await FetchChaptersMultiPageCSS.call(this, manga, path, query, titleFilter, chaptertitleQuery, start, step, throttle);
             }
         };
     };
