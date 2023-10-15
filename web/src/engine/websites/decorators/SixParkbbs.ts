@@ -55,11 +55,10 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
  * @param queryMatch - A regexp to filter mangas
  * @param sub - Subforum?
  */
-export function MangasMultiPageCSS(path: string, query: string, queryMatch: RegExp, sub = '' , start = 1, step = 1, throttle = 0) {
+export function MangasMultiPageCSS(path: string, query: string, queryMatch: RegExp, sub = '', start = 1, step = 1, throttle = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageCSS.call(this, provider, path, query, queryMatch, sub, start, step, throttle);
