@@ -57,9 +57,7 @@ export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga
  */
 export function ChaptersSinglePageJS(script: string, queryChap = queryChapters, delay = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageJS.call(this, manga, script, queryChap, delay);
@@ -95,9 +93,8 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
  */
 export function PagesSinglePageJS(script = queryChaptersScript, api = SinApi, delay = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageJS.call(this, chapter, script, api, delay);
@@ -105,11 +102,3 @@ export function PagesSinglePageJS(script = queryChaptersScript, api = SinApi, de
         };
     };
 }
-
-/*
-import * as Common from '../decorators/Common';
-import * as SinMH from '../decorators/SinMH';
-
-@Common.MangaCSS(/^https?:\/\/www\.kokomh\.com$/, SinMH.queryManga)
-
-*/
