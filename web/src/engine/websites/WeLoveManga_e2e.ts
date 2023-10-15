@@ -2,7 +2,7 @@
 
 const config = {
     plugin: {
-        id: 'lovehug',
+        id: 'welovemanga',
         title: 'WeloveManga'
     },
     container: {
