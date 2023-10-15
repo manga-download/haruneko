@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS(request, 'viewer-manga-horizontal');
         try {
             const pages = JSON.parse(data[0].getAttribute('v-bind:pages'));
-            return pages.filter(element => typeof element != 'object' && !element.match('white_page')).map(element => new Page(this, chapter, new URL(element.replace(/\/[0-9]+x[0-9]+.([\w]+)/, '/1080x1536.$1')), {fallbackURL : element}));
+            return pages.filter(element => typeof element != 'object' && !element.match('white_page')).map(element => new Page(this, chapter, new URL(element.replace(/\/[0-9]+x[0-9]+.([\w]+)/, '/1080x1536.$1')), {fallbackURL: element}));
         } catch (error) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }

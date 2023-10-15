@@ -219,7 +219,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Plugin_Settings_ThrottlingInteractionInfo: 'Einschränkung der Anzahl von Abfragen an die Webseite zur Prävention einer temporären oder dauerhaften Sperrung',
   Plugin_Common_MangaIndex_NotSupported: 'Ein Inhaltsverzeichnis kann für diese Webseite nicht erstellt werden. Benutze die Kopieren & Einfügen Funktionalität um direkt auf den Inhalt einer URL zuzugreifen!',
   Plugin_Common_Chapter_UnavailableError: 'Das Kapital ist nicht verfügbar (gekauft/freigeschaltet/öffentlich)!',
-  Plugin_Common_Chapter_InvalidError : 'Fehler beim extrahieren der einzelnen Seiten aus dem Kapitel!',
+  Plugin_Common_Chapter_InvalidError: 'Fehler beim extrahieren der einzelnen Seiten aus dem Kapitel!',
   Plugin_MissingWebsite_UpdateError: 'Fehler bei der Aktualisierung des Inhaltsverzeichnis für eine nicht-existierende Webseite!',
   Plugin_MissingWebsiteEntry_UpdateError: 'Fehler bei der Aktualisierung des Medienverzeichnis für eine nicht-existierende Webseite!',
   Plugin_SheepScanlations_Settings_Username: 'Benutzername',

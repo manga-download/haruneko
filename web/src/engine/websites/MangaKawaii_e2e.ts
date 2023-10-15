@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.mangakawaii.io/manga/the-strongest-god-king',
-        id: '/manga/the-strongest-god-king' ,
+        id: '/manga/the-strongest-god-king',
         title: 'The Strongest God King',
         timeout: 15000
 

@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://reader.silentsky-scans.net/series/gto/',
-        id: '/series/gto/' ,
+        id: '/series/gto/',
         title: 'GTO'
     },
     child: {

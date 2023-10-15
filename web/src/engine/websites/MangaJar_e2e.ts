@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://mangajar.com/manga/yuan-zun',
-        id: '/manga/yuan-zun' ,
+        id: '/manga/yuan-zun',
         title: 'Yuan Zun'
     },
     child: {

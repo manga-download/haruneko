@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/baca-komik-im_an_ex_class_hunter-1-2-bahasa-indonesia-im_an_ex_class_hunter-1-terbaru.html',
         title: 'Chapter 1',
-        timeout : 25000
+        timeout: 25000
     },
     entry: {
         index: 1,

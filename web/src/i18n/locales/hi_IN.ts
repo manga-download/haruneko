@@ -219,7 +219,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Plugin_Settings_ThrottlingInteractionInfo: 'Limit the number of requests to this website to prevent being blocked or banned',
   Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
   Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
-  Plugin_Common_Chapter_InvalidError : 'Failed to extract the pages from the chapter content!',
+  Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
   Plugin_MissingWebsite_UpdateError: 'Failed to update the content index for a non-existing website!',
   Plugin_MissingWebsiteEntry_UpdateError: 'Failed to update the media index for a non-existing website!',
   Plugin_SheepScanlations_Settings_Username: 'Username',
