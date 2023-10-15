@@ -15,7 +15,7 @@ const pageScript = `new Promise(resolve => {
 `;
 
 @Common.MangaCSS(/^https?:\/\/hentairead\.com\/hentai\/[^/]+\/$/, 'div.post-title h1')
-@Common.MangasMultiPageCSS('/hentai/page/{page}/','div.post-title a')
+@Common.MangasMultiPageCSS('/hentai/page/{page}/', 'div.post-title a')
 @Common.ChaptersSinglePageCSS('div.summary_image > a')
 @Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()

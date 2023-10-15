@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.hq-now.com/hq/1079/saga-do-infinito',
-        id: '1079' ,
+        id: '1079',
         title: 'Saga do Infinito'
     },
     child: {

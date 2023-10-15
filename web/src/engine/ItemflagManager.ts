@@ -7,7 +7,7 @@ export class ItemflagManager {
     public readonly FlagChanged: Event<IMediaContainer, FlagType> = new Event<IMediaContainer, FlagType>();
     public readonly MediaFlagsChanged: Event<ItemflagManager, IMediaContainer> = new Event<this, IMediaContainer>();
 
-    private items:Map<string,ItemFlag[]> = new Map();
+    private items:Map<string, ItemFlag[]> = new Map();
     constructor(private readonly storage: StorageController) {
     }
 

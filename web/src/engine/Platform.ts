@@ -1,3 +1,5 @@
+import { InternalError } from './Error';
+
 export class PlatformInfo {
     constructor(public readonly OS: System, public readonly Runtime: Runtime) {
     }
@@ -22,7 +24,7 @@ export const enum Runtime {
 }
 
 export function CreateUnsupportedPlatformError(info: PlatformInfo): Error {
-    return new Error(`Unsupported Platform (${info.Runtime}/${info.OS})`);
+    return new InternalError(`Unsupported Platform (${info.Runtime}/${info.OS})`);
 }
 
 export function DetectPlatform(): PlatformInfo {

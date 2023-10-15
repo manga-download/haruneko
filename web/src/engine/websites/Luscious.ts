@@ -152,7 +152,7 @@ export default class extends DecoratableMangaScraper {
             input: {
                 filters: [{ name: 'album_id', value: chapter.Identifier }],
                 display: 'position',
-                items_per_page: 50,//dont change items_per_page to more than 50
+                items_per_page: 50, //dont change items_per_page to more than 50
                 page: page
             }
         };

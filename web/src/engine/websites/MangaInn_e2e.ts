@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.mangainn.net/freezing_zero',
-        id: '/freezing_zero' ,
+        id: '/freezing_zero',
         title: 'Freezing Zero'
     },
     child: {
