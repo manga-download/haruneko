@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.dongmanmanhua.cn/FANTASY/dark-moon-the-blood-altar/list?title_no=1970',
-        id: '/FANTASY/dark-moon-the-blood-altar/list?title_no=1970' ,
+        id: '/FANTASY/dark-moon-the-blood-altar/list?title_no=1970',
         title: 'DARK MOON: 月之神坛'
     },
     child: {
