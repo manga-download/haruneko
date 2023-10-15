@@ -71,10 +71,12 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Fechar a aplicação",
   //
   Frontend_FluentCore_Menu_Description: "Exibir menu da aplicação",
-  Frontend_FluentCore_Menu_OpenSettings_Label: "Definições...",
+  Frontend_FluentCore_Menu_OpenSettings_Label: 'Settings…',
   Frontend_FluentCore_Menu_OpenSettings_Description: "Editar as definições do aplicativo",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Importar Marcadores...",
-  Frontend_FluentCore_Menu_ImportBookmarks_Description: "Abra a caixa de diálogo para importar os marcadores de versão(ões) anterior(es)",
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: 'Import Bookmarks…',
+  Frontend_FluentCore_Menu_ImportBookmarks_Description: 'Import all bookmarks from a file (existing bookmarks will be kept)',
+  Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
+  Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
   Frontend_FluentCore_Settings_ThemeLuminance_Label: "Luminosidade do Tema",
   Frontend_FluentCore_Settings_ThemeLuminance_Description: "Mudar a luz/escuridão do tema",
@@ -166,6 +168,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   FetchProvider_FetchWindow_TimeoutError: "A solicitação não pode ser atendida dentro do tempo indicado!",
   FetchProvider_FetchWindow_CloudFlareError: "A solicitação falhou devido ao seguinte erro do CloudFlare: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "Por favor resolva o Captcha e espere o aplicativo continuar (não feche o site depois de resolver o Captcha)!",
+  BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
   // [SECTION]: Tags
   Tags_Media: "Mídia",
   Tags_Media_Manga: "Mangá",
