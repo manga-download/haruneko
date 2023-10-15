@@ -155,7 +155,8 @@ export class TitleBar extends FASTElement {
     {
         try {
             this.popup = false;
-            await HakuNeko.BookmarkPlugin.Export();
+            const summary = await HakuNeko.BookmarkPlugin.Export();
+            console.log(summary);
         } catch(error) {
             // TODO: Show error to user
             console.error(error);
