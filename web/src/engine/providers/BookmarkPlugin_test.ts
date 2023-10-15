@@ -295,6 +295,7 @@ describe('BookmarkPlugin', () => {
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
             fixture.mockInteractiveFileContentProvider.LoadFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
+            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(true);
             const testee = await fixture.CreateTestee();
             const actual = await testee.Import();
 
@@ -313,6 +314,7 @@ describe('BookmarkPlugin', () => {
                 .SetupInfoTrackers();
             const expected = new Error('😈');
             fixture.mockInteractiveFileContentProvider.LoadFile.mockRejectedValue(expected);
+            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(false);
             const testee = await fixture.CreateTestee();
 
             expect(testee.Import()).rejects.toBe(expected);
@@ -351,6 +353,7 @@ describe('BookmarkPlugin', () => {
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
             fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
+            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(true);
             const testee = await fixture.CreateTestee();
             const actual = await testee.Export();
 
@@ -366,6 +369,7 @@ describe('BookmarkPlugin', () => {
                 .SetupInfoTrackers();
             const expected = new Error('😈');
             fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(expected);
+            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(false);
             const testee = await fixture.CreateTestee();
 
             expect(testee.Export()).rejects.toBe(expected);

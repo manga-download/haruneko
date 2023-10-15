@@ -82,7 +82,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
                 types: [ defaultBookmarkFileType ]
             });
         } catch(error) {
-            if(error instanceof DOMException && error.name === 'AbortError') {
+            if(this.fileIO.IsAbortError(error)) {
                 result.cancelled = true;
                 return result;
             } else {
@@ -124,7 +124,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             result.exported = bookmarks.length;
             return result;
         } catch(error) {
-            if(error instanceof DOMException && error.name === 'AbortError') {
+            if(this.fileIO.IsAbortError(error)) {
                 result.cancelled = true;
                 return result;
             } else {
