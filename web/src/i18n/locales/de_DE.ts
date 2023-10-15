@@ -71,10 +71,12 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Die Anwendung schließen",
   //
   Frontend_FluentCore_Menu_Description: "Das Anwendungsmenü anzeigen",
-  Frontend_FluentCore_Menu_OpenSettings_Label: "Einstellungen...",
+  Frontend_FluentCore_Menu_OpenSettings_Label: 'Settings…',
   Frontend_FluentCore_Menu_OpenSettings_Description: "Einstellungen der Anwendung bearbeiten",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Lesezeichen importieren...",
-  Frontend_FluentCore_Menu_ImportBookmarks_Description: "Öffne den Dialog zum Importieren von Lesezeichen aus der vorherigen Version(en)",
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: 'Import Bookmarks…',
+  Frontend_FluentCore_Menu_ImportBookmarks_Description: 'Import all bookmarks from a file (existing bookmarks will be kept)',
+  Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
+  Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
   Frontend_FluentCore_Settings_ThemeLuminance_Label: "Theme Helligkeit",
   Frontend_FluentCore_Settings_ThemeLuminance_Description: "Ändert die Helligkeit des Themas",
@@ -166,6 +168,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   FetchProvider_FetchWindow_TimeoutError: 'The request could not be fulfilled within the given timeout!',
   FetchProvider_FetchWindow_CloudFlareError: 'The request failed due to the following CloudFlare Error: "{0}"',
   FetchProvider_FetchWindow_AlertCaptcha: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
+  BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
   // [SECTION]: Tags
   Tags_Media: "Kategorie",
   Tags_Media_Manga: 'Manga',
