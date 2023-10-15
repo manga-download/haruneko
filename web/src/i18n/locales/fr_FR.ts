@@ -71,10 +71,12 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Fermer l'application",
   //
   Frontend_FluentCore_Menu_Description: "Afficher le menu de l'application",
-  Frontend_FluentCore_Menu_OpenSettings_Label: "Paramètres...",
+  Frontend_FluentCore_Menu_OpenSettings_Label: 'Settings…',
   Frontend_FluentCore_Menu_OpenSettings_Description: "Modifier les paramètres de l'application",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Importer les favoris...",
-  Frontend_FluentCore_Menu_ImportBookmarks_Description: "Ouvrir la boîte de dialogue pour importer des favoris d'une version précédente",
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: 'Import Bookmarks…',
+  Frontend_FluentCore_Menu_ImportBookmarks_Description: 'Import all bookmarks from a file (existing bookmarks will be kept)',
+  Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
+  Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
   Frontend_FluentCore_Settings_ThemeLuminance_Label: "Luminosité du thème",
   Frontend_FluentCore_Settings_ThemeLuminance_Description: "Rendre le thème plus clair/sombre",
@@ -166,6 +168,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   FetchProvider_FetchWindow_TimeoutError: "La requête n'a pas pu être accomplie dans le délai imparti !",
   FetchProvider_FetchWindow_CloudFlareError: "La requête a échoué en raison de l'erreur CloudFlare suivante : \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "Veuillez résoudre le Captcha et attendre que l'application continue (ne fermez pas le site web après avoir résolu le Captcha) !",
+  BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
   // [SECTION]: Tags
   Tags_Media: "Média",
   Tags_Media_Manga: 'Manga',
