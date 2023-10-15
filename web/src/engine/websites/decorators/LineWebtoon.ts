@@ -126,9 +126,8 @@ async function getChaptersFromPage(scrapper: MangaScraper, manga: Manga, query: 
  */
 export function ChaptersMultiPageCSS(query: string = queryChapters, extractor = ChapterExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersMultiPageCSS.call(this, manga, query, extractor);
@@ -178,9 +177,8 @@ async function createPagesfromData(scraper: MangaScraper, chapter: Chapter, data
  */
 export function PagesSinglePageJS(script = pageScript) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageJS.call(this, chapter, script);
