@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://mangatepesi.com/manga/guard-pass/24',
-        id: '/manga/guard-pass/24' ,
+        id: '/manga/guard-pass/24',
         title: 'Guard Pass'
     },
     child: {

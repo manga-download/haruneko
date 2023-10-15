@@ -76,7 +76,7 @@ export default class extends DecoratableMangaScraper {
                 chapters: chapters.reverse(), nextUrl: data.nextUrl
             };
         } catch (error) {
-            return { chapters: [], nextUrl : '' };
+            return { chapters: [], nextUrl: '' };
         }
 
     }

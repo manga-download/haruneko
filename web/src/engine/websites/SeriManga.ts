@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/serimanga\.com\/manga\//, 'div.seri-img div.name')
-@Common.MangasMultiPageCSS('/mangalar?page={page}', 'ul.sub-manga-list li.mangas-item > a',1,1,0, Common.AnchorInfoExtractor(false, 'span.mlb-cat, span.mlb-star, span.wathced'))
+@Common.MangasMultiPageCSS('/mangalar?page={page}', 'ul.sub-manga-list li.mangas-item > a', 1, 1, 0, Common.AnchorInfoExtractor(false, 'span.mlb-cat, span.mlb-star, span.wathced'))
 @Common.PagesSinglePageCSS('div.reader-manga.chapter-pages img.chapter-pages__item')
 @Common.ImageAjax()
 

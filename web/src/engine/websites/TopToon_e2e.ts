@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://toptoon.com/comic/ep_list/im_mother',
-        id: '/comic/ep_list/im_mother' ,
+        id: '/comic/ep_list/im_mother',
         title: '나는 엄마다'
     },
     child: {

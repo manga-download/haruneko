@@ -232,7 +232,7 @@ async function descrambleImage(data: Blob): Promise<Blob> {
 
         canvas.toBlob(data => {
             resolve(data);
-        },'image/png', parseFloat('90') / 100);
+        }, 'image/png', parseFloat('90') / 100);
     });
 }
 

@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://scantrad-union.com/manga/aiki/',
-        id: '/manga/aiki/' ,
+        id: '/manga/aiki/',
         title: 'Aiki'
     },
     child: {

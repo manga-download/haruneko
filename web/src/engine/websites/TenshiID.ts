@@ -10,7 +10,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @MangaStream.MangaCSS(/^https?:\/\/tenshi\.id\/komik\/[^/]+\/$/)
-@Common.MangasMultiPageCSS('/komik/?page={page}','div.bs div.bsx a', 1,1,0, MangaExtractor)
+@Common.MangasMultiPageCSS('/komik/?page={page}', 'div.bs div.bsx a', 1, 1, 0, MangaExtractor)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()

@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.mngdoom.com/against-the-gods/',
-        id: '/against-the-gods/' ,
+        id: '/against-the-gods/',
         title: 'Against the Gods'
     },
     child: {

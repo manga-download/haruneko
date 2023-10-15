@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/a-bad-person-chapter-01-bahasa-indonesia/',
         title: 'Chapter 01',
-        timeout : 15000
+        timeout: 15000
     },
     entry: {
         index: 0,
