@@ -15,4 +15,8 @@ export class InteractiveFileContentProvider {
         await stream.write(data);
         await stream.close();
     }
+
+    public async PickDirectory(startIn: WellKnownDirectory | FileSystemHandle): Promise<FileSystemDirectoryHandle> {
+        return window.showDirectoryPicker({ startIn });
+    }
 }
