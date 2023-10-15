@@ -1,6 +1,6 @@
 import { FetchRequest, FetchJSON } from '../../FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import type * as Common from './Common';
+import * as Common from './Common';
 
 type APISingleManga = { title: string };
 
@@ -48,9 +48,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
  */
 export function MangaAJAX(pattern: RegExp) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 return pattern.test(url);
@@ -80,9 +78,7 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
  */
 export function MangasSinglePageAJAX() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasSinglePageAJAX.call(this, provider);
@@ -108,9 +104,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, manga: Manga): Pro
  */
 export function ChaptersSinglePageAJAX() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChapterSinglePageAJAX.call(this, manga);
@@ -128,9 +122,7 @@ export function ChaptersSinglePageAJAX() {
  */
 export function PagesSinglePageAJAX() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageAJAX.call(this, chapter);

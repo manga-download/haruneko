@@ -103,9 +103,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  */
 export function ChaptersSinglePageCSS(query: string = queryChapterListLinks) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query);
@@ -174,9 +172,7 @@ export async function FetchPagesSinglePageREGEX(this: MangaScraper, chapter: Cha
  */
 export function PagesSinglePageREGEX(...matchers: RegExp[]) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesSinglePageREGEX.call(this, chapter, ...matchers);

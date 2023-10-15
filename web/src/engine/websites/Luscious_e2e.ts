@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.luscious.net/albums/nomikai-de-ikemen-no-senpai-no_500170/',
-        id: '500170' ,
+        id: '500170',
         title: 'Nomikai de Ikemen no Senpai no Omochikaeri Sarechau Ko'
     },
     child: {

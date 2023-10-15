@@ -9,7 +9,7 @@ const fixtureSingleReader = new TestFixture({
         url: 'https://www.japscan.lol/manga/jujutsu-kaisen/',
         id: '/manga/jujutsu-kaisen/',
         title: 'Jujutsu Kaisen'
-    },/* Reader is protected by CloudFlare with ~10 minute challenge reset
+    }, /* Reader is protected by CloudFlare with ~10 minute challenge reset
     child: {
         id: '/lecture-en-ligne/jujutsu-kaisen/1/',
         title: 'Chapitre 1: Esprit à double-face'
@@ -31,7 +31,7 @@ const fixtureFullReader = new TestFixture({
         url: 'https://www.japscan.lol/manga/king-game/',
         id: '/manga/king-game/',
         title: 'King Game'
-    },/* Reader is protected by CloudFlare with ~10 minute challenge reset
+    }, /* Reader is protected by CloudFlare with ~10 minute challenge reset
     child: {
         id: '/lecture-en-ligne/king-game/1/',
         title: 'Chapitre 1'

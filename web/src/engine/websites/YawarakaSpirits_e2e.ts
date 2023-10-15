@@ -4,7 +4,7 @@ const config = {
     plugin: {
         id: 'yawarakaspirits',
         title: 'やわらかスピリッツ (Yawaraka Spirits)',
-        timeout : 50000 //again site is damn slow in browser
+        timeout: 50000 //again site is damn slow in browser
     },
     container: {
         url: 'https://yawaspi.com/gekirin/index.html',

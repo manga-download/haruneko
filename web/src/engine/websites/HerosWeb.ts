@@ -1,14 +1,14 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './HerosWeb.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as CoreView from '../decorators/CoreView';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as CoreView from './decorators/CoreView';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/viewer\.heros-web\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.MangasMultiPageCSS(['/series/heros', '/series/flat', '/series/wild'], 'section.series-section ul.series-items > li.series-item > a')
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
-@CoreView.ImageDescrambler()
+@CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

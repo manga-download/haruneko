@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaCross.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON, FetchRequest } from './../FetchProvider';
 
 type APIMangas = {
     comics: APIManga[]
@@ -15,6 +15,7 @@ type APIManga = {
 
 type APIChapters = {
     comic: {
+        title : string,
         episodes: APIChapter[]
     }
 }
@@ -51,12 +52,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const uri = new URL(url);
-        const id = uri.pathname.match(/comics\/([^/]+)\//)[1];
+        const id = new URL(url).pathname.match(/comics\/([^/]+)\//)[1];
+        const uri = new URL(`/api/comics/${id}.json`, this.URI);
         const request = new FetchRequest(uri.href);
-        const data = await FetchCSS<HTMLHeadElement>(request, 'head title');
-        const title = data[0].textContent.split('|')[0].trim();
-        return new Manga(this, provider, id, title);
+        const data = await FetchJSON<APIChapters>(request);
+        return new Manga(this, provider, id, data.comic.title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(`/api/comics/${manga.Identifier}.json`, this.URI);
         const request = new FetchRequest(uri.href);
         const data = await FetchJSON<APIChapters>(request);
-        return data.comic.episodes.filter(episode => episode.status == 'public').map(episode => {
+        return data.comic.episodes.map(episode => {
             let title = episode.volume + ' ';
             title += episode.title ? episode.title : '';
             return new Chapter(this, manga, episode.page_url, title.trim());

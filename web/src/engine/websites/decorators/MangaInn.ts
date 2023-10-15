@@ -61,9 +61,7 @@ async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin
   */
 export function MangasMultiPageCSS(query = queryMangas, path = pathname, extract = DefaultInfoExtractor ) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageCSS.call(this, provider, query, path, extract);

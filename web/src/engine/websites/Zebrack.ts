@@ -5,6 +5,8 @@ import * as Common from './decorators/Common';
 import { protoTypes } from './Zebrack_proto';
 import { FetchProto, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
+import { Exception } from '../Error';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
 
 type ZebrackResponse = {
     titleDetailView: TitleDetailView,
@@ -247,7 +249,7 @@ export default class extends DecoratableMangaScraper {
             }
         }
 
-        throw new Error('No image data available, make sure your account is logged in and the chapter is purchased!');
+        throw new Exception(R.Plugin_Common_Chapter_InvalidError);
     }
 
     async fetchVolumeViewer(titleId: string, volumeId: string, secretKey : string) {
