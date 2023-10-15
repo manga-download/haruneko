@@ -71,10 +71,10 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Fechar a aplicação",
   //
   Frontend_FluentCore_Menu_Description: "Exibir menu da aplicação",
-  Frontend_FluentCore_Menu_OpenSettings_Label: 'Settings…',
+  Frontend_FluentCore_Menu_OpenSettings_Label: "Definições…",
   Frontend_FluentCore_Menu_OpenSettings_Description: "Editar as definições do aplicativo",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: 'Import Bookmarks…',
-  Frontend_FluentCore_Menu_ImportBookmarks_Description: 'Import all bookmarks from a file (existing bookmarks will be kept)',
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Importar Marcadores…",
+  Frontend_FluentCore_Menu_ImportBookmarks_Description: "Abra a caixa de diálogo para importar os marcadores de versão(ões) anterior(es)",
   Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
   Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
