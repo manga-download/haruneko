@@ -71,10 +71,10 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Window_ButtonClose_Description: "Fermer l'application",
   //
   Frontend_FluentCore_Menu_Description: "Afficher le menu de l'application",
-  Frontend_FluentCore_Menu_OpenSettings_Label: 'Settings…',
+  Frontend_FluentCore_Menu_OpenSettings_Label: "Paramètres…",
   Frontend_FluentCore_Menu_OpenSettings_Description: "Modifier les paramètres de l'application",
-  Frontend_FluentCore_Menu_ImportBookmarks_Label: 'Import Bookmarks…',
-  Frontend_FluentCore_Menu_ImportBookmarks_Description: 'Import all bookmarks from a file (existing bookmarks will be kept)',
+  Frontend_FluentCore_Menu_ImportBookmarks_Label: "Importer les favoris…",
+  Frontend_FluentCore_Menu_ImportBookmarks_Description: "Ouvrir la boîte de dialogue pour importer des favoris d'une version précédente",
   Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
   Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
@@ -94,7 +94,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   //
   Frontend_FluentCore_DownloadManager_Heading: "Téléchargements",
   Frontend_FluentCore_DownloadManagerTask_StatusQueued_Description: "En attente",
-  Frontend_FluentCore_DownloadManagerTask_StatusPaused_Description: "En attente",
+  Frontend_FluentCore_DownloadManagerTask_StatusPaused_Description: "Suspendu(s)",
   Frontend_FluentCore_DownloadManagerTask_StatusDownloading_Description: "Téléchargement en cours",
   Frontend_FluentCore_DownloadManagerTask_StatusProcessing_Description: "Traitement en cours",
   Frontend_FluentCore_DownloadManagerTask_StatusFailed_Description: "Échec",
