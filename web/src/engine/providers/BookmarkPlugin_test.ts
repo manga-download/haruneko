@@ -1,18 +1,30 @@
 import { mock } from 'jest-mock-extended';
 import { MediaContainer, type IMediaContainer } from './MediaPlugin';
-import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
+import { MissingInfoTracker, type IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import { Store, type StorageController } from '../StorageController';
 import type { PluginController } from '../PluginController';
 import type { InteractiveFileContentProvider } from '../InteractiveFileContentProvider';
 import { BookmarkPlugin } from './BookmarkPlugin';
 import { MissingWebsite, type Bookmark, type BookmarkSerialized } from './Bookmark';
 
+class BlobProxy extends Blob {
+
+    public readonly data: unknown;
+
+    constructor(parts?: BlobPart[], options?: BlobPropertyBag) {
+        super(parts, options);
+        this.data = JSON.parse(parts[0] as string);
+    }
+}
+
+global.Blob = BlobProxy;
+
 class TestFixture {
 
     public static readonly DefaultStoredEntries: BookmarkSerialized[] = [
         {
-            Created: 1.1,
-            Updated: 1.2,
+            Created: 1,
+            Updated: 1,
             Title: 'Bookmark 01',
             Media: {
                 ProviderID: 'website-01',
@@ -28,8 +40,8 @@ class TestFixture {
             },
         },
         {
-            Created: 2.1,
-            Updated: 2.2,
+            Created: 2,
+            Updated: 2,
             Title: 'Bookmark 02',
             Media: {
                 ProviderID: 'website-02',
@@ -45,8 +57,8 @@ class TestFixture {
             },
         },
         {
-            Created: 3.1,
-            Updated: 3.2,
+            Created: 3,
+            Updated: 3,
             Title: 'Bookmark 03',
             Media: {
                 ProviderID: 'website-03',
@@ -123,6 +135,7 @@ describe('BookmarkPlugin', () => {
             expect(testee.Entries[0].Parent).not.toBeInstanceOf(MissingWebsite);
             expect(testee.Entries[0].Parent.Identifier).toBe('website-01');
             expect(testee.Entries[0].Parent.Title).toBe('Website 01');
+            expect(testee.Entries[0].Tracker).not.toBeInstanceOf(MissingInfoTracker);
             expect(testee.Entries[0].Tracker.Identifier).toBe('tracker-01');
             expect(testee.Entries[0].Tracker.Title).toBe('Tracker 01');
             expect(testee.Entries[0].InfoID).toBe('tracker-01/manga');
@@ -132,7 +145,9 @@ describe('BookmarkPlugin', () => {
             expect(testee.Entries[1].Parent).toBeInstanceOf(MissingWebsite);
             expect(testee.Entries[1].Parent.Identifier).toBe('website-02');
             expect(testee.Entries[1].Parent.Title).toBe('website-02');
-            expect(testee.Entries[1].Tracker).toBeNull();
+            expect(testee.Entries[1].Tracker).toBeInstanceOf(MissingInfoTracker);
+            expect(testee.Entries[1].Tracker.Identifier).toBe('tracker-02');
+            expect(testee.Entries[1].Tracker.Title).toBe('tracker-02');
             expect(testee.Entries[1].InfoID).toBe('tracker-02/manga');
 
             expect(testee.Entries[2].Title).toBe('Bookmark 03');
@@ -140,7 +155,9 @@ describe('BookmarkPlugin', () => {
             expect(testee.Entries[2].Parent).toBeInstanceOf(MissingWebsite);
             expect(testee.Entries[2].Parent.Identifier).toBe('website-03');
             expect(testee.Entries[2].Parent.Title).toBe('website-03');
-            expect(testee.Entries[2].Tracker).toBeNull();
+            expect(testee.Entries[2].Tracker).toBeInstanceOf(MissingInfoTracker);
+            expect(testee.Entries[2].Tracker.Identifier).toBeNull();
+            expect(testee.Entries[2].Tracker.Title).toBeNull();
             expect(testee.Entries[2].InfoID).toBeNull();
         });
     });
@@ -316,8 +333,7 @@ describe('BookmarkPlugin', () => {
 
             expect(actual.cancelled).toBe(false);
             expect(actual.exported).toBe(3);
-            // TODO: Is it possible to assert the text() of the Blob?
-            expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalledWith(new Blob(), {
+            expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalledWith(expect.objectContaining({ data: TestFixture.DefaultStoredEntries }), {
                 suggestedName: `HakuNeko (${today}).bookmarks`,
                 types: [
                     {
