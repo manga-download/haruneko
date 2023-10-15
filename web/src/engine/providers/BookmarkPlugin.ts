@@ -5,6 +5,7 @@ import type { InteractiveFileContentProvider } from '../InteractiveFileContentPr
 import { Event } from '../Event';
 import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
 import { Bookmark, MissingWebsite, type BookmarkSerialized } from './Bookmark';
+import { MissingInfoTracker } from '../trackers/IMediaInfoTracker';
 
 type BookmarkImportResult = {
     cancelled: boolean;
@@ -46,7 +47,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
         const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? new MissingWebsite(serialized.Media.ProviderID);
-        const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
+        const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID) ?? new MissingInfoTracker(serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
             new Date(serialized.Updated),
