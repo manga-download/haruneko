@@ -12,7 +12,7 @@ const config: Config = {
     },
     child: {
         id: '/read/mythos/en/1/1/',
-        title: 'Chapter 1: Peaceful Days. (FREE)'
+        title: 'Chapter 1: Peaceful Days.'
     },
     entry: {
         index: 0,

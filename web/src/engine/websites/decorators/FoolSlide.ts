@@ -98,7 +98,7 @@ const ChapterInfoExtractor = Common.AnchorInfoExtractor();
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
-export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks): Promise<Chapter[]> {
+export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks, extractor = ChapterInfoExtractor): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
     const request = new FetchRequest(uri.href, {
         method: 'POST',
@@ -109,7 +109,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
     });
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
-        const { id, title } = ChapterInfoExtractor.call(this, element);
+        const { id, title } = extractor.call(this, element);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }
@@ -119,12 +119,12 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
-export function ChaptersSinglePageCSS(query: string = queryChapterListLinks) {
+export function ChaptersSinglePageCSS(query: string = queryChapterListLinks, extractor = ChapterInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageCSS.call(this, manga, query);
+                return FetchChaptersSinglePageCSS.call(this, manga, query, extractor);
             }
         };
     };
