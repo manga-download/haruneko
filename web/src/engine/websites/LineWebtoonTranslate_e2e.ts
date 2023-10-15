@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://translate.webtoons.com/webtoonVersion?webtoonNo=3140&language=SWE&teamVersion=0',
-        id: '/webtoonVersion?webtoonNo=3140&language=SWE&teamVersion=0' ,
+        id: '/webtoonVersion?webtoonNo=3140&language=SWE&teamVersion=0',
         title: 'I want to be a cute anime girl',
         timeout: 15000
     },
