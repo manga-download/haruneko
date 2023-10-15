@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './NoraNoFansub.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as FoolSlide from '../decorators/FoolSlide';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as FoolSlide from './decorators/FoolSlide';
 
 @FoolSlide.MangaCSS(/^https?:\/\/www\.noranofansub\.com\/lector\/series\/[^/]+\/$/)
 @FoolSlide.MangasMultiPageCSS('/lector/directory/{page}')
