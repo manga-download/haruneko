@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.funmanga.com/Tales-of-Demons-and-Gods',
-        id: '/Tales-of-Demons-and-Gods' ,
+        id: '/Tales-of-Demons-and-Gods',
         title: 'Tales of Demons and Gods'
     },
     child: {

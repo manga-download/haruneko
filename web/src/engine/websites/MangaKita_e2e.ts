@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/closer-chapter-30-bahasa-indonesia/',
         title: 'Chapter 30',
-        timeout : 10000
+        timeout: 10000
     },
     entry: {
         index: 0,

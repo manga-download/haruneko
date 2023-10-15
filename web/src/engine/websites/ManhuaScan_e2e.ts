@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/manga/35647-taoist-master-hoguk/chapter-67',
         title: 'Chapter 67',
-        timeout : 10000
+        timeout: 10000
     },
     entry: {
         index: 0,

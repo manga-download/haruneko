@@ -2,7 +2,7 @@
 
 const config: Config = {
     plugin: {
-        id: 'secretscans',
+        id: 'lynxscans',
         title: 'Lynx Scans'
     },
     container: {
@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/the-story-of-a-low-rank-soldier-becoming-a-monarch-chapter-1/',
         title: 'Chapter 1',
-        timeout : 15000
+        timeout: 15000
     },
     entry: {
         index: 1,

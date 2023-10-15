@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.shqqaa.com/manga/one-piece/',
-        id: '/manga/one-piece/' ,
+        id: '/manga/one-piece/',
         title: 'One Piece'
     },
     child: {

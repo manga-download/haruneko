@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://trwebtoon.com/webtoon/oscar-zahnin-garip-seruvenleri',
-        id: '/webtoon/oscar-zahnin-garip-seruvenleri' ,
+        id: '/webtoon/oscar-zahnin-garip-seruvenleri',
         title: 'Oscar Zahn’ın Garip Serüvenleri'
     },
     child: {
