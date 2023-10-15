@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
         const comicPy = url.match(/\/info\/(\S+)\.html$/)[1];
         const request = new FetchRequest(new URL(`/api/v1/comic1/comic/detail?comic_py=${comicPy}`, this.URI).href);
         const data = await FetchJSON<APIResult<APIComicSingle>>(request);
-        return new Manga(this, provider, JSON.stringify({ comicPy : data.data.comicInfo.comicPy, comicId: data.data.comicInfo.id }), data.data.comicInfo.title.trim());
+        return new Manga(this, provider, JSON.stringify({ comicPy: data.data.comicInfo.comicPy, comicId: data.data.comicInfo.id }), data.data.comicInfo.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
