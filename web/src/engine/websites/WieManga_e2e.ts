@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.wiemanga.com/manga/Solo_Leveling.html',
-        id: '/manga/Solo_Leveling.html' ,
+        id: '/manga/Solo_Leveling.html',
         title: 'Solo Leveling',
     },
     child: {
