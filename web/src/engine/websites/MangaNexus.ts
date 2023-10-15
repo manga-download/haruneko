@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
     private nextBuild = '';
 
     public constructor() {
-        super('manganexus', `MangaNexus`, 'https://manganexus.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('manganexus', `MangaNexus`, 'https://manganexus.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
     public override get Icon() {
         return icon;
