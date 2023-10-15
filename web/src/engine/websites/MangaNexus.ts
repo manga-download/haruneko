@@ -59,7 +59,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         const request = new FetchRequest(this.URI.href);
-        const data = await FetchWindowScript<NEXTDATA>(request, `__NEXT_DATA__`,2000);
+        const data = await FetchWindowScript<NEXTDATA>(request, `__NEXT_DATA__`, 2000);
         this.nextBuild = data.buildId;
     }
 
