@@ -12,7 +12,7 @@ import * as SixParkbbs from './decorators/SixParkbbs';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sixparkbbsclub', `6parkbbs (卡通漫画)`, 'https://club.6parkbbs.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('sixparkbbsclub', `6parkbbs Club (新❀华漫)`, 'https://club.6parkbbs.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

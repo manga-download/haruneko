@@ -1,13 +1,15 @@
-import { FetchRequest, FetchWindowCSS } from '../../FetchProvider';
+﻿import { FetchRequest, FetchWindowCSS } from '../../FetchProvider';
 import { Manga, type MangaPlugin, type MangaScraper } from '../../providers/MangaPlugin';
 import * as Common from './Common';
-export function MangaLabelExtractor(element: HTMLElement) {
-    return element.textContent.replace(/^\s*\[.*?\]\s*/g, '').trim();
+export function MangaLabelExtractor(element: HTMLAnchorElement) {
+    return element.textContent.replace(/\[.*?\]/g, '').replace(/【.*?】/g, '').trim();
 }
 
 export function PagesExtractor(element: HTMLImageElement) {
     return element.getAttribute('mydatasrc') || element.src;
 }
+
+const queryMangasPagecount = 'div#d_list_page a:nth-last-child(2)';
 
 /***********************************************
  ******** Manga List Extraction Methods ********
@@ -29,17 +31,26 @@ export function PagesExtractor(element: HTMLImageElement) {
 export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, path: string, query: string, queryMatch: RegExp, sub = '', start = 1, step = 1, throttle = 0): Promise<Manga[]> {
     const mangaList = [];
     let reducer = Promise.resolve();
-    for (let page = start, run = true; run; page += step) {
+
+    //fetch pages count (because we must continue despites empty pages)
+    const url = new URL(sub + path.replace('{page}', '1000'), this.URI).href;//great page number to make sure we get last
+    const data = await FetchWindowCSS<HTMLAnchorElement>(new FetchRequest(url), queryMangasPagecount);
+    const pageMaxUrl = new URL(data[0].href);
+    const pageMax = parseInt(pageMaxUrl.searchParams.get('p') || pageMaxUrl.searchParams.get('nowpage'));
+
+    for (let page = start; page < pageMax; page += step) {
         await reducer;
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const url = new URL(sub + path.replace('{page}', `${page}`), this.URI).href;
         const data = await FetchWindowCSS<HTMLAnchorElement>(new FetchRequest(url), query);//If not using FetchWindowCSS we always fetch the same page
-        if (!data || data.length == 0) break;
+        if (!data || data.length == 0) continue;
         const mangas = data
             .filter(element => queryMatch.test(element.text))
-            .map(el => new Manga(this, provider, el.pathname + el.search, el.text.trim()));
-        mangas.length > 0 && !Common.EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
-
+            .map(element => {
+                const title = MangaLabelExtractor.call(this, element);
+                return new Manga(this, provider, element.pathname + element.search, title);
+            });
+        if (mangas.length > 0 && !Common.EndsWith(mangaList, mangas) ) mangaList.push(...mangas) ;
     }
     return mangaList;
 }
