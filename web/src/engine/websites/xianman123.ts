@@ -18,7 +18,7 @@ const pagesScript = `
 @Common.MangaCSS(/^https?:\/\/www\.xianmanwang\.com\/\S+\/$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS('/f-1-0-0-0-0-2-{page}.html', MH.queryMangas)
 @Common.ChaptersSinglePageCSS(MH.queryChapters, MH.ChapterExtractor)
-@Common.PagesSinglePageJS(pagesScript,2500)
+@Common.PagesSinglePageJS(pagesScript, 2500)
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {

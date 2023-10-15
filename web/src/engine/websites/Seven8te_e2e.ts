@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.17te.com/cartoon/581',
-        id: '/cartoon/581' ,
+        id: '/cartoon/581',
         title: '家庭教师()'
     },
     child: {
