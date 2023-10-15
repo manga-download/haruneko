@@ -168,6 +168,7 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   FetchProvider_FetchWindow_TimeoutError: 'The request could not be fulfilled within the given timeout!',
   FetchProvider_FetchWindow_CloudFlareError: 'The request failed due to the following CloudFlare Error: "{0}"',
   FetchProvider_FetchWindow_AlertCaptcha: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
+  BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
   // [SECTION]: Tags
   Tags_Media: 'Media',
   Tags_Media_Manga: 'Manga',
