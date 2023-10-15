@@ -1,6 +1,6 @@
 ﻿import { FetchCSS, FetchRequest, FetchWindowCSS } from '../../FetchProvider';
 import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
-import type * as Common from './Common';
+import * as Common from './Common';
 export function MangaLabelExtractor(element: HTMLElement) {
     const title = ((element as HTMLMetaElement).content || element.textContent).replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
     return title ;
@@ -86,9 +86,8 @@ async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, quer
  */
 export function ChaptersSinglePageCSS(query: string = queryChapters, extractor = ChapterExtractor, bypassNsfwWarning = true) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageCSS.call(this, manga, query, extractor, bypassNsfwWarning);
@@ -141,9 +140,8 @@ export async function FetchPagesMultiPagesCSS(this: MangaScraper, chapter: Chapt
  */
 export function PagesMultiPageCSS(queryPages_arg: string = queryPages, querySubPages_arg: string = querySubPages, queryImages_arg: string = queryImages, extractSubPages: LinkExtractor = PageLinkExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 return FetchPagesMultiPagesCSS.call(this, chapter, queryPages_arg, querySubPages_arg, queryImages_arg, extractSubPages );
