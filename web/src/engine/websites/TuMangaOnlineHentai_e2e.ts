@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://tmohentai.com/contents/642cba8a84de5',
-        id: '/contents/642cba8a84de5' ,
+        id: '/contents/642cba8a84de5',
         title: 'INSTINCT WORLD'
     },
     child: {

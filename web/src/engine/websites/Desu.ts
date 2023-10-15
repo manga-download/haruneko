@@ -22,7 +22,7 @@ const scriptPages = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('desu', `Desu`, 'https://desu.me' , Tags.Language.Russian, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('desu', `Desu`, 'https://desu.me', Tags.Language.Russian, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

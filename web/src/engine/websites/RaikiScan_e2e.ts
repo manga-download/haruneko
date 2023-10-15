@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/invencible-desde-el-principio-capitulo-0/',
         title: 'Capítulo 0',
-        timeout : 15000
+        timeout: 15000
     },
     entry: {
         index: 1,

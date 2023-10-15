@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/zui-wu-dao-capitulo-01/',
         title: 'Capítulo 01',
-        timeout : 13000
+        timeout: 13000
     },
     entry: {
         index: 1,

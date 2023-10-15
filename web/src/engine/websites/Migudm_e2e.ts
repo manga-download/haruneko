@@ -9,7 +9,7 @@ const config: Config = {
         url: 'https://www.migudm.cn/comic/090000001072.html',
         id: '/comic/090000001072.html',
         title: '青柠之夏',
-        timeout : 10000,
+        timeout: 10000,
     },
     child: {
         id: '/090000001072/chapter/1.html',

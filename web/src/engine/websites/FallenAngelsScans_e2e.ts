@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://manga.fascans.com/manga/29-to-jk',
-        id: '/manga/29-to-jk' ,
+        id: '/manga/29-to-jk',
         title: '29 to JK'
     },
     child: {

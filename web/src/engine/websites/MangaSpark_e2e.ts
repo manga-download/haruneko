@@ -6,7 +6,7 @@ const config = {
         title: 'مانجا سبارك (MangaSpark)'
     },
     container: {
-        url: 'https://mangaspark.com/manga/the-unlikely-gods/',
+        url: 'https://mangaspark.org/manga/the-unlikely-gods/',
         id: JSON.stringify({ post: '83566', slug: '/manga/the-unlikely-gods/' }),
         title: 'The Unlikely Gods'
     },
