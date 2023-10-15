@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://fmteam.fr/comics/dgray-man',
-        id: 'dgray-man' ,
+        id: 'dgray-man',
         title: 'D.Gray-man'
     },
     child: {

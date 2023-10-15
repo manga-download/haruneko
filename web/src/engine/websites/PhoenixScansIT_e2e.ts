@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.phoenixscans.com/comics/kakko-no-iinazuke',
-        id: 'kakko-no-iinazuke' ,
+        id: 'kakko-no-iinazuke',
         title: 'Kakko no Iinazuke'
     },
     child: {

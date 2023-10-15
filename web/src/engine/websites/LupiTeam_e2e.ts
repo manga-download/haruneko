@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://lupiteam.net/comics/one-piece',
-        id: 'one-piece' ,
+        id: 'one-piece',
         title: 'One Piece'
     },
     child: {

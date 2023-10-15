@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://reader.gtothegreatsite.net/comics/il-mio-senpai-e-irritante',
-        id: 'il-mio-senpai-e-irritante' ,
+        id: 'il-mio-senpai-e-irritante',
         title: 'Il mio senpai è irritante'
     },
     child: {
