@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://x.henchan.pro/manga/47092-zhena-privela-podrugu-dlya-muzha-u-kotorogo-ne-vstanet-bez-esche-2-bolshih-sisek-glava-1.html',
-        id: '/manga/47092-zhena-privela-podrugu-dlya-muzha-u-kotorogo-ne-vstanet-bez-esche-2-bolshih-sisek-glava-1.html' ,
+        id: '/manga/47092-zhena-privela-podrugu-dlya-muzha-u-kotorogo-ne-vstanet-bez-esche-2-bolshih-sisek-glava-1.html',
         title: 'Жена привела подругу для мужа, у которого не встанет без ещё 2 больших сисек - глава 1'
     },
     child: {
