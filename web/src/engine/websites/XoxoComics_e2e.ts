@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://xoxocomics.net/comic/marvel-knights-4',
-        id: '/comic/marvel-knights-4' ,
+        id: '/comic/marvel-knights-4',
         title: 'Marvel Knights 4'
     },
     child: {

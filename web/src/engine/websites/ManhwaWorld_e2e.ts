@@ -4,7 +4,7 @@ const config = {
     plugin: {
         id: 'manhwaworld',
         title: 'Manhwa World',
-        timeout : 50000
+        timeout: 50000
 
     },
     container: {

@@ -27,6 +27,8 @@
     // Hakuneko Engine
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import type { IMediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
+    import { Exception } from '../../../engine/Error';
+    import { VariantResourceKey as R } from '../../../i18n/ILocale';
 
     let medias: IMediaContainer[] = [];
     let filteredmedias: IMediaContainer[] = [];
@@ -146,7 +148,7 @@
                     return;
                 }
             }
-            throw new Error(`No matching website found for '${link}'`);
+            throw new Exception(R.Frontend_Media_PasteLink_NotFoundError, link);
         } catch (error) {
             console.warn(error);
         }

@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
             body: form, method: 'POST', headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'X-Requested-With': 'XMLHttpRequest',
-                'Referer' : this.URI.href
+                'Referer': this.URI.href
             }
         });
         return request;
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
         const formManga = new URLSearchParams({
             'filter[generes][]': '-1',
             'filter[queryString]': '',
-            'filter[skip]' : String(500 * page),
+            'filter[skip]': String(500 * page),
             'filter[take]': '500',
             'filter[sortby]': '5',
             'filter[broadcastStatus]': '0',

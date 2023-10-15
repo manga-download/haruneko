@@ -6,10 +6,9 @@ import * as Common from '../decorators/Common';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/comic-days\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-//@CoreView.MangasMultiPageCSS(['/oneshot', '/newcomer', '/daysneo'])
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
-@CoreView.ImageDescrambler()
+@CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
