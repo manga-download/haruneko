@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://mangatales.com/mangas/546/is-this-good-or-evil',
-        id: '546' ,
+        id: '546',
         title: 'Is This Good or Evil'
     },
     child: {

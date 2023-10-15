@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://gmanga.me/mangas/17240/oh-my-devil',
-        id: '17240' ,
+        id: '17240',
         title: 'Oh, My Devil'
     },
     child: {
