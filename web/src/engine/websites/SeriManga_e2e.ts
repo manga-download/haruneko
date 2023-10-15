@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://serimanga.com/manga/kara-yonca',
-        id: '/manga/kara-yonca' ,
+        id: '/manga/kara-yonca',
         title: 'Black Clover'
     },
     child: {

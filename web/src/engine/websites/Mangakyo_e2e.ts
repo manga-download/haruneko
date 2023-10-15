@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/0-magic-a-high-spirit-and-a-demonic-sword-chapter-01/',
         title: 'Chapter 01',
-        timeout : 15000
+        timeout: 15000
     },
     entry: {
         index: 0,

@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.raindropteamfan.com/manga/owari-no-seraph/',
-        id: '/manga/owari-no-seraph/' ,
+        id: '/manga/owari-no-seraph/',
         title: 'Owari no Seraph'
     },
     child: {
