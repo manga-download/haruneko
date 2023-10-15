@@ -10,7 +10,7 @@ export enum LocaleID {
     Locale_filPH = 'Locale_filPH',
     Locale_frFR = 'Locale_frFR',
     Locale_hiIN = 'Locale_hiIN',
-    Locale_inID = 'Locale_inID',
+    Locale_idID = 'Locale_idID',
     Locale_ptPT = 'Locale_ptPT',
     Locale_thTH = 'Locale_thTH',
     Locale_trTR = 'Locale_trTR',
