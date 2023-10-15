@@ -64,9 +64,9 @@ const translations: IVariantResource = {
     Frontend_Classic_Settings_ViewerDoublePage: 'Show Double Pages',
     Frontend_Classic_Settings_ViewerDoublePageInfo: 'Show two pages/images at once (like in tradional Manga)',
     Frontend_Classic_Sidenav_Home: 'Home',
-    Frontend_Classic_Sidenav_Settings_General:'General',
+    Frontend_Classic_Sidenav_Settings_General: 'General',
     Frontend_Classic_Sidenav_Settings_Interface: 'Interface',
-    Frontend_Classic_Sidenav_Settings_Trackers:'Trackers',
+    Frontend_Classic_Sidenav_Settings_Trackers: 'Trackers',
     Frontend_Classic_Sidenav_Settings_Network: 'Network',
 
     // [SECTION]: Frontend FluentCore
@@ -250,8 +250,8 @@ const translations: IVariantResource = {
     Plugin_Settings_ThrottlingInteractionInfo: 'Limit the number of requests to this website to prevent being blocked or banned',
 
     Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
-    Plugin_Common_Chapter_UnavailableError : 'The chapter is not available (not purchased/unlocked/public)!',
-    Plugin_Common_Chapter_InvalidError : 'Failed to extract the pages from the chapter content!',
+    Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
+    Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
 
     Plugin_MissingWebsite_UpdateError: 'Failed to update the content index for a non-existing website!',
     Plugin_MissingWebsiteEntry_UpdateError: 'Failed to update the media index for a non-existing website!',

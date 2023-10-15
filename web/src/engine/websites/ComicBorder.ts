@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicBorder.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as CoreView from '../decorators/CoreView';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as CoreView from './decorators/CoreView';
+import * as Common from './decorators/Common';
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -14,7 +14,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasSinglePageCSS('/', 'ul.index-list-all li a', MangaExtractor)
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
-@CoreView.ImageDescrambler()
+@CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

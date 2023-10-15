@@ -232,7 +232,7 @@ async function descrambleImage(data: Blob): Promise<Blob> {
 
         canvas.toBlob(data => {
             resolve(data);
-        },'image/png', parseFloat('90') / 100);
+        }, 'image/png', parseFloat('90') / 100);
     });
 }
 
@@ -240,7 +240,7 @@ async function descrambleImage(data: Blob): Promise<Blob> {
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export function ImageDescrambler(detectMimeType = false) {
+export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {

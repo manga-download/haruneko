@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://mangakatana.com/manga/musuko-ga-kawaikute-shikataganai-mazoku-no-hahaoya.17231',
-        id: '/manga/musuko-ga-kawaikute-shikataganai-mazoku-no-hahaoya.17231' ,
+        id: '/manga/musuko-ga-kawaikute-shikataganai-mazoku-no-hahaoya.17231',
         title: 'Musuko ga Kawaikute Shikataganai Mazoku no Hahaoya'
     },
     child: {

@@ -16,7 +16,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/https:\/\/lewdmanhwa\.com/, 'main#main header.entry-header h1.entry-title')
-@Common.MangasMultiPageCSS('/webtoons/page/{page}/', 'div#content div.is-list-card div.column a', 1,1,0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('/webtoons/page/{page}/', 'div#content div.is-list-card div.column a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter-list div.chapter-list-items a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('span.single-comic-page img')
 @Common.ImageAjax()

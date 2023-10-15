@@ -13,7 +13,7 @@ const config: Config = {
     child: {
         id: '/chapter/mercenary-enrollment/chapter-126',
         title: 'Chapter 126',
-        timeout : 20000,
+        timeout: 20000,
     },
     entry: {
         index: 0,

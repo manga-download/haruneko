@@ -1,6 +1,6 @@
 import { Tags } from '../../Tags';
 import icon from './Mexat.webp';
-import { Chapter, DecoratableMangaScraper,Page,type Manga } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import { FetchCSS, FetchRequest } from '../../FetchProvider';
 

@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://mangahub.ru/title/soul_land_ii',
-        id: '/title/soul_land_ii' ,
+        id: '/title/soul_land_ii',
         title: 'Боевой Континент 2'
     },
     child: {
