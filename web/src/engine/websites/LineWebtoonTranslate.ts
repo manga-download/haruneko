@@ -39,7 +39,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^https?:\/\/translate\.webtoons\.com\/webtoonVersion\?webtoonNo=\d+&language=\S+&teamVersion=\d+$/, LineW.queryMangaTitleURI, Common.ElementLabelExtractor(), true)
-@Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a',1,1,0, MangaExtractor)
+@Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a', 1, 1, 0, MangaExtractor)
 @LineW.ChaptersMultiPageCSS()
 @LineW.PagesSinglePageJS(pageScript)
 @LineW.ImageAjax()

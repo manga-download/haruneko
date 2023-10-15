@@ -7,9 +7,9 @@ const config = {
     },
     container: {
         url: 'https://www.webtoons.com/en/romance/lore-olympus/list?title_no=1320',
-        id: '/en/romance/lore-olympus/list?title_no=1320' ,
+        id: '/en/romance/lore-olympus/list?title_no=1320',
         title: 'Lore Olympus',
-        timeout : 15000
+        timeout: 15000
     },
     child: {
         id: '/en/romance/lore-olympus/s3-episode-250/viewer?title_no=1320&episode_no=255',
