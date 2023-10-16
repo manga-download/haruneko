@@ -52,8 +52,8 @@ export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga
  * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given JS {@link script}.
  * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
  * @param script - A JS script to extract a list of entries with each entry containing the identifier and title property from which the chapters are composed
- * @param delay - An initial delay [ms] before the {@link script} is executed
  * @param queryChap - CSS selector to get chapters
+ * @param delay - An initial delay [ms] before the {@link script} is executed
  */
 export function ChaptersSinglePageJS(script: string, queryChap = queryChapters, delay = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
@@ -88,8 +88,8 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
  * A class decorator that adds the ability to extract all pages for a given chapter using the given JS {@link script}.
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
  * @param script - A JS script to extract the image links
- * @param delay - An initial delay [ms] before the {@link script} is executed
  * @param api - Api object name to call in script. Default 'SinMH'
+ * @param delay - An initial delay [ms] before the {@link script} is executed
  */
 export function PagesSinglePageJS(script = queryChaptersScript, api = SinApi, delay = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {

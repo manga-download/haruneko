@@ -4,19 +4,6 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SinMH from './decorators/SinMH';
 
-/*
-this.config = {
-    throttle: {
-        label: 'Page Throttle Requests [ms]',
-        description: 'Enter the timespan in [ms] to delay consecuitive HTTP requests while downloading Pages.\nThe website may ban your IP for to many consecuitive requests.',
-        input: 'numeric',
-        min: 500,
-        max: 10000,
-        value: 2500
-    }
-};
-*/
-
 const queryPagesScript = `
             new Promise(resolve => {
                 SMH.imgData = function(data) {

@@ -6,11 +6,8 @@ const config = {
         title: '动漫之家(DMZJ)'
     },
     container: {
-        url: 'https://www.dmzj.com/info/biaoren.html',
-        id: JSON.stringify({
-            comicPy: 'biaoren',
-            comicId: 21046
-        }),
+        url: 'https://www.idmzj.com/info/biaoren.html',
+        id: 'biaoren',
         title: '镖人'
     },
     child: {
