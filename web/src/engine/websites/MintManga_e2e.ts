@@ -6,19 +6,19 @@ const config: Config = {
         title: 'MintManga'
     },
     container: {
-        url: 'https://mintmanga.live/voshojdenie_v_teni__A35c96',
-        id: '/voshojdenie_v_teni__A35c96',
-        title: 'Восхождение в тени',
+        url: 'https://23.mintmanga.live/blagoslovenie_nebojitelei__A5327',
+        id: '/blagoslovenie_nebojitelei__A5327',
+        title: 'Heaven Official’s Blessing',
     },
     child: {
-        id: '/voshojdenie_v_teni__A35c96/vol9/53',
-        title: '9 - 53',
-        timeout: 30000
+        id: '/blagoslovenie_nebojitelei__A5327/vol8/98',
+        title: '8 - 98 Кто прав, кто виноват',
+        timeout: 50000
 
     },
     entry: {
         index: 0,
-        size: 1_823_083,
+        size: 3_678_062,
         type: 'image/png'
     }
 };
