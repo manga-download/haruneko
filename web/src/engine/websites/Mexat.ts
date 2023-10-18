@@ -38,17 +38,5 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS<HTMLOptionElement>(request, 'div.content div.manga-filter select#manga_pid option');
         return data.map(page => new Page(this, chapter, new URL(`${request.url}?pid=${page.value}`, this.URI)));
     }
-/*
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const image = await this.imageTaskPool.Add(async () => {
-            const request = new FetchRequest(page.Link.href, {
-                signal: signal
-            });
-            const realimage = new URL((await FetchCSS<HTMLImageElement>(request, 'div.content div.post-inner div.pic a img'))[0].src).pathname;
-            return new Page(this, page.Parent as Chapter, new URL(DeProxify(new URL(realimage, page.Link.origin)).href));
-        }, priority, signal);
 
-        return await Common.FetchImageAjax.call(this, image, priority, signal, false);
-    }
-*/
 }
