@@ -4,6 +4,7 @@ import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchPro
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { IMediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
+import DeProxify from '../../transformers/ImageLinkDeProxifier';
 
 export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContext) {
     if (context && context.kind !== 'class') {
@@ -516,6 +517,35 @@ export function ImageElement(includeRefererHeader = true, detectMimeType = false
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImageElement.call(this, page, priority, signal, includeRefererHeader, detectMimeType);
+            }
+        };
+    };
+}
+
+export async function FetchImageAjaxFromHTML(page: Page, priority: Priority, signal: AbortSignal, queryImage: string, detectMimeType = false): Promise<Blob> {
+    const image = await this.imageTaskPool.Add(async () => {
+        const request = new FetchRequest(page.Link.href, {
+            signal: signal
+        });
+        const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].src;
+        return new Page(this, page.Parent as Chapter, new URL(DeProxify(new URL(realimage)), this.URI));
+    }, priority, signal);
+
+    return await FetchImageAjax.call(this, image, priority, signal, detectMimeType);
+}
+
+/**
+ * A class decorator that adds the ability to get the image data when Page is the link to an HTML Page.
+ * Use this when Chapter are composed of multiple html Page and each page hold an image
+ * @param queryImage - a query to get the image in the html page Page
+ * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ */
+export function ImageAjaxFromHTML(queryImage: string, detectMimeType = false) {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+                return FetchImageAjaxFromHTML.call(this, page, priority, signal, queryImage, detectMimeType);
             }
         };
     };
