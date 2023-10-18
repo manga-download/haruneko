@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Mangaz.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import { FetchCSS, FetchRequest, FetchWindowScript } from '../../FetchProvider';
-import * as Common from '../decorators/Common';
-import { type Priority } from '../../taskpool/TaskPool';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { FetchCSS, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import * as Common from './decorators/Common';
+import { type Priority } from './../taskpool/TaskPool';
 
 type ImgObj = {
     img: string[],
@@ -29,14 +29,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 0, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(page, provider);
+            const mangas = await this.getMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(new URL('/title/addpage_renewal?query=&page=' + page, this.URI).href, {
+    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const request = new FetchRequest(new URL(`/title/addpage_renewal?query=&page=${page}=`, this.URI).href, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -49,8 +49,8 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
         const data = await FetchCSS(request, 'body');
-        return data[0].querySelector("li.box") ?
-            [...data[0].querySelectorAll("li.box")].map(ele => new Chapter(this, manga, ele.querySelector('button').dataset['url'].replace('navi', 'virgo/view'), ele.querySelector('span').textContent.trim()))
+        return data[0].querySelector("li.item") ?
+            [...data[0].querySelectorAll("li.item")].map(ele => new Chapter(this, manga, ele.querySelector('button').dataset['url'].replace('navi', 'virgo/view'), ele.querySelector('span.title').textContent.trim()))
             :
             [new Chapter(this, manga, data[0].querySelector('button').dataset['url'].replace('navi', 'virgo/view'), manga.Title)];
     }
