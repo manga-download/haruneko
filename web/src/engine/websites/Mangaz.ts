@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(new URL(`/title/addpage_renewal?query=&page=${page}=`, this.URI).href, {
+        const request = new FetchRequest(new URL(`/title/addpage_renewal?query=&page=${page}`, this.URI).href, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
