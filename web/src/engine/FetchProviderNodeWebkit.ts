@@ -1,6 +1,7 @@
 import { VariantResourceKey as R } from '../i18n/ILocale';
 import type { PreloadAction } from './FetchProvider';
-import { FetchRedirection, CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';
+import { FetchRedirection } from './AntiScrapingDetection';
+import { CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';
 import * as protobuf from 'protobufjs';
 import { Exception, InternalError } from './Error';
 
@@ -214,12 +215,16 @@ async function Wait(delay: number) {
     return new Promise(resolve => setTimeout(resolve, delay));
 }
 
+function IsVerboseMode() {
+    return window.localStorage.getItem('hakuneko-fetchwindow-verbose') === 'true';
+}
+
 async function FetchWindow(request: FetchRequest, timeout: number, preload: PreloadAction = () => undefined): Promise<NWJS_Helpers.win> {
 
     const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
         new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
         mixed_context: false,
-        show: false,
+        show: IsVerboseMode(),
         position: 'center',
         width: 1280,
         height: 720,
@@ -259,7 +264,9 @@ async function FetchWindow(request: FetchRequest, timeout: number, preload: Prel
         });
 
         const destroy = () => {
-            win.close();
+            if(!IsVerboseMode) {
+                win.close();
+            }
             if(!invocations.some(invocation => invocation.name === 'loaded')) {
                 console.warn(`FetchWindow() timed out without <loaded> event being invoked!`);
             }
@@ -289,7 +296,9 @@ async function FetchWindow(request: FetchRequest, timeout: number, preload: Prel
                 }
             } catch(error) {
                 clearTimeout(cancellation);
-                win.close();
+                if(!IsVerboseMode) {
+                    win.close();
+                }
                 reject(error);
             }
         });
@@ -306,7 +315,9 @@ export async function FetchWindowCSS<T extends HTMLElement>(request: FetchReques
         const dom = win.window.document as Document;
         return [...dom.querySelectorAll(query)] as T[];
     } finally {
-        win.close();
+        if(!IsVerboseMode()) {
+            win.close();
+        }
     }
 }
 
