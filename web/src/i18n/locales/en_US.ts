@@ -95,6 +95,8 @@ const translations: IVariantResource = {
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: 'Toggle the visibility of the download manager on/off',
     Frontend_FluentCore_Settings_ShowSplashScreen_Label: 'Show Splash Screen',
     Frontend_FluentCore_Settings_ShowSplashScreen_Description: 'Toggle the splash screen during application start on/off',
+    Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label: 'Show FetchBrowser Windows',
+    Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description: 'This developer focused option toggles the visibility of the browser windows for fetching data in the background on/off',
     //
     Frontend_FluentCore_SettingsDialog_Title: 'Settings',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label: 'Done',
