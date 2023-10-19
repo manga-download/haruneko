@@ -345,6 +345,8 @@ export async function FetchWindowPreloadScript<T>(request: FetchRequest, preload
             new Promise<T>((_, reject) => setTimeout(reject, timeout - elapsed, new Exception(R.FetchProvider_FetchWindow_TimeoutError)))
         ]);
     } finally {
-        win.close();
+        if(!IsVerboseMode()) {
+            win.close();
+        }
     }
 }
