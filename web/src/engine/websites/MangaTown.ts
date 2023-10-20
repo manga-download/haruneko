@@ -1,14 +1,16 @@
 import { Tags } from '../Tags';
 import icon from './MangaTown.webp';
-import { DecoratableMangaScraper, type Page } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchRequest } from '../FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+
+function PageLinkExtractor(element: HTMLOptionElement) {
+    return element.value;
+}
 
 @Common.MangaCSS(/^https?:\/\/www\.mangatown\.com\/manga\//, 'div.article_content h1.title-top')
 @Common.MangasMultiPageCSS('/directory/0-0-0-0-0-0/{page}.htm', 'ul.manga_pic_list li p.title a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('ul.chapter_list li a')
-@Common.PagesSinglePageCSS('div.manga_read_footer div.page_select select option', (option: HTMLOptionElement) => option.value)
+@Common.ImageAjaxFromHTML('img#image')
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -19,19 +21,8 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const request = new FetchRequest(page.Link.href);
-        const images = await FetchCSS<HTMLImageElement>(request, 'img#image');
-
-        return this.imageTaskPool.Add(async () => {
-            const request = new FetchRequest(new URL(images.pop().src, this.URI).href, {
-                signal: signal,
-                headers: {
-                    Referer: 'mangahere.com'
-                }
-            });
-            const response = await Fetch(request);
-            return response.blob();
-        }, priority, signal);
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div.manga_read_footer div.page_select select option', PageLinkExtractor);
+        return pages.map(page => new Page(this, chapter, new URL(page.Link.pathname, this.URI), { Referer: 'mangahere.com' }));
     }
 }
