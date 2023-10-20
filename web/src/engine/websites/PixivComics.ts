@@ -3,6 +3,8 @@ import icon from './PixivComics.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchJSON, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
+import type { Numeric, Text } from '../SettingsManager';
+import { Key as GlobalKey } from '../SettingsGlobal';
 
 type APIMangaPage = {
     data: {
@@ -78,7 +80,7 @@ export default class extends DecoratableMangaScraper {
         const { data } = await FetchJSON<APIManga>(request);
         const id = data.official_work.id;
         const title = data.official_work.name.trim();
-        return new Manga(this, provider, String(id), title);
+        return new Manga(this, provider, id.toString(), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -97,7 +99,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(`magazines/v2/${page}/works`, this.apiURL);
         const request = this.prepareRequest(uri.href);
         const { data } = await FetchJSON<APIMangas>(request);
-        return data.official_works.map(item => new Manga(this, provider, String(item.id), item.title.trim()));
+        return data.official_works.map(item => new Manga(this, provider, item.id.toString(), item.title.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -116,7 +118,7 @@ export default class extends DecoratableMangaScraper {
         return data.episodes
             .filter(item => item.readable)
             .map(item => {
-                return new Chapter(this, manga, String(item.episode.id), item.episode.numbering_title + (!item.episode.sub_title ? '' : ' - ' + item.episode.sub_title));
+                return new Chapter(this, manga, item.episode.id.toString(), item.episode.numbering_title + (!item.episode.sub_title ? '' : ' - ' + item.episode.sub_title));
             });
     }
 
@@ -151,14 +153,19 @@ export default class extends DecoratableMangaScraper {
                 }
             });
             const response = await Fetch(request);
-            return await response.blob();
+            return response.blob();
         }, priority, signal);
 
-        return await this.descrambleImage(image, page);
+        return this.descrambleImage(image, page);
 
     }
 
     async descrambleImage(data: Blob, page: Page): Promise<Blob> {
+
+        const settings = HakuNeko.SettingsManager.OpenScope();
+        const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
+        const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
+
         const image = await createImageBitmap(data);
         const payload: APIPage = JSON.parse(page.Parameters.payload as string);
 
@@ -176,7 +183,7 @@ export default class extends DecoratableMangaScraper {
         return new Promise((resolve) => {
             canvas.toBlob(data => {
                 resolve(data);
-            }, 'image/png', parseFloat('90') / 100);
+            }, format, quality / 100);
         });
     }
 
