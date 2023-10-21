@@ -2,6 +2,8 @@ import { Fetch, FetchCSS, FetchJSON, FetchRequest, FetchWindowCSS } from '../../
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
+import type { Numeric, Text } from '../../SettingsManager';
+import { Key as GlobalKey } from '../../SettingsGlobal';
 
 type JSONPageData_v016452 = {
     items: Configuration_v016452[]
@@ -432,6 +434,11 @@ async function process_v016130(scraper: MangaScraper, page: Page, priority: Prio
 
 async function descramble_v016130(bitmap: ImageBitmap, keys: DescrambleKP): Promise<Blob> {
     return new Promise(resolve => {
+
+        const settings = HakuNeko.SettingsManager.OpenScope();
+        const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
+        const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
+
         const view: PageView_v016130 = _getImageDescrambleCoords(keys.s, keys.u, bitmap.width, bitmap.height);
         const canvas = document.createElement('canvas');
         canvas.width = view.width;
@@ -449,7 +456,7 @@ async function descramble_v016130(bitmap: ImageBitmap, keys: DescrambleKP): Prom
         }
         canvas.toBlob(data => {
             resolve(data);
-        }, 'image/png', parseFloat('90') / 100);
+        }, format, quality / 100);
     });
 }
 
