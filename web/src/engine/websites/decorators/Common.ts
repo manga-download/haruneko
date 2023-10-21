@@ -4,6 +4,7 @@ import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchPro
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { IMediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
+import DeProxify from '../../transformers/ImageLinkDeProxifier';
 
 export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContext) {
     if (context && context.kind !== 'class') {
@@ -359,7 +360,6 @@ export function ChaptersUniqueFromManga() {
 }
 
 /**********************************************
-/**********************************************
  ******** Page List Extraction Methods ********
  **********************************************/
 
@@ -449,13 +449,15 @@ export function PagesSinglePageJS(script: string, delay = 0) {
  * @param priority - The importance level for ordering the request for the image data within the internal task pool
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * @param deProxifyLink - Remove common image proxies (default false)
  */
-export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
-        const request = new FetchRequest(page.Link.href, {
+        const imageLink = deProxifyLink ? DeProxify(page.Link) : page.Link;
+        const request = new FetchRequest(imageLink.href, {
             signal: signal,
             headers: {
-                Referer: page.Parameters?.Referer || page.Link.origin,
+                Referer: page.Parameters?.Referer ?? imageLink.origin,
             }
         });
         const response = await Fetch(request);
@@ -466,13 +468,14 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 /**
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * @param deProxifyLink - Remove common image proxies (default false)
  */
-export function ImageAjax(detectMimeType = false) {
+export function ImageAjax(detectMimeType = false, deProxifyLink = false) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImageAjax.call(this, page, priority, signal, detectMimeType);
+                return FetchImageAjax.call(this, page, priority, signal, detectMimeType, deProxifyLink);
             }
         };
     };
@@ -486,10 +489,12 @@ export function ImageAjax(detectMimeType = false) {
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param includeRefererHeader - Corresponds to the `referrerpolicy` attribute of the `<img>` tag, to determine if the Referer header shall be included
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * @param deProxifyLink - Remove common image proxies (default false)
  */
-export async function FetchImageElement(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, includeRefererHeader = true, detectMimeType = false): Promise<Blob> {
+export async function FetchImageElement(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, includeRefererHeader = true, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
-        const request = new FetchRequest(page.Link.href, {
+        const imageLink = deProxifyLink ? DeProxify(page.Link) : page.Link;
+        const request = new FetchRequest(imageLink.href, {
             signal: signal,
             headers: {
                 'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
@@ -498,7 +503,7 @@ export async function FetchImageElement(this: MangaScraper, page: Page, priority
             }
         });
         if (includeRefererHeader) {
-            request.headers.set('Referer', page.Parameters?.Referer ?? page.Link.origin);
+            request.headers.set('Referer', page.Parameters?.Referer ?? imageLink.origin);
         }
         const response = await Fetch(request);
         return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
@@ -509,13 +514,59 @@ export async function FetchImageElement(this: MangaScraper, page: Page, priority
  * A class decorator that adds the ability to get the image data for a given page by pretending to load the source via an `<IMG>` tag.
  * @param includeRefererHeader - Corresponds to the `referrerpolicy` attribute of the `<img>` tag, to determine if the Referer header shall be included
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * @param deProxifyLink - Remove common image proxies (default false)
  */
-export function ImageElement(includeRefererHeader = true, detectMimeType = false) {
+export function ImageElement(includeRefererHeader = true, detectMimeType = false, deProxifyLink = false) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImageElement.call(this, page, priority, signal, includeRefererHeader, detectMimeType);
+                return FetchImageElement.call(this, page, priority, signal, includeRefererHeader, detectMimeType, deProxifyLink);
+            }
+        };
+    };
+}
+
+/**
+ * An extension method that adds the ability to get the image data when Page is the link to an HTML Page.
+ *  Use this when Chapter are composed of multiple html Page and each page hold an image
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param page - A reference to the {@link Page} containing the necessary information to acquire the image data
+ * @param priority - The importance level for ordering the request for the image data within the internal task pool
+ * @param signal - An abort signal that can be used to cancel the request for the image data
+ * @param queryImage - a query to get the image in the html page Page
+ * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * @param deProxifyLink - Remove common image proxies (default false)
+ */
+export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, queryImage: string, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
+    const image = await this.imageTaskPool.Add(async () => {
+        const request = new FetchRequest(page.Link.href, {
+            signal: signal,
+            headers: {
+                Referer: page.Link.origin,
+            }
+        });
+        const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].getAttribute('src');
+        const parameters = page.Parameters?.Referer ? { Referer: page.Parameters?.Referer } : { Referer: page.Link.origin };
+        return new Page(this, page.Parent as Chapter, new URL(realimage, request.url), parameters);
+    }, priority, signal);
+
+    return await FetchImageAjax.call(this, image, priority, signal, detectMimeType, deProxifyLink);
+}
+
+/**
+ * A class decorator that adds the ability to get the image data when Page is the link to an HTML Page.
+ * Use this when Chapter are composed of multiple html Page and each page hold an image
+ * @param queryImage - a query to get the image in the html page Page
+ * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * @param deProxifyLink - Remove common image proxies (default false)
+ */
+export function ImageAjaxFromHTML(queryImage: string, detectMimeType = false, deProxifyLink = false) {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+                return FetchImageAjaxFromHTML.call(this, page, priority, signal, queryImage, detectMimeType, deProxifyLink);
             }
         };
     };

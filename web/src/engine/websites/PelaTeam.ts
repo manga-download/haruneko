@@ -1,11 +1,11 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './PelaTeam.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 function MangaAndChapterExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname +'Computer/' + anchor.search;
-    const title = anchor.text.trim();
+    const title = anchor.text.replace(/\[\d+p\.\]/, '').trim();
     return { id, title };
 }
 
