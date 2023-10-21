@@ -457,7 +457,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
         const request = new FetchRequest(imageLink.href, {
             signal: signal,
             headers: {
-                Referer: page.Parameters?.Referer || imageLink.origin,
+                Referer: page.Parameters?.Referer ?? imageLink.origin,
             }
         });
         const response = await Fetch(request);
@@ -503,7 +503,7 @@ export async function FetchImageElement(this: MangaScraper, page: Page, priority
             }
         });
         if (includeRefererHeader) {
-            request.headers.set('Referer', page.Parameters?.Referer ?? page.Link.origin);
+            request.headers.set('Referer', page.Parameters?.Referer ?? imageLink.origin);
         }
         const response = await Fetch(request);
         return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
@@ -546,9 +546,9 @@ export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, pri
                 Referer: page.Link.origin,
             }
         });
-        const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].src;
+        const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].getAttribute('src');
         const parameters = page.Parameters?.Referer ? { Referer: page.Parameters?.Referer } : { Referer: page.Link.origin };
-        return new Page(this, page.Parent as Chapter, new URL(realimage, this.URI), parameters);
+        return new Page(this, page.Parent as Chapter, new URL(realimage, request.url), parameters);
     }, priority, signal);
 
     return await FetchImageAjax.call(this, image, priority, signal, detectMimeType, deProxifyLink);

@@ -23,6 +23,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div.manga_read_footer div.page_select select option', PageLinkExtractor);
-        return pages.map(page => new Page(this, chapter, new URL(page.Link.pathname, this.URI), { Referer: 'mangahere.com' }));
+        return pages.map(page => new Page(this, chapter, new URL(page.Link.pathname, this.URI), { Referer: 'mangahere.com' })).filter(page => !/featured\.html$/.test(page.Link.pathname));
     }
 }
