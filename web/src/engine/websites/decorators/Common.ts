@@ -546,9 +546,9 @@ export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, pri
                 Referer: page.Link.origin,
             }
         });
-        const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].src;
+        const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].getAttribute('src');
         const parameters = page.Parameters?.Referer ? { Referer: page.Parameters?.Referer } : { Referer: page.Link.origin };
-        return new Page(this, page.Parent as Chapter, new URL(realimage, this.URI), parameters);
+        return new Page(this, page.Parent as Chapter, new URL(realimage, request.url), parameters);
     }, priority, signal);
 
     return await FetchImageAjax.call(this, image, priority, signal, detectMimeType, deProxifyLink);
