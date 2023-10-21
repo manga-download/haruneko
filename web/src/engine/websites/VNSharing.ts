@@ -1,7 +1,7 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './VNSharing.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https:\/\/truyen\.vnsharing\.site\/index\/read\/\d+\/0\//, 'div.banner_info_read p.title')
 @Common.MangasMultiPageCSS('/index/KhamPha/newest/{page}', 'li.browse_result_item a.title')

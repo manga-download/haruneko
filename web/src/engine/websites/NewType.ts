@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './NewType.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
 
 type APIChapter = {
     html: string,
