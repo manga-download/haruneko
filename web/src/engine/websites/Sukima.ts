@@ -54,6 +54,7 @@ type APIMangas = {
         title_code: string,
         title_name: string
     }[]
+    max_page: number
 }
 
 type APICategories = {
@@ -89,7 +90,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
-
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.getMangasFromPage(provider, page);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -99,25 +99,23 @@ export default class extends DecoratableMangaScraper {
             const uri = new URL(category.more_btn.link, this.URI);
             if (uri.searchParams.get('tag') != null) {
                 for (let page = 1, run = true; run; page++) {
-                    const mangas = await this.getMangasFromPage(provider, page, uri.searchParams.get('tag'));
+                    const mangas = await this.getMangasFromPage(provider, page, [uri.searchParams.get('tag')]);
                     mangas.length > 0 ? mangaList.push(...mangas) : run = false;
                 }
-
             }
         }
         return mangaList;
     }
 
-    async getMangasFromPage(provider: MangaPlugin, page: number, tag: string = undefined): Promise<Manga[]>{
+    async getMangasFromPage(provider: MangaPlugin, page: number, tag :string[]= []): Promise<Manga[]>{
         const body = {
             'page': page,
             'sort_by': 0,
             'tag': tag
         };
         const pageContent = await this.fetchPOST<APIMangas>('/api/v1/search/', JSON.stringify(body));
-        return pageContent.items.map(element => {
-            return new Manga(this, provider, element.title_code, element.title_name);
-        });
+        const mangas = pageContent.items.map(element => new Manga(this, provider, element.title_code, element.title_name));
+        return page > pageContent.max_page ? [] : mangas;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
