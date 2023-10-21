@@ -2,6 +2,8 @@ import { FetchRequest, FetchCSS, FetchWindowScript } from '../../FetchProvider';
 import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
+import type { Numeric, Text } from '../../SettingsManager';
+import { Key as GlobalKey } from '../../SettingsGlobal';
 
 export const queryChapters = 'div.detail_body div.detail_lst ul li > a';
 export const queryMangaTitleURI = 'div.info .subj';
@@ -203,6 +205,11 @@ async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority
     return !page.Parameters ? await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType) : await descrambleImage(page);
 }
 async function descrambleImage(page: Page): Promise<Blob> {
+
+    const settings = HakuNeko.SettingsManager.OpenScope();
+    const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
+    const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
+
     const canvas = document.createElement('canvas');
     const payload: PageData = JSON.parse(page.Parameters.page as string);
     canvas.width = payload.width;
@@ -230,7 +237,7 @@ async function descrambleImage(page: Page): Promise<Blob> {
         }
     }
     return await new Promise(resolve => {
-        canvas.toBlob(data => resolve(data), 'image/png', 0.90);
+        canvas.toBlob(data => resolve(data), format, quality / 100);
     });
 }
 
