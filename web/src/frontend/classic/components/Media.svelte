@@ -17,7 +17,7 @@
     import { coinflip } from '../lib/transitions';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
-    import { Bookmark } from '../../../engine/providers/BookmarkPlugin';
+    import { Bookmark } from '../../../engine/providers/Bookmark';
 
     export let media: IMediaContainer;
     let selected: boolean = false;

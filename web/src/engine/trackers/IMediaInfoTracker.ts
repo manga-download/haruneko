@@ -1,3 +1,4 @@
+import { NotImplementedError } from '../Error';
 import type { ISettings } from '../SettingsManager';
 
 export const enum MediaType {
@@ -43,4 +44,34 @@ export interface IMediaInfoTracker {
     GetInfo(identifier: string): Promise<Info>;
     GetStatus(identifier: string): Promise<TrackingStatus>;
     SetStatus(identifier: string, status: TrackingStatus): Promise<void>;
+}
+
+export class MissingInfoTracker implements IMediaInfoTracker {
+    public readonly Title: string;
+    public readonly Icon: string = null;
+    public readonly Settings: ISettings = null;
+
+    constructor(public readonly Identifier: string) {
+        this.Title = Identifier;
+    }
+
+    Login(): Promise<boolean> {
+        throw new NotImplementedError();
+    }
+
+    Search(_title: string): Promise<Suggestion[]> {
+        throw new NotImplementedError();
+    }
+
+    GetInfo(_identifier: string): Promise<Info> {
+        throw new NotImplementedError();
+    }
+
+    GetStatus(_identifier: string): Promise<TrackingStatus> {
+        throw new NotImplementedError();
+    }
+
+    SetStatus(_identifier: string, _status: TrackingStatus): Promise<void> {
+        throw new NotImplementedError();
+    }
 }
