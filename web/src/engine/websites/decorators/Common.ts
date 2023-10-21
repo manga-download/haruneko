@@ -457,7 +457,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
         const request = new FetchRequest(imageLink.href, {
             signal: signal,
             headers: {
-                Referer: page.Parameters?.Referer || page.Link.origin,
+                Referer: page.Parameters?.Referer || imageLink.origin,
             }
         });
         const response = await Fetch(request);
