@@ -2,7 +2,7 @@ import { readable, writable } from 'svelte/store';
 import type { IWindowController } from '../../WindowController';
 import { CreateWindowController } from '../../WindowController';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
-import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
+import type { Bookmark } from '../../../engine/providers/Bookmark';
 import { checkNewContent } from './Settings';
 
 export const WindowController = writable<IWindowController>(CreateWindowController());

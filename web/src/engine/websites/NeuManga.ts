@@ -1,7 +1,7 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './NeuManga.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/neumanga\.net\/series\/[^/]+\/$/, 'div.series-title h2')
 @Common.MangasSinglePageCSS('/manga-list/', 'div.mangalist-blc ul li a.series')

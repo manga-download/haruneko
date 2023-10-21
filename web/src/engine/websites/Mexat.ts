@@ -1,12 +1,12 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Mexat.webp';
-import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/manga\.mexat\.com\/category\/[^/]+\/$/, 'div.page-head h1.page-title')
 @Common.MangasSinglePageCSS('/قائمة-المانجا/', 'div.content ul.MangaList li div.SeriesName a')
-@Common.ImageAjax()
+@Common.ImageAjaxFromHTML('div.content div.post-inner div.pic a img')
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -36,13 +36,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchCSS<HTMLOptionElement>(request, 'div.content div.manga-filter select#manga_pid option');
-        const pagelinks = data.map(page => new URL(`${request.url}?pid=${page.value}`, this.URI));
-        const pages = [];
-        for (const pagelink of pagelinks) {
-            const request = new FetchRequest(pagelink.href);
-            const data = await FetchCSS<HTMLImageElement>(request, 'div.content div.post-inner div.pic a img');
-            pages.push(new Page(this, chapter, new URL(new URL(data[0].src), this.URI)));
-        }
-        return pages;
+        return data.map(page => new Page(this, chapter, new URL(`${request.url}?pid=${page.value}`, this.URI)));
     }
+
 }

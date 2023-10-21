@@ -1,7 +1,7 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Manhwa18.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/manhwa18\.com\/manga\/[^/]+$/, 'span.series-name')
 @Common.MangasMultiPageCSS('/manga-list?page={page}', 'div.series-title a')
