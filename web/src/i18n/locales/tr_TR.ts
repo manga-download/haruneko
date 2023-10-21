@@ -86,6 +86,8 @@ const translations: IVariantResource = { // NOTE: Use defaults for missing trans
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: "İndirme yöneticisinin görünürlüğünü aç/kapat",
   Frontend_FluentCore_Settings_ShowSplashScreen_Label: "Açılış Ekranını Göster",
   Frontend_FluentCore_Settings_ShowSplashScreen_Description: "Uygulama başlarken açılış ekranını aç/kapat",
+  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label: 'Show FetchBrowser Windows',
+  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description: 'This developer focused option toggles the visibility of the browser windows for fetching data in the background on/off',
   //
   Frontend_FluentCore_SettingsDialog_Title: "Ayarlar",
   Frontend_FluentCore_SettingsDialog_CloseButton_Label: "Tamamlandı",
