@@ -1,14 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ZeroScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
-
-type APIMangaClipboard = {
-    data: {
-        details: APIManga
-    }[]
-}
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
 
 type APIManga = {
     id: number,
@@ -56,8 +50,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const request = new FetchRequest(url);
-        const data = await FetchWindowScript<APIMangaClipboard>(request, `__ZEROSCANS__`);
-        return new Manga(this, provider, JSON.stringify({ id: data.data[0].details.id, slug: data.data[0].details.slug }), data.data[0].details.name.trim());
+        const data = await FetchWindowScript<APIManga>(request, `__ZEROSCANS__.data[0].details`, 2000);
+        return new Manga(this, provider, JSON.stringify({ id: data.id, slug: data.slug }), data.name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -69,13 +63,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this._getChaptersFromPage(manga, page);
+            const chapters = await this.getChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
 
-    private async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
+    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
         const mangainfos: APIManga = JSON.parse(manga.Identifier);
         const params = new URLSearchParams({
             page: String(page),
@@ -85,7 +79,7 @@ export default class extends DecoratableMangaScraper {
         uri.search = params.toString();
         const request = new FetchRequest(uri.href);
         const data = await FetchJSON<APIResult<APIChapters>>(request);
-        return data.success ? data.data.data.map(chapter => new Chapter(this, manga, String(chapter.id), `Chapter ${chapter.name}`)) : [];
+        return data.success ? data.data.data.map(chapter => new Chapter(this, manga, chapter.id.toString(), `Chapter ${chapter.name}`)) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
