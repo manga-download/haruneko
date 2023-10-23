@@ -890,7 +890,6 @@ export { default as YesMangasBR } from './legacy/YesMangasBR';
 export { default as YouBaManga } from './legacy/YouBaManga';
 export { default as YouBaMangaNext } from './legacy/YouBaMangaNext';
 export { default as YoungJump } from './legacy/YoungJump';
-export { default as YugenMangas } from './legacy/YugenMangas';
 export { default as YuriISM } from './legacy/YuriISM';
 export { default as ZinNovel } from './legacy/ZinNovel';
 export { default as ZuiMH } from './legacy/ZuiMH';
