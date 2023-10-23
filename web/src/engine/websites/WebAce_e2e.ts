@@ -22,4 +22,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, fixture.AssertWebsite);
+describe(fixture.Name, () => fixture.AssertWebsite());
