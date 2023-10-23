@@ -458,6 +458,7 @@ export { default as YugenMangasES } from './YugenMangasES';
 export { default as YugenMangasPT } from './YugenMangasPT';
 export { default as YuriVerso } from './YuriVerso';
 export { default as Zebrack } from './Zebrack';
+export { default as ZeroScans } from './ZeroScans';
 export { default as ZinManga } from './ZinManga';
 // Legacy Websites
 export { default as AkaiYuhiMun } from './legacy/AkaiYuhiMun';
@@ -891,7 +892,6 @@ export { default as YouBaMangaNext } from './legacy/YouBaMangaNext';
 export { default as YoungJump } from './legacy/YoungJump';
 export { default as YugenMangas } from './legacy/YugenMangas';
 export { default as YuriISM } from './legacy/YuriISM';
-export { default as ZeroScans } from './legacy/ZeroScans';
 export { default as ZinNovel } from './legacy/ZinNovel';
 export { default as ZuiMH } from './legacy/ZuiMH';
 export { default as ZYMKMangaWeb } from './legacy/ZYMKMangaWeb';
