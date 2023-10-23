@@ -2,16 +2,16 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'realmscans',
-        title: 'RealmScans'
+        id: 'rizzcomics',
+        title: 'Rizz Comics'
     },
     container: {
-        url: 'https://realmscans.to/m050523/series/demonic-master-of-mount-kunlun',
-        id: '/m050523/series/demonic-master-of-mount-kunlun',
+        url: 'https://rizzcomic.com/series/r3513102-demonic-master-of-mount-kunlun',
+        id: '/series/r3513102-demonic-master-of-mount-kunlun',
         title: 'Demonic Master of Mount Kunlun'
     },
     child: {
-        id: '/m050523/demonic-master-of-mount-kunlun-chapter-49',
+        id: '/chapter/r3513102-demonic-master-of-mount-kunlun-chapter-49',
         title: 'Chapter 49'
     },
     entry: {
