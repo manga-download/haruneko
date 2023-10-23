@@ -9,7 +9,7 @@ import es_ES from './locales/es_ES';
 import fil_PH from './locales/fil_PH';
 import fr_FR from './locales/fr_FR';
 import hi_IN from './locales/hi_IN';
-import in_ID from './locales/in_ID';
+import id_ID from './locales/id_ID';
 import pt_PT from './locales/pt_PT';
 import th_TH from './locales/th_TH';
 import tr_TR from './locales/tr_TR';
@@ -27,7 +27,7 @@ const resources: Record<LocaleID, ILocale> = {
     Locale_filPH: CreateLocale(fil_PH),
     Locale_frFR: CreateLocale(fr_FR),
     Locale_hiIN: CreateLocale(hi_IN),
-    Locale_inID: CreateLocale(in_ID),
+    Locale_idID: CreateLocale(id_ID),
     Locale_ptPT: CreateLocale(pt_PT),
     Locale_thTH: CreateLocale(th_TH),
     Locale_trTR: CreateLocale(tr_TR),

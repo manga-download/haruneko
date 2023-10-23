@@ -1,23 +1,43 @@
 import type { PluginController } from '../PluginController';
-import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaPlugin';
+import { type IMediaContainer, MediaContainer } from './MediaPlugin';
 import { type StorageController, Store } from '../StorageController';
+import type { InteractiveFileContentProvider } from '../InteractiveFileContentProvider';
 import { Event } from '../Event';
-import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
-import icon from '../../img/warning.webp';
-import { Exception } from '../Error';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
+import { Bookmark, MissingWebsite, type BookmarkSerialized } from './Bookmark';
+import { MissingInfoTracker } from '../trackers/IMediaInfoTracker';
+
+type BookmarkImportResult = {
+    cancelled: boolean;
+    found: number;
+    imported: number;
+    skipped: number;
+    broken: number;
+}
+
+type BookmarkExportResult = {
+    cancelled: boolean;
+    exported: number;
+}
+
+const defaultBookmarkFileType: FilePickerAcceptType = {
+    description: 'HakuNeko Bookmarks',
+    accept: {
+        'application/json': [ '.bookmarks' ]
+    }
+};
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     public readonly EntriesUpdated: Event<typeof this, Bookmark[]> = new Event<typeof this, Bookmark[]>();
 
-    constructor(private readonly storage: StorageController, private readonly plugins: PluginController) {
+    constructor(private readonly storage: StorageController, private readonly plugins: PluginController, private readonly fileIO: InteractiveFileContentProvider) {
         super('bookmarks', 'Bookmarks');
         this.Load();
     }
 
     public get Entries(): Bookmark[] {
-        return this._entries.sort((a, b) => a.Title.localeCompare(b.Title));
+        return this._entries.sort((self, other) => self.Title.localeCompare(other.Title));
     }
 
     private OnBookmarkChangedCallback(sender: Bookmark): void {
@@ -27,7 +47,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
         const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? new MissingWebsite(serialized.Media.ProviderID);
-        const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID);
+        const tracker = this.plugins.InfoTrackers.find(tracker => tracker.Identifier === serialized.Info.ProviderID) ?? new MissingInfoTracker(serialized.Info.ProviderID);
         const bookmark = new Bookmark(
             new Date(serialized.Created),
             new Date(serialized.Updated),
@@ -36,7 +56,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             serialized.Title,
             serialized.LastKnownEntries,
             tracker,
-            serialized.Info.EntryID
+            serialized.Info?.EntryID
         );
         bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
         return bookmark;
@@ -46,6 +66,71 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
         this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
         this.EntriesUpdated.Dispatch(this, this.Entries);
+    }
+
+    public async Import(): Promise<BookmarkImportResult> {
+        let data: Blob;
+        const result: BookmarkImportResult = {
+            cancelled: false,
+            found: 0,
+            imported: 0,
+            skipped: 0,
+            broken: 0,
+        };
+        try {
+            data = await this.fileIO.LoadFile({
+                types: [ defaultBookmarkFileType ]
+            });
+        } catch(error) {
+            if(this.fileIO.IsAbortError(error)) {
+                result.cancelled = true;
+                return result;
+            } else {
+                throw error;
+            }
+        }
+        const found = (JSON.parse(await data.text()) as Array<unknown>).map(entry => this.Deserialize(ConvertToSerializedBookmark(entry)));
+        result.found = found.length;
+        const imported = found.filter(bookmark => !this.Entries.some(entry => entry.IsSameAs(bookmark)));
+        for(const bookmark of imported) {
+            await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
+        }
+        await this.Load();
+        result.imported = imported.length;
+        result.skipped = found.length - imported.length;
+        result.broken = imported.filter(entry => entry.Parent instanceof MissingWebsite).length;
+        return result;
+    }
+
+    public async Export(): Promise<BookmarkExportResult> {
+        const bookmarks = this._entries.map(bookmark => this.Serialize(bookmark));
+        /*
+        bookmarks.forEach(bookmark => {
+            bookmark.LastKnownEntries.IdentifierHashes = [];
+            bookmark.LastKnownEntries.TitleHashes = [];
+        });
+        */
+        const result: BookmarkExportResult = {
+            cancelled: false,
+            exported: 0
+        };
+        const data = new Blob([ JSON.stringify(bookmarks, null, 2) ], { type: 'application/json' });
+        const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
+        try {
+            await this.fileIO.SaveFile(data, {
+                suggestedName: `HakuNeko (${today}).bookmarks`,
+                types: [ defaultBookmarkFileType ]
+            });
+            result.exported = bookmarks.length;
+            return result;
+        } catch(error) {
+            if(this.fileIO.IsAbortError(error)) {
+                result.cancelled = true;
+                return result;
+            } else {
+                throw error;
+            }
+        }
     }
 
     private Serialize(bookmark: Bookmark): BookmarkSerialized {
@@ -58,8 +143,8 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
                 EntryID: bookmark.Identifier
             },
             Info: {
-                ProviderID: bookmark.Tracker?.Identifier,
-                EntryID: bookmark.InfoID
+                ProviderID: bookmark.Tracker?.Identifier ?? null,
+                EntryID: bookmark.InfoID ?? null
             },
             LastKnownEntries: bookmark.LastKnownEntries,
         };
@@ -114,179 +199,4 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         ));
         return this.Entries.filter((_, index) => results[index]);
     }
-}
-
-/**
- * A dummy representation for a bookmark's origin (media title), which is no longer available.
- */
-class MissingWebsiteEntry extends MediaContainer<IMediaContainer> {
-    constructor(identifier: string, title: string) {
-        super(identifier, title, null);
-    }
-    public override get Icon(): string {
-        return icon;
-    }
-    public override async Update(): Promise<void> {
-        throw new Exception(R.Plugin_MissingWebsiteEntry_UpdateError);
-    }
-}
-
-/**
- * A dummy representation for a bookmark's parent (website), which has been removed.
- */
-class MissingWebsite extends MediaContainer<IMediaContainer> {
-    constructor(identifier: string) {
-        super(identifier, identifier, null);
-    }
-    public override get Icon(): string {
-        return icon;
-    }
-    public override CreateEntry(identifier: string, title: string): IMediaContainer {
-        return new MissingWebsiteEntry(identifier, title);
-    }
-    public override async Update(): Promise<void> {
-        throw new Exception(R.Plugin_MissingWebsite_UpdateError);
-    }
-}
-
-/**
- * A bookmark is more or less a proxy/facade for a media container.
- */
-export class Bookmark extends MediaContainer<IMediaChild> {
-
-    public readonly Changed: Event<typeof this, void> = new Event<typeof this, void>();
-
-    constructor(
-        public readonly Created: Date,
-        public Updated: Date,
-        parent: IMediaContainer,
-        MediaID: string,
-        title: string,
-        public readonly LastKnownEntries?: EntryHashes,
-        private tracker?: IMediaInfoTracker,
-        private infoID?: string
-    ) {
-        super(MediaID, title, parent);
-        this.LastKnownEntries = this.LastKnownEntries || {
-            IdentifierHashes: [],
-            TitleHashes: []
-        };
-    }
-
-    private Hash(text: string): string {
-        return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
-    }
-
-    public get StorageKey(): string {
-        return `${this.Parent.Identifier} :: ${this.Identifier}`;
-    }
-
-    private origin: IMediaContainer;
-    /**
-     * Get the origin entry related to this bookmark from the shared parent.
-     * If the origin entry does not yet exist, a stand in origin entry will be used.
-     */
-    private get Origin(): IMediaContainer {
-        const entry = (this.Parent.Entries as IMediaContainer[]).find(entry => entry.Identifier === this.Identifier) ?? this.origin;
-        if(entry) {
-            return entry;
-        } else {
-            this.origin = this.Parent.CreateEntry(this.Identifier, this.Title) as IMediaContainer;
-            return this.origin;
-        }
-    }
-
-    /**
-     * Directly pass-through the icon from the media container.
-     */
-    public override get Icon(): string {
-        return this.Origin?.Icon ?? super.Icon;
-    }
-
-    /**
-     * Directly pass-through the entries from the shared parent.
-     */
-    public override get Entries(): IMediaContainer[] {
-        return this.Origin.Entries as IMediaContainer[];
-    }
-
-    public get Tracker(): IMediaInfoTracker {
-        return this.tracker;
-    }
-
-    public get InfoID(): string {
-        return this.infoID;
-    }
-
-    public get IsOrphaned(): boolean {
-        return this.Parent instanceof MissingWebsite;
-    }
-
-    /**
-     * Update the entries of the origin related to this bookmark.
-     */
-    public async Update(): Promise<void> {
-        await this.Origin.Update();
-    }
-
-    /**
-     * Memorize the current list of entries as list of last known entries,
-     * so future requests with {@link GetNewEntries} will be based on these known entries.
-     */
-    public async ApplyEntriesAsKnownEntries(): Promise<void> {
-        const entries = this.Entries;
-        if(entries.length > 0) {
-            this.Updated = new Date();
-            this.LastKnownEntries.IdentifierHashes = entries.map(entry => this.Hash(entry.Identifier));
-            this.LastKnownEntries.TitleHashes = entries.map(entry => this.Hash(entry.Title));
-            this.Changed.Dispatch(this);
-        } else {
-            // TODO: No entries available, maybe website is broken or entries not yet updated?
-        }
-    }
-
-    public LinkTracker(tracker: IMediaInfoTracker, infoID: string) {
-        this.Updated = new Date();
-        this.tracker = tracker;
-        this.infoID = infoID;
-        this.Changed.Dispatch(this);
-    }
-
-    /**
-     * {@link Update} the current list of entries from the website and determine which entries are not yet in the list of last known entries.
-     */
-    public async GetNewEntries(): Promise<IMediaContainer[]> {
-        await this.Update();
-        return this.Entries.filter(entry => {
-            const isIdentifierUnknown = !this.LastKnownEntries.IdentifierHashes.includes(this.Hash(entry.Identifier));
-            const isTitleUnknown = !this.LastKnownEntries.TitleHashes.includes(this.Hash(entry.Title));
-            return isIdentifierUnknown && isTitleUnknown;
-        });
-    }
-
-    /**
-     * determine which entries have unflagged items
-     */
-    public async getUnflaggedContent(): Promise<IMediaContainer[]> {
-        return await HakuNeko.ItemflagManager.GetUnFlaggedItems(this);
-    }
-}
-
-type BookmarkSerialized = {
-    Created: number,
-    Updated: number,
-    Title: string,
-    Media: Provider,
-    Info: Provider,
-    LastKnownEntries: EntryHashes,
-};
-
-type EntryHashes = {
-    IdentifierHashes: string[],
-    TitleHashes: string[]
-}
-
-type Provider = {
-    ProviderID: string,
-    EntryID: string
 }

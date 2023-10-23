@@ -1,5 +1,7 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
 import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
+import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
+import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
 import S from '../services/StateService';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
@@ -140,10 +142,19 @@ export class SettingsDialog extends FASTElement {
 
     @observable hidden = true;
     @observable settings: ISetting[] = [];
+    @InteractiveFileContentProviderService fileIO: InteractiveFileContentProvider;
 
     public async SelectDirectory(directory: Directory): Promise<void> {
-        const folder = await window.showDirectoryPicker({ startIn: directory.Value ?? 'documents' }) ?? directory.Value;
-        this.shadowRoot.querySelector<HTMLInputElement>('#' + directory.ID).value = folder.name;
-        directory.Value = folder;
+        try {
+            const folder = await this.fileIO.PickDirectory(directory.Value ?? 'documents') ?? directory.Value;
+            this.shadowRoot.querySelector<HTMLInputElement>('#' + directory.ID).value = folder.name;
+            directory.Value = folder;
+        } catch(error) {
+            if(this.fileIO.IsAbortError(error)) {
+                return;
+            } else {
+                throw error;
+            }
+        }
     }
 }
