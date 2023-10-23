@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Tsumino.webp';
-import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
 
 type APIMangas = {
     pageNumber: number,
@@ -63,8 +63,8 @@ export default class extends DecoratableMangaScraper {
             }
         });
         try {
-            const data = await FetchJSON<APIMangas>(request);
-            return data.data.map(manga => new Manga(this, provider, `/entry/${String(manga.entry.id)}`, manga.entry.title.trim()));
+            const { data } = await FetchJSON<APIMangas>(request);
+            return data.map(manga => new Manga(this, provider, `/entry/${manga.entry.id}`, manga.entry.title.trim()));
         } catch {
         //
         }
