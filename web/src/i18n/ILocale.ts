@@ -10,7 +10,7 @@ export enum LocaleID {
     Locale_filPH = 'Locale_filPH',
     Locale_frFR = 'Locale_frFR',
     Locale_hiIN = 'Locale_hiIN',
-    Locale_inID = 'Locale_inID',
+    Locale_idID = 'Locale_idID',
     Locale_ptPT = 'Locale_ptPT',
     Locale_thTH = 'Locale_thTH',
     Locale_trTR = 'Locale_trTR',
@@ -104,6 +104,8 @@ export enum VariantResourceKey {
     Frontend_FluentCore_Menu_OpenSettings_Description = 'Frontend_FluentCore_Menu_OpenSettings_Description',
     Frontend_FluentCore_Menu_ImportBookmarks_Label = 'Frontend_FluentCore_Menu_ImportBookmarks_Label',
     Frontend_FluentCore_Menu_ImportBookmarks_Description = 'Frontend_FluentCore_Menu_ImportBookmarks_Description',
+    Frontend_FluentCore_Menu_ExportBookmarks_Label = 'Frontend_FluentCore_Menu_ExportBookmarks_Label',
+    Frontend_FluentCore_Menu_ExportBookmarks_Description = 'Frontend_FluentCore_Menu_ExportBookmarks_Description',
 
     Frontend_FluentCore_Settings_ThemeLuminance_Label = 'Frontend_FluentCore_Settings_ThemeLuminance_Label',
     Frontend_FluentCore_Settings_ThemeLuminance_Description = 'Frontend_FluentCore_Settings_ThemeLuminance_Description',
@@ -113,6 +115,8 @@ export enum VariantResourceKey {
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Description = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Description',
     Frontend_FluentCore_Settings_ShowSplashScreen_Label = 'Frontend_FluentCore_Settings_ShowSplashScreen_Label',
     Frontend_FluentCore_Settings_ShowSplashScreen_Description = 'Frontend_FluentCore_Settings_ShowSplashScreen_Description',
+    Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label = 'Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label',
+    Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description = 'Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description',
 
     Frontend_FluentCore_SettingsDialog_Title = 'Frontend_FluentCore_SettingsDialog_Title',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label = 'Frontend_FluentCore_SettingsDialog_CloseButton_Label',
@@ -200,6 +204,8 @@ export enum VariantResourceKey {
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
+
+    BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',
 }
 
 // [SECTION]: Tags
