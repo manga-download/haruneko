@@ -8,8 +8,6 @@ import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeProxify from '../transformers/ImageLinkDeProxifier';
 import DeScramble from '../transformers/ImageDescrambler';
-import type { Numeric, Text } from '../SettingsManager';
-import { Key as GlobalKey } from '../SettingsGlobal';
 
 type pageScriptResult = {
     imagz: string[],
@@ -113,7 +111,8 @@ export default class extends DecoratableMangaScraper {
         const blobMainImage = await Common.FetchImageAjax.call(this, page, priority, signal);
 
         switch (page.Parameters.scrambled) {
-            case 0: return blobMainImage; // No scrambling, return image
+            case 0: // No scrambling, return image
+                return blobMainImage;
             case 1: // Flip picture
                 return DeScramble(blobMainImage, async (bitmap, ctx) => {
                     ctx.scale(-1, 1);
@@ -124,26 +123,16 @@ export default class extends DecoratableMangaScraper {
                 const pageUrl = (page.Parameters.secondaryPic) as string;
                 const request = new FetchRequest(pageUrl, { headers: { Referer: this.URI.href } });
                 const response = await Fetch(request);
-                return this.composePuzzle(blobMainImage, await response.blob());
+                const b1 = await createImageBitmap(blobMainImage);
+                const b2 = await createImageBitmap(await response.blob());
+                return DeScramble(new ImageData(b1.width + b2.width, b1.height), async (_, ctx) => {
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(b2, 0, 0, -b2.width, b2.height);
+                    ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
+                });
             }
             default:
                 throw Error();
         }
-    }
-
-    async composePuzzle(left: Blob, right: Blob): Promise<Blob> {
-        const b1 = await createImageBitmap(left);
-        const b2 = await createImageBitmap(right);
-        const canvas = new OffscreenCanvas(b1.width + b2.width, b1.height);
-        const ctx = canvas.getContext('2d');
-        ctx.scale(-1, 1);
-        ctx.drawImage(b2, 0, 0, -b2.width, b2.height);
-        ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
-        const settings = HakuNeko.SettingsManager.OpenScope();
-        const options = {
-            type: settings.Get<Text>(GlobalKey.DescramblingFormat).Value,
-            quality: settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value / 100
-        };
-        return canvas.convertToBlob(options);
     }
 }
