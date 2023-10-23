@@ -3,12 +3,16 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
     'bananascan': 'harmonyscan',
+    'crazyscans': 'mangacultivator',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
+    'lovehug': 'welovemanga',
     'mangaswat': 'goldragon',
+    'realmscans': 'rizzcomics',
     'muctau': 'bibimanga',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',
+    'yugenmangas': 'yugenmangas-es'
 };
 
 type BookmarkLegacy = {
