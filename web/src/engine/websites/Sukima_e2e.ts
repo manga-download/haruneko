@@ -13,7 +13,7 @@ const config: Config = {
     },
     child: {
         id: '/bv/t/BT0001051812/v/1/s/1/p/1',
-        title: '(001-001)第1話 (1)'
+        title: '(001-0001)第1話 (1)'
     },
     entry: {
         index: 0,

@@ -16,10 +16,9 @@ const pageScript = `
 
             resolve(PAGES_INFO.map(page => {
                 return {
-                page_number : page.page_number, 
-                page_url : page.page_url,
-                shuffle_map : JSON.parse(page.shuffle_map),
-                blocklen : BLOCKLEN
+                    page_url : page.page_url,
+                    shuffle_map : page.shuffle_map,
+                    blocklen : BLOCKLEN
                 }
             }));
      });
@@ -43,9 +42,8 @@ type APIChapter = {
 }
 
 type PAGE_INFO = {
-    page_number: number,
     page_url: string,
-    shuffle_map: SHUFFLE_MAP,
+    shuffle_map: string,
     blocklen: number
 }
 
@@ -78,7 +76,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/www\.sukima\.me\/book\/title\/\S+\/$/.test(url);
+        return /https?:\/\/www\.sukima\.me\/book\/title\/[^/]+\/$/.test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -94,8 +92,8 @@ export default class extends DecoratableMangaScraper {
             const mangas = await this.getMangasFromPage(provider, page);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
-        const categorys = await this.fetchPOST<APICategories>('/api/book/v1/free/', JSON.stringify({store: false, genre: '0'}));
-        for (const category of categorys.rows) {
+        const categories = await this.fetchPOST<APICategories>('/api/book/v1/free/', {store: false, genre: '0'});
+        for (const category of categories.rows) {
             const uri = new URL(category.more_btn.link, this.URI);
             if (uri.searchParams.get('tag') != null) {
                 for (let page = 1, run = true; run; page++) {
@@ -113,7 +111,7 @@ export default class extends DecoratableMangaScraper {
             'sort_by': 0,
             'tag': tag
         };
-        const pageContent = await this.fetchPOST<APIMangas>('/api/v1/search/', JSON.stringify(body));
+        const pageContent = await this.fetchPOST<APIMangas>('/api/v1/search/', body);
         const mangas = pageContent.items.map(element => new Manga(this, provider, element.title_code, element.title_name));
         return page > pageContent.max_page ? [] : mangas;
     }
@@ -121,14 +119,15 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new FetchRequest(new URL(`/api/book/v1/title/${manga.Identifier}/`, this.URI).href);
         const books = await FetchJSON<APIManga>(request);
-        const chapters = [];
-        for (const book of books.contents) {
-            for (const chapter of book.stories) {
+        const chapters : Chapter[]= [];
+
+        books.contents.map(book => {
+            book.stories.map(chapter => {
                 const id = `/bv/t/${chapter.title_code}/v/${chapter.volume}/s/${chapter.story}/p/1`;
-                const title = `(${chapter.volume.toString().padStart(3, '0')}-${chapter.story.toString().padStart(3, '0')})${chapter.info.text.trim()}`.replace(manga.Title, '').trim();
+                const title = `(${chapter.volume.toString().padStart(3, '0')}-${chapter.story.toString().padStart(4, '0')})${chapter.info.text.trim()}`.replace(manga.Title, '').trim();
                 chapters.push(new Chapter(this, manga, id, title));
-            }
-        }
+            });
+        });
         return chapters;
     }
 
@@ -155,6 +154,7 @@ export default class extends DecoratableMangaScraper {
             canvas.width = bitmap.width;
             canvas.height = bitmap.height;
             const ctx = canvas.getContext('2d');
+            const shuffle_map: SHUFFLE_MAP = JSON.parse(payload.shuffle_map);
 
             const xSplitCount = Math.floor(bitmap.width / payload.blocklen);
             const ySplitCount = Math.floor(bitmap.height / payload.blocklen);
@@ -163,8 +163,8 @@ export default class extends DecoratableMangaScraper {
 
             for (let col = 0; col < xSplitCount; col++) {
                 for (let row = 0; row < ySplitCount; row++) {
-                    const dx = payload.shuffle_map[count][0];
-                    const dy = payload.shuffle_map[count][1];
+                    const dx = shuffle_map[count][0];
+                    const dy = shuffle_map[count][1];
                     const sx = col * payload.blocklen;
                     const sy = row * payload.blocklen;
                     ctx.drawImage(bitmap, sx, sy, payload.blocklen, payload.blocklen, dx, dy, payload.blocklen, payload.blocklen);
@@ -178,10 +178,10 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    async fetchPOST<T>(uri : string, body : string) {
+    async fetchPOST<T>(uri: string, body: unknown) {
         const request = new FetchRequest(new URL(uri, this.URI).href, {
             method: 'POST',
-            body: body,
+            body: JSON.stringify(body),
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             }
