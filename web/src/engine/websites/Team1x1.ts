@@ -16,7 +16,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('team1x1', `Team X`, 'https://team11x11.com', Tags.Language.Arabic, Tags.Media.Manhua, Tags.Media.Manhwa);
+        super('team1x1', `Team X`, 'https://team11x11.com', Tags.Language.Arabic, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
     public override get Icon() {
         return icon;
@@ -33,12 +33,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this._getChaptersFromPage(manga, page);
+            const chapters = await this.getChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
-    private async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
+    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
         const uri = new URL(`${manga.Identifier}?page=${page}`, this.URI);
         const request = new FetchRequest(uri.href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div.eplister ul li a:not([data-bs-toggle])');
