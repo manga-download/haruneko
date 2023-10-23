@@ -1,10 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './WebNovel.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
-import * as Common from '../decorators/Common';
-
-let token = '';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import * as Common from './decorators/Common';
 
 type APIComic = {
     comicId: number,
@@ -42,6 +40,7 @@ type APIPageList = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+    private token = '';
 
     public constructor() {
         super('webnovel', `Webnovel Comics`, 'https://www.webnovel.com', Tags.Language.English, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Official);
@@ -52,7 +51,7 @@ export default class extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         const request = new FetchRequest(this.URI.href);
         const data = await FetchWindowScript<string>(request, `new Promise( resolve => resolve( decodeURIComponent( document.cookie ).match( /_csrfToken=([^;]+);/ )[1] ) )`);
-        token = data;
+        this.token = data;
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -62,7 +61,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const request = new FetchRequest(url);
         const data = await FetchWindowScript<APIComic>(request, `new Promise( resolve => resolve( window.g_data.book.comicInfo));`);
-        return new Manga(this, provider, String(data.comicId), data.comicName.trim());
+        return new Manga(this, provider, data.comicId.toString(), data.comicName.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -78,7 +77,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/go/pcm/category/categoryAjax', this.URI);
         const params = new URLSearchParams({
             pageIndex: String(page),
-            _csrfToken: token,
+            _csrfToken: this.token,
             categoryId: '0',
             categoryType: '2',
         });
@@ -91,7 +90,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL('/go/pcm/comic/getChapterList', this.URI);
         const params = new URLSearchParams({
-            _csrfToken: token,
+            _csrfToken: this.token,
             comicId: manga.Identifier
         });
         uri.search = params.toString();
@@ -104,7 +103,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/go/pcm/comic/getContent', this.URI);
         const params = new URLSearchParams({
             width: '1920',
-            _csrfToken: token,
+            _csrfToken: this.token,
             comicId: chapter.Parent.Identifier,
             chapterid: chapter.Identifier
 

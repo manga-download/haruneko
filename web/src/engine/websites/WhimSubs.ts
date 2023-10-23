@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './WhimSubs.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchJSON, FetchRequest } from '../../FetchProvider';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON, FetchRequest } from './../FetchProvider';
 
 type APIPages = {
     readingOrder: {
