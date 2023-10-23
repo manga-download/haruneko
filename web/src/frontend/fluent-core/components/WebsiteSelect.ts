@@ -1,5 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+import type { SearchBox } from './SearchBox';
 import S from '../services/StateService';
 
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
@@ -184,7 +185,7 @@ const template: ViewTemplate<WebsiteSelect> = html`
     </div>
     <div id="dropdown" ${ref('dropdown')}>
         <div id="searchcontrol">
-            <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+            <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
         <fluent-lazy-scroll id="entries" :items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
     </div>
@@ -193,7 +194,8 @@ const template: ViewTemplate<WebsiteSelect> = html`
 @customElement({ name: 'fluent-website-select', template, styles })
 export class WebsiteSelect extends FASTElement {
 
-    dropdown: HTMLDivElement;
+    readonly dropdown: HTMLDivElement;
+    readonly searchbox: SearchBox;
 
     @observable entries: IMediaContainer[] = [];
     entriesChanged() {
@@ -214,6 +216,8 @@ export class WebsiteSelect extends FASTElement {
     expandedChanged() {
         if(this.dropdown) {
             this.dropdown.style.display = this.expanded ? 'block' : 'none';
+            this.searchbox.control.control.focus();
+            //this.searchbox.control.select();
         }
     }
     @observable updating = false;

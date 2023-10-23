@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Shakai.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
 
 type APIMangas = {
     create: number,
@@ -50,13 +50,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(page, provider);
+            const mangas = await this.getMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL('/take/catalog/request/shakai', this.URI);
         const form = new FormData();
         form.append('dataRun', 'catalog');
@@ -76,14 +76,19 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL(`/manga/${manga.Identifier}/element-list`, this.URI);
-        const request = new FetchRequest(url.href);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'div.post-element__action a');
-        return data.map(chapter => {
-            const id = chapter.href.match(/\/manga-read\/\d+\/(\S+)\//)[1];
-            const title = `#${id}`;
-            return new Chapter(this, manga, id, title);
+        const url = new URL('/take/api-manga/request/shakai', this.URI);
+        const form = new FormData();
+        form.append('dataRun', 'api-manga');
+        form.append('dataRequest', manga.Identifier);
+        const request = new FetchRequest(url.href, {
+            method: 'POST',
+            body: form,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         });
+        const { data } = await FetchJSON<APIPages>(request);
+        return data.map(chapter => new Chapter(this, manga, chapter['data-first'], chapter['data-first']));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

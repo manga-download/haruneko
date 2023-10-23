@@ -7,6 +7,8 @@ import * as Common from './decorators/Common';
 import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeProxify from '../transformers/ImageLinkDeProxifier';
+import type { Numeric, Text } from '../SettingsManager';
+import { Key as GlobalKey } from '../SettingsGlobal';
 
 type pageScriptResult = {
     imagz: string[],
@@ -109,10 +111,14 @@ export default class extends DecoratableMangaScraper {
         const blobMainImage = await Common.FetchImageAjax.call(this, page, priority, signal);
         const bitmaps: ImageBitmap[] = [];
 
+        const settings = HakuNeko.SettingsManager.OpenScope();
+        const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
+        const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
+
         switch (page.Parameters.scrambled) {
             case 0: return blobMainImage; //No scrambling, return image
             case 1: //Flip picture
-                return await this.flipPicture(await createImageBitmap(blobMainImage));
+                return await this.flipPicture(await createImageBitmap(blobMainImage), format, quality);
             case 2://Combine/Flip 2 pictures
             {
                 bitmaps.push(await createImageBitmap(blobMainImage));
@@ -122,14 +128,14 @@ export default class extends DecoratableMangaScraper {
                 const response = await Fetch(request);
                 const data = await response.blob();
                 bitmaps.push(await createImageBitmap(data));
-                return await this.composePuzzle(bitmaps);
+                return await this.composePuzzle(bitmaps, format, quality);
             }
             default :
         }
 
     }
 
-    async flipPicture(bitmap: ImageBitmap): Promise<Blob> {
+    async flipPicture(bitmap: ImageBitmap, format: string, quality : number): Promise<Blob> {
         return new Promise(resolve => {
             const canvas = document.createElement('canvas');
             canvas.width = bitmap.width;
@@ -139,11 +145,11 @@ export default class extends DecoratableMangaScraper {
             ctx.drawImage(bitmap, 0, 0, -bitmap.width, bitmap.height);
             canvas.toBlob(data => {
                 resolve(data);
-            }, 'image/png', parseFloat('90') / 100);
+            }, format, quality / 100);
         });
     }
 
-    async composePuzzle(bitmaps: ImageBitmap[]): Promise<Blob> {
+    async composePuzzle(bitmaps: ImageBitmap[], format: string, quality: number): Promise<Blob> {
         return new Promise(resolve => {
             const canvas = document.createElement('canvas');
             const b1 = bitmaps[0];
@@ -156,7 +162,7 @@ export default class extends DecoratableMangaScraper {
             ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
             canvas.toBlob(data => {
                 resolve(data);
-            }, 'image/png', parseFloat('90') / 100);
+            }, format, quality / 100);
         });
     }
 }
