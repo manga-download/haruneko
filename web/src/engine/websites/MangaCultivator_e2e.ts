@@ -2,17 +2,18 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'crazyscans',
+        id: 'mangacultivator',
         title: 'MangaCultivator'
     },
     container: {
-        url: 'https://mangacultivator.com/manga/lightnings-dfs/',
+        url: 'https://mangacult.org/manga/lightnings-dfs/',
         id: JSON.stringify({ post: '1307', slug: '/manga/lightnings-dfs/' }),
         title: 'Lightning Degree'
     },
     child: {
         id: '/manga/lightnings-dfs/ch-001/',
-        title: 'Ch.001'
+        title: 'Ch.001',
+        timeout: 15000
     },
     entry: {
         index: 0,

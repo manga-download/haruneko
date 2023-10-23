@@ -7,12 +7,12 @@ const config = {
         timeout: 35000, //warning : WEBSITE IS SLOW IN BROWSER
     },
     container: {
-        url: 'https://sinensisscans.com/inicio1/manga/a-budgies-life/',
-        id: JSON.stringify({ post: '9436', slug: '/inicio1/manga/a-budgies-life/' }),
-        title: 'A Budgie’s Life',
+        url: 'https://sinensisscan.net/manga/a-budgies-life/',
+        id: JSON.stringify({ post: '9436', slug: '/manga/a-budgies-life/' }),
+        title: 'A vida de um passarinho',
     },
     child: {
-        id: '/inicio1/manga/a-budgies-life/cap-01/',
+        id: '/manga/a-budgies-life/cap-01/',
         title: 'Cap. 01',
         timeout: 15000
 
