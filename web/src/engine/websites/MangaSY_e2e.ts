@@ -13,6 +13,7 @@ const config = {
     child: {
         id: '/manga/his-thousands-romantic-tricks/chapter-157-the-end/',
         title: 'Chapter 157-The End',
+        timeout: 15000
     },
     entry: {
         index: 0,
