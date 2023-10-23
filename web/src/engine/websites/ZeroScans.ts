@@ -4,12 +4,6 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
 
-type APIMangaClipboard = {
-    data: {
-        details: APIManga
-    }[]
-}
-
 type APIManga = {
     id: number,
     name: string,
@@ -56,8 +50,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const request = new FetchRequest(url);
-        const { data } = await FetchWindowScript<APIMangaClipboard>(request, `__ZEROSCANS__`, 2000);
-        return new Manga(this, provider, JSON.stringify({ id: data[0].details.id, slug: data[0].details.slug }), data[0].details.name.trim());
+        const data = await FetchWindowScript<APIManga>(request, `__ZEROSCANS__.data[0].details`, 2000);
+        return new Manga(this, provider, JSON.stringify({ id: data.id, slug: data.slug }), data.name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
