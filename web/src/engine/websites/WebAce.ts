@@ -6,7 +6,7 @@ import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
 
 function MangaExtractor(element: HTMLDivElement) {
     const anchor = element.querySelector<HTMLAnchorElement>('a');
-    const id = anchor.pathname.match(/(\/\S+\/contents\/\d+\/)/)[1];
+    const id = anchor.pathname.match(/(\/\w+\/contents\/\d+\/)/)[1];
     const title = element.querySelector <HTMLHeadingElement>('h3').textContent.trim();
     return { id, title };
 }
@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
 
     public override ValidateMangaURL(url: string): boolean {
         // NOTE: only mangas with ID >= 1000000 have chapters for online reading
-        return new RegExp(/^https?:\/\/web-ace\.jp\/\S+\/contents\/\d{7}\//).test(url);
+        return new RegExp(/^https?:\/\/web-ace\.jp\/\w+\/contents\/\d{7}\//).test(url);
 
     }
 
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
         //We cant ask the user to get a matching url since the website doesnt provide them within the good format
         //we also enforce / a the end of the identifier
         const uri = new URL(url);
-        uri.pathname = uri.pathname.match(/(\/\S+\/contents\/\d{7}\/)/)[1];
+        uri.pathname = uri.pathname.match(/(\/\w+\/contents\/\d{7}\/)/)[1];
         const request = new FetchRequest(uri.href);
         const data = await FetchCSS<HTMLHeadingElement>(request, 'div#sakuhin-info div.credit h1');
         return new Manga(this, provider, uri.pathname, data[0].textContent.trim());
