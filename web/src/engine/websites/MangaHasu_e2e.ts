@@ -11,12 +11,12 @@ const config: Config = {
         title: `A Returner's Magic Should Be Special`
     },
     child: {
-        id: '/a-returners-magic-should-be-special/chapter-238-oorLmLZmyBZZ-c1894439.html',
-        title: 'Chapter 238'
+        id: '/a-returners-magic-should-be-special/chapter-1-oorLmLZmyBZZ-c629354.html',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 711_638,
+        size: 50_414,
         type: 'image/jpeg'
     }
 };
