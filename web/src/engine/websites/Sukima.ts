@@ -3,8 +3,7 @@ import icon from './Sukima.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
-import type { Numeric, Text } from '../SettingsManager';
-import { Key as GlobalKey } from '../SettingsGlobal';
+import DeScramble from '../transformers/ImageDescrambler';
 import * as Common from './decorators/Common';
 
 const pageScript = `
@@ -139,23 +138,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return this.descrambleImage(blob, page.Parameters as PAGE_INFO);
-    }
-
-    async descrambleImage(blob: Blob, payload: PAGE_INFO): Promise<Blob> {
-        const settings = HakuNeko.SettingsManager.OpenScope();
-        const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
-        const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
-
-        const bitmap = await createImageBitmap(blob);
-        return new Promise(resolve => {
-
-            const canvas = document.createElement('canvas');
-            canvas.width = bitmap.width;
-            canvas.height = bitmap.height;
-            const ctx = canvas.getContext('2d');
+        return DeScramble(blob, async (bitmap, ctx) => {
+            const payload = page.Parameters as PAGE_INFO;
             const shuffle_map: SHUFFLE_MAP = JSON.parse(payload.shuffle_map);
-
             const xSplitCount = Math.floor(bitmap.width / payload.blocklen);
             const ySplitCount = Math.floor(bitmap.height / payload.blocklen);
             let count = 0;
@@ -171,10 +156,6 @@ export default class extends DecoratableMangaScraper {
                     count++;
                 }
             }
-
-            canvas.toBlob(data => {
-                resolve(data);
-            }, format, quality / 100);
         });
     }
 
