@@ -7,7 +7,7 @@ import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
 import { Bookmark, MissingWebsite, type BookmarkSerialized } from './Bookmark';
 import { MissingInfoTracker } from '../trackers/IMediaInfoTracker';
 
-type BookmarkImportResult = {
+export type BookmarkImportResult = {
     cancelled: boolean;
     found: number;
     imported: number;
@@ -15,7 +15,7 @@ type BookmarkImportResult = {
     broken: number;
 }
 
-type BookmarkExportResult = {
+export type BookmarkExportResult = {
     cancelled: boolean;
     exported: number;
 }
@@ -66,6 +66,11 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
         this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
         this.EntriesUpdated.Dispatch(this, this.Entries);
+        for (const media of this._entries) {
+            await media.Update();
+            HakuNeko.ItemflagManager.LoadContainerFlags(media);
+        }
+
     }
 
     public async Import(): Promise<BookmarkImportResult> {
