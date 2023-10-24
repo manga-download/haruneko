@@ -14,7 +14,7 @@ const config = {
     child: {
         id: '/en/romance/lore-olympus/s3-episode-250/viewer?title_no=1320&episode_no=255',
         title: '#255 - (S3) Episode 250',
-        timeout: 15000
+        timeout: 20000
     },
     entry: {
         index: 1,

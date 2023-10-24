@@ -10,8 +10,10 @@ const pageScript = `
                  let pages = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img div.img_info')].map(page => {
                             let cover = page.querySelector('img');
                             return {
+                                width: cover.width,
+                                height: cover.height,
                                 background: {
-                                    image: cover.src
+                                    image: cover.src,
                                 },
                                 layers: [...page.querySelectorAll('span.ly_img_text')].map(layer => {
                                     let image = layer.querySelector('img');
@@ -38,7 +40,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/translate\.webtoons\.com\/webtoonVersion\?webtoonNo=\d+&language=\S+&teamVersion=\d+$/, LineW.queryMangaTitleURI, Common.ElementLabelExtractor(), true)
+@LineW.MangaCSS(/^https?:\/\/translate\.webtoons\.com\/webtoonVersion\?webtoonNo=\d+&language=[^/]+&teamVersion=\d+$/, LineW.queryMangaTitleURI, /language=(\w{3})/)
 @Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a', 1, 1, 0, MangaExtractor)
 @LineW.ChaptersMultiPageCSS()
 @LineW.PagesSinglePageJS(pageScript)

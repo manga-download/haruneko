@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as LineW from './decorators/LineWebtoon';
 
-@Common.MangaCSS(/^https?:\/\/www\.webtoons\.com\/\S+\/\S+\/\S+\/list\?title_no=\d+$/, LineW.queryMangaTitleURI, Common.ElementLabelExtractor(), true)
+@LineW.MangaCSS(/^https?:\/\/www\.webtoons\.com\/[a-z]{2}\/[^/]+\/[^/]+\/list\?title_no=\d+$/)
 @Common.MangasNotSupported()
 @LineW.ChaptersMultiPageCSS()
 @LineW.PagesSinglePageJS()

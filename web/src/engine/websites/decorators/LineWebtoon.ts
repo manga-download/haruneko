@@ -1,12 +1,60 @@
 import { FetchRequest, FetchCSS, FetchWindowScript } from '../../FetchProvider';
-import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
-import type { Numeric, Text } from '../../SettingsManager';
-import { Key as GlobalKey } from '../../SettingsGlobal';
+import DeScramble from '../../transformers/ImageDescrambler';
+import { Tags } from '../../Tags';
 
 export const queryChapters = 'div.detail_body div.detail_lst ul li > a';
 export const queryMangaTitleURI = 'div.info .subj';
+
+const DefaultLabelExtractor = Common.ElementLabelExtractor();
+const DefaultLanguageRegexp = /\/([a-z]{2})\//;
+
+const mangasLanguageMap = {
+    zh: Tags.Language.Chinese,
+    en: Tags.Language.English,
+    fr: Tags.Language.French,
+    de: Tags.Language.German,
+    id: Tags.Language.Indonesian,
+    it: Tags.Language.Italian,
+    ja: Tags.Language.Japanese,
+    ko: Tags.Language.Korean,
+    es: Tags.Language.Spanish,
+    th: Tags.Language.Thai,
+    tr: Tags.Language.Turkish,
+
+    ARA: Tags.Language.Arabic,
+    //BEN: Bengali,
+    //BUL: Bulgarian,
+    CMN: Tags.Language.Chinese,
+    CMT: Tags.Language.Chinese,
+    //CES: Czech,
+    //DAN: Danish,
+    //NLD: Dutch,
+    ENG: Tags.Language.English,
+    //FIL: Filipino,
+    DEU: Tags.Language.German,
+    //GRE: Greek,
+    //HIN: Hindi,
+    IND: Tags.Language.Indonesian,
+    ITA: Tags.Language.Italian,
+    JPN: Tags.Language.Japanese,
+    //LIT: Lithuanian,
+    //MAY: Malay,
+    //MON: Mongolian,
+    //PER: Persian,
+    POL: Tags.Language.Polish,
+    POR: Tags.Language.Portuguese,
+    POT: Tags.Language.Portuguese,
+    //RON: Romanian,
+    RUS: Tags.Language.Russian,
+    //SWE: Swedish,
+    THA: Tags.Language.Thai,
+    TUR: Tags.Language.Turkish,
+    //UKR: Ukrainian,
+    VIE: Tags.Language.Vietnamese,
+};
 
 type PageData = {
     width: number,
@@ -88,6 +136,59 @@ function ChapterExtractor(element: HTMLAnchorElement) {
     return {id, title};
 }
 
+/***************************************************
+ ******** Manga from URL Extraction Methods ********
+ ***************************************************/
+
+/**
+ * An extension method for extracting a single manga from the given {@link url} using the given CSS {@link query}.
+ * The `pathname`and the `search` of the given {@link url} will be used as identifier for the extracted manga.
+ * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted manga
+ * @param url - The url from which the manga shall be extracted
+ * @param query - A CSS query to locate the element from which the manga title shall be extracted
+ * @param languageRegexp - A regexp to extract language code from url pathname
+ * @param extract - An Extractor to get manga infos
+ * @param includeSearch - append Uri.search to the manga identifier
+ * @param includeHash - append Uri.hash to the manga identifier
+  */
+export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query = queryMangaTitleURI, languageRegexp = DefaultLanguageRegexp, extract = DefaultLabelExtractor, includeSearch = true, includeHash = false): Promise<Manga> {
+    const manga = await Common.FetchMangaCSS.call(this, provider, url, query, extract, includeSearch, includeHash);
+    try {
+        const languageCode = url.match(languageRegexp)[1];
+        manga.Tags.push(mangasLanguageMap[languageCode]);
+    } catch (error) {
+        //
+    }
+    return manga;
+}
+
+/**
+ * A class decorator that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
+ * The `pathname` of the url will be used as identifier for the extracted manga.
+ * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
+ * @param pattern - An expression to check if a manga can be extracted from an url or not
+ * @param query - A CSS query to locate the element from which the manga title shall be extracted
+ * @param languageRegexp - A regexp to extract language code from url pathname
+ * @param extract - An Extractor to get manga infos
+ * @param includeSearch - append Uri.search to the manga identifier
+ * @param includeHash - append Uri.hash to the manga identifier
+ */
+export function MangaCSS(pattern: RegExp, query = queryMangaTitleURI, languageRegexp = DefaultLanguageRegexp, extract = DefaultLabelExtractor, includeSearch = true, includeHash = false) {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public ValidateMangaURL(this: MangaScraper, url: string): boolean {
+                return pattern.test(url);
+            }
+            public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
+                return FetchMangaCSS.call(this, provider, url, query, languageRegexp, extract, includeSearch, includeHash);
+            }
+        };
+    };
+}
+
 /*************************************************
  ******** Chapter List Extraction Methods ********
  *************************************************/
@@ -163,7 +264,7 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
     return typeof data[0] == 'string' ? (data as Array<string>).map(page => new Page(this, chapter, new URL(page))) : createPagesfromData(this, chapter, data as PageData[]);
 }
 
-//sample for descrambling : //https://www.webtoons.com/id/horror/guidao/list?title_no=874&page=1
+//sample for descrambling : //https://www.webtoons.com/id/horror/guidao/list?title_no=874
 async function createPagesfromData(scraper: MangaScraper, chapter: Chapter, data: PageData[]): Promise<Page[]> {
     return data.map(page => {
         const parameters = { Referer: scraper.URI.href, page: JSON.stringify(page) };
@@ -202,46 +303,39 @@ export function PagesSinglePageJS(script = pageScript) {
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
 async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    return !page.Parameters ? await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType) : await descrambleImage(page);
-}
-async function descrambleImage(page: Page): Promise<Blob> {
+    let payload: PageData = undefined;
+    if (page.Parameters?.page) payload = JSON.parse(page.Parameters.page as string);
 
-    const settings = HakuNeko.SettingsManager.OpenScope();
-    const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
-    const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
+    return !payload ? await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType) : DeScramble(new ImageData(payload.width, payload.height,), async (_, ctx) => {
+        ctx.canvas.width = payload.width;
+        ctx.canvas.height = payload.height;
 
-    const canvas = document.createElement('canvas');
-    const payload: PageData = JSON.parse(page.Parameters.page as string);
-    canvas.width = payload.width;
-    canvas.height = payload.height;
-    const ctx = canvas.getContext('2d');
-    if (payload.background.image) {
-        const image = await _loadImage(payload.background.image);
-        canvas.width = image.width;
-        canvas.height = image.height;
-        ctx.drawImage(image, 0, 0);
-    }
-    if (payload.background.color) {
-        ctx.fillStyle = payload.background.color;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-    for (const layer of payload.layers) {
-        const type = layer.type.split('|');
-        if (type[0] === 'image') {
-            const image = await _loadImage(layer.asset);
-            if (type[1] === 'text') {
-                _adjustTextLayerVisibility(layer, image, canvas);
-            }
-            // TODO: process layer.keyframes in case top/left/width/height is animated?
-            ctx.drawImage(image, layer.left, layer.top, layer.width || image.width, layer.height || image.height);
+        if (payload.background.image) {
+            const image = await loadImage(payload.background.image);
+            ctx.canvas.width = image.width;
+            ctx.canvas.height = image.height;
+            ctx.drawImage(image, 0, 0);
         }
-    }
-    return await new Promise(resolve => {
-        canvas.toBlob(data => resolve(data), format, quality / 100);
+        if (payload.background.color) {
+            ctx.fillStyle = payload.background.color;
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        }
+        for (const layer of payload.layers) {
+            const type = layer.type.split('|');
+            if (type[0] === 'image') {
+                const image = await loadImage(layer.asset);
+                if (type[1] === 'text') {
+                    adjustTextLayerVisibility(layer, image, ctx.canvas);
+                }
+                // TODO: process layer.keyframes in case top/left/width/height is animated?
+                ctx.drawImage(image, layer.left, layer.top, layer.width || image.width, layer.height || image.height);
+            }
+        }
+
     });
 }
 
-function _adjustTextLayerVisibility(layer: ImageLayer, textLayer: HTMLImageElement, canvas: HTMLCanvasElement) {
+function adjustTextLayerVisibility(layer: ImageLayer, textLayer: HTMLImageElement, canvas: OffscreenCanvas) {
     if (textLayer.height > canvas.height) {
         layer.top = 0;
         layer.height = canvas.height;
@@ -268,7 +362,7 @@ function _adjustTextLayerVisibility(layer: ImageLayer, textLayer: HTMLImageEleme
     }
 }
 
-async function _loadImage(url: string): Promise<HTMLImageElement> {
+async function loadImage(url: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const uri = new URL(url);
         uri.searchParams.delete('type');
