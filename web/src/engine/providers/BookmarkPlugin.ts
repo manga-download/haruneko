@@ -66,13 +66,14 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
         this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
         this.EntriesUpdated.Dispatch(this, this.Entries);
+    }
+
+    public async RefreshAllFlags() {
         for (const media of this._entries) {
             await media.Update();
             HakuNeko.ItemflagManager.LoadContainerFlags(media);
         }
-
     }
-
     public async Import(): Promise<BookmarkImportResult> {
         let data: Blob;
         const result: BookmarkImportResult = {
