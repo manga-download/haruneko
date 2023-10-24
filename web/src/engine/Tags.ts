@@ -108,3 +108,7 @@ export const Tags = {
         Vietnamese: new Tag(R.Tags_Language, R.Tags_Language_Vietnamese),
     },
 };
+
+export function filterByCategory(tags : Tag[], category) : Tag[] {
+    return tags.filter(tag => category.toArray().includes(tag));
+}

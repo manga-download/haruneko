@@ -7,8 +7,8 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^https?:\/\/mangaeffect\.com\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageCSS()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
+@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript, 2000)
+@Common.ImageAjax(false, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

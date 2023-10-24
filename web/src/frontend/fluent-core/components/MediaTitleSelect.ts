@@ -1,6 +1,7 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
+import type { SearchBox } from './SearchBox';
 import S from '../services/StateService';
 import { Exception } from '../../../engine/Error';
 import { VariantResourceKey as R } from '../../../i18n/ILocale';
@@ -202,7 +203,7 @@ const template: ViewTemplate<MediaTitleSelect> = html`
     </div>
     <div id="dropdown" ${ref('dropdown')}>
         <div id="searchcontrol">
-            <fluent-searchbox placeholder="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+            <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
         <fluent-lazy-scroll id="entries" :items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
     </div>
@@ -222,7 +223,8 @@ export class MediaTitleSelect extends FASTElement {
         HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
     }
 
-    dropdown: HTMLDivElement;
+    readonly dropdown: HTMLDivElement;
+    readonly searchbox: SearchBox;
 
     @observable container: IMediaContainer;
     containerChanged() {
@@ -246,6 +248,8 @@ export class MediaTitleSelect extends FASTElement {
     expandedChanged() {
         if(this.dropdown) {
             this.dropdown.style.display = this.expanded ? 'block' : 'none';
+            this.searchbox.control.control.focus();
+            //this.searchbox.control.select();
         }
     }
 
