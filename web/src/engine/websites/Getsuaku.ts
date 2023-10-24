@@ -22,7 +22,7 @@ function MangaExtractor(element: HTMLElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/getsuaku\.com\/episode\/\S+$/, 'div.detail__main h2.detail__title')
+@Common.MangaCSS(/^https?:\/\/getsuaku\.com\/episode\/[^/]+$/, 'div.detail__main h2.detail__title')
 @Common.MangasSinglePageCSS('/series', 'div.comics__grid div.comics__gridItem', MangaExtractor)
 @SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()

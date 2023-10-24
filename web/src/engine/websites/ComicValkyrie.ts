@@ -30,7 +30,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /^https?:\/\/www\.comic-valkyrie\.com\/\S+(\/|\/new.html)?$/.test(url);
+        return /^https?:\/\/www\.comic-valkyrie\.com\/[^/]+(\/|\/new.html)?$/.test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

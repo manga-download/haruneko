@@ -15,7 +15,7 @@ function ChapterExtractor(element: HTMLElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/digitalmargaret\.jp\/detail\/\S+\/$/, 'section#product div.content h3')
+@Common.MangaCSS(/^https?:\/\/digitalmargaret\.jp\/detail\/[^/]+\/$/, 'section#product div.content h3')
 @Common.MangasSinglePageCSS('/', 'section#serial ul.serial-list li a', MangaExtractor)
 @Common.ChaptersSinglePageCSS('section#product div.list div.box div.number', ChapterExtractor)
 @SpeedBinb.PagesSinglePage()

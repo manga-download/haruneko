@@ -11,7 +11,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/webcomic\.ohtabooks\.com\/\S+\/$/, 'h2.contentTitle')
+@Common.MangaCSS(/^https?:\/\/webcomic\.ohtabooks\.com\/[^/]+\/$/, 'h2.contentTitle')
 @Common.MangasSinglePageCSS('/list/', 'div.bnrList ul li a', MangaExtractor)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

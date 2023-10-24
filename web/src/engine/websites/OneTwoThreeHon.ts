@@ -8,11 +8,11 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     console.log(anchor.pathname);
     const id = anchor.pathname;
-    const title = anchor.pathname.match(/[\w]+\/web-comic\/([\S]+)\//)[1];
+    const title = anchor.pathname.match(/[^/]+\/web-comic\/([^/]+)\//)[1];
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.123hon\.com\/[\S]+\/web-comic\/[\S]+\/$/, 'div.title-area h2')
+@Common.MangaCSS(/^https?:\/\/www\.123hon\.com\/[^/]+\/web-comic\/[^/]+\/$/, 'div.title-area h2')
 @SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

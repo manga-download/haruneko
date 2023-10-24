@@ -14,7 +14,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/gaugau\.futabanet\.jp\/list\/work\/\S+$/, 'h1.detail-ex__title')
+@Common.MangaCSS(/^https?:\/\/gaugau\.futabanet\.jp\/list\/work\/[^/]+$/, 'h1.detail-ex__title')
 @Common.MangasMultiPageCSS('/list/works?page={page}', 'div.m-result-list__item a', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('section.detail-sec.detail-ex div.detail-ex__btn-item a[href*="reader.futabanet"]', ChapterExtractor)
 @SpeedBinb.PagesSinglePage('https://reader.futabanet.jp')

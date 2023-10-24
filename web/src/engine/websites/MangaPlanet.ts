@@ -11,7 +11,7 @@ function MangaExtractor(element: HTMLElement) {
     return {id, title};
 }
 
-@Common.MangaCSS(/^https?:\/\/mangaplanet\.com\/comic\/\S+$/, '.card-body.book-detail h3')
+@Common.MangaCSS(/^https?:\/\/mangaplanet\.com\/comic\/[^/]+$/, '.card-body.book-detail h3')
 @Common.MangasMultiPageCSS('/browse/title?ttlpage={page}', 'div#Title .row.book-list', 1, 1, 0, MangaExtractor)
 @SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()
