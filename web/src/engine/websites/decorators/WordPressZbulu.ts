@@ -9,9 +9,9 @@ export const queryPages = 'div.chapter-content-inner img';
 
 export const mangaTitleFilter = /(\s+manga|\s+webtoon|\s+others)+\s*$/gi;
 export const chapterTitleFilter = /^\s*(\s+manga|\s+webtoon|\s+others)+/gi;
+const chapterBloat = ['span', 'div.chapter-date'];
 export const chapterPath = '{mangaid}/page-{page}/';
 export const mangaPath = '/manga-list/page-{page}/';
-const queryChaptertitle = undefined;
 
 export function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -20,9 +20,18 @@ export function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-export function ChapterExtractor(element: HTMLAnchorElement, titlefilter: RegExp, mangatitle: string, chapterTitleQuery: string) {
+export function ChapterExtractor(element: HTMLAnchorElement, mangatitle: string) {
     const id = element.pathname;
-    let title = chapterTitleQuery ? element.querySelector(chapterTitleQuery).textContent : (element as HTMLAnchorElement).text.trim();
+
+    //remove bloat badges
+    for (const bloatCSS of chapterBloat) {
+        while (element.querySelector(bloatCSS)) {
+            const bloatNode = element.querySelector(bloatCSS);
+            bloatNode.parentElement.removeChild(bloatNode);
+        }
+    }
+
+    let title = element.text.trim();
     title = title.replace(mangatitle, '').replace(chapterTitleFilter, '').trim();
     return { id, title };
 }
@@ -115,9 +124,8 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
  */
 export function MangasMultiPageCSS(path: string = mangaPath, query: string = queryMangas, start = 1, step = 1, throttle = 0, extract = MangaExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        if (context && context.kind !== 'class') {
-            throw new Error(context.name);
-        }
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
                 return FetchMangasMultiPageCSS.call(this, provider, path, query, start, step, throttle, extract);
@@ -131,14 +139,12 @@ export function MangasMultiPageCSS(path: string = mangaPath, query: string = que
  *************************************************/
 /**
  * @param query - A CSS query to locate the elements from which the chapter identifier shall be extracted
- * @param titleFilter - A Regexp used to replace element in extracted chapter title
- * @param chaptertitleQuery - A CSS query. If defined, this will be use to extract title
  * @param path - the subpath for chapter pagination
    @param start - The start for the sequence of incremental numbers which are applied to the {@link path} pattern
  * @param step - An int that will be used to increase page on each loop, so page can be used as an offset if needed
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites) */
 
-async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path: string = chapterPath, query: string = queryChapters, titleFilter = chapterTitleFilter, chaptertitleQuery : string = queryChaptertitle,
+async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path: string = chapterPath, query: string = queryChapters,
     start: number = 1, step: number = 1, throttle: number = 0): Promise<Chapter[]> {
 
     const chapterlist: Chapter[]= [];
@@ -147,7 +153,7 @@ async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path:
         await reducer;
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const pathTopage = path.replace('{page}', `${page}`).replace('{mangaid}', manga.Identifier);
-        const chapters = await FetchChaptersSinglePageCSS.call(this, manga, pathTopage, query, titleFilter, chaptertitleQuery);
+        const chapters = await FetchChaptersSinglePageCSS.call(this, manga, pathTopage, query);
         // Always add when mangaList is empty ... (length = 0)
         chapters.length > 0 && !EndsWith(chapterlist, chapters) ? chapterlist.push(...chapters) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
@@ -158,12 +164,12 @@ async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path:
     return uniqueChapters;
 }
 
-async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, path: string, query = queryChapters, titleFilter = chapterTitleFilter, chaptertitleQuery: string): Promise<Chapter[]>{
+async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, path: string, query = queryChapters): Promise<Chapter[]>{
     const url = new URL(path.replace('//', '/'), this.URI).href;
     const request = new FetchRequest(url);
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(chapter => {
-        const { id, title } = ChapterExtractor.call(this, chapter, titleFilter, manga.Title, chaptertitleQuery);
+        const { id, title } = ChapterExtractor.call(this, chapter, manga.Title);
         return new Chapter(this, manga, id, title);
     });
 }
@@ -179,21 +185,18 @@ export function EndsWith(target: Chapter[], source: Chapter[]) {
  * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
  * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
  * @param query - A CSS query to locate the elements from which the chapter identifier shall be extracted
- * @param titleFilter - A Regexp used to replace element in extracted chapter title
- * @param chaptertitleQuery - A CSS query. If defined, this will be use to extract title
  * @param path - the path for chapter pagination
  * @param start - The start for the sequence of incremental numbers which are applied to the {@link path} pattern
  * @param step - An int that will be used to increase page on each loop, so page can be used as an offset if needed
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites) */
 
-export function ChaptersMultiPageCSS(path: string = chapterPath, query: string = queryChapters, titleFilter = chapterTitleFilter, chaptertitleQuery = queryChaptertitle,
-    start: number = 1, step: number = 1, throttle: number = 0) {
+export function ChaptersMultiPageCSS(path: string = chapterPath, query: string = queryChapters, start: number = 1, step: number = 1, throttle: number = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return await FetchChaptersMultiPageCSS.call(this, manga, path, query, titleFilter, chaptertitleQuery, start, step, throttle);
+                return await FetchChaptersMultiPageCSS.call(this, manga, path, query, start, step, throttle);
             }
         };
     };

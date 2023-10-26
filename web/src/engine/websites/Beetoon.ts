@@ -7,7 +7,7 @@ import { Fetch, FetchRequest } from '../FetchProvider';
 
 @Zbulu.MangaCSS(/^https:\/\/(\w+\.)?beetoon\.net\/[^/]+\/$/)
 @Zbulu.MangasMultiPageCSS()
-@Zbulu.ChaptersMultiPageCSS(Zbulu.chapterPath, 'div#chapterList div.items-chapters a', Zbulu.chapterTitleFilter, 'div.r1 h2.chap')
+@Zbulu.ChaptersMultiPageCSS(Zbulu.chapterPath, 'div#chapterList div.items-chapters a')
 @Common.PagesSinglePageCSS(Zbulu.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
