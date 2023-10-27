@@ -31,6 +31,4 @@ export default class extends DecoratableMangaScraper {
         return options.map(option => new Page(this, chapter, new URL(`/photos-view-id-${option.value}.html`, this.URI)));
 
     }
-
-
 }
