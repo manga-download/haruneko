@@ -4,15 +4,15 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/www\.wnacg\.org\/photos-index/, 'div#bodywrap > h2')
+@Common.MangaCSS(/^https?:\/\/www\.wnacg\.com\/photos-index/, 'div#bodywrap > h2')
 @Common.MangasMultiPageCSS('/albums-index-page-{page}.html', 'ul li.gallary_item div.info div.title a')
 @Common.ChaptersUniqueFromManga()
-@Common.ImageAjax()
+@Common.ImageAjaxFromHTML('img#picarea')
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('wnacg', `Wnacg`, 'https://www.wnacg.org', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Rating.Erotica);
+        super('wnacg', `Wnacg`, 'https://www.wnacg.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Rating.Erotica);
     }
 
     public override get Icon() {
@@ -20,7 +20,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pageList = [];
         //get first "image" page
         const url = new URL(chapter.Identifier, this.URI);
         let request = new FetchRequest(url.href);
@@ -29,18 +28,9 @@ export default class extends DecoratableMangaScraper {
         //fetch option values
         request = new FetchRequest(new URL(firstlink.pathname, this.URI).href);
         const options = await FetchCSS<HTMLOptionElement>(request, 'div.newpage select.pageselect option');
-        const linkList = options.map(op => new URL(`/photos-view-id-${op.value}.html`, this.URI).href);
+        return options.map(option => new Page(this, chapter, new URL(`/photos-view-id-${option.value}.html`, this.URI)));
 
-        for (const link of linkList) {
-            const pages = await this.ExtractPagesFromPage(chapter, link);
-            pageList.push(...pages);
-        }
-        return pageList;
     }
 
-    private async ExtractPagesFromPage(chapter: Chapter, url: string): Promise<Page[]> {
-        const data = await FetchCSS<HTMLImageElement>(new FetchRequest(url), 'img#picarea');
-        return data.map(img => new Page(this, chapter, new URL(img.src)));
-    }
 
 }

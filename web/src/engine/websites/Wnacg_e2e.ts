@@ -6,7 +6,7 @@ const config = {
         title: 'Wnacg'
     },
     container: {
-        url: 'https://www.wnacg.org/photos-index-aid-201161.html',
+        url: 'https://www.wnacg.com/photos-index-aid-201161.html',
         id: '/photos-index-aid-201161.html',
         title: '[楝蛙] つづきから (COMIC 快楽天 2021年8月号) [無修正]'
     },
