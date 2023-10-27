@@ -1,34 +1,22 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './NhatTruyen.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import * as Mojo from '../decorators/MojoPortalComic';
+
+@Common.MangaCSS(/^https?:\/\/nhattruyenmin\.com\/truyen-tranh\/[^/]+/, Mojo.queryMangaTitle)
+@Common.MangasMultiPageCSS(Mojo.path, Mojo.queryMangas)
+@Common.ChaptersSinglePageCSS(Mojo.queryChapter)
+@Mojo.PagesSinglePageCSS([/638143969460448990.jpg$/], Mojo.queryPages)
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nhattruyen', `NhatTruyen`, 'http://nhattruyenvip.com' /*, Tags.Language.English, Tags ... */);
+        super('nhattruyen', `NhatTruyen`, 'https://nhattruyenmin.com', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class NhatTruyen extends MojoPortalComic {
-
-    constructor() {
-        super();
-        super.id = 'nhattruyen';
-        super.label = 'NhatTruyen';
-        this.tags = [ 'manga', 'vietnamese' ];
-        this.url = 'http://nhattruyenvip.com';
-        this.links = {
-            login: this.url + '/Secure/Login.aspx'
-        };
-    }
-}
-*/
