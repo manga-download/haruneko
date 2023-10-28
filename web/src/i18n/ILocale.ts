@@ -1,7 +1,16 @@
-export type IResource = Record<LocaleID | InvariantResourceKey | VariantResourceKey, string>;
+export type IResource = Record<InvariantResourceKey | VariantResourceKey, string>;
 export type ILocale = Record<keyof IResource, (...params: string[]) => string>;
-export type IVariantResource = Record<VariantResourceKey, string>;
+export type InvariantResource = Record<InvariantResourceKey, string>;
+export type VariantResource = Record<VariantResourceKey, string>;
 
+// ****************************************************************************
+/**
+ * All pre-defined identifiers that must be independent from the selected locale.
+ */
+type InvariantResourceKey = LocaleID;
+// ****************************************************************************
+
+// [SECTION]: Locales
 export enum LocaleID {
     Locale_arSA = 'Locale_arSA',
     Locale_deDE = 'Locale_deDE',
@@ -17,17 +26,88 @@ export enum LocaleID {
     Locale_zhCN = 'Locale_zhCN',
 }
 
-export enum InvariantResourceKey {
-    //
-}
-
+// *****************************************************************************************************
 /**
  * All pre-defined identifiers that must be provided by any localization {@link IResource} implementation.
  * Using merged enum for structuring ...
  */
+type VariantResourceKey = TagCategoryResourceKey | TagResourceKey | AnnotationCategoryResourceKey | AnnotationResourceKey | FrontendResourceKey | EngineResourceKey | TrackerResourceKey | WebsiteResourceKey;
+// *****************************************************************************************************
+
+// [SECTION]: Tag Categories
+export enum TagCategoryResourceKey {
+    Tags_Media = 'Tags_Media',
+    Tags_Source = 'Tags_Source',
+    Tags_Accessibility = 'Tags_Accessibility',
+    Tags_Rating = 'Tags_Rating',
+    Tags_Language = 'Tags_Language',
+    Tags_Others = 'Tags_Others',
+}
+
+// [SECTION]: Tags
+export enum TagResourceKey {
+    Tags_Media_Manga = 'Tags_Media_Manga',
+    Tags_Media_MangaDescription = 'Tags_Media_MangaDescription',
+    Tags_Media_Manhua = 'Tags_Media_Manhua',
+    Tags_Media_ManhuaDescription = 'Tags_Media_ManhuaDescription',
+    Tags_Media_Manhwa = 'Tags_Media_Manhwa',
+    Tags_Media_ManhwaDescription = 'Tags_Media_ManhwaDescription',
+    Tags_Media_Comic = 'Tags_Media_Comic',
+    Tags_Media_ComicDescription = 'Tags_Media_ComicDescription',
+    Tags_Media_Anime = 'Tags_Media_Anime',
+    Tags_Media_AnimeDescription = 'Tags_Media_AnimeDescription',
+    Tags_Media_Cartoon = 'Tags_Media_Cartoon',
+    Tags_Media_CartoonDescription = 'Tags_Media_CartoonDescription',
+    Tags_Media_Novel = 'Tags_Media_Novel',
+    Tags_Media_NovelDescription = 'Tags_Media_NovelDescription',
+    Tags_Source_Official = 'Tags_Source_Official',
+    Tags_Source_Scanlator = 'Tags_Source_Scanlator',
+    Tags_Source_Aggregator = 'Tags_Source_Aggregator',
+    Tags_Accessibility_RegionLock = 'Tags_Accessibility_RegionLock',
+    Tags_Accessibility_RegionLockDescription = 'Tags_Accessibility_RegionLockDescription',
+    Tags_Accessibility_RateLimit = 'Tags_Accessibility_RateLimit',
+    Tags_Accessibility_RateLimitDescription = 'Tags_Accessibility_RateLimitDescription',
+    Tags_Rating_Safe = 'Tags_Rating_Safe',
+    Tags_Rating_Suggestive = 'Tags_Rating_Suggestive',
+    Tags_Rating_Erotica = 'Tags_Rating_Erotica',
+    Tags_Rating_Pornographic = 'Tags_Rating_Pornographic',
+    Tags_Language_Multilingual = 'Tags_Language_Multilingual',
+    Tags_Language_Arabic = 'Tags_Language_Arabic',
+    Tags_Language_Chinese = 'Tags_Language_Chinese',
+    Tags_Language_English = 'Tags_Language_English',
+    Tags_Language_French = 'Tags_Language_French',
+    Tags_Language_German = 'Tags_Language_German',
+    Tags_Language_Indonesian = 'Tags_Language_Indonesian',
+    Tags_Language_Italian = 'Tags_Language_Italian',
+    Tags_Language_Japanese = 'Tags_Language_Japanese',
+    Tags_Language_Korean = 'Tags_Language_Korean',
+    Tags_Language_Polish = 'Tags_Language_Polish',
+    Tags_Language_Portuguese = 'Tags_Language_Portuguese',
+    Tags_Language_Russian = 'Tags_Language_Russian',
+    Tags_Language_Spanish = 'Tags_Language_Spanish',
+    Tags_Language_Thai = 'Tags_Language_Thai',
+    Tags_Language_Turkish = 'Tags_Language_Turkish',
+    Tags_Language_Vietnamese = 'Tags_Language_Vietnamese',
+}
+
+// [SECTION]: Annotation Categories (Custom Tags)
+export enum AnnotationCategoryResourceKey {
+    Annotations_ViewProgress = 'Annotations_ViewProgress',
+}
+
+// [SECTION]: Annotations (Custom Tags)
+export enum AnnotationResourceKey {
+    Annotations_ViewProgressDescription = 'Annotations_ViewProgressDescription',
+    Annotations_ViewProgress_None = 'Annotations_ViewProgress_None',
+    Annotations_ViewProgress_NoneDescription = 'Annotations_ViewProgress_NoneDescription',
+    Annotations_ViewProgress_Viewed = 'Annotations_ViewProgress_Viewed',
+    Annotations_ViewProgress_ViewedDescription = 'Annotations_ViewProgress_ViewedDescription',
+    Annotations_ViewProgress_Current = 'Annotations_ViewProgress_Current',
+    Annotations_ViewProgress_CurrentDescription = 'Annotations_ViewProgress_CurrentDescription',
+}
 
 // [SECTION]: Frontends (Common)
-export enum VariantResourceKey {
+export enum FrontendResourceKey {
     FrontendController_Reload_ConfirmNotice = 'FrontendController_Reload_ConfirmNotice',
     Frontend_Product_Title = 'Frontend_Product_Title',
     Frontend_Product_Description = 'Frontend_Product_Description',
@@ -54,7 +134,7 @@ export enum VariantResourceKey {
 }
 
 // [SECTION]: Frontend: Classic
-export enum VariantResourceKey {
+export enum FrontendResourceKey {
     Frontend_Classic_Label = 'Frontend_Classic_Label',
     Frontend_Classic_Description = 'Frontend_Classic_Description',
     Frontend_Classic_Settings_FuzzySearch = 'Frontend_Classic_Settings_FuzzySearch',
@@ -90,7 +170,7 @@ export enum VariantResourceKey {
 }
 
 // [SECTION]: Frontend: FluentCore
-export enum VariantResourceKey {
+export enum FrontendResourceKey {
     Frontend_FluentCore_Label = 'Frontend_FluentCore_Label',
     Frontend_FluentCore_Description = 'Frontend_FluentCore_Description',
 
@@ -160,7 +240,7 @@ export enum VariantResourceKey {
 }
 
 // [SECTION]: Engine
-export enum VariantResourceKey {
+export enum EngineResourceKey {
     Settings_Global_Frontend = 'Settings_Global_Frontend',
     Settings_Global_FrontendInfo = 'Settings_Global_FrontendInfo',
     Settings_Global_Language = 'Settings_Global_Language',
@@ -208,72 +288,8 @@ export enum VariantResourceKey {
     BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',
 }
 
-// [SECTION]: Tags
-export enum VariantResourceKey {
-    Tags_Media = 'Tags_Media',
-    Tags_Media_Manga = 'Tags_Media_Manga',
-    Tags_Media_MangaDescription = 'Tags_Media_MangaDescription',
-    Tags_Media_Manhua = 'Tags_Media_Manhua',
-    Tags_Media_ManhuaDescription = 'Tags_Media_ManhuaDescription',
-    Tags_Media_Manhwa = 'Tags_Media_Manhwa',
-    Tags_Media_ManhwaDescription = 'Tags_Media_ManhwaDescription',
-    Tags_Media_Comic = 'Tags_Media_Comic',
-    Tags_Media_ComicDescription = 'Tags_Media_ComicDescription',
-    Tags_Media_Anime = 'Tags_Media_Anime',
-    Tags_Media_AnimeDescription = 'Tags_Media_AnimeDescription',
-    Tags_Media_Cartoon = 'Tags_Media_Cartoon',
-    Tags_Media_CartoonDescription = 'Tags_Media_CartoonDescription',
-    Tags_Media_Novel = 'Tags_Media_Novel',
-    Tags_Media_NovelDescription = 'Tags_Media_NovelDescription',
-    Tags_Source = 'Tags_Source',
-    Tags_Source_Official = 'Tags_Source_Official',
-    Tags_Source_Scanlator = 'Tags_Source_Scanlator',
-    Tags_Source_Aggregator = 'Tags_Source_Aggregator',
-    Tags_Accessibility = 'Tags_Accessibility',
-    Tags_Accessibility_RegionLock = 'Tags_Accessibility_RegionLock',
-    Tags_Accessibility_RegionLockDescription = 'Tags_Accessibility_RegionLockDescription',
-    Tags_Accessibility_RateLimit = 'Tags_Accessibility_RateLimit',
-    Tags_Accessibility_RateLimitDescription = 'Tags_Accessibility_RateLimitDescription',
-    Tags_Rating = 'Tags_Rating',
-    Tags_Rating_Safe = 'Tags_Rating_Safe',
-    Tags_Rating_Suggestive = 'Tags_Rating_Suggestive',
-    Tags_Rating_Erotica = 'Tags_Rating_Erotica',
-    Tags_Rating_Pornographic = 'Tags_Rating_Pornographic',
-    Tags_Language = 'Tags_Language',
-    Tags_Language_Multilingual = 'Tags_Language_Multilingual',
-    Tags_Language_Arabic = 'Tags_Language_Arabic',
-    Tags_Language_Chinese = 'Tags_Language_Chinese',
-    Tags_Language_English = 'Tags_Language_English',
-    Tags_Language_French = 'Tags_Language_French',
-    Tags_Language_German = 'Tags_Language_German',
-    Tags_Language_Indonesian = 'Tags_Language_Indonesian',
-    Tags_Language_Italian = 'Tags_Language_Italian',
-    Tags_Language_Japanese = 'Tags_Language_Japanese',
-    Tags_Language_Korean = 'Tags_Language_Korean',
-    Tags_Language_Polish = 'Tags_Language_Polish',
-    Tags_Language_Portuguese = 'Tags_Language_Portuguese',
-    Tags_Language_Russian = 'Tags_Language_Russian',
-    Tags_Language_Spanish = 'Tags_Language_Spanish',
-    Tags_Language_Thai = 'Tags_Language_Thai',
-    Tags_Language_Turkish = 'Tags_Language_Turkish',
-    Tags_Language_Vietnamese = 'Tags_Language_Vietnamese',
-    Tags_Others = 'Tags_Others',
-}
-
-// [SECTION]: Customizable Tags
-export enum VariantResourceKey {
-    Tags_Customized_ViewProgress = 'Tags_Customized_ViewProgress',
-    Tags_Customized_ViewProgressDescription = 'Tags_Customized_ViewProgressDescription',
-    Tags_Customized_ViewProgress_None = 'Tags_Customized_ViewProgress_None',
-    Tags_Customized_ViewProgress_NoneDescription = 'Tags_Customized_ViewProgress_NoneDescription',
-    Tags_Customized_ViewProgress_Viewed = 'Tags_Customized_ViewProgress_Viewed',
-    Tags_Customized_ViewProgress_ViewedDescription = 'Tags_Customized_ViewProgress_ViewedDescription',
-    Tags_Customized_ViewProgress_Current = 'Tags_Customized_ViewProgress_Current',
-    Tags_Customized_ViewProgress_CurrentDescription = 'Tags_Customized_ViewProgress_CurrentDescription',
-}
-
 // [SECTION]: Tracker Kitsu
-export enum VariantResourceKey {
+export enum TrackerResourceKey {
     Tracker_Kitsu_Settings_Username = 'Tracker_Kitsu_Settings_Username',
     Tracker_Kitsu_Settings_UsernameInfo = 'Tracker_Kitsu_Settings_UsernameInfo',
     Tracker_Kitsu_Settings_Password = 'Tracker_Kitsu_Settings_Password',
@@ -281,7 +297,7 @@ export enum VariantResourceKey {
 }
 
 // [SECTION]: Websites (Common)
-export enum VariantResourceKey {
+export enum WebsiteResourceKey {
     Plugin_Settings_ThrottlingDownloads = 'Plugin_Settings_ThrottlingDownloads',
     Plugin_Settings_ThrottlingDownloadsInfo = 'Plugin_Settings_ThrottlingDownloadsInfo',
     Plugin_Settings_ThrottlingInteraction = 'Plugin_Settings_ThrottlingInteraction',
@@ -294,7 +310,7 @@ export enum VariantResourceKey {
 }
 
 // [SECTION]: Website SheepScanlations
-export enum VariantResourceKey {
+export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_Username = 'Plugin_SheepScanlations_Settings_Username',
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
