@@ -1,13 +1,13 @@
-export type IResource = Record<InvariantResourceKey | VariantResourceKey, string>;
+export type IResource = Record<keyof InvariantResource | keyof VariantResource, string>;
+export type InvariantResource = Record<keyof typeof InvariantResourceKey, string>;
+export type VariantResource = Record<keyof typeof VariantResourceKey, string>;
 export type ILocale = Record<keyof IResource, (...params: string[]) => string>;
-export type InvariantResource = Record<InvariantResourceKey, string>;
-export type VariantResource = Record<VariantResourceKey, string>;
 
 // ****************************************************************************
 /**
  * All pre-defined identifiers that must be independent from the selected locale.
  */
-type InvariantResourceKey = LocaleID;
+//type InvariantResourceKey = keyof typeof LocaleID;
 // ****************************************************************************
 
 // [SECTION]: Locales
@@ -26,12 +26,16 @@ export enum LocaleID {
     Locale_zhCN = 'Locale_zhCN',
 }
 
+export const InvariantResourceKey = {
+    ...LocaleID,
+};
+
 // *****************************************************************************************************
 /**
  * All pre-defined identifiers that must be provided by any localization {@link IResource} implementation.
  * Using merged enum for structuring ...
  */
-type VariantResourceKey = TagCategoryResourceKey | TagResourceKey | AnnotationCategoryResourceKey | AnnotationResourceKey | FrontendResourceKey | EngineResourceKey | TrackerResourceKey | WebsiteResourceKey;
+//type VariantResourceKey = TagCategoryResourceKey | TagResourceKey | AnnotationCategoryResourceKey | AnnotationResourceKey | FrontendResourceKey | EngineResourceKey | TrackerResourceKey | WebsiteResourceKey;
 // *****************************************************************************************************
 
 // [SECTION]: Tag Categories
@@ -316,3 +320,14 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
 }
+
+export const VariantResourceKey = {
+    ...TagCategoryResourceKey,
+    ...TagResourceKey,
+    ...AnnotationCategoryResourceKey,
+    ...AnnotationResourceKey,
+    ...FrontendResourceKey,
+    ...EngineResourceKey,
+    ...TrackerResourceKey,
+    ...WebsiteResourceKey,
+};
