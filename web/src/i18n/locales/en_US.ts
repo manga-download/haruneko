@@ -237,6 +237,17 @@ const translations: IVariantResource = {
     Tags_Language_Vietnamese: '🇻🇳Vietnamese',
     Tags_Others: 'Others',
 
+    // [SECTION]: Customizable Tags
+
+    Tags_Customized_ViewProgress: 'Progress',
+    Tags_Customized_ViewProgressDescription: 'A custom status indicating the reading/viewing progression',
+    Tags_Customized_ViewProgress_None: '-',
+    Tags_Customized_ViewProgress_NoneDescription: 'Not yet read/viewed',
+    Tags_Customized_ViewProgress_Viewed: 'x',
+    Tags_Customized_ViewProgress_ViewedDescription: 'Already read/viewed',
+    Tags_Customized_ViewProgress_Current: 'o',
+    Tags_Customized_ViewProgress_CurrentDescription: 'Currently reading/viewing',
+
     // [SECTION]: Trackers
 
     Tracker_Kitsu_Settings_Username: 'Username',

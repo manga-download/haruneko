@@ -260,6 +260,18 @@ export enum VariantResourceKey {
     Tags_Others = 'Tags_Others',
 }
 
+// [SECTION]: Customizable Tags
+export enum VariantResourceKey {
+    Tags_Customized_ViewProgress = 'Tags_Customized_ViewProgress',
+    Tags_Customized_ViewProgressDescription = 'Tags_Customized_ViewProgressDescription',
+    Tags_Customized_ViewProgress_None = 'Tags_Customized_ViewProgress_None',
+    Tags_Customized_ViewProgress_NoneDescription = 'Tags_Customized_ViewProgress_NoneDescription',
+    Tags_Customized_ViewProgress_Viewed = 'Tags_Customized_ViewProgress_Viewed',
+    Tags_Customized_ViewProgress_ViewedDescription = 'Tags_Customized_ViewProgress_ViewedDescription',
+    Tags_Customized_ViewProgress_Current = 'Tags_Customized_ViewProgress_Current',
+    Tags_Customized_ViewProgress_CurrentDescription = 'Tags_Customized_ViewProgress_CurrentDescription',
+}
+
 // [SECTION]: Tracker Kitsu
 export enum VariantResourceKey {
     Tracker_Kitsu_Settings_Username = 'Tracker_Kitsu_Settings_Username',
