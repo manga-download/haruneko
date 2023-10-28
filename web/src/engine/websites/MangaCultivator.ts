@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './CrazyScans.webp';
+import icon from './MangaCultivator.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/mangacultivator\.com\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MangaCultivator"])')
+@Madara.MangaCSS(/^https?:\/\/mangacult\.org\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MangaCultivator"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript)
-@Common.ImageAjax()
+@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript, 2000)
+@Common.ImageAjax(false, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('crazyscans', 'MangaCultivator', 'https://mangacultivator.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('mangacultivator', 'MangaCultivator', 'https://mangacult.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {

@@ -3,7 +3,7 @@ import { Event } from '../Event';
 import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import icon from '../../img/warning.webp';
 import { Exception } from '../Error';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 /**
  * A dummy representation for a bookmark's origin (media title), which is no longer available.

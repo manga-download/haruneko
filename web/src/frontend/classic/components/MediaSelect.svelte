@@ -28,7 +28,7 @@
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import type { IMediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
     import { Exception } from '../../../engine/Error';
-    import { VariantResourceKey as R } from '../../../i18n/ILocale';
+    import { FrontendResourceKey as R } from '../../../i18n/ILocale';
 
     let medias: IMediaContainer[] = [];
     let filteredmedias: IMediaContainer[] = [];
