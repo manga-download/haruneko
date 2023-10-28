@@ -1,4 +1,4 @@
-import { type IResource, TagCategoryResourceKey as TC, TagResourceKey as T } from '../i18n/ILocale';
+import { TagCategoryResourceKey as TC, TagResourceKey as T } from '../i18n/ILocale';
 import type { AnnotationCategoryResourceKey as AC, AnnotationResourceKey as A } from '../i18n/ILocale';
 
 export class Tag extends Object {
@@ -14,15 +14,15 @@ export class Tag extends Object {
         this.descriptionKey = descriptionKey;
     }
 
-    public get Category(): keyof IResource {
+    public get Category(): TC | AC {
         return this.categoryKey;
     }
 
-    public get Title(): keyof IResource {
+    public get Title(): T | A {
         return this.titleKey;
     }
 
-    public get Description(): keyof IResource {
+    public get Description(): T | A {
         return this.descriptionKey ? this.descriptionKey : this.Title;
     }
 }
