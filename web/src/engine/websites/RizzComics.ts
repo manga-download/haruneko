@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './RealmScans.webp';
+import icon from './RizzComics.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -10,15 +10,15 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return {id, title};
 }
 
-@MangaStream.MangaCSS(/^https?:\/\/realmscans\.to\/\S+\/series\/[^/]+$/)
+@MangaStream.MangaCSS(/^https?:\/\/rizzcomic\.com\/series\/[^/]+$/)
 @Common.MangasSinglePageCSS('/series', 'div.bsx a', MangaExtractor)
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageCSS([/discord\.webp$/])
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('realmscans', 'RealmScans', 'https://realmscans.to', Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
+        super('rizzcomics', 'Rizz Comics', 'https://rizzcomic.com', Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

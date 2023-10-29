@@ -6,7 +6,7 @@ import { protoTypes } from './Zebrack_proto';
 import { FetchProto, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type ZebrackResponse = {
     titleDetailView: TitleDetailView,

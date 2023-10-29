@@ -3,7 +3,7 @@ import icon from './SheepManga.webp';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { Numeric, Secret, Text } from '../SettingsManager';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import * as Common from './decorators/Common';
 
 /**

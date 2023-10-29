@@ -36,8 +36,7 @@ describe('BookmarkConverter', () => {
                 Updated: 987654321,
                 Title: 'media-title',
                 Media: { ProviderID: 'website-key', EntryID: 'media-key' },
-                Info: { ProviderID: 'tracker-key', EntryID: 'item-key' },
-                LastKnownEntries: { IdentifierHashes: [ 1, 2, 3 ], TitleHashes: [ 3, 2, 1 ] }
+                Info: { ProviderID: 'tracker-key', EntryID: 'item-key' }
             };
             const actual = testee.ConvertToSerializedBookmark(expected);
             expect(actual).toBe(expected);
@@ -49,8 +48,7 @@ describe('BookmarkConverter', () => {
                 Updated: 0,
                 Title: 'manga-title',
                 Media: { ProviderID: 'website-key', EntryID: 'manga-key' },
-                Info: { ProviderID: null, EntryID: null },
-                LastKnownEntries: { IdentifierHashes: [], TitleHashes: [] }
+                Info: { ProviderID: null, EntryID: null }
             };
             const actual = testee.ConvertToSerializedBookmark({
                 key: { connector: 'website-key', manga: 'manga-key' },
@@ -60,13 +58,19 @@ describe('BookmarkConverter', () => {
         });
 
         it.each<{ sourceID: string, targetID: string }>([
+            { sourceID: '9anime', targetID: 'aniwave' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
-            { sourceID: 'heavenmanga', targetID: 'beetoon' },
-            { sourceID: 'heavenmanga2', targetID: 'heavenmanga' },
+            { sourceID: 'crazyscans', targetID: 'mangacultivator' },
+            { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
+            { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
+            { sourceID: 'lovehug', targetID: 'welovemanga' },
             { sourceID: 'mangaswat', targetID: 'goldragon' },
+            { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
+            { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },
+
             // TODO: Add all test cases from BookmarkConverter::legacyWebsiteIdentifierMap ...
         ])('Should migrate website ID from legacy bookmark', async (data) => {
             const actual = testee.ConvertToSerializedBookmark({

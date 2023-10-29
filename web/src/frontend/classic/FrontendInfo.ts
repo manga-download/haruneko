@@ -1,5 +1,5 @@
 import type { IFrontendInfo } from '../IFrontend';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { FrontendResourceKey as R } from '../../i18n/ILocale';
 
 export const Info: IFrontendInfo = {
     ID: 'classic',

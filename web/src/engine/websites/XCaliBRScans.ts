@@ -7,8 +7,7 @@ import * as Common from './decorators/Common';
 import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeProxify from '../transformers/ImageLinkDeProxifier';
-import type { Numeric, Text } from '../SettingsManager';
-import { Key as GlobalKey } from '../SettingsGlobal';
+import DeScramble from '../transformers/ImageDescrambler';
 
 type pageScriptResult = {
     imagz: string[],
@@ -104,65 +103,36 @@ export default class extends DecoratableMangaScraper {
                 return pages;
             }
             default:
+                throw Error();
         }
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blobMainImage = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const bitmaps: ImageBitmap[] = [];
-
-        const settings = HakuNeko.SettingsManager.OpenScope();
-        const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
-        const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
 
         switch (page.Parameters.scrambled) {
-            case 0: return blobMainImage; //No scrambling, return image
-            case 1: //Flip picture
-                return await this.flipPicture(await createImageBitmap(blobMainImage), format, quality);
-            case 2://Combine/Flip 2 pictures
+            case 0: // No scrambling, return image
+                return blobMainImage;
+            case 1: // Flip picture
+                return DeScramble(blobMainImage, async (bitmap, ctx) => {
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(bitmap, 0, 0, -bitmap.width, bitmap.height);
+                });
+            case 2: // Combine/Flip 2 pictures
             {
-                bitmaps.push(await createImageBitmap(blobMainImage));
-                //fetch second image
                 const pageUrl = (page.Parameters.secondaryPic) as string;
-                const request = new FetchRequest(pageUrl, { referrer: this.URI.href });
+                const request = new FetchRequest(pageUrl, { headers: { Referer: this.URI.href } });
                 const response = await Fetch(request);
-                const data = await response.blob();
-                bitmaps.push(await createImageBitmap(data));
-                return await this.composePuzzle(bitmaps, format, quality);
+                const b1 = await createImageBitmap(blobMainImage);
+                const b2 = await createImageBitmap(await response.blob());
+                return DeScramble(new ImageData(b1.width + b2.width, b1.height), async (_, ctx) => {
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(b2, 0, 0, -b2.width, b2.height);
+                    ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
+                });
             }
-            default :
+            default:
+                throw Error();
         }
-
-    }
-
-    async flipPicture(bitmap: ImageBitmap, format: string, quality : number): Promise<Blob> {
-        return new Promise(resolve => {
-            const canvas = document.createElement('canvas');
-            canvas.width = bitmap.width;
-            canvas.height = bitmap.height;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(-1, 1);
-            ctx.drawImage(bitmap, 0, 0, -bitmap.width, bitmap.height);
-            canvas.toBlob(data => {
-                resolve(data);
-            }, format, quality / 100);
-        });
-    }
-
-    async composePuzzle(bitmaps: ImageBitmap[], format: string, quality: number): Promise<Blob> {
-        return new Promise(resolve => {
-            const canvas = document.createElement('canvas');
-            const b1 = bitmaps[0];
-            const b2 = bitmaps[1];
-            canvas.width = b1.width + b2.width;
-            canvas.height = b1.height;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(-1, 1);
-            ctx.drawImage(b2, 0, 0, -b2.width, b2.height);
-            ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
-            canvas.toBlob(data => {
-                resolve(data);
-            }, format, quality / 100);
-        });
     }
 }
