@@ -220,6 +220,15 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Language_Turkish: "🇹🇷Turc",
   Tags_Language_Vietnamese: "🇻🇳Vietnamien",
   Tags_Others: "Autres",
+  // [SECTION]: Annotations
+  Annotations_ViewProgress: 'Progress',
+  Annotations_ViewProgressDescription: 'A custom status indicating the reading/viewing progression',
+  Annotations_ViewProgress_None: '-',
+  Annotations_ViewProgress_NoneDescription: 'Not yet read/viewed',
+  Annotations_ViewProgress_Viewed: 'x',
+  Annotations_ViewProgress_ViewedDescription: 'Already read/viewed',
+  Annotations_ViewProgress_Current: 'o',
+  Annotations_ViewProgress_CurrentDescription: 'Currently reading/viewing',
   // [SECTION]: Trackers
   Tracker_Kitsu_Settings_Username: "Nom d’utilisateur",
   Tracker_Kitsu_Settings_UsernameInfo: "Nom d'utilisateur pour la connexion automatique à Kitsu",

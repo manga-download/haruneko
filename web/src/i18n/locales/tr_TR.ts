@@ -220,6 +220,15 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Language_Turkish: "🇹🇷Türkçe",
   Tags_Language_Vietnamese: "🇻🇳Vietnamca",
   Tags_Others: "Diğer",
+  // [SECTION]: Annotations
+  Annotations_ViewProgress: "İlerleme Durumu",
+  Annotations_ViewProgressDescription: "Okuma/izleme ilerlemesini belirten özel bir bildirim",
+  Annotations_ViewProgress_None: '-',
+  Annotations_ViewProgress_NoneDescription: "Okumadım/izlemedim",
+  Annotations_ViewProgress_Viewed: 'x',
+  Annotations_ViewProgress_ViewedDescription: "Okudum/izledim",
+  Annotations_ViewProgress_Current: 'o',
+  Annotations_ViewProgress_CurrentDescription: "Okuyorum/izliyorum",
   // [SECTION]: Trackers
   Tracker_Kitsu_Settings_Username: "Kullanıcı Adı",
   Tracker_Kitsu_Settings_UsernameInfo: "Kitsu'da otomatik hesap girişi için kullanıcı adı",
