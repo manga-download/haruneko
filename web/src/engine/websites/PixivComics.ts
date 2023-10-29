@@ -3,8 +3,7 @@ import icon from './PixivComics.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchJSON, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
-import type { Numeric, Text } from '../SettingsManager';
-import { Key as GlobalKey } from '../SettingsGlobal';
+import DeScramble from '../transformers/ImageDescrambler';
 
 type APIMangaPage = {
     data: {
@@ -95,6 +94,7 @@ export default class extends DecoratableMangaScraper {
         }
         return mangaList;
     }
+
     async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL(`magazines/v2/${page}/works`, this.apiURL);
         const request = this.prepareRequest(uri.href);
@@ -136,13 +136,12 @@ export default class extends DecoratableMangaScraper {
         });
 
         const { data } = await FetchJSON<APIPages>(request);
-        return data.reading_episode.pages.map(image => new Page(this, chapter, new URL(image.url), { payload: JSON.stringify(image) }));
+        return data.reading_episode.pages.map(image => new Page(this, chapter, new URL(image.url), { ...image }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-
-        const image = await this.imageTaskPool.Add(async () => {
-            const payload: APIPage = JSON.parse(page.Parameters.payload as string);
+        const payload = page.Parameters as APIPage;
+        const data = await this.imageTaskPool.Add(async () => {
             const request = new FetchRequest(page.Link.href, {
                 method: 'GET',
                 headers: {
@@ -156,38 +155,15 @@ export default class extends DecoratableMangaScraper {
             return response.blob();
         }, priority, signal);
 
-        return this.descrambleImage(image, page);
-
-    }
-
-    async descrambleImage(data: Blob, page: Page): Promise<Blob> {
-
-        const settings = HakuNeko.SettingsManager.OpenScope();
-        const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
-        const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
-
-        const image = await createImageBitmap(data);
-        const payload: APIPage = JSON.parse(page.Parameters.payload as string);
-
-        const canvas = document.createElement('canvas');
-        canvas.width = payload.width;
-        canvas.height = payload.height;
-        const ctx = canvas.getContext('2d');
-
-        ctx.drawImage(image, 0, 0);
-        const i = ctx.getImageData(0, 0, payload.width, payload.height);
-        const l = await this.descrambleData(i.data, 4, payload.width, payload.height, payload.gridsize, payload.gridsize, '4wXCKprMMoxnyJ3PocJFs4CYbfnbazNe', payload.key, true);
-        const o = new ImageData(l, payload.width, payload.height);
-        ctx.putImageData(o, 0, 0);
-
-        return new Promise((resolve) => {
-            canvas.toBlob(data => {
-                resolve(data);
-            }, format, quality / 100);
+        return DeScramble(data, async (image, ctx) => {
+            ctx.drawImage(image, 0, 0);
+            const scrambled = ctx.getImageData(0, 0, payload.width, payload.height).data;
+            const descrambled = await this.descrambleData(scrambled, 4, payload.width, payload.height, payload.gridsize, payload.gridsize, '4wXCKprMMoxnyJ3PocJFs4CYbfnbazNe', payload.key, true);
+            ctx.putImageData(new ImageData(descrambled, payload.width, payload.height), 0, 0);
         });
     }
 
-    async descrambleData(e, t, i, r, n, s, a, l, o): Promise<Uint8ClampedArray> {
+    private async descrambleData(e, t, i, r, n, s, a, l, o): Promise<Uint8ClampedArray> {
         const d = Math.ceil(r / s),
             c = Math.floor(i / n),
             u = Array(d).fill(null).map(() => Array.from(Array(c).keys()));
@@ -272,5 +248,4 @@ class PixivShuffler {
     tj(e, t) {
         return (e << (t %= 32) >>> 0 | e >>> 32 - t) >>> 0;
     }
-
 }

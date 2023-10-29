@@ -6,8 +6,8 @@ const config = {
         title: 'YugenMangas (PT)'
     },
     container: {
-        url: 'https://yugenmangas.com.br/series/para-amar-seu-inimigo/',
-        id: JSON.stringify({ post: '17954', slug: '/series/para-amar-seu-inimigo/' }),
+        url: 'https://yugenmangas.org/series/para-amar-seu-inimigo/',
+        id: '/series/para-amar-seu-inimigo/',
         title: 'Para Amar seu Inimigo'
     },
     child: {
