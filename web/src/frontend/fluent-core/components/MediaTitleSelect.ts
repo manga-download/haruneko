@@ -4,7 +4,7 @@ import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import type { SearchBox } from './SearchBox';
 import S from '../services/StateService';
 import { Exception } from '../../../engine/Error';
-import { VariantResourceKey as R } from '../../../i18n/ILocale';
+import { FrontendResourceKey as R } from '../../../i18n/ILocale';
 
 import IconSynchronize from '@vscode/codicons/src/icons/refresh.svg?raw'; // sync.svg
 import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.svg?raw';

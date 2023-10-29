@@ -5,6 +5,7 @@ export const enum Store {
     Settings = 'Settings',
     Bookmarks = 'Bookmarks',
     Itemflags = 'Itemflags',
+    TagManager = 'CustomTags',
     MediaLists = 'MediaLists',
 }
 
