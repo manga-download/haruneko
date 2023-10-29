@@ -1,6 +1,6 @@
-import type { LocaleID, InvariantResourceKey } from '../ILocale';
+import type { InvariantResource } from '../ILocale';
 
-export const invariant: Record<LocaleID | InvariantResourceKey, string> = {
+export const invariant: InvariantResource = {
     Locale_arSA: '🇸🇦 العربية (SA)',
     Locale_deDE: '🇩🇪 Deutsch (DE)',
     Locale_enUS: '🇺🇸 English (US)',
@@ -8,7 +8,7 @@ export const invariant: Record<LocaleID | InvariantResourceKey, string> = {
     Locale_filPH: '🇵🇭 Pilipino (PH)',
     Locale_frFR: '🇫🇷 Français (FR)',
     Locale_hiIN: '🇮🇳 हिंदी (IN)',
-    Locale_inID: '🇮🇩 Indonesia (ID)',
+    Locale_idID: '🇮🇩 Indonesia (ID)',
     Locale_ptPT: '🇵🇹 Português (PT)',
     Locale_thTH: '🇹🇭 ไทย (TH)',
     Locale_trTR: '🇹🇷 Türkçe (TR)',

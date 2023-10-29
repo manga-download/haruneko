@@ -26,11 +26,10 @@
 
 <style>
     /* TODO: How to get type safe from enum(string): ResourceKey.Tags_Language? */
-    .Tags_Language {
+    .Tags_Language::first-letter {
         font-family: BabelStoneFlags;
     }
     .tagContent {
-        display: flex;
         align-items: center;
         user-select: none;
     }
