@@ -1,4 +1,4 @@
-import { type ILocale, type IVariantResource, LocaleID, InvariantResourceKey, VariantResourceKey } from './ILocale';
+import { type ILocale, type LocaleID, type VariantResource, VariantResourceKey, InvariantResourceKey } from './ILocale';
 import type { Choice } from '../engine/SettingsManager';
 import { Scope, Key } from '../engine/SettingsGlobal';
 import { invariant } from './locales/_invariant';
@@ -46,16 +46,13 @@ function Format(this: string, ...params: string[]) {
     return text;
 }
 
-export function CreateLocale(resource: IVariantResource): ILocale {
-    const result: Record<string, typeof Format> = {};
-    for(const key in LocaleID) {
-        result[key] = Format.bind(invariant[key]);
-    }
+export function CreateLocale(resource: VariantResource): ILocale {
+    const result = {};
     for(const key in InvariantResourceKey) {
-        result[key] = Format.bind(invariant[key]);
+        result[key] = Format.bind(invariant[key] ?? key);
     }
     for(const key in VariantResourceKey) {
-        result[key] = Format.bind(resource[key]);
+        result[key] = Format.bind(resource[key] ?? key);
     }
     return result as ILocale;
 }

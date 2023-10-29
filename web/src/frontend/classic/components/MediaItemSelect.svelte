@@ -20,6 +20,8 @@
         selectedItemPrevious,
         selectedItemNext,
     } from '../stores/Stores';
+    import { filterByCategory, Tags, type Tag } from '../../../engine/Tags';
+    import { Locale } from '../stores/Settings';
 
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
@@ -50,15 +52,42 @@
 
     let itemNameFilter = '';
     $: filteredItems = items?.filter((item) => {
-        return (
-            item.Parent?.Title.toLowerCase().indexOf(
-                itemNameFilter.toLowerCase()
-            ) !== -1
-        );
+        let conditions: Boolean[] = [];
+        if (itemNameFilter)
+            conditions.push(
+                item.Title.toLowerCase().indexOf(
+                    itemNameFilter.toLowerCase()
+                ) !== -1
+            );
+        if (langFilter) conditions.push(item.Tags.includes(langFilter));
+        return conditions.every((condition) => condition);
     });
 
     let itemsdiv: HTMLElement;
 
+    let MediaLanguages: Tag[] = [];
+    $: getMediaLanguages(items);
+    async function getMediaLanguages(items: IMediaContainer[]) {
+        const Languages = new Set<Tag>();
+        items.forEach((item) => {
+            filterByCategory(item.Tags, Tags.Language).forEach((tag) =>
+                Languages.add(tag)
+            );
+        });
+        MediaLanguages = [...Languages];
+    }
+    $: langComboboxItems =
+        MediaLanguages.length > 0
+            ? [
+                  { id: '*', text: '*' },
+                  ...MediaLanguages.map((lang) => {
+                      return { id: lang, text: $Locale[lang.Title]() };
+                  }),
+              ]
+            : [{ id: '*', text: '*' }];
+
+    let langFilterID: string | Tag = '*';
+    $: langFilter = langFilterID === '*' ? null : (langFilterID as Tag);
     /*
      * Multi Item Selection
      * CTRL + click = individual add to selected list
@@ -221,14 +250,13 @@
             tooltipAlignment="center"
             iconDescription="Languages"
         />
+
         <Dropdown
-            selectedId="0"
+            disabled={MediaLanguages.length === 0}
+            placeholder="Select a language"
+            bind:selectedId={langFilterID}
             size="sm"
-            items={[
-                { id: '0', text: '*' },
-                { id: '1', text: 'gb' },
-                { id: '2', text: 'fr' },
-            ]}
+            items={langComboboxItems}
         />
     </div>
     <div id="ItemFilter">
@@ -241,9 +269,10 @@
                 <div>... items</div>
             </div>
         {:then}
-            {#each filteredItems as item (item.Identifier)}
+            {#each filteredItems as item (item)}
                 <MediaItem
                     {item}
+                    multilang={!langFilter && MediaLanguages.length > 1}
                     selected={selectedItems.includes(item)}
                     on:view={onItemView(item)}
                     on:contextmenu={onItemClick(item)}
@@ -281,6 +310,10 @@
         grid-area: LanguageFilter;
         display: grid;
         grid-template-columns: auto 1fr;
+    }
+    #LanguageFilter :global(.bx--list-box__menu-item__option)::first-letter,
+    #LanguageFilter :global(.bx--list-box__label)::first-letter {
+        font-family: BabelStoneFlags;
     }
     #ItemFilter {
         grid-area: ItemFilter;

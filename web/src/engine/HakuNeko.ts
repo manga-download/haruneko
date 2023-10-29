@@ -13,7 +13,6 @@ import { CreatePlatformIPC } from './ipc/InterProcessCommunicationFactory';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
-
 export class HakuNeko {
 
     readonly #storageController: StorageController;
@@ -40,10 +39,8 @@ export class HakuNeko {
         /*const ipc = */CreatePlatformIPC(this.#settingsManager);
         // Preload bookmarks flags to show content to view
         const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;
-        this.BookmarkPlugin.Entries.map(async (media) => {
-            if (checkNewContent) await media.Update();
-            this.ItemflagManager.LoadContainerFlags(media);
-        });
+        if (checkNewContent) this.BookmarkPlugin.RefreshAllFlags();
+
     }
 
     public get Tags() {
