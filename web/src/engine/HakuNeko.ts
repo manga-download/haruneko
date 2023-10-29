@@ -38,7 +38,7 @@ export class HakuNeko {
         await InitGlobalSettings(this.SettingsManager);
         /*const ipc = */CreatePlatformIPC(this.#settingsManager);
         if (this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value) {
-            this.BookmarkPlugin.UpdateEntries().forEach(promise => promise.then(bookmark => this.ItemflagManager.MediaFlagsChanged.Dispatch(null, bookmark)));
+            this.BookmarkPlugin.UpdateEntries().forEach(promise => promise.then(bookmark => this.ItemflagManager.MediaFlagsChanged.Dispatch(null, bookmark), () => {}));
         }
     }
 
