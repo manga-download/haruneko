@@ -1,9 +1,10 @@
-import { VariantResourceKey as R } from '../../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
 import { FetchRequest, FetchCSS } from '../../FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
+import DeScramble from '../../transformers/ImageDescrambler';
 
 export const mangaPaths = ['/series', '/series/oneshot', '/series/finished'];
 export const queryMangaTitleFromURI = '.series-header-title';
@@ -200,40 +201,28 @@ export function PagesSinglePageJSON(query = queryEpisodeJSON) {
  */
 async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     const data: Blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
-    return page.Parameters.scrambled ? await descrambleImage(data) : data;
+    return page.Parameters.scrambled ? DeScramble(data, descramble) : data;
 }
 
-async function descrambleImage(data: Blob): Promise<Blob> {
-    const bitmap = await createImageBitmap(data);
-    return new Promise(resolve => {
-        const canvas = document.createElement('canvas');
-        canvas.width = bitmap.width;
-        canvas.height = bitmap.height;
-        const ctx = canvas.getContext('2d');
-
-        const width = canvas.width;
-        const height = canvas.height;
-        const DIVIDE_NUM = 4;
-        const MULTIPLE = 8;
-        const cell_width = Math.floor(width / (DIVIDE_NUM * MULTIPLE)) * MULTIPLE;
-        const cell_height = Math.floor(height / (DIVIDE_NUM * MULTIPLE)) * MULTIPLE;
-        //view.drawImage(0, 0, width, height, 0, 0);
-        ctx.drawImage(bitmap, 0, 0, width, height, 0, 0, width, height);
-        for (let e = 0; e < DIVIDE_NUM * DIVIDE_NUM; e++) {
-            const t = Math.floor(e / DIVIDE_NUM) * cell_height;
-            const n = e % DIVIDE_NUM * cell_width;
-            const r = Math.floor(e / DIVIDE_NUM);
-            const i = e % DIVIDE_NUM * DIVIDE_NUM + r;
-            const o = i % DIVIDE_NUM * cell_width;
-            const s = Math.floor(i / DIVIDE_NUM) * cell_height;
-            //view.drawImage(n, t, cell_width, cell_height, o, s);
-            ctx.drawImage(bitmap, n, t, cell_width, cell_height, o, s, cell_width, cell_height);
-        }
-
-        canvas.toBlob(data => {
-            resolve(data);
-        }, 'image/png', parseFloat('90') / 100);
-    });
+async function descramble(bitmap: ImageBitmap, ctx: OffscreenCanvasRenderingContext2D) {
+    const width = bitmap.width;
+    const height = bitmap.height;
+    const DIVIDE_NUM = 4;
+    const MULTIPLE = 8;
+    const cell_width = Math.floor(width / (DIVIDE_NUM * MULTIPLE)) * MULTIPLE;
+    const cell_height = Math.floor(height / (DIVIDE_NUM * MULTIPLE)) * MULTIPLE;
+    //view.drawImage(0, 0, width, height, 0, 0);
+    ctx.drawImage(bitmap, 0, 0, width, height, 0, 0, width, height);
+    for (let e = 0; e < DIVIDE_NUM * DIVIDE_NUM; e++) {
+        const t = Math.floor(e / DIVIDE_NUM) * cell_height;
+        const n = e % DIVIDE_NUM * cell_width;
+        const r = Math.floor(e / DIVIDE_NUM);
+        const i = e % DIVIDE_NUM * DIVIDE_NUM + r;
+        const o = i % DIVIDE_NUM * cell_width;
+        const s = Math.floor(i / DIVIDE_NUM) * cell_height;
+        //view.drawImage(n, t, cell_width, cell_height, o, s);
+        ctx.drawImage(bitmap, n, t, cell_width, cell_height, o, s, cell_width, cell_height);
+    }
 }
 
 /**

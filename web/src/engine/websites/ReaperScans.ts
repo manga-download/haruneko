@@ -6,7 +6,7 @@ import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import { Numeric } from '../SettingsManager';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type LaravelLivewireMessage = {
     effects?: {

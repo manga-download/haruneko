@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'xxxyaoi',
         title: 'XXXYaoi'
-    }/*,
+    },
     container: {
-        url: 'https://xxxyaoi.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://3xyaoi.com/bl/love-is-an-illusion/',
+        id: JSON.stringify({ slug: '/bl/love-is-an-illusion/' }),
+        title: 'Love is an Illusion'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/bl/love-is-an-illusion/primeira-temporada/capitulo-1/',
+        title: 'Capítulo 1'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 234_602,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
