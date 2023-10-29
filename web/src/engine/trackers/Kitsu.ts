@@ -1,7 +1,7 @@
 import logo from './Kitsu.webp';
 import poster from '../../img/media.webp';
 import { TrackerResourceKey as R } from '../../i18n/ILocale';
-import { type IMediaInfoTracker, type Info, MediaType, type TrackingStatus } from './IMediaInfoTracker';
+import { type MediaInfoTracker, type Info, MediaType, type TrackingStatus } from './IMediaInfoTracker';
 import { type SettingsManager, type ISettings, Text, Secret } from '../SettingsManager';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
 import { NotImplementedError } from '../Error';
@@ -51,7 +51,7 @@ type APIAlgoliaSearch = {
     }[];
 }
 
-export class Kitsu implements IMediaInfoTracker {
+export class Kitsu implements MediaInfoTracker {
 
     private readonly endpoint = 'https://kitsu.io/api/edge';
     public readonly Identifier: string = 'kitsu';

@@ -5,12 +5,12 @@
 
     import { onMount, onDestroy } from 'svelte';
 
-    import type { IDownloadTask } from '../../../engine/DownloadTask';
+    import type { DownloadTask } from '../../../engine/DownloadTask';
     import { Status } from '../../../engine/DownloadTask';
 
-    export let job: IDownloadTask;
+    export let job: DownloadTask;
 
-    async function OnJobChangedCallback(changedJob: IDownloadTask) {
+    async function OnJobChangedCallback(changedJob: DownloadTask) {
         job = changedJob;
     }
 

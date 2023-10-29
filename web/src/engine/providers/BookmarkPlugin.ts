@@ -1,5 +1,5 @@
 import type { PluginController } from '../PluginController';
-import { type IMediaContainer, MediaContainer } from './MediaPlugin';
+import { MediaContainer, type MediaChild } from './MediaPlugin';
 import { type StorageController, Store } from '../StorageController';
 import type { InteractiveFileContentProvider } from '../InteractiveFileContentProvider';
 import { Event } from '../Event';
@@ -144,7 +144,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         };
     }
 
-    public async Add(entry: IMediaContainer) {
+    public async Add(entry: MediaContainer<MediaContainer<MediaChild>>) {
         if(this.isBookmarked(entry)) {
             // TODO: Keep duplicate bookmark, or replace with new one?
             return;
@@ -162,17 +162,17 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         await this.storage.RemovePersistent(Store.Bookmarks, bookmark.StorageKey);
     }
 
-    public async Toggle(entry: IMediaContainer): Promise<boolean> {
+    public async Toggle(entry: MediaContainer<MediaContainer<MediaChild>>): Promise<boolean> {
         const bookmark = this.Find(entry);
         if (bookmark) { await this.Remove(bookmark); return false; }
         else { await this.Add(entry); return true;}
     }
 
-    public Find(entry: IMediaContainer): Bookmark {
+    public Find(entry: MediaContainer<MediaChild>): Bookmark {
         return this.Entries.find(bookmark => bookmark.Identifier === entry.Identifier && bookmark.Parent.Identifier === entry.Parent.Identifier);
     }
 
-    public isBookmarked(entry: IMediaContainer): boolean {
+    public isBookmarked(entry: MediaContainer<MediaChild>): boolean {
         return !!this.Find(entry);
     }
 

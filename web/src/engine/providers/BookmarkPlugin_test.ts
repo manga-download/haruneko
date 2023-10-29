@@ -1,6 +1,6 @@
 import { mock } from 'jest-mock-extended';
-import { MediaContainer, type IMediaContainer } from './MediaPlugin';
-import { MissingInfoTracker, type IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
+import { MediaContainer, type MediaChild } from './MediaPlugin';
+import { MissingInfoTracker, type MediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import { Store, type StorageController } from '../StorageController';
 import type { PluginController } from '../PluginController';
 import type { InteractiveFileContentProvider } from '../InteractiveFileContentProvider';
@@ -62,18 +62,18 @@ class TestFixture {
             },
         },
     ];
-    public static readonly DefaultWebsitePlugins: IMediaContainer[] = [
+    public static readonly DefaultWebsitePlugins: MediaContainer<MediaChild>[] = [
         {
             Identifier: 'website-01',
             Title: 'Website 01',
             IsSameAs: MediaContainer.prototype.IsSameAs
-        } as IMediaContainer
+        } as MediaContainer<MediaChild>
     ];
-    public static readonly DefaultInfoTrackers: IMediaInfoTracker[] = [
+    public static readonly DefaultInfoTrackers: MediaInfoTracker[] = [
         {
             Identifier: 'tracker-01',
             Title: 'Tracker 01',
-        } as IMediaInfoTracker
+        } as MediaInfoTracker
     ];
     public readonly mockInteractiveFileContentProvider = mock<InteractiveFileContentProvider>();
     public readonly mockStorageController = mock<StorageController>();
@@ -84,12 +84,12 @@ class TestFixture {
         return this;
     }
 
-    public SetupWebsitePlugins(plugins?: IMediaContainer[]): TestFixture {
+    public SetupWebsitePlugins(plugins?: MediaContainer<MediaChild>[]): TestFixture {
         Object.defineProperty(this.mockPluginController, 'WebsitePlugins', { get: () => plugins ?? TestFixture.DefaultWebsitePlugins });
         return this;
     }
 
-    public SetupInfoTrackers(trackers?: IMediaInfoTracker[]): TestFixture {
+    public SetupInfoTrackers(trackers?: MediaInfoTracker[]): TestFixture {
         Object.defineProperty(this.mockPluginController, 'InfoTrackers', { get: () => trackers ?? TestFixture.DefaultInfoTrackers });
         return this;
     }

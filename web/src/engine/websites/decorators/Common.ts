@@ -2,7 +2,7 @@ import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception, InternalError } from '../../Error';
 import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchProvider';
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
-import type { IMediaContainer } from '../../providers/MediaPlugin';
+import type { MediaChild, MediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 
@@ -75,7 +75,7 @@ function DefaultPageLinkExtractor<E extends HTMLImageElement>(this: MangaScraper
     return element.dataset.src || element.getAttribute('src') || ''; // TODO: Throw if none found?
 }
 
-function GetParentReferer(item: IMediaContainer, base: URL): URL {
+function GetParentReferer(item: MediaContainer<MediaChild>, base: URL): URL {
     try {
         return new URL(item.Parent?.Identifier ?? '', base);
     } catch {

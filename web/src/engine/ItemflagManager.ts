@@ -1,12 +1,12 @@
-import type { IMediaChild, IMediaContainer } from './providers/MediaPlugin';
+import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
 import { type StorageController, Store } from './StorageController';
 import { Event } from './Event';
 
 export class ItemflagManager {
 
     private readonly cache: Map<string, ItemFlag[]> = new Map();
-    public readonly FlagChanged: Event<IMediaContainer, FlagType> = new Event<IMediaContainer, FlagType>();
-    public readonly MediaFlagsChanged: Event<ItemflagManager, IMediaContainer> = new Event<this, IMediaContainer>();
+    public readonly FlagChanged: Event<MediaContainer<MediaChild>, FlagType> = new Event<MediaContainer<MediaChild>, FlagType>();
+    public readonly MediaFlagsChanged: Event<ItemflagManager, MediaContainer<MediaChild>> = new Event<this, MediaContainer<MediaChild>>();
 
     constructor(private readonly storage: StorageController) {}
 
@@ -35,7 +35,7 @@ export class ItemflagManager {
     /**
      * Create a pseudo-unique identifier for a given {@link container}.
      */
-    private StorageKey(container: IMediaContainer): string {
+    private StorageKey(container: MediaContainer<MediaContainer<MediaChild>>): string {
         return `${container.Parent.Identifier} :: ${container.Identifier}`;
     }
 
@@ -46,25 +46,25 @@ export class ItemflagManager {
         return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
     }
 
-    private isFlagRepresentingEntry(flag: ItemFlag, entry: IMediaContainer): boolean {
+    private isFlagRepresentingEntry(flag: ItemFlag, entry: MediaContainer<MediaChild>): boolean {
         return flag.IdentifierHash === this.Hash(entry.Identifier) || flag.TitleHash === this.Hash(entry.Title);
     }
 
-    private findFlagType(flags: ItemFlag[], entry: IMediaContainer) {
+    private findFlagType(flags: ItemFlag[], entry: MediaContainer<MediaChild>) {
         return flags?.find(flag => this.isFlagRepresentingEntry(flag, entry))?.kind ?? FlagType.None;
     }
 
     /**
      * Get the cached/stored flags for all entries within the given {@link container}.
      */
-    private async GetContainerItemsFlags(container: IMediaContainer): Promise<ItemFlag[]> {
+    private async GetContainerItemsFlags(container: MediaContainer<MediaContainer<MediaChild>>): Promise<ItemFlag[]> {
         const storagekey = this.StorageKey(container);
         if (!this.cache.has(storagekey)) await this.LoadFlags(storagekey);
         return this.cache.get(storagekey);
     }
 
     /* Add a flag of an item */
-    public async SetFlag(entry: IMediaContainer, kind: FlagType) {
+    public async SetFlag(entry: MediaContainer<MediaChild>, kind: FlagType) {
         const newflag: ItemFlag = {
             IdentifierHash: this.Hash(entry.Identifier),
             TitleHash: this.Hash(entry.Title),
@@ -74,7 +74,7 @@ export class ItemflagManager {
         if (kind === FlagType.Current) {
             // Ignore all previous flags and add flag viewed on all items after entry
             // TODO: Manage flags context per language in case of multiple current flag (1 per language)
-            const items = entry.Parent?.Entries as IMediaContainer[];
+            const items = entry.Parent?.Entries;
             const entryIndex = items?.indexOf(entry);
             items.forEach((item, index) => {
                 if (index > entryIndex) flags.push({
@@ -98,13 +98,13 @@ export class ItemflagManager {
     }
 
     /* Get the flagType of an item */
-    public async GetFlag(entry: IMediaContainer) : Promise<FlagType> {
+    public async GetFlag(entry: MediaContainer<MediaChild>) : Promise<FlagType> {
         return this.findFlagType(await this.GetContainerItemsFlags(entry.Parent), entry);
     }
 
-    public async FilterEntries(container: IMediaContainer, mask: FlagType): Promise<IMediaChild[]> {
+    public async FilterEntries(container: MediaContainer<MediaContainer<MediaChild>>, mask: FlagType) {
         const marks = await this.GetContainerItemsFlags(container);
-        return container.Entries.filter((entry: IMediaContainer) => {
+        return container.Entries.filter(entry => {
             const flag = this.findFlagType(marks, entry);
             return (mask & flag) === flag;
         });

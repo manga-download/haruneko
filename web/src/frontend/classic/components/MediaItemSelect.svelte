@@ -13,7 +13,7 @@
 
     import { fade } from 'svelte/transition';
 
-    import MediaItem from './MediaItem.svelte';
+    import MediaComponent from './MediaItem.svelte';
     import {
         selectedMedia,
         selectedItem,
@@ -23,21 +23,21 @@
     import { filterByCategory, Tags, type Tag } from '../../../engine/Tags';
     import { Locale } from '../stores/Settings';
 
-    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import type { StoreableMediaContainer, MediaContainer, MediaChild, MediaItem } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
 
-    let items: IMediaContainer[] = [];
-    let filteredItems: IMediaContainer[] = [];
+    let items: StoreableMediaContainer<MediaItem>[] = [];
+    let filteredItems: StoreableMediaContainer<MediaItem>[] = [];
     let loadItem: Promise<void>;
-    let selectedItems: IMediaContainer[] = [];
+    let selectedItems: StoreableMediaContainer<MediaItem>[] = [];
 
-    selectedItem.subscribe((item: IMediaContainer) => {
+    selectedItem.subscribe((item: StoreableMediaContainer<MediaItem>) => {
         const position = filteredItems.indexOf(item);
         $selectedItemPrevious = filteredItems[position + 1];
         $selectedItemNext = filteredItems[position - 1];
     });
 
-    const onItemView = (item: IMediaContainer) => (_event: any) => {
+    const onItemView = (item: StoreableMediaContainer<MediaItem>) => (_event: any) => {
         selectedItems.push(item);
         $selectedItem = item;
     };
@@ -46,7 +46,7 @@
         items = [];
         selectedItems = [];
         loadItem = value?.Update().then(() => {
-            items = (value?.Entries as IMediaContainer[]) ?? [];
+            items = (value?.Entries ?? []) as unknown as StoreableMediaContainer<MediaItem>[];
         });
     });
 
@@ -67,7 +67,7 @@
 
     let MediaLanguages: Tag[] = [];
     $: getMediaLanguages(items);
-    async function getMediaLanguages(items: IMediaContainer[]) {
+    async function getMediaLanguages(items: MediaContainer<MediaChild>[]) {
         const Languages = new Set<Tag>();
         items.forEach((item) => {
             filterByCategory(item.Tags, Tags.Language).forEach((tag) =>
@@ -98,7 +98,7 @@
     let multipleSelectionFrom: number = -1;
     let multipleSelectionTo: number = -1;
 
-    const onItemClick = (item: IMediaContainer) => (event: any) => {
+    const onItemClick = (item: StoreableMediaContainer<MediaItem>) => (event: any) => {
         if (event.shiftKey) {
             //range mode
             if (multipleSelectionFrom === -1) {
@@ -137,9 +137,9 @@
 
     let multipleSelectionDragFrom: number = -1;
     let multipleSelectionDragTo: number = -1;
-    let selectedDragItems: IMediaContainer[] = [];
+    let selectedDragItems: StoreableMediaContainer<MediaItem>[] = [];
 
-    const mouseHandler = (item: IMediaContainer) => (event: any) => {
+    const mouseHandler = (item: StoreableMediaContainer<MediaItem>) => (event: any) => {
         switch (event.type) {
             case 'mousedown':
                 multipleSelectionDragFrom = filteredItems.indexOf(item);
@@ -262,7 +262,7 @@
             </div>
         {:then}
             {#each filteredItems as item (item)}
-                <MediaItem
+                <MediaComponent
                     {item}
                     multilang={!langFilter && MediaLanguages.length > 1}
                     selected={selectedItems.includes(item)}

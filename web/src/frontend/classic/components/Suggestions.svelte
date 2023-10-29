@@ -19,7 +19,7 @@
 
     import { useNavigate } from 'svelte-navigator';
     import { FlagType } from '../../../engine/ItemflagManager';
-    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
     const navigate = useNavigate();
 
     const settings = HakuNeko.SettingsManager.OpenScope();
@@ -29,7 +29,7 @@
         checkNewContent = shouldCheck;
     });
 
-    let suggestions: Bookmark[] = [];
+    let suggestions: MediaContainer<MediaContainer<MediaItem>>[] = [];
     let isRefreshing = false;
     async function refreshSuggestions() {
         if (isRefreshing) return;
@@ -37,7 +37,7 @@
         await new Promise((resolve) => setTimeout(resolve, 1000));
         const accumulator = [];
         for(const bookmark of HakuNeko.BookmarkPlugin.Entries) {
-            if((await HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None)).length > 0) {
+            if((await HakuNeko.ItemflagManager.FilterEntries(bookmark as MediaContainer<MediaContainer<MediaItem>>, FlagType.None)).length > 0) {
                 accumulator.push(bookmark);
             }
         }
@@ -56,11 +56,11 @@
         () => refreshSuggestions()
     );
 
-    async function selectBookmark(bookmark: Bookmark) {
+    async function selectBookmark(bookmark: MediaContainer<MediaContainer<MediaItem>>) {
         let unFlaggedContent = await HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None);
         $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
-        $selectedItem = unFlaggedContent[unFlaggedContent.length - 1] as IMediaContainer;
+        $selectedItem = unFlaggedContent[unFlaggedContent.length - 1] as MediaContainer<MediaItem>;
     }
 </script>
 
