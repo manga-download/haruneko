@@ -61,14 +61,19 @@ describe('Localization', () => {
 
     describe('CreateLocale()', () => {
 
-        it('Should not wrap unknown resource keys', async () => {
+        it('Should not wrap unknown resource key', async () => {
             const testee = CreateLocale({ Speak: 'Meow' } as unknown as IResource);
             expect(testee['Speak']).toBe(undefined);
         });
 
-        it('Should wrap known resource keys', async () => {
+        it('Should wrap known resource key', async () => {
             const testee = CreateLocale({ Frontend_Product_Title: 'Meow {0}' } as unknown as IResource);
             expect(testee.Frontend_Product_Title('😺', '🙈')).toBe('Meow 😺');
+        });
+
+        it('Should return known resource key for missing translation', async () => {
+            const testee = CreateLocale({ Frontend_Product_Title: null } as unknown as IResource);
+            expect(testee.Frontend_Product_Title()).toBe('Frontend_Product_Title');
         });
     });
 

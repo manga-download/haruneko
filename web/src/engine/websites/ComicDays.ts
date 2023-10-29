@@ -1,9 +1,9 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicDays.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as CoreView from '../decorators/CoreView';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import * as CoreView from './decorators/CoreView';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/comic-days\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.ChaptersSinglePageCSS()

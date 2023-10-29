@@ -1,5 +1,5 @@
 import { writable, derived } from 'svelte/store';
-import { type ILocale, VariantResourceKey as R } from '../../../i18n/ILocale';
+import { type ILocale, FrontendResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
 import { Check, Choice} from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
