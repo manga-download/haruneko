@@ -1,4 +1,4 @@
-import { type IResource, VariantResourceKey as R } from '../i18n/ILocale';
+import { type IResource, EngineResourceKey as R } from '../i18n/ILocale';
 import { type StorageController, Store } from './StorageController';
 import { Event } from './Event';
 import { Scope } from './SettingsGlobal';

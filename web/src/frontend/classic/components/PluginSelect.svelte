@@ -28,7 +28,7 @@
     import { Locale } from '../stores/Settings';
     import { selectedPlugin } from '../stores/Stores';
     // Hakuneko Engine
-    import { VariantResourceKey as R } from '../../../i18n/ILocale';
+    import { TagCategoryResourceKey as R } from '../../../i18n/ILocale';
 
     function createDataRow(item: IMediaContainer) {
         return {

@@ -6,7 +6,7 @@ import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import * as Common from './decorators/Common';
 import { Numeric } from '../SettingsManager';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type CachedManga = {
     id: string,
