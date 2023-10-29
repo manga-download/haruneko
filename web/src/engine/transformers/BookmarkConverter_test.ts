@@ -58,6 +58,7 @@ describe('BookmarkConverter', () => {
         });
 
         it.each<{ sourceID: string, targetID: string }>([
+            { sourceID: '9anime', targetID: 'aniwave' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
