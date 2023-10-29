@@ -51,15 +51,10 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         parent: IMediaContainer,
         MediaID: string,
         title: string,
-        public readonly LastKnownEntries?: EntryHashes,
         private tracker?: IMediaInfoTracker,
         private infoID?: string
     ) {
         super(MediaID, title, parent);
-        this.LastKnownEntries = this.LastKnownEntries || {
-            IdentifierHashes: [],
-            TitleHashes: []
-        };
     }
 
     private Hash(text: string): string {
@@ -126,8 +121,6 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         const entries = this.Entries;
         if(entries.length > 0) {
             this.Updated = new Date();
-            this.LastKnownEntries.IdentifierHashes = entries.map(entry => this.Hash(entry.Identifier));
-            this.LastKnownEntries.TitleHashes = entries.map(entry => this.Hash(entry.Title));
             this.Changed.Dispatch(this);
         } else {
             // TODO: No entries available, maybe website is broken or entries not yet updated?
@@ -139,18 +132,6 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         this.tracker = tracker;
         this.infoID = infoID;
         this.Changed.Dispatch(this);
-    }
-
-    /**
-     * {@link Update} the current list of entries from the website and determine which entries are not yet in the list of last known entries.
-     */
-    public async GetNewEntries(): Promise<IMediaContainer[]> {
-        await this.Update();
-        return this.Entries.filter(entry => {
-            const isIdentifierUnknown = !this.LastKnownEntries.IdentifierHashes.includes(this.Hash(entry.Identifier));
-            const isTitleUnknown = !this.LastKnownEntries.TitleHashes.includes(this.Hash(entry.Title));
-            return isIdentifierUnknown && isTitleUnknown;
-        });
     }
 
     /**
@@ -167,13 +148,7 @@ export type BookmarkSerialized = {
     Title: string,
     Media: Provider,
     Info: Provider,
-    LastKnownEntries: EntryHashes,
 };
-
-type EntryHashes = {
-    IdentifierHashes: string[],
-    TitleHashes: string[]
-}
 
 type Provider = {
     ProviderID?: string,

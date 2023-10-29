@@ -42,7 +42,7 @@ function GetKeys(data: unknown, prefix = ''): string {
 }
 
 function IsSerializedBookmarkFormat(data: unknown): data is BookmarkSerialized {
-    return GetKeys(data) === 'Created, Info.EntryID, Info.ProviderID, LastKnownEntries.IdentifierHashes, LastKnownEntries.TitleHashes, Media.EntryID, Media.ProviderID, Title, Updated';
+    return GetKeys(data) === 'Created, Info.EntryID, Info.ProviderID, Media.EntryID, Media.ProviderID, Title, Updated';
 }
 
 function IsLegacyBookmarkFormat(data: unknown): data is BookmarkLegacy {
@@ -65,10 +65,6 @@ export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
         Info: {
             ProviderID: null,
             EntryID: null,
-        },
-        LastKnownEntries: {
-            IdentifierHashes: [],
-            TitleHashes: [],
         }
     };
 
