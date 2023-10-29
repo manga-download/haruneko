@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;

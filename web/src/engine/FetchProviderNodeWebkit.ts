@@ -1,4 +1,4 @@
-import { VariantResourceKey as R } from '../i18n/ILocale';
+import { EngineResourceKey as R } from '../i18n/ILocale';
 import type { PreloadAction } from './FetchProvider';
 import { FetchRedirection } from './AntiScrapingDetection';
 import { CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';

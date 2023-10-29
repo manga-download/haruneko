@@ -1,4 +1,4 @@
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { EngineResourceKey as R } from '../../i18n/ILocale';
 import { Key, Scope } from '../SettingsGlobal';
 import type { Check, Directory, ISettings, SettingsManager } from '../SettingsManager';
 import { SanitizeFileName, type StorageController, Store } from '../StorageController';

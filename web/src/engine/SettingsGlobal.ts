@@ -1,5 +1,5 @@
 import { type SettingsManager, Check, Numeric, Text, Secret, Choice, Directory } from './SettingsManager';
-import { VariantResourceKey as R, LocaleID } from '../i18n/ILocale';
+import { EngineResourceKey as R, LocaleID } from '../i18n/ILocale';
 import { FrontendList } from '../frontend/FrontendController';
 import { Info as InfoClassic } from '../frontend/classic/FrontendInfo';
 
