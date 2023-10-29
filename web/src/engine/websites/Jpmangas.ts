@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Jpmangas.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as MangaReader from '../decorators/MangaReaderCMS';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as MangaReader from './decorators/MangaReaderCMS';
 
 @Common.MangaCSS(/^https?:\/\/jpmangas\.xyz\/manga\/[^/]+$/, MangaReader.queryMangaTitle)
 @MangaReader.MangasSinglePageCSS()
