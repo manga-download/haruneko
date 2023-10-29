@@ -201,29 +201,21 @@
                 indented
                 labelText="Not viewed"
                 on:click={async () => {
-                    window.HakuNeko.ItemflagManager.UnflagItem(
-                        selectedItems[0]
-                    );
+                    window.HakuNeko.ItemflagManager.SetFlag(selectedItems[0], FlagType.None);
                 }}
             />
             <ContextMenuOption
                 indented
                 labelText="Viewed"
                 on:click={async () => {
-                    window.HakuNeko.ItemflagManager.FlagItem(
-                        selectedItems[0],
-                        FlagType.Viewed
-                    );
+                    window.HakuNeko.ItemflagManager.SetFlag(selectedItems[0], FlagType.Viewed);
                 }}
             />
             <ContextMenuOption
                 indented
                 labelText="Current"
                 on:click={async () => {
-                    window.HakuNeko.ItemflagManager.FlagItem(
-                        selectedItems[0],
-                        FlagType.Current
-                    );
+                    window.HakuNeko.ItemflagManager.SetFlag(selectedItems[0], FlagType.Current);
                 }}
             />
         </ContextMenuOption>

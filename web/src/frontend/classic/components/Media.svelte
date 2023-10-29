@@ -35,10 +35,11 @@
     let mediadiv: HTMLElement;
 
     //Unviewed content
-    let unFlaggedItems: IMediaContainer[] = [];
+    let unFlaggedItems = false;
     findMediaUnFlaggedContent(media);
 
     import { EventWatcher } from '../stores/Events';
+    import { FlagType } from '../../../engine/ItemflagManager';
     const mediaFlagsChanged = EventWatcher(
         null,
         HakuNeko.ItemflagManager.MediaFlagsChanged,
@@ -47,9 +48,7 @@
     $: if ($mediaFlagsChanged) findMediaUnFlaggedContent(media);
 
     async function findMediaUnFlaggedContent(media: IMediaContainer) {
-        unFlaggedItems = await HakuNeko.ItemflagManager.GetUnFlaggedItems(
-            media
-        );
+        unFlaggedItems = (await HakuNeko.ItemflagManager.FilterEntries(media, FlagType.None)).length > 0;
     }
 </script>
 
@@ -120,7 +119,7 @@
     >
         <span title={media.Title}>{media.Title}</span>
     </ClickableTile>
-    {#if unFlaggedItems.length > 0}
+    {#if unFlaggedItems}
         <Button
             icon={PlayFilled}
             kind="ghost"

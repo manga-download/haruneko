@@ -18,6 +18,8 @@
     import type { Check } from '../../../engine/SettingsManager';
 
     import { useNavigate } from 'svelte-navigator';
+    import { FlagType } from '../../../engine/ItemflagManager';
+    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     const navigate = useNavigate();
 
     const settings = HakuNeko.SettingsManager.OpenScope();
@@ -35,7 +37,7 @@
         await new Promise((resolve) => setTimeout(resolve, 1000));
         const accumulator = [];
         for(const bookmark of HakuNeko.BookmarkPlugin.Entries) {
-            if((await HakuNeko.ItemflagManager.GetUnFlaggedItems(bookmark)).length > 0) {
+            if((await HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None)).length > 0) {
                 accumulator.push(bookmark);
             }
         }
@@ -55,10 +57,10 @@
     );
 
     async function selectBookmark(bookmark: Bookmark) {
-        let unFlaggedContent = await HakuNeko.ItemflagManager.GetUnFlaggedItems(bookmark);
+        let unFlaggedContent = await HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None);
         $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
-        $selectedItem = unFlaggedContent[unFlaggedContent.length - 1];
+        $selectedItem = unFlaggedContent[unFlaggedContent.length - 1] as IMediaContainer;
     }
 </script>
 
@@ -84,7 +86,7 @@
                         <span title={bookmark.Title}>{bookmark.Title}</span>
                     </Tag>
 
-                    {#await window.HakuNeko.ItemflagManager.GetUnFlaggedItems(bookmark) then value}
+                    {#await window.HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None) then value}
                         <Tag
                             class="suggestcount"
                             type="outline"
