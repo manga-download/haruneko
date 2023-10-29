@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
-import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
+import type { Bookmark } from '../../../engine/providers/Bookmark';
 import S from '../services/StateService';
 
 const styles: ElementStyles = css`

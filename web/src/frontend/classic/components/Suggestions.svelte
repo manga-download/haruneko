@@ -10,7 +10,7 @@
         selectedItem,
     } from '../stores/Stores';
 
-    import type { Bookmark } from '../../../engine/providers/BookmarkPlugin';
+    import type { Bookmark } from '../../../engine/providers/Bookmark';
 
     import MediaIcon from '../../../img/media.webp';
 
@@ -28,9 +28,14 @@
     });
 
     let suggestions: Bookmark[] = [];
+    let isRefreshing = false;
     async function refreshSuggestions() {
+        if (isRefreshing) return;
+        isRefreshing = true;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         suggestions =
             await HakuNeko.BookmarkPlugin.getEntriesWithUnflaggedContent();
+        isRefreshing = false;
     }
     refreshSuggestions();
 
@@ -60,7 +65,7 @@
                 <BookmarkAdd size={24} />
             </h4>
         </ClickableTile>
-        {#each suggestions as bookmark (bookmark.Identifier)}
+        {#each suggestions as bookmark (bookmark)}
             <ClickableTile
                 class="suggesttile"
                 light
@@ -94,13 +99,15 @@
     :global(#Suggestions) {
         display: grid;
         grid-template-columns: repeat(auto-fit, 10em);
-        grid-template-rows: auto auto; /* 2 rows */
-        grid-auto-rows: 0px; /* next rows equal to 0 */
+        grid-template-rows: auto auto auto; /* 2 rows */
+        grid-auto-rows: 0; /* next rows equal to 0 */
         grid-gap: 0.5em;
-        overflow: hidden;
+        overflow-y: hidden;
+        max-height: 20em;
     }
 
     :global(#Suggestions .suggesttile) {
+        height: 8em;
         padding: 0;
     }
     :global(#Suggestions .suggesttile .bx--tag span) {

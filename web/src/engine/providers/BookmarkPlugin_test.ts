@@ -1,219 +1,359 @@
 import { mock } from 'jest-mock-extended';
-import type { IMediaChild, IMediaContainer } from './MediaPlugin';
-import { Bookmark, BookmarkPlugin } from './BookmarkPlugin';
-import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
+import { MediaContainer, type IMediaContainer } from './MediaPlugin';
+import { MissingInfoTracker, type IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import { Store, type StorageController } from '../StorageController';
 import type { PluginController } from '../PluginController';
+import type { InteractiveFileContentProvider } from '../InteractiveFileContentProvider';
+import { BookmarkPlugin } from './BookmarkPlugin';
+import { MissingWebsite, type Bookmark, type BookmarkSerialized } from './Bookmark';
 
-class TestFixture {
+class BlobProxy extends Blob {
 
-    public readonly CreationTime = 123456;
-    public readonly ModificationTime = 654321;
-    public readonly OriginIdentifier = 'sheepyneko';
-    public readonly OriginTitle = 'Sheepy Neko';
-    public readonly MockParent = mock<IMediaContainer>();
-    public readonly MockOrigin: IMediaChild;
-    public readonly MockInfoTracker = mock<IMediaInfoTracker>();
-    public readonly InfoIdentifier = 'sheepyneko@info-tracker';
-    public readonly LastKnownEntries = {
-        IdentifierHashes: [] as string[],
-        TitleHashes: [] as string[]
-    };
+    public readonly data: unknown;
 
-    constructor() {
-        //this.MockParent.CreateEntry.calledWith(this.OriginIdentifier, this.OriginTitle).mockReturnValue(this.MockOrigin);
-    }
-
-    /*
-    public SetupOrigin(identifier: string, title: string): TestFixture {
-        return this;
-    }
-    */
-
-    /*
-    public SetupInfoTracking(infoID: string) {
-
-    }
-    */
-
-    public SetupLastKnownEntries(identifierHashes: string[], titleHashes: string[]): TestFixture {
-        this.LastKnownEntries.IdentifierHashes = identifierHashes;
-        this.LastKnownEntries.TitleHashes = titleHashes;
-        return this;
-    }
-
-    public CreateSparseTestee() {
-        return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent, this.OriginIdentifier, this.OriginTitle);
-    }
-
-    public CreateTestee() {
-        return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent, this.OriginIdentifier, this.OriginTitle, this.LastKnownEntries, this.MockInfoTracker, this.InfoIdentifier);
+    constructor(parts?: BlobPart[], options?: BlobPropertyBag) {
+        super(parts, options);
+        this.data = JSON.parse(parts[0] as string);
     }
 }
 
-describe('Bookmark', () => {
+global.Blob = BlobProxy;
 
-    describe('Constructor', () => {
+class TestFixture {
 
-        it('Should correctly assign mandatory parameters', async () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateSparseTestee();
+    public static readonly DefaultStoredEntries: BookmarkSerialized[] = [
+        {
+            Created: 1,
+            Updated: 1,
+            Title: 'Bookmark 01',
+            Media: {
+                ProviderID: 'website-01',
+                EntryID: 'website-01/manga'
+            },
+            Info: {
+                ProviderID: 'tracker-01',
+                EntryID: 'tracker-01/manga'
+            },
+        },
+        {
+            Created: 2,
+            Updated: 2,
+            Title: 'Bookmark 02',
+            Media: {
+                ProviderID: 'website-02',
+                EntryID: 'website-02/manga'
+            },
+            Info: {
+                ProviderID: 'tracker-02',
+                EntryID: 'tracker-02/manga'
+            },
+        },
+        {
+            Created: 3,
+            Updated: 3,
+            Title: 'Bookmark 03',
+            Media: {
+                ProviderID: 'website-03',
+                EntryID: 'website-03/manga'
+            },
+            Info: {
+                ProviderID: null,
+                EntryID: null
+            },
+        },
+    ];
+    public static readonly DefaultWebsitePlugins: IMediaContainer[] = [
+        {
+            Identifier: 'website-01',
+            Title: 'Website 01',
+            IsSameAs: MediaContainer.prototype.IsSameAs
+        } as IMediaContainer
+    ];
+    public static readonly DefaultInfoTrackers: IMediaInfoTracker[] = [
+        {
+            Identifier: 'tracker-01',
+            Title: 'Tracker 01',
+        } as IMediaInfoTracker
+    ];
+    public readonly mockInteractiveFileContentProvider = mock<InteractiveFileContentProvider>();
+    public readonly mockStorageController = mock<StorageController>();
+    public readonly mockPluginController = mock<PluginController>();
 
-            expect(testee.Created.getTime()).toBe(fixture.CreationTime);
-            expect(testee.Updated.getTime()).toBe(fixture.ModificationTime);
-            expect(testee.Identifier).toBe(fixture.OriginIdentifier);
-            expect(testee.Title).toBe(fixture.OriginTitle);
-            expect(testee.Parent).toBe(fixture.MockParent);
-            expect(testee.LastKnownEntries.IdentifierHashes.length).toBe(0);
-            expect(testee.LastKnownEntries.TitleHashes.length).toBe(0);
-            expect(testee.Tracker).toBeUndefined();
-            expect(testee.InfoID).toBeUndefined();
-        });
+    public SetupStoredBookmarks(bookmarks?: BookmarkSerialized[], delay = 0): TestFixture {
+        this.mockStorageController.LoadPersistent.calledWith(Store.Bookmarks, undefined).mockReturnValue(new Promise(resolve => setTimeout(() => resolve(bookmarks ?? TestFixture.DefaultStoredEntries), delay)));
+        return this;
+    }
 
-        it('Should correctly assign optional parameters', async () => {
-            const expectedLastKnownEntries = {
-                IdentifierHashes: [ '-' ],
-                TitleHashes: [ '+' ]
-            };
-            const fixture = new TestFixture().SetupLastKnownEntries(expectedLastKnownEntries.IdentifierHashes, expectedLastKnownEntries.TitleHashes);
-            const testee = fixture.CreateTestee();
+    public SetupWebsitePlugins(plugins?: IMediaContainer[]): TestFixture {
+        Object.defineProperty(this.mockPluginController, 'WebsitePlugins', { get: () => plugins ?? TestFixture.DefaultWebsitePlugins });
+        return this;
+    }
 
-            expect(testee.Created.getTime()).toBe(fixture.CreationTime);
-            expect(testee.Updated.getTime()).toBe(fixture.ModificationTime);
-            expect(testee.Identifier).toBe(fixture.OriginIdentifier);
-            expect(testee.Title).toBe(fixture.OriginTitle);
-            expect(testee.Parent).toBe(fixture.MockParent);
-            expect(testee.LastKnownEntries).toStrictEqual(expectedLastKnownEntries);
-            expect(testee.Tracker).toBe(fixture.MockInfoTracker);
-            expect(testee.InfoID).toBe(fixture.InfoIdentifier);
-        });
-    });
+    public SetupInfoTrackers(trackers?: IMediaInfoTracker[]): TestFixture {
+        Object.defineProperty(this.mockPluginController, 'InfoTrackers', { get: () => trackers ?? TestFixture.DefaultInfoTrackers });
+        return this;
+    }
 
-    describe('Entries', () => {
-
-        it('Should find existing origin in parent and pass-through entries from origin', async () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateSparseTestee();
-
-            const entries = mock<IMediaContainer[]>();
-            const origin = mock<IMediaContainer>();
-            Object.defineProperty(origin, 'Identifier', { get: () => testee.Identifier });
-            Object.defineProperty(origin, 'Entries', { get: () => entries });
-
-            const children = [ origin ];
-            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => children });
-
-            const actual = testee.Entries;
-
-            expect(actual).toBe(entries);
-            expect(children[0]).toBe(origin);
-            expect(fixture.MockParent.Entries[0]).toBe(origin);
-            expect(fixture.MockParent.CreateEntry).toHaveBeenCalledTimes(0);
-        });
-
-        it('Should create non-existing origin once and pass-through the same instance', async () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateSparseTestee();
-
-            const entries = mock<IMediaContainer[]>();
-            const origin = mock<IMediaContainer>();
-            Object.defineProperty(origin, 'Identifier', { get: () => testee.Identifier });
-            Object.defineProperty(origin, 'Entries', { get: () => entries });
-
-            const children = [];
-            fixture.MockParent.CreateEntry.calledWith(testee.Identifier, testee.Title).mockReturnValue(origin);
-            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => children });
-
-            // Multiple calls to internal `Origin` getter to verify that `CreateEntry` is only called once
-            const actual = testee.Entries || testee.Entries || testee.Entries;
-
-            expect(actual).toBe(entries);
-            expect(children.length).toBe(0);
-            expect(fixture.MockParent.Entries.length).toBe(0);
-            expect(fixture.MockParent.CreateEntry).toHaveBeenCalledTimes(1);
-            expect(fixture.MockParent.CreateEntry).toHaveBeenCalledWith(testee.Identifier, testee.Title);
-        });
-    });
-});
+    public async CreateTestee(delay = 25): Promise<BookmarkPlugin> {
+        const testee = new BookmarkPlugin(this.mockStorageController, this.mockPluginController, this.mockInteractiveFileContentProvider);
+        await new Promise(resolve => setTimeout(resolve, delay)); // Make sure bookmarks are loaded from async storage provider
+        return testee;
+    }
+}
 
 describe('BookmarkPlugin', () => {
 
     describe('Constructor', () => {
 
-        test('Should load bookmarks from persitent storage', async () => {
-            const mockStorageController = mock<StorageController>();
-            mockStorageController.LoadPersistent.calledWith(Store.Bookmarks, undefined).mockReturnValue(Promise.resolve([
-                {
-                    Created: 1,
-                    Updated: 2,
-                    Title: 'Bookmark ✔️',
-                    Media: {
-                        ProviderID: 'website-exists',
-                        EntryID: 'website-exists/manga'
-                    },
-                    Info: {
-                        ProviderID: 'tracker-exists',
-                        EntryID: 'tracker-exists/manga'
-                    },
-                    LastKnownEntries: {
-                        IdentifierHashes: [],
-                        TitleHashes: []
-                    },
-                }, // as BookmarkSerialized
-                {
-                    Created: 3,
-                    Updated: 4,
-                    Title: 'Bookmark ❌',
-                    Media: {
-                        ProviderID: 'website-missing',
-                        EntryID: 'website-missing/manga'
-                    },
-                    Info: {
-                        ProviderID: 'tracker-missing',
-                        EntryID: 'tracker-missing/manga'
-                    },
-                    LastKnownEntries: {
-                        IdentifierHashes: [],
-                        TitleHashes: []
-                    },
-                }, // as BookmarkSerialized
-            ]));
-            const mockPluginController = mock<PluginController>();
-            Object.defineProperty(mockPluginController, 'WebsitePlugins', { get: () => [
-                {
-                    Identifier: 'website-exists',
-                    Title: 'Website (exists)',
-                } as IMediaContainer
-            ] });
-            Object.defineProperty(mockPluginController, 'InfoTrackers', { get: () => [
-                {
-                    Identifier: 'tracker-exists',
-                    Title: 'Tracker (exists)',
-                } as IMediaInfoTracker
-            ] });
-
+        test('Should load bookmarks from persistent storage', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks(TestFixture.DefaultStoredEntries, 25)
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
             let updatedEntries: Bookmark[];
-            const testee = new BookmarkPlugin(mockStorageController, mockPluginController);
+            const testee = await fixture.CreateTestee(0);
             testee.EntriesUpdated.Subscribe((_, args) => updatedEntries = args);
             await new Promise(resolve => setTimeout(resolve, 50));
 
+            expect(testee.Entries.length).toBe(3);
             expect(testee.Entries).toBe(updatedEntries);
-            expect(testee.Entries.length).toBe(2);
 
-            expect(testee.Entries[0].Title).toBe('Bookmark ✔️');
-            expect(testee.Entries[0].Identifier).toBe('website-exists/manga');
-            expect(testee.Entries[0].Parent.Identifier).toBe('website-exists');
-            expect(testee.Entries[0].Parent.Title).toBe('Website (exists)');
-            expect(testee.Entries[0].Tracker.Identifier).toBe('tracker-exists');
-            expect(testee.Entries[0].Tracker.Title).toBe('Tracker (exists)');
-            expect(testee.Entries[0].InfoID).toBe('tracker-exists/manga');
+            expect(testee.Entries[0].Title).toBe('Bookmark 01');
+            expect(testee.Entries[0].Identifier).toBe('website-01/manga');
+            expect(testee.Entries[0].Parent).not.toBeInstanceOf(MissingWebsite);
+            expect(testee.Entries[0].Parent.Identifier).toBe('website-01');
+            expect(testee.Entries[0].Parent.Title).toBe('Website 01');
+            expect(testee.Entries[0].Tracker).not.toBeInstanceOf(MissingInfoTracker);
+            expect(testee.Entries[0].Tracker.Identifier).toBe('tracker-01');
+            expect(testee.Entries[0].Tracker.Title).toBe('Tracker 01');
+            expect(testee.Entries[0].InfoID).toBe('tracker-01/manga');
 
-            expect(testee.Entries[1].Title).toBe('Bookmark ❌');
-            expect(testee.Entries[1].Identifier).toBe('website-missing/manga');
-            expect(testee.Entries[1].Parent.Identifier).toBe('website-missing');
-            expect(testee.Entries[1].Parent.Title).toBe('website-missing');
-            expect(testee.Entries[1].Tracker).toBeUndefined();
-            expect(testee.Entries[1].InfoID).toBe('tracker-missing/manga');
+            expect(testee.Entries[1].Title).toBe('Bookmark 02');
+            expect(testee.Entries[1].Identifier).toBe('website-02/manga');
+            expect(testee.Entries[1].Parent).toBeInstanceOf(MissingWebsite);
+            expect(testee.Entries[1].Parent.Identifier).toBe('website-02');
+            expect(testee.Entries[1].Parent.Title).toBe('website-02');
+            expect(testee.Entries[1].Tracker).toBeInstanceOf(MissingInfoTracker);
+            expect(testee.Entries[1].Tracker.Identifier).toBe('tracker-02');
+            expect(testee.Entries[1].Tracker.Title).toBe('tracker-02');
+            expect(testee.Entries[1].InfoID).toBe('tracker-02/manga');
+
+            expect(testee.Entries[2].Title).toBe('Bookmark 03');
+            expect(testee.Entries[2].Identifier).toBe('website-03/manga');
+            expect(testee.Entries[2].Parent).toBeInstanceOf(MissingWebsite);
+            expect(testee.Entries[2].Parent.Identifier).toBe('website-03');
+            expect(testee.Entries[2].Parent.Title).toBe('website-03');
+            expect(testee.Entries[2].Tracker).toBeInstanceOf(MissingInfoTracker);
+            expect(testee.Entries[2].Tracker.Identifier).toBeNull();
+            expect(testee.Entries[2].Tracker.Title).toBeNull();
+            expect(testee.Entries[2].InfoID).toBeNull();
+        });
+    });
+
+    describe('Import', () => {
+
+        test('Should successfully import bookmarks', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const file = mock<Blob>();
+            fixture.mockInteractiveFileContentProvider.LoadFile.mockResolvedValue(file);
+            file.text.mockResolvedValue(`[
+                {
+                    "Title": "Bookmark 1001",
+                    "Created": 1.1, "Updated": 1.2,
+                    "Media": { "ProviderID": "website-01", "EntryID": "website-01/manga" },
+                    "Info": { "ProviderID": null, "EntryID": null }
+                },
+                {
+                    "Title": "Bookmark 1002",
+                    "Created": 2.1, "Updated": 2.2,
+                    "Media": { "ProviderID": "website-01", "EntryID": "website-01/anime" },
+                    "Info": { "ProviderID": "tracker-01", "EntryID": "tracker-01/anime" }
+                },
+                {
+                    "Title": "Bookmark 1003",
+                    "Created": 3.1, "Updated": 3.2,
+                    "Media": { "ProviderID": "website-02", "EntryID": "website-02/anime" },
+                    "Info": { "ProviderID": null, "EntryID": null }
+                }
+            ]`);
+            const testee = await fixture.CreateTestee();
+            fixture.mockStorageController.LoadPersistent.mockClear();
+            const actual = await testee.Import();
+
+            expect(actual.cancelled).toBe(false);
+            expect(actual.found).toBe(3);
+            expect(actual.imported).toBe(2);
+            expect(actual.skipped).toBe(1);
+            expect(actual.broken).toBe(1);
+
+            expect(fixture.mockStorageController.LoadPersistent).toBeCalledTimes(1);
+            expect(fixture.mockStorageController.SavePersistent).toBeCalledTimes(2);
+            expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
+                Title: 'Bookmark 1002',
+                Created: 2, Updated: 2,
+                Media: { EntryID: 'website-01/anime', ProviderID: 'website-01' },
+                Info: { EntryID: 'tracker-01/anime', ProviderID: 'tracker-01' },
+            }, Store.Bookmarks, 'website-01 :: website-01/anime');
+            expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
+                Title: 'Bookmark 1003',
+                Created: 3, Updated: 3,
+                Media: { EntryID: 'website-02/anime', ProviderID: 'website-02' },
+                Info: { EntryID: null, ProviderID: null },
+            }, Store.Bookmarks, 'website-02 :: website-02/anime');
+        });
+
+        test('Should successfully import legacy bookmarks', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const file = mock<Blob>();
+            fixture.mockInteractiveFileContentProvider.LoadFile.mockResolvedValue(file);
+            file.text.mockResolvedValue(`[
+                {
+                    "title": {
+                        "connector": "❓",
+                        "manga": "Bookmark 1001"
+                    },
+                    "key": {
+                        "connector": "website-01",
+                        "manga": "website-01/manga"
+                    }
+                },
+                {
+                    "title": {
+                        "connector": "❓",
+                        "manga": "Bookmark 1002"
+                    },
+                    "key": {
+                        "connector": "website-01",
+                        "manga": "website-01/anime"
+                    }
+                },
+                {
+                    "title": {
+                        "connector": "❓",
+                        "manga": "Bookmark 1003"
+                    },
+                    "key": {
+                        "connector": "website-02",
+                        "manga": "website-02/anime"
+                    }
+                }
+            ]`);
+            const testee = await fixture.CreateTestee();
+            fixture.mockStorageController.LoadPersistent.mockClear();
+            const actual = await testee.Import();
+
+            expect(actual.cancelled).toBe(false);
+            expect(actual.found).toBe(3);
+            expect(actual.imported).toBe(2);
+            expect(actual.skipped).toBe(1);
+            expect(actual.broken).toBe(1);
+
+            expect(fixture.mockStorageController.LoadPersistent).toBeCalledTimes(1);
+            expect(fixture.mockStorageController.SavePersistent).toBeCalledTimes(2);
+            expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
+                Title: 'Bookmark 1002',
+                Created: 0, Updated: 0,
+                Media: { EntryID: 'website-01/anime', ProviderID: 'website-01' },
+                Info: { EntryID: null, ProviderID: null },
+            }, Store.Bookmarks, 'website-01 :: website-01/anime');
+            expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
+                Title: 'Bookmark 1003',
+                Created: 0, Updated: 0,
+                Media: { EntryID: 'website-02/anime', ProviderID: 'website-02' },
+                Info: { EntryID: null, ProviderID: null },
+            }, Store.Bookmarks, 'website-02 :: website-02/anime');
+        });
+
+        test('Should do nothing when import is cancelled by user', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            fixture.mockInteractiveFileContentProvider.LoadFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
+            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(true);
+            const testee = await fixture.CreateTestee();
+            const actual = await testee.Import();
+
+            expect(actual.cancelled).toBe(true);
+            expect(actual.found).toBe(0);
+            expect(actual.imported).toBe(0);
+            expect(actual.skipped).toBe(0);
+            expect(actual.broken).toBe(0);
+            expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
+        });
+
+        test('Should throw on unexpected error', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const expected = new Error('😈');
+            fixture.mockInteractiveFileContentProvider.LoadFile.mockRejectedValue(expected);
+            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(false);
+            const testee = await fixture.CreateTestee();
+
+            expect(testee.Import()).rejects.toBe(expected);
+            expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
+        });
+    });
+
+    describe('Export', () => {
+
+        test('Should successfully export bookmarks', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
+            const testee = await fixture.CreateTestee();
+            const actual = await testee.Export();
+
+            expect(actual.cancelled).toBe(false);
+            expect(actual.exported).toBe(3);
+            expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalledWith(expect.objectContaining({ data: TestFixture.DefaultStoredEntries }), {
+                suggestedName: `HakuNeko (${today}).bookmarks`,
+                types: [
+                    {
+                        accept: {
+                            'application/json': [ '.bookmarks' ]
+                        },
+                        description: 'HakuNeko Bookmarks'
+                    }
+                ]});
+        });
+
+        test('Should do nothing when export is cancelled by user', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
+            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(true);
+            const testee = await fixture.CreateTestee();
+            const actual = await testee.Export();
+
+            expect(actual.cancelled).toBe(true);
+            expect(actual.exported).toBe(0);
+            expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalled();
+        });
+
+        test('Should throw on unexpected error', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const expected = new Error('😈');
+            fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(expected);
+            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(false);
+            const testee = await fixture.CreateTestee();
+
+            expect(testee.Export()).rejects.toBe(expected);
         });
     });
 });

@@ -34,7 +34,7 @@ describe('Localization', () => {
                 LocaleID.Locale_filPH,
                 LocaleID.Locale_frFR,
                 LocaleID.Locale_hiIN,
-                LocaleID.Locale_inID,
+                LocaleID.Locale_idID,
                 LocaleID.Locale_ptPT,
                 LocaleID.Locale_thTH,
                 LocaleID.Locale_trTR,
@@ -51,7 +51,7 @@ describe('Localization', () => {
             expect(locale.Locale_filPH()).toBe('🇵🇭 Pilipino (PH)');
             expect(locale.Locale_frFR()).toBe('🇫🇷 Français (FR)');
             expect(locale.Locale_hiIN()).toBe('🇮🇳 हिंदी (IN)');
-            expect(locale.Locale_inID()).toBe('🇮🇩 Indonesia (ID)');
+            expect(locale.Locale_idID()).toBe('🇮🇩 Indonesia (ID)');
             expect(locale.Locale_ptPT()).toBe('🇵🇹 Português (PT)');
             expect(locale.Locale_thTH()).toBe('🇹🇭 ไทย (TH)');
             expect(locale.Locale_trTR()).toBe('🇹🇷 Türkçe (TR)');
@@ -61,14 +61,19 @@ describe('Localization', () => {
 
     describe('CreateLocale()', () => {
 
-        it('Should not wrap unknown resource keys', async () => {
+        it('Should not wrap unknown resource key', async () => {
             const testee = CreateLocale({ Speak: 'Meow' } as unknown as IResource);
             expect(testee['Speak']).toBe(undefined);
         });
 
-        it('Should wrap known resource keys', async () => {
+        it('Should wrap known resource key', async () => {
             const testee = CreateLocale({ Frontend_Product_Title: 'Meow {0}' } as unknown as IResource);
             expect(testee.Frontend_Product_Title('😺', '🙈')).toBe('Meow 😺');
+        });
+
+        it('Should return known resource key for missing translation', async () => {
+            const testee = CreateLocale({ Frontend_Product_Title: null } as unknown as IResource);
+            expect(testee.Frontend_Product_Title()).toBe('Frontend_Product_Title');
         });
     });
 
@@ -118,9 +123,9 @@ describe('Localization', () => {
             expect(GetLocale(LocaleID.Locale_hiIN).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
-        it('Should provide correct resource for in_ID', async () => {
-            expect(GetLocale(LocaleID.Locale_inID)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_inID).Frontend_Product_Title()).toBe('HakuNeko');
+        it('Should provide correct resource for id_ID', async () => {
+            expect(GetLocale(LocaleID.Locale_idID)).toBeInstanceOf(Object);
+            expect(GetLocale(LocaleID.Locale_idID).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for pt_PT', async () => {

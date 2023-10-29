@@ -1,7 +1,13 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import { IWindowService } from '../services/WindowService';
 import S from '../services/StateService';
 
 // See: https://icon-sets.iconify.design/fluent/
+import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw';
+import IconBookmarkList from '@fluentui/svg-icons/icons/bookmark_multiple_20_regular.svg?raw';
+import IconBookmarksImport from '@fluentui/svg-icons/icons/arrow_import_20_filled.svg?raw';
+import IconBookmarksExport from '@fluentui/svg-icons/icons/arrow_export_20_filled.svg?raw';
+import IconWindowAd from '@fluentui/svg-icons/icons/window_ad_20_filled.svg?raw';
 /*
 import IconMinimize from '@fluentui/svg-icons/icons/subtract_20_filled.svg?raw';
 import IconMaximize from '@fluentui/svg-icons/icons/window_20_filled.svg?raw'; // full_screen_maximize, maximize, square
@@ -10,15 +16,12 @@ import IconClose from '@fluentui/svg-icons/icons/dismiss_square_20_filled.svg?ra
 */
 // See: https://microsoft.github.io/vscode-codicons/dist/codicon.html
 import IconMenu from '@vscode/codicons/src/icons/menu.svg?raw';
-import IconBookmarkList from '@fluentui/svg-icons/icons/bookmark_multiple_20_regular.svg?raw'; // star_line_horizontal_3_20_regular
-import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw'; // arrow_swap_2-_regular
-import IconWindowAd from '@fluentui/svg-icons/icons/window_ad_20_filled.svg?raw';
+import IconDebugConsole from '@vscode/codicons/src/icons/debug-console.svg?raw';
 import IconSettings from '@vscode/codicons/src/icons/settings.svg?raw';
 import IconMinimize from '@vscode/codicons/src/icons/chrome-minimize.svg?raw';
 import IconMaximize from '@vscode/codicons/src/icons/chrome-maximize.svg?raw';
 import IconRestore from '@vscode/codicons/src/icons/chrome-restore.svg?raw';
 import IconClose from '@vscode/codicons/src/icons/chrome-close.svg?raw';
-import { IWindowService } from '../services/WindowService';
 
 const styles: ElementStyles = css`
 
@@ -96,16 +99,26 @@ const template: ViewTemplate<TitleBar> = html`
                 ${() => S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
-            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Description()}" :checked=${() => window.localStorage.getItem('hakuneko-nosplash') !== 'true'} @change=${(_, ctx) => window.localStorage.setItem('hakuneko-nosplash', (!ctx.event.currentTarget['checked']).toString())}>
-                <div slot="start" :innerHTML=${() => IconWindowAd}></div>
-                ${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Label()}
-            </fluent-menu-item>
             <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Description()}" @click=${model => model.ShowGlobalSettingsDialog()}>
                 <div slot="start" :innerHTML=${() => IconSettings}></div>
                 ${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
             </fluent-menu-item>
-            <fluent-menu-item disabled title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ShowImportDialog()}>
+            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ImportBookmarks()}>
+                <div slot="start" :innerHTML=${() => IconBookmarksImport}></div>    
                 ${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
+            </fluent-menu-item>
+            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Description()}" @click=${model => model.ExportBookmarks()}>
+                <div slot="start" :innerHTML=${() => IconBookmarksExport}></div>   
+                ${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Label()}
+            </fluent-menu-item>
+            <fluent-divider></fluent-divider>
+            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Description()}" :checked=${() => window.localStorage.getItem('hakuneko-nosplash') !== 'true'} @change=${(_, ctx) => window.localStorage.setItem('hakuneko-nosplash', (!ctx.event.currentTarget['checked']).toString())}>
+                <div slot="start" :innerHTML=${() => IconWindowAd}></div>
+                ${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Label()}
+            </fluent-menu-item>
+            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description()}" :checked=${() => window.localStorage.getItem('hakuneko-fetchwindow-verbose') === 'true'} @change=${(_, ctx) => window.localStorage.setItem('hakuneko-fetchwindow-verbose', ctx.event.currentTarget['checked'].toString())}>
+                <div slot="start" :innerHTML=${() => IconDebugConsole}></div>
+                ${() => S.Locale.Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
             <fluent-setting-theme-luminance></fluent-setting-theme-luminance>
@@ -132,8 +145,27 @@ export class TitleBar extends FASTElement {
         S.ShowSettingsDialog(...HakuNeko.SettingsManager.OpenScope());
     }
 
-    public ShowImportDialog()
+    public async ImportBookmarks()
     {
-        this.popup = false;
+        try {
+            this.popup = false;
+            const summary = await HakuNeko.BookmarkPlugin.Import();
+            console.log(summary);
+        } catch(error) {
+            // TODO: Show error to user
+            console.error(error);
+        }
+    }
+
+    public async ExportBookmarks()
+    {
+        try {
+            this.popup = false;
+            const summary = await HakuNeko.BookmarkPlugin.Export();
+            console.log(summary);
+        } catch(error) {
+            // TODO: Show error to user
+            console.error(error);
+        }
     }
 }

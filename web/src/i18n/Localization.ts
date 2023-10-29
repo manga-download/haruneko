@@ -1,4 +1,4 @@
-import { type ILocale, type IVariantResource, LocaleID, InvariantResourceKey, VariantResourceKey } from './ILocale';
+import { type ILocale, type LocaleID, type VariantResource, VariantResourceKey, InvariantResourceKey } from './ILocale';
 import type { Choice } from '../engine/SettingsManager';
 import { Scope, Key } from '../engine/SettingsGlobal';
 import { invariant } from './locales/_invariant';
@@ -9,7 +9,7 @@ import es_ES from './locales/es_ES';
 import fil_PH from './locales/fil_PH';
 import fr_FR from './locales/fr_FR';
 import hi_IN from './locales/hi_IN';
-import in_ID from './locales/in_ID';
+import id_ID from './locales/id_ID';
 import pt_PT from './locales/pt_PT';
 import th_TH from './locales/th_TH';
 import tr_TR from './locales/tr_TR';
@@ -27,7 +27,7 @@ const resources: Record<LocaleID, ILocale> = {
     Locale_filPH: CreateLocale(fil_PH),
     Locale_frFR: CreateLocale(fr_FR),
     Locale_hiIN: CreateLocale(hi_IN),
-    Locale_inID: CreateLocale(in_ID),
+    Locale_idID: CreateLocale(id_ID),
     Locale_ptPT: CreateLocale(pt_PT),
     Locale_thTH: CreateLocale(th_TH),
     Locale_trTR: CreateLocale(tr_TR),
@@ -46,16 +46,13 @@ function Format(this: string, ...params: string[]) {
     return text;
 }
 
-export function CreateLocale(resource: IVariantResource): ILocale {
-    const result: Record<string, typeof Format> = {};
-    for(const key in LocaleID) {
-        result[key] = Format.bind(invariant[key]);
-    }
+export function CreateLocale(resource: VariantResource): ILocale {
+    const result = {};
     for(const key in InvariantResourceKey) {
-        result[key] = Format.bind(invariant[key]);
+        result[key] = Format.bind(invariant[key] ?? key);
     }
     for(const key in VariantResourceKey) {
-        result[key] = Format.bind(resource[key]);
+        result[key] = Format.bind(resource[key] ?? key);
     }
     return result as ILocale;
 }

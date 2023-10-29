@@ -6,7 +6,13 @@ import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import * as Common from './decorators/Common';
 import { Numeric } from '../SettingsManager';
-import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+
+type CachedManga = {
+    id: string,
+    title: string,
+    created: string,
+}
 
 type APIContainer<T> = {
     data: T
@@ -100,7 +106,7 @@ export default class extends MangaScraper {
         '8d8ecf83-8d42-4f8c-add8-60963f9f28d9' // Comikey
     ];
 
-    private readonly mangasTaskPool = new TaskPool(1, new RateLimit(12, 60));
+    private readonly mangasTaskPool = new TaskPool(1, new RateLimit(2, 1));
     private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
 
     public constructor() {
@@ -128,9 +134,45 @@ export default class extends MangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
+        const mangaCache = await FetchJSON<CachedManga[]>(new FetchRequest('https://websites.hakuneko.download/mangadex.json'));
+        const mangaList = mangaCache.map(manga => new Manga(this, provider, manga.id, manga.title));
+        /*
         const limit = 100;
-        let lastCreatedAt = '2000-01-01T00:00:00';
+        let lastCreatedAt = mangaCache.pop().created;
+        const mangas = await (async () => {
+            const dbg: APIManga[] = [];
+            for(let run = true, offset = 0; run && offset < 10000 - limit; offset += limit) {
+                try {
+                    const data = await this.mangasTaskPool.Add(async () => {
+                        const uri = new URL('/manga', this.api);
+                        uri.searchParams.set('limit', `${limit}`);
+                        uri.searchParams.set('offset', `${offset}`);
+                        uri.searchParams.set('order[createdAt]', 'asc');
+                        uri.searchParams.set('createdAtSince', lastCreatedAt);
+                        uri.searchParams.append('contentRating[]', 'safe');
+                        uri.searchParams.append('contentRating[]', 'suggestive');
+                        uri.searchParams.append('contentRating[]', 'erotica');
+                        uri.searchParams.append('contentRating[]', 'pornographic');
+                        const request = new FetchRequest(uri.href, { headers: { Referer: `https://${Math.random().toString(16).split('.').pop()}.org` }});
+                        const { data } = await FetchJSON<APIContainer<APIManga[]>>(request);
+                        return data;
+                    }, Priority.Normal);
+                    run = dbg.push(...data) > 0;
+                } catch {
+                    offset -= limit;
+                }
+            }
+            return dbg;
+        })();
+        lastCreatedAt = mangas[mangas.length - 1].attributes.createdAt.split('+').shift();
+        console.log('Next Batch:', lastCreatedAt);
+        mangaList.push(...mangas.map(manga => {
+            const title = manga.attributes.title.en || Object.values(manga.attributes.title).shift();
+            return new Manga(this, provider, manga.id, title);
+        }));
+        */
+
+        /*
         while(lastCreatedAt) {
             const data = await this.mangasTaskPool.Add(async () => {
                 const uri = new URL('/manga', this.api);
@@ -156,6 +198,7 @@ export default class extends MangaScraper {
                 mangaList.push(...mangas);
             }
         }
+        */
         return mangaList;
     }
 
