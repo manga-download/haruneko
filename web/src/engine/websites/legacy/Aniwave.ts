@@ -1,14 +1,14 @@
 // Auto-Generated export from HakuNeko Legacy
 // See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
 
-//import { Tags } from '../../Tags';
-import icon from './NineAnime.webp';
+import { Tags } from '../../Tags';
+import icon from './Aniwave.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('9anime', `9ANIME`, 'https://9anime.to' /*, Tags.Language.English, Tags ... */);
+        super('aniwave', `Aniwave`, 'https://aniwave.to', Tags.Media.Anime, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

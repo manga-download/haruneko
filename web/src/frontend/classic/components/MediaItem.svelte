@@ -17,12 +17,16 @@
         CloudDownload,
     } from 'carbon-icons-svelte';
 
+    import { filterByCategory, Tags } from '../../../engine/Tags';
+
     import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
     import { selectedItem } from '../stores/Stores';
+    import { Locale } from '../stores/Settings';
 
     export let item: IMediaContainer;
     export let selected: boolean;
+    export let multilang = false;
     let flag: FlagType;
     const flagiconmap = new Map<FlagType, any>([
         [FlagType.Viewed, ViewFilled],
@@ -86,6 +90,15 @@
             dispatch('view', item);
         }}
     >
+        {#if multilang}
+            <span class="multilang">
+                {multilang
+                    ? $Locale[
+                          filterByCategory(item.Tags, Tags.Language)[0].Title
+                      ]().substring(0, 4)
+                    : ''}
+            </span>
+        {/if}
         <span title={item.Title}>{item.Title}</span>
     </ClickableTile>
 </div>
@@ -127,5 +140,10 @@
     }
     .listitem :global(button:hover) {
         --cds-icon-01: var(--cds-hover-secondary);
+    }
+    .multilang {
+        font-family: BabelStoneFlags;
+        opacity: 0.7;
+        margin-right: 0.4em;
     }
 </style>
