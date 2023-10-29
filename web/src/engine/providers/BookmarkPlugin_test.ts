@@ -150,6 +150,55 @@ describe('BookmarkPlugin', () => {
         });
     });
 
+    describe('Update', () => {
+
+        test('Should load update entries from storage', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks(TestFixture.DefaultStoredEntries.slice(0, 1))
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const testee = await fixture.CreateTestee(5);
+            expect(testee.Entries.map(entry => entry.Title)).toEqual([ 'Bookmark 01' ]);
+            fixture.SetupStoredBookmarks(TestFixture.DefaultStoredEntries.slice(2, 3));
+            await testee.Update();
+            expect(testee.Entries.map(entry => entry.Title)).toEqual([ 'Bookmark 03' ]);
+        });
+    });
+
+    describe('UpdateEntries', () => {
+
+        test('Should invoke update for each entry', async () => {
+            const fixture = new TestFixture()
+                .SetupStoredBookmarks()
+                .SetupWebsitePlugins()
+                .SetupInfoTrackers();
+            const testee = await fixture.CreateTestee(5);
+            const original = testee.UpdateEntries;
+
+            const spyUpdateEntry0 = jest.fn();
+            spyUpdateEntry0.mockReturnValue(new Promise<void>(resolve => setTimeout(resolve, 5)));
+            testee.Entries[0].Update = spyUpdateEntry0;
+            const spyUpdateEntry1 = jest.fn();
+            spyUpdateEntry1.mockReturnValue(new Promise<void>(resolve => setTimeout(resolve, 25)));
+            testee.Entries[1].Update = spyUpdateEntry1;
+            const spyUpdateEntry2 = jest.fn();
+            spyUpdateEntry2.mockReturnValue(new Promise<void>(resolve => setTimeout(resolve, 15)));
+            testee.Entries[2].Update = spyUpdateEntry2;
+
+            const invocationFirst = testee.UpdateEntries();
+            expect(testee.UpdateEntries).not.toBe(original);
+            const invocationSecond = testee.UpdateEntries();
+
+            await Promise.all(invocationSecond);
+
+            expect(invocationFirst).toBe(invocationSecond);
+            expect(testee.UpdateEntries).toBe(original);
+            expect(spyUpdateEntry0).toBeCalledTimes(1);
+            expect(spyUpdateEntry1).toBeCalledTimes(1);
+            expect(spyUpdateEntry2).toBeCalledTimes(1);
+        });
+    });
+
     describe('Import', () => {
 
         test('Should successfully import bookmarks', async () => {

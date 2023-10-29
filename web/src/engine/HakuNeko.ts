@@ -37,10 +37,9 @@ export class HakuNeko {
     public async Initialze(): Promise<void> {
         await InitGlobalSettings(this.SettingsManager);
         /*const ipc = */CreatePlatformIPC(this.#settingsManager);
-        // Preload bookmarks flags to show content to view
-        const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;
-        if (checkNewContent) this.BookmarkPlugin.RefreshAllFlags();
-
+        if (this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value) {
+            this.BookmarkPlugin.UpdateEntries().forEach(promise => promise.then(bookmark => this.ItemflagManager.MediaFlagsChanged.Dispatch(null, bookmark)));
+        }
     }
 
     public get Tags() {

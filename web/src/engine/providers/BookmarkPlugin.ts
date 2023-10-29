@@ -6,6 +6,8 @@ import { Event } from '../Event';
 import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
 import { Bookmark, MissingWebsite, type BookmarkSerialized } from './Bookmark';
 import { MissingInfoTracker } from '../trackers/IMediaInfoTracker';
+import { Priority, TaskPool } from '../taskpool/TaskPool';
+import { RateLimit } from '../taskpool/RateLimit';
 
 export type BookmarkImportResult = {
     cancelled: boolean;
@@ -67,12 +69,6 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         this.EntriesUpdated.Dispatch(this, this.Entries);
     }
 
-    public async RefreshAllFlags() {
-        for (const media of this._entries) {
-            await media.Update();
-            HakuNeko.ItemflagManager.LoadContainerFlags(media);
-        }
-    }
     public async Import(): Promise<BookmarkImportResult> {
         let data: Blob;
         const result: BookmarkImportResult = {
@@ -191,10 +187,20 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         await this.Load();
     }
 
-    public async getEntriesWithUnflaggedContent(): Promise<Bookmark[]> {
-        const results = await Promise.all(this.Entries.map(
-            async (bookmark) => (await bookmark.getUnflaggedContent()).length > 0
-        ));
-        return this.Entries.filter((_, index) => results[index]);
+    /**
+     * Update each entry in {@link Entries}.
+     * Depending on the number of {@link Entries} this may take some time.
+     * Multiple invocations have no effect, only one execution is allowed at a time.
+     */
+    public UpdateEntries(): Promise<Bookmark>[] {
+        const thisUpdateEntries = this.UpdateEntries;
+        const taskpool: TaskPool = new TaskPool(4, new RateLimit(4, 1));
+        const promises = this._entries.map(entry => taskpool.Add(async () => {
+            await entry.Update();
+            return entry;
+        }, Priority.Low));
+        Promise.allSettled(promises).finally(() => this.UpdateEntries = thisUpdateEntries);
+        this.UpdateEntries = () => promises;
+        return promises;
     }
 }
