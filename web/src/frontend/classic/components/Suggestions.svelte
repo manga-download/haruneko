@@ -33,8 +33,13 @@
         if (isRefreshing) return;
         isRefreshing = true;
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        suggestions =
-            await HakuNeko.BookmarkPlugin.getEntriesWithUnflaggedContent();
+        const accumulator = [];
+        for(const bookmark of HakuNeko.BookmarkPlugin.Entries) {
+            if((await HakuNeko.ItemflagManager.GetUnFlaggedItems(bookmark)).length > 0) {
+                accumulator.push(bookmark);
+            }
+        }
+        suggestions = accumulator;
         isRefreshing = false;
     }
     refreshSuggestions();
@@ -50,7 +55,7 @@
     );
 
     async function selectBookmark(bookmark: Bookmark) {
-        let unFlaggedContent = await bookmark.getUnflaggedContent();
+        let unFlaggedContent = await HakuNeko.ItemflagManager.GetUnFlaggedItems(bookmark);
         $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
         $selectedItem = unFlaggedContent[unFlaggedContent.length - 1];
@@ -79,7 +84,7 @@
                         <span title={bookmark.Title}>{bookmark.Title}</span>
                     </Tag>
 
-                    {#await bookmark.getUnflaggedContent() then value}
+                    {#await window.HakuNeko.ItemflagManager.GetUnFlaggedItems(bookmark) then value}
                         <Tag
                             class="suggestcount"
                             type="outline"

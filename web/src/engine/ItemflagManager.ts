@@ -11,7 +11,7 @@ export class ItemflagManager {
     constructor(private readonly storage: StorageController) {
     }
 
-    public async LoadContainerFlags(media: IMediaContainer) {
+    private async LoadContainerFlags(media: IMediaContainer) {
         if(media.Parent) {
             const mediaflags = await this.storage.LoadPersistent<ItemFlag[]>(Store.Itemflags, this.StorageKey(media));
             this.items.set(this.StorageKey(media), mediaflags);
