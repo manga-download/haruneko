@@ -25,13 +25,13 @@
     } from '../stores/Stores';
     import { FuzzySearch } from '../stores/Settings';
     // Hakuneko Engine
-    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
-    import type { IMediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
+    import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
+    import type { MediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
 
-    let medias: IMediaContainer[] = [];
-    let filteredmedias: IMediaContainer[] = [];
+    let medias: MediaContainer<MediaChild>[] = [];
+    let filteredmedias: MediaContainer<MediaChild>[] = [];
     let fuse = new Fuse(medias, {
         keys: ['Title'],
         findAllMatches: true,
@@ -40,7 +40,7 @@
         fieldNormWeight: 0,
     });
     $selectedPlugin = HakuNeko.BookmarkPlugin;
-    let currentPlugin: IMediaContainer;
+    let currentPlugin: MediaContainer<MediaContainer<MediaChild>>;
     let loadPlugin: Promise<void>;
     let disablePluginRefresh = false;
 
@@ -48,7 +48,7 @@
     let pluginsFavorites = ['sheep-scanlations'];
 
     let pluginsCombo: Array<ComboBoxItem>;
-    let orderedPlugins: IMediaContainer[] = [];
+    let orderedPlugins: MediaContainer<MediaContainer<MediaChild>>[] = [];
 
     orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
         return (
@@ -86,9 +86,9 @@
     }
     $: pluginDropdownSelected = currentPlugin?.Identifier;
 
-    function loadMedia(media: IMediaContainer) {
+    function loadMedia(media: MediaContainer<MediaContainer<MediaChild>>) {
         if (!media) return;
-        medias = (media.Entries as IMediaContainer[]) ?? [];
+        medias = media.Entries ?? [];
         fuse = new Fuse(medias, {
             keys: ['Title'],
             findAllMatches: true,
@@ -98,7 +98,7 @@
         });
     }
 
-    function filterMedia(mediaNameFilter: string): IMediaContainer[] {
+    function filterMedia(mediaNameFilter: string) {
         if ($FuzzySearch)
             return fuse.search(mediaNameFilter).map((item) => item.item);
         else
@@ -111,7 +111,7 @@
         mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter);
 
     let isTrackerModalOpen = false;
-    let selectedTracker: IMediaInfoTracker;
+    let selectedTracker: MediaInfoTracker;
 
     function shouldFilterPlugin(item: any, value: string) {
         if (!value) return true;
@@ -133,7 +133,7 @@
             for (const website of HakuNeko.PluginController.WebsitePlugins) {
                 const media = (await website.TryGetEntry(
                     link
-                )) as IMediaContainer;
+                ));
                 if (media) {
                     $selectedItem = undefined;
                     if (!$selectedPlugin?.IsSameAs(media.Parent)) {

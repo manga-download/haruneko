@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
-import type { IMediaContainer, IMediaItem } from '../../../engine/providers/MediaPlugin';
+import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Chapter } from '../../../engine/providers/MangaPlugin';
 import S from '../services/StateService';
 
@@ -35,7 +35,7 @@ const styles: ElementStyles = css`
     }
 `;
 
-const templatePage: ViewTemplate<IMediaItem> = html`<fluent-media-item-page :item=${model => model}></fluent-media-item-page>`;
+const templatePage: ViewTemplate<MediaItem> = html`<fluent-media-item-page :item=${model => model}></fluent-media-item-page>`;
 const templateChapter: ViewTemplate<MediaItemPreview> = html`${repeat(model => model.items, templatePage, { recycle: false })}`;
 
 const template: ViewTemplate<MediaItemPreview> = html`
@@ -52,14 +52,14 @@ const template: ViewTemplate<MediaItemPreview> = html`
 @customElement({ name: 'fluent-media-item-preview', template, styles })
 export class MediaItemPreview extends FASTElement {
 
-    @observable entry: IMediaContainer;
+    @observable entry: MediaContainer<MediaItem>;
     async entryChanged() {
         if(this.entry?.Entries?.length === 0) {
             this.items = [];
             await this.entry?.Update();
         }
-        this.items = (this.entry?.Entries ?? []) as IMediaItem[];
+        this.items = this.entry?.Entries ?? [];
         this.$emit('entryChanged', this.entry);
     }
-    @observable items: IMediaItem[];
+    @observable items: MediaItem[];
 }
