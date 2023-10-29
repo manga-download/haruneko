@@ -1,4 +1,4 @@
-import { VariantResourceKey as R } from '../../../i18n/ILocale';
+import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
 import { FetchRequest, FetchCSS } from '../../FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';

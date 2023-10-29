@@ -34,10 +34,6 @@ class TestFixture {
                 ProviderID: 'tracker-01',
                 EntryID: 'tracker-01/manga'
             },
-            LastKnownEntries: {
-                IdentifierHashes: [],
-                TitleHashes: []
-            },
         },
         {
             Created: 2,
@@ -51,10 +47,6 @@ class TestFixture {
                 ProviderID: 'tracker-02',
                 EntryID: 'tracker-02/manga'
             },
-            LastKnownEntries: {
-                IdentifierHashes: [],
-                TitleHashes: []
-            },
         },
         {
             Created: 3,
@@ -67,10 +59,6 @@ class TestFixture {
             Info: {
                 ProviderID: null,
                 EntryID: null
-            },
-            LastKnownEntries: {
-                IdentifierHashes: [],
-                TitleHashes: []
             },
         },
     ];
@@ -176,22 +164,19 @@ describe('BookmarkPlugin', () => {
                     "Title": "Bookmark 1001",
                     "Created": 1.1, "Updated": 1.2,
                     "Media": { "ProviderID": "website-01", "EntryID": "website-01/manga" },
-                    "Info": { "ProviderID": null, "EntryID": null },
-                    "LastKnownEntries": { "IdentifierHashes": [], "TitleHashes": [] }
+                    "Info": { "ProviderID": null, "EntryID": null }
                 },
                 {
                     "Title": "Bookmark 1002",
                     "Created": 2.1, "Updated": 2.2,
                     "Media": { "ProviderID": "website-01", "EntryID": "website-01/anime" },
-                    "Info": { "ProviderID": "tracker-01", "EntryID": "tracker-01/anime" },
-                    "LastKnownEntries": { "IdentifierHashes": [], "TitleHashes": [] }
+                    "Info": { "ProviderID": "tracker-01", "EntryID": "tracker-01/anime" }
                 },
                 {
                     "Title": "Bookmark 1003",
                     "Created": 3.1, "Updated": 3.2,
                     "Media": { "ProviderID": "website-02", "EntryID": "website-02/anime" },
-                    "Info": { "ProviderID": null, "EntryID": null },
-                    "LastKnownEntries": { "IdentifierHashes": [], "TitleHashes": [] }
+                    "Info": { "ProviderID": null, "EntryID": null }
                 }
             ]`);
             const testee = await fixture.CreateTestee();
@@ -211,14 +196,12 @@ describe('BookmarkPlugin', () => {
                 Created: 2, Updated: 2,
                 Media: { EntryID: 'website-01/anime', ProviderID: 'website-01' },
                 Info: { EntryID: 'tracker-01/anime', ProviderID: 'tracker-01' },
-                LastKnownEntries: { IdentifierHashes: [], TitleHashes: [] },
             }, Store.Bookmarks, 'website-01 :: website-01/anime');
             expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
                 Title: 'Bookmark 1003',
                 Created: 3, Updated: 3,
                 Media: { EntryID: 'website-02/anime', ProviderID: 'website-02' },
                 Info: { EntryID: null, ProviderID: null },
-                LastKnownEntries: { IdentifierHashes: [], TitleHashes: [] },
             }, Store.Bookmarks, 'website-02 :: website-02/anime');
         });
 
@@ -278,14 +261,12 @@ describe('BookmarkPlugin', () => {
                 Created: 0, Updated: 0,
                 Media: { EntryID: 'website-01/anime', ProviderID: 'website-01' },
                 Info: { EntryID: null, ProviderID: null },
-                LastKnownEntries: { IdentifierHashes: [], TitleHashes: [] },
             }, Store.Bookmarks, 'website-01 :: website-01/anime');
             expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
                 Title: 'Bookmark 1003',
                 Created: 0, Updated: 0,
                 Media: { EntryID: 'website-02/anime', ProviderID: 'website-02' },
                 Info: { EntryID: null, ProviderID: null },
-                LastKnownEntries: { IdentifierHashes: [], TitleHashes: [] },
             }, Store.Bookmarks, 'website-02 :: website-02/anime');
         });
 

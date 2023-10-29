@@ -13,23 +13,13 @@ class TestFixture {
     public readonly MockOrigin: IMediaChild;
     public readonly MockInfoTracker = mock<IMediaInfoTracker>();
     public readonly InfoIdentifier = 'sheepyneko@info-tracker';
-    public readonly LastKnownEntries = {
-        IdentifierHashes: [] as string[],
-        TitleHashes: [] as string[]
-    };
-
-    public SetupLastKnownEntries(identifierHashes: string[], titleHashes: string[]): TestFixture {
-        this.LastKnownEntries.IdentifierHashes = identifierHashes;
-        this.LastKnownEntries.TitleHashes = titleHashes;
-        return this;
-    }
 
     public CreateSparseTestee() {
         return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent, this.OriginIdentifier, this.OriginTitle);
     }
 
     public CreateTestee() {
-        return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent, this.OriginIdentifier, this.OriginTitle, this.LastKnownEntries, this.MockInfoTracker, this.InfoIdentifier);
+        return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent, this.OriginIdentifier, this.OriginTitle, this.MockInfoTracker, this.InfoIdentifier);
     }
 }
 
@@ -46,18 +36,12 @@ describe('Bookmark', () => {
             expect(testee.Identifier).toBe(fixture.OriginIdentifier);
             expect(testee.Title).toBe(fixture.OriginTitle);
             expect(testee.Parent).toBe(fixture.MockParent);
-            expect(testee.LastKnownEntries.IdentifierHashes.length).toBe(0);
-            expect(testee.LastKnownEntries.TitleHashes.length).toBe(0);
             expect(testee.Tracker).toBeNull();
             expect(testee.InfoID).toBeNull();
         });
 
         it('Should correctly assign optional parameters', async () => {
-            const expectedLastKnownEntries = {
-                IdentifierHashes: [ '-' ],
-                TitleHashes: [ '+' ]
-            };
-            const fixture = new TestFixture().SetupLastKnownEntries(expectedLastKnownEntries.IdentifierHashes, expectedLastKnownEntries.TitleHashes);
+            const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
             expect(testee.Created.getTime()).toBe(fixture.CreationTime);
@@ -65,7 +49,6 @@ describe('Bookmark', () => {
             expect(testee.Identifier).toBe(fixture.OriginIdentifier);
             expect(testee.Title).toBe(fixture.OriginTitle);
             expect(testee.Parent).toBe(fixture.MockParent);
-            expect(testee.LastKnownEntries).toStrictEqual(expectedLastKnownEntries);
             expect(testee.Tracker).toBe(fixture.MockInfoTracker);
             expect(testee.InfoID).toBe(fixture.InfoIdentifier);
         });

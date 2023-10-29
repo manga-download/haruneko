@@ -54,7 +54,6 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             parent,
             serialized.Media.EntryID,
             serialized.Title,
-            serialized.LastKnownEntries,
             tracker,
             serialized.Info?.EntryID
         );
@@ -110,12 +109,6 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     public async Export(): Promise<BookmarkExportResult> {
         const bookmarks = this._entries.map(bookmark => this.Serialize(bookmark));
-        /*
-        bookmarks.forEach(bookmark => {
-            bookmark.LastKnownEntries.IdentifierHashes = [];
-            bookmark.LastKnownEntries.TitleHashes = [];
-        });
-        */
         const result: BookmarkExportResult = {
             cancelled: false,
             exported: 0
@@ -151,8 +144,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             Info: {
                 ProviderID: bookmark.Tracker?.Identifier ?? null,
                 EntryID: bookmark.InfoID ?? null
-            },
-            LastKnownEntries: bookmark.LastKnownEntries,
+            }
         };
     }
 

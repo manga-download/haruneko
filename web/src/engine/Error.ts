@@ -1,4 +1,4 @@
-import type { VariantResourceKey } from '../i18n/ILocale';
+import type { IResource } from '../i18n/ILocale';
 import { GetLocale } from '../i18n/Localization';
 
 /**
@@ -24,7 +24,7 @@ export class Exception extends Error {
 
     private readonly params: string[];
 
-    constructor(private readonly key: VariantResourceKey, ...params: string[]) {
+    constructor(private readonly key: keyof IResource, ...params: string[]) {
         super();
         this.params = params;
     }
