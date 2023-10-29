@@ -35,7 +35,7 @@ export class ItemflagManager {
     /**
      * Create a pseudo-unique identifier for a given {@link container}.
      */
-    private StorageKey(container: MediaContainer<MediaContainer<MediaChild>>): string {
+    private StorageKey(container: MediaContainer<MediaChild>): string {
         return `${container.Parent.Identifier} :: ${container.Identifier}`;
     }
 
@@ -57,7 +57,7 @@ export class ItemflagManager {
     /**
      * Get the cached/stored flags for all entries within the given {@link container}.
      */
-    private async GetContainerItemsFlags(container: MediaContainer<MediaContainer<MediaChild>>): Promise<ItemFlag[]> {
+    private async GetContainerItemsFlags(container: MediaContainer<MediaChild>): Promise<ItemFlag[]> {
         const storagekey = this.StorageKey(container);
         if (!this.cache.has(storagekey)) await this.LoadFlags(storagekey);
         return this.cache.get(storagekey);
@@ -102,10 +102,10 @@ export class ItemflagManager {
         return this.findFlagType(await this.GetContainerItemsFlags(entry.Parent), entry);
     }
 
-    public async FilterEntries(container: MediaContainer<MediaContainer<MediaChild>>, mask: FlagType) {
+    public async FilterEntries(container: MediaContainer<MediaChild>, mask: FlagType) {
         const marks = await this.GetContainerItemsFlags(container);
         return container.Entries.filter(entry => {
-            const flag = this.findFlagType(marks, entry);
+            const flag = this.findFlagType(marks, entry as MediaContainer<MediaChild>);
             return (mask & flag) === flag;
         });
     }

@@ -36,7 +36,7 @@
                         <span title={bookmark.Title}>{bookmark.Title}</span>
                     </Tag>
 
-                    {#await window.HakuNeko.ItemflagManager.FilterEntries(bookmark as MediaContainer<MediaContainer<MediaChild>>, FlagType.None) then value}
+                    {#await window.HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None) then value}
                         {#if value.length > 0}
                             <Tag
                                 class="suggestcount"
