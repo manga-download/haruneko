@@ -79,7 +79,7 @@ export { default as FallenAngelsScans } from './FallenAngelsScans';
 export { default as FenixScan } from './FenixScan';
 export { default as FinalScans } from './FinalScans';
 export { default as FirstKissManga } from './FirstKissManga';
-export { default as FlameScans } from './FlameScans';
+export { default as FlameComics } from './FlameComics';
 export { default as FranxxMangas } from './FranxxMangas';
 export { default as FreeComicOnline } from './FreeComicOnline';
 export { default as FreeManga } from './FreeManga';
