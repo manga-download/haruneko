@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://comic-walker.com/contents/detail/KDCW_AM06204400010000_68/',
-        id: '/contents/detail/KDCW_AM06204400010000_68/',
+        id: JSON.stringify({id: '/contents/detail/KDCW_AM06204400010000_68/', langCode: 'jp'}),
         title: 'いつかのLo-fiみゅーじっく'
     },
     child: {

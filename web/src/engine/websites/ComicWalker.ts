@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './ComicWalker.webp';
-import { type Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { Fetch, FetchCSS, FetchHTML, FetchJSON, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type TEndpoints = {
@@ -21,23 +21,50 @@ type APIPages = {
     }
 }
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname + anchor.search,
-        title: anchor.title.trim()
-    };
+const langMap = {
+    en: Tags.Language.English,
+    tw: Tags.Language.Chinese,
+    jp: Tags.Language.Japanese
+};
+
+type MangaID = {
+    id: string,
+    langCode: string
+
 }
 
-@Common.MangaCSS(/^https?:\/\/comic-walker\.com\/contents\/detail\/[^/]+\/$/, 'div#mainContent div#detailIndex div.comicIndex-box h1')
-@Common.ChaptersSinglePageCSS('div#ulreversible ul#reversible li a', ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicwalker', `コミックウォーカー (ComicWalker)`, 'https://comic-walker.com', Tags.Language.Multilingual, Tags.Source.Official, Tags.Media.Manga);
+        super('comicwalker', `コミックウォーカー (ComicWalker)`, 'https://comic-walker.com', Tags.Language.Japanese, Tags.Language.Chinese, Tags.Language.English, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return /^https?:\/\/comic-walker\.com\/contents\/detail\/[^/]+\/$/.test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const document = await FetchHTML(new FetchRequest(url));
+        const title = document.querySelector('div#mainContent div#detailIndex div.comicIndex-box h1').textContent.trim();
+
+        //infer manga language from page meta url
+        //<meta property="og:url" content="https://comic-walker.com/tw/contents/detail/KDCW_KS02000002030000_68/" />
+
+        const metaUrl = new URL(document.querySelector<HTMLMetaElement>('meta[property="og:url"]').content);
+        const langCode = metaUrl.pathname.match(/^\/([a-z]{2})\//)[1];
+
+        const mangaid: MangaID = {
+            id: new URL(url).pathname,
+            langCode: langCode
+        };
+        const manga = new Manga(this, provider, JSON.stringify(mangaid), title);
+        manga.Tags.push(langMap[langCode]);
+
+        return manga;
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -45,17 +72,31 @@ export default class extends DecoratableMangaScraper {
         for (const language of ['en', 'tw', 'jp']) {
             await this.setLanguage(language);
             const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, '/contents/list/p?={page}', 'div.comicPage ul.tileList li a', 1, 1, 0, Common.AnchorInfoExtractor(false, '.contents_tile_epi'));
-            mangasList.push(...mangas);
+            const langMangas = mangas.map(manga => new Manga(this, provider, JSON.stringify({ id: manga.Identifier, langCode: language }), manga.Title));
+            langMangas.forEach(manga => manga.Tags.push(langMap[language]));
+            mangasList.push(...langMangas);
         }
         return mangasList;
     }
 
     private async setLanguage(language: string): Promise<void> {
-        const request = new FetchRequest(`${this.URI.origin}/set_lang/${ language }/`);
-        await Fetch(request);
+        const request = new FetchRequest(`${this.URI.origin}/set_lang/${language}/`);
+        (await Fetch(request)).text();
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const mangaID: MangaID = JSON.parse(manga.Identifier);
+        await this.setLanguage(mangaID.langCode);
+
+        const request = new FetchRequest(new URL(mangaID.id, this.URI).href);
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'div#ulreversible ul#reversible li a');
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname + chapter.search, chapter.title.replace(manga.Title, '').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const language = (JSON.parse(chapter.Parent.Identifier) as MangaID).langCode;
+        await this.setLanguage(language);
+
         //get endpoints data
         const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
         const mainApp = await FetchCSS(request, 'main#app');
@@ -80,12 +121,6 @@ export default class extends DecoratableMangaScraper {
         return Common.GetTypedData(decrypted);
     }
 
-    /**
-     ******************************
-     * ** COMIC-WALKER CODE BEGIN ***
-     *****************************
-     */
-
     private generateKey(t: string): Uint8Array {
         const e = t.slice(0, 16).match(/[\da-f]{2}/gi);
         if (null != e)
@@ -104,10 +139,4 @@ export default class extends DecoratableMangaScraper {
             o[a] = t[a] ^ e[a % i];
         return o;
     }
-
-    /**
-     ****************************
-     * ** COMIC-WALKER CODE END ***
-     ***************************
-     */
 }
