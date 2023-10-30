@@ -1,10 +1,10 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaHasu.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/mangahasu\.se\/[\S]+\.html$/, '.info-title h1')
-@Common.MangasMultiPageCSS('/directory.html?page={page}', 'ul.list_manga li a.name-manga')
+@Common.MangaCSS(/^https?:\/\/mangahasu\.se\/[^/]+\.html$/, '.info-title h1')
+@Common.MangasMultiPageCSS('/directory.html?page={page}', 'ul.list_manga li a.name-manga', 1, 1, 1000)
 @Common.ChaptersSinglePageCSS('div.list-chapter table tr td.name a')
 @Common.PagesSinglePageCSS('div.img-chapter div.img img')
 @Common.ImageAjax()

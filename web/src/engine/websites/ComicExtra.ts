@@ -1,7 +1,7 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicExtra.webp';
-import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname + '/full';
@@ -9,15 +9,15 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/comicextra\.net\/comic\/[^/]+$/, '.title-1')
+@Common.MangaCSS(/^https?:\/\/comicextra\.me\/comic\/[^/]+$/, '.title-1')
 @Common.ChaptersSinglePageCSS('#list tr td a', ChapterExtractor)
-@Common.PagesSinglePageCSS('.chapter_img')
+@Common.PagesSinglePageCSS('div.chapter-container img')
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicextra', `ComicExtra`, 'https://comicextra.net', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
+        super('comicextra', `ComicExtra`, 'https://comicextra.me', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

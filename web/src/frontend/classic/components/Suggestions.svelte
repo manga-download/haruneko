@@ -18,6 +18,7 @@
     import type { Check } from '../../../engine/SettingsManager';
 
     import { useNavigate } from 'svelte-navigator';
+    import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
     const navigate = useNavigate();
 
     const settings = HakuNeko.SettingsManager.OpenScope();
@@ -53,7 +54,7 @@
         let unFlaggedContent = await bookmark.getUnflaggedContent();
         $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
-        $selectedItem = unFlaggedContent[unFlaggedContent.length - 1];
+        $selectedItem = unFlaggedContent[unFlaggedContent.length - 1] as MediaContainer<MediaItem>;
     }
 </script>
 

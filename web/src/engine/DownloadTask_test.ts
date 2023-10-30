@@ -1,11 +1,11 @@
 import { mock, mockFn } from 'jest-mock-extended';
-import { DownloadTask, type IDownloadTask, Status } from './DownloadTask';
-import type { StoreableMediaContainer, IMediaItem } from './providers/MediaPlugin';
+import { DownloadTask, Status } from './DownloadTask';
+import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
 import { DeferredTask } from './taskpool/DeferredTask';
 
 function MockItem(resolve: boolean, delay: number = undefined) {
-    const item = mock<IMediaItem>();
+    const item = mock<MediaItem>();
     if(resolve) {
         if(delay) {
             item.Fetch.mockReturnValue(new Promise(resolve => setTimeout(resolve, 5)));
@@ -25,15 +25,15 @@ function MockItem(resolve: boolean, delay: number = undefined) {
 class TestFixture {
 
     public readonly StorageControllerMock = mock<StorageController>();
-    private readonly MediaContainerEntriesMock = mockFn<() => IMediaItem[]>();
-    public readonly MediaContainerMock = mock<StoreableMediaContainer<IMediaItem>>();
-    public readonly StatusChangedCallbackMock = mockFn<(sender: IDownloadTask, args: Status) => void>();
-    public readonly ProgressChangedCallbackMock = mockFn<(sender: IDownloadTask, args: number) => void>();
+    private readonly MediaContainerEntriesMock = mockFn<() => MediaItem[]>();
+    public readonly MediaContainerMock = mock<StoreableMediaContainer<MediaItem>>();
+    public readonly StatusChangedCallbackMock = mockFn<(sender: DownloadTask, args: Status) => void>();
+    public readonly ProgressChangedCallbackMock = mockFn<(sender: DownloadTask, args: number) => void>();
 
     constructor() {
         const base = {};
         Object.defineProperty(base, 'Entries', { get: this.MediaContainerEntriesMock });
-        this.MediaContainerMock = mock<StoreableMediaContainer<IMediaItem>>(base);
+        this.MediaContainerMock = mock<StoreableMediaContainer<MediaItem>>(base);
     }
 
     public CreateTestee() {
@@ -43,7 +43,7 @@ class TestFixture {
         return testee;
     }
 
-    public SetupMediaContainer(items: IMediaItem[]): TestFixture {
+    public SetupMediaContainer(items: MediaItem[]): TestFixture {
         this.MediaContainerEntriesMock.mockReset();
         this.MediaContainerEntriesMock.mockReturnValue(items);
         return this;
@@ -144,7 +144,7 @@ describe('DownloadTask', () => {
 
         it('Should signal abort for active downloads', async () => {
             const signals: AbortSignal[] = [];
-            const item = mock<IMediaItem>();
+            const item = mock<MediaItem>();
             item.Fetch.mockImplementation((_, signal) => {
                 signals.push(signal);
                 return Promise.resolve(null);
