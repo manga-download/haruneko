@@ -1,7 +1,7 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaReader.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https?:\/\/mangareader.tv\/manga\/[^/]+$/, 'table tr td span.name')
 @Common.MangasSinglePageCSS('/alphabetical', 'ul.d46 li a')
