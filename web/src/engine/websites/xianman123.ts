@@ -7,7 +7,7 @@ import * as MH from './decorators/MH';
 const pagesScript = `
     new Promise((resolve, reject) => {
         try {
-            const pageLinks = picdata.map(pic => new URL(pic, imgDomain).href);
+            const pageLinks = picdata.map(pic => imgDomain != '' ? new URL(pic, imgDomain).href : pic);
             resolve(pageLinks);
         } catch (error) {
             reject(error);
@@ -15,7 +15,7 @@ const pagesScript = `
     });
  `;
 
-@Common.MangaCSS(/^https?:\/\/www\.xianmanwang\.com\/\S+\/$/, MH.queryMangaTitleFromURI)
+@Common.MangaCSS(/^https?:\/\/www\.gaonaojin\.com\/[^/]+\/$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS('/f-1-0-0-0-0-2-{page}.html', MH.queryMangas)
 @Common.ChaptersSinglePageCSS(MH.queryChapters, MH.ChapterExtractor)
 @Common.PagesSinglePageJS(pagesScript, 2500)
@@ -24,7 +24,7 @@ const pagesScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('xianman123', `XianMan123`, 'https://www.xianmanwang.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Aggregator);
+        super('xianman123', `XianMan123`, 'https://www.gaonaojin.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

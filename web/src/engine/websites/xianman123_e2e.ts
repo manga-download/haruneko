@@ -6,17 +6,17 @@ const config = {
         title: 'XianMan123'
     },
     container: {
-        url: 'https://www.xianmanwang.com/bailianchengshen/',
-        id: '/bailianchengshen/',
-        title: '百炼成神',
+        url: 'https://www.gaonaojin.com/douluodaluIIjueshitangmen/',
+        id: '/douluodaluIIjueshitangmen/',
+        title: '斗罗大陆 II 绝世唐门',
     },
     child: {
-        id: '/bailianchengshen/1859.html',
-        title: '特别篇 神秘剑客',
+        id: '/douluodaluIIjueshitangmen/376.html',
+        title: '369 强敌！',
     },
     entry: {
         index: 1,
-        size: 526_910,
+        size: 254_668,
         type: 'image/jpeg'
     }
 };
