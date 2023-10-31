@@ -1,17 +1,17 @@
-import type { IMediaContainer } from './providers/MediaPlugin';
+import type { MediaChild, MediaContainer } from './providers/MediaPlugin';
 import { type StorageController, Store } from './StorageController';
 import { Event } from './Event';
 
 export class ItemflagManager {
 
-    public readonly FlagChanged: Event<IMediaContainer, FlagType> = new Event<IMediaContainer, FlagType>();
-    public readonly MediaFlagsChanged: Event<ItemflagManager, IMediaContainer> = new Event<this, IMediaContainer>();
+    public readonly FlagChanged: Event<MediaContainer<MediaChild>, FlagType> = new Event<MediaContainer<MediaChild>, FlagType>();
+    public readonly MediaFlagsChanged: Event<ItemflagManager, MediaContainer<MediaChild>> = new Event<this, MediaContainer<MediaChild>>();
 
     private items:Map<string, ItemFlag[]> = new Map();
     constructor(private readonly storage: StorageController) {
     }
 
-    public async LoadContainerFlags(media: IMediaContainer) {
+    public async LoadContainerFlags(media: MediaContainer<MediaChild>) {
         if(media.Parent) {
             const mediaflags = await this.storage.LoadPersistent<ItemFlag[]>(Store.Itemflags, this.StorageKey(media));
             this.items.set(this.StorageKey(media), mediaflags);
@@ -19,12 +19,12 @@ export class ItemflagManager {
         }
     }
 
-    private async SaveContainerFlags(container: IMediaContainer, flags: ItemFlag[]) {
+    private async SaveContainerFlags(container: MediaContainer<MediaChild>, flags: ItemFlag[]) {
         await this.storage.SavePersistent<ItemFlag[]>(flags, Store.Itemflags, this.StorageKey(container));
     }
 
     /* Key to store flags by plugin-media */
-    private StorageKey(item: IMediaContainer): string {
+    private StorageKey(item: MediaContainer<MediaChild>): string {
         return `${item.Parent.Identifier} :: ${item.Identifier}`;
     }
 
@@ -32,21 +32,21 @@ export class ItemflagManager {
         return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
     }
 
-    private isContainerSameItem(flag: ItemFlag, container: IMediaContainer): boolean {
+    private isContainerSameItem(flag: ItemFlag, container: MediaContainer<MediaChild>): boolean {
         const doesIdentifierMatch = flag.IdentifierHash === this.Hash(container.Identifier);
         const doesTitleMatch = flag.TitleHash === this.Hash(container.Title);
         return doesIdentifierMatch || doesTitleMatch;
     }
 
     /* Retrieves the flags of a media */
-    public async GetContainerItemsFlags(container: IMediaContainer): Promise<ItemFlag[]> {
+    public async GetContainerItemsFlags(container: MediaContainer<MediaChild>) {
         const storagekey = this.StorageKey(container);
         if (!this.items.has(storagekey)) await this.LoadContainerFlags(container);
         return this.items.get(storagekey);
     }
 
     /* Add a flag of an item */
-    public async FlagItem(entry: IMediaContainer, kind: FlagType) {
+    public async FlagItem(entry: MediaContainer<MediaChild>, kind: FlagType) {
         const newflag: ItemFlag = {
             IdentifierHash: this.Hash(entry.Identifier),
             TitleHash: this.Hash(entry.Title),
@@ -56,7 +56,7 @@ export class ItemflagManager {
         if (kind === FlagType.Current) {
             // Ignore all previous flags and add flag viewed on all items after entry
             // TODO: Manage flags context per language in case of multiple current flag (1 per language)
-            const items = entry.Parent?.Entries as IMediaContainer[];
+            const items = entry.Parent?.Entries;
             const entryIndex = items?.indexOf(entry);
             items.forEach((item, index) => {
                 if (index > entryIndex) flags.push({
@@ -79,7 +79,7 @@ export class ItemflagManager {
     }
 
     /* Remove the flag of an item */
-    public async UnflagItem(itemToRemove: IMediaContainer) {
+    public async UnflagItem(itemToRemove: MediaContainer<MediaChild>) {
         let flags = await this.GetContainerItemsFlags(itemToRemove.Parent);
         if (!flags) return;
         flags = flags.filter(flag => {
@@ -92,7 +92,7 @@ export class ItemflagManager {
     }
 
     /* Get the flagType of an item */
-    public async GetItemFlagType(item: IMediaContainer): Promise<FlagType>{
+    public async GetItemFlagType(item: MediaContainer<MediaChild>) {
         const marks = await this.GetContainerItemsFlags(item.Parent);
         if (!marks) return undefined;
         const mark = marks.find(mark => {
@@ -101,14 +101,14 @@ export class ItemflagManager {
         return mark?.kind;
     }
 
-    public async GetUnFlaggedItems(media: IMediaContainer): Promise<IMediaContainer[]> {
+    public async GetUnFlaggedItems(media: MediaContainer<MediaContainer<MediaChild>>) {
         const marks = await this.GetContainerItemsFlags(media);
-        return media.Entries.filter((item:IMediaContainer) => {
+        return media.Entries.filter(item => {
             const mark = marks?.find(mark => {
                 return this.isContainerSameItem(mark, item);
             });
             return mark === undefined;
-        }) as IMediaContainer[];
+        });
     }
 }
 

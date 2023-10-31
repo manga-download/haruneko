@@ -1,6 +1,6 @@
-import { type IMediaChild, type IMediaContainer, MediaContainer } from './MediaPlugin';
+import { type MediaChild, MediaContainer } from './MediaPlugin';
 import { Event } from '../Event';
-import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
+import type { MediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import icon from '../../img/warning.webp';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
@@ -8,7 +8,7 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 /**
  * A dummy representation for a bookmark's origin (media title), which is no longer available.
  */
-class MissingWebsiteEntry extends MediaContainer<IMediaContainer> {
+class MissingWebsiteEntry extends MediaContainer<MediaChild> {
     constructor(identifier: string, title: string) {
         super(identifier, title, null);
     }
@@ -23,14 +23,14 @@ class MissingWebsiteEntry extends MediaContainer<IMediaContainer> {
 /**
  * A dummy representation for a bookmark's parent (website), which has been removed.
  */
-export class MissingWebsite extends MediaContainer<IMediaContainer> {
+export class MissingWebsite extends MediaContainer<MissingWebsiteEntry> {
     constructor(identifier: string) {
         super(identifier, identifier, null);
     }
     public override get Icon(): string {
         return icon;
     }
-    public override CreateEntry(identifier: string, title: string): IMediaContainer {
+    public override CreateEntry(identifier: string, title: string) {
         return new MissingWebsiteEntry(identifier, title);
     }
     public override async Update(): Promise<void> {
@@ -41,17 +41,17 @@ export class MissingWebsite extends MediaContainer<IMediaContainer> {
 /**
  * A bookmark is more or less a proxy/facade for a media container.
  */
-export class Bookmark extends MediaContainer<IMediaChild> {
+export class Bookmark extends MediaContainer<MediaChild> {
 
     public readonly Changed: Event<typeof this, void> = new Event<typeof this, void>();
 
     constructor(
         public readonly Created: Date,
         public Updated: Date,
-        parent: IMediaContainer,
+        parent: MediaContainer<MediaContainer<MediaChild>>,
         MediaID: string,
         title: string,
-        private tracker?: IMediaInfoTracker,
+        private tracker?: MediaInfoTracker,
         private infoID?: string
     ) {
         super(MediaID, title, parent);
@@ -65,17 +65,17 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         return `${this.Parent.Identifier} :: ${this.Identifier}`;
     }
 
-    private origin: IMediaContainer;
+    private origin: MediaContainer<MediaChild>;
     /**
      * Get the origin entry related to this bookmark from the shared parent.
      * If the origin entry does not yet exist, a stand in origin entry will be used.
      */
-    private get Origin(): IMediaContainer {
-        const entry = (this.Parent.Entries as IMediaContainer[]).find(entry => entry.Identifier === this.Identifier) ?? this.origin;
+    private get Origin(): MediaContainer<MediaChild> {
+        const entry = this.Parent.Entries.find(entry => entry.Identifier === this.Identifier) ?? this.origin;
         if(entry) {
             return entry;
         } else {
-            this.origin = this.Parent.CreateEntry(this.Identifier, this.Title) as IMediaContainer;
+            this.origin = this.Parent.CreateEntry(this.Identifier, this.Title);
             return this.origin;
         }
     }
@@ -90,11 +90,11 @@ export class Bookmark extends MediaContainer<IMediaChild> {
     /**
      * Directly pass-through the entries from the shared parent.
      */
-    public override get Entries(): IMediaContainer[] {
-        return this.Origin.Entries as IMediaContainer[];
+    public override get Entries() {
+        return this.Origin.Entries;
     }
 
-    public get Tracker(): IMediaInfoTracker {
+    public get Tracker(): MediaInfoTracker {
         return this.tracker ?? null;
     }
 
@@ -127,7 +127,7 @@ export class Bookmark extends MediaContainer<IMediaChild> {
         }
     }
 
-    public LinkTracker(tracker: IMediaInfoTracker, infoID: string) {
+    public LinkTracker(tracker: MediaInfoTracker, infoID: string) {
         this.Updated = new Date();
         this.tracker = tracker;
         this.infoID = infoID;
@@ -137,8 +137,8 @@ export class Bookmark extends MediaContainer<IMediaChild> {
     /**
      * determine which entries have unflagged items
      */
-    public async getUnflaggedContent(): Promise<IMediaContainer[]> {
-        return await HakuNeko.ItemflagManager.GetUnFlaggedItems(this);
+    public async getUnflaggedContent() {
+        return await HakuNeko.ItemflagManager.GetUnFlaggedItems(this as MediaContainer<MediaContainer<MediaChild>>);
     }
 }
 

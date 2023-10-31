@@ -1,5 +1,5 @@
-import { DownloadTask, type IDownloadTask, Status } from './DownloadTask';
-import type { IMediaContainer, StoreableMediaContainer, IMediaItem } from './providers/MediaPlugin';
+import { DownloadTask, Status } from './DownloadTask';
+import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
 import { Event } from './Event';
 
@@ -8,8 +8,8 @@ export class DownloadManager {
     private processing = false;
     private queue: DownloadTask[] = [];
     private queueTransactionLock = false;
-    public readonly TasksAdded: Event<typeof this, IDownloadTask[]> = new Event<typeof this, IDownloadTask[]>();
-    public readonly TasksRemoved: Event<typeof this, IDownloadTask[]> = new Event<typeof this, IDownloadTask[]>();
+    public readonly TasksAdded: Event<typeof this, DownloadTask[]> = new Event<typeof this, DownloadTask[]>();
+    public readonly TasksRemoved: Event<typeof this, DownloadTask[]> = new Event<typeof this, DownloadTask[]>();
 
     constructor(private readonly storageController: StorageController) {
     }
@@ -30,20 +30,20 @@ export class DownloadManager {
         }
     }
 
-    public GetTasks(): Promise<IDownloadTask[]> {
-        return this.InvokeQueueTransaction(queue => queue.map(task => task as IDownloadTask));
+    public GetTasks(): Promise<DownloadTask[]> {
+        return this.InvokeQueueTransaction(queue => queue.map(task => task));
     }
 
     /**
      * Add the given {@link containers} to the download queue.
      * Only containers that are not present in the download queue will be added.
      */
-    public async Enqueue(...containers: IMediaContainer[]): Promise<void> {
+    public async Enqueue(...containers: StoreableMediaContainer<MediaItem>[]): Promise<void> {
         const added = await this.InvokeQueueTransaction(queue => {
             const result = [];
             for(const container of containers) {
                 if(!queue.some(task => container?.IsSameAs(task.Media))) {
-                    const task = new DownloadTask(container as StoreableMediaContainer<IMediaItem>, this.storageController);
+                    const task = new DownloadTask(container, this.storageController);
                     result.push(task);
                     queue.push(task);
                 }
@@ -58,7 +58,7 @@ export class DownloadManager {
      * Remove the given {@link tasks} from the download queue.
      * Only tasks that are present in the download queue will be removed.
      */
-    public async Dequeue(...tasks: IDownloadTask[]): Promise<void> {
+    public async Dequeue(...tasks: DownloadTask[]): Promise<void> {
         const removed = await this.InvokeQueueTransaction(queue => {
             const result = [];
             this.queue = queue.filter(task => {

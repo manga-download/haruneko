@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
-import { type IDownloadTask, Status } from '../../../engine/DownloadTask';
+import { type DownloadTask, Status } from '../../../engine/DownloadTask';
 import S from '../services/StateService';
 
 import IconQueued from '@fluentui/svg-icons/icons/clock_20_regular.svg?raw';
@@ -97,8 +97,8 @@ export class DownloadManagerTask extends FASTElement {
         this.entry?.ProgressChanged.Unsubscribe(this.UpdateProgress);
     }
 
-    @observable entry: IDownloadTask;
-    entryChanged(oldValue: IDownloadTask, newValue: IDownloadTask) {
+    @observable entry: DownloadTask;
+    entryChanged(oldValue: DownloadTask, newValue: DownloadTask) {
         oldValue?.StatusChanged.Unsubscribe(this.UpdateStatus);
         newValue?.StatusChanged.Subscribe(this.UpdateStatus);
         oldValue?.ProgressChanged.Unsubscribe(this.UpdateProgress);
@@ -110,11 +110,11 @@ export class DownloadManagerTask extends FASTElement {
     @observable status: Status;
     @observable progress = 0;
 
-    private UpdateStatus = function (_: IDownloadTask, value?: Status) {
+    private UpdateStatus = function (_: DownloadTask, value?: Status) {
         this.status = value;
     }.bind(this);
 
-    private UpdateProgress = function (_: IDownloadTask, value?: number) {
+    private UpdateProgress = function (_: DownloadTask, value?: number) {
         this.progress = value ?? 0;
     }.bind(this);
 

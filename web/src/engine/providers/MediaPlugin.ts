@@ -6,46 +6,29 @@ import type { Priority } from '../taskpool/TaskPool';
 import icon from '../../img/media.webp';
 import { NotImplementedError } from '../Error';
 
-export type IMediaChild = IMediaContainer | IMediaItem;
+export type MediaChild = MediaContainer<MediaChild> | MediaItem;
 
-export interface IMediaItem {
-    readonly Parent: IMediaContainer;
-    Fetch(priority: Priority, signal: AbortSignal): Promise<Blob>;
-}
+export abstract class MediaItem {
 
-export abstract class MediaItem implements IMediaItem {
-
-    public constructor(public readonly Parent: IMediaContainer) {
+    public constructor(public readonly Parent: MediaContainer<MediaItem>) {
     }
 
     public abstract Fetch(priority: Priority, signal: AbortSignal): Promise<Blob>;
 }
 
-export interface IMediaContainer {
-    readonly Parent?: IMediaContainer;
-    readonly Identifier: string;
-    readonly Title: string;
-    readonly Settings: ISettings;
-    readonly Icon: string;
-    readonly Tags: Tag[];
-    readonly URI?: URL;
-    readonly Entries: IMediaChild[];
-    [Symbol.iterator](): Iterator<IMediaChild>;
-    IsSameAs(other: IMediaContainer): boolean;
-    CreateEntry(identifier: string, title: string): IMediaChild;
-    TryGetEntry(url: string): Promise<IMediaChild>;
-    Update(): Promise<void>;
-}
-
-export abstract class MediaContainer<T extends IMediaChild> implements IMediaContainer {
+export abstract class MediaContainer<T extends MediaChild> {
 
     #tags: Tag[] = [];
     protected _entries: T[] = [];
 
-    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: IMediaContainer) {
+    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: MediaContainer<MediaContainer<T>>) {
     }
 
     public get Settings(): ISettings {
+        return null;
+    }
+
+    public get URI(): URL {
         return null;
     }
 
@@ -67,7 +50,7 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
         }
     }
 
-    public IsSameAs(other: IMediaContainer): boolean {
+    public IsSameAs(other: MediaContainer<T>): boolean {
         if(!this.Identifier || !other?.Identifier) {
             return false;
         }
@@ -82,7 +65,7 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
 
     protected async Initialize(): Promise<void> {
         if (this.Parent) {
-            await (this.Parent as MediaContainer<IMediaContainer>).Initialize();
+            await this.Parent.Initialize();
         }
         // NOTE: nonce method, disable after called once
         this.Initialize = () => Promise.resolve();
@@ -99,13 +82,13 @@ export abstract class MediaContainer<T extends IMediaChild> implements IMediaCon
     public abstract Update(): Promise<void>;
 }
 
-export abstract class StoreableMediaContainer<T extends IMediaItem> extends MediaContainer<T> {
+export abstract class StoreableMediaContainer<T extends MediaItem> extends MediaContainer<T> {
 
     public abstract get IsStored(): boolean;
     public abstract Store(resources: Map<number, string>): Promise<void>;
 }
 
-export abstract class MediaScraper<T extends IMediaContainer> {
+export abstract class MediaScraper<T extends MediaContainer<MediaChild>> {
 
     public readonly URI: URL;
     public readonly Tags: Tag[];

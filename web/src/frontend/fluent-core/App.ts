@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
-import type { IMediaContainer } from '../../engine/providers/MediaPlugin';
+import type { MediaContainer, MediaChild } from '../../engine/providers/MediaPlugin';
 import S from './services/StateService';
 
 const styles: ElementStyles = css`
@@ -67,7 +67,7 @@ const templateSidePanel: ViewTemplate<App> = html`
     <div id="sidepanel">
         <fluent-card id="bookmark-list-panel" style="display: ${() => S.SettingPanelBookmarks ? 'block' : 'none'}">
             <fluent-bookmark-list id="bookmark-list"
-                @bookmarkClicked=${(model, ctx) => model.selectedTitle = (ctx.event as CustomEvent<IMediaContainer>).detail}></fluent-bookmark-list>
+                @bookmarkClicked=${(model, ctx) => model.selectedTitle = (ctx.event as CustomEvent<MediaContainer<MediaChild>>).detail}></fluent-bookmark-list>
         </fluent-card>
         <fluent-card id="download-manager-panel" style="display: ${() => S.SettingPanelDownloads ? 'block' : 'none'}">
             <fluent-download-manager id="download-manager"></fluent-download-manager>
@@ -81,17 +81,17 @@ const templateWidgets: ViewTemplate<App> = html`
         <div id="mainpanel">
             <fluent-card>
                 <fluent-website-select id="website-select" :entries=${() => HakuNeko.PluginController.WebsitePlugins} :selected=${model => model.selectedWebsite}
-                    @selectedChanged=${(model, ctx) => model.SelectedWebsiteChanged(ctx.event as CustomEvent<IMediaContainer>)}>
+                    @selectedChanged=${(model, ctx) => model.SelectedWebsiteChanged(ctx.event as CustomEvent<MediaContainer<MediaChild>>)}>
                 </fluent-website-select>
             </fluent-card>
             <fluent-card>
                 <fluent-media-title-select id="media-title-select" :container=${model => model.selectedWebsite} :selected=${model => model.selectedTitle}
-                    @selectedChanged=${(model, ctx) => model.SelectedMediaTitleChanged(ctx.event as CustomEvent<IMediaContainer>)}>
+                    @selectedChanged=${(model, ctx) => model.SelectedMediaTitleChanged(ctx.event as CustomEvent<MediaContainer<MediaChild>>)}>
                 </fluent-media-title-select>
             </fluent-card>
             <fluent-card>
                 <fluent-media-item-list id="media-item-list" :container=${model => model.selectedTitle}
-                    @previewClicked=${(model, ctx) => model.previewEntry = (ctx.event as CustomEvent<IMediaContainer>).detail}></fluent-media-item-list>
+                    @previewClicked=${(model, ctx) => model.previewEntry = (ctx.event as CustomEvent<MediaContainer<MediaChild>>).detail}></fluent-media-item-list>
             </fluent-card>
         </div>
     </div>
@@ -99,7 +99,7 @@ const templateWidgets: ViewTemplate<App> = html`
 
 const templatePreview: ViewTemplate<App> = html`
     <fluent-media-item-preview id="preview" :entry=${model => model.previewEntry}
-        @entryChanged=${(model, ctx) => model.previewEntry = (ctx.event as CustomEvent<IMediaContainer>).detail}></fluent-media-item-preview>
+        @entryChanged=${(model, ctx) => model.previewEntry = (ctx.event as CustomEvent<MediaContainer<MediaChild>>).detail}></fluent-media-item-preview>
 `;
 
 const template: ViewTemplate<App> = html`
@@ -112,18 +112,18 @@ const template: ViewTemplate<App> = html`
 @customElement({ name: 'fluent-app', template, styles })
 export default class App extends FASTElement {
 
-    @observable selectedWebsite: IMediaContainer;
-    @observable selectedTitle: IMediaContainer;
-    @observable previewEntry: IMediaContainer;
+    @observable selectedWebsite: MediaContainer<MediaChild>;
+    @observable selectedTitle: MediaContainer<MediaChild>;
+    @observable previewEntry: MediaContainer<MediaChild>;
 
-    public SelectedWebsiteChanged(event: CustomEvent<IMediaContainer>) {
+    public SelectedWebsiteChanged(event: CustomEvent<MediaContainer<MediaChild>>) {
         this.selectedWebsite = event.detail;
         if(!this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
             this.selectedTitle = undefined;
         }
     }
 
-    public SelectedMediaTitleChanged(event: CustomEvent<IMediaContainer>) {
+    public SelectedMediaTitleChanged(event: CustomEvent<MediaContainer<MediaChild>>) {
         this.selectedTitle = event.detail;
         if(this.selectedTitle && (this.selectedWebsite || this.selectedTitle?.Parent) && !this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
             this.selectedWebsite = this.selectedTitle?.Parent;
