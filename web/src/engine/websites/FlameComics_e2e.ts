@@ -2,16 +2,17 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'flamescans-org',
-        title: 'Flame Scans'
+        id: 'flamecomics',
+        title: 'Flame Comics',
+        timeout: 30000
     },
     container: {
-        url: 'https://flamescans.org/series/1695463322-solo-necromancy/',
-        id: '/series/1695463322-solo-necromancy/',
+        url: 'https://flamecomics.com/series/solo-necromancy/',
+        id: '/series/solo-necromancy/',
         title: 'Solo Necromancy'
     },
     child: {
-        id: '/1695463262-solo-necromancy-chapter-1/',
+        id: '/solo-necromancy-chapter-1/',
         title: 'Chapter 1'
     },
     entry: {

@@ -134,7 +134,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
 
 export class Manga extends MediaContainer<Chapter> {
 
-    constructor(private readonly scraper: MangaScraper, parent: MediaContainer<Manga>, identifier: string, title: string) {
+    constructor(private readonly scraper: MangaScraper, parent: MangaPlugin, identifier: string, title: string) {
         super(identifier, title, parent);
     }
 
@@ -154,7 +154,7 @@ export class Manga extends MediaContainer<Chapter> {
 
 export class Chapter extends StoreableMediaContainer<Page> {
 
-    constructor(private readonly scraper: MangaScraper, parent: MediaContainer<Chapter>, identifier: string, title: string) {
+    constructor(private readonly scraper: MangaScraper, parent: Manga, identifier: string, title: string) {
         super(identifier, title, parent);
     }
 
@@ -220,7 +220,7 @@ export class Page extends MediaItem {
 
     public constructor(
         private readonly scraper: MangaScraper,
-        parent: MediaContainer<Page>,
+        parent: Chapter,
         public readonly Link: URL,
         public readonly Parameters?: Parameters) {
         super(parent);
