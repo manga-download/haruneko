@@ -6,7 +6,7 @@ const config: Config = {
         title: 'KomikCast'
     },
     container: {
-        url: 'https://komikcast.vip/komik/swordmasters-youngest-son/',
+        url: 'https://komikcast.ch/komik/swordmasters-youngest-son/',
         id: '/komik/swordmasters-youngest-son/',
         title: 'Swordmaster’s Youngest Son'
     },
