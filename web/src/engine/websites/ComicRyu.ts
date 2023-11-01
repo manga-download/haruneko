@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicRyu.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchRequest } from '../../FetchProvider';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 const pageScript =`
     new Promise(resolve => {
