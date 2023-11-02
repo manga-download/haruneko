@@ -1,4 +1,4 @@
-import type { IMediaContainer, StoreableMediaContainer, IMediaItem } from './providers/MediaPlugin';
+import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
 import { Event } from './Event';
 import { Priority } from './taskpool/DeferredTask';
 import type { StorageController } from './StorageController';
@@ -12,25 +12,27 @@ export const enum Status {
     Failed = 'failed',
 }
 
+/*
 export interface IDownloadTask {
     readonly ID: symbol;
     readonly Created: Date;
-    readonly Media: IMediaContainer;
+    readonly Media: MediaContainer<MediaItem>;
     readonly Errors: Error[];
     readonly Status: Status;
     readonly StatusChanged: Event<typeof this, Status>;
     readonly Progress: number;
     readonly ProgressChanged: Event<typeof this, number>;
 }
+*/
 
-export class DownloadTask implements IDownloadTask {
+export class DownloadTask {
 
     public readonly ID = Symbol();
     public readonly Created = new Date();
-    public readonly StatusChanged: Event<IDownloadTask, Status> = new Event<IDownloadTask, Status>();
-    public readonly ProgressChanged: Event<IDownloadTask, number> = new Event<IDownloadTask, number>();
+    public readonly StatusChanged: Event<DownloadTask, Status> = new Event<DownloadTask, Status>();
+    public readonly ProgressChanged: Event<DownloadTask, number> = new Event<DownloadTask, number>();
 
-    constructor(public readonly Media: StoreableMediaContainer<IMediaItem>, private readonly storageController: StorageController) {
+    constructor(public readonly Media: StoreableMediaContainer<MediaItem>, private readonly storageController: StorageController) {
     }
 
     private errors: Error[] = [];
@@ -80,7 +82,7 @@ export class DownloadTask implements IDownloadTask {
             this.Abort = cancellator.abort.bind(cancellator);
             await this.Media.Update();
             // TODO: What if no entries?
-            const promises = this.Media.Entries.map(async (item: IMediaItem, index: number) => {
+            const promises = this.Media.Entries.map(async (item, index: number) => {
                 try {
                     const data = await item.Fetch(Priority.Low, cancellator.signal);
                     const resource = await this.storageController.SaveTemporary(data);

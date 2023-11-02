@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
-import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+import type { MediaContainer } from '../../../engine/providers/MediaPlugin';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
 import S from '../services/StateService';
 
@@ -79,8 +79,8 @@ const styles: ElementStyles = css`
     }
 `;
 
-const listitem: ViewTemplate<IMediaContainer> = html`
-    <li class=${model => (model as Bookmark)?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
+const listitem: ViewTemplate<Bookmark> = html`
+    <li class=${model => model?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
         <img class="icon" src="${model => model.Parent.Icon}"></img>
         <!--
         <img class="icon" src="${model => model.Icon}"></img>
@@ -116,7 +116,7 @@ export class BookmarkList extends FASTElement {
         HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
     }
 
-    @observable entries: IMediaContainer[] = [];
+    @observable entries: MediaContainer<Bookmark>[] = [];
     entriesChanged() {
         this.FilterEntries();
     }
@@ -124,10 +124,10 @@ export class BookmarkList extends FASTElement {
     matchChanged() {
         this.FilterEntries();
     }
-    @observable filtered: IMediaContainer[] = [];
+    @observable filtered: MediaContainer<Bookmark>[] = [];
     @observable updating = false;
 
-    public SelectEntry(entry: IMediaContainer) {
+    public SelectEntry(entry: Bookmark) {
         this.$emit('bookmarkClicked', entry);
     }
 
