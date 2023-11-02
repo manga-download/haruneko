@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
-import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+import type { StoreableMediaContainer, MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
 import S from '../services/StateService';
 
 //import IconSortNone from '@fluentui/svg-icons/icons/arrow_sort_20_regular.svg?raw';
@@ -129,7 +129,7 @@ const styles: ElementStyles = css`
     */
 `;
 
-const listitem: ViewTemplate<IMediaContainer> = html`
+const listitem: ViewTemplate<StoreableMediaContainer<MediaItem>> = html`
     <div class="entry" style="${styleEntry}" onmouseover="this.querySelector('div.controls').style.visibility = 'visible'" onmouseout="this.querySelector('div.controls').style.visibility = 'hidden'">
         <div style="${styleTrim}"><!-- <fluent-checkbox></fluent-checkbox> --></div>
         <div style="${styleTrim}">${model => model.Title}</div>
@@ -175,12 +175,12 @@ const template: ViewTemplate<MediaItemList> = html`
 @customElement({ name: 'fluent-media-item-list', template, styles })
 export class MediaItemList extends FASTElement {
 
-    @observable container?: IMediaContainer;
+    @observable container?: MediaContainer<StoreableMediaContainer<MediaItem>>;
     containerChanged() {
-        this.entries = (this.container?.Entries ?? []) as IMediaContainer[];
+        this.entries = this.container?.Entries ?? [];
     }
 
-    @observable entries: IMediaContainer[] = [];
+    @observable entries: StoreableMediaContainer<MediaItem>[] = [];
     entriesChanged() {
         this.FilterEntries();
     }
@@ -188,7 +188,7 @@ export class MediaItemList extends FASTElement {
     matchChanged() {
         this.FilterEntries();
     }
-    @observable filtered: IMediaContainer[] = [];
+    @observable filtered: StoreableMediaContainer<MediaItem>[] = [];
     @observable updating: Array<string> = [];
 
     public async FilterEntries() {
@@ -211,11 +211,11 @@ export class MediaItemList extends FASTElement {
         }
     }
 
-    public async ShowPreview(entry: IMediaContainer) {
+    public async ShowPreview(entry: StoreableMediaContainer<MediaItem>) {
         this.$emit('previewClicked', entry);
     }
 
-    public async Download(entry: IMediaContainer) {
+    public async Download(entry: StoreableMediaContainer<MediaItem>) {
         HakuNeko.DownloadManager.Enqueue(entry);
     }
 }

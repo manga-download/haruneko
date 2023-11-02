@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Loading } from 'carbon-components-svelte';
-    import type { IMediaContainer } from '../../../../engine/providers/MediaPlugin';
+    import type { MediaContainer, MediaItem } from '../../../../engine/providers/MediaPlugin';
     import ImageViewer from './ImageViewer.svelte';
     import VideoViewer from './VideoViewer.svelte';
     import {
@@ -11,13 +11,13 @@
     import { FlagType } from '../../../../engine/ItemflagManager';
 
     export let mode: 'Image' | 'Video' = 'Image';
-    export let item: IMediaContainer;
-    let displayedItem: IMediaContainer;
+    export let item: MediaContainer<MediaItem>;
+    let displayedItem: MediaContainer<MediaItem>;;
     let currentImageIndex: number = -1;
 
     let updating: Promise<void> | undefined;
     $: refresh(item);
-    async function refresh(item: IMediaContainer) {
+    async function refresh(item: MediaContainer<MediaItem>) {
         updating = item.Update();
         await updating;
         displayedItem = item;
@@ -36,7 +36,7 @@
         markAsCurrent(item);
     }
 
-    async function markAsCurrent(itemtoflag: IMediaContainer) {
+    async function markAsCurrent(itemtoflag: MediaContainer<MediaItem>) {
         let currentIndex = -1;
         let itemtoflagIndex = -1;
         const flags = await HakuNeko.ItemflagManager.GetContainerItemsFlags(
@@ -44,8 +44,8 @@
         );
 
         await Promise.all(
-            item.Parent.Entries.map(async (entry: IMediaContainer, index) => {
-                if ((entry as IMediaContainer).IsSameAs(itemtoflag))
+            item.Parent.Entries.map(async (entry, index) => {
+                if (entry.IsSameAs(itemtoflag))
                     itemtoflagIndex = index;
                 const flag = await HakuNeko.ItemflagManager.GetItemFlagType(
                     entry

@@ -16,10 +16,10 @@
     import { selectedMedia } from '../stores/Stores';
     import { coinflip } from '../lib/transitions';
 
-    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
     import { Bookmark } from '../../../engine/providers/Bookmark';
 
-    export let media: IMediaContainer;
+    export let media: MediaContainer<MediaContainer<MediaChild>>;
     let selected: boolean = false;
     $: selected = $selectedMedia?.IsSameAs(media);
 
@@ -35,7 +35,7 @@
     let mediadiv: HTMLElement;
 
     //Unviewed content
-    let unFlaggedItems: IMediaContainer[] = [];
+    let unFlaggedItems: MediaContainer<MediaChild>[] = [];
     findMediaUnFlaggedContent(media);
 
     import { EventWatcher } from '../stores/Events';
@@ -46,7 +46,7 @@
     );
     $: if ($mediaFlagsChanged) findMediaUnFlaggedContent(media);
 
-    async function findMediaUnFlaggedContent(media: IMediaContainer) {
+    async function findMediaUnFlaggedContent(media: MediaContainer<MediaContainer<MediaChild>>) {
         unFlaggedItems = await HakuNeko.ItemflagManager.GetUnFlaggedItems(
             media
         );

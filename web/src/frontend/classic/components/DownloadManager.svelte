@@ -3,10 +3,10 @@
     import { ExpandableTile } from 'carbon-components-svelte';
     import DocumentDownload from 'carbon-icons-svelte/lib/DocumentDownload.svelte';
 
-    import type { IDownloadTask } from '../../../engine/DownloadTask';
+    import type { DownloadTask } from '../../../engine/DownloadTask';
     import DownloadManagerTask from './DownloadManagerTask.svelte';
 
-    let jobs: IDownloadTask[] = [];
+    let jobs: DownloadTask[] = [];
     $: groupedJobs = groupBy(jobs, (elt) => elt.Media.Parent.Identifier);
     HakuNeko.DownloadManager.GetTasks().then((data) => (jobs = data));
 
