@@ -5,6 +5,7 @@ const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
     'bananascan': 'harmonyscan',
     'crazyscans': 'mangacultivator',
+    'flamescans-org': 'flamecomics',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'lovehug': 'welovemanga',

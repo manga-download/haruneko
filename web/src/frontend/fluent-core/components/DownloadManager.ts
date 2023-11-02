@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
-import type { IDownloadTask } from '../../../engine/DownloadTask';
+import type { DownloadTask } from '../../../engine/DownloadTask';
 import S from '../services/StateService';
 
 const styles: ElementStyles = css`
@@ -44,7 +44,7 @@ const styles: ElementStyles = css`
     }
 `;
 
-const listitem: ViewTemplate<IDownloadTask> = html`
+const listitem: ViewTemplate<DownloadTask> = html`
     <fluent-download-manager-task :entry=${model => model}></fluent-download-manager-task>
 `;
 
@@ -77,7 +77,7 @@ export class DownloadManager extends FASTElement {
         HakuNeko.DownloadManager.TasksRemoved.Unsubscribe(this.DownloadsChanged);
     }
 
-    @observable entries: IDownloadTask[] = [];
+    @observable entries: DownloadTask[] = [];
     entriesChanged() {
         this.FilterEntries();
     }
@@ -85,7 +85,7 @@ export class DownloadManager extends FASTElement {
     matchChanged() {
         this.FilterEntries();
     }
-    @observable filtered: IDownloadTask[] = [];
+    @observable filtered: DownloadTask[] = [];
 
     public FilterEntries() {
         this.filtered = this.entries.filter(task => this.match(task.Media.Title)).slice(0, 250); /* TODO: virtual scrolling */

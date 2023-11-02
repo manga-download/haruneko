@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onDestroy } from 'svelte';
-    import type { IMediaItem } from '../../../../engine/providers/MediaPlugin';
+    import type { MediaItem } from '../../../../engine/providers/MediaPlugin';
     import { Priority } from '../../../../engine/taskpool/DeferredTask';
     import { InlineLoading } from 'carbon-components-svelte';
-    export let page: IMediaItem;
+    export let page: MediaItem;
     export let alt: string;
     let loaded = false;
     let dataload: Promise<Blob>;
