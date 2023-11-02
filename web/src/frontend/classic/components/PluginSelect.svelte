@@ -22,7 +22,7 @@
     // UI: Components
     import Chip from '../lib/Tag.svelte';
     import { type Tag, Tags } from '../../../engine/Tags';
-    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
     import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
     import { Locale } from '../stores/Settings';
@@ -30,7 +30,7 @@
     // Hakuneko Engine
     import { TagCategoryResourceKey as R } from '../../../i18n/ILocale';
 
-    function createDataRow(item: IMediaContainer) {
+    function createDataRow(item: MediaContainer<MediaChild>) {
         return {
             id: item.Identifier,
             name: item.Title,
@@ -50,7 +50,7 @@
     };
 
     let isSettingOpen = false;
-    let pluginToConfigure: IMediaContainer;
+    let pluginToConfigure: MediaContainer<MediaChild>;
 
     const langTags = Tags.Language.toArray();
     const typeTags = Tags.Media.toArray();

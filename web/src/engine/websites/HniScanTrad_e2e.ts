@@ -1,6 +1,6 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const config: Config = {
     plugin: {
         id: 'hniscantrad',
         title: 'HNI-Scantrad'
@@ -11,12 +11,12 @@ const config = {
         title: 'A Trail of Blood'
     },
     child: {
-        id: '/lel/read/a-trail-of-blood/fr/0/96/',
-        title: 'Chapter 96: Confirmation'
+        id: '/lel/read/a-trail-of-blood/en-us/0/99/',
+        title: 'Chapter 99: Visitors'
     },
     entry: {
         index: 0,
-        size: 417_539,
+        size: 281_073,
         type: 'image/png'
     }
 };

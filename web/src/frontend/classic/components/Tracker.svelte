@@ -9,15 +9,15 @@
     import { CheckmarkOutline } from 'carbon-icons-svelte';
     import { fade } from 'svelte/transition';
 
-    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
     import type {
-        IMediaInfoTracker,
+        MediaInfoTracker,
         Suggestion,
         Info,
     } from '../../../engine/trackers/IMediaInfoTracker';
 
-    export let media: IMediaContainer;
-    export let tracker: IMediaInfoTracker;
+    export let media: MediaContainer<MediaChild>;
+    export let tracker: MediaInfoTracker;
     export let isTrackerModalOpen = false;
 
     let mediaSuggestions: Promise<Suggestion[]>;
