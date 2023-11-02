@@ -559,7 +559,6 @@ export { default as LxHentai } from './legacy/LxHentai';
 export { default as MagaParkPublisher } from './legacy/MagaParkPublisher';
 export { default as MagKan } from './legacy/MagKan';
 export { default as Manatoki } from './legacy/Manatoki';
-export { default as Manga3x } from './legacy/Manga3x';
 export { default as Manga33 } from './legacy/Manga33';
 export { default as Manga1001 } from './legacy/Manga1001';
 export { default as MangaArab } from './legacy/MangaArab';
