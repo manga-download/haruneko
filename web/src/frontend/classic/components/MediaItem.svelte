@@ -19,12 +19,12 @@
 
     import { filterByCategory, Tags } from '../../../engine/Tags';
 
-    import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+    import type { StoreableMediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
     import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
 
-    export let item: IMediaContainer;
+    export let item: StoreableMediaContainer<MediaItem>;
     export let selected: boolean;
     export let multilang = false;
     let flag: FlagType;
@@ -35,7 +35,7 @@
     $: flagicon = flagiconmap.get(flag) || View;
 
     async function OnFlagChangedCallback(
-        changedItem: IMediaContainer,
+        changedItem: StoreableMediaContainer<MediaItem>,
         changedFlag: FlagType
     ) {
         if (changedItem === item) flag = changedFlag;

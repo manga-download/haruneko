@@ -34,7 +34,7 @@ export type Info = Suggestion & {
     Description: string;
 }
 
-export interface IMediaInfoTracker {
+export interface MediaInfoTracker {
     readonly Identifier: string;
     readonly Title: string;
     readonly Icon: string;
@@ -46,7 +46,7 @@ export interface IMediaInfoTracker {
     SetStatus(identifier: string, status: TrackingStatus): Promise<void>;
 }
 
-export class MissingInfoTracker implements IMediaInfoTracker {
+export class MissingInfoTracker implements MediaInfoTracker {
     public readonly Title: string;
     public readonly Icon: string = null;
     public readonly Settings: ISettings = null;

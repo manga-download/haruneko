@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
-import type { IMediaContainer } from '../../../engine/providers/MediaPlugin';
+import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
 import type { SearchBox } from './SearchBox';
 import S from '../services/StateService';
 
@@ -164,7 +164,7 @@ const starred: ViewTemplate<WebsiteSelect> = html`
 // HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
 //       => classes are not working, apply inline styles
 //       => manually query correct host and provide callback function
-const listitem: ViewTemplate<IMediaContainer> = html`
+const listitem: ViewTemplate<MediaContainer<MediaChild>> = html`
     <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--neutral-fill-hover')" onmouseout="this.style.backgroundColor = ''" @click=${(model, ctx) => ctx.parent.parentNode.parentNode.host.SelectEntry(model) }>
         <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
         <div class="title" style="${styleTitle}">${model => model.Title}</div>
@@ -197,7 +197,7 @@ export class WebsiteSelect extends FASTElement {
     readonly dropdown: HTMLDivElement;
     readonly searchbox: SearchBox;
 
-    @observable entries: IMediaContainer[] = [];
+    @observable entries: MediaContainer<MediaChild>[] = [];
     entriesChanged() {
         this.FilterEntries();
     }
@@ -205,9 +205,9 @@ export class WebsiteSelect extends FASTElement {
     matchChanged() {
         this.FilterEntries();
     }
-    @observable filtered: IMediaContainer[] = [];
-    @observable selected: IMediaContainer;
-    selectedChanged(previous: IMediaContainer, current: IMediaContainer) {
+    @observable filtered: MediaContainer<MediaChild>[] = [];
+    @observable selected: MediaContainer<MediaChild>;
+    selectedChanged(previous: MediaContainer<MediaChild>, current: MediaContainer<MediaChild>) {
         if((current || previous) && !current?.IsSameAs(previous)) {
             this.$emit('selectedChanged', this.selected);
         }
@@ -227,7 +227,7 @@ export class WebsiteSelect extends FASTElement {
         this.filtered = this.entries.filter(entry => this.match(entry.Title));
     }
 
-    public SelectEntry(entry: IMediaContainer) {
+    public SelectEntry(entry: MediaContainer<MediaChild>) {
         this.selected = entry;
         this.expanded = false;
         Observable.notify(this, 'expanded'); // force update of UI even when property not changed
