@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
-import type { IMediaItem } from '../../../engine/providers/MediaPlugin';
+import type { MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Priority } from '../../../engine/taskpool/DeferredTask';
 
 function noop() {/* ... */}
@@ -59,7 +59,7 @@ export class MediaItemPage extends FASTElement {
 
     private abort = noop;
     private timerLoadPage: number;
-    @observable item: IMediaItem;
+    @observable item: MediaItem;
     itemChanged() {
         this.abort();
         this.img = undefined;

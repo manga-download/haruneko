@@ -1,14 +1,14 @@
 // Auto-Generated export from HakuNeko Legacy
 // See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
 
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './AnimaRegia.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('animaregia', `Anima Regia`, 'https://animaregia.net' /*, Tags.Language.English, Tags ... */);
+        super('animaregia', `Anima Regia`, 'https://animaregia.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
