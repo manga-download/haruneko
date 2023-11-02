@@ -1,6 +1,6 @@
 import { mock } from 'jest-mock-extended';
-import type { IMediaChild, IMediaContainer } from './MediaPlugin';
-import type { IMediaInfoTracker } from '../trackers/IMediaInfoTracker';
+import type { MediaContainer, MediaChild } from './MediaPlugin';
+import type { MediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import { Bookmark } from './Bookmark';
 
 class TestFixture {
@@ -9,9 +9,9 @@ class TestFixture {
     public readonly ModificationTime = 654321;
     public readonly OriginIdentifier = 'sheepyneko';
     public readonly OriginTitle = 'Sheepy Neko';
-    public readonly MockParent = mock<IMediaContainer>();
-    public readonly MockOrigin: IMediaChild;
-    public readonly MockInfoTracker = mock<IMediaInfoTracker>();
+    public readonly MockParent = mock<MediaContainer<MediaContainer<MediaChild>>>();
+    public readonly MockOrigin: MediaContainer<MediaChild>;
+    public readonly MockInfoTracker = mock<MediaInfoTracker>();
     public readonly InfoIdentifier = 'sheepyneko@info-tracker';
 
     public CreateSparseTestee() {
@@ -60,8 +60,8 @@ describe('Bookmark', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateSparseTestee();
 
-            const entries = mock<IMediaContainer[]>();
-            const origin = mock<IMediaContainer>();
+            const entries = mock<MediaContainer<MediaChild>[]>();
+            const origin = mock<MediaContainer<MediaChild>>();
             Object.defineProperty(origin, 'Identifier', { get: () => testee.Identifier });
             Object.defineProperty(origin, 'Entries', { get: () => entries });
 
@@ -80,8 +80,8 @@ describe('Bookmark', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateSparseTestee();
 
-            const entries = mock<IMediaContainer[]>();
-            const origin = mock<IMediaContainer>();
+            const entries = mock<MediaContainer<MediaChild>[]>();
+            const origin = mock<MediaContainer<MediaChild>>();
             Object.defineProperty(origin, 'Identifier', { get: () => testee.Identifier });
             Object.defineProperty(origin, 'Entries', { get: () => entries });
 

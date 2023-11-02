@@ -1,6 +1,6 @@
 import type { JSHandle, Page } from 'puppeteer-core';
 import type { PluginController } from './PluginController';
-import type { IMediaContainer } from './providers/MediaPlugin';
+import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
 
 export class TestFixture {
 
@@ -16,7 +16,7 @@ export class TestFixture {
         });
     }
 
-    public async GetRemoteWebsitePlugins(): Promise<JSHandle<IMediaContainer[]>> {
+    public async GetRemoteWebsitePlugins(): Promise<JSHandle<MediaContainer<MediaChild>[]>> {
         return this.page.evaluateHandle(async () => {
             return window.HakuNeko.PluginController.WebsitePlugins;
         });

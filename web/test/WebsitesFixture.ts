@@ -1,5 +1,5 @@
 import type { JSHandle, Page } from 'puppeteer-core';
-import type { IMediaContainer, IMediaItem } from '../src/engine/providers/MediaPlugin';
+import type { MediaContainer, MediaChild, MediaItem } from '../src/engine/providers/MediaPlugin';
 
 export type Config = {
     plugin: {
@@ -26,9 +26,9 @@ export type Config = {
     };
 }
 
-type MediaPuginInstance = IMediaContainer & { Initialize(): Promise<void> };
+type MediaPuginInstance = MediaContainer<MediaChild> & { Initialize(): Promise<void> };
 
-export class TestFixture<TWebsitePlugin extends IMediaContainer, TContainer extends IMediaContainer, TChild extends IMediaContainer, TEntry extends IMediaItem> {
+export class TestFixture<TWebsitePlugin extends MediaContainer<MediaChild>, TContainer extends MediaContainer<MediaChild>, TChild extends MediaContainer<MediaItem>, TEntry extends MediaItem> {
 
     private readonly page: Page;
     private readonly config: Config;

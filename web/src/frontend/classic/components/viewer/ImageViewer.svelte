@@ -7,8 +7,8 @@
     import { InlineNotification } from 'carbon-components-svelte';
     // engine
     import type {
-        IMediaContainer,
-        IMediaItem,
+        MediaContainer,
+        MediaItem,
     } from '../../../../engine/providers/MediaPlugin';
     // svelte component
     import ImageViewerWideSettings from './ImageViewerWideSettings.svelte';
@@ -25,7 +25,7 @@
     // others
     import { scrollSmoothly, scrollMagic, toggleFullScreen } from './utilities';
 
-    export let item: IMediaContainer;
+    export let item: MediaContainer<MediaItem>;
     export let currentImageIndex: number = -1;
     export let wide: Boolean;
 
@@ -34,7 +34,7 @@
         viewer?.removeEventListener('mousedown', onMouseDown);
     });
 
-    $: entries = item.Entries as IMediaItem[];
+    $: entries = item.Entries;
 
     const title = item?.Title ?? 'unkown';
     let viewer: HTMLElement;
