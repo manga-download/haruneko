@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Gntai.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchRegex, FetchRequest } from '../../FetchProvider';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchRegex, FetchRequest } from '../FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/www\.gntai\.net\/mangas-hentai\/[^/]+\/$/, 'main header.entry-header h1')
 @Common.MangasMultiPageCSS('/page/{page}/', 'main article div.chapter-thumb > a', 1, 1, 0, Common.AnchorInfoExtractor(true))
