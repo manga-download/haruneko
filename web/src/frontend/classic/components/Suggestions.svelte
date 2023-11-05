@@ -18,7 +18,10 @@
     import type { Check } from '../../../engine/SettingsManager';
 
     import { useNavigate } from 'svelte-navigator';
-    import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
+    import type {
+        MediaContainer,
+        MediaItem,
+    } from '../../../engine/providers/MediaPlugin';
     const navigate = useNavigate();
 
     const settings = HakuNeko.SettingsManager.OpenScope();
@@ -54,7 +57,9 @@
         let unFlaggedContent = await bookmark.getUnflaggedContent();
         $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
-        $selectedItem = unFlaggedContent[unFlaggedContent.length - 1] as MediaContainer<MediaItem>;
+        $selectedItem = unFlaggedContent[
+            unFlaggedContent.length - 1
+        ] as MediaContainer<MediaItem>;
     }
 </script>
 
@@ -100,11 +105,9 @@
     :global(#Suggestions) {
         display: grid;
         grid-template-columns: repeat(auto-fit, 10em);
-        grid-template-rows: auto auto auto; /* 2 rows */
-        grid-auto-rows: 0; /* next rows equal to 0 */
         grid-gap: 0.5em;
         overflow-y: hidden;
-        max-height: 20em;
+        max-height: 18em;
     }
 
     :global(#Suggestions .suggesttile) {
