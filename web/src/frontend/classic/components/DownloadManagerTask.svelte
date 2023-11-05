@@ -1,9 +1,10 @@
 <script lang="ts">
     //TODO: text-overflow not working
-    import { ProgressBar } from 'carbon-components-svelte';
-    import { TrashCan } from 'carbon-icons-svelte';
+    import { Button, ProgressBar, TooltipIcon } from 'carbon-components-svelte';
+    import { TrashCan, WarningHexFilled } from 'carbon-icons-svelte';
 
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
 
     import type { DownloadTask } from '../../../engine/DownloadTask';
     import { Status } from '../../../engine/DownloadTask';
@@ -14,12 +15,17 @@
         job = changedJob;
     }
 
+    async function OnJobStatusChangedCallback(changedJob: DownloadTask) {
+        OnJobChangedCallback(changedJob);
+        dispatch('update');
+    }
+
     onMount(() => {
-        job.StatusChanged.Subscribe(OnJobChangedCallback);
+        job.StatusChanged.Subscribe(OnJobStatusChangedCallback);
         job.ProgressChanged.Subscribe(OnJobChangedCallback);
     });
     onDestroy(() => {
-        job.StatusChanged.Unsubscribe(OnJobChangedCallback);
+        job.StatusChanged.Unsubscribe(OnJobStatusChangedCallback);
         job.ProgressChanged.Unsubscribe(OnJobChangedCallback);
     });
 
@@ -31,48 +37,72 @@
         [Status.Failed]: 'error',
         [Status.Completed]: 'finished',
     };
-    let value: number = undefined;
-    $: value = job.Status === Status.Processing ? 100 : job.Progress * 100;
+
+    function copyErrorToClipBoard(task: DownloadTask) {
+        const message = task.Errors.map((error) => {
+            return `${error.message}\r\n > ${error.stack}`;
+        }).join('-------------------');
+        // TODO: Remove depenencies to nwjs with an abstraction
+        const clipboard = nw.Clipboard.get();
+        clipboard.set(message, 'text');
+        //navigator.clipboard.writeText(message);
+    }
 </script>
 
 <div class="task">
     <div class="progress">
         <ProgressBar
-            labelText={job.Media.Title}
             status={StatusIcons[job.Status]}
             size="sm"
-            {value}
-        />
+            value={job.Status === Status.Processing ? 100 : job.Progress * 100}
+        >
+            <div slot="labelText" class="label">
+                {job.Media.Title}
+                {#if job.Errors.length > 0}
+                    <TooltipIcon
+                        icon={WarningHexFilled}
+                        direction="right"
+                        tooltipText="test"
+                        on:click={(e) => {
+                            e.stopPropagation();
+                            copyErrorToClipBoard(job);
+                        }}
+                    >
+                        <div slot="tooltipText" class="tooltipText">
+                            {#each job.Errors as error}
+                                <div>${error.message}</div>
+                                <pre>${error.stack}</pre>
+                                <hr />
+                            {/each}
+                        </div>
+                    </TooltipIcon>
+                {/if}
+            </div>
+        </ProgressBar>
     </div>
     <div class="action">
-        <button
-            on:click|preventDefault|stopPropagation={() =>
-                window.HakuNeko.DownloadManager.Dequeue(job)}
-            on:keypress
-        >
-            <TrashCan size={20} />
-        </button>
+        <Button
+            kind="ghost"
+            size="small"
+            icon={TrashCan}
+            iconDescription="Delete"
+            on:click={() => window.HakuNeko.DownloadManager.Dequeue(job)}
+        />
     </div>
 </div>
 
 <style>
     .task {
         display: grid;
-        grid-template-columns: 1fr 2em;
+        grid-template-columns: 1fr 3em;
+        gap: 1em;
         width: 100%;
     }
-    .task .progress :global(.bx--progress-bar) {
-        width: 100%;
-        max-width: 30em;
+    .progress .label :global(.bx--tooltip__trigger svg) {
+        fill: var(--cds-support-error);
     }
-    .task .progress :global(.bx--progress-bar__label) {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding-left: 2em;
-    }
-    .task .progress :global(.bx--progress-bar__label svg) {
-        left: 0;
-        position: absolute;
+    .progress .label :global(.bx--assistive-text) {
+        width: fit-content;
+        max-width: unset;
     }
 </style>

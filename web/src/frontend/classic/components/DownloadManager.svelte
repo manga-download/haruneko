@@ -3,29 +3,17 @@
     import { ExpandableTile } from 'carbon-components-svelte';
     import DocumentDownload from 'carbon-icons-svelte/lib/DocumentDownload.svelte';
 
-    import type { DownloadTask } from '../../../engine/DownloadTask';
+    import { Status } from '../../../engine/DownloadTask';
+    import { DownloadTasks } from '../stores/Stores';
     import DownloadManagerTask from './DownloadManagerTask.svelte';
 
-    let jobs: DownloadTask[] = [];
-    $: groupedJobs = groupBy(jobs, (elt) => elt.Media.Parent.Identifier);
-    HakuNeko.DownloadManager.GetTasks().then((data) => (jobs = data));
-
-    async function OnTasksChangedCallback() {
-        jobs = await HakuNeko.DownloadManager.GetTasks();
+    $: groupedJobs = groupBy(
+        $DownloadTasks,
+        (elt) => elt.Media.Parent.Identifier
+    );
+    function update() {
+        groupedJobs = groupedJobs;
     }
-
-    onMount(async () => {
-        OnTasksChangedCallback();
-        HakuNeko.DownloadManager.TasksAdded.Subscribe(OnTasksChangedCallback);
-        HakuNeko.DownloadManager.TasksRemoved.Subscribe(OnTasksChangedCallback);
-    });
-    onDestroy(() => {
-        HakuNeko.DownloadManager.TasksAdded.Unsubscribe(OnTasksChangedCallback);
-        HakuNeko.DownloadManager.TasksRemoved.Unsubscribe(
-            OnTasksChangedCallback
-        );
-    });
-
     function groupBy<T>(
         arr: T[],
         keysSupplier: (item: T) => any
@@ -40,18 +28,53 @@
 </script>
 
 <div id="jobs">
-    {#if jobs.length > 0}
+    {#if $DownloadTasks.length > 0}
         {#each Object.entries(groupedJobs) as [media, mediajobs] (media)}
-            <ExpandableTile>
+            {@const completed = mediajobs.filter(
+                (job) => job.Status === Status.Completed
+            ).length}
+            {@const failed = mediajobs.filter(
+                (job) => job.Status === Status.Failed
+            ).length}
+            {@const processing = mediajobs.filter((job) =>
+                [Status.Downloading, Status.Processing].includes(job.Status)
+            ).length}
+            <ExpandableTile tileCollapsedLabel="Details">
                 <div slot="above">
                     <h6>
                         {mediajobs[0].Media.Parent.Title} [{mediajobs[0].Media
                             .Parent.Parent.Title}]
                     </h6>
+                    <div class="total">
+                        <div
+                            class="bar val-processing"
+                            style:flex-basis="{(processing / mediajobs.length) *
+                                100}%"
+                        />
+                        <div
+                            class="bar val-completed"
+                            style:flex-basis="{(completed / mediajobs.length) *
+                                100}%"
+                        />
+                        <div
+                            class="bar val-failed"
+                            style:flex-basis="{(failed / mediajobs.length) *
+                                100}%"
+                        />
+                        <div
+                            class="bar val-pending"
+                            style:flex-basis="{((mediajobs.length -
+                                completed -
+                                failed -
+                                processing) /
+                                mediajobs.length) *
+                                100}%"
+                        />
+                    </div>
                 </div>
-                <div slot="below">
+                <div slot="below" class="below">
                     {#each mediajobs as job (job)}
-                        <DownloadManagerTask {job} />
+                        <DownloadManagerTask {job} on:update={update} />
                     {/each}
                 </div>
             </ExpandableTile>
@@ -66,5 +89,39 @@
         height: 100%;
         width: 100%;
         overflow-y: scroll;
+    }
+
+    .below {
+        margin-bottom: 1em;
+    }
+
+    .total {
+        border-radius: 0.5em;
+        overflow: hidden;
+        height: 1.2em;
+        display: flex;
+        align-items: stretch;
+        justify-content: flex-start;
+        margin: 0.5em;
+    }
+
+    .total .bar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: width 1s ease-in-out;
+    }
+
+    .total .val-completed {
+        background: var(--cds-support-success);
+    }
+    .total .val-failed {
+        background: var(--cds-support-error);
+    }
+    .total .val-processing {
+        background: var(--cds-support-info-inverse);
+    }
+    .total .val-pending {
+        background: var(--cds-background-active);
     }
 </style>
