@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './LxHentai.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as Mojo from '../decorators/MojoPortalComic';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as Mojo from './decorators/MojoPortalComic';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
