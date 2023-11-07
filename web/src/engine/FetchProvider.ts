@@ -5,11 +5,17 @@ import { InternalError, NotImplementedError } from './Error';
 
 export type PreloadAction = (win: typeof window, frame: typeof window) => void;
 
-export class HttpResponseError extends InternalError {
-    constructor(public readonly status: number, message: string) {
-        super(message);
+class HttpResponseError extends InternalError {
+    constructor(public readonly response: Response) {
+        super(response.statusText);
+    }
+
+    public get status() {
+        return this.response.status;
     }
 }
+
+export type { HttpResponseError };
 
 const fail = function() {
     throw new NotImplementedError();
@@ -30,7 +36,7 @@ export async function Fetch(request: FetchRequest) {
     if(response.ok) {
         return response;
     } else {
-        throw new HttpResponseError(response.status, response.statusText);
+        throw new HttpResponseError(response);
     }
 }
 
