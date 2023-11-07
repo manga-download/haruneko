@@ -239,6 +239,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingDownloadsInfo: '...',
   Plugin_Settings_ThrottlingInteraction: 'Interaction Rate Limit [requests/minute]',
   Plugin_Settings_ThrottlingInteractionInfo: 'Limit the number of requests to this website to prevent being blocked or banned',
+  Plugin_Settings_UrlOverride: 'Url Override',
+  Plugin_Settings_UrlOverrideInfo: 'Use this URL as current domain for this website',
   Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
   Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
