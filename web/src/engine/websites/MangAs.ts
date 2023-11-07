@@ -38,7 +38,6 @@ export default class extends DecoratableMangaScraper {
         this.Settings.throttle = new Numeric('throttle.images', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 4, 1, 60);
         this.Settings.throttle.ValueChanged.Subscribe((_, value: number) => this.imageTaskPool.RateLimit = new RateLimit(value, 5));
         this.imageTaskPool.RateLimit = new RateLimit(this.Settings.throttle.value as number, 5);
-        console.log(this.imageTaskPool.RateLimit);
     }
 
     public override get Icon() {
