@@ -153,6 +153,6 @@
     }
 
     :global(.bx--header__global .bx--header__action.close):hover {
-        background-color: var(--cds-support-error-inverse);
+        background-color: var(--cds-button-danger-primary);
     }
 </style>
