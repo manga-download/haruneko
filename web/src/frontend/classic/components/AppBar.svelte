@@ -115,6 +115,7 @@
                 on:click={() => close()}
                 aria-label="Close"
                 icon={Close}
+                class="close"
             />
         {/if}
         <HeaderAction>
@@ -149,5 +150,9 @@
     div[slot='platform'] {
         display: flex;
         align-items: center;
+    }
+
+    :global(.bx--header__global .bx--header__action.close):hover {
+        background-color: var(--cds-button-danger-primary);
     }
 </style>

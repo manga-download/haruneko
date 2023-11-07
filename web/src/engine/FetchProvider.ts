@@ -1,9 +1,21 @@
 import { type PlatformInfo, Runtime, DetectPlatform, CreateUnsupportedPlatformError } from './Platform';
 import * as FetchProviderNodeWebkit from './FetchProviderNodeWebkit';
 import * as FetchProviderBrowser from './FetchProviderBrowser';
-import { NotImplementedError } from './Error';
+import { InternalError, NotImplementedError } from './Error';
 
 export type PreloadAction = (win: typeof window, frame: typeof window) => void;
+
+class HttpResponseError extends InternalError {
+    constructor(public readonly response: Response) {
+        super(response.statusText);
+    }
+
+    public get status() {
+        return this.response.status;
+    }
+}
+
+export type { HttpResponseError };
 
 const fail = function() {
     throw new NotImplementedError();
@@ -19,8 +31,13 @@ export class FetchRequest extends Request {
 }
 
 let fetch: (request: FetchRequest) => Promise<Response> = fail;
-export function Fetch(request: FetchRequest) {
-    return fetch(request);
+export async function Fetch(request: FetchRequest) {
+    const response = await fetch(request);
+    if(response.ok) {
+        return response;
+    } else {
+        throw new HttpResponseError(response);
+    }
 }
 
 let fetchHTML: (request: FetchRequest) => Promise<Document> = fail;
