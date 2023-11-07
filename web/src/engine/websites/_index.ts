@@ -41,6 +41,7 @@ export { default as ComicBorder } from './ComicBorder';
 export { default as ComicBushi } from './ComicBushi';
 export { default as ComicDays } from './ComicDays';
 export { default as ComicExtra } from './ComicExtra';
+export { default as ComicFuz } from './ComicFuz';
 export { default as ComicGardo } from './ComicGardo';
 export { default as ComicK } from './ComicK';
 export { default as Comico } from './Comico';
