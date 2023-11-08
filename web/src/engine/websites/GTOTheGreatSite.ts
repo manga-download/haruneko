@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as PizzaReader from './decorators/PizzaReader';
 import * as Common from './decorators/Common';
 
-@PizzaReader.MangaAJAX(/^https?:\/\/reader\.gtothegreatsite\.net\/comics\/\S+$/)
+@PizzaReader.MangaAJAX(/^https?:\/\/reader\.gtothegreatsite\.net\/comics\/[^/]+$/)
 @PizzaReader.MangasSinglePageAJAX()
 @PizzaReader.ChaptersSinglePageAJAX()
 @PizzaReader.PagesSinglePageAJAX()
