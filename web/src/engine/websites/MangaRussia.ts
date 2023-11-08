@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as TAADD from './decorators/TAADD';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/www\.mangarussia\.com\/manga\/\S+\.html$/, 'div.mangabookbox div.bookmessagebox h1', TAADD.MangaLabelExtractor)
+@Common.MangaCSS(/^https?:\/\/www\.mangarussia\.com\/manga\/[^/]+\.html$/, 'div.mangabookbox div.bookmessagebox h1', TAADD.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(TAADD.mangaPath, TAADD.queryMangas, 1, 1, 0, Common.AnchorInfoExtractor(true))
 @TAADD.ChaptersSinglePageCSS('div.chapterlist table tr td.col1 a', TAADD.ChapterExtractor, false)
 @TAADD.PagesMultiPageCSS()
