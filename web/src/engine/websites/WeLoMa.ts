@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
 
-@Common.MangaCSS(/^https?:\/\/weloma\.art\/\S+\/$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
+@Common.MangaCSS(/^https?:\/\/weloma\.art\/[^/]+\/$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS('/manga-list.html?page={page}', FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
 @FlatManga.ChaptersSinglePageCSS()
 @Common.PagesSinglePageCSS(FlatManga.queryPages)

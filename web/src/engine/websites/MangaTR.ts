@@ -8,7 +8,7 @@ function MangaLabelExtractor(element: HTMLTitleElement) {
     return element.text.split(' - ')[0].trim();
 }
 
-@Common.MangaCSS(/^https?:\/\/manga-tr\.com\/manga-\S+\.html$/, 'body title', MangaLabelExtractor)
+@Common.MangaCSS(/^https?:\/\/manga-tr\.com\/manga-[^/]+\.html$/, 'body title', MangaLabelExtractor)
 @Common.MangasSinglePageCSS('/manga-list.html', FlatManga.queryMangas)
 @FlatManga.PagesSinglePageCSS('img.chapter-img')
 @Common.ImageAjax()
