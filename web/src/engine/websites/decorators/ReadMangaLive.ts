@@ -1,4 +1,4 @@
-import { Fetch, FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
@@ -85,58 +85,22 @@ export function ImageAjax(detectMimeType = false) {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal, detectMimeType, false);
+                return FetchImage.call(this, page, priority, signal, detectMimeType );
             }
         };
     };
 }
 
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, pretendImageElementSource = false): Promise<Blob> {
-    return this.imageTaskPool.Add(async () => {
+async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+    let blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
+    if (blob.type.startsWith('image/')) return blob;
 
-        //1st : try to get the url directly
-        const request = cookImageRequest(page, signal, pretendImageElementSource);
-        let response = undefined;
-        let failed = false;
-        try {
-            response = await Fetch(request);
-        } catch {
-            failed = true;
+    const servers: string[] = JSON.parse(page.Parameters.servers as string);
+    for (const server of servers) {
+        if (!page.Link.href.includes(server)) {
+            page.Link.href = new URL(page.Link.pathname, server).href + page.Link.search;
+            blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
+            if (blob.type.startsWith('image/')) return blob;
         }
-        //if requested failed, loop servers
-        if (failed || response.status != 200) {
-            const servers: string[] = JSON.parse(page.Parameters.servers as string);
-            for (const server of servers) {
-                if (`${page.Link.origin}/` === server) {
-                    continue;
-                }
-                const request = cookImageRequest(page, signal, pretendImageElementSource, server);
-                failed = false;
-                try {
-                    response = await Fetch(request);
-                } catch {
-                    failed = true;
-                }
-                if ( !failed && response.status == 200) {
-                    break;
-                }
-            }
-        }
-        return detectMimeType ? Common.GetTypedData(await response.arrayBuffer()) : response.blob();
-    }, priority, signal);
-}
-
-function cookImageRequest(page: Page, signal: AbortSignal, pretendImageElementSource: boolean, customServer = ''): FetchRequest {
-    const url = customServer == '' ? page.Link.href : new URL(page.Link.pathname, customServer).href;
-    const request = new FetchRequest(url, {
-        signal: signal,
-        headers: {
-            Referer: page.Parameters?.Referer || page.Link.origin,
-        }
-    });
-    if (pretendImageElementSource) {
-        request.headers.set('Accept', 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8');
-        request.headers.set('Sec-Fetch-Dest', 'image');
     }
-    return request;
 }
