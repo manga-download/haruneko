@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MH from './decorators/MH';
 
-@Common.MangaCSS(/^https?:\/\/www\.kuimh\.com\/book\/\S+$/, MH.queryMangaTitleFromURI)
+@Common.MangaCSS(/^https?:\/\/www\.kuimh\.com\/book\/[^/]+$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS(MH.mangaPath, MH.queryMangas)
 @Common.ChaptersSinglePageCSS('div#chapterlistload ul#detail-list-select li:not([style]) a', MH.ChapterExtractor)
 @Common.PagesSinglePageCSS(MH.queryPages, MH.PageLinkExtractor)
