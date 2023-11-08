@@ -7,7 +7,7 @@ const config: Config = {
     },
     container: {
         url: 'https://reaperscans.fr/serie/perfect-surgeon/',
-        id: '{"post":"212","slug":"/serie/perfect-surgeon/"}',
+        id: JSON.stringify({ post: '212', slug: '/serie/perfect-surgeon/' }),
         title: 'Perfect Surgeon'
     },
     child: {
