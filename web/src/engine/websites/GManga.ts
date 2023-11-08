@@ -5,7 +5,7 @@ import * as GManga from './decorators/GManga';
 
 const apiUrl = 'https://api.gmanga.me/';
 
-@GManga.MangaCSS(/^https?:\/\/gmanga.me\/mangas\/\d+\/\S+$/)
+@GManga.MangaCSS(/^https?:\/\/gmanga.me\/mangas\/\d+\/[^/]+$/)
 @GManga.MangasMultiPageAJAX(apiUrl)
 @GManga.ChaptersSinglePageAJAX(apiUrl)
 @GManga.PagesSinglePageCSS()

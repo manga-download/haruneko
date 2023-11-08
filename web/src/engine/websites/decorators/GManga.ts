@@ -12,6 +12,20 @@ type APISingleManga = {
     }
 };
 
+export type packedData = {
+    cols: string[],
+    isCompact: boolean,
+    isObject: boolean,
+    isArray: boolean,
+    maxLevel: number,
+    rows: packedData[] | APIData[]
+
+}
+
+export type APIData = {
+    [id: string]: number | string | Array<number>[]
+}
+
 export type APIResult = {
     iv: boolean,
     data: string;
@@ -169,9 +183,8 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, manga: Manga, apiU
     const request = new FetchRequest(new URL(`/api/mangas/${manga.Identifier}/releases`, apiUrl).href);
     const response = await FetchJSON<APIResult>(request);
     const strdata = response.iv ? await _haqiqa(response.data) : JSON.stringify(response);
-    let tmpdata = JSON.parse(strdata);
-    tmpdata = tmpdata['isCompact'] ? _unpack(tmpdata) : tmpdata;
-    const chapters = tmpdata as APIChapters;
+    const tmpdata: packedData | APIChapters = JSON.parse(strdata);
+    const chapters: APIChapters = (tmpdata as packedData).isCompact ? _unpack(tmpdata as packedData) as APIChapters : tmpdata as APIChapters;
     return chapters.releases.map(chapter => {
         const team = chapters.teams.find(t => t.id === chapter.team_id);
         const chapterization = chapters.chapterizations.find(c => c.id === chapter.chapterization_id);
@@ -255,8 +268,8 @@ async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority
     let data = await Common.FetchImageAjax.call(this, page, priority, signal);
     if (data.type === 'text/html') {
         const newUrl = new URL(page.Link.href.replace('/hq', '/mq'));
-        const newpage = new Page(this, page.Parent as Chapter, newUrl);
-        data = await Common.FetchImageAjax.call(this, newpage, priority, signal);
+        page.Link.href = newUrl.href;
+        data = await Common.FetchImageAjax.call(this, page, priority, signal);
     }
     return data;
 }
@@ -276,7 +289,7 @@ export function ImageAjax() {
     };
 }
 
-export async function _haqiqa(t) : Promise<string>{
+export async function _haqiqa(t: string) : Promise<string>{
     //let c = { default: CryptoJS };
     /*if (!_dataExists(t) || "string" != typeof t)
         return !1;*/
@@ -307,14 +320,14 @@ export async function _haqiqa(t) : Promise<string>{
     return new TextDecoder('utf-8').decode(decrypted);
 }
 
-export function _unpack(t, ...args) {
+export function _unpack(t: packedData | APIData, ...args) {
     const e = arguments.length > 1 && void 0 !== args[1] ? args[1] : 1;
     if (!t || e > t.maxLevel)
         return t;
     if ( typeof t != 'object' || !t.isCompact)
         return t;
-    const n = t.cols;
-    const r = t.rows;
+    const n = (t as packedData).cols;
+    const r = (t as packedData).rows;
     if (t.isObject) {
         const o = {};
         let i = 0;
