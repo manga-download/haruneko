@@ -6,17 +6,20 @@ const config: Config = {
         title: 'Reaper Scans (Turkish)',
     },
     container: {
-        url: 'https://reaperscanstr.com/seri/hyper-luck/',
-        id: JSON.stringify({post: "1161", slug: "/seri/hyper-luck/"}),
-        title: 'Hyper Luck'
+        url: 'https://reaperscans.com.tr/manga/a-gate-opened-on-my-first-day-as-a-politician/',
+        id: '/manga/a-gate-opened-on-my-first-day-as-a-politician/',
+        title: 'A Gate Opened on my First Day as a Politician',
+        timeout: 15000
+
     },
     child: {
-        id: '/seri/hyper-luck/bolum-39/',
-        title: 'Bölüm 39'
+        id: '/a-gate-opened-on-my-first-day-as-a-politician-0-bolum/',
+        title: 'Bölüm 0',
+        timeout: 25000
     },
     entry: {
         index: 1,
-        size: 3_006_190,
+        size: 2_501_299,
         type: 'image/jpeg'
     }
 };
