@@ -53,6 +53,10 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
     uri.searchParams.set('mtr', '1');
     const request = new FetchRequest(uri.href);
     const images = await FetchWindowScript<scriptResult>(request, script, delay);
+
+    images.pics = images.pics.map(pic => pic.replace(/^\/\//, 'https://'));
+    images.servers = images.servers.map(server => server.replace(/^\/\//, 'https://'));
+
     return images.pics.map(url => {
         const parameters = { Referer: uri.href, servers: JSON.stringify(images.servers) };
         return new Page(this, chapter, new URL(url), parameters);

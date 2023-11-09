@@ -1,6 +1,7 @@
 // Implemented Websites
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as AkuManga } from './AkuManga';
+export { default as AllHentai } from './AllHentai';
 export { default as AlliedFansub } from './AlliedFansub';
 export { default as AllPornComic } from './AllPornComic';
 export { default as Alphapolis } from './Alphapolis';
@@ -480,7 +481,6 @@ export { default as Zebrack } from './Zebrack';
 export { default as ZeroScans } from './ZeroScans';
 export { default as ZinManga } from './ZinManga';
 // Legacy Websites
-export { default as AllHentai } from './legacy/AllHentai';
 export { default as AnimaRegia } from './legacy/AnimaRegia';
 export { default as AnimeCenterScan } from './legacy/AnimeCenterScan';
 export { default as AnimePahe } from './legacy/AnimePahe';
