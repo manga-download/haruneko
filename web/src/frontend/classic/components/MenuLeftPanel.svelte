@@ -16,6 +16,7 @@
         EventsAlt,
         Home,
         Image,
+        ImportExport,
         Information,
         Location,
         LogoDiscord,
@@ -32,6 +33,8 @@
     const dispatch = createEventDispatcher();
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';
+    import BookmarksImport from './BookmarksImport.svelte';
+
     import {
         selectedPlugin,
         selectedMedia,
@@ -44,6 +47,7 @@
     let settingsSelectedTabs = 0;
     let isSettingsModalOpen = false;
     let isPluginModalOpen = false;
+    let isBookmarksImportModalOpen = false;
 </script>
 
 {#if isPluginModalOpen}
@@ -56,6 +60,9 @@
     bind:isModalOpen={isSettingsModalOpen}
     selectedTab={settingsSelectedTabs}
 />
+{#if isBookmarksImportModalOpen}
+    <BookmarksImport bind:isModalOpen={isBookmarksImportModalOpen} />
+{/if}
 <SideNav bind:isOpen rail={$SidenavTrail} expansionBreakpoint={100000}>
     <span class="menuleftpanel">
         <SideNavItems>
@@ -85,6 +92,11 @@
                 text={$Locale.Frontend_Plugins()}
                 icon={PlugFilled}
                 on:click={() => (isPluginModalOpen = true)}
+            />
+            <SideNavLink
+                text="import/export"
+                icon={ImportExport}
+                on:click={() => (isBookmarksImportModalOpen = true)}
             />
             <SideNavMenu text={$Locale.Frontend_Settings()} icon={Settings}>
                 <SideNavLink
