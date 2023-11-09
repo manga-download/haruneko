@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('fmteam', `FMTeam`, 'https://fmteam.fr/', Tags.Language.French, Tags.Media.Manga, Tags.Source.Scanlator);
+        super('fmteam', `FMTeam`, 'https://fmteam.fr', Tags.Language.French, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
