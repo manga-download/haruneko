@@ -11,7 +11,7 @@ import { FetchRegex, FetchRequest } from '../FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('daysneo', `Daysneo`, 'https://daysneo.com', Tags.Language.Japanese, Tags.Media.Manga);
+        super('daysneo', `Daysneo`, 'https://daysneo.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
