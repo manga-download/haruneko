@@ -79,8 +79,8 @@ export function ChaptersSinglePageJS(script: string, queryChap = queryChapters, 
  * @param api - Api object name to call in script. Default 'SinMH'
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
-async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, api: string = SinApi, delay = 0): Promise<Page[]> {
-    const finalscript = script.replace('{api}', api);
+async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = queryPagesScript, api: string = SinApi, delay = 0): Promise<Page[]> {
+    const finalscript = script.replaceAll('{api}', api);
     return Common.FetchPagesSinglePageJS.call(this, chapter, finalscript, delay);
 }
 
@@ -91,7 +91,7 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
  * @param api - Api object name to call in script. Default 'SinMH'
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
-export function PagesSinglePageJS(script = queryChaptersScript, api = SinApi, delay = 0) {
+export function PagesSinglePageJS(script = queryPagesScript, api = SinApi, delay = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
