@@ -2,6 +2,9 @@ import { CreateUnsupportedPlatformError, DetectPlatform, Runtime, type PlatformI
 import type { IFrontendModule, IFrontendInfo } from './frontend/IFrontend';
 import type { Event } from './engine/Event';
 
+import { Stream } from './video-playground';
+Stream();
+
 async function ShowNodeWebkitSplashScreen(nwWindow: NWJS_Helpers.win, event: Event<IFrontendModule, IFrontendInfo>, timeout: number) {
 
     nwWindow.hide();
