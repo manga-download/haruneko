@@ -45,8 +45,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/www\.hq-now\.com\/hq\/([\d]+)/.test(url);
+        return new RegExp(`^${this.URI.origin}/hq/[\\d]+`).test(url);
     }
+
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = parseInt(new URL(url).pathname.match(/\/hq\/([\d]+)/)[1]);
         const operationName = 'getHqsById';
