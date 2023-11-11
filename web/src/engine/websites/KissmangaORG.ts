@@ -10,7 +10,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/kissmanga\.org\/manga\/[^/]+$/, 'strong.bigChar')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'strong.bigChar')
 @Common.MangasMultiPageCSS('/manga_list?page={page}&action=list&q=', 'div.listing div.item_movies_in_cat div a.item_movies_link', 1, 1)
 @Common.ChaptersSinglePageCSS('div#leftside div.full div.episodeList div.full div.listing.full div div h3 a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.barContent div.full div.full.watch_container div#centerDivVideo img')

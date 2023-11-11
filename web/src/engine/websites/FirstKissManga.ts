@@ -8,7 +8,7 @@ type ChapterData = {
     list_chap : string
 }
 
-@Common.MangaCSS(/^https?:\/\/likemanga\.io\/.*-\d+\/$/, 'h1#title-detail-manga')
+@Common.MangaCSS(/^{origin}\/.*-\d+\/$/, 'h1#title-detail-manga')
 @Common.MangasMultiPageCSS('?act=home&pageNum={page}', 'div.card-body p.card-text a')
 @Common.PagesSinglePageCSS('div.reading-detail div.page-chapter img')
 @Common.ImageAjax()

@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SinMH from './decorators/SinMH';
 
-@Common.MangaCSS(/^https?:\/\/www\.icekr\.com\/manhua\/[^/]+\/$/, SinMH.queryManga)
+@Common.MangaCSS(/^{origin}\/manhua\/[^/]+\/$/, SinMH.queryManga)
 @Common.MangasMultiPageCSS(SinMH.path, SinMH.queryMangas)
 @SinMH.ChaptersSinglePageJS(SinMH.queryChaptersScript, SinMH.queryChapters)
 @SinMH.PagesSinglePageJS()

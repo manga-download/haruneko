@@ -10,7 +10,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/comicbushi-web\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @Common.MangasSinglePageCSS('/', 'section#lineup ul.lineup-list div.lineup-item a', MangaExtractor)
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
