@@ -8,7 +8,7 @@ function PageExtractor(img: HTMLImageElement) {
     return img.getAttribute('data-src').trim();
 }
 
-@Madara.MangaCSS(/^https?:\/\/manhwa-latino\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageCSS()
 @Common.PagesSinglePageCSS('div.page-break img.img-responsive', PageExtractor)
 @Common.ImageAjax(true)
