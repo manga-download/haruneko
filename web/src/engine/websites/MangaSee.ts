@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as MangaLife from './decorators/MangaLife';
 
 @MangaLife.Initialize()
-@Common.MangaCSS(/^https?:\/\/mangasee123\.com\/manga\/[^/]+$/, MangaLife.queryMangaTitle, MangaLife.ElementLabelExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaLife.queryMangaTitle, MangaLife.ElementLabelExtractor)
 @MangaLife.MangasSinglePageCSS()
 @Common.ChaptersSinglePageJS(MangaLife.chapterScript, 1500)
 @Common.PagesSinglePageJS(MangaLife.pageScript, 1500)
