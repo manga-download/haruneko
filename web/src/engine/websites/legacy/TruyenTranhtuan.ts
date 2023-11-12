@@ -3,7 +3,7 @@ import icon from './TruyenTranhtuan.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
-@Common.MangaCSS(/^https:\/\/truyentuan\.com\/[^/]+\/$/, 'div#infor-box div h1[itemprop="name"]')
+@Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div#infor-box div h1[itemprop="name"]')
 @Common.MangasSinglePageCSS('/danh-sach-category', 'div.manga-focus span.manga a')
 @Common.ChaptersSinglePageCSS('div#manga-chapter span.chapter-name a')
 @Common.PagesSinglePageJS('slides_page')

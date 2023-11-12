@@ -1,0 +1,220 @@
+<script lang="ts">
+    import { onDestroy } from 'svelte';
+    import { DownloadTasks } from '../stores/Stores';
+    import {
+        Button,
+        ClickableTile,
+        Modal,
+        ProgressBar,
+    } from 'carbon-components-svelte';
+    import { CloudDownload, TrashCan } from 'carbon-icons-svelte';
+    import { DownloadTask, Status } from '../../../engine/DownloadTask';
+    import DownloadManager from './DownloadManager.svelte';
+
+    let previousTasks: DownloadTask[] = [];
+    let currentDownload: DownloadTask;
+    let completed = 0;
+    let failed = 0;
+    let processing = 0;
+    let progress: number;
+    let status: Status;
+    let isModalOpen = false;
+
+    function refreshCounts() {
+        completed = $DownloadTasks.filter(
+            (job) => job.Status === Status.Completed
+        ).length;
+        failed = $DownloadTasks.filter(
+            (job) => job.Status === Status.Failed
+        ).length;
+        processing = $DownloadTasks.filter((job) =>
+            [Status.Downloading, Status.Processing].includes(job.Status)
+        ).length;
+    }
+
+    function refreshProgress() {
+        status = currentDownload.Status;
+        switch (status) {
+            case Status.Downloading:
+                progress = currentDownload.Progress;
+                break;
+            case Status.Completed:
+                progress = 1;
+                break;
+            case Status.Processing:
+                progress = 1;
+                break;
+            default:
+                progress = 0;
+                break;
+        }
+    }
+
+    DownloadTasks.subscribe((tasks) => {
+        const removed = previousTasks.filter((task) => !tasks.includes(task));
+        const added = tasks.filter((task) => !previousTasks.includes(task));
+        removed.forEach((job) => job.StatusChanged.Unsubscribe(refreshStatus));
+        added.forEach((job) => job.StatusChanged.Subscribe(refreshStatus));
+        previousTasks = tasks;
+        refreshCounts();
+    });
+
+    function refreshStatus() {
+        const nowDownloading = $DownloadTasks.filter((job) =>
+            [Status.Downloading, Status.Processing].includes(job.Status)
+        )[0];
+        if (nowDownloading && nowDownloading !== currentDownload) {
+            currentDownload?.StatusChanged.Unsubscribe(refreshProgress);
+            currentDownload?.ProgressChanged.Unsubscribe(refreshProgress);
+            currentDownload = nowDownloading;
+            currentDownload.ProgressChanged.Subscribe(refreshProgress);
+            currentDownload.StatusChanged.Subscribe(refreshProgress);
+        }
+        refreshCounts();
+    }
+
+    onDestroy(() => {
+        currentDownload?.ProgressChanged.Unsubscribe(refreshProgress);
+        currentDownload?.StatusChanged.Unsubscribe(refreshProgress);
+        $DownloadTasks.forEach((job) =>
+            job.StatusChanged.Unsubscribe(refreshStatus)
+        );
+    });
+
+    const statusmap: Record<Status, 'active' | 'finished' | 'error'> = {
+        [Status.Paused]: 'active',
+        [Status.Queued]: 'active',
+        [Status.Downloading]: 'active',
+        [Status.Processing]: 'active',
+        [Status.Completed]: 'finished',
+        [Status.Failed]: 'error',
+    };
+</script>
+
+{#if isModalOpen}
+    <Modal bind:open={isModalOpen} size="lg" passiveModal hasScrollingContent
+        ><DownloadManager />
+        <div slot="heading">
+            Download Tasks
+            <Button
+                kind="danger-tertiary"
+                size="small"
+                icon={TrashCan}
+                iconDescription="Delete all tasks"
+                on:click={() =>
+                    $DownloadTasks.forEach((task) =>
+                        window.HakuNeko.DownloadManager.Dequeue(task)
+                    )}
+            />
+        </div>
+    </Modal>
+{/if}
+<ClickableTile on:click={() => (isModalOpen = true)}>
+    <div id="tasksstatus">
+        <div class="label">
+            <CloudDownload size={32} />
+            <div class="count">
+                Downloads ({$DownloadTasks.filter((job) =>
+                    [
+                        Status.Downloading,
+                        Status.Processing,
+                        Status.Queued,
+                    ].includes(job.Status)
+                )?.length})
+            </div>
+        </div>
+        <div class="downloads">
+            {#if $DownloadTasks.length > 0}
+                <div class="progress">
+                    {#if currentDownload}
+                        <ProgressBar
+                            value={progress * 100}
+                            status={statusmap[status]}
+                            labelText="[{currentDownload.Media.Parent
+                                .Title}] {currentDownload.Media.Title}"
+                        />
+                    {:else}
+                        <ProgressBar
+                            size="sm"
+                            value={0}
+                            labelText="<no tasks>"
+                        />
+                    {/if}
+                </div>
+                <div class="total">
+                    <div
+                        class="bar val-processing"
+                        style:flex-basis="{(processing /
+                            $DownloadTasks.length) *
+                            100}%"
+                    />
+                    <div
+                        class="bar val-completed"
+                        style:flex-basis="{(completed / $DownloadTasks.length) *
+                            100}%"
+                    />
+                    <div
+                        class="bar val-failed"
+                        style:flex-basis="{(failed / $DownloadTasks.length) *
+                            100}%"
+                    />
+                    <div
+                        class="bar val-pending"
+                        style:flex-basis="{(($DownloadTasks.length -
+                            completed -
+                            failed -
+                            processing) /
+                            $DownloadTasks.length) *
+                            100}%"
+                    />
+                </div>
+            {/if}
+        </div>
+    </div>
+</ClickableTile>
+
+<style>
+    #tasksstatus {
+        display: grid;
+        grid-template-columns: fit-content(10em) 1fr;
+    }
+    #tasksstatus .label {
+        text-align: center;
+        margin-right: 2em;
+    }
+    #tasksstatus .label .count {
+        top: 12em;
+    }
+    #tasksstatus .downloads .progress {
+        margin-bottom: 0.5em;
+    }
+
+    #tasksstatus .downloads .total {
+        border-radius: 0.5em;
+        overflow: hidden;
+        height: 1em;
+        display: flex;
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+
+    #tasksstatus .total .bar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: width 1s ease-in-out;
+    }
+
+    #tasksstatus .val-completed {
+        background: var(--cds-support-success);
+    }
+    #tasksstatus .val-failed {
+        background: var(--cds-support-error);
+    }
+    #tasksstatus .val-processing {
+        background: var(--cds-support-info-inverse);
+    }
+    #tasksstatus .val-pending {
+        background: var(--cds-background-active);
+    }
+</style>

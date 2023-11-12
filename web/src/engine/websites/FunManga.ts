@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaInn from './decorators/MangaInn';
 
-@Common.MangaCSS(/^https?:\/\/www\.funmanga\.com/, MangaInn.queryMangaTitle)
+@Common.MangaCSS(/^{origin}/, MangaInn.queryMangaTitle)
 @MangaInn.MangasMultiPageCSS()
 @Common.ChaptersSinglePageCSS(MangaInn.queryChapters, MangaInn.ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaInn.queryPages)

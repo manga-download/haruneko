@@ -18,7 +18,7 @@ type APIMangaEntry = {
     }
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.tsumino\.com\/entry\/\d+$/, 'head meta[property="og:title"]')
+@Common.MangaCSS(/^{origin}\/entry\/\d+$/, 'head meta[property="og:title"]')
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax(true)
 

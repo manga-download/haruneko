@@ -23,7 +23,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/modescanlator\.com\/[^/]+\/$/, 'h1.desc__titulo__comic')
+@Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h1.desc__titulo__comic')
 @Common.MangasSinglePageCSS('/todas-as-obras/', 'div.comics__all__box a.titulo__comic__allcomics')
 @Common.ChaptersSinglePageCSS('ul.capitulos__lista a.link__capitulos', ChapterExtractor)
 

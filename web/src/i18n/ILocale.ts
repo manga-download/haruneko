@@ -306,6 +306,8 @@ export enum WebsiteResourceKey {
     Plugin_Settings_ThrottlingDownloadsInfo = 'Plugin_Settings_ThrottlingDownloadsInfo',
     Plugin_Settings_ThrottlingInteraction = 'Plugin_Settings_ThrottlingInteraction',
     Plugin_Settings_ThrottlingInteractionInfo = 'Plugin_Settings_ThrottlingInteractionInfo',
+    Plugin_Settings_UrlOverride = 'Plugin_Settings_UrlOverride',
+    Plugin_Settings_UrlOverrideInfo = 'Plugin_Settings_UrlOverrideInfo',
     Plugin_Common_MangaIndex_NotSupported = 'Plugin_Common_MangaIndex_NotSupported',
     Plugin_Common_Chapter_InvalidError = 'Plugin_Common_Chapter_InvalidError',
     Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',

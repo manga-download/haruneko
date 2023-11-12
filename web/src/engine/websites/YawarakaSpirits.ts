@@ -15,7 +15,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/yawaspi\.com\/[\S]+\/index.html$/, 'div.page__header h2')
+@Common.MangaCSS(/^{origin}\/[\S]+\/index.html$/, 'div.page__header h2')
 @Common.ChaptersSinglePageCSS('section.page__read div.page__read__inner ul.inner__content li a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.page__detail__inner div.page__detail__vertical div.vertical__inner ul li img')
 @Common.ImageAjax()

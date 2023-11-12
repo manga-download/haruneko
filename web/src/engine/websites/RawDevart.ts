@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/endevart\.com\/comic\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(url);
+        return new RegExp(`^${this.URI.origin}/comic/[-0-9a-fA-F]{36}$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, _url: string): Promise<Manga> {

@@ -15,7 +15,7 @@ type ImgObj = {
     }
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.mangaz\.com\/series\/detail\/\d+$/, 'li.title')
+@Common.MangaCSS(/^{origin}\/series\/detail\/\d+$/, 'li.title')
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

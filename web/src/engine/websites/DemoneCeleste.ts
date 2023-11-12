@@ -4,7 +4,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/www\.demoneceleste\.it\/[^/]+\//, 'div.col-md-8.text-center h3 strong')
+@Common.MangaCSS(/^{origin}\/[^/]+\//, 'div.col-md-8.text-center h3 strong')
 @Common.MangasSinglePageCSS('/manga/', 'div#myTabContent h4 > a')
 @Common.ChaptersSinglePageCSS('div.col-md-8.text-center > div a')
 @Common.ImageAjax()
