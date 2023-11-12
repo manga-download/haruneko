@@ -40,7 +40,7 @@ type APIPages = {
     }
 }
 
-@GManga.MangaCSS(/^https?:\/\/mangatales.com\/mangas\/\d+\/[^/]+$/)
+@GManga.MangaCSS(/^{origin}\/mangas\/\d+\/[^/]+$/)
 @GManga.MangasMultiPageAJAX(apiUrl)
 @GManga.ImageAjax()
 export default class extends DecoratableMangaScraper {
