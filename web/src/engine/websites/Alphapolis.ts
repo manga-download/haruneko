@@ -19,7 +19,7 @@ function ChaptersExtractor(element: HTMLDivElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.alphapolis\.co\.jp\/manga\/official\/\d+/, 'div.manga-detail-description > div.title')
+@Common.MangaCSS(/^{origin}\/manga\/official\/\d+/, 'div.manga-detail-description > div.title')
 @Common.MangasMultiPageCSS(`/manga/official/search?page={page}`, 'div.official-manga-panel > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.episode-unit', ChaptersExtractor)
 export default class extends DecoratableMangaScraper {

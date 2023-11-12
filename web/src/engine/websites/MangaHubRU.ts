@@ -8,7 +8,7 @@ type APIPages = {
     scans: {id : number, src : string}[]
 }
 
-@Common.MangaCSS(/^https?:\/\/mangahub\.ru\/title\//, '#title-detail div.col div.card-padding-x h1')
+@Common.MangaCSS(/^{origin}\/title\//, '#title-detail div.col div.card-padding-x h1')
 @Common.MangasMultiPageCSS('/explore?page={page}', 'div.container div.card a.comic-grid-name')
 @Common.ImageAjax()
 

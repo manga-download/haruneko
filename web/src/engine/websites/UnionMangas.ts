@@ -4,7 +4,7 @@ import { type Chapter, DecoratableMangaScraper, type Manga } from '../providers/
 import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 
-@Common.MangaCSS(/^https?:\/\/unionmangasbr\.top\/manga\//, 'div.manga-perfil-novo div.row div.col-md-12 h2')
+@Common.MangaCSS(/^{origin}\/manga\//, 'div.manga-perfil-novo div.row div.col-md-12 h2')
 @Common.MangasMultiPageCSS('/lista-mangas/visualizacoes/{page}', 'div.tamanho-bloco-perfil div.lista-itens > a:last-of-type')
 @MangaStream.PagesSinglePageCSS([/banner_/], 'img.img-manga')
 @Common.ImageAjax()

@@ -10,6 +10,7 @@
     import { Status } from '../../../engine/DownloadTask';
 
     export let job: DownloadTask;
+    export let taskerror: DownloadTask = undefined;
 
     async function OnJobChangedCallback(changedJob: DownloadTask) {
         job = changedJob;
@@ -37,16 +38,6 @@
         [Status.Failed]: 'error',
         [Status.Completed]: 'finished',
     };
-
-    function copyErrorToClipBoard(task: DownloadTask) {
-        const message = task.Errors.map((error) => {
-            return `${error.message}\r\n > ${error.stack}`;
-        }).join('-------------------');
-        // TODO: Remove depenencies to nwjs with an abstraction
-        const clipboard = nw.Clipboard.get();
-        clipboard.set(message, 'text');
-        //navigator.clipboard.writeText(message);
-    }
 </script>
 
 <div class="task">
@@ -59,23 +50,16 @@
             <div slot="labelText" class="label">
                 {job.Media.Title}
                 {#if job.Errors.length > 0}
-                    <TooltipIcon
+                    <Button
+                        kind="danger-ghost"
+                        size="small"
                         icon={WarningHexFilled}
-                        direction="right"
-                        tooltipText="test"
+                        iconDescription={job.Errors[0].name}
                         on:click={(e) => {
+                            taskerror = job;
                             e.stopPropagation();
-                            copyErrorToClipBoard(job);
                         }}
-                    >
-                        <div slot="tooltipText" class="tooltipText">
-                            {#each job.Errors as error}
-                                <div>${error.message}</div>
-                                <pre>${error.stack}</pre>
-                                <hr />
-                            {/each}
-                        </div>
-                    </TooltipIcon>
+                    />
                 {/if}
             </div>
         </ProgressBar>
@@ -97,12 +81,10 @@
         grid-template-columns: 1fr 3em;
         gap: 1em;
         width: 100%;
+        padding-left: 4em;
     }
-    .progress .label :global(.bx--tooltip__trigger svg) {
-        fill: var(--cds-support-error);
-    }
-    .progress .label :global(.bx--assistive-text) {
-        width: fit-content;
-        max-width: unset;
+
+    .label :global(button) {
+        min-height: unset;
     }
 </style>

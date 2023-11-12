@@ -3,7 +3,7 @@ import icon from './SekteKomik.webp';
 import { type Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/sektekomik\.xyz\/manga\/[^/]+$/, 'div.anime__details__title h3')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.anime__details__title h3')
 @Common.PagesSinglePageCSS('div.container img[onerror]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

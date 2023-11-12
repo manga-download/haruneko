@@ -9,7 +9,7 @@ function MangaInfoExtractor(element: HTMLDivElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/sadscans\.com\/series\//, 'div.title h2')
+@Common.MangaCSS(/^{origin}\/series\//, 'div.title h2')
 @Common.MangasSinglePageCSS('/series', 'div.series-list', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.chap-link div.link a', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div.swiper-slide img')

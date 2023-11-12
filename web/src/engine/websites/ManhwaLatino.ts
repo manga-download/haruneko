@@ -4,10 +4,14 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/manhwa-latino\.com\/manga\/[^/]+\/$/)
+function PageExtractor(img: HTMLImageElement) {
+    return img.getAttribute('data-src').trim();
+}
+
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageCSS()
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
+@Common.PagesSinglePageCSS('div.page-break img.img-responsive', PageExtractor)
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -22,4 +26,5 @@ export default class extends DecoratableMangaScraper {
         const chapters = await Madara.FetchChaptersSinglePageCSS.call(this, manga, 'ul li.wp-manga-chapter div.mini-letters a');
         return chapters.map(chapter => new Chapter(this, manga, chapter.Identifier, chapter.Title.replace(manga.Title, '').trim()));
     }
+
 }
