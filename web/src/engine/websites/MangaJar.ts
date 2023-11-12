@@ -10,7 +10,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/mangajar\.com\/manga\//, 'span.post-name')
+@Common.MangaCSS(/^{origin}\/manga\//, 'span.post-name')
 @Common.MangasMultiPageCSS('/manga?page={page}', 'div.row article.flex-item div.post-description a.card-about', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageCSS('img.page-image')
 @Common.ImageAjax()

@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/www\.luscious\.net\/albums\//.test(url);
+        return new RegExp(`^${this.URI.origin}/albums/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

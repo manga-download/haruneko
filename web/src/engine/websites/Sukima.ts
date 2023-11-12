@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/www\.sukima\.me\/book\/title\/[^/]+\/$/.test(url);
+        return new RegExp(`^${this.URI.origin}/book/title/[^/]+/$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

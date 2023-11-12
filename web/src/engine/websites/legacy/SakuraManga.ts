@@ -3,7 +3,7 @@ import icon from './SakuraManga.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/sakuramanga\.org\/p-[^/]+\/$/, 'div#content div.archive-title')
+@Common.MangaCSS(/^{origin}\/p-[^/]+\/$/, 'div#content div.archive-title')
 @Common.MangasMultiPageCSS('/japanese-manga-list/?lcp_page0={page}', 'ul#lcp_instance_0 li a')
 @Common.ChaptersSinglePageCSS('div.chap-list a')
 @Common.PagesSinglePageCSS('div.entry-content p img')

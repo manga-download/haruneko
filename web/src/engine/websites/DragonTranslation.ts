@@ -9,7 +9,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/dragontranslation\.net\/manga\/[^/]+$/, 'div.post-title h1')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.post-title h1')
 @Common.MangasMultiPageCSS('/mangas?page={page}', 'div.series-box a')
 @Common.ChaptersSinglePageCSS('li.wp-manga-chapter a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div#chapter_imgs img')
