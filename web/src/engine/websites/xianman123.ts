@@ -15,7 +15,7 @@ const pagesScript = `
     });
  `;
 
-@Common.MangaCSS(/^https?:\/\/www\.gaonaojin\.com\/[^/]+\/$/, MH.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/[^/]+\/$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS('/f-1-0-0-0-0-2-{page}.html', MH.queryMangas)
 @Common.ChaptersSinglePageCSS(MH.queryChapters, MH.ChapterExtractor)
 @Common.PagesSinglePageJS(pagesScript, 2500)
