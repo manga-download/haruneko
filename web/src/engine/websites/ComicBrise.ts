@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/www\.comic-brise\.com\/contents\/[^/]+\/$/, '.post-title')
+@Common.MangaCSS(/^{origin}\/contents\/[^/]+\/$/, '.post-title')
 @Common.MangasSinglePageCSS('/titlelist', '.list-works a')
 @SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()

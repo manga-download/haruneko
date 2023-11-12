@@ -7,7 +7,7 @@ const config: Config = {
         timeout: 45000
     },
     container: {
-        url: 'https://www.comicride.jp/book/kamihatsu/',
+        url: 'https://www.comicride.jp//book/kamihatsu/index.html', //purposedly test a bad url like comicride can give us
         id: '/book/kamihatsu/',
         title: '神の遣いの少女は初恋の将軍にすべてを捧ぐ'
     },

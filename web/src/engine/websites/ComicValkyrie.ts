@@ -6,7 +6,7 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
-    const id = new URL(element.querySelector('a').href).pathname.replace('/new.html', '');
+    const id = new URL(element.querySelector('a').href).pathname.replace('/new.html', '/');
     const title = element.querySelector('.title').textContent.replace(/\s*THE COMIC\s*/i, '').trim();
     return { id, title };
 }
@@ -30,14 +30,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /^https?:\/\/www\.comic-valkyrie\.com\/[^/]+(\/|\/new.html)?$/.test(url);
+        return new RegExp(`^${this.URI.origin}/[^/]+(/|/new.html)?$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         const request = new FetchRequest(uri.href);
         const data = await FetchCSS<HTMLMetaElement>(request, 'meta[property = "og:title"]');
-        const id = uri.pathname.replace('/new.html', '');
+        const id = uri.pathname.replace('/new.html', '/');
         const title = data[0].content.replace(/\s*THE COMIC\s*/i, '').trim();
         return new Manga(this, provider, id, title);
     }

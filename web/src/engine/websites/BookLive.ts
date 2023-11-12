@@ -9,7 +9,7 @@ function ChapterExtractor(element: HTMLElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/booklive\.jp\/product\/index\/title_id\/\d+\/vol_no\/\d+$/, 'div#product_detail_area div.product_info > h1#product_display_1')
+@Common.MangaCSS(/^{origin}\/product\/index\/title_id\/\d+\/vol_no\/\d+$/, 'div#product_detail_area div.product_info > h1#product_display_1')
 @Common.MangasNotSupported()
 @Common.ChaptersSinglePageCSS('div#product_detail_area div.product_actions ul a.bl-bviewer', ChapterExtractor)
 @SpeedBinb.PagesSinglePage()

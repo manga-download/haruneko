@@ -6,7 +6,7 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLElement) {
     return {
-        id: element.querySelector<HTMLAnchorElement>('a.p-update-list__main').pathname.replace(/\/\//g, "/"),
+        id: element.querySelector<HTMLAnchorElement>('a.p-update-list__main').pathname.replace(/\/\//g, "/").replace('/index.html', '/'),
         title: element.querySelector('.p-update-list__title').textContent.trim()
     };
 }
@@ -32,11 +32,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /^https?:\/\/www\.comicride\.jp\/(\/)?book\/[^/]+\/(index\.html)?$/.test(url);
+        return new RegExp(`^${this.URI.origin}/(/)?book/[^/]+/(index.html)?$`).test(url);
+
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        return await Common.FetchMangaCSS.call(this, provider, url.replace(/\/\//g, "/"), '.p-detail-head__title');
+        return await Common.FetchMangaCSS.call(this, provider, url.replace(/\/\//g, "/").replace('/index.html', '/'), '.p-detail-head__title');
 
     }
 

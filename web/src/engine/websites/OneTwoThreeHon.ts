@@ -12,7 +12,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.123hon\.com\/[^/]+\/web-comic\/[^/]+\/$/, 'div.title-area h2')
+@Common.MangaCSS(/^{origin}\/[^/]+\/web-comic\/[^/]+\/$/, 'div.title-area h2')
 @SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

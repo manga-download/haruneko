@@ -11,7 +11,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/comic-polaris\.jp\/[^/]+\/$/, 'div#contents div.h2_area_comic h2.h2ttl_comic')
+@Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div#contents div.h2_area_comic h2.h2ttl_comic')
 @Common.MangasMultiPageCSS('/wp-admin/admin-ajax.php?action=get_flex_titles_for_toppage&get_num=64&page={page}', 'div.update_work_size div.update_work_info_img a', 1, 1, 0, MangaExtractor)
 @SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()

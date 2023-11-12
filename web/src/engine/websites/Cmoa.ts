@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/www\.cmoa\.jp\/title\/\d+\/(vol\/\d+\/)?$/, '#GA_this_page_title_name')
+@Common.MangaCSS(/^{origin}\/title\/\d+\/(vol\/\d+\/)?$/, '#GA_this_page_title_name')
 @Common.MangasNotSupported()
 @SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()

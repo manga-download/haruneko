@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Comic Valkyrie'
     },
     container: {
-        url: 'https://www.comic-valkyrie.com/teisou/',
+        url: 'https://www.comic-valkyrie.com/teisou/new.html', //testing the removing of new.html on purpose
         id: '/teisou/',
         title: '貞操逆転世界'
     },
