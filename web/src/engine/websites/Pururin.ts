@@ -18,7 +18,7 @@ function MangaInfoExTractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/pururin.to\/gallery\/\d+\//, 'div.title h1 span')
+@Common.MangaCSS(/^{origin}\/gallery\/\d+\//, 'div.title h1 span')
 @Common.MangasMultiPageCSS('/browse/title?page={page}', 'a.card.card-gallery', 1, 1, 0, MangaInfoExTractor)
 @Common.ImageAjax()
 

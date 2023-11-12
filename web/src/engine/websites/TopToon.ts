@@ -25,7 +25,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/toptoon\.com\/comic\/ep_list\//, 'div.bnr_episode_info p.tit_toon')
+@Common.MangaCSS(/^{origin}\/comic\/ep_list\//, 'div.bnr_episode_info p.tit_toon')
 @Common.ChaptersSinglePageCSS('div.episode_list ul a.episode-items', ChapterExtractor)
 @Common.ImageAjax()
 

@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as MangaReader from './decorators/MangaReaderCMS';
 import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/manga18\.club\/manhwa\/[^/]+$/, 'div.detail_infomation div.detail_name')
+@Common.MangaCSS(/^{origin}\/manhwa\/[^/]+$/, 'div.detail_infomation div.detail_name')
 @Common.MangasMultiPageCSS('/list-manga/{page}', 'div.story_item div.mg_info div.mg_name > a' )
 @Common.ChaptersSinglePageCSS(MangaReader.queryChapters, MangaReader.ChapterInfoExtractor)
 @Common.ImageAjax()

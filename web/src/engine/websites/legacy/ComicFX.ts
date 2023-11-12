@@ -16,7 +16,7 @@ function MangaExtractor(element: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/comicfx\.net\/comic\/[^/]+$/, '.judul-komik h2')
+@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.judul-komik h2')
 @MangaReader.MangasSinglePageCSS(MangaReader.queryMangas, '/', MangaExtractor)
 @Common.ChaptersSinglePageCSS('ul#listch li span.xkiri.pull-left a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div#lcanv img[onerror]')
