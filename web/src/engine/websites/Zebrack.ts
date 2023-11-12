@@ -112,7 +112,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/zebrack-comic\.shueisha\.co\.jp\/(title|gravure|magazine)\/\d+(\/(issue|volume|volume_list)\/\d+)?/.test(url);
+        return new RegExp(`^${this.URI.origin}/(title|gravure|magazine)/\\d+(/(issue|volume|volume_list)/\\d+)?`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

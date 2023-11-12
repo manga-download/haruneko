@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Madara from './decorators/WordPressMadara';
 
-@Madara.MangaCSS(/^https?:\/\/shinigami\.sh\/series\/[\w-]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/series\/[\w-]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS('div.page-break img[data-src]')

@@ -4,7 +4,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/assortedscans\.com\/reader\/[^/]+\/$/, '#series-title')
+@Common.MangaCSS(/^{origin}\/reader\/[^/]+\/$/, '#series-title')
 @Common.MangasSinglePageCSS('/reader/', 'section.series h2.series-title a')
 @Common.ChaptersSinglePageCSS('div.chapter > a')
 @Common.ImageAjaxFromHTML('#page-image', false, true)

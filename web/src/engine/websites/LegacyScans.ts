@@ -17,7 +17,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/legacy-scans\.com\/comics\/[^/]+$/, 'div.serieTitle h1')
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'div.serieTitle h1')
 @Common.ChaptersSinglePageCSS('div.chapterList a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.readerMainContainer img[data-nuxt-img]')
 @Common.ImageAjax()

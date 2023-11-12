@@ -23,7 +23,7 @@ const chapterScript = `
     });
 `;
 
-@Common.MangaCSS(/^https?:\/\/www\.sunday-webry\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.MangasMultiPageCSS(['/series', '/series/oneshot', '/series/yoru-sunday'], 'ul.webry-series-list > li.webry-series-item > a')
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()

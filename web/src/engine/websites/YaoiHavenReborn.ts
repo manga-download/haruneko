@@ -14,7 +14,7 @@ const mangasPerPageScript = `
     app.$http.post('/api/accounts/pagination/', {'paginate_by': 200}, {headers: {'X-CSRFToken': csrf_token}});
 `;
 
-@Common.MangaCSS(/^https?:\/\/www\.yaoihavenreborn\.com\/doujinshi/, 'meta[property="og:title"]')
+@Common.MangaCSS(/^{origin}\/doujinshi/, 'meta[property="og:title"]')
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('v-card-text v-img.mx-auto.my-1')
 @Common.ImageAjax()
