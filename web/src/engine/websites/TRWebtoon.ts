@@ -9,7 +9,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/trwebtoon\.com\/webtoon\//, 'div#movie-card h2.movie__title')
+@Common.MangaCSS(/^{origin}\/webtoon\//, 'div#movie-card h2.movie__title')
 @Common.MangasMultiPageCSS('/webtoon-listesi?page={page}', 'div.page-content div.card div.card-body div.table-responsive a.text-hover-primary')
 @Common.ChaptersSinglePageCSS('table#chapters tbody tr td:first-of-type a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div#images img')

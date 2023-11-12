@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/magcomi\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.MangasMultiPageCSS(['/series'], 'ul.magcomi-series-list > li.series-item > a')
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()

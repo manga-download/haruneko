@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SinMH from './decorators/SinMH';
 
-@Common.MangaCSS(/^https?:\/\/www\.zuimh\.com\/manhua\/[^/]+\/$/, SinMH.queryManga)
+@Common.MangaCSS(/^{origin}\/manhua\/[^/]+\/$/, SinMH.queryManga)
 @Common.MangasMultiPageCSS(SinMH.path, SinMH.queryMangas)
 @SinMH.ChaptersSinglePageJS(SinMH.queryChaptersScript, SinMH.queryChapters)
 @SinMH.PagesSinglePageJS()
@@ -17,9 +17,5 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async Initialize(): Promise<void> {
-        //main page is damn slow
     }
 }

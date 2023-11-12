@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MadTheme from './decorators/MadTheme';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/mangabuddy\.com\/[^/]+$/, 'div.name.box h1')
+@Common.MangaCSS(/^{origin}\/[^/]+$/, 'div.name.box h1')
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
 @MadTheme.ChaptersSinglePageAJAX()
 @MadTheme.PagesSinglePageJS()

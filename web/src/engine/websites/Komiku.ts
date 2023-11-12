@@ -10,7 +10,7 @@ function MangaLabelExtractor(element: HTMLElement) {
     return element.textContent.replace(/^komik/i, '').trim();
 }
 
-@Common.MangaCSS(/https:\/\/komiku\.id/, 'article header#Judul h1[itemprop="name"]', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}/, 'article header#Judul h1[itemprop="name"]', MangaLabelExtractor)
 @Common.ChaptersSinglePageCSS('table#Daftar_Chapter td.judulseries a')
 @Common.PagesSinglePageCSS('section#Baca_Komik img')
 @Common.ImageAjax()

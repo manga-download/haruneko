@@ -20,7 +20,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/manga-tube\.me\/series\//, 'h1.series-title')
+@Common.MangaCSS(/^{origin}\/series\//, 'h1.series-title')
 @Common.ChaptersSinglePageCSS('div.vol-container ul.chapter-list li a[title]', ChapterExtractor)
 @Common.PagesSinglePageJS('manga_reader.pages.map(page => manga_reader.img_path + page.file_name);', 500)
 @Common.ImageAjax()

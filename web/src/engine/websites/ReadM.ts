@@ -16,7 +16,7 @@ function ChapterInfoExtractor(element: HTMLElement) {
     return { id, title };
 
 }
-@Common.MangaCSS(/^https?:\/\/readm\.org\/manga\//, MangaInn.queryMangaTitle)
+@Common.MangaCSS(/^{origin}\/manga\//, MangaInn.queryMangaTitle)
 @MangaInn.MangasMultiPageCSS(MangaInn.queryMangas, MangaInn.pathname, MangaInfosExtractor)
 @Common.ChaptersSinglePageCSS(MangaInn.queryChapters, ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaInn.queryPages)

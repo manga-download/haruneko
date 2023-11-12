@@ -5,7 +5,7 @@ import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/comic-days\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()

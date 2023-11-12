@@ -7,7 +7,7 @@ function ImageExtractor(img: HTMLImageElement) {
     return img.dataset.original;
 }
 
-@Common.MangaCSS(/https:\/\/hamtruyen\.info\//, 'meta[property="og:title"]')
+@Common.MangaCSS(/^{origin}\//, 'meta[property="og:title"]')
 @Common.MangasMultiPageCSS('/danhsach/P{page}/index.html', 'h4.story-name a')
 @Common.ChaptersSinglePageCSS('div.chap-item-info h5.name a')
 @Common.PagesSinglePageCSS('div.list-images img', ImageExtractor)

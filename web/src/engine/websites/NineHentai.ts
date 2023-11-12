@@ -22,7 +22,7 @@ type APIChapter = {
     results: { total_page: number, id: number, image_server : string }
 }
 
-@Common.MangaCSS(/^https?:\/\/9hentai\.to\/g\//, 'div#info h1')
+@Common.MangaCSS(/^{origin}\/g\//, 'div#info h1')
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
