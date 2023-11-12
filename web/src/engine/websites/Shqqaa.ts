@@ -7,7 +7,7 @@ function MangaInfoExtractor(element: HTMLTitleElement) {
     return element.text.split('|')[0].replace('مانجا', '').trim();
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.shqqaa\.com\/manga\//, 'head title', MangaInfoExtractor)
+@Common.MangaCSS(/^{origin}\/manga\//, 'head title', MangaInfoExtractor)
 @Common.MangasSinglePageCSS('/manga/', 'div.card div.card-body h6.card-title a')
 @Common.ChaptersSinglePageCSS('div.card.card-body div.text-center a[role="button"]')
 @Common.PagesSinglePageCSS('div.img-manga img')
