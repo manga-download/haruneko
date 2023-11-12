@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as NHentai from './decorators/NHentai';
 
-@Common.MangaCSS(/https?:\/\/nhentai\.net\/g\/\d+/, NHentai.queryMangaTitle)
+@Common.MangaCSS(/^{origin}\/g\/\d+/, NHentai.queryMangaTitle)
 @Common.MangasNotSupported()
 @NHentai.ChaptersUniqueFromManga()
 @Common.PagesSinglePageJS(NHentai.pageScript, 500)
