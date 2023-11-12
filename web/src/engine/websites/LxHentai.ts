@@ -11,7 +11,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/lxmanga\.net\/truyen\/[^/]+/, 'ol li div.flex.items-center span')
+@Common.MangaCSS(/^{origin}\/truyen\/[^/]+/, 'ol li div.flex.items-center span')
 @Common.MangasMultiPageCSS('/danh-sach?page={page}', 'div.w-full.relative div.p-2.w-full.truncate a.text-ellipsis')
 @Common.ChaptersSinglePageCSS('div.justify-between ul.overflow-y-auto a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.text-center img.lazy', Mojo.PageExtractor)

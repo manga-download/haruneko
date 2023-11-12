@@ -1,6 +1,6 @@
 import type { Chapter, MangaScraper, Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
-export const queryMangaTitle = 'meta[property="og:title"]';
+export const queryMangaTitle = '#item-detail .title-detail';
 export const queryChapter = 'div.list-chapter ul li.row div.chapter a';
 export const queryPages = 'div.reading div.page-chapter img';
 export const path = '/?page={page}';
