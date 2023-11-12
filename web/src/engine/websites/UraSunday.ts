@@ -30,7 +30,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/urasunday\.com\/title\/\d+$/, 'div.title div.detail div.info h1')
+@Common.MangaCSS(/^{origin}\/title\/\d+$/, 'div.title div.detail div.info h1')
 @Common.ChaptersSinglePageCSS('div.title div.detail div.chapter ul li:not([class]) a', ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()

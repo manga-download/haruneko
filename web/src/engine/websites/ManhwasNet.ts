@@ -25,7 +25,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/manhwas\.net\/manga\/[^/]+$/, 'article.anime-single h1.title')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article.anime-single h1.title')
 @Common.MangasMultiPageCSS('/biblioteca?page={page}', 'article.anime a', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('li a.fa-book', ChapterExtractor)
 @Common.PagesSinglePageJS(pagesScript, 2500)

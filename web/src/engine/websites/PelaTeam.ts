@@ -19,7 +19,7 @@ const pageScript = `
          });
 `;
 
-@Common.MangaCSS(/^https?:\/\/pelateam\.org\/Computer\/\?manga=[^#]+$/, 'div.nomeserie a', Common.ElementLabelExtractor(), true)
+@Common.MangaCSS(/^{origin}\/Computer\/\?manga=[^#]+$/, 'div.nomeserie a', Common.ElementLabelExtractor(), true)
 @Common.MangasSinglePageCSS('/Computer/', 'div.theList div.nomeserie > a', MangaAndChapterExtractor)
 @Common.ChaptersSinglePageCSS('div.theList a[title = "Capitolo Italiano"]', MangaAndChapterExtractor)
 @Common.PagesSinglePageJS(pageScript)
