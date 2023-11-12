@@ -4,7 +4,7 @@ import { DecoratableMangaScraper, type MangaPlugin, type Manga } from '../provid
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/pocket\.shonenmagazine\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.ChaptersSinglePageCSS(CoreView.queryChapters)
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()

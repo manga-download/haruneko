@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 
-@Common.MangaCSS(/^https?:\/\/blogtruyen\.vn\/[^/]+\//, 'section.manga-detail h1.entry-title')
+@Common.MangaCSS(/^{origin}\/[^/]+\//, 'section.manga-detail h1.entry-title')
 @Common.MangasMultiPageCSS('/ajax/Search/AjaxLoadListManga?key=tatca&orderBy=1&p={page}', 'div.list p span.tiptip a', 1, 1, 200)
 @Common.ChaptersSinglePageCSS('div#list-chapters span.title a')
 @MangaStream.PagesSinglePageCSS([/donate/], 'article#content img:not([marginheight])')

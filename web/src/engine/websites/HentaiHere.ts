@@ -13,7 +13,7 @@ const script = `
             });
         `;
 
-@Common.MangaCSS(/^https?:\/\/hentaihere\.com/, 'div.bg-black h4 a', Common.ElementLabelExtractor('span'))
+@Common.MangaCSS(/^{origin}/, 'div.bg-black h4 a', Common.ElementLabelExtractor('span'))
 @Common.MangasMultiPageCSS('/directory?page={page}', 'div.item a.text-ellipsis')
 @Common.ChaptersSinglePageCSS('li.sub-chp a#chapterBlock', Common.AnchorInfoExtractor(false, 'i'))
 @Common.PagesSinglePageJS(script, 500)

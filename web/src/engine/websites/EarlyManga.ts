@@ -48,8 +48,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/earlym\.org\/manga\/\d+\/\S+/.test(url);
+        return new RegExp(`^${this.URI.origin}/manga/\\d+/\\S+`).test(url);
     }
+
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = url.match(/\/manga\/(\S+)/)[1];
         const apicallurl = new URL('/api/manga/' + mangaid, this.URI);
