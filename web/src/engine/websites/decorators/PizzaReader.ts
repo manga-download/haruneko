@@ -56,7 +56,8 @@ export function MangaAJAX(pattern: RegExp) {
 
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
-                return pattern.test(url);
+                const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
+                return new RegExp(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaAJAX.call(this, provider, url);
