@@ -8,8 +8,7 @@ const config = {
     container: {
         url: 'https://www.zuimh.com/manhua/chenshuiwanguchushihengtuizhutian/',
         id: '/manhua/chenshuiwanguchushihengtuizhutian/',
-        title: '沉睡万古：出世横推诸天',
-        timeout: 20000
+        title: '沉睡万古：出世横推诸天'
     },
     child: {
         id: '/manhua/chenshuiwanguchushihengtuizhutian/2108800.html',

@@ -8,13 +8,11 @@ const config = {
     container: {
         url: 'https://www.icekr.com/manhua/wojialaopolaiziyiqiannianqian/',
         id: '/manhua/wojialaopolaiziyiqiannianqian/',
-        title: '我家老婆来自一千年前',
-        timeout: 15000
+        title: '我家老婆来自一千年前'
     },
     child: {
         id: '/manhua/wojialaopolaiziyiqiannianqian/1387488.html',
-        title: '预告',
-        timeout: 15000
+        title: '预告'
     },
     entry: {
         index: 0,

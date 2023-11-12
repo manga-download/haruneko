@@ -8,8 +8,7 @@ const config = {
     container: {
         url: 'https://www.gufengmh9.com/manhua/moshifanren/',
         id: '/manhua/moshifanren/',
-        title: '末世凡人',
-        timeout: 30000
+        title: '末世凡人'
     },
     child: {
         id: '/manhua/moshifanren/252431.html',

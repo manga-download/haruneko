@@ -18,9 +18,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
-    public override async Initialize(): Promise<void> {
-        //main page is damn slow
-    }
-
 }
