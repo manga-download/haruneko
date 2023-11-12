@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Zbulu from './decorators/WordPressZbulu';
 
-@Zbulu.MangaCSS(/^https:\/\/mytoon\.net\/[^/]+\/$/)
+@Zbulu.MangaCSS(/^{origin}\/[^/]+\/$/)
 @Zbulu.MangasMultiPageCSS()
 @Zbulu.ChaptersMultiPageCSS()
 @Common.PagesSinglePageCSS(Zbulu.queryPages)
