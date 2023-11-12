@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SixParkbbs from './decorators/SixParkbbs';
 
-@Common.MangaCSS(/^https?:\/\/web\.6parkbbs\.com\/index\.php\?app=forum&act=view&tid=\d+/, 'div.c-box p.c-box-h b', SixParkbbs.MangaLabelExtractor, true)
+@Common.MangaCSS(/^{origin}\/index\.php\?app=forum&act=view&tid=\d+/, 'div.c-box p.c-box-h b', SixParkbbs.MangaLabelExtractor, true)
 @SixParkbbs.MangasMultiPageCSS('/index.php?app=forum&act=bbs&bbsid=2032&p={page}', 'div#d_list div.repl-list-one a:nth-child(1)', /.*\[漫画\]/)
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('div.cen-main div.c-box-m center img', SixParkbbs.PagesExtractor)
