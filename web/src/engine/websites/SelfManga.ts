@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as ReadM from './decorators/ReadMangaLive';
 
-@Common.MangaCSS(/^https?:\/\/selfmanga\.live\/[^/]+$/, ReadM.queryMangaTitle)
+@Common.MangaCSS(/^{origin}\/[^/]+$/, ReadM.queryMangaTitle)
 @Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, ReadM.pageMangaOffset, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS(ReadM.queryChapters)
 @ReadM.PagesSinglePageJS()
