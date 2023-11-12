@@ -4,7 +4,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/www\.wnacg\.com\/photos-index/, 'div#bodywrap > h2')
+@Common.MangaCSS(/^{origin}\/photos-index/, 'div#bodywrap > h2')
 @Common.MangasMultiPageCSS('/albums-index-page-{page}.html', 'ul li.gallary_item div.info div.title a')
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjaxFromHTML('img#picarea')

@@ -20,7 +20,7 @@ function MangaInfoExtractor(element: HTMLElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.comic-ryu\.jp\/_[^/]+\/index.html/, 'div#detail div.titlepage h2 img', MangaExtractor)
+@Common.MangaCSS(/^{origin}\/_[^/]+\/index.html/, 'div#detail div.titlepage h2 img', MangaExtractor)
 @Common.MangasSinglePageCSS('/lineup/', 'article.m-lineup-piece', MangaInfoExtractor)
 @Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()

@@ -26,7 +26,7 @@ type APIPages = {
     }
 }
 
-@Common.MangaCSS(/https?:\/\/littlexgarden\.com\/[^/]/, 'h2.super-title')
+@Common.MangaCSS(/^{origin}\/[^/]/, 'h2.super-title')
 @Common.MangasSinglePageCSS('/mangas', 'div.listing a.no-select', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
 

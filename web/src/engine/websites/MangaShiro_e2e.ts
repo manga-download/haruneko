@@ -6,17 +6,17 @@ const config: Config = {
         title: 'MangaShiro'
     },
     container: {
-        url: 'https://mangashiro.me/manga/star-martial-god-technique/',
-        id: '/manga/star-martial-god-technique/',
-        title: 'Star Martial God Technique'
+        url: 'https://mangashiro.me/manga/hackgu/',
+        id: '/manga/hackgu/',
+        title: '.hack//G.U.+'
     },
     child: {
-        id: '/star-martial-god-technique-chapter-01/',
+        id: '/hackg-u-chapter-01/',
         title: 'Chapter 01'
     },
     entry: {
-        index: 2,
-        size: 115_931,
+        index: 1,
+        size: 115_639,
         type: 'image/jpeg'
     }
 };

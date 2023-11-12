@@ -239,6 +239,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingDownloadsInfo: '...',
   Plugin_Settings_ThrottlingInteraction: "Zugriffsbegrenzung [Anfragen/Minute]",
   Plugin_Settings_ThrottlingInteractionInfo: "Einschränkung der Anzahl von Abfragen an die Webseite zur Prävention einer temporären oder dauerhaften Sperrung",
+  Plugin_Settings_UrlOverride: 'Url Override',
+  Plugin_Settings_UrlOverrideInfo: 'Use this URL as current domain for this website',
   Plugin_Common_MangaIndex_NotSupported: "Ein Inhaltsverzeichnis kann für diese Webseite nicht erstellt werden. Benutze die Kopieren & Einfügen Funktionalität um direkt auf den Inhalt einer URL zuzugreifen!",
   Plugin_Common_Chapter_UnavailableError: "Das Kapitel ist nicht verfügbar (gekauft/freigeschaltet/öffentlich)!",
   Plugin_Common_Chapter_InvalidError: "Fehler beim extrahieren der einzelnen Seiten aus dem Kapitel!",

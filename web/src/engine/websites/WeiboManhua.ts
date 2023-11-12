@@ -77,7 +77,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /^https?:\/\/manhua\.weibo\.com\/c\//.test(url);
+        return new RegExp(`^${this.URI.origin}/c/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
