@@ -22,7 +22,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /^https?:\/\/manga\.d34d\.one\/manga\//.test(url);
+        return new RegExp(`^${this.URI.origin}/manga/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

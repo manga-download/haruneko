@@ -4,7 +4,7 @@ import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest} from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/212\.32\.226\.234\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.ElementLabelExtractor('span.alter'))
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.ElementLabelExtractor('span.alter'))
 @Common.MangasMultiPageCSS('/komik-list/page/{page}/', '#main .relat div.animepost a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a')
 @Common.ImageAjax()

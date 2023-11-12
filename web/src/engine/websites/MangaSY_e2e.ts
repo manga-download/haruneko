@@ -6,18 +6,18 @@ const config = {
         title: 'Manga SY'
     },
     container: {
-        url: 'https://www.mangasy.com/manga/his-thousands-romantic-tricks/',
-        id: JSON.stringify({ post: '9476', slug: '/manga/his-thousands-romantic-tricks/' }),
-        title: 'His Thousands Romantic Tricks'
+        url: 'https://www.mangasy.com/manga/bossy-president-please-love-me-gently/',
+        id: JSON.stringify({ post: '9599', slug: '/manga/bossy-president-please-love-me-gently/' }),
+        title: 'Bossy President, Please Love Me Gently'
     },
     child: {
-        id: '/manga/his-thousands-romantic-tricks/chapter-157-the-end/',
-        title: 'Chapter 157-The End',
+        id: '/manga/bossy-president-please-love-me-gently/chapter-0-prologue/',
+        title: 'Chapter 0-Prologue',
         timeout: 15000
     },
     entry: {
         index: 0,
-        size: 73_444,
+        size: 82_554,
         type: 'image/webp'
     }
 };

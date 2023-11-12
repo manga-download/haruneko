@@ -10,7 +10,7 @@ type APIPages = {
     }[]
 }
 
-@Common.MangaCSS(/^https?:\/\/whimsubs.xyz\/r\/series\/[^/]+\/$/, '.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8-desktop.mdc-layout-grid__cell--span-6-tablet h1', Common.ElementLabelExtractor('span, a'))
+@Common.MangaCSS(/^{origin}\/r\/series\/[^/]+\/$/, '.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8-desktop.mdc-layout-grid__cell--span-6-tablet h1', Common.ElementLabelExtractor('span, a'))
 @Common.MangasMultiPageCSS('/r/directory/{page}/', 'div.mdc-card div.mdc-card__media-title > a')
 @Common.ChaptersSinglePageCSS('ul.mdc-list li span.mdc-list-item__text > a')
 @Common.ImageAjax()

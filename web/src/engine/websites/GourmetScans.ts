@@ -17,7 +17,7 @@ const pageScripts = `
     });
 `;
 
-@Madara.MangaCSS(/^https?:\/\/gourmetscans\.net\/project\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Gourmet Scans"])')
+@Madara.MangaCSS(/^{origin}\/project\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Gourmet Scans"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Common.PagesSinglePageJS(pageScripts)

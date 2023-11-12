@@ -9,7 +9,7 @@ function InfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/nightow\.net/, 'div.theList h3.title', Common.ElementLabelExtractor(), true)
+@Common.MangaCSS(/^{origin}/, 'div.theList h3.title', Common.ElementLabelExtractor(), true)
 @Common.MangasSinglePageCSS('', 'div.selector2 div.options a', InfoExtractor)
 @Common.ChaptersSinglePageCSS('div.theList div.chapter b a', InfoExtractor)
 @Common.PagesSinglePageJS('imageArray.map(image => window.location.origin +"/online/"+ image);', 1000)

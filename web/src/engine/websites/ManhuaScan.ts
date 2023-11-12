@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as MadTheme from './decorators/MadTheme';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/manhuascan\.io\/manga\/[^/]+$/, 'div.name.box h1')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.name.box h1')
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
 @MadTheme.PagesSinglePageJS()
 @Common.ImageAjax()

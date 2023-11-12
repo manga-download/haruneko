@@ -10,7 +10,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/comicborder\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @Common.MangasSinglePageCSS('/', 'ul.index-list-all li a', MangaExtractor)
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()
