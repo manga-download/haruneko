@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './ElevenToon.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import { FetchCSS, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import * as Common from './decorators/Common';
 
@@ -10,6 +10,8 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
         title: anchor.querySelector('.homelist-title span').textContent.trim()
     };
 }
+
+@Common.MangaCSS(/^https?:\/\/www\.11toon\d*\.com\/bbs\/board\.php\?bo_table=toons&stx=[^/]+/, '#cover-info h2', Common.ElementLabelExtractor(), true )
 @Common.MangasMultiPageCSS('/bbs/board.php?bo_table=toon_c&type=upd&page={page}', 'ul.homelist li[data-id] a', 1, 1, 0, MangaExtractor)
 @Common.PagesSinglePageJS('img_list', 500)
 @Common.ImageAjax()
@@ -29,14 +31,6 @@ export default class extends DecoratableMangaScraper {
         const request = new FetchRequest(uri.href);
         this.URI.href = await FetchWindowScript(request, `window.location.origin`, 1500);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/www\.11toon\d*\.com\/bbs\/board\.php\?bo_table=toons&stx=/.test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        return Common.FetchMangaCSS.call(this, provider, url, '#cover-info h2', Common.ElementLabelExtractor(), true);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
