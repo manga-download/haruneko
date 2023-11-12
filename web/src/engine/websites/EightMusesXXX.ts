@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 const extractor = Common.AnchorInfoExtractor(true);
-@Common.MangaCSS(/^https?:\/\/8muses\.xxx\/comics\/[^/]+\/$/, 'div#content meta[itemprop="name"]')
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+\/$/, 'div#content meta[itemprop="name"]')
 @Common.MangasNotSupported()
 @Common.ChaptersSinglePageCSS('div#content div.gallery a.c-tile', extractor)
 @Common.PagesSinglePageCSS('div.gallery div.image img')

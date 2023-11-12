@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 import * as DM5 from './decorators/DM5';
 
 const extractor = Common.AnchorInfoExtractor(true);
-@Common.MangaCSS(/^https?:\/\/www\.mangahere\.cc\/manga\//, 'div.detail-info span.detail-info-right-title-font')
+@Common.MangaCSS(/^{origin}\/manga\//, 'div.detail-info span.detail-info-right-title-font')
 @Common.MangasSinglePageCSS('/mangalist/', 'div.browse-new-block-list div.browse-new-block p.browse-new-block-content a', extractor)
 @Common.ChaptersSinglePageCSS('div#chapterlist ul li a', extractor)
 @DM5.PagesSinglePageScript()

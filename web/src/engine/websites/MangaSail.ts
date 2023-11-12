@@ -8,14 +8,14 @@ function IsImage(page: string) {
     return ['png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp'].includes(page.toLowerCase().split('.').pop());
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.mangasail\.net\/content\//, 'div.main-content-inner h1.page-header')
+@Common.MangaCSS(/^{origin}\/content\/[^/]+$/, 'div.main-content-inner h1.page-header')
 @Common.MangasMultiPageCSS('/directory?page={page}', 'table.directory_list tr td:first-of-type a')
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangasail', `MangaSail`, 'https://www.mangasail.net', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangasail', `MangaSail`, 'https://www.sailmanga.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

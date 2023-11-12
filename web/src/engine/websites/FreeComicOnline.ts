@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/freecomiconline\.me\/comic\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="for free"])')
+@Madara.MangaCSS(/^{origin}\/comic\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="for free"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()

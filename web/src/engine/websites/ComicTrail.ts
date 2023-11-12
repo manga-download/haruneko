@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/comic-trail\.com\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.MangasMultiPageCSS(['/series'], '#page-comicTrail-serial-serial > div div a', undefined, 'h4')
 @CoreView.ChaptersSinglePageCSS()
 @CoreView.PagesSinglePageJSON()

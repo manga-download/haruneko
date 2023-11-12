@@ -16,7 +16,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/lelscans\.net\/lecture[^/]+$/, 'meta[name="lelscan"]')
+@Common.MangaCSS(/^{origin}\/lecture[^/]+$/, 'meta[name="lelscan"]')
 @Common.MangasSinglePageCSS('', 'div.outil_lecture ul li a', MangaExtractor)
 @Common.ChaptersSinglePageCSS('div#header-image form select:first-of-type option', ChapterExtractor)
 @Common.ImageAjaxFromHTML('div#image img')

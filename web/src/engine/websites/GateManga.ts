@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/gatemanga\.com\/ar\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/ar\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageCSS()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()

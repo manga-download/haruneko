@@ -1,4 +1,5 @@
-import { GetLocale } from '../../i18n/Localization';
+import { VariantResourceKey as R } from '../../i18n/ILocale';
+import { Exception } from '../Error';
 import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
@@ -28,12 +29,7 @@ type BookmarkLegacy = {
     };
 };
 
-class BookmarkFormatError extends Error {
-    constructor(message?: string) {
-        super(message);
-        this.name = BookmarkFormatError.name;
-    }
-}
+class BookmarkFormatError extends Exception {}
 
 function GetKeys(data: unknown, prefix = ''): string {
     return Object.keys(data ?? {}).map(key => {
@@ -77,5 +73,5 @@ export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
         return bookmark;
     }
 
-    throw new BookmarkFormatError(GetLocale().BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError());
+    throw new BookmarkFormatError(R.BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError);
 }

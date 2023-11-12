@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/freewebtooncoins\.com\/webtoon\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="free coins"])')
+@Madara.MangaCSS(/^{origin}\/webtoon\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="free coins"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
