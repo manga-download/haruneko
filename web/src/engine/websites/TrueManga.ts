@@ -8,7 +8,7 @@ function ImageExtractor(element: HTMLImageElement): string {
     return element.dataset.src;
 }
 
-@Common.MangaCSS(/^https?:\/\/truemanga\.com\/[^/]+$/, 'div.name.box h1')
+@Common.MangaCSS(/^{origin}\/[^/]+$/, 'div.name.box h1')
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.list div.title h3 a', 1)
 @MadTheme.ChaptersSinglePageAJAX()
 @Common.PagesSinglePageCSS('div.chapter-image img', ImageExtractor)

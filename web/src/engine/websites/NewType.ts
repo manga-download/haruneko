@@ -15,7 +15,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/comic\.webnewtype\.com\/contents\/[^/]+\/$/, 'div.section_item--contents ul li h1.contents__ttl')
+@Common.MangaCSS(/^{origin}\/contents\/[^/]+\/$/, 'div.section_item--contents ul li h1.contents__ttl')
 @Common.MangasSinglePageCSS('/contents/?refind_search=all', 'li.detail__col-list--common > a', MangaExtractor)
 @Common.ImageAjax()
 

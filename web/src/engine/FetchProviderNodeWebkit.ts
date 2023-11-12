@@ -235,50 +235,27 @@ async function FetchWindow(request: FetchRequest, timeout: number, preload: Prel
     return await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(request.url/*'data:text/plain,'*/, options, win => {
 
         const invocations: {
-            name: 'opened' | 'document-start' | 'loaded' | 'new-win-policy' | 'navigation';
+            name: string;
             info: string
         }[] = [];
 
-        if(win?.window?.window) {
-            invocations.push({ name: 'opened', info: win.window?.location?.href });
-            preload(win.window.window, win.window.window);
-            PreventDialogs(win, win.window.window);
-        }
-
-        win.on('document-start', (frame: typeof window) => {
-            invocations.push({ name: 'document-start', info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
-            preload(win.window.window, frame);
-            PreventDialogs(win, frame);
-        });
-
-        // NOTE: Use policy to prevent any new popup windows
-        win.on('new-win-policy', (_frame, url, policy) => {
-            invocations.push({ name: 'new-win-policy', info: url });
-            policy.ignore();
-        });
-
-        win.on('navigation', (_frame, url/*, policy*/) => {
-            invocations.push({ name: 'navigation', info: url });
-            //policy.ignore();
-            win.hide();
-        });
-
-        const destroy = () => {
-            if(!IsVerboseMode) {
-                win.close();
-            }
-            if(!invocations.some(invocation => invocation.name === 'loaded')) {
-                console.warn(`FetchWindow() timed out without <loaded> event being invoked!`);
-            }
-            console.log('FetchWindow()::invocations', invocations);
-            reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
-        };
-
         let cancellation = setTimeout(destroy, timeout);
 
-        win.on('loaded', async () => {
-            invocations.push({ name: 'loaded', info: win.window?.location?.href });
+        function destroy() {
+            if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
+                console.warn(`FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!`, invocations);
+            }
+            if(IsVerboseMode()) {
+                console.log('FetchWindow()::invocations', invocations);
+            } else {
+                win.close();
+            }
+            reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+        }
+
+        let verify = async () => {
             try {
+                verify = () => Promise.resolve();
                 const redirect = await CheckAntiScrapingDetection(win);
                 switch (redirect) {
                     case FetchRedirection.Interactive:
@@ -296,11 +273,50 @@ async function FetchWindow(request: FetchRequest, timeout: number, preload: Prel
                 }
             } catch(error) {
                 clearTimeout(cancellation);
-                if(!IsVerboseMode) {
+                if(!IsVerboseMode()) {
                     win.close();
                 }
                 reject(error);
+            } finally {
+                if(IsVerboseMode()) {
+                    console.log('FetchWindow()::invocations', invocations);
+                }
             }
+        };
+
+        if(win?.window?.window) {
+            invocations.push({ name: 'opened', info: win.window?.location?.href });
+            preload(win.window.window, win.window.window);
+            PreventDialogs(win, win.window.window);
+        }
+
+        win.on('document-start', (frame: typeof window) => {
+            if(win.window === frame) {
+                win.window.document.addEventListener('DOMContentLoaded', () => {
+                    invocations.push({ name: 'DOMContentLoaded', info: win.window?.location?.href });
+                    verify();
+                });
+            }
+            invocations.push({ name: 'document-start', info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
+            preload(win.window.window, frame);
+            PreventDialogs(win, frame);
+        });
+
+        // NOTE: Use policy to prevent any new popup windows
+        win.on('new-win-policy', (_frame, url, policy) => {
+            invocations.push({ name: 'new-win-policy', info: url });
+            policy.ignore();
+        });
+
+        win.on('navigation', (_frame, url/*, policy*/) => {
+            invocations.push({ name: 'navigation', info: url });
+            //policy.ignore();
+            win.hide();
+        });
+
+        win.on('loaded', () => {
+            invocations.push({ name: 'loaded', info: win.window?.location?.href });
+            verify();
         });
 
         // HACK: win.on('loaded', load) alone seems quite unreliable => enforce reload after event was attached ...

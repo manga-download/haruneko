@@ -8,7 +8,7 @@ function IsImage(page: string) {
     return ['png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp'].includes(page.toLowerCase().split('.').pop());
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.sailmanga\.com\/content\/[^/]+$/, 'div.main-content-inner h1.page-header')
+@Common.MangaCSS(/^{origin}\/content\/[^/]+$/, 'div.main-content-inner h1.page-header')
 @Common.MangasMultiPageCSS('/directory?page={page}', 'table.directory_list tr td:first-of-type a')
 @Common.ImageAjax()
 
