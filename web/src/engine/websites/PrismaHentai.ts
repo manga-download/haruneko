@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/prismahentai\.com\/manga\/[^/]+\/$/, 'div#mangazinho')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div#mangazinho')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()

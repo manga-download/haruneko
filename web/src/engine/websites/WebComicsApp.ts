@@ -53,8 +53,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/www\.webcomicsapp\.com\/comic\//.test(url);
+        return new RegExp(`^${this.URI.origin}/comic/`).test(url);
     }
+
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = url.split('/comic/')[1].split('/')[1];
         const element = await FetchCSS<HTMLHeadingElement>(new FetchRequest(url), 'div.book-info div.card-info div.info h5');

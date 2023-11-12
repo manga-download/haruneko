@@ -7,7 +7,7 @@ function ImageExtractor(node: HTMLImageElement) {
     return node.dataset.file;
 }
 
-@Common.MangaCSS(/^https?:\/\/doujins\.com\/[^/]+/, 'head title')
+@Common.MangaCSS(/^{origin}\/[^/]+/, 'head title')
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('img.doujin', ImageExtractor)

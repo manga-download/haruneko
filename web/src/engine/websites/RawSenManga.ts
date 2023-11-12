@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchRequest, FetchWindowScript } from './../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/raw\.senmanga\.com/, 'div.desc h1.series')
+@Common.MangaCSS(/^{origin}/, 'div.desc h1.series')
 @Common.MangasMultiPageCSS('/directory?page={page}', 'div.item-info div.series-title a')
 @Common.ChaptersSinglePageCSS('ul.chapter-list li > a')
 @Common.PagesSinglePageCSS('div.reader img.picture')

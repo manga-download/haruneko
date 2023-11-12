@@ -17,7 +17,7 @@ function MangaExtractor(element: HTMLDivElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/po2scans\.com\/series\/[^/]+$/, 'div.series-information div.title')
+@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'div.series-information div.title')
 @Common.MangasSinglePageCSS('/series', 'div.series-list', MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.chap-section div.chap a')
 @Common.PagesSinglePageJS(pageScript, 2500)

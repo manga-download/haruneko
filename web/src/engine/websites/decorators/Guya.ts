@@ -44,14 +44,15 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
 /**
  * A class decorator that adds the ability to extract a manga from any url that matches the given {@link pattern}.
  * The last part of the url will be used as an id to call the api and get the title
- * @param pattern - An expression to check if a manga can be extracted from an url or not
+ * @param pattern - An expression to check if a manga can be extracted from an url or not, it may contain the placeholders `{origin}` and `{hostname}` which will be replaced with the corresponding parameters based on the website's base URL
  */
 export function MangaAJAX(pattern: RegExp) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
-                return pattern.test(url);
+                const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
+                return new RegExp(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaAJAX.call(this, provider, url);

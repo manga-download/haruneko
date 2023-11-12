@@ -3,7 +3,7 @@ import icon from './FuryoSquad.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/www\.furyosquad\.com\/[^/]+/, 'div.comic-info h1.fs-comic-title')
+@Common.MangaCSS(/^{origin}\/[^/]+/, 'div.comic-info h1.fs-comic-title')
 @Common.MangasSinglePageCSS('/mangas', 'div.fs-chap-container div.grid-item-container div.media-body a', Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div.list.fs-chapter-list div.title a', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div.fs-reader-page img')

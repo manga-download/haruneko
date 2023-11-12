@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /^https?:\/\/comic-walker\.com\/contents\/detail\/[^/]+\/$/.test(url);
+        return new RegExp(`^${this.URI.origin}/contents/detail/[^/]+/$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
         const mangasList : Manga[] = [];
         for (const language of ['en', 'tw', 'jp']) {
             await this.setLanguage(language);
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, '/contents/list/p?={page}', 'div.comicPage ul.tileList li a', 1, 1, 0, Common.AnchorInfoExtractor(false, '.contents_tile_epi'));
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, '/contents/list/?p={page}', 'div.comicPage ul.tileList li a', 1, 1, 0, Common.AnchorInfoExtractor(false, '.contents_tile_epi'));
             const langMangas = mangas.map(manga => new Manga(this, provider, JSON.stringify({ id: manga.Identifier, langCode: language }), manga.Title));
             langMangas.forEach(manga => manga.Tags.push(langMap[language]));
             mangasList.push(...langMangas);
