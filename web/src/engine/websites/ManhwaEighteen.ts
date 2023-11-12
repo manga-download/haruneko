@@ -3,7 +3,7 @@ import icon from './ManhwaEighteen.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/manhwa18\.net\/manga\/[^/]+$/, 'span.series-name')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'span.series-name')
 @Common.MangasMultiPageCSS('/manga-list?page={page}', 'div.series-title a')
 @Common.ChaptersSinglePageCSS('ul.list-chapters a', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div#chapter-content img.lazy')

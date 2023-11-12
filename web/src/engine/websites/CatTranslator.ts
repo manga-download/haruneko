@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/cats-translator\.com\/manga\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Cat-Translator"])')
+@Madara.MangaCSS(/^{origin}\/manga\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Cat-Translator"])')
 @Madara.MangasMultiPageAJAX(undefined, 0, '/manga')
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
