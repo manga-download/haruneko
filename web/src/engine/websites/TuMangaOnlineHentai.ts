@@ -7,7 +7,7 @@ function ImageExtractor(img: HTMLImageElement) {
     return new URL(img.dataset['original'] || img.src, this.URI).href;
 }
 
-@Common.MangaCSS(/^https?:\/\/tmohentai\.com\/contents\//, 'div.panel-heading h3')
+@Common.MangaCSS(/^{origin}\/contents\//, 'div.panel-heading h3')
 @Common.MangasMultiPageCSS('/section/all?view=list&order=alphabetic&page={page}', 'div.panel-body table.table tbody tr td.text-left a')
 @Common.PagesSinglePageCSS('div#content-images img.content-image', ImageExtractor)
 @Common.ImageAjax()

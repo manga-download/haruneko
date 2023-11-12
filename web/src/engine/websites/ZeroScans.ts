@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(/^https?:\/\/zeroscans\.com\/comics\/[^/]+$/).test(url);
+        return new RegExp(`^${this.URI.origin}/comics/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

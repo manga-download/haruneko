@@ -4,11 +4,7 @@
     import './theme/hakuneko.css';
     import './theme/global.css';
     import './theme/sidenav-hack.css';
-    import {
-        Content,
-        Accordion,
-        AccordionItem,
-    } from 'carbon-components-svelte';
+    import { Content } from 'carbon-components-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
     import { onMount } from 'svelte';
@@ -18,7 +14,7 @@
     import Theme from './components/Theme.svelte';
     import MediaSelect from './components/MediaSelect.svelte';
     import MediaItemSelect from './components/MediaItemSelect.svelte';
-    import Jobs from './components/DownloadManager.svelte';
+    import DownloadsStatus from './components/DownloadManagerStatus.svelte';
     import Viewer from './components/viewer/Viewer.svelte';
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
@@ -67,12 +63,8 @@
                 {/if}
             </div>
         {/if}
-        <div id="Bottom" transition:fade>
-            <Accordion id="DownloadManager">
-                <AccordionItem title="DownloadManager">
-                    <Jobs />
-                </AccordionItem>
-            </Accordion>
+        <div id="Bottom">
+            <DownloadsStatus />
         </div>
     </Content>
 </Theme>
@@ -120,12 +112,6 @@
     }
     #Bottom {
         grid-area: Bottom;
-        max-height: 20em;
-    }
-    #Bottom :global(#DownloadManager .bx--accordion__content) {
-        padding-right: 0.5em;
-        background-color: var(--cds-field-01);
-        box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
     }
     :global(#Header) {
         -webkit-app-region: drag;

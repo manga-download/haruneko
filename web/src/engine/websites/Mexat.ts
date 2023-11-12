@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/manga\.mexat\.com\/category\/[^/]+\/$/, 'div.page-head h1.page-title')
+@Common.MangaCSS(/^{origin}\/category\/[^/]+\/$/, 'div.page-head h1.page-title')
 @Common.MangasSinglePageCSS('/قائمة-المانجا/', 'div.content ul.MangaList li div.SeriesName a')
 @Common.ImageAjaxFromHTML('div.content div.post-inner div.pic a img')
 export default class extends DecoratableMangaScraper {

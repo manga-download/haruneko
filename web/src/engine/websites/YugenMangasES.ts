@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 //TODO: needs to be recoded with novel support && Yugenmanga API
 
-@Madara.MangaCSS(/^https?:\/\/yugenmangas\.com\/series\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()

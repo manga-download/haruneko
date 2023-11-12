@@ -11,7 +11,7 @@ function ChapterExtractor(element: HTMLAnchorElement) {
 
 }
 
-@Madara.MangaCSS(/^https?:\/\/ragnarokscan\.com\/series\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX('div.series-box a')
 @Madara.ChaptersSinglePageCSS(undefined, ChapterExtractor)
 @Madara.PagesSinglePageCSS()
