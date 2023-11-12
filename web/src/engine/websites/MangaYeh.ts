@@ -10,7 +10,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/w13\.mangayeh\.com\/manga-info\//, 'div.content h1.title')
+@Common.MangaCSS(/^{origin}\/manga-info\//, 'div.content h1.title')
 @Common.MangasMultiPageCSS('/category/all?page={page}', 'div.media-content div.content > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('#chapterList td:nth-child(1) a')
 @Common.ImageAjax(true)

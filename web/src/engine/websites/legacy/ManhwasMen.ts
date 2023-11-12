@@ -16,7 +16,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 
 }
 
-@Common.MangaCSS(/^https?:\/\/manhwas\.men\/manga\/[^/]+$/, 'h1.title')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'h1.title')
 @Common.MangasMultiPageCSS('/manga-list?page={page}', 'article.anime a', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('ul.episodes-list li a', ChapterExtractor)
 @MangaStream.PagesSinglePageCSS([/discord\.jpg/], 'div#chapter_imgs img')

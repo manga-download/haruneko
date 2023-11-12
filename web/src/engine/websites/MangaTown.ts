@@ -7,7 +7,7 @@ function PageLinkExtractor(element: HTMLOptionElement) {
     return element.value;
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.mangatown\.com\/manga\//, 'div.article_content h1.title-top')
+@Common.MangaCSS(/^{origin}\/manga\//, 'div.article_content h1.title-top')
 @Common.MangasMultiPageCSS('/directory/0-0-0-0-0-0/{page}.htm', 'ul.manga_pic_list li p.title a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('ul.chapter_list li a')
 @Common.ImageAjaxFromHTML('img#image')

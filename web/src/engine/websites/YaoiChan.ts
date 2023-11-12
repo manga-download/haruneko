@@ -3,7 +3,7 @@ import icon from './YaoiChan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/v1\.yaoi-chan\.me\/manga\/\S+\.html$/, 'div#info_wrap div.name_row h1 a.title_top_a')
+@Common.MangaCSS(/^{origin}\/manga\/\S+\.html$/, 'div#info_wrap div.name_row h1 a.title_top_a')
 @Common.MangasMultiPageCSS('/catalog?offset={page}', 'div#content div.content_row div.manga_row1 h2 a.title_link', 0, 20, 0)
 @Common.ChaptersSinglePageCSS('table.table_cha tr td div.manga a')
 @Common.PagesSinglePageJS('fullimg', 500)

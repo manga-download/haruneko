@@ -30,7 +30,7 @@ type APIPages = {
     data : string[]
 }
 
-@Common.MangaCSS(/^https?:\/\/reaperscans\.net\/series\/[^/]+$/, 'head title', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', MangaLabelExtractor)
 @Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {

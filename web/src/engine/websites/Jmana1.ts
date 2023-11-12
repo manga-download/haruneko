@@ -10,7 +10,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/https:\/\/kr14\.jmana\.one/, '.books-db-detail a.tit', Common.ElementLabelExtractor(), true)
+@Common.MangaCSS(/^{origin}/, '.books-db-detail a.tit', Common.ElementLabelExtractor(), true)
 @Common.MangasMultiPageCSS('/comic_list?page={page}', 'ul li.etc div.txt-wrap a.tit', 1, 1, 10000)
 @Common.ChaptersSinglePageCSS('div.lst-wrap ul li div.inner a.tit', ChapterInfoExtractor)
 @Common.ImageAjax()
