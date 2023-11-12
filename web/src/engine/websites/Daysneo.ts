@@ -4,7 +4,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchRegex, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/daysneo\.com\/works\/[^/]+\.html$/, 'p.f150.b')
+@Common.MangaCSS(/^{origin}\/works\/[^/]+\.html$/, 'p.f150.b')
 @Common.MangasMultiPageCSS('/search/?page_num={page}', 'ul.tile li strong.f130 a')
 @Common.ChaptersSinglePageCSS('ul.ul01 li strong.f130 a')
 @Common.ImageAjax()
