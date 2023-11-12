@@ -7,7 +7,7 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 const extract = Common.AnchorInfoExtractor(false, 'span.chapter-release-date');
 
-@Madara.MangaCSS(/^https?:\/\/www\.instamanhwa\.com\/manga\/[^/]+$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.post-title h1')
 @Madara.MangasMultiPageCSS('div.post-title h3 a', 0, '/latest?page={page}')
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()

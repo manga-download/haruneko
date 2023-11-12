@@ -15,7 +15,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/yugenmangas\.org\/series\/[^/]+\/$/, 'div.sinopse div.title-name h1')
+@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.sinopse div.title-name h1')
 @Common.MangasMultiPageCSS('/series?page={page}', 'div.gallery a.mangas-gallery')
 @Common.ChaptersSinglePageCSS('div#listadecapitulos div.chapter a', ChapterExtractor)
 @Common.ImageAjax()

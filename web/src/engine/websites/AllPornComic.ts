@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/allporncomic.com\/porncomic\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="AllPornComic"])')
+@Madara.MangaCSS(/^{origin}\/porncomic\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="AllPornComic"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageCSS()
 @Madara.PagesSinglePageCSS()
