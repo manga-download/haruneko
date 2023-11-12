@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/bestmanga\.club\/manga\/[^/]+\/$/, 'div.summary-content span[property="name"]')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.summary-content span[property="name"]')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Common.PagesSinglePageJS(`chapter_preloaded_images`, 2500)

@@ -36,7 +36,7 @@ const pageScript = `
     });
 `;
 
-@Common.MangaCSS(/https:\/\/www\.kuaikanmanhua\.com/, 'head title', LabelExtractor)
+@Common.MangaCSS(/^{origin}/, 'head title', LabelExtractor)
 @Common.MangasMultiPageCSS('/tag/0?page={page}', 'div.tagContent div a')
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageJS(pageScript, 500)

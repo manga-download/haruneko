@@ -12,7 +12,7 @@ function ImageExtractor(img: HTMLImageElement) {
     return img.dataset.original;
 }
 
-@Common.MangaCSS(/^https?:\/\/xoxocomics\.net\/comic\/[\da-z-]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
+@Common.MangaCSS(/^{origin}\/comic\/[\da-z-]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
 @Common.MangasMultiPageCSS('/comic-list/alphabet?c=&page={page}', 'div.chapter > a')
 @Common.PagesSinglePageCSS('div.page-chapter img', ImageExtractor)
 @Common.ImageAjax()
