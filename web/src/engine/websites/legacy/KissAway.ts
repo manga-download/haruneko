@@ -40,7 +40,7 @@ const pageScript = `
 //TODO Implement at request level a BYPASS for this DDOSS protection
 //its not triggered on main page but on manga page
 
-@Common.MangaCSS(/^https?:\/\/klz9\.com\/\S+\.html$/, FlatManga.queryMangaTitle)
+@Common.MangaCSS(/^{origin}\/[^/]+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasSinglePageCSS(FlatManga.pathSinglePageManga, FlatManga.queryMangas)
 @Common.PagesSinglePageJS(pageScript, 1000)
 @Common.ImageAjax()

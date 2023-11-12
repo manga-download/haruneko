@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
 
-@Common.MangaCSS(/^https?:\/\/truyentranhlh\.net\/truyen-tranh\/[^/]+$/, 'span.series-name')
+@Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'span.series-name')
 @Common.MangasMultiPageCSS('/danh-sach?page={page}', FlatManga.queryMangas)
 @FlatManga.ChaptersSinglePageCSS()
 @Common.PagesSinglePageCSS(FlatManga.queryPages)

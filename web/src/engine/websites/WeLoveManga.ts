@@ -20,7 +20,7 @@ const chapterScript = `
     });
 `;
 
-@Common.MangaCSS(/^https?:\/\/welovemanga\.one\/(mgraw-)?\d+\/$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/(mgraw-)?\d+\/$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS('/manga-list.html?page={page}', FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
 @Common.ChaptersSinglePageJS(chapterScript, 1000)
 @Common.ImageAjax()
