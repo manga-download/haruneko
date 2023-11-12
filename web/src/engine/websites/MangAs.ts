@@ -26,7 +26,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/mangas\.in\/manga\/[^/]+$/, MangaReader.queryMangaTitle)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryMangaTitle)
 @Common.MangasMultiPageCSS('/filterList?page={page}&sortBy=name', 'div.media a.thumbnail', 1, 1, 500, MangaExtractor )
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageCSS(MangaReader.queryPages, MangaReader.ChapterPageExtractor)
