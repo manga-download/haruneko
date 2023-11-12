@@ -18,7 +18,7 @@ type APIPages = {
     }[]
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.mkzhan\.com\/\d+\/$/, 'div.de-info__box p.comic-title')
+@Common.MangaCSS(/^{origin}\/\d+\/$/, 'div.de-info__box p.comic-title')
 @Common.MangasMultiPageCSS('/category/?page={page}', 'div.cate-comic-list div.common-comic-item a.cover')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
