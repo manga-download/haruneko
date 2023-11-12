@@ -10,7 +10,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.dongmanmanhua\.cn\/[^/]+\/[^/]+\/list\?title_no=\d+$/, LineW.queryMangaTitleURI, Common.ElementLabelExtractor(), true)
+@Common.MangaCSS(/^{origin}\/[^/]+\/[^/]+\/list\?title_no=\d+$/, LineW.queryMangaTitleURI, Common.ElementLabelExtractor(), true)
 @Common.MangasSinglePageCSS('/dailySchedule', 'div.daily_lst ul.daily_card li a.daily_card_item', MangaExtractor)
 @LineW.ChaptersMultiPageCSS()
 @LineW.PagesSinglePageJS()
