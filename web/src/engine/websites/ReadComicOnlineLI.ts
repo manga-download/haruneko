@@ -22,7 +22,7 @@ function MangInfoExtractor(element: HTMLDivElement) { //needed because titles ar
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/readcomiconline.li\/Comic\/[^/]+$/, 'div.barContent a.bigChar')
+@Common.MangaCSS(/^{origin}\/Comic\/[^/]+$/, 'div.barContent a.bigChar')
 @Common.MangasMultiPageCSS('/ComicList?page={page}', 'div.list-comic div.item, div.item-list div.group div.col.info', 1, 1, 0, MangInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.episodeList table.listing tr td:first-of-type a, div.section ul.list li a', ChapterExtractor)
 @Common.PagesSinglePageJS('lstImages', 2500) //may trigger a captcha request
