@@ -65,7 +65,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        //return /https?:\/\/comic-fuz\.com\/manga\/\d+$/.test(url);
         return new RegExp(`^${this.URI.origin}/manga/\\d+$`).test(url);
 
     }
