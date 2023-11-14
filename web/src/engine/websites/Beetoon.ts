@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as Zbulu from './decorators/WordPressZbulu';
 import { Fetch, FetchRequest } from '../FetchProvider';
 
-@Zbulu.MangaCSS(/^{origin}\/[^/]+\/$/)
+@Zbulu.MangaCSS(/^https?:\/\/(ww\d*\.)?beetoon\.net\/[^/]+\/$/)
 @Zbulu.MangasMultiPageCSS()
 @Zbulu.ChaptersMultiPageCSS(Zbulu.chapterPath, 'div#chapterList div.items-chapters a')
 @Common.PagesSinglePageCSS(Zbulu.queryPages)

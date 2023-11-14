@@ -5,7 +5,7 @@ import { Fetch, FetchRequest } from '../FetchProvider';
 import * as Common from './decorators/Common';
 import * as Zbulu from './decorators/WordPressZbulu';
 
-@Zbulu.MangaCSS(/^{origin}\/[^/]+\/$/)
+@Zbulu.MangaCSS(/^https?:\/\/(w\d*\.)?holymanga.net\/[^/]+\/$/)
 @Zbulu.MangasMultiPageCSS()
 @Zbulu.ChaptersMultiPageCSS()
 @Common.PagesSinglePageCSS(Zbulu.queryPages)

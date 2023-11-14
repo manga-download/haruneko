@@ -8,7 +8,8 @@ const config: Config = {
     container: {
         url: 'https://w32.holymanga.net/one-piece-02/',
         id: '/one-piece-02/',
-        title: 'One Piece'
+        title: 'One Piece',
+        timeout: 10000
     },
     child: {
         id: '/one-piece-chapter-1096',
