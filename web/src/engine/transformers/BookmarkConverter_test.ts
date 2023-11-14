@@ -62,14 +62,15 @@ describe('BookmarkConverter', () => {
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
-            { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
-            { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
+            { sourceID: 'heavenmanga', targetID: 'beetoon' },
+            { sourceID: 'heavenmanga2', targetID: 'heavenmanga' },
             { sourceID: 'lovehug', targetID: 'welovemanga' },
             { sourceID: 'mangaswat', targetID: 'goldragon' },
-            { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
+            { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
+            { sourceID: 'truyentranhaudioonline', targetID: 'protruyen' },
             { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },
 
             // TODO: Add all test cases from BookmarkConverter::legacyWebsiteIdentifierMap ...

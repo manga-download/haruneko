@@ -14,6 +14,7 @@ const legacyWebsiteIdentifierMap = {
     'realmscans': 'rizzcomics',
     'muctau': 'bibimanga',
     'secretscans': 'lynxscans',
+    'truyentranhaudioonline': 'protruyen',
     'shonenmagazine-pocket': 'shonenmagazine',
     'yugenmangas': 'yugenmangas-es'
 };

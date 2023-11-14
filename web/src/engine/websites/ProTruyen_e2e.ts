@@ -2,9 +2,9 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'truyentranhaudioonline',
-        title: 'Truyện tranh audio'
-    }/*,
+        id: 'protruyen',
+        title: 'ProTruyen'
+    }/*, Irrelevant test since website uses cloudflare
     container: {
         url: 'https://truyentranhaudio.online/manga/.../',
         id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
