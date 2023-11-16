@@ -112,13 +112,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const data = await this.fetchMangaDetail(manga.Identifier);
-        const chapters: Chapter[] = [];
-        data.chapters.forEach(chapterGroup => {
-            chapterGroup.chapters.forEach(chapter => {
-                chapters.push(new Chapter(this, manga, chapter.id.toString(), chapter.title.trim()));
-            });
-        });
-        return chapters;
+        return data.chapters.map(group => group.chapters.map(chapt => new Chapter(this, manga, chapt.id.toString(), chapt.title))).flat();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -142,17 +136,15 @@ export default class extends DecoratableMangaScraper {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return data.pages
-            .filter(page => page.image && page.image.imageUrl)
-            .filter(page => !(page.image.isExtraPage && page.image.isExtraPage == true))
+            .filter(page => page.image?.imageUrl && page.image.isExtraPage != true)
             .map(page => new Page(this, chapter, new URL(page.image.imageUrl, this.imgUrl), { ...page.image }));
-
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         const payload = page.Parameters as ApiImage;
         if (!payload.encryptionKey) return data;
-        const encrypted = await new Response(data).arrayBuffer();
+        const encrypted = await data.arrayBuffer();
         const decrypted = await this.decryptPicture(new Uint8Array(encrypted), payload);
         return Common.GetTypedData(decrypted);
     }
@@ -169,11 +161,9 @@ export default class extends DecoratableMangaScraper {
                 length: 128
             }, true, ['encrypt', 'decrypt']);
 
-        const decrypted = await crypto.subtle.decrypt({
+        return crypto.subtle.decrypt({
             name: 'AES-CBC',
             iv: iv
         }, secretKey, encrypted);
-
-        return decrypted;
     }
 }
