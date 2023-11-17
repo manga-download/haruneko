@@ -2,8 +2,8 @@
 
 const config = {
     plugin: {
-        id: 'readcomiconlineli',
-        title: 'ReadComicOnlineLI'
+        id: 'readcomiconline',
+        title: 'ReadComicOnline'
     },
     container: {
         url: 'https://readcomiconline.li/Comic/Star-Wars-Legacy-War',

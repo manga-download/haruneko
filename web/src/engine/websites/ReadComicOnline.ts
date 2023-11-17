@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './ReadComicOnlineLI.webp';
+import icon from './ReadComicOnline.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -30,7 +30,7 @@ function MangInfoExtractor(element: HTMLDivElement) { //needed because titles ar
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('readcomiconlineli', `ReadComicOnlineLI`, 'https://readcomiconline.li', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
+        super('readcomiconline', `ReadComicOnline`, 'https://readcomiconline.li', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
