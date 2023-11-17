@@ -9,6 +9,7 @@ const legacyWebsiteIdentifierMap = {
     'flamescans-org': 'flamecomics',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
+    'kisscomic': 'readcomiconline',
     'lovehug': 'welovemanga',
     'mangaswat': 'goldragon',
     'realmscans': 'rizzcomics',
