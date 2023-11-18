@@ -62,6 +62,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
+            { sourceID: 'kisscomic', targetID: 'readcomiconline' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'lovehug', targetID: 'welovemanga' },
