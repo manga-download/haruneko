@@ -12,6 +12,7 @@ export { default as AniGliScans } from './AniGliScans';
 export { default as Anikiga } from './Anikiga';
 export { default as Anisamanga } from './Anisamanga';
 export { default as AnshScans } from './AnshScans';
+export { default as AnzManga } from './AnzManga';
 export { default as ApollComics } from './ApollComics';
 export { default as ApollToons } from './ApollToons';
 export { default as AresManga } from './AresManga';
