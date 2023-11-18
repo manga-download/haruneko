@@ -15,6 +15,7 @@ export { default as AnshScans } from './AnshScans';
 export { default as AnzManga } from './AnzManga';
 export { default as ApollComics } from './ApollComics';
 export { default as ApollToons } from './ApollToons';
+export { default as AquaManga } from './AquaManga';
 export { default as AresManga } from './AresManga';
 export { default as ArgosScan } from './ArgosScan';
 export { default as ArthurScan } from './ArthurScan';
