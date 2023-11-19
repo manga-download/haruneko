@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('adonisfansub', 'Adonis Fansub', 'https://manga.adonisfansub.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
+        super('adonisfansub', 'Adonis Fansub', 'https://manga.adonisfansub.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
