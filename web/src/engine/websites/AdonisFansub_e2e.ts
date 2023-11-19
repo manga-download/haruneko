@@ -3,7 +3,7 @@
 const config = {
     plugin: {
         id: 'adonisfansub',
-        title: 'AdonisFansub'
+        title: 'Adonis Fansub'
     },
     container: {
         url: 'https://manga.adonisfansub.com/manga/nyx-stay-night/',
@@ -12,11 +12,11 @@ const config = {
     },
     child: {
         id: '/nyx-stay-night-bolum-0/',
-        title: 'Bölüm 0'
+        title: 'Bölüm 0 - Prolog'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 408_328,
         type: 'image/jpeg'
     }
 };
