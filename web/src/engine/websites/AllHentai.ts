@@ -6,7 +6,7 @@ import * as ReadM from './decorators/ReadMangaLive';
 import { Text } from '../SettingsManager';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
-//To see pixtures we need to be logged
+//To see pictures we need to be logged
 //TODO: Add a login button? Well login works for now anyway, using the button in fluent core UI
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, ReadM.queryMangaTitle)
