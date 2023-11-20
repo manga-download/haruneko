@@ -30,6 +30,7 @@ export { default as AyaToon } from './AyaToon';
 export { default as AzoraWorld } from './AzoraWorld';
 export { default as AzureManga } from './AzureManga';
 export { default as BacaKomik } from './BacaKomik';
+export { default as BacaManga } from './BacaManga';
 export { default as BakaMan } from './BakaMan';
 export { default as Batoto } from './Batoto';
 export { default as BestManga } from './BestManga';

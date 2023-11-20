@@ -5,6 +5,7 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
     'bananascan': 'harmonyscan',
+    'bacamangaorg': 'bacamanga',
     'crazyscans': 'mangacultivator',
     'flamescans-org': 'flamecomics',
     'heavenmanga': 'beetoon', // (future zbulu PR)

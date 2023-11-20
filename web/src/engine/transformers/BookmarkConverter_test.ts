@@ -60,6 +60,7 @@ describe('BookmarkConverter', () => {
         it.each<{ sourceID: string, targetID: string }>([
             { sourceID: '9anime', targetID: 'aniwave' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
+            { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
