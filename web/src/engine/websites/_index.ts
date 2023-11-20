@@ -34,6 +34,7 @@ export { default as BacaManga } from './BacaManga';
 export { default as BakaMan } from './BakaMan';
 export { default as Batoto } from './Batoto';
 export { default as BestManga } from './BestManga';
+export { default as BestManhua } from './BestManhua';
 export { default as BibiManga } from './BibiManga';
 export { default as BlogTruyen } from './BlogTruyen';
 export { default as Boosei } from './Boosei';
