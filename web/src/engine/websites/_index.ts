@@ -553,7 +553,6 @@ export { default as kakaopage } from './legacy/kakaopage';
 export { default as KanMan } from './legacy/KanMan';
 export { default as KirishimaFansub } from './legacy/KirishimaFansub';
 export { default as KissAway } from './legacy/KissAway';
-export { default as kuimh } from './legacy/kuimh';
 export { default as kuman5 } from './legacy/kuman5';
 export { default as KuManga } from './legacy/KuManga';
 export { default as LectorManga } from './legacy/LectorManga';
