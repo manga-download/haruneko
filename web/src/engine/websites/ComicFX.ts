@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './ComicFX.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as MangaReader from '../decorators/MangaReaderCMS';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as MangaReader from './decorators/MangaReaderCMS';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -19,7 +19,7 @@ function MangaExtractor(element: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.judul-komik h2')
 @MangaReader.MangasSinglePageCSS(MangaReader.queryMangas, '/', MangaExtractor)
 @Common.ChaptersSinglePageCSS('ul#listch li span.xkiri.pull-left a', ChapterExtractor)
-@Common.PagesSinglePageCSS('div#lcanv img[onerror]')
+@Common.PagesSinglePageJS('link_canx')
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
