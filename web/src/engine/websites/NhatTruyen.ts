@@ -16,7 +16,7 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('nhattruyen', `NhatTruyen`, 'https://nhattruyenplus.com', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
-        this.Settings.url = new Text('UrlOverride', R.Plugin_Settings_UrlOverride, R.Plugin_Settings_UrlOverrideInfo, 'https://nhattruyenplus.com');
+        this.Settings.url = new Text('urloverride', R.Plugin_Settings_UrlOverride, R.Plugin_Settings_UrlOverrideInfo, 'https://nhattruyenplus.com');
         this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
         this.URI.href = this.Settings.url.value as string;
     }
