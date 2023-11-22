@@ -90,6 +90,7 @@ export { default as DoujinHentai } from './DoujinHentai';
 export { default as Doujins } from './Doujins';
 export { default as DragonTea } from './DragonTea';
 export { default as DragonTranslation } from './DragonTranslation';
+export { default as DrakeScans } from './DrakeScans';
 export { default as DropeScan } from './DropeScan';
 export { default as DuniaKomik } from './DuniaKomik';
 export { default as DynastyScans } from './DynastyScans';
