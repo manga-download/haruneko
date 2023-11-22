@@ -7,6 +7,7 @@ const legacyWebsiteIdentifierMap = {
     'bananascan': 'harmonyscan',
     'bacamangaorg': 'bacamanga',
     'crazyscans': 'mangacultivator',
+    'dalsei': 'viyafansub',
     'flamescans-org': 'flamecomics',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
