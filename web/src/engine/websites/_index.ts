@@ -78,6 +78,7 @@ export { default as DeathTollScans } from './DeathTollScans';
 export { default as DecadenceScans } from './DecadenceScans';
 export { default as DemoneCeleste } from './DemoneCeleste';
 export { default as Desu } from './Desu';
+export { default as DiamondFansub } from './DiamondFansub';
 export { default as DigitalTeam } from './DigitalTeam';
 export { default as DisasterScans } from './DisasterScans';
 export { default as DiskusScan } from './DiskusScan';
