@@ -64,6 +64,7 @@ export { default as ComicZenon } from './ComicZenon';
 export { default as ComicZerosum } from './ComicZerosum';
 export { default as ComikeyArchive } from './ComikeyArchive';
 export { default as CopyPasteScan } from './CopyPasteScan';
+export { default as CosmicScans } from './CosmicScans';
 export { default as CrunchyScan } from './CrunchyScan';
 export { default as CyComi } from './CyComi';
 export { default as DankeFursLesen } from './DankeFursLesen';
