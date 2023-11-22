@@ -308,6 +308,8 @@ export enum WebsiteResourceKey {
     Plugin_Settings_ThrottlingInteractionInfo = 'Plugin_Settings_ThrottlingInteractionInfo',
     Plugin_Settings_UrlOverride = 'Plugin_Settings_UrlOverride',
     Plugin_Settings_UrlOverrideInfo = 'Plugin_Settings_UrlOverrideInfo',
+    Plugin_Settings_ImageFormat = 'Plugin_Settings_ImageFormat',
+    Plugin_Settings_ImageFormatInfo = 'Plugin_Settings_ImageFormatInfo',
     Plugin_Common_MangaIndex_NotSupported = 'Plugin_Common_MangaIndex_NotSupported',
     Plugin_Common_Chapter_InvalidError = 'Plugin_Common_Chapter_InvalidError',
     Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',
@@ -321,6 +323,9 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
+    Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
+    Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
+
 }
 
 export const VariantResourceKey = {

@@ -241,6 +241,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingInteractionInfo: "crwdns1604:0crwdne1604:0",
   Plugin_Settings_UrlOverride: "crwdns2084:0crwdne2084:0",
   Plugin_Settings_UrlOverrideInfo: "crwdns2086:0crwdne2086:0",
+  Plugin_Settings_ImageFormat: 'Preferred Image Format',
+  Plugin_Settings_ImageFormatInfo: 'Download pictures using this file format if possible',
   Plugin_Common_MangaIndex_NotSupported: "crwdns1606:0crwdne1606:0",
   Plugin_Common_Chapter_UnavailableError: "crwdns1608:0crwdne1608:0",
   Plugin_Common_Chapter_InvalidError: "crwdns1610:0crwdne1610:0",
@@ -249,6 +251,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_Username: "crwdns1553:0crwdne1553:0",
   Plugin_SheepScanlations_Settings_UsernameInfo: "crwdns1555:0crwdne1555:0",
   Plugin_SheepScanlations_Settings_Password: "crwdns1557:0crwdne1557:0",
-  Plugin_SheepScanlations_Settings_PasswordInfo: "crwdns1559:0crwdne1559:0"
+  Plugin_SheepScanlations_Settings_PasswordInfo: "crwdns1559:0crwdne1559:0",
+  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
+  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
 };
 export default translations;

@@ -241,6 +241,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingInteractionInfo: "Einschränkung der Anzahl von Abfragen an die Webseite zur Prävention einer temporären oder dauerhaften Sperrung",
   Plugin_Settings_UrlOverride: 'Url Override',
   Plugin_Settings_UrlOverrideInfo: 'Use this URL as current domain for this website',
+  Plugin_Settings_ImageFormat: 'Preferred Image Format',
+  Plugin_Settings_ImageFormatInfo: 'Download pictures using this file format if possible',
   Plugin_Common_MangaIndex_NotSupported: "Ein Inhaltsverzeichnis kann für diese Webseite nicht erstellt werden. Benutze die Kopieren & Einfügen Funktionalität um direkt auf den Inhalt einer URL zuzugreifen!",
   Plugin_Common_Chapter_UnavailableError: "Das Kapitel ist nicht verfügbar (gekauft/freigeschaltet/öffentlich)!",
   Plugin_Common_Chapter_InvalidError: "Fehler beim extrahieren der einzelnen Seiten aus dem Kapitel!",
@@ -249,6 +251,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_Username: "Benutzername",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Benutzername für die automatische Anmeldung bei der Webseite",
   Plugin_SheepScanlations_Settings_Password: "Passwort",
-  Plugin_SheepScanlations_Settings_PasswordInfo: "Passwort für die automatische Anmeldung bei der Webseite"
+  Plugin_SheepScanlations_Settings_PasswordInfo: "Passwort für die automatische Anmeldung bei der Webseite",
+  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
+  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
 };
 export default translations;
