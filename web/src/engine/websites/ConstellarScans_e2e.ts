@@ -12,7 +12,8 @@ const config = {
     },
     child: {
         id: '/secret-class-chapter-1/',
-        title: 'Chapter 1'
+        title: 'Chapter 1',
+        timeout: 15000
     },
     entry: {
         index: 0,
