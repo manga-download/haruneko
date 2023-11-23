@@ -2,7 +2,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'firstkiss',
+        id: 'likemanga',
         title: 'LikeManga'
     },
     container: {
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 126_0603,
+        size: 997_542,
         type: 'image/jpeg'
     }
 };
