@@ -111,6 +111,7 @@ export { default as FreeWebtoonCoins } from './FreeWebtoonCoins';
 export { default as FRScan } from './FRScan';
 export { default as FunManga } from './FunManga';
 export { default as FuryoSquad } from './FuryoSquad';
+export { default as GalaxyManga } from './GalaxyManga';
 export { default as GanGanOnline } from './GanGanOnline';
 export { default as Ganma } from './Ganma';
 export { default as GateManga } from './GateManga';
