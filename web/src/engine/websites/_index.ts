@@ -104,6 +104,7 @@ export { default as FinalScans } from './FinalScans';
 export { default as FlameComics } from './FlameComics';
 export { default as FoxWhiteScan } from './FoxWhiteScan';
 export { default as FranxxMangas } from './FranxxMangas';
+export { default as FreakScans } from './FreakScans';
 export { default as FreeComicOnline } from './FreeComicOnline';
 export { default as FreeManga } from './FreeManga';
 export { default as FreeWebtoonCoins } from './FreeWebtoonCoins';
