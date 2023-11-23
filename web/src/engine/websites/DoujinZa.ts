@@ -27,7 +27,7 @@ export default class extends DecoratableMangaScraper {
         const mangas = await Madara.FetchMangasMultiPageCSS.call(this, provider);
         return mangas.filter(manga => {
             const mangaID: MangaID = JSON.parse(manga.Identifier);
-            return mangaID.slug != '/'; //some manga links are bugged, cant help it
+            return mangaID.slug !== '/'; //some manga links are bugged, cant help it
         }).map(manga => {
             const mangaID: MangaID = JSON.parse(manga.Identifier);
             const link = mangaID.slug.match(/(^\/doujin\/[^/]+\/)/)[1]; //some mangas are direct links to the only chapter, so we keep only manga part
