@@ -42,38 +42,30 @@ type APIChapter = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
-    private readonly API_HEADERS = {
-        'User-Agent': '"User-Agent" to "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.44"',
-        version: new Date().toISOString().replace(/-/g, ".").split('T').shift(),
-        platform: "1",
-    };
+    private get Apidate() { return new Date().toISOString().replace(/-/g, ".").split('T').shift(); }
 
     private readonly apiurl = 'https://api.copymanga.org';
 
     public constructor() {
         super('copymanga', 'CopyManga', 'https://www.copymanga.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
 
-        //URL
-        this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, 'https://www.copymanga.site');
+        this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
         this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
         this.URI.href = this.Settings.url.value as string;
 
-        //image format
         this.Settings.format = new Choice('image.format',
             W.Plugin_Settings_ImageFormat,
             W.Plugin_Settings_ImageFormatInfo,
             'jpeg',
-            { key: 'jpeg', label: E.Settings_Global_DescramblingFormat_JPEG },
-            { key: 'webp', label: E.Settings_Global_DescramblingFormat_WEBP },
+            { key: 'jpeg', label: E.Settings_Global_Format_JPEG },
+            { key: 'webp', label: E.Settings_Global_Format_WEBP },
         );
 
-        //"Use Global CDN"
         this.Settings.useGlobalCDN = new Check(
             'check-useGlobalCDN',
             W.Plugin_CopyManga_Settings_GlobalCDN,
             W.Plugin_CopyManga_Settings_GlobalCDNInfo,
-            true //true = 0, false = 1
+            true
         );
 
     }
@@ -88,14 +80,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').pop();
-        const request = this.createApiRequest(`api/v3/comic2/${id}`);
+        const request = this.createApiRequest(`comic2/${id}`);
         const data = await FetchJSON<APIResponse<APISingleComic>>(request);
         return new Manga(this, provider, data.results.comic.path_word, data.results.comic.name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
-        for (let page = 0, run = true; run; page++) {//its offset so page start at 0
+        for (let page = 0, run = true; run; page++) {
             const mangas = await this.getMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
@@ -104,11 +96,9 @@ export default class extends DecoratableMangaScraper {
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
-            const request = this.createApiRequest(`/api/v3/comics?ordering=-datetime_updated&limit=50&offset=${page * 50}`); //50 is the max
+            const request = this.createApiRequest(`comics?ordering=-datetime_updated&limit=50&offset=${page * 50}`);
             const data = await FetchJSON<APIResponse<APIResultList<APIComic>>>(request);
-            return data.results.list.map(item => {
-                return new Manga(this, provider, item.path_word, item.name.trim());
-            });
+            return data.results.list.map(item => new Manga(this, provider, item.path_word, item.name.trim()));
         } catch (error) {
             return [];
         }
@@ -125,18 +115,16 @@ export default class extends DecoratableMangaScraper {
 
     private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         try {
-            const request = this.createApiRequest(`/api/v3/comic/${manga.Identifier}/group/default/chapters?limit=500&offset=${page * 500}`);
+            const request = this.createApiRequest(`comic/${manga.Identifier}/group/default/chapters?limit=500&offset=${page * 500}`);
             const data = await FetchJSON<APIResponse<APIResultList<APIChapter>>>(request);
-            return data.results.list.map(item => {
-                return new Chapter(this, manga, item.uuid, item.name.trim());
-            });
+            return data.results.list.map(item => new Chapter(this, manga, item.uuid, item.name.trim()));
         } catch (error) {
             return [];
         }
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = this.createApiRequest(`/api/v3/comic/${chapter.Parent.Identifier}/chapter2/${chapter.Identifier}?platform=3`);
+        const request = this.createApiRequest(`comic/${chapter.Parent.Identifier}/chapter2/${chapter.Identifier}?platform=3`);
         const data = await FetchJSON<APIResponse<APIPages>>(request);
         const imageUrls = data.results.chapter.contents.map(item => item.url);
         const imageOrder = data.results.chapter.words;
@@ -148,13 +136,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     private createApiRequest(pathname: string): FetchRequest {
-        const request = new FetchRequest(new URL(pathname, this.apiurl).href);
-        Object.keys(this.API_HEADERS).forEach(key => {
-            request.headers.set(key, this.API_HEADERS[key]);
-        });
-        request.headers.set("Referer", this.URI.href);
-        request.headers.set("webp", this.Settings.format.Value == 'jpeg' ? '0' : '1');
-        request.headers.set("region", this.Settings.useGlobalCDN.Value ? '0' : '1');
+        const request = new FetchRequest(new URL(`/api/v3/${pathname}`, this.apiurl).href,
+            {
+                headers: {
+                    Version: this.Apidate,
+                    Platform: '1',
+                    Referer: this.URI.href,
+                    Region: this.Settings.useGlobalCDN.Value ? '0' : '1',
+                    WebP: this.Settings.format.Value == 'jpeg' ? '0' : '1',
+                }
+            });
+
         return request;
     }
 
