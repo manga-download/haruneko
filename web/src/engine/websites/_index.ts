@@ -98,6 +98,7 @@ export { default as EightMusesXXX } from './EightMusesXXX';
 export { default as ElevenToon } from './ElevenToon';
 export { default as EvilFlowers } from './EvilFlowers';
 export { default as FallenAngelsScans } from './FallenAngelsScans';
+export { default as FbSquads } from './FbSquads';
 export { default as FenixScan } from './FenixScan';
 export { default as FinalScans } from './FinalScans';
 export { default as FirstKissManga } from './FirstKissManga';
