@@ -1,3 +1,5 @@
+// https://github.com/FedericoHeichou/PizzaReader
+
 import { FetchRequest, FetchJSON } from '../../FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from './Common';
