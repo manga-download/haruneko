@@ -2,21 +2,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'doujindesu',
-        title: 'DoujinDesu'
+        id: 'bacamanga',
+        title: 'BacaManga'
     },
     container: {
-        url: 'https://doujindesu.tv/manga/hero-villain/',
-        id: '/manga/hero-villain/',
-        title: 'Hero Villain'
+        url: 'https://bacamanga.id/manga/50kg-cinderella/',
+        id: '/manga/50kg-cinderella/',
+        title: '-50kg Cinderella'
     },
     child: {
-        id: '/2022/02/19/hero-villain-chapter-01/',
-        title: 'Chapter 01'
+        id: '/50kg-cinderella-chapter-1-1/',
+        title: 'Chapter 1.1'
     },
     entry: {
-        index: 1,
-        size: 1_115_560,
+        index: 2,
+        size: 57_750,
         type: 'image/jpeg'
     }
 };
