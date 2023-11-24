@@ -9,6 +9,7 @@ const legacyWebsiteIdentifierMap = {
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
     'flamescans-org': 'flamecomics',
+    'gateanimemanga': 'gatemanga',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'kisscomic': 'readcomiconline',
