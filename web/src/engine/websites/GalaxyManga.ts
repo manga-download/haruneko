@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('-')[1];
-        const request = new FetchRequest(new URL(`/api/v1/webtoon/series/${id}`, this.apiurl).href);
+        const request = new FetchRequest(`${this.apiurl}/api/v1/webtoon/series/${id}`);
         const { serie } = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, serie.id.toString(), serie.title);
     }
@@ -68,21 +68,19 @@ export default class extends DecoratableMangaScraper {
     }
 
     async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(new URL(`/api/v1/webtoon/homepage/latest/home?page=${page}`, this.apiurl).href);
+        const request = new FetchRequest(`${this.apiurl}/api/v1/webtoon/homepage/latest/home?page=${page}`);
         const { data } = await FetchJSON<APIMangas>(request);
         return data.map(manga => new Manga(this, provider, String(manga.id), manga.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`/api/v1/webtoon/chapters/${manga.Identifier}-desc`, this.apiurl);
-        const request = new FetchRequest(uri.href);
+        const request = new FetchRequest(`${this.apiurl}/api/v1/webtoon/chapters/${manga.Identifier}-desc`);
         const data = await FetchJSON<APIChapter[]>(request);
         return data.map(chapter => new Chapter(this, manga, chapter.id.toString(), `${chapter.name} ${chapter.title || ''}`.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL(`/api/v1/webtoon/chapters/chapter/${chapter.Identifier}`, this.apiurl);
-        const request = new FetchRequest(uri.href);
+        const request = new FetchRequest(`${this.apiurl}/api/v1/webtoon/chapters/chapter/${chapter.Identifier}`);
         const data = await FetchJSON<APIPages>(request);
         return data.chapter.chapterData.webtoon.map(image => new Page(this, chapter, new URL(`/storage/${image}`, this.apiurl)));
     }
