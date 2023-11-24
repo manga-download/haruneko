@@ -139,13 +139,13 @@ export function MangaCSS(pattern: RegExp) {
 async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl : string): Promise<Manga[]> {
     const mangaList = [];
     for (let page = 1, run = true; run; page++) {
-        const mangas = await _getMangasFromPage(provider, page, apiUrl);
+        const mangas = await getMangasFromPage(provider, page, apiUrl);
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
     }
     return mangaList;
 }
 
-async function _getMangasFromPage(provider: MangaPlugin, page: number, apiUrl: string): Promise<Manga[]>
+async function getMangasFromPage(provider: MangaPlugin, page: number, apiUrl: string): Promise<Manga[]>
 {
     mangasearch.page = page;
     const request = new FetchRequest(new URL('/api/mangas/search', apiUrl).href, {
