@@ -25,7 +25,7 @@ const pageScripts = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('gourmetscans', 'Gourmet Scans', 'https://gourmetscans.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('gourmetscans', 'Gourmet Scans', 'https://gourmetsupremacy.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
