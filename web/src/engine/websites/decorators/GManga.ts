@@ -352,9 +352,3 @@ export function _unpack(t: packedData | APIData, ...args) {
         o;
     }
 }
-
-/**
- *****************
- * ** END GMANGA ***
- ****************
- */
