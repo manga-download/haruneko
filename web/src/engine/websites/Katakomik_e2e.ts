@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Katakomik'
     },
     container: {
-        url: 'https://katakomik.online/manga/shark/',
+        url: 'https://katakomik.my.id/manga/shark/',
         id: '/manga/shark/',
         title: 'Shark'
     },
