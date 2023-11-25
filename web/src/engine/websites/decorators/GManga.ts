@@ -291,9 +291,6 @@ export function ImageAjax() {
 }
 
 export async function _haqiqa(t: string) : Promise<string>{
-    //let c = { default: CryptoJS };
-    /*if (!_dataExists(t) || "string" != typeof t)
-        return !1;*/
     const e = t.split("|");
     const n = e[0];
     const r = e[2];
