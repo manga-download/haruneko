@@ -24,7 +24,7 @@ describe('BookmarkConverter', () => {
     describe('ConvertToSerializedBookmark()', () => {
 
         it.each<unknown>([
-            [ 'x', 1 ], { x: 1 }, null, true, 'x', 1
+            ['x', 1], { x: 1 }, null, true, 'x', 1
         ])('Should throw for invald data', async (data) => {
             const expected = GetLocale(LocaleID.Locale_enUS).BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError();
             expect(() => testee.ConvertToSerializedBookmark(data)).toThrowError(expected);
@@ -64,6 +64,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'dalsei', targetID: 'viyafansub' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
+            { sourceID: 'firstkiss', targetID: 'likemanga'},
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)

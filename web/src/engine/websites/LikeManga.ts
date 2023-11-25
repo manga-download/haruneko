@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './FirstKissManga.webp';
+import icon from './LikeManga.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchRequest } from '../FetchProvider';
@@ -8,14 +8,27 @@ type ChapterData = {
     list_chap : string
 }
 
+const pagescript = `
+    new Promise(resolve => {
+        const tokenElement = document.querySelector("div.reading input#next_img_token");
+        if (tokenElement != null) {
+            const imgCdnUrl = document.querySelector("div.reading #currentlink").getAttribute("value");
+            const imgdata = JSON.parse(atob(parseJwt(tokenElement.getAttribute('value')).data)); 
+            resolve(imgdata.map(image => new URL(image, imgCdnUrl).href));
+        }
+        const images = [...document.querySelectorAll("div.reading-detail.box_doc img:not(noscript img)")];
+        resolve(images.map(image => image.getAttribute('src')));
+    });
+`;
+
 @Common.MangaCSS(/^{origin}\/.*-\d+\/$/, 'h1#title-detail-manga')
 @Common.MangasMultiPageCSS('?act=home&pageNum={page}', 'div.card-body p.card-text a')
-@Common.PagesSinglePageCSS('div.reading-detail div.page-chapter img')
+@Common.PagesSinglePageJS(pagescript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('firstkiss', 'LikeManga', 'https://likemanga.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('likemanga', 'LikeManga', 'https://likemanga.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
