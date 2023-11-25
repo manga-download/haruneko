@@ -5,10 +5,14 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
     'bananascan': 'harmonyscan',
+    'bacamangaorg': 'bacamanga',
     'crazyscans': 'mangacultivator',
+    'dalsei': 'viyafansub',
+    'firstkiss': 'likemanga',
     'flamescans-org': 'flamecomics',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
+    'kisscomic': 'readcomiconline',
     'lovehug': 'welovemanga',
     'mangaswat': 'goldragon',
     'realmscans': 'rizzcomics',
