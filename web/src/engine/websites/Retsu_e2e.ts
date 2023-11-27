@@ -2,7 +2,7 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'kumascans',
+        id: 'retsu',
         title: 'Retsu'
     },
     container: {
