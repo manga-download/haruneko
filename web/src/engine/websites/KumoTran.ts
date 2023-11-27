@@ -23,8 +23,7 @@ const pagejs = `
       const nodes = [...document.querySelectorAll('div.reading-content img, div.reading-content canvas')];
       const data = nodes.map(element => {
           if (element instanceof HTMLCanvasElement) {
-              const id = element.id.match(/([A-Z]{5})/)[1]+'image'; //get image variable name
-              const script = window[id].onload.toString(); //get onload handler body from image variable
+              const script = eval(element.nextElementSibling.text.replace('eval(', '('));
               const result = {
                   url : element.dataset.url,
                   script: script,
