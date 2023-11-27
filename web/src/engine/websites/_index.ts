@@ -187,6 +187,7 @@ export { default as KnightNoFansub } from './KnightNoFansub';
 export { default as KolNovel } from './KolNovel';
 export { default as KomikAV } from './KomikAV';
 export { default as KomikCast } from './KomikCast';
+export { default as KomikGo } from './KomikGo';
 export { default as Komikid } from './Komikid';
 export { default as KomikIndo } from './KomikIndo';
 export { default as KomikIndoId } from './KomikIndoId';
