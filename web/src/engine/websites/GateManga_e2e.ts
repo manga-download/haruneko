@@ -2,7 +2,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'gateanimemanga',
+        id: 'gatemanga',
         title: 'GateManga'
     },
     container: {
