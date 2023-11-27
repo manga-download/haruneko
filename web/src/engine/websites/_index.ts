@@ -177,6 +177,7 @@ export { default as Jmana1 } from './Jmana1';
 export { default as Jpmangas } from './Jpmangas';
 export { default as KaiScans } from './KaiScans';
 export { default as Kanjiku } from './Kanjiku';
+export { default as Kanzenin } from './Kanzenin';
 export { default as Katakomik } from './Katakomik';
 export { default as Kiryuu } from './Kiryuu';
 export { default as KissmangaIN } from './KissmangaIN';
