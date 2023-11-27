@@ -157,7 +157,7 @@ async function getMangasFromPage(provider: MangaPlugin, page: number, apiUrl: st
     });
 
     const response = await FetchJSON<APIResult>(request);
-    const data = response.iv ? await _haqiqa(response.data) : response.data;
+    const data = response.iv ? await decrypt(response.data) : response.data;
     const mangas: APIMangas = JSON.parse(data);
     return !mangas.mangas ? [] : mangas.mangas.map(manga => new Manga(this, provider, String(manga.id), manga.title));
 }
@@ -183,7 +183,7 @@ export function MangasMultiPageAJAX(apiUrl : string) {
 async function FetchChapterSinglePageAJAX(this: MangaScraper, manga: Manga, apiUrl: string): Promise<Chapter[]> {
     const request = new FetchRequest(new URL(`/api/mangas/${manga.Identifier}/releases`, apiUrl).href);
     const response = await FetchJSON<APIResult>(request);
-    const strdata = response.iv ? await _haqiqa(response.data) : JSON.stringify(response);
+    const strdata = response.iv ? await decrypt(response.data) : JSON.stringify(response);
     const tmpdata: packedData | APIChapters = JSON.parse(strdata);
     const chapters: APIChapters = (tmpdata as packedData).isCompact ? _unpack(tmpdata as packedData) as APIChapters : tmpdata as APIChapters;
     return chapters.releases.map(chapter => {
@@ -290,7 +290,7 @@ export function ImageAjax() {
     };
 }
 
-export async function _haqiqa(t: string) : Promise<string>{
+export async function decrypt(t: string) : Promise<string>{
     const e = t.split("|");
     const n = e[0];
     const r = e[2];

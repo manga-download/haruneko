@@ -54,7 +54,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new FetchRequest(new URL(`/api/mangas/${manga.Identifier}`, apiUrl).href);
         const response = await FetchJSON<GManga.APIResult> (request);
-        const strdata = response.iv ? await GManga._haqiqa(response.data) : JSON.stringify(response);
+        const strdata = response.iv ? await GManga.decrypt(response.data) : JSON.stringify(response);
         const tmpdata: GManga.packedData | APIChapters = JSON.parse(strdata);
         const chapters: APIChapters = (tmpdata as GManga.packedData).isCompact ? GManga._unpack(tmpdata as GManga.packedData) as APIChapters : tmpdata as APIChapters;
         return chapters.mangaReleases.map(chapter => {
