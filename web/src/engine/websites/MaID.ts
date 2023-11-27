@@ -4,6 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
+//Note : use Zmanga WP theme. May issue a template in the future
 @MangaStream.MangaCSS(/^https?:\/\/www\.maid\.my\.id\/manga\/[^/]+\/$/, 'div.series-title h2')
 @MangaStream.MangasSinglePageCSS('div.mangalist-blc ul li.Manga a.series', '/manga-list/?list')
 @MangaStream.ChaptersSinglePageCSS('div.series-chapter ul.series-chapterlist li div.flexch-infoz a')

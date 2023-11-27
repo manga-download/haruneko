@@ -5,10 +5,16 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
     'bananascan': 'harmonyscan',
+    'bacamangaorg': 'bacamanga',
     'crazyscans': 'mangacultivator',
+    'dalsei': 'viyafansub',
+    'firstkiss': 'likemanga',
     'flamescans-org': 'flamecomics',
+    'gateanimemanga': 'gatemanga',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
+    'kisscomic': 'readcomiconline',
+    'kumascans': 'retsu',
     'lovehug': 'welovemanga',
     'mangaswat': 'goldragon',
     'realmscans': 'rizzcomics',
