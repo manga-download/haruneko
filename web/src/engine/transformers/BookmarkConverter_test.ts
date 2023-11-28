@@ -71,6 +71,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'lovehug', targetID: 'welovemanga' },
+            { sourceID: 'lyrascans', targetID: 'quantumscans' },
             { sourceID: 'mangaswat', targetID: 'goldragon' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
