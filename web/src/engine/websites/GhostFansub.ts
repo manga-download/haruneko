@@ -1,18 +1,20 @@
 import { Tags } from '../Tags';
-import icon from './GateManga.webp';
+import icon from './GhostFansub.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/ar\/[^/]+\/$/, 'div.post-title h1')
-@Madara.MangasMultiPageCSS()
+//TODO: add login page ?
+
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Ghost Fansub"])')
+@Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('gatemanga', 'GateManga', 'https://gatemanga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
+        super('ghostfansub', 'Ghost Fansub', 'https://ghostfansub.online', Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Rating.Pornographic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

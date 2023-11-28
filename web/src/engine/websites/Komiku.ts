@@ -1,8 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './Komiku.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from './../FetchProvider';
 
 const paths = ['manga', 'manhua', 'manhwa'];
 
@@ -28,11 +27,8 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (const genre of paths) {
-            const request = new FetchRequest(new URL('/daftar-komik/?tipe=' + genre, this.URI).href);
-            const data = await FetchCSS<HTMLAnchorElement>(request, 'div.ls4 div.ls4j h4 a');
-            const mangas = data.map(element => {
-                return new Manga(this, provider, element.pathname, element.text.trim());
-            });
+
+            const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, `/daftar-komik/?tipe=${genre}`, 'div.ls4 div.ls4j h4 a');
             mangaList.push(...mangas);
         }
         return mangaList;

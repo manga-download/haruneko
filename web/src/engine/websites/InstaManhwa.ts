@@ -14,7 +14,7 @@ const extract = Common.AnchorInfoExtractor(false, 'span.chapter-release-date');
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('instamanhwa', 'InstaManhwa', 'https://www.instamanhwa.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Rating.Erotica);
+        super('instamanhwa', 'InstaManhwa', 'https://www.instamanhwa.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

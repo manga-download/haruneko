@@ -10,9 +10,11 @@ const legacyWebsiteIdentifierMap = {
     'dalsei': 'viyafansub',
     'firstkiss': 'likemanga',
     'flamescans-org': 'flamecomics',
+    'gateanimemanga': 'gatemanga',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'kisscomic': 'readcomiconline',
+    'kumascans': 'retsu',
     'lovehug': 'welovemanga',
     'mangaswat': 'goldragon',
     'realmscans': 'rizzcomics',

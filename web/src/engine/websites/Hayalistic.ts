@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property = "og:title"]')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hayalistic', 'Hayalistic', 'https://hayalistic.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
+        super('hayalistic', 'Hayalistic', 'https://hayalistic.com.tr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
     }
 
     public override get Icon() {
