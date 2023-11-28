@@ -395,6 +395,7 @@ export { default as PrismaScan } from './PrismaScan';
 export { default as ProjetoScanlator } from './ProjetoScanlator';
 export { default as Pururin } from './Pururin';
 export { default as Pzykosis666HFansub } from './Pzykosis666HFansub';
+export { default as QuantumScans } from './QuantumScans';
 export { default as Rackus } from './Rackus';
 export { default as RagnarokScan } from './RagnarokScan';
 export { default as RaikiScan } from './RaikiScan';
