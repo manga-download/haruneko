@@ -222,6 +222,7 @@ export { default as LunarScans } from './LunarScans';
 export { default as LupiTeam } from './LupiTeam';
 export { default as Luscious } from './Luscious';
 export { default as LynxScans } from './LynxScans';
+export { default as MadaraDex } from './MadaraDex';
 export { default as MagComi } from './MagComi';
 export { default as MagicalTranslators } from './MagicalTranslators';
 export { default as MaID } from './MaID';
