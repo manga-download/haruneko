@@ -45,8 +45,7 @@ export default function DeProxify(uri: URL): URL {
     if (/cdn\.statically\.io\/img\//.test(uri.href)) {
         return DeProxifyStatically(uri);
     }
-
-    if (/cdn\.madaradex\.org\/proxy_v1/.test(uri.href)) {
+    if (/cdn\.madaradex\.org\/proxy/.test(uri.href)) {//they have proxy, proxy_v1, probably more
         return DeProxifyMadaradex(uri);
     }
 
