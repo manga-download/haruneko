@@ -104,7 +104,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new FetchRequest(`${this.URI.href}/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`);
-        const data = await FetchWindowScript<FooBar>(request, `(${script})()`, 2500);
+        const data = await FetchWindowScript<ScrambledImages>(request, `(${script})()`, 2500);
         console.log('Scrambled Images:', data);
         return data.map(entry => new Page(this, chapter, new URL(entry.link), {}));
     }
@@ -122,13 +122,13 @@ type TileMap = {
     d: Tile, // destination
 }[];
 
-type FooBar = {
+type ScrambledImages = {
     link: string,
     tiles?: TileMap,
 }[];
 
 function script(this: Window) {
-    return new Promise<FooBar>(resolve => {
+    return new Promise<ScrambledImages>(resolve => {
 
         function extractSeed(url: string): string {
             const uri = new URL(url);
@@ -138,13 +138,6 @@ function script(this: Window) {
             })(uri.searchParams.get('q') || '', uri.searchParams.get('expires') || ''));
         }
 
-        /*
-        function shuffle(indices: number[], seed: string): number[] {
-            return indices;
-        }
-        */
-
-
         function g(t, e) {
             for (let n, o = t + "", i = 0; i < o.length; )
                 e[f & i] = f & (n ^= 19 * e[f & i]) + o.charCodeAt(i++);
@@ -153,31 +146,31 @@ function script(this: Window) {
 
         function seedrandom(t, e, n) {
             const o = [], f = g(m((e = 1 == e ? {
-                entropy: !0
-            } : e || {}).entropy ? [t, b(i)] : null == t ? function() {
-                try {
-                    var t;
-                    return a && (t = a.randomBytes) ? t = t(u) : (t = new Uint8Array(u),
-                    (s.crypto || s.msCrypto).getRandomValues(t)),
-                    b(t);
-                } catch (o) {
-                    var e = s.navigator
-                      , n = e && e.plugins;
-                    return [+new Date, s, n, s.screen, b(i)]
-                }
-            }() : t, 3), o)
-              , p = new h(o)
-              , w = function() {
-                for (var t = p.g(6), e = c, n = 0; t < l; )
-                    t = (t + n) * u,
-                    e *= u,
-                    n = p.g(1);
-                for (; t >= d; )
-                    t /= 2,
-                    e /= 2,
-                    n >>>= 1;
-                return (t + n) / e
-            };
+                    entropy: !0
+                } : e || {}).entropy ? [t, b(i)] : null == t ? function() {
+                        try {
+                            let t;
+                            return a && (t = a.randomBytes) ? t = t(u) : (t = new Uint8Array(u),
+                            (s.crypto || s.msCrypto).getRandomValues(t)),
+                            b(t);
+                        } catch (o) {
+                            let e = s.navigator
+                                , n = e && e.plugins;
+                            return [+new Date, s, n, s.screen, b(i)]
+                        }
+                    }() : t, 3), o)
+                , p = new h(o)
+                , w = function() {
+                    for (var t = p.g(6), e = c, n = 0; t < l; )
+                        t = (t + n) * u,
+                        e *= u,
+                        n = p.g(1);
+                    for (; t >= d; )
+                        t /= 2,
+                        e /= 2,
+                        n >>>= 1;
+                    return (t + n) / e
+                };
             return w.int32 = function() {
                 return 0 | p.g(4)
             }
@@ -221,23 +214,6 @@ function script(this: Window) {
             }
             return s;
         };
-
-        /*
-        function shuffle(t, e) {
-            if (!n(t))
-                return null;
-            e = o(e) || "none";
-            for (var r = t.length, a = seedrandom(e), s = [], u = [], c = 0; c < r; c++)
-                u.push(c);
-            for (c = 0; c < r; c++) {
-                var l = i(a, 0, u.length - 1)
-                  , d = u[l];
-                u.splice(l, 1),
-                s.push(t[d])
-            }
-            return s;
-        }
-        */
 
         function getGroupedTiles(image: NextImage) {
             const tileSize = 50;
