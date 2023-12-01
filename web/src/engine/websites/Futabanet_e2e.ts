@@ -11,7 +11,7 @@ const config: Config = {
         title: 'ポイントギフター《経験値分配能力者》の異世界最強ソロライフ～ブラックギルドから解放された男は万能最強職として無双する～'
     },
     child: {
-        id: 'https://reader.futabanet.jp/62591706776561c83f010000_001-001_1?wurl=https%3A%2F%2Fgaugau.futabanet.jp%2Flist%2Fwork%2F62591706776561c83f010000',
+        id: '/list/work/62591706776561c83f010000/episodes/1',
         title: '第1話(1)'
     },
     entry: {

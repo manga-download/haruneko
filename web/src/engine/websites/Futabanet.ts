@@ -1,23 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './Futabanet.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('.m-result-list__title').textContent.trim();
-    return { id, title };
-}
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    const title = anchor.querySelector<HTMLSpanElement>('span:not(.new)').innerText.replace(/\(\d+\.\d+(.*)\)$/, '').trim();
-    const id = anchor.href;
-    return { id, title };
-}
+import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/list\/work\/[^/]+$/, 'h1.detail-ex__title')
-@Common.MangasMultiPageCSS('/list/works?page={page}', 'div.m-result-list__item a', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('section.detail-sec.detail-ex div.detail-ex__btn-item a[href*="reader.futabanet"]', ChapterExtractor)
-@SpeedBinb.PagesSinglePage('https://reader.futabanet.jp')
+@Common.MangaCSS(/^{origin}\/list\/work\/[^/]+$/, 'div.works__grid div.list__text div.mbOff h1')
+@Common.MangasMultiPageCSS('/list/works?page={page}', 'div.works__grid div.list__box h4 a')
+@SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -27,4 +17,16 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const request = new FetchRequest(`${this.URI.origin}${manga.Identifier}/episodes`);
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'div.episode__grid a');
+        return data.map(chapter => {
+            const epnum = chapter.querySelector('.episode__num').textContent.trim();
+            const title = chapter.querySelector('.episode__title').textContent.trim();
+            return new Chapter(this, manga, chapter.pathname, title ? [epnum, title].join(' - ') : epnum);
+        });
+
+    }
+
 }
