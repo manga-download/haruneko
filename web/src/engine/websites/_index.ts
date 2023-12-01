@@ -240,6 +240,7 @@ export { default as MangaBob } from './MangaBob';
 export { default as MangaBuddy } from './MangaBuddy';
 export { default as MangaCanBlog } from './MangaCanBlog';
 export { default as MangaChan } from './MangaChan';
+export { default as MangaChill } from './MangaChill';
 export { default as Mangacim } from './Mangacim';
 export { default as MangaClash } from './MangaClash';
 export { default as MangaCrab } from './MangaCrab';
