@@ -259,6 +259,7 @@ export { default as MangaForest } from './MangaForest';
 export { default as MangaForFree } from './MangaForFree';
 export { default as MangaFort } from './MangaFort';
 export { default as MangaFox } from './MangaFox';
+export { default as MangaFoxFull } from './MangaFoxFull';
 export { default as MangaGG } from './MangaGG';
 export { default as MangaGreat } from './MangaGreat';
 export { default as MangaHasu } from './MangaHasu';
