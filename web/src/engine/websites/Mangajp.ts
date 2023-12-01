@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 function MangaExtractor(element: HTMLElement): string {
-    return element.textContent.replace(/Raw$$/i, '').trim();
+    return element.textContent.replace(/Raw$/i, '').trim();
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div#content div.postbody article h1', MangaExtractor)
