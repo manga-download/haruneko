@@ -143,7 +143,7 @@ export default class extends DecoratableMangaScraper {
                     Platform: '1',
                     Referer: this.URI.href,
                     Region: this.Settings.useGlobalCDN.Value ? '0' : '1',
-                    WebP: this.Settings.format.Value == 'jpeg' ? '0' : '1',
+                    WebP: this.Settings.format.Value == 'webp' ? '1' : '0',
                 }
             });
 
