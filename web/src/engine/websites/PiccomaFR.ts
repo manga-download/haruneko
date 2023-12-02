@@ -6,8 +6,8 @@ import { FetchCSS, FetchJSON, FetchRequest, FetchWindowScript } from '../FetchPr
 
 type APIMangas = {
     data: {
-        products: [{
-            id: number,
+        p_products: [{
+            product_id: number,
             title: string,
         }]
     }
@@ -52,7 +52,11 @@ type NextImage = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('piccoma', 'Piccoma', 'https://piccoma.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Official);
+        super('piccoma-fr', 'Piccoma (French)', 'https://piccoma.com/fr', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.French, Tags.Source.Official);
+    }
+
+    private getAPI(endpoint: string): URL {
+        return new URL(this.URI.href + '/api/haribo/api/public/v2' + endpoint);
     }
 
     public override get Icon() {
@@ -60,37 +64,35 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.href}/web/product/\\d+`).test(url);
+        return new RegExp(`^${this.URI.href}/product(/episode)?/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').pop();
-        const [ element ] = await FetchCSS<HTMLMetaElement>(new FetchRequest(url), 'meta[property="og:title"]');
+        const id = url.split('/').pop();
+        const request = new FetchRequest(`${this.URI.href}/product/${id}`);
+        const [ element ] = await FetchCSS<HTMLMetaElement>(request, 'meta[property="og:title"]');
         return new Manga(this, provider, id, element.content.split('|').shift().trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
-        const vowels = 'aeiouあいうえお'.split('');
+        const vowels = 'aeiou'.split('');
         for (const word of vowels) {
             for (let page = 1, run = true; run; page++) {
                 const mangas = await this.getMangasFromPage(word, page, provider);
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             }
         }
-
-        const dbg = mangaList.distinct();
-        console.log('Distinct:', mangaList.length, dbg.length);
-        return mangaList.distinct();
+        return [...new Set(mangaList.map(manga => manga.Identifier))].map(id => mangaList.find(manga => manga.Identifier === id));
     }
 
     private async getMangasFromPage(word: string, page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const uri = new URL('/web/search/result_ajax/list', this.URI);
-        uri.searchParams.set('tab_type', 'T');
+        const uri = this.getAPI('/search/product');
+        uri.searchParams.set('search_type', 'P');
         uri.searchParams.set('word', word);
         uri.searchParams.set('page', `${page}`);
-        const { data: { products: entries } } = await FetchJSON<APIMangas>(new FetchRequest(uri.href));
-        return entries.map(entry => new Manga(this, provider, `${entry.id}`, entry.title));
+        const { data: { p_products: entries } } = await FetchJSON<APIMangas>(new FetchRequest(uri.href));
+        return entries.map(entry => new Manga(this, provider, `${entry.product_id}`, entry.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
