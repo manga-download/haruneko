@@ -141,11 +141,11 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_WebsiteSubDirectoryInfo: 'Set wether HakuNeko shall store media directly in the directory, or use sub-directories per website',
   Settings_Global_DescramblingFormat: 'De-Scrambling Format',
   Settings_Global_DescramblingFormatInfo: 'Select the output image format for websites hosting puzzled images (this will NOT apply to wesites already providing valid images)',
-  Settings_Global_DescramblingFormat_PNG: 'PNG (*.png)',
-  Settings_Global_DescramblingFormat_JPEG: 'JPEG (*.jpg)',
-  Settings_Global_DescramblingFormat_WEBP: 'WEBP (*.webp)',
   Settings_Global_DescramblingQuality: 'De-Scrambling Quality',
   Settings_Global_DescramblingQualityInfo: 'Set the quality in which de-scrambled images shall be stored (this will NOT apply to PNG)',
+  Settings_Global_Format_PNG: 'PNG (*.png)',
+  Settings_Global_Format_JPEG: 'JPEG (*.jpg)',
+  Settings_Global_Format_WEBP: 'WEBP (*.webp)',
   Settings_Global_UserAgent: 'User-Agent',
   Settings_Global_UserAgentInfo: 'The User-Agent that HakuNeko will be pretend to be for each website request (leave blank to use default)',
   Settings_Global_HCaptchaToken: 'H-Captcha Token',
@@ -241,6 +241,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingInteractionInfo: 'Limit the number of requests to this website to prevent being blocked or banned',
   Plugin_Settings_UrlOverride: 'Url Override',
   Plugin_Settings_UrlOverrideInfo: 'Use this URL as current domain for this website',
+  Plugin_Settings_ImageFormat: 'Preferred Image Format',
+  Plugin_Settings_ImageFormatInfo: 'Download pictures using this file format if possible',
   Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
   Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
@@ -249,6 +251,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_Username: 'Username',
   Plugin_SheepScanlations_Settings_UsernameInfo: 'Username for automatic account login to Sheep-Scanlations 😉',
   Plugin_SheepScanlations_Settings_Password: 'Password',
-  Plugin_SheepScanlations_Settings_PasswordInfo: 'Password for automatic account login to Sheep-Scanlations 😉'
+  Plugin_SheepScanlations_Settings_PasswordInfo: 'Password for automatic account login to Sheep-Scanlations 😉',
+  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
+  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
 };
 export default translations;
