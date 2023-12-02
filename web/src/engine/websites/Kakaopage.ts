@@ -2,17 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Kakaopage.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchGraphQL, FetchRequest } from '../FetchProvider';
-
-type ApiClipBoard = {
-    contentHomeOverview: {
-        content: {
-            id: string,
-            seriesId: number,
-            title: string
-        }
-    }
-}
+import { FetchCSS, FetchGraphQL, FetchRequest } from '../FetchProvider';
 
 type APIChapters = {
     contentHomeProductList : {
@@ -60,47 +50,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = parseInt(new URL(url).pathname.match(/content\/(\d+)/)[1]);
-        const gql = `
-            query contentHomeOverview($seriesId: Long!) {
-              contentHomeOverview(seriesId: $seriesId) {
-                content {
-                  ...SeriesFragment
-                }
-              }
-            }
-            fragment SeriesFragment on Series {
-              id
-              seriesId
-              title
-            }
-        `;
-        const vars = { seriesId: id };
-        const request = new FetchRequest(new URL('/graphql', this.URI).href, {
-            headers: {
-                Referer: this.URI.href,
-                Origin: this.URI.href
-            }
-        });
-        const operationName = 'contentHomeOverview';
-        const { contentHomeOverview } = await FetchGraphQL<ApiClipBoard>(request, operationName, gql, JSON.stringify(vars));
-        return new Manga(this, provider, String(contentHomeOverview.content.seriesId), contentHomeOverview.content.title.trim());
+        const id = new URL(url).pathname.match(/content\/(\d+)/)[1];
+        const data = await FetchCSS<HTMLTitleElement>(new FetchRequest(url), 'title');
+        return new Manga(this, provider, id, data[0].text.split(' - ')[0].trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        let nextCursor = '';
-        const chapterList = [];
-        for (let run = true; run;) {
-            const data = await this.getChaptersFromPage(manga, nextCursor);
-            const chapters = data.contentHomeProductList.edges.map(chapter => new Chapter(this, manga, chapter.node.single.productId.toString(), chapter.node.single.title.replace(manga.Title, '').trim()));
-            nextCursor = data.contentHomeProductList.pageInfo.hasNextPage ? data.contentHomeProductList.pageInfo.endCursor : null;
-            chapterList.push(...chapters);
-            run = nextCursor != null;
-        }
-        return chapterList;
-    }
+        let nextCursor = null;
+        const chapterList : Chapter[]= [];
 
-    async getChaptersFromPage(manga: Manga, nextCursor: string): Promise<APIChapters> {
         const gql = `
             query contentHomeProductList(
               $after: String
@@ -120,15 +78,11 @@ export default class extends DecoratableMangaScraper {
                 boughtOnly: $boughtOnly
                 sortType: $sortType
               ) {
-                totalCount
                 pageInfo {
                   hasNextPage
                   endCursor
-                  hasPreviousPage
-                  startCursor
                 }
                 edges {
-                  cursor
                   node {
                     ...SingleListViewItem
                   }
@@ -136,67 +90,58 @@ export default class extends DecoratableMangaScraper {
               }
             }
             fragment SingleListViewItem on SingleListViewItem {
-              id
-              type
               single {
                 productId
-                id
-                isFree
-                thumbnail
                 title
-                slideType
               }
             }
 
         `;
-        const vars = {
-            seriesId: parseInt(manga.Identifier),
-            boughtOnly: false,
-            sortType: 'asc',
-            after: nextCursor
-        };
-        const request = new FetchRequest(new URL('/graphql', this.URI).href, {
-            headers: {
-                Referer: this.URI.href,
-                Origin: this.URI.href
-            }
-        });
-        const operationName = 'contentHomeProductList';
-        return await FetchGraphQL<APIChapters>(request, operationName, gql, JSON.stringify(vars));
+
+        do {
+            const request = new FetchRequest(new URL('/graphql', this.URI).href, {
+                headers: {
+                    Referer: this.URI.href,
+                    Origin: this.URI.href
+                }
+            });
+
+            const vars = {
+                seriesId: parseInt(manga.Identifier),
+                boughtOnly: false,
+                sortType: 'asc',
+                after: nextCursor
+            };
+
+            const data = await FetchGraphQL<APIChapters>(request, 'contentHomeProductList', gql, JSON.stringify(vars));
+            const chapters = data.contentHomeProductList.edges.map(chapter => new Chapter(this, manga, chapter.node.single.productId.toString(), chapter.node.single.title.replace(manga.Title, '').trim()));
+            nextCursor = data.contentHomeProductList.pageInfo.hasNextPage ? data.contentHomeProductList.pageInfo.endCursor : null;
+            chapterList.push(...chapters);
+        } while (nextCursor);
+
+        return chapterList;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const gql = `
-            query viewerInfo($seriesId: Long!, $productId: Long!) {
-              viewerInfo(seriesId: $seriesId, productId: $productId) {
-                viewerData {
-                  ...ImageViewerData
-                  __typename
+                query viewerInfo($seriesId: Long!, $productId: Long!) {
+                  viewerInfo(seriesId: $seriesId, productId: $productId) {
+                    viewerData {
+                      ...ImageViewerData
+                    }
+                  }
                 }
-                __typename
-              }
-            }
-
-            fragment ImageViewerData on ImageViewerData {
-              type
-              imageDownloadData {
-                ...ImageDownloadData
-                __typename
-              }
-            }
-
-            fragment ImageDownloadData on ImageDownloadData {
-              files {
-                ...ImageDownloadFile
-                __typename
-              }
-            }
-
-            fragment ImageDownloadFile on ImageDownloadFile {
-              no
-              secureUrl
-            }
-
+                
+                fragment ImageViewerData on ImageViewerData {
+                  imageDownloadData {
+                    files {
+                      ... {
+                        no
+                        secureUrl
+                      }
+                    }
+                  }
+                }
         `;
         const vars = {
             productId: parseInt(chapter.Identifier),
@@ -208,13 +153,9 @@ export default class extends DecoratableMangaScraper {
                 Origin: this.URI.href
             }
         });
-        const operationName = 'viewerInfo';
 
-        try {
-            const data = await FetchGraphQL<APiPages>(request, operationName, gql, JSON.stringify(vars));
-            return data.viewerInfo.viewerData.imageDownloadData.files.map(page => new Page(this, chapter, new URL(page.secureUrl)));
-        } catch (error) {
-            return [];
-        }
+        const data = await FetchGraphQL<APiPages>(request, 'viewerInfo', gql, JSON.stringify(vars));
+        return data.viewerInfo.viewerData.imageDownloadData.files.map(page => new Page(this, chapter, new URL(page.secureUrl)));
+
     }
 }
