@@ -253,6 +253,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_Password: "Senha",
   Plugin_SheepScanlations_Settings_PasswordInfo: "Senha para login automático de conta na Sheep-Scanlations 😉",
   Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
-  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
+  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN'
 };
 export default translations;
