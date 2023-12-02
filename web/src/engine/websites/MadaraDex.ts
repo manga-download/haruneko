@@ -1,16 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './MadaraDex.webp';
-import { type Chapter, DecoratableMangaScraper, Page, type MangaScraper } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import { Fetch, FetchCSS, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
-import DeProxify from '../transformers/ImageLinkDeProxifier';
-
-function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement): string {
-    const url = image.dataset?.src || image.dataset?.lazySrc || image.srcset || image.src;
-    const uri = new URL(url.trim(), this.URI);
-    return uri.href;
-}
 
 @Madara.MangaCSS(/^{origin}\/title\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Read "])')
 @Madara.MangasMultiPageAJAX()
@@ -31,11 +24,20 @@ export default class extends DecoratableMangaScraper {
         const request = new FetchRequest(uri.href);
         const data = await FetchCSS<HTMLImageElement>(request, 'div.page-break img');
         return data.map(element => {
-            const link = new URL(ChapterPageExtractor.call(this, element), request.url);
+
+            const url = element.dataset?.src || element.dataset?.lazySrc || element.srcset || element.getAttribute('src');
+            const link = new URL(url.trim(), this.URI);
             let referer = link.searchParams.get('domain') ?? this.URI.origin;
             referer += '/';
-            return new Page(this, chapter, DeProxify(link), { Referer: referer });
+            return new Page(this, chapter, this.DeProxify(link), { Referer: referer });
         });
+    }
+
+    private DeProxify(link: URL): URL {
+        if (/cdn\.madaradex\.org\/proxy/.test(link.href)) {//they have proxy, proxy_v1, probably more
+            return new URL(link.searchParams.get('url') || '');
+        }
+        return link;
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
