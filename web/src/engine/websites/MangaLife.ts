@@ -4,14 +4,14 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin} from '../providers/Ma
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
 
-export type APIManga = {
+type APIManga = {
     i: string,
     s: string,
 }
 
-export const queryMangaTitle = 'head title';
+const queryMangaTitle = 'head title';
 
-export const chapterScript = `
+const chapterScript = `
     new Promise((resolve, reject) => {
         try {
             let vm = angular.element($('[ng-app="MainApp"]')).scope().vm;
@@ -28,7 +28,7 @@ export const chapterScript = `
     });
 `;
 
-export const pageScript = `
+const pageScript = `
     new Promise((resolve, reject) => {
         try {
             resolve([...document.querySelectorAll('div.ImageGallery div[ng-repeat] img')].map(img => img.src));
@@ -38,7 +38,7 @@ export const pageScript = `
     });
 `;
 
-export function ElementLabelExtractor(element: HTMLElement) {
+function ElementLabelExtractor(element: HTMLElement) {
     return element.textContent.split('|')[0].trim();
 }
 
