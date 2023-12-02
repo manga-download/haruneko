@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+const scrambledChapterConfig = {
     plugin: {
         id: 'kumotran',
         title: 'KumoTran'
@@ -20,6 +20,29 @@ const config = {
         type: 'image/jpeg'
     }
 };
+const scrambledFixture = new TestFixture(scrambledChapterConfig);
+describe(scrambledFixture.Name, () => scrambledFixture.AssertWebsite());
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+const normalChapterConfig = {
+    plugin: {
+        id: 'kumotran',
+        title: 'KumoTran'
+    },
+    container: {
+        url: 'https://www.kumotran.com/manga/little-hands/',
+        id: JSON.stringify({ post: '119579', slug: '/manga/little-hands/' }),
+        title: 'Little Hands'
+    },
+    child: {
+        id: '/manga/little-hands/1.1/',
+        title: 'ตอนที่ 1.1'
+    },
+    entry: {
+        index: 0,
+        size: 290_861,
+        type: 'image/jpeg'
+    }
+};
+const normalFixture = new TestFixture(normalChapterConfig);
+
+describe(normalFixture.Name, () => normalFixture.AssertWebsite());

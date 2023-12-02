@@ -12,14 +12,14 @@ type ImageData = {
     script?: string
 }
 
-type puzzleData = {
+type PuzzleData = {
     puzzle: Array<Array<string>>,
     x: number,
     y: number
 }
 
 const pagejs = `
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
       const nodes = [...document.querySelectorAll('div.reading-content img, div.reading-content canvas')];
       const data = nodes.map(element => {
           if (element instanceof HTMLCanvasElement) {
@@ -62,7 +62,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    extractDescramblePattern(script : string): puzzleData {
+    extractDescramblePattern(script : string): PuzzleData {
 
         const x = parseInt(script.match(/imagePuzzle\[i\]\[3\],(\d+),(\d+)/)[1]);
         const y = parseInt(script.match(/imagePuzzle\[i\]\[3\],(\d+),(\d+)/)[2]);
@@ -78,7 +78,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         if (!page.Parameters?.params) return blob;
-        const payload = JSON.parse(page.Parameters.params as string) as puzzleData;
+        const payload = JSON.parse(page.Parameters.params as string) as PuzzleData;
 
         return DeScramble(blob, async (image, ctx) => {
             ctx.drawImage(image, 0, 0);
