@@ -14,6 +14,8 @@ const legacyWebsiteIdentifierMap = {
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'kisscomic': 'readcomiconline',
+    'kumascans': 'retsu',
+    'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
     'lovehug': 'welovemanga',
     'mangaswat': 'goldragon',
     'realmscans': 'rizzcomics',
