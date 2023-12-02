@@ -15,14 +15,12 @@ type APIPages = {
         }[]
     }
 }
-
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
         title: anchor.querySelector('div.info h3').textContent.trim()
     };
 }
-
 function ChapterExtractor(element: HTMLElement) {
     const num = element.querySelector('div.chapterNumber span').textContent.trim();
     const title = element.querySelector('div.chapterNumber p.chapterTitle').textContent.trim();
@@ -34,7 +32,6 @@ function ChapterExtractor(element: HTMLElement) {
 
 @Common.MangaCSS(/^{origin}\/title\/\d+$/, 'div.titleMain div.titleInfo h1')
 @Common.ChaptersSinglePageCSS('div.chapter ul li[data-chapter-id]', ChapterExtractor)
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
