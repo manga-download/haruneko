@@ -25,8 +25,6 @@ const pageScript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly categories = ['/completed/', '/ongoing/', '/paused/', '/cancelled/'];
-
     public constructor() {
         super('leercapitulo', 'LeerCapitulo', 'https://www.leercapitulo.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
@@ -42,16 +40,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        let mangaList = [];
-        for (const cat of this.categories) {
-            const path = `/status${cat}?page={page}`;
+        const categories = ['completed', 'ongoing', 'paused', 'cancelled'];
+        const mangaList : Manga[] = [];
+        for (const category of categories) {
+            const path = `/status/${category}/?page={page}`;
             const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, path, 'div.media div.media-body a');
             mangaList.push(...mangas);
         }
-        mangaList = mangaList.filter((value, index, self) =>
-            index === self.findIndex((t) => t.Identifier === value.Identifier)
+        return mangaList.filter((value, index, mangaList) =>
+            index === mangaList.findIndex((t) => t.Identifier === value.Identifier)
         );
-        return mangaList;
+
     }
 
 }
