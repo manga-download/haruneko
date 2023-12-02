@@ -1,6 +1,29 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+const scrambledChapterConfig = {
+    plugin: {
+        id: 'kumotran',
+        title: 'KumoTran'
+    },
+    container: {
+        url: 'https://www.kumotran.com/manga/only-realized-after-losing-you/',
+        id: JSON.stringify({ post: '199232', slug: '/manga/only-realized-after-losing-you/' }),
+        title: 'Only Realized After Losing You'
+    },
+    child: {
+        id: '/manga/only-realized-after-losing-you/48/',
+        title: 'ตอนที่ 48'
+    },
+    entry: {
+        index: 0,
+        size: 160_823,
+        type: 'image/jpeg'
+    }
+};
+const scrambledFixture = new TestFixture(scrambledChapterConfig);
+describe(scrambledFixture.Name, () => scrambledFixture.AssertWebsite());
+
+const normalChapterConfig = {
     plugin: {
         id: 'kumotran',
         title: 'KumoTran'
@@ -20,6 +43,6 @@ const config = {
         type: 'image/jpeg'
     }
 };
+const normalFixture = new TestFixture(normalChapterConfig);
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(normalFixture.Name, () => normalFixture.AssertWebsite());
