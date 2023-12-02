@@ -7,12 +7,12 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript, 2000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('azoraworld', 'ازورا مانجا (AZORA MANGA)', 'https://azoranov.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
+        super('azoraworld', 'ازورا مانجا (AZORA MANGA / WORLD)', 'https://azoramoon.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
     }
 
     public override get Icon() {

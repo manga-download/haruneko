@@ -4,6 +4,7 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
+    'azoramanga': 'azoraworld',
     'bananascan': 'harmonyscan',
     'bacamangaorg': 'bacamanga',
     'crazyscans': 'mangacultivator',
