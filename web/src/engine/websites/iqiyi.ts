@@ -21,7 +21,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^{origin}\/manhua\/detail_\S+\.html$/, '.detail-tit h1')
+@Common.MangaCSS(/^{origin}\/manhua\/detail_[^/]+\.html$/, '.detail-tit h1')
 @Common.MangasMultiPageCSS('/manhua/category/%E5%85%A8%E9%83%A8_-1_-1_9_{page}', 'ul.cartoon-hot-ul li.cartoon-hot-list a.cartoon-cover', 1, 1, 0, MangaExtractor)
 @Common.PagesSinglePageCSS('ul.main-container li.main-item img', MH.PageLinkExtractor)
 @Common.ImageAjax()
@@ -40,7 +40,7 @@ export default class extends DecoratableMangaScraper {
         const manhuaId = new URL(manga.Identifier, this.URI).href.match(/_(([a-z]|[0-9])*)/)[1];
         const requestChaps = new FetchRequest(new URL(`/manhua/catalog/${manhuaId}/`, this.URI).href);
         const { data } = await FetchJSON<APIChapters>(requestChaps);
-        return data.episodes.map(element => new Chapter(this, manga, `/manhua/reader/${manhuaId}_${element.episodeId}.html`, [element.episodeOrder, element.episodeTitle.trim()].join(" ")));
+        return data.episodes.map(element => new Chapter(this, manga, `/manhua/reader/${manhuaId}_${element.episodeId}.html`, [element.episodeOrder, element.episodeTitle.trim()].join(' ')));
     }
 
 }

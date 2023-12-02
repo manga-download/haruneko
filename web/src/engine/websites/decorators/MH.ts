@@ -5,7 +5,7 @@ export function ChapterExtractor(element: HTMLAnchorElement) {
 }
 
 export function PageLinkExtractor(element: HTMLImageElement) {
-    return element.dataset.src || element.dataset.original || element.dataset.echo || element.src;
+    return element.dataset.src || element.dataset.original || element.dataset.echo || element.getAttribute('src');
 }
 
 export const mangaPath ='/booklist?page={page}';
