@@ -1,11 +1,10 @@
-// Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaLike.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manhwa\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangalike', 'mangalike', 'https://mangalike.net'/*, Tags.Media., Tags.Language.*/);
+        super('mangalike', 'MangaLike', 'https://manga-like.org', Tags.Media.Manga, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaLike extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangalike';
-        super.label = 'mangalike';
-        this.tags = [ 'manga', 'english' ];
-        this.url = 'https://mangalike.net';
-    }
-}
-*/
