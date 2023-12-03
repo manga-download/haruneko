@@ -276,7 +276,6 @@ export { default as MangaJar } from './MangaJar';
 export { default as MangaKakalot } from './MangaKakalot';
 export { default as MangaKatana } from './MangaKatana';
 export { default as MangaKawaii } from './MangaKawaii';
-export { default as MangaKid } from './MangaKid';
 export { default as MangaKik } from './MangaKik';
 export { default as MangaKiss } from './MangaKiss';
 export { default as MangaKita } from './MangaKita';
