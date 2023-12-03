@@ -59,9 +59,6 @@ export default class extends DecoratableMangaScraper {
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             }
         }
-
-        const dbg = mangaList.distinct();
-        console.log('Distinct:', mangaList.length, dbg.length);
         return mangaList.distinct();
     }
 
@@ -101,20 +98,19 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new FetchRequest(`${this.URI.origin}/web/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`);
         const data = await FetchWindowScript<ImageLinks>(request, `(${script})()`, 2500);
-        console.log('Scrambled Images:', data);
-        return data.map(entry => new Page(this, chapter, new URL(entry.link), { scrambled: entry.tiles }));
+        return data.map(entry => new Page(this, chapter, new URL(entry.link), { scrambled: JSON.stringify(entry.tiles) }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const scrambled = page.Parameters?.scrambled as Record<string, TileGroup>;
-        if (!scrambled) {
+        if (!page.Parameters?.scrambled) {
             return blob;
         }
         return DeScramble(blob, async (bitmap, ctx) => {
+            const scrambled: Record<string, TileGroup> = JSON.parse(page.Parameters.scrambled as string);
             for (const key in scrambled) {
                 const group = scrambled[key];
-                for(let index = 0; index < group.tiles.length; index++) {
+                for (let index = 0; index < group.tiles.length; index++) {
                     const d = group.tiles[index];
                     const s = group.tiles[group.indexmap[index]];
                     ctx.drawImage(bitmap, s.x, s.y, group.tileWidth, group.tileHeight, d.x, d.y, group.tileWidth, group.tileHeight);
@@ -145,21 +141,6 @@ function script(this: Window) {
             const residualIndex = sum % checksum.length;
             return checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
         }
-
-        /*
-        // window.shuffleSeed.shuffle();
-        function shuffle(indices: number[], seed: string) {
-            const next = seedrandom(seed); // Math.seedrandom.call(this, seed);
-            const shuffled = [];
-            const indicesCopy = [ ...indices ];
-            for (let index = 0; index < indices.length; index++) {
-                const i = Math.floor(next() * indicesCopy.length);
-                shuffled.push(indices[indicesCopy[i]]);
-                indicesCopy.splice(i, 1);
-            }
-            return shuffled;
-        }
-        */
 
         function extractGroupedTileMaps(img: PDataImage, seed: string, tileSize: number) {
             const columns = Math.ceil(img.width / tileSize);
