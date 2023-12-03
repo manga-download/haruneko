@@ -1,8 +1,9 @@
 import { Tags } from '../Tags';
-import icon from './PiedPiper.webp';
+import icon from './Piccoma.webp';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIMangas = {
     data: {
@@ -37,17 +38,6 @@ type NextChapters = {
     is_free: 'Y' | 'N',
 }[];
 
-type NextPages = {
-    isScrambled: boolean,
-    img: NextImage[],
-};
-
-type NextImage = {
-    path: string,
-    width: number,
-    height: number,
-};
-
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -60,13 +50,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.href}/web/product/\\d+`).test(url);
+        return new RegExp('^https://(jp\\.)?piccoma.com/web/product/\\d+').test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').pop();
-        const [ element ] = await FetchCSS<HTMLMetaElement>(new FetchRequest(url), 'meta[property="og:title"]');
-        return new Manga(this, provider, id, element.content.split('|').shift().trim());
+        const [ element ] = await FetchCSS<HTMLHeadElement>(new FetchRequest(url), 'h1.PCM-productTitle');
+        return new Manga(this, provider, id, element.textContent.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -94,19 +84,51 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(`${this.URI.href}/product/episode/${manga.Identifier}`);
-        const [ { text: json } ] = await FetchCSS<HTMLScriptElement>(request, 'script#__NEXT_DATA__');
-        const chapters = (JSON.parse(json) as NextData).props.pageProps.initialState.episode.episodeList.episode_list;
-        return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title));
+        return [
+            ... await this.fetchEpisodes(manga),
+            ... await this.fetchVolumes(manga),
+        ].sort((self, other) => self.Title.localeCompare(other.Title));
+    }
+
+    private async fetchEpisodes(manga: Manga): Promise<Chapter[]> {
+        const request = new FetchRequest(`${this.URI.origin}/web/product/${manga.Identifier}/episodes?etype=E`);
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.PCM-epList li a[data-episode_id]');
+        return data.map(element => new Chapter(this, manga, element.dataset.episode_id, element.querySelector('div.PCM-epList_title h2').textContent.trim()));
+    }
+
+    private async fetchVolumes(manga: Manga): Promise<Chapter[]> {
+        const request = new FetchRequest(`${this.URI.origin}/web/product/${manga.Identifier}/episodes?etype=V`);
+        const data = await FetchCSS<HTMLUListElement>(request, 'ul.PCM-volList li');
+        return data.map(element => new Chapter(
+            this,
+            manga,
+            element.querySelector<HTMLElement>('div.PCM-prdVol_btns a:last-of-type').dataset.episode_id,
+            element.querySelector('div.PCM-prdVol_title h2').textContent.trim(),
+        ));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(`${this.URI.href}/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`);
-        const data = await FetchWindowScript<ScrambledImages>(request, `(${script})()`, 2500);
+        const request = new FetchRequest(`${this.URI.origin}/web/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`);
+        const data = await FetchWindowScript<ImageLinks>(request, `(${script})()`, 2500);
         console.log('Scrambled Images:', data);
-        return data.map(entry => new Page(this, chapter, new URL(entry.link), {}));
+        return data.map(entry => new Page(this, chapter, new URL(entry.link), { scramblekey: entry.scramblekey }));
+    }
+
+    public override async FetchImage(_page: Page, _priority: Priority, _signal: AbortSignal): Promise<Blob> {
+        return [];
     }
 }
+
+type PData = {
+    isScrambled: boolean,
+    img: PDataImage[],
+};
+
+type PDataImage = {
+    path: string,
+    width: number,
+    height: number,
+};
 
 type Tile = {
     x: number,
@@ -120,13 +142,17 @@ type TileMap = {
     d: Tile, // destination
 }[];
 
-type ScrambledImages = {
+type ScrambleKey = string;
+
+type ImageLinks = {
     link: string,
-    tiles?: TileMap,
+    scramblekey?: ScrambleKey,
 }[];
 
 function script(this: Window) {
-    return new Promise<ScrambledImages>(resolve => {
+    return new Promise<ImageLinks>(resolve => {
+
+        /*
 
         function extractSeed(url: string): string {
             const uri = new URL(url);
@@ -254,15 +280,23 @@ function script(this: Window) {
 
         const isScrambled = globalThis.__NEXT_DATA__.props.pageProps.initialState.viewer.pData.isScrambled;
         const images = (globalThis.__NEXT_DATA__ as NextData).props.pageProps.initialState.viewer.pData.img;
+        */
 
-        const result = images.map(image => {
-            const uri = new URL(image.path);
-            return {
-                link: uri.href,
-                tiles: isScrambled ? extractTileMap(image) : undefined,
-            };
-        });
+        function extractTileMap(img: PDataImage): ScrambleKey {
+            return '...';
+        }
 
-        resolve(result);
+        const pdata = globalThis._pdata_ as PData;
+
+        const images: ImageLinks = pdata.img
+            .filter(img => img.path)
+            .map(img => {
+                return {
+                    link: new URL(img.path, window.location.origin).href,
+                    scramblekey: pdata.isScrambled ? extractTileMap(img) : undefined,
+                };
+            });
+
+        resolve(images);
     });
 }
