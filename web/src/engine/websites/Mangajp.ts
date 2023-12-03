@@ -16,7 +16,7 @@ function MangaExtractor(element: HTMLElement): string {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangajp', '漫画RAW(mangajp)', 'https://mangajp.top', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese);
+        super('mangajp', '漫画RAW(mangajp)', 'https://mangajp.top', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

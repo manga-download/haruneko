@@ -12,7 +12,7 @@ import type { Priority } from '../taskpool/TaskPool';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('madaradex', 'MadaraDex', 'https://madaradex.org', Tags.Media.Manhwa, Tags.Language.English, Tags.Rating.Pornographic);
+        super('madaradex', 'MadaraDex', 'https://madaradex.org', Tags.Media.Manhwa, Tags.Language.English, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
