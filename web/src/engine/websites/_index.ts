@@ -289,6 +289,7 @@ export { default as MangaKitsu } from './MangaKitsu';
 export { default as MangaKomi } from './MangaKomi';
 export { default as Mangakyo } from './Mangakyo';
 export { default as Mangalek } from './Mangalek';
+export { default as MangaLib } from './MangaLib';
 export { default as MangaLife } from './MangaLife';
 export { default as MangaLike } from './MangaLike';
 export { default as MangaLover } from './MangaLover';
