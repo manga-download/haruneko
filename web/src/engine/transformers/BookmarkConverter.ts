@@ -19,6 +19,7 @@ const legacyWebsiteIdentifierMap = {
     'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
     'lovehug': 'welovemanga',
     'mangaswat': 'goldragon',
+    'mangamx': 'mangaoni',
     'realmscans': 'rizzcomics',
     'muctau': 'bibimanga',
     'secretscans': 'lynxscans',

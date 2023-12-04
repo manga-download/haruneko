@@ -294,6 +294,7 @@ export { default as MangaMonarca } from './MangaMonarca';
 export { default as MangaNel } from './MangaNel';
 export { default as MangaNexus } from './MangaNexus';
 export { default as MangaOkur } from './MangaOkur';
+export { default as MangaOni } from './MangaOni';
 export { default as MangaParkPublisher } from './MangaParkPublisher';
 export { default as MangaPill } from './MangaPill';
 export { default as MangaRead } from './MangaRead';
