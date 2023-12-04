@@ -291,7 +291,7 @@ export { default as MangaLife } from './MangaLife';
 export { default as MangaLike } from './MangaLike';
 export { default as MangaLover } from './MangaLover';
 export { default as MangaMonarca } from './MangaMonarca';
-export { default as MangaNel } from './MangaNel';
+export { default as MangaNato } from './MangaNato';
 export { default as MangaNexus } from './MangaNexus';
 export { default as MangaOkur } from './MangaOkur';
 export { default as MangaOni } from './MangaOni';

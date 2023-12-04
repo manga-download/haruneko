@@ -2,7 +2,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const fixtureSameSite = new TestFixture({
     plugin: {
-        id: 'manganel',
+        id: 'manganato',
         title: 'Manganato'
     },
     container: {
@@ -11,7 +11,7 @@ const fixtureSameSite = new TestFixture({
         title: 'Sweet Taboo'
     },
     child: {
-        id: 'https://readmanganato.com/manga-nh990564/chapter-1',
+        id: 'https://chapmanganato.com/manga-nh990564/chapter-1',
         title: 'Chapter 1: Father-Daughter Standoff'
     },
     entry: {
@@ -24,16 +24,16 @@ describe(fixtureSameSite.Name, () => fixtureSameSite.AssertWebsite());
 
 const fixtureCrossSite = new TestFixture({
     plugin: {
-        id: 'manganel',
+        id: 'manganato',
         title: 'Manganato'
     },
     container: {
-        url: 'https://readmanganato.com/manga-mx989932',
-        id: 'https://readmanganato.com/manga-mx989932',
-        title: 'Keep A Low Profile, Sect Leader!'
+        url: 'https://chapmanganato.com/manga-mx989932',
+        id: 'https://chapmanganato.com/manga-mx989932',
+        title: 'Keep A Low Profile, Sect Leader'
     },
     child: {
-        id: 'https://readmanganato.com/manga-mx989932/chapter-1',
+        id: 'https://chapmanganato.com/manga-mx989932/chapter-1',
         title: 'Chapter 1'
     },
     entry: {

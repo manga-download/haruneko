@@ -20,6 +20,7 @@ const legacyWebsiteIdentifierMap = {
     'lovehug': 'welovemanga',
     'mangaswat': 'goldragon',
     'mangamx': 'mangaoni',
+    'manganel': 'manganato',
     'realmscans': 'rizzcomics',
     'muctau': 'bibimanga',
     'secretscans': 'lynxscans',

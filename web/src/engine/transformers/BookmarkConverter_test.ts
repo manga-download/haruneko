@@ -75,6 +75,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'lyrascans', targetID: 'quantumscans' },
             { sourceID: 'mangaswat', targetID: 'goldragon' },
             { sourceID: 'mangamx', targetID: 'mangaoni' },
+            { sourceID: 'manganel', targetID: 'manganato' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
