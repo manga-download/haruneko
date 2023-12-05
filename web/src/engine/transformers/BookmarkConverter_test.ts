@@ -24,7 +24,7 @@ describe('BookmarkConverter', () => {
     describe('ConvertToSerializedBookmark()', () => {
 
         it.each<unknown>([
-            [ 'x', 1 ], { x: 1 }, null, true, 'x', 1
+            ['x', 1], { x: 1 }, null, true, 'x', 1
         ])('Should throw for invald data', async (data) => {
             const expected = GetLocale(LocaleID.Locale_enUS).BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError();
             expect(() => testee.ConvertToSerializedBookmark(data)).toThrowError(expected);
@@ -59,12 +59,21 @@ describe('BookmarkConverter', () => {
 
         it.each<{ sourceID: string, targetID: string }>([
             { sourceID: '9anime', targetID: 'aniwave' },
+            { sourceID: 'azoramanga', targetID: 'azoraworld' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
+            { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
+            { sourceID: 'dalsei', targetID: 'viyafansub' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
+            { sourceID: 'firstkiss', targetID: 'likemanga'},
+            { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
+            { sourceID: 'kisscomic', targetID: 'readcomiconline' },
+            { sourceID: 'kumascans', targetID: 'retsu' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'lovehug', targetID: 'welovemanga' },
+            { sourceID: 'lyrascans', targetID: 'quantumscans' },
+            { sourceID: 'manganelos', targetID: 'mangapure'},
             { sourceID: 'mangaswat', targetID: 'goldragon' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
