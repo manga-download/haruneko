@@ -1,7 +1,5 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-//THIS test may fail because of recaptcha
-
 const config = {
     plugin: {
         id: 'mangalink',
@@ -12,6 +10,7 @@ const config = {
         id: JSON.stringify({ post: '86560', slug: '/readcomics/i-was-the-final-boss/' }),
         title: 'I Was the Final Boss'
     },
+    /* Recaptcha on chapter page
     child: {
         id: '/readcomics/i-was-the-final-boss/14/',
         title: '14'
@@ -20,7 +19,7 @@ const config = {
         index: 0,
         size: 1_805_356,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);
