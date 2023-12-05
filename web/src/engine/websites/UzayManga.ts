@@ -1,14 +1,37 @@
 import { Tags } from '../Tags';
 import icon from './UzayManga.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 
-@MangaStream.MangaCSS(/^https?:\/\/uzaymanga\.com\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS()
-@Common.ImageAjax()
+const pageScript = `
+    new Promise(resolve => {
+        __next_f.forEach(element => {// look for the chunk with images "path"
+            const el = element[1];
+            if (el) {
+                if(el.includes('[{"path":'))  {
+                    resolve(el)
+                }
+            }
+        });
+    });
+`;
+
+type JSONPage = {
+    path: string;
+}
+
+function ChapterExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('.chapternum').textContent.trim()
+    };
+}
+
+@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-details h1')
+@Common.MangasMultiPageCSS('?page={page}', 'div.overflow-hidden.grid.grid-cols-1 > div > a')
+@Common.ChaptersSinglePageCSS('div.list-episode a', ChapterExtractor)
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -18,4 +41,14 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+
+        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const data = await FetchWindowScript<string>(request, pageScript);
+        const jsonString = data.match(/(\[{"path":.*}\])}}/)[1];
+        const imagesData: JSONPage[] = JSON.parse(jsonString);
+        return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/series/image/${ image.path }`)));
+    }
+
 }
