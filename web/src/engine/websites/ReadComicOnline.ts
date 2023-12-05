@@ -3,6 +3,10 @@ import icon from './ReadComicOnline.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
+AddAntiScrapingDetection(async (dom) => {
+    return dom.querySelector('form#formVerify[action*="/Special/AreYouHuman"]') ? FetchRedirection.Interactive: undefined;
+});
+
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const link = new URL(anchor.href);
     link.searchParams.set('readType', '1');
