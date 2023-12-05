@@ -1,9 +1,8 @@
-import { Tags } from '../../Tags';
-import icon from './KissAway.webp';
-import { type Chapter, DecoratableMangaScraper, type Manga } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import * as FlatManga from '../decorators/FlatManga';
-import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import { Tags } from '../Tags';
+import icon from './KLManga.webp';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import * as FlatManga from './decorators/FlatManga';
 
 const chapterScript = `
     new Promise(async resolve => {
@@ -19,8 +18,7 @@ const chapterScript = `
                 title : chapter.title
             };
         });
-        const uniqueChapters = chapters.filter((obj, index) =>chapters.findIndex((item) => item.id === obj.id) === index );
-        resolve(uniqueChapters);
+        resolve(chapters);
     });
 `;
 
@@ -32,37 +30,25 @@ const pageScript = `
         const response = await fetch(uri);
         const data = await response.text();
         const dom = new DOMParser().parseFromString(data, "text/html");
-        const nodes = [...dom.querySelectorAll('img.chapter-img')];
+        const nodes = [...dom.querySelectorAll('img.chapter-img[alt*="Page"]')];
         resolve(nodes.map(picture => picture.src));
     });
 `;
 
-//TODO Implement at request level a BYPASS for this DDOSS protection
-//its not triggered on main page but on manga page
-
 @Common.MangaCSS(/^{origin}\/[^/]+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasSinglePageCSS(FlatManga.pathSinglePageManga, FlatManga.queryMangas)
+@Common.ChaptersSinglePageJS(chapterScript, 1000)
 @Common.PagesSinglePageJS(pageScript, 1000)
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
-    private ddosProtectionPassed = false;
-
     public constructor() {
-        super('kissaway', `KLManga`, 'https://klz9.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('klmanga', `KLManga`, 'https://klz9.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        if (!this.ddosProtectionPassed) {
-            await FetchWindowScript(new FetchRequest(new URL(manga.Identifier, this.URI).href), '', 5000);
-            this.ddosProtectionPassed = true;
-        }
-        return Common.FetchChaptersSinglePageJS.call(this, manga, chapterScript, 1000);
     }
 
 }
