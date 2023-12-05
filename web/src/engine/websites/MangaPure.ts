@@ -8,7 +8,6 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 type MangaID = {
     post: string,
-    slug: string
 }
 
 @Madara.MangaCSS(/^{origin}\/read\/[^/]+$/, 'div.post-title')
@@ -25,8 +24,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaid: MangaID = JSON.parse(manga.Identifier);
-        const request = new FetchRequest(new URL(`/ajax-list-chapter?mangaID=${mangaid.post}`, this.URI).href, {
+        const { post } = JSON.parse(manga.Identifier) as MangaID;
+        const request = new FetchRequest(new URL(`/ajax-list-chapter?mangaID=${post}`, this.URI).href, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 Referer: this.URI.origin
