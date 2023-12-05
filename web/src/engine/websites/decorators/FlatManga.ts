@@ -93,7 +93,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
         title = title.replace(/^\s*-\s*/, '');
         title = title.replace(/-\s*-\s*Read\s*Online\s*$/, '').trim();
         return new Chapter(this, manga, id, title);
-    });
+    }).distinct();
 }
 
 /**********************************************

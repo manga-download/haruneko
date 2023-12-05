@@ -15,8 +15,7 @@ const chapterScript = `
                 title : chapter.title
             };
         });
-        const uniqueChapters = chapters.filter((obj, index) =>chapters.findIndex((item) => item.id === obj.id) === index );
-        resolve(uniqueChapters);
+        resolve(chapters);
     });
 `;
 
@@ -36,16 +35,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        let url = new URL(chapter.Identifier, this.URI);
+        const url = new URL(chapter.Identifier, this.URI);
         let request = new FetchRequest(url.href, {
             headers: {
                 'Referer': this.URI.href,
             }
         });
         const chapterid = (await FetchCSS<HTMLInputElement>(request, 'input#chapter'))[0].value;
-
-        url = new URL(`/app/manga/controllers/cont.listImg.php?cid=${chapterid}`, this.URI);
-        request = new FetchRequest(url.href, {
+        request = new FetchRequest(new URL(`/app/manga/controllers/cont.listImg.php?cid=${chapterid}`, this.URI).href, {
             headers: {
                 'Referer': this.URI.href,
             }

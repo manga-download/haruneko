@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import { FetchCSS, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
+
 function MangaLabelExtractor(element: HTMLTitleElement) {
     return element.text.split(' - ')[0].trim();
 }
@@ -12,6 +13,7 @@ function MangaLabelExtractor(element: HTMLTitleElement) {
 @Common.MangasSinglePageCSS('/manga-list.html', FlatManga.queryMangas)
 @FlatManga.PagesSinglePageCSS('img.chapter-img')
 @Common.ImageAjax()
+
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('mangatr', `Manga-TR`, 'https://manga-tr.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Source.Aggregator);
@@ -29,13 +31,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this._getChaptersFromPage(manga, page);
+            const chapters = await this.getChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
-        return chapterList;
+        return chapterList.distinct();
     }
-    private async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
-        const mangaslug = manga.Identifier.match(/manga-([\S]+)\.html/)[1];
+    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
+        const mangaslug = manga.Identifier.match(/manga-([^/]+)\.html/)[1];
         const url = new URL('/cek/fetch_pages_manga.php?manga_cek=' + mangaslug, this.URI);
         const request = new FetchRequest(url.href, {
             method: 'POST',
@@ -47,9 +49,9 @@ export default class extends DecoratableMangaScraper {
         });
 
         const data = await FetchCSS<HTMLAnchorElement>(request, 'table.table tr td.table-bordered:first-of-type > a');
-        const esc = manga.Title.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const reg = new RegExp(esc, 'i');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.replace(reg, '').trim()));
+        const escapedMangaTitle = manga.Title.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const regexp = new RegExp(escapedMangaTitle, 'i');
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.replace(regexp, '').trim()));
     }
 
 }

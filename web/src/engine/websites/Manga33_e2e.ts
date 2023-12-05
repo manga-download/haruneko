@@ -6,18 +6,18 @@ const config = {
         title: 'Manga33'
     },
     container: {
-        url: 'https://www.manga333.com/manga/yuan-zun.html',
-        id: '/manga/yuan-zun.html',
-        title: 'Yuan Zun'
+        url: 'https://www.manga333.com/manga/black-clover.html',
+        id: '/manga/black-clover.html',
+        title: 'Black Clover'
     },
     child: {
-        id: '/manga/yuan-zun-510-all.html',
-        title: 'Chapter 510'
+        id: '/manga/black-clover-368-all.html',
+        title: 'Chapter 368'
     },
     entry: {
         index: 0,
-        size: 191_444,
-        type: 'image/jpeg'
+        size: 516_711,
+        type: 'image/jpeg',
     }
 };
 

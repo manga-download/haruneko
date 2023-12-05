@@ -20,11 +20,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await FlatManga.FetchChaptersSinglePageCSS.call(this, manga, FlatManga.queryChapters);
-        const fixedChapters = chapters.map(chapter => new Chapter(this, manga, chapter.Identifier.replace(/-\d+.html$/, '-all.html'), chapter.Title));
-        const uniqueChapters = fixedChapters.filter(
-            (obj, index) =>
-                fixedChapters.findIndex((item) => item.Identifier === obj.Identifier) === index
-        );
-        return uniqueChapters;
+        return chapters.map(chapter => new Chapter(this, manga, chapter.Identifier.replace(/-\d+.html$/, '-all.html'), chapter.Title));
     }
 }
