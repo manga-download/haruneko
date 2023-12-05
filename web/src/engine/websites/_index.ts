@@ -303,6 +303,7 @@ export { default as MangaOwlio } from './MangaOwlio';
 export { default as MangaPanda } from './MangaPanda';
 export { default as MangaParkPublisher } from './MangaParkPublisher';
 export { default as MangaPill } from './MangaPill';
+export { default as MangaPro } from './MangaPro';
 export { default as MangaRead } from './MangaRead';
 export { default as MangaReadCO } from './MangaReadCO';
 export { default as MangaReader } from './MangaReader';
