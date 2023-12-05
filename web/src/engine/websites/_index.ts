@@ -299,6 +299,7 @@ export { default as MangaNexus } from './MangaNexus';
 export { default as MangaOkur } from './MangaOkur';
 export { default as MangaOkuTR } from './MangaOkuTR';
 export { default as MangaOnlineTeam } from './MangaOnlineTeam';
+export { default as MangaOwlio } from './MangaOwlio';
 export { default as MangaParkPublisher } from './MangaParkPublisher';
 export { default as MangaPill } from './MangaPill';
 export { default as MangaRead } from './MangaRead';
