@@ -630,8 +630,6 @@ export { default as MangaKu } from './legacy/MangaKu';
 export { default as MangaLink } from './legacy/MangaLink';
 export { default as MangaLivre } from './legacy/MangaLivre';
 export { default as Manganelos } from './legacy/Manganelos';
-export { default as MangaOnline } from './legacy/MangaOnline';
-export { default as MangaOnlineBR } from './legacy/MangaOnlineBR';
 export { default as MangaOnlineFun } from './legacy/MangaOnlineFun';
 export { default as MangaPanda } from './legacy/MangaPanda';
 export { default as MangaPark } from './legacy/MangaPark';
