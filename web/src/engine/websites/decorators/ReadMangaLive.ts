@@ -33,7 +33,7 @@ export const queryMangaTitle = [
 export const pathMangas = '/list?offset={page}';
 export const pageMangaOffset = 70;
 
-type scriptResult = {
+type ImagesData = {
     pics: string[],
     servers: string[];
 }
@@ -51,15 +51,15 @@ type scriptResult = {
 async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay : number): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     uri.searchParams.set('mtr', '1');
-    const request = new FetchRequest(uri.href);
-    const images = await FetchWindowScript<scriptResult>(request, script, delay);
+    const images = await FetchWindowScript<ImagesData>(new FetchRequest(uri.href), script, delay);
 
     images.pics = images.pics.map(pic => pic.replace(/^\/\//, 'https://'));
     images.servers = images.servers.map(server => server.replace(/^\/\//, 'https://'));
 
     return images.pics.map(url => {
-        const parameters = { Referer: uri.href, servers: JSON.stringify(images.servers) };
-        return new Page(this, chapter, new URL(url), parameters);
+        return new Page(this, chapter, new URL(url), {
+            Referer: uri.href,
+            servers: JSON.stringify(images.servers) });
     });
 }
 /**
@@ -83,6 +83,7 @@ export function PagesSinglePageJS(script = pagesWithServersScript, delay = 0) {
 /**
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * This method fetch pages by trying different servers. Page must have "servers: string[] (an array or string servers)" in Parameters.
  */
 export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
