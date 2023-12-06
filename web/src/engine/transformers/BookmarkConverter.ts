@@ -21,6 +21,7 @@ const legacyWebsiteIdentifierMap = {
     'mangaproz': 'mangapro',
     'manganelos': 'mangapure',
     'mangaswat': 'goldragon',
+    'manhuaes': 'manhuaaz',
     'realmscans': 'rizzcomics',
     'muctau': 'bibimanga',
     'secretscans': 'lynxscans',
