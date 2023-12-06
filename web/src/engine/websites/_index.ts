@@ -352,6 +352,7 @@ export { default as ManhuaScan } from './ManhuaScan';
 export { default as Manhuass } from './Manhuass';
 export { default as ManhuaUs } from './ManhuaUs';
 export { default as Manhwa18 } from './Manhwa18';
+export { default as Manhwa18cc } from './Manhwa18cc';
 export { default as ManhwaEighteen } from './ManhwaEighteen';
 export { default as ManhwaFull } from './ManhwaFull';
 export { default as ManhwaHentai } from './ManhwaHentai';
