@@ -14,7 +14,6 @@ type FeedResults = {
             }[],
         }[]
     }
-
 }
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
@@ -38,27 +37,28 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        const uri = new URL(url);
-        uri.search = '';
-        return new RegExp(`^${this.URI.origin}/search/label/[^?]+$`).test(uri.href);
+        return new RegExp(`^${this.URI.origin}/search/label/[^?]+$`).test(this.stripSearch(url));
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const uri = new URL(url);
-        uri.search = '';
-        const id = uri.pathname.split('/').pop();
-        const data = await FetchCSS(new FetchRequest(uri.href), 'div.sidebar ul li span[dir="ltr"]');
+        const id = new URL(url).pathname.split('/').pop();
+        const data = await FetchCSS(new FetchRequest(this.stripSearch(url)), 'div.sidebar ul li span[dir="ltr"]');
         return new Manga(this, provider, id, data[0].textContent.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new FetchRequest(new URL(`/feeds/posts/default/-/${manga.Identifier}?alt=json&max-results=9999`, this.URI).href);
         const { feed } = await FetchJSON<FeedResults>(request);
-        if (!feed.entry) return [];
         return feed.entry.map(entry => {
             const goodLink = entry.link.find(a => a.rel === 'alternate');
             const title = goodLink.title.replace(manga.Title, '').replaceAll(/\[.*\]/g, '').trim();
             return new Chapter(this, manga, new URL(goodLink.href).pathname, title);
         });
+    }
+
+    private stripSearch(url: string): string {
+        const uri = new URL(url);
+        uri.search = '';
+        return uri.href;
     }
 }
