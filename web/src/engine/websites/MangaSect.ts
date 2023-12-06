@@ -35,11 +35,10 @@ export default class extends DecoratableMangaScraper {
 
         const response = await FetchJSON<AJAXResponse>(request);
         const dom = new DOMParser().parseFromString(response.html, 'text/html');
-        let data = [...dom.querySelectorAll<HTMLImageElement>('a.readimg img.lazy.loaded')];
-        data = data.sort(function (a, b) {
+        const data = [...dom.querySelectorAll<HTMLImageElement>('a.readimg img.lazy.loaded')].sort(function (a, b) {
             const za = parseInt(a.parentElement.parentElement.dataset.index);
-            const zy = parseInt(b.parentElement.parentElement.dataset.index);
-            return za - zy;
+            const zb = parseInt(b.parentElement.parentElement.dataset.index);
+            return za - zb;
         });
         return data.map(image => new Page(this, chapter, DeProxify(new URL(image.getAttribute('src')))));
 
