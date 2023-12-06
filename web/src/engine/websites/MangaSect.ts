@@ -24,7 +24,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-
         const chapterid = chapter.Identifier.match(/\/([\d]+)$/)[1];
         const request = new FetchRequest(new URL(`/ajax/image/list/chap/${chapterid}`, this.URI).href, {
             headers: {
