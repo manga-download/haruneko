@@ -74,6 +74,7 @@ export { default as CosmicScansID } from './CosmicScansID';
 export { default as CovenScan } from './CovenScan';
 export { default as CrunchyScan } from './CrunchyScan';
 export { default as CyComi } from './CyComi';
+export { default as CypherScans } from './CypherScans';
 export { default as DankeFursLesen } from './DankeFursLesen';
 export { default as Daysneo } from './Daysneo';
 export { default as DeathTollScans } from './DeathTollScans';
