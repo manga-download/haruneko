@@ -19,7 +19,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
 
-        //get pagination because it nevers ends otherwise
+        //get pagination because it never ends otherwise
         const request = new FetchRequest(`${this.URI.origin}/browse-comics/?results=1`);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.pagination li:not([class]) a');
         const pageMax = parseInt(data[0].text.trim());
