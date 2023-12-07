@@ -48,7 +48,7 @@ type ImagesData = {
  * @param chapter - A reference to the {@link Chapter} which contains the pages
  * @param endpoint - An URL path providing the protected image link data (for each image)
  */
-async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay : number): Promise<Page[]> {
+async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay : number = 0): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     uri.searchParams.set('mtr', '1');
     const images = await FetchWindowScript<ImagesData>(new FetchRequest(uri.href), script, delay);
