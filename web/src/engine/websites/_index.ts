@@ -268,7 +268,6 @@ export { default as MangaFort } from './MangaFort';
 export { default as MangaFox } from './MangaFox';
 export { default as MangaFoxFull } from './MangaFoxFull';
 export { default as MangaGG } from './MangaGG';
-export { default as MangaGreat } from './MangaGreat';
 export { default as MangaHasu } from './MangaHasu';
 export { default as MangaHentai } from './MangaHentai';
 export { default as MangaHere } from './MangaHere';
