@@ -348,6 +348,7 @@ export { default as ManhwaFreak } from './ManhwaFreak';
 export { default as ManhwaFull } from './ManhwaFull';
 export { default as ManhwaHentai } from './ManhwaHentai';
 export { default as ManhwaHentaiMe } from './ManhwaHentaiMe';
+export { default as ManhwaHub } from './ManhwaHub';
 export { default as ManhwaIndo } from './ManhwaIndo';
 export { default as Manhwaland } from './Manhwaland';
 export { default as ManhwaLatino } from './ManhwaLatino';
