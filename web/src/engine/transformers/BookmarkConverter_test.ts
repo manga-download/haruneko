@@ -73,10 +73,13 @@ describe('BookmarkConverter', () => {
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'lovehug', targetID: 'welovemanga' },
             { sourceID: 'lyrascans', targetID: 'quantumscans' },
+            { sourceID: 'mangaproz', targetID: 'mangapro' },
+            { sourceID: 'manganelos', targetID: 'mangapure'},
             { sourceID: 'mangaswat', targetID: 'goldragon' },
             { sourceID: 'mangamx', targetID: 'mangaoni' },
             { sourceID: 'manganel', targetID: 'manganato' },
             { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
+            { sourceID: 'manhuaes', targetID: 'manhuaaz' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
