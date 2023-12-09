@@ -394,6 +394,7 @@ export { default as NeoxScan } from './NeoxScan';
 export { default as NeuManga } from './NeuManga';
 export { default as NewType } from './NewType';
 export { default as Ngomik } from './Ngomik';
+export { default as NHentaiCom } from './NHentaiCom';
 export { default as NightComic } from './NightComic';
 export { default as Nightow } from './Nightow';
 export { default as NijiTranslations } from './NijiTranslations';
