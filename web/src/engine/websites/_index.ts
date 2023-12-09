@@ -397,6 +397,7 @@ export { default as NewType } from './NewType';
 export { default as Ngomik } from './Ngomik';
 export { default as NightComic } from './NightComic';
 export { default as Nightow } from './Nightow';
+export { default as NightScans } from './NightScans';
 export { default as NijiTranslations } from './NijiTranslations';
 export { default as NineHentai } from './NineHentai';
 export { default as NiveraFansub } from './NiveraFansub';
