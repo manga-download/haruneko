@@ -401,6 +401,7 @@ export { default as NightScans } from './NightScans';
 export { default as NijiTranslations } from './NijiTranslations';
 export { default as NineHentai } from './NineHentai';
 export { default as NirvanaManga } from './NirvanaManga';
+export { default as NitroManga } from './NitroManga';
 export { default as NiveraFansub } from './NiveraFansub';
 export { default as NoraNoFansub } from './NoraNoFansub';
 export { default as NovelMic } from './NovelMic';

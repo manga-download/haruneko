@@ -80,6 +80,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'manganel', targetID: 'manganato' },
             { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
             { sourceID: 'manhuaes', targetID: 'manhuaaz' },
+            { sourceID: 'nitroscans', targetID: 'nitromanga' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
