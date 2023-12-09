@@ -3,12 +3,14 @@ import icon from './Piccoma.webp';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
+import { TaskPool, Priority } from '../taskpool/TaskPool';
+import { RateLimit } from '../taskpool/RateLimit';
 
 type APIMangas = {
     data: {
-        products: [{
+        total_page: number,
+        products?: [{
             id: number,
             title: string,
         }]
@@ -32,6 +34,8 @@ type TileGroup = {
 
 export default class extends DecoratableMangaScraper {
 
+    private readonly mangasTaskPool = new TaskPool(4, new RateLimit(8, 1));
+
     public constructor() {
         super('piccoma', 'Piccoma', 'https://piccoma.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Official, Tags.Accessibility.RegionLocked);
     }
@@ -45,30 +49,46 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').pop();
-        const [ element ] = await FetchCSS<HTMLHeadElement>(new FetchRequest(url), 'h1.PCM-productTitle');
+        const uri = new URL(url);
+        const id = uri.pathname.split('/')[3];
+        uri.pathname = uri.pathname.split('/').slice(0, 4).join('/');
+        const [ element ] = await FetchCSS<HTMLHeadElement>(new FetchRequest(uri.href), 'h1.PCM-productTitle');
         return new Manga(this, provider, id, element.textContent.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
-        const vowels = 'aeiouあいうえお'.split('');
-        for (const word of vowels) {
-            for (let page = 1, run = true; run; page++) {
-                const mangas = await this.getMangasFromPage(word, page, provider);
-                mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        const cancellator = new AbortController();
+        try {
+            const genres = [ 1, 2, 3, 4, 5, 6, 7, 9, 10 ];
+            const mangaList: Manga[] = [];
+            for(const genre of genres) {
+                const result = await this.getMangasFromPage(genre, 1, provider, cancellator.signal);
+                mangaList.push(...result.mangas);
+                const promises = Array(result.pages - 1).fill(0).map(async (_, index) => {
+                    const { mangas } = await this.getMangasFromPage(genre, index + 2, provider, cancellator.signal);
+                    mangaList.push(...mangas);
+                });
+                await Promise.all(promises);
             }
+            return mangaList.distinct();
+        } catch(error) {
+            cancellator.abort();
+            throw error;
         }
-        return mangaList.distinct();
     }
 
-    private async getMangasFromPage(word: string, page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const uri = new URL('/web/search/result_ajax/list', this.URI);
-        uri.searchParams.set('tab_type', 'T');
-        uri.searchParams.set('word', word);
-        uri.searchParams.set('page', `${page}`);
-        const { data: { products: entries } } = await FetchJSON<APIMangas>(new FetchRequest(uri.href));
-        return entries.map(entry => new Manga(this, provider, `${entry.id}`, entry.title));
+    private async getMangasFromPage(genre: number, page: number, provider: MangaPlugin, signal: AbortSignal) {
+        return this.mangasTaskPool.Add(async () => {
+            const uri = new URL('/web/next_page/list', this.URI);
+            uri.searchParams.set('list_type', 'G');
+            uri.searchParams.set('result_id', `${genre}`);
+            uri.searchParams.set('page_id', `${page}`);
+            const { data } = await FetchJSON<APIMangas>(new FetchRequest(uri.href));
+            return {
+                pages: data.total_page,
+                mangas: data.products.map(entry => new Manga(this, provider, `${entry.id}`, entry.title))
+            };
+        }, Priority.Normal, signal);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -142,6 +162,7 @@ function script(this: Window) {
             return checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
         }
 
+        // See: https://github.com/webcaetano/image-scramble/blob/master/unscrambleImg.js
         function extractGroupedTileMaps(img: PDataImage, seed: string, tileSize: number) {
             const columns = Math.ceil(img.width / tileSize);
             const tileCount = columns * Math.ceil(img.height / tileSize);
@@ -162,6 +183,7 @@ function script(this: Window) {
 
             for (const key in groupedTileMaps) {
                 const group = groupedTileMaps[key];
+                // See: https://github.com/webcaetano/shuffle-seed/blob/master/shuffle-seed.js
                 group.indexmap = globalThis.shuffleSeed.shuffle(group.tiles.map((_, index) => index), seed);
             }
 
