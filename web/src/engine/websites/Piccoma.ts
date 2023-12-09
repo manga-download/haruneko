@@ -107,12 +107,15 @@ export default class extends DecoratableMangaScraper {
     private async fetchVolumes(manga: Manga): Promise<Chapter[]> {
         const request = new FetchRequest(`${this.URI.origin}/web/product/${manga.Identifier}/episodes?etype=V`);
         const data = await FetchCSS<HTMLUListElement>(request, 'ul.PCM-volList li');
-        return data.map(element => new Chapter(
-            this,
-            manga,
-            element.querySelector<HTMLElement>('div.PCM-prdVol_btns a:last-of-type').dataset.episode_id,
-            element.querySelector('div.PCM-prdVol_title h2').textContent.trim(),
-        ));
+        return data.map(element => {
+            const volume = [ ...element.querySelectorAll<HTMLElement>('div.PCM-prdVol_btns > a:not([class*="buyBtn"])') ].pop();
+            const title = [
+                element.querySelector<HTMLElement>('div.PCM-prdVol_title h2').innerText.trim(),
+                volume.classList.contains('PCM-prdVol_freeBtn') ? ` (${ volume.innerText.trim() })` : '',
+                volume.classList.contains('PCM-prdVol_trialBtn') ? ` (${ volume.innerText.trim() })` : '',
+            ].join('');
+            return new Chapter(this, manga, volume.dataset.episode_id, title);
+        });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
