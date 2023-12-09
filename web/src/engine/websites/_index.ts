@@ -393,6 +393,7 @@ export { default as Nekomik } from './Nekomik';
 export { default as NeoxScan } from './NeoxScan';
 export { default as NeuManga } from './NeuManga';
 export { default as NewType } from './NewType';
+export { default as NextScan } from './NextScan';
 export { default as Ngomik } from './Ngomik';
 export { default as NightComic } from './NightComic';
 export { default as Nightow } from './Nightow';
