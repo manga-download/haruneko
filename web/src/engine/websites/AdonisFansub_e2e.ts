@@ -2,8 +2,8 @@
 
 const config = {
     plugin: {
-        id: 'natsuid',
-        title: 'NatsuID'
+        id: 'adonisfansub',
+        title: 'Adonis Fansub'
     },
     container: {
         url: 'https://manga.adonisfansub.com/manga/nyx-stay-night/',
