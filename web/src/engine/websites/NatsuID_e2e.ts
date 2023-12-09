@@ -6,17 +6,17 @@ const config = {
         title: 'NatsuID'
     },
     container: {
-        url: 'https://manga.adonisfansub.com/manga/nyx-stay-night/',
-        id: '/manga/nyx-stay-night/',
-        title: 'Nyx Stay Night'
+        url: 'https://natsu.id/manga/99-reinforced-wooden-stick/',
+        id: '/manga/99-reinforced-wooden-stick/',
+        title: '+99 Reinforced Wooden Stick'
     },
     child: {
-        id: '/nyx-stay-night-bolum-0/',
-        title: 'Bölüm 0 - Prolog'
+        id: '/99-reinforced-wooden-stick-chapter-133/',
+        title: 'Chapter 133'
     },
     entry: {
-        index: 0,
-        size: 408_328,
+        index: 1,
+        size: 132_617,
         type: 'image/jpeg'
     }
 };

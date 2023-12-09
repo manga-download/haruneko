@@ -388,6 +388,7 @@ export { default as MomoNoHanaScan } from './MomoNoHanaScan';
 export { default as MonochromeScans } from './MonochromeScans';
 export { default as MonoManga } from './MonoManga';
 export { default as MoonWitchInLove } from './MoonWitchInLove';
+export { default as NatsuID } from './NatsuID';
 export { default as Nekomik } from './Nekomik';
 export { default as NeoxScan } from './NeoxScan';
 export { default as NeuManga } from './NeuManga';
