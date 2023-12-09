@@ -4,7 +4,7 @@ const fixtureChapter = new TestFixture({
     plugin: {
         id: 'piccoma',
         title: 'Piccoma'
-    }, /* Rgion Locked
+    }, /* Region Locked
     container: {
         url: 'https://piccoma.com/web/product/6301',
         id: '6301',
