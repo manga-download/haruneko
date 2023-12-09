@@ -1,25 +1,45 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+const fixtureChapter = new TestFixture({
     plugin: {
-        id: 'piedpiperfb',
-        title: 'Pied Piper'
-    },
+        id: 'piccoma',
+        title: 'Piccoma'
+    }, /* Rgion Locked
     container: {
-        url: 'https://piedpiperfansub.me/manga/chainsaw-man/',
-        id: JSON.stringify({ post: '28250', slug: '/manga/chainsaw-man/' }),
-        title: 'Chainsaw Man'
+        url: 'https://piccoma.com/web/product/6301',
+        id: '6301',
+        title: 'エロスの種子'
     },
     child: {
-        id: '/manga/chainsaw-man/1-bolum/',
-        title: '1.Bölüm'
+        id: '1106510',
+        title: '第一話 (1)'
     },
     entry: {
-        index: 1,
-        size: 706_465,
-        type: 'image/jpeg'
-    }
-};
+        index: 0,
+        size: 531_180,
+        type: 'image/png'
+    } */
+});
+describe(fixtureChapter.Name, () => fixtureChapter.AssertWebsite());
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+const fixtureVolume = new TestFixture({
+    plugin: {
+        id: 'piccoma',
+        title: 'Piccoma'
+    }, /* Region Locked
+    container: {
+        url: 'https://piccoma.com/web/product/6301',
+        id: '6301',
+        title: 'エロスの種子'
+    },
+    child: {
+        id: '367170',
+        title: '第1巻 (¥0)'
+    },
+    entry: {
+        index: 0,
+        size: 1_012_662,
+        type: 'image/png'
+    } */
+});
+describe(fixtureVolume.Name, () => fixtureVolume.AssertWebsite());
