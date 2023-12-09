@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Mangakyo'
     },
     container: {
-        url: 'https://mangakyo.org/komik/0-magic-a-high-spirit-and-a-demonic-sword/',
+        url: 'https://mangakyo.vip/komik/0-magic-a-high-spirit-and-a-demonic-sword/',
         id: '/komik/0-magic-a-high-spirit-and-a-demonic-sword/',
         title: '0 Magic, a High Spirit, and a Demonic Sword'
     },
