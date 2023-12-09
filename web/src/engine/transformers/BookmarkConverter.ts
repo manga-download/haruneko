@@ -25,6 +25,7 @@ const legacyWebsiteIdentifierMap = {
     'manganel': 'manganato',
     'manhwaclub': 'manhwahentai',
     'manhuaes': 'manhuaaz',
+    'nitroscans': 'nitromanga',
     'realmscans': 'rizzcomics',
     'muctau': 'bibimanga',
     'secretscans': 'lynxscans',
