@@ -17,7 +17,7 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('allhentai', `AllHentai`, 'https://20.allhen.online', Tags.Language.Russian, Tags.Media.Manga, Tags.Rating.Pornographic);
+        super('allhentai', `AllHentai`, 'https://20.allhen.online', Tags.Language.Russian, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
         this.Settings.url = new Text('UrlOverride', R.Plugin_Settings_UrlOverride, R.Plugin_Settings_UrlOverrideInfo, this.URI.href);
         this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
         this.URI.href = this.Settings.url.value as string;
