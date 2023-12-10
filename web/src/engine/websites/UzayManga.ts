@@ -5,8 +5,8 @@ import * as Common from './decorators/Common';
 import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 
 const pageScript = `
-    new Promise(resolve => {
-        __next_f.forEach(element => {// look for the chunk with images "path"
+    new Promise((resolve, reject) => {
+        __next_f.forEach(element => {
             const el = element[1];
             if (el) {
                 if(el.includes('[{"path":'))  {
@@ -14,6 +14,7 @@ const pageScript = `
                 }
             }
         });
+        reject();
     });
 `;
 
@@ -29,7 +30,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-details h1')
-@Common.MangasMultiPageCSS('?page={page}', 'div.overflow-hidden.grid.grid-cols-1 > div > a')
+@Common.MangasMultiPageCSS('/?page={page}', 'div.overflow-hidden.grid.grid-cols-1 > div > a')
 @Common.ChaptersSinglePageCSS('div.list-episode a', ChapterExtractor)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
