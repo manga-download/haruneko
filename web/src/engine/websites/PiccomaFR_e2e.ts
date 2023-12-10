@@ -1,45 +1,23 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixtureChapter = new TestFixture({
+const fixture = new TestFixture({
     plugin: {
         id: 'piccoma-fr',
         title: 'Piccoma (French)'
     }, /* Region Locked
     container: {
-        url: 'https://',
-        id: '',
-        title: ''
+        url: 'https://piccoma.com/fr/product/731',
+        id: '731',
+        title: 'Evangéline'
     },
     child: {
-        id: '',
-        title: ''
+        id: '46944',
+        title: '#1 Où et qui suis-je ?'
     },
     entry: {
         index: 0,
-        size: 0,
+        size: 307_526,
         type: 'image/png'
     } */
 });
-describe(fixtureChapter.Name, () => fixtureChapter.AssertWebsite());
-
-const fixtureVolume = new TestFixture({
-    plugin: {
-        id: 'piccoma-fr',
-        title: 'Piccoma (French)'
-    }, /* Region Locked
-    container: {
-        url: 'https://',
-        id: '',
-        title: ''
-    },
-    child: {
-        id: '',
-        title: ''
-    },
-    entry: {
-        index: 0,
-        size: 0,
-        type: 'image/png'
-    } */
-});
-describe(fixtureVolume.Name, () => fixtureVolume.AssertWebsite());
+describe(fixture.Name, () => fixture.AssertWebsite());
