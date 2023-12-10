@@ -29,6 +29,7 @@ const legacyWebsiteIdentifierMap = {
     'muctau': 'bibimanga',
     'nitroscans': 'nitromanga',
     'oxapk': 'manjanoon',
+    'ozulscans': 'kingofmanga',
     'realmscans': 'rizzcomics',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',
