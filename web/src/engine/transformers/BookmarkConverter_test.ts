@@ -83,7 +83,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'manhuaes', targetID: 'manhuaaz' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'nitroscans', targetID: 'nitromanga' },
-            { sourceID: 'oxpak', targetID: 'manjanoon' },
+            { sourceID: 'oxapk', targetID: 'manjanoon' },
             { sourceID: 'ozulscans', targetID: 'kingofmanga' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
