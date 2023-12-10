@@ -20,6 +20,7 @@ const legacyWebsiteIdentifierMap = {
     'lovehug': 'welovemanga',
     'mangaproz': 'mangapro',
     'manganelos': 'mangapure',
+    'mangaraw': 'mangagecko',
     'mangaswat': 'goldragon',
     'mangamx': 'mangaoni',
     'manganel': 'manganato',

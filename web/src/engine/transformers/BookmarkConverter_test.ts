@@ -75,6 +75,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'lyrascans', targetID: 'quantumscans' },
             { sourceID: 'mangaproz', targetID: 'mangapro' },
             { sourceID: 'manganelos', targetID: 'mangapure'},
+            { sourceID: 'mangaraw', targetID: 'mangagecko' },
             { sourceID: 'mangaswat', targetID: 'goldragon' },
             { sourceID: 'mangamx', targetID: 'mangaoni' },
             { sourceID: 'manganel', targetID: 'manganato' },
