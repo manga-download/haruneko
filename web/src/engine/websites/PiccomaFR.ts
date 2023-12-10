@@ -50,7 +50,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.href}/product(/episode)?/\\d+$`).test(url);
+        return new RegExp('^https://(fr\\.)?piccoma.com/fr/product(/episode)?/\\d+$').test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
