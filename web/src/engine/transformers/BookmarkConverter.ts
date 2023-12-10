@@ -26,9 +26,11 @@ const legacyWebsiteIdentifierMap = {
     'manganel': 'manganato',
     'manhwaclub': 'manhwahentai',
     'manhuaes': 'manhuaaz',
-    'nitroscans': 'nitromanga',
-    'realmscans': 'rizzcomics',
     'muctau': 'bibimanga',
+    'nitroscans': 'nitromanga',
+    'oxapk': 'manjanoon',
+    'ozulscans': 'kingofmanga',
+    'realmscans': 'rizzcomics',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',
     'yugenmangas': 'yugenmangas-es'
