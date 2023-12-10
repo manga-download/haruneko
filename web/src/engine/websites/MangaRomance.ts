@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
         const { feed } = await FetchJSON<FeedResults>(request);
         return feed.entry.map(entry => {
             const goodLink = entry.link.find(a => a.rel === 'alternate');
-            const title = goodLink.title.replace(manga.Title, '').replaceAll(/\[.*\]/g, '').trim();
+            const title = goodLink.title.replace(manga.Title, '').replaceAll(/\[[^\]]+\]/g, '').trim();
             return new Chapter(this, manga, new URL(goodLink.href).pathname, title);
         });
     }
