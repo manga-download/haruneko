@@ -416,6 +416,7 @@ export { default as OnMangaMe } from './OnMangaMe';
 export { default as Opiatoon } from './Opiatoon';
 export { default as Oremanga } from './Oremanga';
 export { default as OrigamiOrpheans } from './OrigamiOrpheans';
+export { default as Otsugami } from './Otsugami';
 export { default as OzulScans } from './OzulScans';
 export { default as PairOfTwo } from './PairOfTwo';
 export { default as PatyScans } from './PatyScans';
