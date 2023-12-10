@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private MangaLabelExtractor(element: HTMLAnchorElement) {
-        return element.textContent.replace(/\[.*?\]/g, '').replace(/【.*?】/g, '').trim();
+        return element.textContent.replaceAll(/\[[^\]]+\]/g, '').replaceAll(/【[^】]+】/g, '').trim();
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
