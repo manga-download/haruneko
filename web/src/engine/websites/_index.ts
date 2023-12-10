@@ -414,6 +414,7 @@ export { default as NovelMic } from './NovelMic';
 export { default as OlympusScanlation } from './OlympusScanlation';
 export { default as OnMangaMe } from './OnMangaMe';
 export { default as Opiatoon } from './Opiatoon';
+export { default as Oremanga } from './Oremanga';
 export { default as OzulScans } from './OzulScans';
 export { default as PairOfTwo } from './PairOfTwo';
 export { default as PatyScans } from './PatyScans';
