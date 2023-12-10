@@ -17,12 +17,12 @@ type APIMangas = {
     }
 }
 
-type ImageLinks = {
+export type ImageLinks = {
     link: string,
     tiles?: Record<string, TileGroup>,
 }[];
 
-type TileGroup = {
+export type TileGroup = {
     tileWidth: number,
     tileHeight: number,
     tiles: {
@@ -154,15 +154,34 @@ type PDataImage = {
     height: number,
 };
 
-function script(this: Window) {
+export function script(this: Window) {
     return new Promise<ImageLinks>(resolve => {
 
+        (function() {
+            if(globalThis.shuffleSeed?.shuffle) {
+                return;
+            }
+            const temp = { exports: {} };
+            (function locate(object, id) {
+                if(object[id]) {
+                    return object[id];
+                }
+                let result = null;
+                for(const key in object) {
+                    result = result ?? locate(object[key], id);
+                }
+                return result;
+            })(globalThis.webpackChunk_N_E, 71987)(temp);
+            globalThis.shuffleSeed = temp.exports;
+        })();
+
         function extractSeed(uri: URL): string {
-            const checksum = uri.pathname.split('/').slice(-2).shift();
+            const checksum = uri.searchParams.get('q') ?? uri.pathname.split('/').slice(-2).shift();
             const expiration = uri.searchParams.get('expires');
             const sum = expiration.split('').reduce((accumulator, character) => accumulator + parseInt(character), 0);
             const residualIndex = sum % checksum.length;
-            return checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
+            const seed = checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
+            return globalThis.dd ? globalThis.dd(seed) : seed;
         }
 
         // See: https://github.com/webcaetano/image-scramble/blob/master/unscrambleImg.js
@@ -193,7 +212,7 @@ function script(this: Window) {
             return groupedTileMaps;
         }
 
-        const pdata = globalThis._pdata_ as PData;
+        const pdata = (globalThis._pdata_ ?? globalThis.__NEXT_DATA__.props.pageProps.initialState.viewer.pData) as PData;
 
         const images: ImageLinks = pdata.img
             .filter(img => img.path)

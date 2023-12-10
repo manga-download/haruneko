@@ -1,10 +1,11 @@
+import { type ImageLinks, type TileGroup, script } from './Piccoma';
 import { Tags } from '../Tags';
 import icon from './Piccoma.webp';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
-import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
+import type { Priority } from '../taskpool/TaskPool';
 
 type APIMangas = {
     data: {
@@ -24,9 +25,6 @@ type NextData = {
                         episode_list?: NextChapters
                     }
                 },
-                viewer: {
-                    pData?: NextPages
-                },
             }
         }
     }
@@ -38,17 +36,6 @@ type NextChapters = {
     volume: number,
     is_free: 'Y' | 'N',
 }[];
-
-type NextPages = {
-    isScrambled: boolean,
-    img: NextImage[],
-};
-
-type NextImage = {
-    path: string,
-    width: number,
-    height: number,
-};
 
 export default class extends DecoratableMangaScraper {
 
@@ -126,105 +113,4 @@ export default class extends DecoratableMangaScraper {
             }
         });
     }
-}
-
-type ImageLinks = {
-    link: string,
-    tiles?: Record<string, TileGroup>,
-}[];
-
-type TileGroup = {
-    tileWidth: number,
-    tileHeight: number,
-    tiles: {
-        x: number,
-        y: number,
-    }[],
-    indexmap: number[],
-};
-
-type PData = {
-    isScrambled: boolean,
-    img: PDataImage[],
-};
-
-type PDataImage = {
-    path: string,
-    width: number,
-    height: number,
-};
-
-function script(this: Window) {
-    return new Promise<ImageLinks>(resolve => {
-
-        (function() {
-            if(globalThis.shuffleSeed?.shuffle) {
-                return;
-            }
-            const temp = { exports: {} };
-            (function locate(object, id) {
-                if(object[id]) {
-                    return object[id];
-                }
-                let result = null;
-                for(const key in object) {
-                    result = result ?? locate(object[key], id);
-                }
-                return result;
-            })(globalThis.webpackChunk_N_E, 71987)(temp);
-            globalThis.shuffleSeed = temp.exports;
-        })();
-
-        function extractSeed(uri: URL): string {
-            const checksum = uri.searchParams.get('q');
-            const expiration = uri.searchParams.get('expires');
-            const sum = expiration.split('').reduce((accumulator, character) => accumulator + parseInt(character), 0);
-            const residualIndex = sum % checksum.length;
-            const seed = checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
-            return globalThis.dd(seed);
-        }
-
-        // See: https://github.com/webcaetano/image-scramble/blob/master/unscrambleImg.js
-        function extractGroupedTileMaps(img: PDataImage, seed: string, tileSize: number) {
-            const columns = Math.ceil(img.width / tileSize);
-            const tileCount = columns * Math.ceil(img.height / tileSize);
-            const groupedTileMaps: Record<string, TileGroup> = {};
-            for (let index = 0; index < tileCount; index++) {
-                const row = Math.floor(index / columns);
-                const column = index - row * columns;
-                const offsetX = column * tileSize;
-                const offsetY = row * tileSize;
-                const tileWidth = offsetX + tileSize > img.width ? img.width - offsetX : tileSize;
-                const tileHeight = offsetY + tileSize > img.height ? img.height - offsetY : tileSize;
-                const group = `${tileWidth}-${tileHeight}`;
-                if(!groupedTileMaps[group]) {
-                    groupedTileMaps[group] = { tileWidth, tileHeight, tiles: [], indexmap: [] };
-                }
-                groupedTileMaps[group].tiles.push({ x: offsetX, y: offsetY });
-            }
-
-            for (const key in groupedTileMaps) {
-                const group = groupedTileMaps[key];
-                // See: https://github.com/webcaetano/shuffle-seed/blob/master/shuffle-seed.js
-                group.indexmap = globalThis.shuffleSeed.shuffle(group.tiles.map((_, index) => index), seed);
-            }
-
-            return groupedTileMaps;
-        }
-
-        const pdata = globalThis.__NEXT_DATA__.props.pageProps.initialState.viewer.pData as PData;
-
-        const images: ImageLinks = pdata.img
-            .filter(img => img.path)
-            .map(img => {
-                const uri = new URL(img.path, window.location.origin);
-                const seed = extractSeed(uri);
-                return {
-                    link: uri.href,
-                    tiles: pdata.isScrambled ? extractGroupedTileMaps(img, seed, 50) : undefined,
-                };
-            });
-
-        resolve(images);
-    });
 }
