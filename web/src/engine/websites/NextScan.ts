@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './NextScan.webp';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchRequest } from '../FetchProvider';
 
 const chapterScript = `
     new Promise(resolve => {
@@ -26,11 +26,6 @@ const pagesScript = `
     });
 `;
 
-type ChapterID = {
-    id: string,
-    title: string
-}
-
 type APIMangas = {
     feed: {
         entry: {
@@ -47,6 +42,7 @@ type APIMangas = {
 }
 
 @Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'article header h1')
+@Common.ChaptersSinglePageJS(chapterScript, 2500)
 @Common.PagesSinglePageJS(pagesScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -66,12 +62,6 @@ export default class extends DecoratableMangaScraper {
             const goodLink = manga.link.find(link => link.rel === 'alternate');
             return new Manga(this, provider, new URL(goodLink.href).pathname, goodLink.title.trim());
         });
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
-        const data = await FetchWindowScript<ChapterID[]>(request, chapterScript, 2500);
-        return data.map(chapter => new Chapter(this, manga, chapter.id, chapter.title));
     }
 
 }
