@@ -1,8 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './Piccoma.webp';
-import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, type Page } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import type { Priority } from '../taskpool/TaskPool';
+import DeScramble from '../transformers/ImageDescrambler';
 
 type APIMangas = {
     data: {
@@ -48,7 +50,6 @@ type NextImage = {
     height: number,
 };
 
-@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -102,175 +103,128 @@ export default class extends DecoratableMangaScraper {
         return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title));
     }
 
-    public override async FetchPages(_chapter: Chapter): Promise<Page[]> {
-        /*
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new FetchRequest(`${this.URI.href}/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`);
-        const data = await FetchWindowScript<ScrambledImages>(request, `(${script})()`, 2500);
-        console.log('Scrambled Images:', data);
-        return data.map(entry => new Page(this, chapter, new URL(entry.link), {}));
-        */
-        return [];
+        const data = await FetchWindowScript<ImageLinks>(request, `(${script})()`, 2500);
+        return data.map(entry => new Page(this, chapter, new URL(entry.link), { scrambled: JSON.stringify(entry.tiles) }));
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        if (!page.Parameters?.scrambled) {
+            return blob;
+        }
+        return DeScramble(blob, async (bitmap, ctx) => {
+            const scrambled: Record<string, TileGroup> = JSON.parse(page.Parameters.scrambled as string);
+            for (const key in scrambled) {
+                const group = scrambled[key];
+                for (let index = 0; index < group.tiles.length; index++) {
+                    const d = group.tiles[index];
+                    const s = group.tiles[group.indexmap[index]];
+                    ctx.drawImage(bitmap, s.x, s.y, group.tileWidth, group.tileHeight, d.x, d.y, group.tileWidth, group.tileHeight);
+                }
+            }
+        });
     }
 }
 
-/*
+type ImageLinks = {
+    link: string,
+    tiles?: Record<string, TileGroup>,
+}[];
 
-type Tile = {
-    x: number,
-    y: number,
-    w: number,
-    h: number,
+type TileGroup = {
+    tileWidth: number,
+    tileHeight: number,
+    tiles: {
+        x: number,
+        y: number,
+    }[],
+    indexmap: number[],
 };
 
-type TileMap = {
-    s: Tile, // source
-    d: Tile, // destination
-}[];
+type PData = {
+    isScrambled: boolean,
+    img: PDataImage[],
+};
 
-type ScrambledImages = {
-    link: string,
-    tiles?: TileMap,
-}[];
+type PDataImage = {
+    path: string,
+    width: number,
+    height: number,
+};
 
 function script(this: Window) {
-    return new Promise<ScrambledImages>(resolve => {
+    return new Promise<ImageLinks>(resolve => {
 
-        function extractSeed(url: string): string {
-            const uri = new URL(url);
-            return globalThis.dd(((e, t) => {
-                const i = t.split('').reduce((e, t) => e + parseInt(t), 0) % e.length;
-                return e.slice(-i) + e.slice(0, -i);
-            })(uri.searchParams.get('q') || '', uri.searchParams.get('expires') || ''));
-        }
-
-        function g(t, e) {
-            for (let n, o = t + "", i = 0; i < o.length; )
-                e[f & i] = f & (n ^= 19 * e[f & i]) + o.charCodeAt(i++);
-            return b(e);
-        }
-
-        function seedrandom(t, e, n) {
-            const o = [], f = g(m((e = 1 == e ? {
-                    entropy: !0
-                } : e || {}).entropy ? [t, b(i)] : null == t ? function() {
-                        try {
-                            let t;
-                            return a && (t = a.randomBytes) ? t = t(u) : (t = new Uint8Array(u),
-                            (s.crypto || s.msCrypto).getRandomValues(t)),
-                            b(t);
-                        } catch (o) {
-                            let e = s.navigator
-                                , n = e && e.plugins;
-                            return [+new Date, s, n, s.screen, b(i)]
-                        }
-                    }() : t, 3), o)
-                , p = new h(o)
-                , w = function() {
-                    for (var t = p.g(6), e = c, n = 0; t < l; )
-                        t = (t + n) * u,
-                        e *= u,
-                        n = p.g(1);
-                    for (; t >= d; )
-                        t /= 2,
-                        e /= 2,
-                        n >>>= 1;
-                    return (t + n) / e
-                };
-            return w.int32 = function() {
-                return 0 | p.g(4)
+        (function() {
+            if(globalThis.shuffleSeed?.shuffle) {
+                return;
             }
-            ,
-            w.quick = function() {
-                return p.g(4) / 4294967296
-            }
-            ,
-            w.double = w,
-            g(b(p.S), i),
-            (e.pass || n || function(t, e, n, o) {
-                return o && (o.S && v(o, p),
-                t.state = function() {
-                    return v(p, {})
+            const temp = { exports: {} };
+            (function locate(object, id) {
+                if(object[id]) {
+                    return object[id];
                 }
-                ),
-                n ? (r.random = t,
-                e) : t
-            }
-            )(w, f, "global"in e ? e.global : this == r, e.state)
+                let result = null;
+                for(const key in object) {
+                    result = result ?? locate(object[key], id);
+                }
+                return result;
+            })(globalThis.webpackChunk_N_E, 71987)(temp);
+            globalThis.shuffleSeed = temp.exports;
+        })();
+
+        function extractSeed(uri: URL): string {
+            const checksum = uri.searchParams.get('q');
+            const expiration = uri.searchParams.get('expires');
+            const sum = expiration.split('').reduce((accumulator, character) => accumulator + parseInt(character), 0);
+            const residualIndex = sum % checksum.length;
+            const seed = checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
+            return globalThis.dd(seed);
         }
 
-        const o = function(t) {
-            return /(number|string)/i.test(Object.prototype.toString.call(t).match(/^\[object (.*)\]$/)[1]) ? t : isNaN(t) ? Number(String(this.strSeed = t).split('').map(function(t) {
-                return t.charCodeAt(0);
-            }).join('')) : t;
-        };
-
-        const shuffle = function(t: number[], e: string) {
-            if (Object.prototype.toString.call(t) !== '[object Array]') return null;
-            e = o(e) || 'none';
-            const a = seedrandom(e);
-            const s = [];
-            const u = [];
-            for (let c = 0; c < t.length; c++) u.push(c);
-            for (let c = 0; c < t.length; c++) {
-                const l = i(a, 0, u.length - 1);
-                const d = u[l];
-                u.splice(l, 1),
-                s.push(t[d]);
-            }
-            return s;
-        };
-
-        function getGroupedTiles(image: NextImage) {
-            const tileSize = 50;
-            const columns = Math.ceil(image.width / tileSize);
-            const tileCount = columns * Math.ceil(image.height / tileSize);
-            const result: Record<string, Tile[]> = {};
+        // See: https://github.com/webcaetano/image-scramble/blob/master/unscrambleImg.js
+        function extractGroupedTileMaps(img: PDataImage, seed: string, tileSize: number) {
+            const columns = Math.ceil(img.width / tileSize);
+            const tileCount = columns * Math.ceil(img.height / tileSize);
+            const groupedTileMaps: Record<string, TileGroup> = {};
             for (let index = 0; index < tileCount; index++) {
                 const row = Math.floor(index / columns);
                 const column = index - row * columns;
                 const offsetX = column * tileSize;
                 const offsetY = row * tileSize;
-                const tile = {
-                    x: offsetX,
-                    y: offsetY,
-                    w: offsetX + tileSize > image.width ? image.width - offsetX : tileSize,
-                    h: offsetY + tileSize > image.height ? image.height - offsetY : tileSize,
+                const tileWidth = offsetX + tileSize > img.width ? img.width - offsetX : tileSize;
+                const tileHeight = offsetY + tileSize > img.height ? img.height - offsetY : tileSize;
+                const group = `${tileWidth}-${tileHeight}`;
+                if(!groupedTileMaps[group]) {
+                    groupedTileMaps[group] = { tileWidth, tileHeight, tiles: [], indexmap: [] };
+                }
+                groupedTileMaps[group].tiles.push({ x: offsetX, y: offsetY });
+            }
+
+            for (const key in groupedTileMaps) {
+                const group = groupedTileMaps[key];
+                // See: https://github.com/webcaetano/shuffle-seed/blob/master/shuffle-seed.js
+                group.indexmap = globalThis.shuffleSeed.shuffle(group.tiles.map((_, index) => index), seed);
+            }
+
+            return groupedTileMaps;
+        }
+
+        const pdata = globalThis.__NEXT_DATA__.props.pageProps.initialState.viewer.pData as PData;
+
+        const images: ImageLinks = pdata.img
+            .filter(img => img.path)
+            .map(img => {
+                const uri = new URL(img.path, window.location.origin);
+                const seed = extractSeed(uri);
+                return {
+                    link: uri.href,
+                    tiles: pdata.isScrambled ? extractGroupedTileMaps(img, seed, 50) : undefined,
                 };
-                const group = `${tile.w}-${tile.h}`;
-                result[group] || (result[group] = []), result[group].push(tile);
-            }
-            return result;
-        }
+            });
 
-        function extractTileMap(image: NextImage) {
-            const result: TileMap = [];
-            const seed = extractSeed(image.path);
-            const groups = getGroupedTiles(image);
-            for (const group in groups) {
-                const tiles = groups[group];
-                const indexMap = shuffle([...tiles.keys()], seed);
-                result.push(...tiles.map((tile, index) => {
-                    return {
-                        s: tiles[indexMap[index]],
-                        d: tile,
-                    };
-                }));
-            }
-            return result;
-        }
-
-        const isScrambled = globalThis.__NEXT_DATA__.props.pageProps.initialState.viewer.pData.isScrambled;
-        const images = (globalThis.__NEXT_DATA__ as NextData).props.pageProps.initialState.viewer.pData.img;
-
-        const result = images.map(image => {
-            const uri = new URL(image.path);
-            return {
-                link: uri.href,
-                tiles: isScrambled ? extractTileMap(image) : undefined,
-            };
-        });
-
-        resolve(result);
+        resolve(images);
     });
 }
-*/
