@@ -96,7 +96,7 @@ export default class extends DecoratableMangaScraper {
 
     private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]>{
         try {
-            const uri = new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl); //adding a limit allows us to fetch all pages. 49 is the max
+            const uri = new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl);
             const request = new FetchRequest(uri.href);
             const data = await FetchJSON<APIManga[]>(request);
             return data.map(item => {
