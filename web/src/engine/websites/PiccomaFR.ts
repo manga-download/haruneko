@@ -33,8 +33,6 @@ type NextData = {
 type NextChapters = {
     id: string,
     title: string,
-    volume: number,
-    is_free: 'Y' | 'N',
 }[];
 
 export default class extends DecoratableMangaScraper {
