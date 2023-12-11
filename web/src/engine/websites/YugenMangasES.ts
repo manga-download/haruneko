@@ -9,7 +9,7 @@ const apiUrl = 'https://api.yugenmangas.net';
 @HeamCMS.MangasMultiPageAJAX(apiUrl)
 @HeamCMS.ChaptersSinglePageAJAX(apiUrl)
 @HeamCMS.PagesSinglePageAJAX(apiUrl)
-@HeamCMS.ImageAjax()
+@HeamCMS.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

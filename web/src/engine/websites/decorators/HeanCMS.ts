@@ -166,10 +166,7 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
     const chapterList: Chapter[] = [];
 
     seasons.map((season) => season.chapters.map((chapter) => {
-        const id = JSON.stringify({
-            series: manga.Identifier,
-            chapter: chapter.chapter_slug
-        });
+        const id = chapter.chapter_slug;
         const title = `${seasons.length > 1 ? 'S' + season.index : ''} ${chapter.chapter_name} ${chapter.chapter_title || ''}`.trim();
         chapterList.push(new Chapter(this, manga, id, title));
     }));
@@ -201,8 +198,7 @@ export function ChaptersSinglePageAJAX(apiUrl: string) {
  * @param apiUrl - The url of the HeanCMS api for the website
  */
 export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, apiUrl: string ): Promise<Page[]> {
-    const id = JSON.parse(chapter.Identifier);
-    const request = new FetchRequest(new URL(`/chapter/${id.series}/${id.chapter}`, apiUrl).href);
+    const request = new FetchRequest(new URL(`/chapter/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl).href);
     const { chapter_type, data, paywall } = await FetchJSON<APIPages>(request);
 
     // check for paywall
@@ -212,7 +208,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
 
     // check if novel
     if (chapter_type.toLowerCase() === 'novel') {
-        return [new Page(this, chapter, new URL(`/series/${id.series}/${id.chapter}`, this.URI), { type: chapter_type })];
+        return [new Page(this, chapter, new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI), { type: chapter_type })];
     }
 
     return (data as string[]).map(image => new Page(this, chapter, new URL(image), { type: chapter_type }));
@@ -254,7 +250,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
         //TODO: test if used want to export the NOVEL as HTML?
 
         const request = new FetchRequest(page.Link.href);
-        const data = await FetchWindowScript<string>(request, novelScript, 500, 10000);
+        const data = await FetchWindowScript<string>(request, novelScript, 1000, 10000);
         return Common.FetchImageAjax.call(this, new Page(this, page.Parent as Chapter, new URL(data)), priority, signal, false, false);
     }
 }
