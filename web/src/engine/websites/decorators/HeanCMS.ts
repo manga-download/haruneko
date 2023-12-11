@@ -247,7 +247,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
     if (page.Parameters?.type as string === 'Comic') {
         return Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType, deProxifyLink);
     } else {
-        //TODO: test if used want to export the NOVEL as HTML?
+        //TODO: test if user want to export the NOVEL as HTML?
 
         const request = new FetchRequest(page.Link.href);
         const data = await FetchWindowScript<string>(request, novelScript, 1000, 10000);

@@ -415,6 +415,7 @@ export { default as NoraNoFansub } from './NoraNoFansub';
 export { default as Noromax } from './Noromax';
 export { default as NovelMic } from './NovelMic';
 export { default as OlympusScanlation } from './OlympusScanlation';
+export { default as OmegaScans } from './OmegaScans';
 export { default as OnMangaMe } from './OnMangaMe';
 export { default as Opiatoon } from './Opiatoon';
 export { default as Oremanga } from './Oremanga';
