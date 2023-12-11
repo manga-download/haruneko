@@ -2,11 +2,11 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'sushiscanfr',
-        title: 'Sushi Scans (FR)'
+        id: 'animesama',
+        title: 'Anime-Sama'
     },
     container: {
-        url: 'https://sushiscan.fr/manga/sakamoto-days/',
+        url: 'https://anime-sama.me/manga/sakamoto-days/',
         id: '/manga/sakamoto-days/',
         title: 'Sakamoto Days'
     },
