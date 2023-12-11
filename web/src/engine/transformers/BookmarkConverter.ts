@@ -32,6 +32,7 @@ const legacyWebsiteIdentifierMap = {
     'ozulscans': 'kingofmanga',
     'realmscans': 'rizzcomics',
     'secretscans': 'lynxscans',
+    'sushiscanfr': 'animesama',
     'shonenmagazine-pocket': 'shonenmagazine',
     'yugenmangas': 'yugenmangas-es'
 };
