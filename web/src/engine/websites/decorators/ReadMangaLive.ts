@@ -46,7 +46,7 @@ type ImagesData = {
  * Extracts the pages from the HTML page of the given {@link chapter}.
  * @param this - A reference to the {@link MangaScraper}
  * @param chapter - A reference to the {@link Chapter} which contains the pages
- * @param endpoint - An URL path providing the protected image link data (for each image)
+ * @param script - A script to extract the pages as \{ pics : string[], servers: string[] \}
  */
 async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay : number = 0): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
@@ -65,7 +65,7 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter using the given JS {@link script}.
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
- * @param script - A JS script to extract the image links
+ * @param script - A script to extract the pages as \{ pics : string[], servers: string[] \}
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
 export function PagesSinglePageJS(script = pagesWithServersScript, delay = 0) {
