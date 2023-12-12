@@ -1,4 +1,4 @@
-import { Fetch, FetchCSS, FetchJSON, FetchRequest, FetchWindowCSS } from '../../FetchProvider';
+import { Fetch, FetchJSON, FetchRequest, FetchWindowCSS } from '../../FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
@@ -13,7 +13,7 @@ type Configuration_v016452 = {
     ContentID : string,
     ctbl: string[],
     ptbl: string[],
-    ServerType: number,
+    ServerType: number | string
     ContentsServer: string,
     p: string,
     ViewMode: number,
@@ -65,6 +65,13 @@ type DescrambleKP = {
     u: string
 }
 
+function getSanitizedURL(base: string, append: string): URL {
+    const baseURI = new URL(append, base+'/');
+    baseURI.pathname = baseURI.pathname.replaceAll(/\/\/+/g, '/');
+    return baseURI;
+
+}
+
 /**********************************************
  ******** Page List Extraction Methods ********
  **********************************************/
@@ -77,34 +84,45 @@ type DescrambleKP = {
  * @param baseUrl - sdcqds
  */
 export async function FetchPagesSinglePage(this: MangaScraper, chapter: Chapter, baseUrl = ''): Promise<Page[]> {
-    const url = baseUrl ? new URL(baseUrl) : new URL(this.URI);
-    const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const websiteUrl = baseUrl ? new URL(baseUrl) : new URL(this.URI);
+    let viewerUrl = new URL(chapter.Identifier, this.URI);
+    const request = new FetchRequest(viewerUrl.href, {
         headers: {
             Referer: this.URI.href
-        } });//referer needed for ManpaPlanet
-    const data = await FetchCSS(request, 'div#content.pages');
+        }
+    });//referer needed for ManpaPlanet
+
+    //const data = await FetchCSS(request, 'div#content.pages');
+    const response = await Fetch(request);
+    const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const data = [...dom.querySelectorAll<HTMLElement>('div#content.pages')];
+
+    //handle redirection
+    if (response.redirected) {
+        viewerUrl = new URL(response.url);
+    }
+
     if (data.length == 0) return []; //chapter may be paywalled, no need to throw an error, so quit gracefully
     const el = data[0];
 
     if (el.dataset['ptbinb'] && el.dataset['ptbinbCid']) {
-        const uri = new URL(chapter.Identifier, url);
-        uri.searchParams.set('cid', el.dataset['ptbinbCid']);
-        return await getPageList_v016113(this, uri.pathname + uri.search, el.dataset.ptbinb, url.href, chapter);
+        viewerUrl.searchParams.set('cid', el.dataset['ptbinbCid']);
+        return await getPageList_v016113(this, viewerUrl, el.dataset.ptbinb, websiteUrl.href, chapter);
     }
-    if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && uri.searchParams.get('u0') && uri.searchParams.get('u1')) {
-        return await getPageList_v016452(this, chapter, el.dataset.ptbinb, url.href);
+
+    if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && viewerUrl.searchParams.get('u0') && viewerUrl.searchParams.get('u1')) {
+        return await getPageList_v016452(this, viewerUrl, el.dataset.ptbinb, websiteUrl.href, chapter);
     }
-    if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && uri.searchParams.get('u1')) {
-        return await getPageList_v016201(this, chapter, el.dataset.ptbinb, url.href);
+    if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && viewerUrl.searchParams.get('u1')) {
+        return await getPageList_v016201(this, viewerUrl, el.dataset.ptbinb, websiteUrl.href, chapter);
     }
     if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo')) {
-        return await getPageList_v016130(this, chapter.Identifier, el.dataset.ptbinb, url.href, chapter);
+        return await getPageList_v016130(this, viewerUrl, el.dataset.ptbinb, websiteUrl.href, chapter);
     }
+
     const imageConfigurations = el.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
     if (imageConfigurations.length > 0) {
-        // TODO: Use the response URL instead of the request URL (in case of redirection ...)
-        return await _getPageList_v016061(this, [...imageConfigurations], request.url, chapter);
+        return await getPageList_v016061(this, viewerUrl.href, [...imageConfigurations], chapter);
     }
 
     throw new Error('Unsupported version of SpeedBinb reader!');
@@ -130,19 +148,12 @@ export function PagesSinglePage(baseUrl = '') {
 /**
 *************************
 *** SpeedBinb v01.6061 ***
-* ** Comic Meteor, Comic Valkyrie, ZeroSum, DigitalMargaRet, ComicBrise, ComicRide
+* ** Comic Meteor, Comic Valkyrie, DigitalMargaRet, ComicBrise, ComicRide
 *************************
 */
-async function _getPageList_v016061(scraper : MangaScraper, imageConfigurations: HTMLDivElement[], url: string, parent: Chapter): Promise<Page[]> {
+async function getPageList_v016061(scraper: MangaScraper, url: string, imageConfigurations: HTMLDivElement[], chapter: Chapter): Promise<Page[]> {
     return imageConfigurations.map(element => {
-        //Zerosum & digital margaret, 123hon fix (missing "/").. Other ending must have been filtered from the plugin itself (like "/index.html")
-        const baseURI = new URL(url);
-
-        if (!baseURI.href.endsWith('/') && !element.dataset.ptimg.startsWith('/')) {
-            baseURI.href += '/';
-        }
-
-        return new Page(scraper, parent, new URL(element.dataset.ptimg, baseURI.href));
+        return new Page(scraper, chapter, getSanitizedURL(url, element.dataset.ptimg));
     });
 }
 
@@ -153,8 +164,8 @@ async function _getPageList_v016061(scraper : MangaScraper, imageConfigurations:
  * Getsuaku, which is v01.6700
  *************************
  */
-async function getPageList_v016113(scraper: MangaScraper, chapterID: string, apiURL: string, baseURL: string, chapter: Chapter): Promise<Page[]> {
-    return await getPageList_v016130(scraper, chapterID, apiURL, baseURL, chapter);
+async function getPageList_v016113(scraper: MangaScraper, viewerURL: URL, apiEndpoint: string, baseURL: string, chapter: Chapter): Promise<Page[]> {
+    return await getPageList_v016130(scraper, viewerURL, apiEndpoint, baseURL, chapter);
 }
 
 /**
@@ -163,12 +174,12 @@ async function getPageList_v016113(scraper: MangaScraper, chapterID: string, api
  * ** Cmoa            ***
  *************************
  */
-async function getPageList_v016452(scraper : MangaScraper, chapter: Chapter, apiURL: string, baseURL: string): Promise<Page[]> {
-    const cid = new URL(chapter.Identifier, baseURL).searchParams.get('cid');
-    const u0 = new URL(chapter.Identifier, baseURL).searchParams.get('u0');
-    const u1 = new URL(chapter.Identifier, baseURL).searchParams.get('u1');
+async function getPageList_v016452(scraper: MangaScraper, viewerURL: URL, apiEndpoint: string, baseURL: string, chapter: Chapter,): Promise<Page[]> {
+    const cid = viewerURL.searchParams.get('cid');
+    const u0 = viewerURL.searchParams.get('u0');
+    const u1 = viewerURL.searchParams.get('u1');
     const sharingKey = _tt(cid);
-    const uri = new URL(apiURL, baseURL + '/');
+    const uri = getSanitizedURL(baseURL, apiEndpoint);//new URL(apiEndpoint, baseURL + '/');
     uri.searchParams.set('cid', cid);
     uri.searchParams.set('dmytime', String(Date.now()));
     uri.searchParams.set('k', sharingKey);
@@ -182,7 +193,11 @@ async function getPageList_v016452(scraper : MangaScraper, chapter: Chapter, api
 async function getPageLinks_v016452(scraper: MangaScraper, configuration: Configuration_v016452, params: Params_v016452, baseURL: string, chapter: Chapter): Promise<Page[]> {
     configuration.ctbl = _pt(params.cid, params.sharingKey, configuration.ctbl);
     configuration.ptbl = _pt(params.cid, params.sharingKey, configuration.ptbl);
-    //configuration.ServerType = parseInt(configuration.ServerType);
+    try {
+        configuration.ServerType = parseInt(configuration.ServerType as string);
+    } catch (error) {
+        //
+    }
     if (configuration.ServerType === 0) {
         return await getPageLinksSBC_v016452(scraper, configuration, params, baseURL, chapter);
     }
@@ -190,7 +205,8 @@ async function getPageLinks_v016452(scraper: MangaScraper, configuration: Config
 }
 
 async function getPageLinksSBC_v016452(scraper : MangaScraper, configuration: Configuration_v016452, params: Params_v016452, baseURL: string, chapter: Chapter) {
-    const uri = new URL(configuration.ContentsServer + '/sbcGetCntnt.php', baseURL + '/');
+    //const uri = new URL(configuration.ContentsServer + '/sbcGetCntnt.php', baseURL + '/');
+    const uri = getSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
     uri.searchParams.set('cid', params.cid);
     uri.searchParams.set('p', configuration.p);
     uri.searchParams.set('q', '1');
@@ -208,16 +224,20 @@ async function getPageLinksSBC_v016452(scraper : MangaScraper, configuration: Co
 *************************
 */
 
-async function getPageList_v016201(scraper: MangaScraper, chapter: Chapter, apiURL: string, baseURL: string): Promise<Page[]> {
-    const cid = new URL(chapter.Identifier, baseURL).searchParams.get('cid');
-    const u = new URL(chapter.Identifier, baseURL).searchParams.get('u1');
+async function getPageList_v016201(scraper: MangaScraper, viewerURL: URL, apiEndpoint: string, baseURL: string, chapter: Chapter): Promise<Page[]> {
+    const cid = viewerURL.searchParams.get('cid');
+    const u = viewerURL.searchParams.get('u1');
     const sharingKey = _tt(cid);
-    const uri = new URL(apiURL, baseURL + '/');
+    const uri = getSanitizedURL(baseURL, apiEndpoint);//new URL(apiEndpoint, baseURL + '/');
     uri.searchParams.set('cid', cid);
     uri.searchParams.set('dmytime', String(Date.now()));
     uri.searchParams.set('k', sharingKey);
     uri.searchParams.set('u1', u);
-    const request = new FetchRequest(uri.href);
+
+    let request = new FetchRequest(uri.href);
+    await FetchWindowCSS(request, 'body');//dummy request set cookies for mangaplanet
+
+    request = new FetchRequest(uri.href);
     const data: JSONPageData_v016452 = await FetchJSON(request);
     return await getPageLinks_v016201(scraper, data.items[0], sharingKey, u, chapter);
 }
@@ -226,17 +246,23 @@ async function getPageLinks_v016201(scraper : MangaScraper, configuration: Confi
     const cid = configuration.ContentID;
     configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl);
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl);
-    //configuration.ServerType = parseInt(configuration.ServerType);
+    try {
+        configuration.ServerType = parseInt(configuration.ServerType as string);
+    } catch (error) {
+        //
+    }
 
-    if (configuration['ServerType'] === 2) {
+    if (configuration.ServerType === 2) {
         return await _getPageLinksContent_v016201(scraper, configuration, u, chapter);
     }
     return Promise.reject(new Error('Content server type not supported!'));
 }
 async function _getPageLinksContent_v016201(scraper: MangaScraper, configuration: Configuration_v016452, u: string, chapter: Chapter): Promise<Page[]> {
-    const uri = new URL(configuration.ContentsServer);
-    uri.pathname += uri.pathname.endsWith('/') ? '' : '/';
-    uri.pathname += 'content';
+    //const uri = new URL(configuration.ContentsServer);
+    //uri.pathname += '/content';
+    //uri.pathname = uri.pathname.replaceAll(/\/\/+/g, '/');
+    const uri = getSanitizedURL(configuration.ContentsServer, 'content');
+
     uri.searchParams.set('dmytime', configuration.ContentDate);
     uri.searchParams.set('u1', u);
     const data: SBCDATA = await FetchJSON(new FetchRequest(uri.href));
@@ -252,15 +278,14 @@ async function _getPageLinksContent_v016201(scraper: MangaScraper, configuration
 /**
  *****************************
  *** SpeedBinb v01.6130 ******
- * ** BookLive, MangaPlanet***
+ * ** BookLive, MangaPlanet, Yanmaga***
  *****************************
  */
 
-async function getPageList_v016130(scraper: MangaScraper, chapterID: string, apiURL: string, baseURL: string, chapter: Chapter): Promise<Page[]> {
-    const cid = new URL(chapterID, baseURL).searchParams.get('cid');
+async function getPageList_v016130(scraper: MangaScraper, chapterUrl: URL, apiEndpoint: string, baseURL: string, chapter: Chapter): Promise<Page[]> {
+    const cid = chapterUrl.searchParams.get('cid');
     const sharingKey = _tt(cid);
-    const uri = new URL(apiURL, baseURL + '/');
-    uri.href = uri.href.replace(/\/\//g, '/');
+    const uri = getSanitizedURL(baseURL, apiEndpoint);//new URL(apiEndpoint, baseURL + '/');
     uri.searchParams.set('cid', cid);
     uri.searchParams.set('dmytime', String(Date.now()));
     uri.searchParams.set('k', sharingKey);
@@ -282,12 +307,16 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
      */
     configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl);
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl);
-    //configuration.ServerType = parseInt(configuration.ServerType);
+    try {
+        configuration.ServerType = parseInt(configuration.ServerType as string);
+    } catch (error) {
+        //
+    }
 
     if (configuration.ServerType === 0) { //Booklive
         return await getPageLinksSBC_v016130(scraper, configuration, baseURL, chapter);
     }
-    if (configuration.ServerType === 1) {//Futabanet
+    if (configuration.ServerType === 1) {//Futabanet, Getsuaku
         return await getPageLinksContentJS_v016130(scraper, configuration, chapter);
     }
     if (configuration.ServerType === 2) {//MangaPlanet
@@ -297,7 +326,9 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
 }
 
 async function getPageLinksSBC_v016130(scraper: MangaScraper, configuration: Configuration_v016452, baseURL: string, chapter: Chapter) {
-    const uri = new URL(configuration.ContentsServer + '/sbcGetCntnt.php', baseURL + '/');
+    //const uri = new URL(configuration.ContentsServer + '/sbcGetCntnt.php', baseURL + '/');
+    const uri = getSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
+
     uri.searchParams.set('cid', configuration.ContentID);
     uri.searchParams.set('dmytime', configuration.ContentDate);
     uri.searchParams.set('p', configuration.p);
@@ -306,9 +337,11 @@ async function getPageLinksSBC_v016130(scraper: MangaScraper, configuration: Con
 }
 
 async function getPageLinksContent_v016130(scraper: MangaScraper, configuration: Configuration_v016452, chapter : Chapter) {
-    const uri = new URL(configuration.ContentsServer);
-    uri.pathname += uri.pathname.endsWith('/') ? '' : '/';
-    uri.pathname += 'content';
+    //const uri = new URL(configuration.ContentsServer);
+    //uri.pathname += uri.pathname.endsWith('/') ? '' : '/';
+    //uri.pathname += 'content';
+    const uri = getSanitizedURL(configuration.ContentsServer, 'content');
+
     uri.searchParams.set('dmytime', configuration.ContentDate);
     const data: SBCDATA = await FetchJSON(new FetchRequest(uri.href, { headers: { Referer: scraper.URI.href } }));
 
@@ -322,9 +355,11 @@ async function getPageLinksContent_v016130(scraper: MangaScraper, configuration:
 }
 
 async function getPageLinksContentJS_v016130(scraper: MangaScraper, configuration: Configuration_v016452, chapter: Chapter) {
-    const uri = new URL(configuration.ContentsServer);
-    uri.pathname += uri.pathname.endsWith('/') ? '' : '/';
-    uri.pathname += 'content.js';
+    //const uri = new URL(configuration.ContentsServer);
+    //uri.pathname += uri.pathname.endsWith('/') ? '' : '/';
+    //uri.pathname += 'content.js';
+    const uri = getSanitizedURL(configuration.ContentsServer, 'content.js');
+
     if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
     const response = await Fetch(new FetchRequest(uri.href));
     const data = await response.text();
