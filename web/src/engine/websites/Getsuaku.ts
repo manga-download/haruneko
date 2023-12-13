@@ -24,7 +24,7 @@ function MangaExtractor(element: HTMLElement) {
 
 @Common.MangaCSS(/^{origin}\/episode\/[^/]+$/, 'div.detail__main h2.detail__title')
 @Common.MangasSinglePageCSS('/series', 'div.comics__grid div.comics__gridItem', MangaExtractor)
-@SpeedBinb.PagesSinglePage()
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

@@ -12,7 +12,7 @@ type APIMagazine = {
 }
 
 @Common.ChaptersUniqueFromManga()
-@SpeedBinb.PagesSinglePage()
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

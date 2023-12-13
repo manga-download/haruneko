@@ -7,7 +7,7 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/contents\/[^/]+\/$/, '.post-title')
 @Common.MangasSinglePageCSS('/titlelist', '.list-works a')
-@SpeedBinb.PagesSinglePage()
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

@@ -33,7 +33,7 @@ new Promise(resolve => {
 @Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'h1.detail-header-title, h1.detailv2-outline-title')
 @Common.MangasSinglePageCSS('/comics', 'a.ga-comics-book-item', MangaExtractor)
 @Common.ChaptersSinglePageJS(chapterScript, 200)
-@SpeedBinb.PagesSinglePage()
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

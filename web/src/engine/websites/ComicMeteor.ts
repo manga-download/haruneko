@@ -13,7 +13,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div.h2ttl_other')
 @Common.MangasMultiPageCSS('/wp-admin/admin-ajax.php?action=get_flex_titles_for_toppage&get_num=64&page={page}', 'div.update_work_size div.update_work_info_img a', 1, 1, 0, MangaExtractor)
-@SpeedBinb.PagesSinglePage()
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

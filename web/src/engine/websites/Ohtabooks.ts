@@ -28,7 +28,7 @@ export default class extends DecoratableMangaScraper {
         //find real reader url to send to SpeedBinb, since redirection is done by Javascript
         const data = await FetchCSS<HTMLBodyElement>(new FetchRequest(chapter.Identifier), 'body');
         const reallink = data[0].innerHTML.match(/location.href='(.*)'/)[1];
-        return await SpeedBinb.FetchPagesSinglePage.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
+        return await SpeedBinb.FetchPagesSinglePageAjax.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

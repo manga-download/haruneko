@@ -12,7 +12,7 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangaCSS(/^{origin}\/product\/index\/title_id\/\d+\/vol_no\/\d+$/, 'div#product_detail_area div.product_info > h1#product_display_1')
 @Common.MangasNotSupported()
 @Common.ChaptersSinglePageCSS('div#product_detail_area div.product_actions ul a.bl-bviewer', ChapterExtractor)
-@SpeedBinb.PagesSinglePage()
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 
 export default class extends DecoratableMangaScraper {

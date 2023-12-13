@@ -2,8 +2,7 @@ import { Fetch, FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchPr
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
-import type { Numeric, Text } from '../../SettingsManager';
-import { Key as GlobalKey } from '../../SettingsGlobal';
+import DeScramble from '../../transformers/ImageDescrambler';
 
 type JSONPageData_v016452 = {
     items: Configuration_v016452[]
@@ -91,7 +90,7 @@ function getSanitizedURL(base: string, append: string): URL {
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param baseUrl - sdcqds
  */
-export async function FetchPagesSinglePage(this: MangaScraper, chapter: Chapter, baseUrl = ''): Promise<Page[]> {
+export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, baseUrl = ''): Promise<Page[]> {
     const websiteUrl = baseUrl ? new URL(baseUrl) : new URL(this.URI);
     let viewerUrl = new URL(chapter.Identifier, this.URI);
     const request = new FetchRequest(viewerUrl.href, {
@@ -100,7 +99,6 @@ export async function FetchPagesSinglePage(this: MangaScraper, chapter: Chapter,
         }
     });//referer needed for ManpaPlanet
 
-    //const data = await FetchCSS(request, 'div#content.pages');
     const response = await Fetch(request);
     const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
     const data = [...dom.querySelectorAll<HTMLElement>('div#content.pages')];
@@ -139,15 +137,15 @@ export async function FetchPagesSinglePage(this: MangaScraper, chapter: Chapter,
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter using the given CSS {@link query}.
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
- * @param baseUrl - sdcqds
+ * @param baseUrl - base url to use. Used to create full url when partial endpoint are found
  */
-export function PagesSinglePage(baseUrl = '') {
+export function PagesSinglePageAjax(baseUrl = '') {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePage.call(this, chapter, baseUrl);
+                return FetchPagesSinglePageAjax.call(this, chapter, baseUrl);
             }
         };
     };
@@ -388,7 +386,7 @@ async function getPageLinksContentJS_v016130(scraper: MangaScraper, configuratio
 //****************
 
 async function fetchSBC(scraper: MangaScraper, uri: URL, configuration: Configuration_v016452, chapter: Chapter) {
-    const data: SBCDATA = await FetchJSON(new FetchRequest(uri.href));
+    const data = await FetchJSON<SBCDATA>(new FetchRequest(uri.href));
     const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
     const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
         const src = img.getAttribute('src');
@@ -415,19 +413,19 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
     let promise;
     switch (true) {
         case page.Link.href.endsWith('ptimg.json'):
-            promise = await process_v016061(this, page, priority, signal, detectMimeType);
+            promise = await descramble_v016061(this, page, priority, signal, detectMimeType);
             break;
         case page.Link.href.includes('sbcGetImg'):
-            promise = await process_v016130(this, page, priority, signal, detectMimeType);
+            promise = await descramble_v016130(this, page, priority, signal, detectMimeType);
             break;
         case page.Link.href.includes('M_L.jpg'):
-            promise = await process_v016130(this, page, priority, signal, detectMimeType);
+            promise = await descramble_v016130(this, page, priority, signal, detectMimeType);
             break;
         case page.Link.href.includes('M_H.jpg'):
-            promise = await process_v016130(this, page, priority, signal, detectMimeType);
+            promise = await descramble_v016130(this, page, priority, signal, detectMimeType);
             break;
         case page.Link.href.includes('/img/'):
-            promise = await process_v016130(this, page, priority, signal, detectMimeType);
+            promise = await descramble_v016130(this, page, priority, signal, detectMimeType);
             break;
         default:
             promise = Promise.reject('Unsupported version of SpeedBinb reader!');
@@ -436,24 +434,15 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
     return promise;
 }
 
-async function process_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    const data: JSONImageData_v016061 = await FetchJSON(new FetchRequest(page.Link.href));
+async function descramble_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+    const data = await FetchJSON<JSONImageData_v016061>(new FetchRequest(page.Link.href));
     const fakepage = new Page(scraper, page.Parent as Chapter, new URL(data.resources.i.src, page.Link.href));
     const imagedata: Blob = await Common.FetchImageAjax.call(scraper, fakepage, priority, signal, detectMimeType);
-    const bmpdata = await createImageBitmap(imagedata);
-    return await descramble_v016061(bmpdata, data.views);
-}
 
-async function descramble_v016061(bitmap: ImageBitmap, views: PageView_v016061[]): Promise<Blob> {
-    return new Promise(resolve => {
-        const view = views[0];
-        const canvas = document.createElement('canvas');
-        canvas.width = view.width;
-        canvas.height = view.height;
-        const ctx = canvas.getContext('2d');
+    return DeScramble(imagedata, async (image, ctx) => {
+        const view = data.views[0];
 
         for (const part of view.coords) {
-            // sample => 'i:119,4+107,150>428,900'
             const num = part.split(/[:,+>]/);
             const sourceX = parseInt(num[1]);
             const sourceY = parseInt(num[2]);
@@ -461,34 +450,17 @@ async function descramble_v016061(bitmap: ImageBitmap, views: PageView_v016061[]
             const targetY = parseInt(num[6]);
             const partWidth = parseInt(num[3]);
             const partHeight = parseInt(num[4]);
-            ctx.drawImage(bitmap, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
+            ctx.drawImage(image, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
         }
-        canvas.toBlob(data => {
-            resolve(data);
-        }, 'image/png', parseFloat('90') / 100);
     });
 }
 
-async function process_v016130(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType: boolean): Promise<Blob> {
+async function descramble_v016130(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType: boolean): Promise<Blob> {
     const imagedata: Blob = await Common.FetchImageAjax.call(scraper, page, priority, signal, detectMimeType);
     const descrambleKeyPair: DescrambleKP = JSON.parse(window.atob(page.Link.hash.slice(1)));
-    const bmpdata = await createImageBitmap(imagedata);
-    return await descramble_v016130(bmpdata, descrambleKeyPair);
-}
 
-async function descramble_v016130(bitmap: ImageBitmap, keys: DescrambleKP): Promise<Blob> {
-    return new Promise(resolve => {
-
-        const settings = HakuNeko.SettingsManager.OpenScope();
-        const format = settings.Get<Text>(GlobalKey.DescramblingFormat).Value;
-        const quality = settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value;
-
-        const view: PageView_v016130 = _getImageDescrambleCoords(keys.s, keys.u, bitmap.width, bitmap.height);
-        const canvas = document.createElement('canvas');
-        canvas.width = view.width;
-        canvas.height = view.height;
-        const ctx = canvas.getContext('2d');
-
+    return DeScramble(imagedata, async (image, ctx) => {
+        const view: PageView_v016130 = _getImageDescrambleCoords(descrambleKeyPair.s, descrambleKeyPair.u, image.width, image.height);
         for (const part of view.transfers[0].coords) {
             const sourceX = part.xsrc;
             const sourceY = part.ysrc;
@@ -496,11 +468,8 @@ async function descramble_v016130(bitmap: ImageBitmap, keys: DescrambleKP): Prom
             const targetY = part.ydest;
             const partWidth = part.width;
             const partHeight = part.height;
-            ctx.drawImage(bitmap, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
+            ctx.drawImage(image, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
         }
-        canvas.toBlob(data => {
-            resolve(data);
-        }, format, quality / 100);
     });
 }
 

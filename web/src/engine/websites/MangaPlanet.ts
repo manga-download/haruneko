@@ -13,7 +13,7 @@ function MangaExtractor(element: HTMLElement) {
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.card-body.book-detail h3')
 @Common.MangasMultiPageCSS('/browse/title?ttlpage={page}', 'div#Title .row.book-list', 1, 1, 0, MangaExtractor)
-@SpeedBinb.PagesSinglePage()
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
