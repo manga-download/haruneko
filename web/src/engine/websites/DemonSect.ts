@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './PrismaScan.webp';
+import icon from './DemonSect.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('prismascans', 'Prisma Scan', 'https://prismascans.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese);
+        super('demonsect', 'Demon Sect', 'https://demonsect.com.br', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
