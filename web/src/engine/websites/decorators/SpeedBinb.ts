@@ -1,4 +1,4 @@
-import { Fetch, FetchJSON, FetchRequest, FetchWindowCSS } from '../../FetchProvider';
+import { Fetch, FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
@@ -65,6 +65,14 @@ type DescrambleKP = {
     u: string
 }
 
+const JsonScript = `
+        new Promise(resolve => {
+            fetch('{URI}')
+                .then(response => response.json())
+                .then(json => resolve(json))
+         });
+`;
+
 function getSanitizedURL(base: string, append: string): URL {
     const baseURI = new URL(append, base+'/');
     baseURI.pathname = baseURI.pathname.replaceAll(/\/\/+/g, '/');
@@ -97,7 +105,7 @@ export async function FetchPagesSinglePage(this: MangaScraper, chapter: Chapter,
     const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
     const data = [...dom.querySelectorAll<HTMLElement>('div#content.pages')];
 
-    //handle redirection
+    //handle redirection. Sometimes chapter is redirected
     if (response.redirected) {
         viewerUrl = new URL(response.url);
     }
@@ -185,8 +193,7 @@ async function getPageList_v016452(scraper: MangaScraper, viewerURL: URL, apiEnd
     uri.searchParams.set('k', sharingKey);
     uri.searchParams.set('u0', u0);
     uri.searchParams.set('u1', u1);
-    const request = new FetchRequest(uri.href);
-    const data: JSONPageData_v016452 = await FetchJSON(request);
+    const data = await FetchJSON<JSONPageData_v016452>(new FetchRequest(uri.href));
     const params: Params_v016452 = { cid, sharingKey, u0, u1 };
     return await getPageLinks_v016452(scraper, data.items[0], params, baseURL, chapter);
 }
@@ -234,11 +241,12 @@ async function getPageList_v016201(scraper: MangaScraper, viewerURL: URL, apiEnd
     uri.searchParams.set('k', sharingKey);
     uri.searchParams.set('u1', u);
 
-    let request = new FetchRequest(uri.href);
-    await FetchWindowCSS(request, 'body');//dummy request set cookies for mangaplanet
+    //let request = new FetchRequest(uri.href);
+    //await FetchWindowCSS(request, 'body');//dummy request set cookies for Youngjump
+    //const data: JSONPageData_v016452 = await FetchJSON(request
 
-    request = new FetchRequest(uri.href);
-    const data: JSONPageData_v016452 = await FetchJSON(request);
+    const request = new FetchRequest(uri.href);
+    const data = await FetchWindowScript<JSONPageData_v016452>(request, JsonScript.replace('{URI}', uri.href), 2000);
     return await getPageLinks_v016201(scraper, data.items[0], sharingKey, u, chapter);
 }
 
@@ -291,10 +299,11 @@ async function getPageList_v016130(scraper: MangaScraper, chapterUrl: URL, apiEn
     uri.searchParams.set('k', sharingKey);
 
     const request = new FetchRequest(uri.href);
-    await FetchWindowCSS(request, 'body');//dummy request set cookies for mangaplanet
+    //await FetchWindowCSS(request, 'body');//dummy request set cookies for mangaplanet
 
-    const response = await fetch(new FetchRequest(uri.href));
-    const data: JSONPageData_v016452 = await response.json();
+    //const response = await Fetch(new FetchRequest(uri.href));
+    //const data: JSONPageData_v016452 = await response.json();
+    const data = await FetchWindowScript<JSONPageData_v016452>(request, JsonScript.replace('{URI}', uri.href), 2000);
 
     return await getPageLinks_v016130(scraper, data.items[0], sharingKey, baseURL, chapter);
 }
