@@ -3,7 +3,7 @@ import icon from './YoungJump.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
 
 type APIMagazine = {
     url: string,
@@ -11,7 +11,6 @@ type APIMagazine = {
     number: string
 }
 
-//@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'h1.detail-header-title, h1.detailv2-outline-title')
 @Common.ChaptersUniqueFromManga()
 @SpeedBinb.PagesSinglePage()
 @SpeedBinb.ImageAjax()
@@ -23,6 +22,17 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return /^https:\/\/www\.youngjump\.world\/reader\/reader.html\?/.test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const mangatitle = await FetchWindowScript<string>(new FetchRequest(url), 'document.title', 3000);
+        const uri = new URL(url);
+        return new Manga(this, provider, uri.pathname + uri.search, mangatitle.trim());
+
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
