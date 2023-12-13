@@ -17,7 +17,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ohtabooks', `Ohtabooks`, 'http://webcomic.ohtabooks.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('ohtabooks', `Ohtabooks`, 'https://webcomic.ohtabooks.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {

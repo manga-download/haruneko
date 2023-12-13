@@ -65,7 +65,6 @@ export { default as ComicK } from './ComicK';
 export { default as ComicMeteor } from './ComicMeteor';
 export { default as Comico } from './Comico';
 export { default as ComicPolaris } from './ComicPolaris';
-export { default as ComicRide } from './ComicRide';
 export { default as ComicRyu } from './ComicRyu';
 export { default as ComicsValley } from './ComicsValley';
 export { default as ComicTrail } from './ComicTrail';
