@@ -30,6 +30,7 @@ const legacyWebsiteIdentifierMap = {
     'nitroscans': 'nitromanga',
     'oxapk': 'manjanoon',
     'ozulscans': 'kingofmanga',
+    'prismascans': 'demonsect',
     'realmscans': 'rizzcomics',
     'secretscans': 'lynxscans',
     'sushiscanfr': 'animesama',

@@ -85,6 +85,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'nitroscans', targetID: 'nitromanga' },
             { sourceID: 'oxapk', targetID: 'manjanoon' },
             { sourceID: 'ozulscans', targetID: 'kingofmanga' },
+            { sourceID: 'prismascans', targetID: 'demonsect' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
