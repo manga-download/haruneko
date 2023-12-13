@@ -18,7 +18,6 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/contents\/[^/]+\/$/, 'div.section_item--contents ul li h1.contents__ttl')
 @Common.MangasSinglePageCSS('/contents/?refind_search=all', 'li.detail__col-list--common > a', MangaExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -29,18 +28,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
+        const chapterList: Chapter[] = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this._getChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
-        return chapterList.filter((chapter, index) => {
-            return index === chapterList.findIndex(item => chapter.Identifier === item.Identifier);
-        });
+        return chapterList.distinct();
     }
 
     async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const result = [];
+        const result: Chapter[] = [];
         const request = new FetchRequest(new URL(`${manga.Identifier}/more/${page}/`, this.URI).href);
         const data = await FetchJSON<APIChapter>(request);
         const dom = new DOMParser().parseFromString(data.html, 'text/html');

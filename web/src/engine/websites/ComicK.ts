@@ -65,10 +65,10 @@ const langMap = {
 
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.comick.app';
+    private readonly apiUrl = 'https://api.comick.ink';
 
     public constructor() {
-        super('comick', `ComicK`, 'https://comick.app', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('comick', `ComicK`, 'https://comick.ink', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -96,7 +96,7 @@ export default class extends DecoratableMangaScraper {
 
     private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]>{
         try {
-            const uri = new URL('/v1.0/search?page=' + page, this.apiUrl);
+            const uri = new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl);
             const request = new FetchRequest(uri.href);
             const data = await FetchJSON<APIManga[]>(request);
             return data.map(item => {

@@ -28,17 +28,18 @@ function DeProxifyStatically(uri: URL): URL {
 }
 
 export default function DeProxify(uri: URL): URL {
-    if(/googleusercontent\.com$/.test(uri.hostname) && /\/proxy$/.test(uri.pathname)) {
+    if (/googleusercontent\.com$/.test(uri.hostname) && /\/proxy$/.test(uri.pathname)) {
         return DeProxifyGoogle(uri);
     }
-    if(/i\d+\.wp\.com$/.test(uri.hostname)) {
+    if (/i\d+\.wp\.com$/.test(uri.hostname)) {
         return DeProxifyPhoton(uri);
     }
-    if(/webpc-passthru\.php/.test(uri.pathname)) {
+    if (/webpc-passthru\.php/.test(uri.pathname)) {
         return DeProxifyWordPressPassthru(uri);
     }
-    if(/cdn\.statically\.io\/img\//.test(uri.href)) {
+    if (/cdn\.statically\.io\/img\//.test(uri.href)) {
         return DeProxifyStatically(uri);
     }
+
     return uri;
 }
