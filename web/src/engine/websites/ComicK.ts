@@ -65,10 +65,10 @@ const langMap = {
 
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.comick.ink';
+    private readonly apiUrl = 'https://api.comick.cc';
 
     public constructor() {
-        super('comick', `ComicK`, 'https://comick.ink', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('comick', `ComicK`, 'https://comick.cc', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -76,7 +76,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/comic/[^/]+$`).test(url);
+        return /https:\/\/comick\.(cc|app|ink)\/comic\/[^/]+$/.test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
