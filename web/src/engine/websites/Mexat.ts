@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
             const chapters = await this.getChaptersFromPage(page, manga);
             chapters.length > 0 ? chapterslist.push(...chapters) : run = false;
         }
-        return chapterslist;
+        return chapterslist.distinct();
     }
 
     async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {

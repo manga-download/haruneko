@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 
-@MangaStream.MangaCSS(/^https?:\/\/lynxscans\.com\/comics\/\S+$/)
+@MangaStream.MangaCSS(/^{origin}\/comics\/[^/]+$/)
 @MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/comics/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
