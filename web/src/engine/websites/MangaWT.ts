@@ -19,19 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaWT extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangawt';
-        super.label = 'MangaWT';
-        this.tags = [ 'webtoon', 'turkish' ];
-        this.url = 'https://www.mangawt.com';
-
-        this.language = 'tr';
-    }
-}
-*/

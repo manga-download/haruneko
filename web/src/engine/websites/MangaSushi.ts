@@ -19,17 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaSushi extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangasushi';
-        super.label = 'Mangasushi';
-        this.tags = [ 'manga', 'english' ];
-        this.url = 'https://mangasushi.net';
-    }
-}
-*/
