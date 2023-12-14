@@ -56,7 +56,7 @@ export function FetchCSS<T extends HTMLElement>(request: FetchRequest, query: st
 }
 
 let fetchGraphQL: <TResult>(request: FetchRequest, operationName: string, query: string, variables : string) => Promise<TResult> = fail;
-export function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: string = undefined): Promise<TResult> {
+export function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables : string): Promise<TResult> {
     return fetchGraphQL(request, operationName, query, variables);
 }
 
