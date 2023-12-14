@@ -425,6 +425,7 @@ export { default as Otsugami } from './Otsugami';
 export { default as PairOfTwo } from './PairOfTwo';
 export { default as PatyScans } from './PatyScans';
 export { default as PCNet } from './PCNet';
+export { default as PeanuToon } from './PeanuToon';
 export { default as PelaTeam } from './PelaTeam';
 export { default as Penlab } from './Penlab';
 export { default as PhenixScans } from './PhenixScans';
