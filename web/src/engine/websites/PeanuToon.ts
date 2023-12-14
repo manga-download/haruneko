@@ -39,13 +39,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const genres = ['전체', 'BL', '로맨스', '성인', 'GL', '드라마', '코믹'];
         const days = ['월', '화', '수', '목', '금', '토', '일', '열흘', '기타'];
-        const mangalist: Manga[] = [];
-        mangalist.push(... await this.fetchMangasByDays(provider, days));
-        mangalist.push(... await this.fetchMangasByGenres(provider, genres));
-        return mangalist.distinct();
+        const mangaList: Manga[] = [];
+        mangaList.push(... await this.fetchMangasByDays(provider, days));
+        mangaList.push(... await this.fetchMangasByGenres(provider, genres));
+        return mangaList.distinct();
     }
     async fetchMangasByDays(provider: MangaPlugin, tabs: string[]) {
-        const mangalist = [];
+        const mangaList = [];
         for (const menuName of tabs) {
             const url = new URL(`/api/comic/tab?which=days&locale=ko&menuName=${menuName}&start=&count=`, this.URI);
             const request = new FetchRequest(url.href, {
@@ -56,18 +56,18 @@ export default class extends DecoratableMangaScraper {
 
             const data = await FetchJSON<APIResponse<APIManga>>(request);
             const mangas = data.response.result.map(manga => new Manga(this, provider, `/ko/comic/detail/${manga.idx}/`, manga.title));
-            mangalist.push(...mangas);
+            mangaList.push(...mangas);
         }
-        return mangalist;
+        return mangaList;
     }
 
     async fetchMangasByGenres(provider: MangaPlugin, genres: string[]): Promise<Manga[]> {
-        const mangalist = [];
-        const mangaperpage = 200;
+        const mangaList = [];
+        const mangasPerPage = 200;
         for (const genre of genres) {
 
-            for (let run = true, offset = 0; run; offset += mangaperpage) {
-                const url = new URL(`/api/comic/genre?tab=new&genre=${genre}&age_group=&start=${offset}&length=${mangaperpage}`, this.URI);
+            for (let run = true, offset = 0; run; offset += mangasPerPage) {
+                const url = new URL(`/api/comic/genre?tab=new&genre=${genre}&age_group=&start=${offset}&length=${mangasPerPage}`, this.URI);
                 const request = new FetchRequest(url.href, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
@@ -76,11 +76,11 @@ export default class extends DecoratableMangaScraper {
 
                 const data = await FetchJSON<APIResponse<APIManga>>(request);
                 const mangas = data.response.result.map(manga => new Manga(this, provider, `/ko/comic/detail/${manga.idx}/`, manga.title));
-                mangalist.push(...mangas);
+                mangaList.push(...mangas);
                 run = mangas.length > 0;
             }
 
         }
-        return mangalist;
+        return mangaList;
     }
 }
