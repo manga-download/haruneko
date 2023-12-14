@@ -6,21 +6,18 @@ import * as Common from './decorators/Common';
 import { FetchGraphQL, FetchRequest } from '../FetchProvider';
 
 const queryOneshots = `
-            query Earthstar_Oneshot {
-                seriesOneshot: serialGroup(groupName: "連載・読切：読切作品") {
-                    seriesSlice {
-                        seriesList {
-                            ...Earthstar_SeriesListItem_Series
-                        }
+    query Earthstar_Oneshot {
+        seriesOneshot: serialGroup(groupName: "連載・読切：読切作品") {
+            seriesSlice {
+                seriesList {
+                    title
+                    firstEpisode {
+                        permalink
                     }
                 }
             }
-            fragment Earthstar_SeriesListItem_Series on Series {
-                title
-                firstEpisode {
-                    permalink
-                }
-            }
+        }
+    }
 `;
 
 type APIOneshots = {
@@ -39,29 +36,29 @@ type APIManga = {
 }
 
 const querySeries = `
-            query Earthstar_Series {
-                seriesOngoing: serialGroup(groupName: "連載・読切：連載作品：連載中") {
-                    seriesSlice {
-                        seriesList {
-                            ...Earthstar_SeriesListItem_Series
-                        }
-                    }
-                }
-                seriesFinished: serialGroup(groupName: "連載・読切：連載作品：連載終了") {
-                    seriesSlice {
-                        seriesList {
-                            ...Earthstar_SeriesListItem_Series
-                        }
-                    }
+    query Earthstar_Series {
+        seriesOngoing: serialGroup(groupName: "連載・読切：連載作品：連載中") {
+            seriesSlice {
+                seriesList {
+                    ...Earthstar_SeriesListItem_Series
                 }
             }
-            
-            fragment Earthstar_SeriesListItem_Series on Series {
-                title
-                firstEpisode {
-                    permalink
+        }
+        seriesFinished: serialGroup(groupName: "連載・読切：連載作品：連載終了") {
+            seriesSlice {
+                seriesList {
+                    ...Earthstar_SeriesListItem_Series
                 }
             }
+        }
+    }
+    
+    fragment Earthstar_SeriesListItem_Series on Series {
+        title
+        firstEpisode {
+            permalink
+        }
+    }
 `;
 
 type APISeries = {
@@ -115,7 +112,7 @@ export default class extends DecoratableMangaScraper {
     async performGraphQL<T>(operationName: string, query: string): Promise<T> {
         const uri = new URL(this.apiUrl);
         uri.searchParams.set('opname', operationName);
-        return FetchGraphQL<T>(new FetchRequest(uri.href), operationName, query);
+        return FetchGraphQL<T>(new FetchRequest(uri.href), operationName, query, {});
     }
 
 }
