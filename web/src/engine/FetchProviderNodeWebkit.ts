@@ -158,7 +158,7 @@ export async function FetchCSS<T extends HTMLElement>(request: FetchRequest, que
     return [...dom.querySelectorAll(query)] as T[];
 }
 
-export async function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: string): Promise<TResult> {
+export async function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: unknown): Promise<TResult> {
 
     const graphQLRequest = new FetchRequest(request.url, {
         body: JSON.stringify({ operationName, query, variables }),

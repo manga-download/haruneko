@@ -89,24 +89,24 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
     const language = uri.pathname.match(/work\/([a-z]{2})\/([^/]+)/)[1];
     const slug = uri.pathname.match(/work\/([a-z]{2})\/([^/]+)/)[2];
 
-    const gql = {
-        operationName: 'Work',
-        variables: {
-            language: languageMap[language],
-            stub: slug
-        },
-        query: `query Work($language: Int, $stub: String) {
-                    work(language: $language, stub: $stub, showHidden: true) {
-                        id
-                        stub
-                        name
-                        language
-                    }   
-               }`
+    const query = `
+        query Work($language: Int, $stub: String) {
+            work(language: $language, stub: $stub, showHidden: true) {
+                id
+                stub
+                name
+                language
+            }   
+        }
+    `;
+
+    const variables = {
+        language: languageMap[language],
+        stub: slug
     };
 
     const request = new FetchRequest(apiUrl);
-    const data = await FetchGraphQL<APIManga>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
+    const data = await FetchGraphQL<APIManga>(request, 'Work', query, variables);
     const id = JSON.stringify({
         id: data.work.id,
         language: data.work.language,
@@ -205,28 +205,30 @@ export function MangasSinglePageAJAX(apiUrl: string, languages = DefaultLanguage
 
 async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, manga: Manga): Promise<Chapter[]> {
     const mangaObj: MangaIdentifier = JSON.parse(manga.Identifier);
-    const gql = {
-        operationName: 'Work',
-        variables: {
-            language: mangaObj.language,
-            stub: mangaObj.stub
-        },
-        query: `query Work($language: Int, $stub: String) {
-                        work(language: $language, stub: $stub, showHidden: true) {
-                            chapters {
-                                id
-                                stub
-                                volume
-                                chapter
-                                subchapter
-                                name
-                                language
-                            }
-                        }
-                    }`
+
+    const query = `
+        query Work($language: Int, $stub: String) {
+            work(language: $language, stub: $stub, showHidden: true) {
+                chapters {
+                    id
+                    stub
+                    volume
+                    chapter
+                    subchapter
+                    name
+                    language
+                }
+            }
+        }
+    `;
+
+    const variables = {
+        language: mangaObj.language,
+        stub: mangaObj.stub
     };
+
     const request = new FetchRequest(apiUrl);
-    const data = await FetchGraphQL<APIChapters>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
+    const data = await FetchGraphQL<APIChapters>(request, 'Work', query, variables);
     return data.work.chapters.map(chapter => {
         let title = `Vol. ${chapter.volume} Ch. ${chapter.chapter}.${chapter.subchapter}`;
         title += chapter.name ? ` - ${chapter.name}`: '';
@@ -273,26 +275,26 @@ export function PagesSinglePageAJAX(apiUrl: string, cdnUrl: string) {
 }
 
 async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnUrl: string, chapter: Chapter): Promise<Page[]> {
-    const gql = {
-        operationName: 'ChapterById',
-        variables: {
-            id: parseInt(chapter.Identifier)
-        },
-        query: `query ChapterById($id: Int) {
-                        chapterById(id: $id, showHidden: true) {
-                            uniqid
-                            work {
-                                uniqid
-                            }
-                            pages {
-                                id
-                                filename
-                            }
-                        }
-                    }`
+    const variables = {
+        id: parseInt(chapter.Identifier)
     };
+
+    const query = `
+        query ChapterById($id: Int) {
+            chapterById(id: $id, showHidden: true) {
+                uniqid
+                work {
+                    uniqid
+                }
+                pages {
+                    id
+                    filename
+                }
+            }
+        }
+    `;
     const request = new FetchRequest(apiUrl);
-    const data = await FetchGraphQL<APIPages>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
+    const data = await FetchGraphQL<APIPages>(request, 'ChapterById', query, variables);
     return data.chapterById.pages.map(page => {
         const uri = new URL(['/works', data.chapterById.work.uniqid, data.chapterById.uniqid, page.filename].join('/'), cdnUrl);
         return new Page(this, chapter, uri);

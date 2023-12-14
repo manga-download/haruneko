@@ -42,18 +42,18 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const slug = manga.Identifier.split('/').pop();
-        const operationName = 'chapters';
-        const query = `query chapters($slug: String, $limit: Float, $skip: Float, $order: Float!, $isAdmin: Boolean!) {
-            chapters(limit: $limit, skip: $skip, where: {
-                deleted: false, published: $isAdmin, manga: {
-                    slug: $slug, published: $isAdmin, deleted: false
+        const query = `
+            query chapters($slug: String, $limit: Float, $skip: Float, $order: Float!, $isAdmin: Boolean!) {
+                chapters(limit: $limit, skip: $skip, where: {
+                    deleted: false, published: $isAdmin, manga: {
+                        slug: $slug, published: $isAdmin, deleted: false
+                    }
+                }, order: [{ field: "number", order: $order }]) {
+                    id
+                    number
                 }
-            }, order: [{ field: "number", order: $order }]) {
-                id
-                number
-                __typename
             }
-        }`;
+        `;
 
         const variables = {
             slug: slug,
@@ -63,7 +63,7 @@ export default class extends DecoratableMangaScraper {
             isAdmin: true
         };
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<APIChapters>(request, operationName, query, JSON.stringify(variables));
+        const data = await FetchGraphQL<APIChapters>(request, 'chapters', query, variables);
         return data.chapters.map(chapter => {
             const name = chapter.name ? String(chapter.number) + ' : ' + chapter.name.trim() : String(chapter.number);
             const id = JSON.stringify({ id: chapter.id, number: chapter.number });
@@ -74,30 +74,29 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const mangaSlug = chapter.Parent.Identifier.split('/').pop();
         const chapterid: ChapterIdentifier = JSON.parse(chapter.Identifier);
-        const operationName = 'chapter';
-        const query = `query chapter($slug: String, $number: Float) {
-                  chapter(
+        const query = `
+            query chapter($slug: String, $number: Float) {
+                chapter(
                     where: {
-                      deleted: false
-                      published: true
-                      number: $number
-                      manga: { deleted: false, published: true, slug: $slug }
+                        deleted: false
+                        published: true
+                        number: $number
+                        manga: { deleted: false, published: true, slug: $slug }
                     }
-                  ) {
-                    pages {
-                      original
-                      __typename
+                )   {
+                        pages {
+                            original
+                        }
                     }
-                    __typename
-                  }
-                }`;
+            }
+   `;
         const variables = {
             slug: mangaSlug,
             number: chapterid.number,
             isAdmin: true
         };
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<APIPages>(request, operationName, query, JSON.stringify(variables));
+        const data = await FetchGraphQL<APIPages>(request, 'chapter', query, variables);
         return data.chapter.pages.map(page => new Page(this, chapter, new URL(`/static/images/${page.original}`, this.URI)));
     }
 }

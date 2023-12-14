@@ -113,7 +113,7 @@ export default class extends DecoratableMangaScraper {
                 after: nextCursor
             };
 
-            const data = await FetchGraphQL<APIChapters>(request, 'contentHomeProductList', gql, JSON.stringify(vars));
+            const data = await FetchGraphQL<APIChapters>(request, 'contentHomeProductList', gql, vars);
             const chapters = data.contentHomeProductList.edges.map(chapter => new Chapter(this, manga, chapter.node.single.productId.toString(), chapter.node.single.title.replace(manga.Title, '').trim()));
             nextCursor = data.contentHomeProductList.pageInfo.hasNextPage ? data.contentHomeProductList.pageInfo.endCursor : null;
             chapterList.push(...chapters);
@@ -154,7 +154,7 @@ export default class extends DecoratableMangaScraper {
             }
         });
 
-        const data = await FetchGraphQL<APiPages>(request, 'viewerInfo', gql, JSON.stringify(vars));
+        const data = await FetchGraphQL<APiPages>(request, 'viewerInfo', gql, vars);
         return data.viewerInfo.viewerData.imageDownloadData.files.map(page => new Page(this, chapter, new URL(page.secureUrl)));
 
     }
