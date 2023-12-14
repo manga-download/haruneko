@@ -12,7 +12,8 @@ const fetchApiForbiddenHeaders = [
     'Referer',
     'Cookie',
     'Origin',
-    'Host'
+    'Host',
+    'Sec-Fetch-Dest'
 ];
 
 type GraphQLResult<T> = {

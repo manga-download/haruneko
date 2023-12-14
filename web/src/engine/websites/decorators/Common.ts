@@ -197,7 +197,7 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
     return data.map(element => {
         const { id, title } = extract.call(this, element);
         return new Manga(this, provider, id, title);
-    });
+    }).distinct();
 }
 
 /**
@@ -230,7 +230,7 @@ export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: 
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
 export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, step = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
-    const mangaList = [];
+    const mangaList: Manga[] = [];
     let reducer = Promise.resolve();
     for (let page = start, run = true; run; page += step) {
         await reducer;
@@ -240,7 +240,7 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
         mangas.length > 0 && !EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
     }
-    return mangaList;
+    return mangaList.distinct();
 }
 
 /**
@@ -287,7 +287,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
     return data.map(element => {
         const { id, title } = extract.call(this, element);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
-    });
+    }).distinct();
 }
 
 /**
@@ -323,9 +323,11 @@ export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga
         }
     });
     const data = await FetchWindowScript<{ id: string, title: string }[]>(request, script, delay);
-    return data.map(entry => {
+    // NOTE: The Array prototype of `data` comes from a different window context and therefore is missing prototype extensions made for Array in this window context
+    //       => Spread `data` into a new Array
+    return [ ...data ].map(entry => {
         return new Chapter(this, manga, entry.id, entry.title.replace(manga.Title, '').trim() || manga.Title);
-    });
+    }).distinct();
 }
 
 /**
@@ -354,7 +356,7 @@ export function ChaptersUniqueFromManga() {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return [new Chapter(this, manga, manga.Identifier, manga.Title)];
+                return [ new Chapter(this, manga, manga.Identifier, manga.Title) ];
             }
         };
     };
