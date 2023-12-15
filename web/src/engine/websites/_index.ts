@@ -471,6 +471,7 @@ export { default as ReaperScansTR } from './ReaperScansTR';
 export { default as ResetScans } from './ResetScans';
 export { default as Retsu } from './Retsu';
 export { default as RightDarkScan } from './RightDarkScan';
+export { default as Rio2Manga } from './Rio2Manga';
 export { default as RizzComics } from './RizzComics';
 export { default as RomantikManga } from './RomantikManga';
 export { default as S2Manga } from './S2Manga';
