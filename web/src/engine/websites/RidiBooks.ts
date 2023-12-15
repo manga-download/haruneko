@@ -66,7 +66,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList : Manga[] = [];
-        let uri = new URL('/v2/category/books', this.apiUrl);
+        let uri : URL = new URL('/v2/category/books', this.apiUrl);
 
         uri.search = new URLSearchParams({
             category_id: '1600',
@@ -81,7 +81,6 @@ export default class extends DecoratableMangaScraper {
             const { data } = await FetchJSON<APIMangas>(new FetchRequest(uri.href));
             const mangas = data.items.map(({ book }) => {
                 const title = book.serial?.title ? book.serial.title.trim() : book.title.trim();
-                if (!book.serial) console.log(book.bookId);
                 return new Manga(this, provider, book.bookId, title);
             });
             mangaList.push(...mangas);
@@ -110,7 +109,6 @@ export default class extends DecoratableMangaScraper {
                 'Content-Type': 'application/json',
             },
         }));
-        if (!data.success) return [];
-        return data.data.pages.map(page => new Page(this, chapter, new URL(page.src)));
+        return data.success ? data.data.pages.map(page => new Page(this, chapter, new URL(page.src))) : [];
     }
 }
