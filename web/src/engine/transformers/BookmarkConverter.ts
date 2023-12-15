@@ -32,6 +32,7 @@ const legacyWebsiteIdentifierMap = {
     'ozulscans': 'kingofmanga',
     'prismascans': 'demonsect',
     'realmscans': 'rizzcomics',
+    'reaperscansid': 'shinigamiid',
     'secretscans': 'lynxscans',
     'sushiscanfr': 'animesama',
     'shonenmagazine-pocket': 'shonenmagazine',
