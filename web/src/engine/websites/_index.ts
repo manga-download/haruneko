@@ -715,7 +715,6 @@ export { default as OnePieceTube } from './legacy/OnePieceTube';
 export { default as OneTwoThreeHon } from './legacy/OneTwoThreeHon';
 export { default as PlotTwistNoFansub } from './legacy/PlotTwistNoFansub';
 export { default as Qiman5 } from './legacy/Qiman5';
-export { default as Qimiaomh } from './legacy/Qimiaomh';
 export { default as RawMangatop } from './legacy/RawMangatop';
 export { default as ReadHentaiManga } from './legacy/ReadHentaiManga';
 export { default as Remangas } from './legacy/Remangas';
