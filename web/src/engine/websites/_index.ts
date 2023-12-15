@@ -92,6 +92,7 @@ export { default as Dmzj } from './Dmzj';
 export { default as Doujin69 } from './Doujin69';
 export { default as DoujinDesu } from './DoujinDesu';
 export { default as DoujinHentai } from './DoujinHentai';
+export { default as Doujinku } from './Doujinku';
 export { default as Doujins } from './Doujins';
 export { default as DoujinZa } from './DoujinZa';
 export { default as DragonTea } from './DragonTea';
