@@ -716,7 +716,6 @@ export { default as OneTwoThreeHon } from './legacy/OneTwoThreeHon';
 export { default as PlotTwistNoFansub } from './legacy/PlotTwistNoFansub';
 export { default as Qiman5 } from './legacy/Qiman5';
 export { default as RawMangatop } from './legacy/RawMangatop';
-export { default as ReadHentaiManga } from './legacy/ReadHentaiManga';
 export { default as Remangas } from './legacy/Remangas';
 export { default as RoseliaScanlations } from './legacy/RoseliaScanlations';
 export { default as SakuraManga } from './legacy/SakuraManga';
