@@ -11,23 +11,22 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 const chapterScript = `
-new Promise(resolve => {
-    const interval = setInterval(() => {
-        let morebtn = document.querySelector('.mod-episode-more-button') ;
-        if (morebtn) morebtn.click()
-            else {
-                clearInterval(interval);
-                const chapters = [...document.querySelectorAll('a.mod-episode-link')];
-                resolve(chapters.map(chapter => {
-                    return {
-                        id: chapter.pathname,
-                        title: chapter.querySelector('.mod-episode-title').textContent.trim()
-                    }
-                }));
-        }
-     }, 1000);
-});
-
+    new Promise(resolve => {
+        const interval = setInterval(() => {
+            let morebtn = document.querySelector('.mod-episode-more-button') ;
+            if (morebtn) morebtn.click()
+                else {
+                    clearInterval(interval);
+                    const chapters = [...document.querySelectorAll('a.mod-episode-link')];
+                    resolve(chapters.map(chapter => {
+                        return {
+                            id: chapter.pathname,
+                            title: chapter.querySelector('.mod-episode-title').textContent.trim()
+                        }
+                    }));
+            }
+         }, 1000);
+    });
 `;
 
 @Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'h1.detail-header-title, h1.detailv2-outline-title')
