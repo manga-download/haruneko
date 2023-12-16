@@ -152,23 +152,21 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
         mappedLanguages.push(languageMap[lang]);
     }
 
-    const gql = {
-        operationName: 'Works',
-        variables: {
-            languages: mappedLanguages
-        },
-        query: `query Works($languages: [Int]) {
-                        works(languages: $languages, orderBy: "ASC", sortBy: "stub", first: 250, offset: 0, showHidden: true) {
-                            id
-                            stub
-                            name
-                            language
-                        }
-                    }`
+    const variables: JSONObject = {
+        languages: mappedLanguages
     };
-
+    const query = `
+        query Works($languages: [Int]) {
+            works(languages: $languages, orderBy: "ASC", sortBy: "stub", first: 250, offset: 0, showHidden: true) {
+                id
+                stub
+                name
+                language
+            }
+        }
+    `;
     const request = new FetchRequest(apiUrl);
-    const data = await FetchGraphQL<APIMangas>(request, gql.operationName, gql.query, JSON.stringify(gql.variables));
+    const data = await FetchGraphQL<APIMangas>(request, 'Works', query, variables);
     return data.works.map(manga => {
         const id = JSON.stringify({
             id: manga.id,
