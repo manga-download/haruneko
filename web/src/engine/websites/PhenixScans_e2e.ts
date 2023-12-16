@@ -2,21 +2,21 @@
 
 const config = {
     plugin: {
-        id: 'unionmangas',
-        title: 'UnionMangas',
+        id: 'phenixscans',
+        title: 'Phenix Scans'
     },
     container: {
-        url: 'https://unionmangasbr.top/manga/one-piece',
-        id: '/manga/one-piece',
-        title: 'One Piece'
+        url: 'https://phenixscans.fr/manga/infinite-mage/',
+        id: '/manga/infinite-mage/',
+        title: 'Infinite Mage'
     },
     child: {
-        id: '/leitor/THQzczVyWVZEcWpPdldQQlNBPT0=/1080',
-        title: 'Cap. 1080'
+        id: '/infinite-mage-chapitre-60/',
+        title: 'Chapitre 60'
     },
     entry: {
         index: 0,
-        size: 426_983,
+        size: 1_217_836,
         type: 'image/jpeg'
     }
 };

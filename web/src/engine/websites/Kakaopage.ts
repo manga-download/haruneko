@@ -3,9 +3,10 @@ import icon from './Kakaopage.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchGraphQL, FetchRequest } from '../FetchProvider';
+import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
-    contentHomeProductList : {
+    contentHomeProductList: {
         edges: {
             node: {
                 single: {
@@ -57,7 +58,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         let nextCursor = null;
-        const chapterList : Chapter[]= [];
+        const chapterList: Chapter[] = [];
 
         const gql = `
             query contentHomeProductList(
@@ -106,14 +107,14 @@ export default class extends DecoratableMangaScraper {
                 }
             });
 
-            const vars = {
+            const vars: JSONObject = {
                 seriesId: parseInt(manga.Identifier),
                 boughtOnly: false,
                 sortType: 'asc',
                 after: nextCursor
             };
 
-            const data = await FetchGraphQL<APIChapters>(request, 'contentHomeProductList', gql, JSON.stringify(vars));
+            const data = await FetchGraphQL<APIChapters>(request, 'contentHomeProductList', gql, vars);
             const chapters = data.contentHomeProductList.edges.map(chapter => new Chapter(this, manga, chapter.node.single.productId.toString(), chapter.node.single.title.replace(manga.Title, '').trim()));
             nextCursor = data.contentHomeProductList.pageInfo.hasNextPage ? data.contentHomeProductList.pageInfo.endCursor : null;
             chapterList.push(...chapters);
@@ -143,7 +144,7 @@ export default class extends DecoratableMangaScraper {
                   }
                 }
         `;
-        const vars = {
+        const vars: JSONObject = {
             productId: parseInt(chapter.Identifier),
             seriesId: parseInt(chapter.Parent.Identifier)
         };
@@ -154,7 +155,7 @@ export default class extends DecoratableMangaScraper {
             }
         });
 
-        const data = await FetchGraphQL<APiPages>(request, 'viewerInfo', gql, JSON.stringify(vars));
+        const data = await FetchGraphQL<APiPages>(request, 'viewerInfo', gql, vars);
         return data.viewerInfo.viewerData.imageDownloadData.files.map(page => new Page(this, chapter, new URL(page.secureUrl)));
 
     }
