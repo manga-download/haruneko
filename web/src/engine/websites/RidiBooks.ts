@@ -66,7 +66,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList : Manga[] = [];
-        let uri : URL = new URL('/v2/category/books', this.apiUrl);
+        let uri : URL | null = new URL('/v2/category/books', this.apiUrl);
 
         uri.search = new URLSearchParams({
             category_id: '1600',
