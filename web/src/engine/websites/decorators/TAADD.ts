@@ -65,8 +65,7 @@ async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, quer
     }
 
     const request = new FetchRequest(url.href);
-    let data = await FetchCSS<HTMLAnchorElement>(request, query);
-    data = await FetchCSS(request, query);
+    const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const { id, title } = extractor.call(this, element);
         const mangaTitle = manga.Title.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&'); //escape special regex chars in manga name
