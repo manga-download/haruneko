@@ -3,9 +3,10 @@ import icon from './Kakaopage.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchGraphQL, FetchRequest } from '../FetchProvider';
+import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
-    contentHomeProductList : {
+    contentHomeProductList: {
         edges: {
             node: {
                 single: {
@@ -57,7 +58,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         let nextCursor = null;
-        const chapterList : Chapter[]= [];
+        const chapterList: Chapter[] = [];
 
         const gql = `
             query contentHomeProductList(
@@ -106,7 +107,7 @@ export default class extends DecoratableMangaScraper {
                 }
             });
 
-            const vars = {
+            const vars: JSONElement = {
                 seriesId: parseInt(manga.Identifier),
                 boughtOnly: false,
                 sortType: 'asc',
@@ -143,7 +144,7 @@ export default class extends DecoratableMangaScraper {
                   }
                 }
         `;
-        const vars = {
+        const vars: JSONElement = {
             productId: parseInt(chapter.Identifier),
             seriesId: parseInt(chapter.Parent.Identifier)
         };

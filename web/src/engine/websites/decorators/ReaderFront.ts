@@ -6,13 +6,14 @@ import { FetchRequest, FetchGraphQL } from '../../FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { type Tag, Tags } from '../../Tags';
 import * as Common from './Common';
+import type { JSONElement } from '../../../../../node_modules/websocket-rpc/dist/types';
 
 const languageMap = {
     'es': 1,
     'en': 2
 };
 
-const DefaultLanguages : string[] = [];
+const DefaultLanguages: string[] = [];
 
 const reverselanguageMap = {
     1: 'es',
@@ -100,7 +101,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
         }
     `;
 
-    const variables = {
+    const variables: JSONElement = {
         language: languageMap[language],
         stub: slug
     };
@@ -145,7 +146,7 @@ export function MangaAJAX(pattern: RegExp, apiUrl: string) {
 /***********************************************
  ******** Manga List Extraction Methods ********
  ***********************************************/
-async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: string, languages : string[]): Promise<Manga[]> {
+async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: string, languages: string[]): Promise<Manga[]> {
     const mappedLanguages: number[] = [];
     for (const lang of languages) {
         mappedLanguages.push(languageMap[lang]);
@@ -222,7 +223,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
         }
     `;
 
-    const variables = {
+    const variables: JSONElement = {
         language: mangaObj.language,
         stub: mangaObj.stub
     };
@@ -231,7 +232,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
     const data = await FetchGraphQL<APIChapters>(request, 'Work', query, variables);
     return data.work.chapters.map(chapter => {
         let title = `Vol. ${chapter.volume} Ch. ${chapter.chapter}.${chapter.subchapter}`;
-        title += chapter.name ? ` - ${chapter.name}`: '';
+        title += chapter.name ? ` - ${chapter.name}` : '';
         const chap = new Chapter(this, manga, String(chapter.id), title);
         const languageTag: Tag = tagsLanguageMap[mangaObj.language];
         chap.Tags.push(languageTag);
@@ -275,7 +276,7 @@ export function PagesSinglePageAJAX(apiUrl: string, cdnUrl: string) {
 }
 
 async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnUrl: string, chapter: Chapter): Promise<Page[]> {
-    const variables = {
+    const variables: JSONElement = {
         id: parseInt(chapter.Identifier)
     };
 

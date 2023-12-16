@@ -3,6 +3,7 @@ import icon from './ArgosScan.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchGraphQL, FetchRequest } from '../FetchProvider';
+import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type ApiResult<T> = {
     [id: string]: {
@@ -52,7 +53,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = { id: id };
+        const vars: JSONElement = { id: id };
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
         const operationName = 'project';
         const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, vars);
@@ -79,7 +80,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = {
+        const vars: JSONElement = {
             filters: {
                 operator: "AND",
                 childExpressions: [{
@@ -119,7 +120,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = { id: parseInt(manga.Identifier) };
+        const vars: JSONElement = { id: parseInt(manga.Identifier) };
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
         const operationName = 'project';
         const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, vars);
@@ -139,7 +140,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = {
+        const vars: JSONElement = {
             filters: {
                 operator: "AND",
                 filters: [{

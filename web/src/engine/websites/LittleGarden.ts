@@ -3,6 +3,7 @@ import icon from './LittleGarden.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchGraphQL, FetchRequest } from '../FetchProvider';
+import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
     chapters: {
@@ -55,7 +56,7 @@ export default class extends DecoratableMangaScraper {
             }
         `;
 
-        const variables = {
+        const variables: JSONElement = {
             slug: slug,
             order: -1,
             skip: 0,
@@ -90,7 +91,7 @@ export default class extends DecoratableMangaScraper {
                     }
             }
    `;
-        const variables = {
+        const variables: JSONElement = {
             slug: mangaSlug,
             number: chapterid.number,
             isAdmin: true
