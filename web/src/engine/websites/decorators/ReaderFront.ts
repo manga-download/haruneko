@@ -6,7 +6,7 @@ import { FetchRequest, FetchGraphQL } from '../../FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { type Tag, Tags } from '../../Tags';
 import * as Common from './Common';
-import type { JSONElement } from '../../../../../node_modules/websocket-rpc/dist/types';
+import type { JSONObject } from '../../../../../node_modules/websocket-rpc/dist/types';
 
 const languageMap = {
     'es': 1,
@@ -101,7 +101,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
         }
     `;
 
-    const variables: JSONElement = {
+    const variables: JSONObject = {
         language: languageMap[language],
         stub: slug
     };
@@ -223,7 +223,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
         }
     `;
 
-    const variables: JSONElement = {
+    const variables: JSONObject = {
         language: mangaObj.language,
         stub: mangaObj.stub
     };
@@ -276,7 +276,7 @@ export function PagesSinglePageAJAX(apiUrl: string, cdnUrl: string) {
 }
 
 async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnUrl: string, chapter: Chapter): Promise<Page[]> {
-    const variables: JSONElement = {
+    const variables: JSONObject = {
         id: parseInt(chapter.Identifier)
     };
 

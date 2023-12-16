@@ -4,7 +4,7 @@ import { FetchRedirection } from './AntiScrapingDetection';
 import { CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';
 import * as protobuf from 'protobufjs';
 import { Exception, InternalError } from './Error';
-import type { JSONElement } from '../../../node_modules/websocket-rpc/dist/types';
+import type { JSONObject } from '../../../node_modules/websocket-rpc/dist/types';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -163,9 +163,9 @@ export async function FetchCSS<T extends HTMLElement>(request: FetchRequest, que
  * @param request - A base FetchRequest
  * @param operationName - the name of the query to be performed
  * @param query - A valid GraphQL query
- * @param variables - A JSONElement containing the variables of the query.
+ * @param variables - A JSONObject containing the variables of the query.
  */
-export async function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: JSONElement): Promise<TResult> {
+export async function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: JSONObject): Promise<TResult> {
 
     const graphQLRequest = new FetchRequest(request.url, {
         body: JSON.stringify({ operationName: operationName, query: query, variables: variables }),

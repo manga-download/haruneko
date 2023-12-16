@@ -3,7 +3,7 @@ import icon from './Kakaopage.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchGraphQL, FetchRequest } from '../FetchProvider';
-import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
+import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
     contentHomeProductList: {
@@ -107,7 +107,7 @@ export default class extends DecoratableMangaScraper {
                 }
             });
 
-            const vars: JSONElement = {
+            const vars: JSONObject = {
                 seriesId: parseInt(manga.Identifier),
                 boughtOnly: false,
                 sortType: 'asc',
@@ -144,7 +144,7 @@ export default class extends DecoratableMangaScraper {
                   }
                 }
         `;
-        const vars: JSONElement = {
+        const vars: JSONObject = {
             productId: parseInt(chapter.Identifier),
             seriesId: parseInt(chapter.Parent.Identifier)
         };

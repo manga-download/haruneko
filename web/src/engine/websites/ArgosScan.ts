@@ -3,7 +3,7 @@ import icon from './ArgosScan.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchGraphQL, FetchRequest } from '../FetchProvider';
-import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
+import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type ApiResult<T> = {
     [id: string]: {
@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars: JSONElement = { id: id };
+        const vars: JSONObject = { id: id };
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
         const operationName = 'project';
         const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, vars);
@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars: JSONElement = {
+        const vars: JSONObject = {
             filters: {
                 operator: "AND",
                 childExpressions: [{
@@ -120,7 +120,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars: JSONElement = { id: parseInt(manga.Identifier) };
+        const vars: JSONObject = { id: parseInt(manga.Identifier) };
         const request = new FetchRequest(new URL('/graphql', this.URI).href);
         const operationName = 'project';
         const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, vars);
@@ -140,7 +140,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars: JSONElement = {
+        const vars: JSONObject = {
             filters: {
                 operator: "AND",
                 filters: [{

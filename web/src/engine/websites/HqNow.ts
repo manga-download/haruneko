@@ -3,7 +3,7 @@ import icon from './HqNow.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchGraphQL, FetchRequest } from '../FetchProvider';
-import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
+import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIMangas = {
     getHqsByNameStartingLetter: APIManga[],
@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = parseInt(new URL(url).pathname.match(/\/hq\/([\d]+)/)[1]);
-        const variables: JSONElement = {
+        const variables: JSONObject = {
             id: id
         };
         const query = `
@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const variables: JSONElement = {
+        const variables: JSONObject = {
             letter: '0-z'
         };
         const query = `
@@ -87,7 +87,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const variables: JSONElement = {
+        const variables: JSONObject = {
             id: parseInt(manga.Identifier)
         };
         const query = `
@@ -113,7 +113,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const variables: JSONElement = {
+        const variables: JSONObject = {
             chapterId: parseInt(chapter.Identifier)
         };
         const query = `
