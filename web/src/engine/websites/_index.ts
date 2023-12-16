@@ -545,7 +545,6 @@ export { default as TuMangaOnlineHentai } from './TuMangaOnlineHentai';
 export { default as TuManhwas } from './TuManhwas';
 export { default as Turktoon } from './Turktoon';
 export { default as TvYManga } from './TvYManga';
-export { default as UnionMangas } from './UnionMangas';
 export { default as UraSunday } from './UraSunday';
 export { default as UzayManga } from './UzayManga';
 export { default as ViyaFansub } from './ViyaFansub';
