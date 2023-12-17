@@ -9,6 +9,7 @@ const legacyWebsiteIdentifierMap = {
     'bacamangaorg': 'bacamanga',
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
+    'evascans': 'manwe',
     'firstkiss': 'likemanga',
     'flamescans-org': 'flamecomics',
     'gateanimemanga': 'gatemanga',
