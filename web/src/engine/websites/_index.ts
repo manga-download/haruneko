@@ -182,6 +182,7 @@ export { default as IrisScanlator } from './IrisScanlator';
 export { default as IsekaiScan } from './IsekaiScan';
 export { default as ItsYourRightManhua } from './ItsYourRightManhua';
 export { default as JapScan } from './JapScan';
+export { default as JiangzaiToon } from './JiangzaiToon';
 export { default as Jmana1 } from './Jmana1';
 export { default as Jpmangas } from './Jpmangas';
 export { default as KaiScans } from './KaiScans';
