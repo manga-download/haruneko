@@ -64,6 +64,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'dalsei', targetID: 'viyafansub' },
+            { sourceID: 'evascans', targetID: 'manwe' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
             { sourceID: 'firstkiss', targetID: 'likemanga' },
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
