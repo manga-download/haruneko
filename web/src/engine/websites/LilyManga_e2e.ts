@@ -6,7 +6,7 @@ const config = {
         title: 'Lily Manga'
     },
     container: {
-        url: 'https://lilymanga.com/ys/liberty/',
+        url: 'https://lilymanga.net/ys/liberty/',
         id: JSON.stringify({ post: '232', slug: '/ys/liberty/' }),
         title: 'Liberty'
     },
