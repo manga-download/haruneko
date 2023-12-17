@@ -336,7 +336,6 @@ export { default as MangaStarz } from './MangaStarz';
 export { default as MangaSushi } from './MangaSushi';
 export { default as MangaSY } from './MangaSY';
 export { default as MangaTale } from './MangaTale';
-export { default as MangaTeca } from './MangaTeca';
 export { default as Mangatellers } from './Mangatellers';
 export { default as MangaTepesi } from './MangaTepesi';
 export { default as MangaTitan } from './MangaTitan';
