@@ -99,18 +99,13 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract);
 
-        //***************************************************************************************************************************/
         // THE REASON WHY WE DONT USE Common.MangaMultiPagesCSS method is because on some ZBULU website we have PAGES OF DUPLICATES, it causes the loop
         // to stop at page 300+ when we have 900 pages to check. Duplicates are filtered manually at the end of the gathering.
-        //***************************************************************************************************************************/
 
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
     }
-
-    const uniqueMangas = mangaList.filter((value, index, self) =>
-        index === self.findIndex((t) => t.Identifier === value.Identifier));
-    return uniqueMangas;
+    return mangaList.distinct();
 }
 
 /**
@@ -148,7 +143,7 @@ export function MangasMultiPageCSS(path: string = mangaPath, query: string = que
 async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path: string = chapterPath, query: string = queryChapters,
     start: number = 1, step: number = 1, throttle: number = 0): Promise<Chapter[]> {
 
-    const chapterlist: Chapter[]= [];
+    const chapterList: Chapter[]= [];
     let reducer = Promise.resolve();
     for (let page = start, run = true; run; page += step) {
         await reducer;
@@ -156,13 +151,9 @@ async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path:
         const pathTopage = path.replace('{page}', `${page}`).replace('{mangaid}', manga.Identifier);
         const chapters = await FetchChaptersSinglePageCSS.call(this, manga, pathTopage, query);
         // Always add when mangaList is empty ... (length = 0)
-        chapters.length > 0 && !EndsWith(chapterlist, chapters) ? chapterlist.push(...chapters) : run = false;
-        // TODO: Broadcast event that mangalist for provider has been updated?
+        chapters.length > 0 && !EndsWith(chapterList, chapters) ? chapterList.push(...chapters) : run = false;
     }
-
-    const uniqueChapters = chapterlist.filter((value, index, self) =>
-        index === self.findIndex((t) => t.Identifier === value.Identifier));
-    return uniqueChapters;
+    return chapterList.distinct();
 }
 
 async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, path: string, query = queryChapters): Promise<Chapter[]>{
