@@ -505,6 +505,7 @@ export { default as SheaKomik } from './SheaKomik';
 export { default as SheepManga } from './SheepManga';
 export { default as SheepMangaBroken } from './SheepMangaBroken';
 export { default as ShinigamiID } from './ShinigamiID';
+export { default as Shirakami } from './Shirakami';
 export { default as ShonenJumpPlus } from './ShonenJumpPlus';
 export { default as ShonenMagazine } from './ShonenMagazine';
 export { default as ShootingStarScans } from './ShootingStarScans';
