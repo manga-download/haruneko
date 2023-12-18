@@ -6,12 +6,12 @@ const config: Config = {
         title: 'Asura Scans',
     },
     container: {
-        url: 'https://asuratoon.com/manga/2122552102-dragon-devouring-mage/',
-        id: '/manga/2122552102-dragon-devouring-mage/',
+        url: 'https://asuratoon.com/manga/0308950452-dragon-devouring-mage/',
+        id: '/manga/0308950452-dragon-devouring-mage/',
         title: 'Dragon-Devouring Mage',
     },
     child: {
-        id: '/5709081497-dragon-devouring-mage-1/',
+        id: '/4460228866-dragon-devouring-mage-1/',
         title: 'Chapter 1',
     },
     entry: {
