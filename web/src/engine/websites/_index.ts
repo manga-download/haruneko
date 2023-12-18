@@ -516,6 +516,7 @@ export { default as SirenKomik } from './SirenKomik';
 export { default as Siyahmelek } from './Siyahmelek';
 export { default as StickHorse } from './StickHorse';
 export { default as Sukima } from './Sukima';
+export { default as Summertoon } from './Summertoon';
 export { default as SundayWebry } from './SundayWebry';
 export { default as SushiScans } from './SushiScans';
 export { default as SweetTimeScan } from './SweetTimeScan';
