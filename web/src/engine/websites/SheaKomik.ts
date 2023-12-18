@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/sheakomik\.com\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sheakomik', 'Shea Komik', 'https://sheakomik.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
+        super('sheakomik', 'Shea Komik', 'https://sheakomik.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
