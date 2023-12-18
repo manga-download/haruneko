@@ -15,7 +15,8 @@ const excludes = [
     /panda_gif_large/i,
     /2021\/04\/page100-10\.jpg/i,
     /2021\/03\/20-ending-page-\.jpg/i,
-    /ENDING-PAGE/i
+    /ENDING-PAGE/i,
+    /EndDesignPSD/i
 ];
 
 @MangaStream.MangasSinglePageCSS()
