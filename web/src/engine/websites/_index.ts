@@ -515,6 +515,7 @@ export { default as SilentSkyScans } from './SilentSkyScans';
 export { default as SinensisScan } from './SinensisScan';
 export { default as SirenKomik } from './SirenKomik';
 export { default as Siyahmelek } from './Siyahmelek';
+export { default as SkyMangas } from './SkyMangas';
 export { default as StickHorse } from './StickHorse';
 export { default as Sukima } from './Sukima';
 export { default as Summertoon } from './Summertoon';
