@@ -520,6 +520,7 @@ export { default as SMangaVF } from './SMangaVF';
 export { default as SoulScans } from './SoulScans';
 export { default as StickHorse } from './StickHorse';
 export { default as Submanga } from './Submanga';
+export { default as SugarLab } from './SugarLab';
 export { default as Sukima } from './Sukima';
 export { default as Summertoon } from './Summertoon';
 export { default as SundayWebry } from './SundayWebry';
