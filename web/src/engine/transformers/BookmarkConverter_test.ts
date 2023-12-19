@@ -89,6 +89,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'prismascans', targetID: 'demonsect' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
+            { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
