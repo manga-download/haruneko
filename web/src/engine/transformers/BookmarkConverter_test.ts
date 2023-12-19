@@ -91,6 +91,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
             { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
+            { sourceID: 'smangavfws', targetID: 'smangavf' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
             { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },
