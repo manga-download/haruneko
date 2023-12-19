@@ -36,6 +36,7 @@ const legacyWebsiteIdentifierMap = {
     'reaperscansid': 'shinigamiid',
     'scansmangasxyz': 'scansmangasme',
     'secretscans': 'lynxscans',
+    'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
     'shonenmagazine-pocket': 'shonenmagazine',
     'yugenmangas': 'yugenmangas-es'
