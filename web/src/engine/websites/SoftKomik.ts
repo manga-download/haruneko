@@ -42,7 +42,7 @@ type APIMangas = {
 export default class extends DecoratableMangaScraper {
 
     private nextBuild = '';
-    private readonly CDN = 'https://soft1.softdevices.my.id'; // other CDN are 'https://soft2.b-cdn.net' and 'https://soft1.softdevices.my.id', make an option?
+    private readonly CDN = 'https://soft1.softdevices.my.id'; // other CDN is 'https://soft2.b-cdn.net' make an option?
     public constructor() {
         super('softkomik', `Softkomik`, 'https://softkomik.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
