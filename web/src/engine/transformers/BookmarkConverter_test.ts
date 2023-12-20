@@ -62,6 +62,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'azoramanga', targetID: 'azoraworld' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
+            { sourceID: 'comicbushi', targetID: 'comicgrowl' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'dalsei', targetID: 'viyafansub' },
             { sourceID: 'evascans', targetID: 'manwe' },

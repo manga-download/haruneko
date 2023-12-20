@@ -7,6 +7,7 @@ const legacyWebsiteIdentifierMap = {
     'azoramanga': 'azoraworld',
     'bananascan': 'harmonyscan',
     'bacamangaorg': 'bacamanga',
+    'comicbushi': 'comicgrowl',
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
     'evascans': 'manwe',
@@ -53,7 +54,7 @@ type BookmarkLegacy = {
     };
 };
 
-class BookmarkFormatError extends Exception {}
+class BookmarkFormatError extends Exception { }
 
 function GetKeys(data: unknown, prefix = ''): string {
     return Object.keys(data ?? {}).map(key => {
@@ -72,7 +73,7 @@ function IsLegacyBookmarkFormat(data: unknown): data is BookmarkLegacy {
 }
 
 export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
-    if(IsSerializedBookmarkFormat(data)) {
+    if (IsSerializedBookmarkFormat(data)) {
         return data;
     }
 
@@ -90,7 +91,7 @@ export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
         }
     };
 
-    if(IsLegacyBookmarkFormat(data)) {
+    if (IsLegacyBookmarkFormat(data)) {
         bookmark.Media.ProviderID = legacyWebsiteIdentifierMap[data.key.connector] ?? data.key.connector;
         bookmark.Media.EntryID = data.key.manga;
         bookmark.Title = data.title.manga;
