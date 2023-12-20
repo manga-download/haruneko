@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './NHentai.webp';
+import icon from './ThreeHentai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as NHentai from './decorators/NHentai';
 
-@Common.MangaCSS(/^{origin}\/g\/\d+/, NHentai.queryMangaTitle)
+@Common.MangaCSS(/^https:\/\/(es\.|fra\.|it\.|\pt.|ru\.)?3hentai\.net\/d\/\d+/, 'div#main-info span.middle-title')
 @Common.MangasNotSupported()
 @NHentai.ChaptersUniqueFromManga()
 @Common.PagesSinglePageJS(NHentai.pageScript, 500)
@@ -12,7 +12,7 @@ import * as NHentai from './decorators/NHentai';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nhentai', `NHentai`, 'https://nhentai.net', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+        super('3hentai', `3Hentai`, 'https://3hentai.net', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
