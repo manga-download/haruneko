@@ -141,11 +141,11 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_WebsiteSubDirectoryInfo: "HakuNeko'nun medyayı doğrudan dizinde mi depolayacağını yoksa web sitesi başına alt dizinler mi oluşturacağını ayarlayın",
   Settings_Global_DescramblingFormat: "Karıştırma Biçimi",
   Settings_Global_DescramblingFormatInfo: "Karıştırılmış görselleri barındıran web siteleri için görsel formatını seçin (bu, halihazırda düzgün görseller sağlayan web siteleri için geçerli OLMAYACAKTIR)",
-  Settings_Global_DescramblingFormat_PNG: 'PNG (*.png)',
-  Settings_Global_DescramblingFormat_JPEG: 'JPEG (*.jpg)',
-  Settings_Global_DescramblingFormat_WEBP: 'WEBP (*.webp)',
   Settings_Global_DescramblingQuality: "Karıştırma Kalitesi",
   Settings_Global_DescramblingQualityInfo: "Karıştırılan görsellerin saklanacağı kaliteyi ayarlayın (bu ayar PNG için geçerli DEĞİLDİR)",
+  Settings_Global_Format_PNG: 'PNG (*.png)',
+  Settings_Global_Format_JPEG: 'JPEG (*.jpg)',
+  Settings_Global_Format_WEBP: 'WEBP (*.webp)',
   Settings_Global_UserAgent: "Kullanıcı Aracısı",
   Settings_Global_UserAgentInfo: "HakuNeko'nun her web sitesi isteği için taklit edeceği Kullanıcı Aracısı (varsayılanı kullanmak için boş bırakın)",
   Settings_Global_HCaptchaToken: "H-Captcha Anahtarı",
@@ -241,6 +241,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingInteractionInfo: "Engellenmeyi veya yasaklanmayı önlemek için web sitesine yapılan istek sayısını sınırlayın",
   Plugin_Settings_UrlOverride: "URL Geçersiz Kılma",
   Plugin_Settings_UrlOverrideInfo: "Bu URL'yi bu web sitesi için geçerli alan adı olarak kullanın",
+  Plugin_Settings_ImageFormat: "Tercih Edilen Resim Formatı",
+  Plugin_Settings_ImageFormatInfo: "Mümkünse bu dosya biçimini kullanarak resimleri indirin",
   Plugin_Common_MangaIndex_NotSupported: "Bu web sitesi için içerik dizini oluşturulamıyor. Belirli bir URL'nin içeriğine doğrudan erişmek için Kopyala ve Yapıştır özelliğini kullanın!",
   Plugin_Common_Chapter_UnavailableError: "Bölüm mevcut değil (satın alınmadı/kilidi açılmadı/halka açık değil)!",
   Plugin_Common_Chapter_InvalidError: "Sayfalar bölüm içeriğinden ayıklanamadı!",
@@ -249,6 +251,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_Username: "Kullanıcı Adı",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Sheep-Scanlations'a otomatik hesap girişi için kullanıcı adı 😉",
   Plugin_SheepScanlations_Settings_Password: "Şifre",
-  Plugin_SheepScanlations_Settings_PasswordInfo: "Sheep-Scanlations'a otomatik hesap girişi için şifre 😉"
+  Plugin_SheepScanlations_Settings_PasswordInfo: "Sheep-Scanlations'a otomatik hesap girişi için şifre 😉",
+  Plugin_CopyManga_Settings_GlobalCDN: "Global CDN Kullan",
+  Plugin_CopyManga_Settings_GlobalCDNInfo: "Global CDN'den talepte bulunma"
 };
 export default translations;
