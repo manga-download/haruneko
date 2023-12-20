@@ -533,6 +533,7 @@ export { default as TCBScans } from './TCBScans';
 export { default as Team1x1 } from './Team1x1';
 export { default as TecnoScan } from './TecnoScan';
 export { default as Tempestfansub } from './Tempestfansub';
+export { default as TempestScans } from './TempestScans';
 export { default as TenshiID } from './TenshiID';
 export { default as TheGuildScans } from './TheGuildScans';
 export { default as TitanManga } from './TitanManga';
