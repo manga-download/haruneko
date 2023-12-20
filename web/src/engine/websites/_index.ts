@@ -304,7 +304,7 @@ export { default as MangaLover } from './MangaLover';
 export { default as MangaMonarca } from './MangaMonarca';
 export { default as MangaNato } from './MangaNato';
 export { default as MangaNexus } from './MangaNexus';
-export { default as MangaOkur } from './MangaOkur';
+export { default as MangaOku } from './MangaOku';
 export { default as MangaOkuTR } from './MangaOkuTR';
 export { default as MangaOni } from './MangaOni';
 export { default as MangaOnlineTeam } from './MangaOnlineTeam';
