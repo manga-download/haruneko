@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'protruyen',
         title: 'ProTruyen'
-    }/*, Irrelevant test since website uses cloudflare
+    },
     container: {
-        url: 'https://truyentranhaudio.online/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://protruyen.xyz/truyen-toi-khong-phai-quy-vuong.html',
+        id: '/truyen-toi-khong-phai-quy-vuong.html',
+        title: 'Tôi Không Phải Quỷ Vương'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/doc-toi-khong-phai-quy-vuong-chuong-175.html',
+        title: 'Chapter 175'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 231_811,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
