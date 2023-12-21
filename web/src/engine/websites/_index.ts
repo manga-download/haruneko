@@ -540,6 +540,7 @@ export { default as TitanManga } from './TitanManga';
 export { default as TmoManga } from './TmoManga';
 export { default as TonariNoYoungJump } from './TonariNoYoungJump';
 export { default as TonizuToon } from './TonizuToon';
+export { default as ToomTam } from './ToomTam';
 export { default as ToonGod } from './ToonGod';
 export { default as Toonily } from './Toonily';
 export { default as ToonilyNet } from './ToonilyNet';
