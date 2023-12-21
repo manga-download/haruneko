@@ -547,6 +547,7 @@ export { default as TopComicPorno } from './TopComicPorno';
 export { default as TopManhua } from './TopManhua';
 export { default as TopManhuaNet } from './TopManhuaNet';
 export { default as TopToon } from './TopToon';
+export { default as TortugaCeviri } from './TortugaCeviri';
 export { default as TraduccionesAmistosas } from './TraduccionesAmistosas';
 export { default as TritiniaScans } from './TritiniaScans';
 export { default as TrueManga } from './TrueManga';
