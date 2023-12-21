@@ -15,7 +15,7 @@ const cdnUrl = 'https://img-cdn1.ravens-scans.com';
 
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('ravensscans-es', `RavensScans (Spanish)`, 'https://ravens-scans.com', Tags.Language.Spanish, Tags.Source.Scanlator, Tags.Media.Manga);
+        super('ravensscans-es', `RavensScans (Spanish)`, 'https://ravens-scans.com', Tags.Language.Spanish, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

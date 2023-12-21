@@ -1,24 +1,24 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'minitwoscan',
         title: 'MiniTwo Scan'
-    }/*,
+    },
     container: {
-        url: 'https://minitwoscan.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://minitwoscan.com/manga/boku-no-kokoro-no-yaibai-yatsu/',
+        id: JSON.stringify({ post: '8344', slug: '/manga/boku-no-kokoro-no-yaibai-yatsu/' }),
+        title: 'Boku no Kokoro no Yaibai yatsu'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/boku-no-kokoro-no-yaibai-yatsu/capitulo-101/',
+        title: 'Capítulo 101'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 535_737,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

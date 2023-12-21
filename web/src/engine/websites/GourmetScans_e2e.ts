@@ -6,7 +6,7 @@ const config = {
         title: 'Gourmet Scans'
     },
     container: {
-        url: 'https://gourmetscans.net/project/an-unseemly-lady/',
+        url: 'https://gourmetsupremacy.com/project/an-unseemly-lady/',
         id: JSON.stringify({ post: '4484', slug: '/project/an-unseemly-lady/' }),
         title: 'An Unseemly Lady',
     },

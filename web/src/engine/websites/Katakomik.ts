@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/katakomik\.online\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS('div.eph-num a')
 @MangaStream.PagesSinglePageJS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('katakomik', 'Katakomik', 'https://katakomik.online', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
+        super('katakomik', 'Katakomik', 'https://katakomik.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
     }
 
     public override get Icon() {
