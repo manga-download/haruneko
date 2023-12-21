@@ -556,6 +556,7 @@ export { default as TruyenTranhtuan } from './TruyenTranhtuan';
 export { default as TRWebtoon } from './TRWebtoon';
 export { default as Tsumino } from './Tsumino';
 export { default as TukangKomik } from './TukangKomik';
+export { default as TuMangaNet } from './TuMangaNet';
 export { default as TuMangaOnlineHentai } from './TuMangaOnlineHentai';
 export { default as TuManhwas } from './TuManhwas';
 export { default as Turktoon } from './Turktoon';
