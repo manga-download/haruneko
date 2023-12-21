@@ -543,7 +543,6 @@ export { default as TonizuToon } from './TonizuToon';
 export { default as ToomTam } from './ToomTam';
 export { default as ToonGod } from './ToonGod';
 export { default as Toonily } from './Toonily';
-export { default as ToonLatino } from './ToonLatino';
 export { default as TopComicPorno } from './TopComicPorno';
 export { default as TopManhua } from './TopManhua';
 export { default as TopManhuaNet } from './TopManhuaNet';
