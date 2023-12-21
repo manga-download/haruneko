@@ -5,8 +5,8 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
     'azoramanga': 'azoraworld',
-    'bananascan': 'harmonyscan',
     'bacamangaorg': 'bacamanga',
+    'bananascan': 'harmonyscan',
     'comicbushi': 'comicgrowl',
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
@@ -18,16 +18,16 @@ const legacyWebsiteIdentifierMap = {
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'kisscomic': 'readcomiconline',
     'kumascans': 'retsu',
-    'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
     'lovehug': 'welovemanga',
-    'mangaproz': 'mangapro',
-    'manganelos': 'mangapure',
-    'mangaraw': 'mangagecko',
-    'mangaswat': 'goldragon',
+    'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
     'mangamx': 'mangaoni',
     'manganel': 'manganato',
-    'manhwaclub': 'manhwahentai',
+    'manganelos': 'mangapure',
+    'mangaproz': 'mangapro',
+    'mangaraw': 'mangagecko',
+    'mangaswat': 'goldragon',
     'manhuaes': 'manhuaaz',
+    'manhwaclub': 'manhwahentai',
     'muctau': 'bibimanga',
     'nitroscans': 'nitromanga',
     'oxapk': 'manjanoon',
@@ -37,9 +37,9 @@ const legacyWebsiteIdentifierMap = {
     'reaperscansid': 'shinigamiid',
     'scansmangasxyz': 'scansmangasme',
     'secretscans': 'lynxscans',
+    'shonenmagazine-pocket': 'shonenmagazine',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
-    'shonenmagazine-pocket': 'shonenmagazine',
     'yugenmangas': 'yugenmangas-es'
 };
 
