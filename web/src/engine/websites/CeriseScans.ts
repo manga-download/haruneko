@@ -5,7 +5,7 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 // TODO Add novel support
-@Madara.MangaCSS(/^{origin}\/home1\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Cerise Scan"])')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Cerise Scan"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('cerisescans', 'Cerise Scans', 'https://cerisescan.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('cerisescans', 'Cerise Scans', 'https://cerisescan.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

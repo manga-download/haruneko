@@ -12,7 +12,7 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('serimanga', `Seri Manga`, 'https://serimanga.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('serimanga', `Seri Manga`, 'https://serimangas.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
