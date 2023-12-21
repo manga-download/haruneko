@@ -6,17 +6,17 @@ const config = {
         title: 'Inmortal Scan'
     },
     container: {
-        url: 'https://manga.mundodrama.site/manga/king-of-the-octagon/',
-        id: JSON.stringify({ post: '2047', slug: '/manga/king-of-the-octagon/' }),
-        title: 'King of the Octagon'
+        url: 'https://manga.mundodrama.site/mg/memoir-of-the-king-of-war/',
+        id: JSON.stringify({ post: '1864', slug: '/mg/memoir-of-the-king-of-war/' }),
+        title: 'Memorias del Rey de la Guerra'
     },
     child: {
-        id: '/manga/king-of-the-octagon/capitulo-1/',
-        title: 'capitulo 1'
+        id: '/mg/memoir-of-the-king-of-war/capitulo-150/',
+        title: 'capitulo 150'
     },
     entry: {
-        index: 0,
-        size: 542_106,
+        index: 1,
+        size: 359_607,
         type: 'image/jpeg'
     }
 };
