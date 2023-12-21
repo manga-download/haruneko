@@ -69,11 +69,9 @@ describe('BookmarkConverter', () => {
             { sourceID: 'firstkiss', targetID: 'likemanga' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
-            { sourceID: 'kisscomic', targetID: 'readcomiconline' },
-            { sourceID: 'kissaway', targetID: 'klmanga'},
-            { sourceID: 'kumascans', targetID: 'retsu' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
+            { sourceID: 'kissaway', targetID: 'klmanga' },
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
             { sourceID: 'kumascans', targetID: 'retsu' },
             { sourceID: 'lovehug', targetID: 'welovemanga' },
