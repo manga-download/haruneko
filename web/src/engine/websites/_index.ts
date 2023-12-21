@@ -506,6 +506,7 @@ export { default as TopToon } from './TopToon';
 export { default as TraduccionesAmistosas } from './TraduccionesAmistosas';
 export { default as TritiniaScans } from './TritiniaScans';
 export { default as TrueManga } from './TrueManga';
+export { default as TruyenChapVn } from './TruyenChapVn';
 export { default as TruyenTranhLH } from './TruyenTranhLH';
 export { default as TruyenTranhOnline } from './TruyenTranhOnline';
 export { default as TRWebtoon } from './TRWebtoon';
