@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as FoolSlide from './decorators/FoolSlide';
 import * as Common from './decorators/Common';
 
-@FoolSlide.MangaCSS(/^https?:\/\/adulto\.seinagi\.org\.es\/series\/[^/]+\/?$/, 'div.comic h1.title')
+@FoolSlide.MangaCSS(/^{origin}\/series\/[^/]+\/?$/, 'div.comic h1.title')
 @FoolSlide.MangasMultiPageCSS()
 @FoolSlide.ChaptersSinglePageCSS()
 @FoolSlide.PagesSinglePageREGEX()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('seinagiadultofansub', `SeinagiAdultoFansub`, 'https://adulto.seinagi.org.es', Tags.Language.Spanish, Tags.Media.Manga, Tags.Rating.Erotica);
+        super('seinagiadultofansub', `SeinagiAdultoFansub`, 'https://adulto.seinagi.org.es', Tags.Language.Spanish, Tags.Media.Manga, Tags.Rating.Erotica, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

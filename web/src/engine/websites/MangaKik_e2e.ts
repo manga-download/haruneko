@@ -6,7 +6,7 @@ const config = {
         title: 'MangaKik'
     },
     container: {
-        url: 'https://mangakik.biz/manga/age-of-terror/',
+        url: 'https://mangakik.org/manga/age-of-terror/',
         id: JSON.stringify({ post: '2376', slug: '/manga/age-of-terror/' }),
         title: 'Age of Terror'
     },
