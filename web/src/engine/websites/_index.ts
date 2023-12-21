@@ -760,7 +760,6 @@ export { default as ToomicsPT } from './legacy/ToomicsPT';
 export { default as ToomicsSC } from './legacy/ToomicsSC';
 export { default as ToomicsTC } from './legacy/ToomicsTC';
 export { default as Toonkor } from './legacy/Toonkor';
-export { default as ToonSarang } from './legacy/ToonSarang';
 export { default as TruyenTranhLH } from './legacy/TruyenTranhLH';
 export { default as TruyenTranhtuan } from './legacy/TruyenTranhtuan';
 export { default as TsundokuTraducoes } from './legacy/TsundokuTraducoes';
