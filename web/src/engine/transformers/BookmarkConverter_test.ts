@@ -97,6 +97,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'smangavfws', targetID: 'smangavf' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
             { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
+            { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
             { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },
 
             // TODO: Add all test cases from BookmarkConverter::legacyWebsiteIdentifierMap ...

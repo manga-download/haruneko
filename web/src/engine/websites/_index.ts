@@ -574,7 +574,7 @@ export { default as WebComicsApp } from './WebComicsApp';
 export { default as WebNovel } from './WebNovel';
 export { default as WebtoonHatti } from './WebtoonHatti';
 export { default as WebtoonTR } from './WebtoonTR';
-export { default as WebtoonTRCOM } from './WebtoonTRCOM';
+export { default as WebtoonTRNET } from './WebtoonTRNET';
 export { default as WebtoonXYZ } from './WebtoonXYZ';
 export { default as WeiboManhua } from './WeiboManhua';
 export { default as WestManga } from './WestManga';
