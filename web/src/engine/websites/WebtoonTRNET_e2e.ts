@@ -2,7 +2,7 @@
 
 const config = {
     plugin: {
-        id: 'webtoontrcom',
+        id: 'webtoontrnet',
         title: 'Webtoon TR'
     },
     container: {

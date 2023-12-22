@@ -42,6 +42,7 @@ const legacyWebsiteIdentifierMap = {
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
     'vermanhwas': 'vermanhwa',
+    'webtoontrcom': 'webtoontrnet',
     'yugenmangas': 'yugenmangas-es'
 };
 
