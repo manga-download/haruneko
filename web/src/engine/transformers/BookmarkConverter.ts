@@ -5,6 +5,7 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
     'azoramanga': 'azoraworld',
+    'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
     'comicbushi': 'comicgrowl',
@@ -40,6 +41,7 @@ const legacyWebsiteIdentifierMap = {
     'shonenmagazine-pocket': 'shonenmagazine',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
+    'vermanhwas': 'vermanhwa',
     'yugenmangas': 'yugenmangas-es'
 };
 
