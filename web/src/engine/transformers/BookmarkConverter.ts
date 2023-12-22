@@ -41,6 +41,7 @@ const legacyWebsiteIdentifierMap = {
     'shonenmagazine-pocket': 'shonenmagazine',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
+    'vermanhwas': 'vermanhwa',
     'yugenmangas': 'yugenmangas-es'
 };
 
