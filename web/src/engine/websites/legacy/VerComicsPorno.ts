@@ -12,7 +12,7 @@ import * as Common from '../decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('vercomicsporno', `VerComicsPorno`, 'https://vercomicsporno.com', Tags.Language.Spanish, Tags.Rating.Pornographic);
+        super('vercomicsporno', `VerComicsPorno`, 'https://vercomicsporno.com', Tags.Media.Comic, Tags.Language.Spanish, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
