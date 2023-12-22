@@ -563,6 +563,7 @@ export { default as Turktoon } from './Turktoon';
 export { default as UraSunday } from './UraSunday';
 export { default as UzayManga } from './UzayManga';
 export { default as VerManhwa } from './VerManhwa';
+export { default as ViewComics } from './ViewComics';
 export { default as ViyaFansub } from './ViyaFansub';
 export { default as VNSharing } from './VNSharing';
 export { default as VoidScans } from './VoidScans';
