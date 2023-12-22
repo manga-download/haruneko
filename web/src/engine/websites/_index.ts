@@ -568,6 +568,7 @@ export { default as ViyaFansub } from './ViyaFansub';
 export { default as VNSharing } from './VNSharing';
 export { default as VoidScans } from './VoidScans';
 export { default as WantedTeam } from './WantedTeam';
+export { default as WarungKomik } from './WarungKomik';
 export { default as WebAce } from './WebAce';
 export { default as WebComicsApp } from './WebComicsApp';
 export { default as WebNovel } from './WebNovel';
