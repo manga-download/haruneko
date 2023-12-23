@@ -787,7 +787,6 @@ export { default as WordExcerpt } from './legacy/WordExcerpt';
 export { default as WordRain } from './legacy/WordRain';
 export { default as wuqimh } from './legacy/wuqimh';
 export { default as WuxiaWorld } from './legacy/WuxiaWorld';
-export { default as YesMangasBR } from './legacy/YesMangasBR';
 export { default as YoungJump } from './legacy/YoungJump';
 export { default as ZinNovel } from './legacy/ZinNovel';
 export { default as ZYMKMangaWeb } from './legacy/ZYMKMangaWeb';
