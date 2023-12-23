@@ -595,6 +595,7 @@ export { default as YaoiToshokan } from './YaoiToshokan';
 export { default as YawarakaSpirits } from './YawarakaSpirits';
 export { default as YugenMangasES } from './YugenMangasES';
 export { default as YugenMangasPT } from './YugenMangasPT';
+export { default as Yurineko } from './Yurineko';
 export { default as YuriVerso } from './YuriVerso';
 export { default as Zebrack } from './Zebrack';
 export { default as ZeroScans } from './ZeroScans';
