@@ -588,6 +588,7 @@ export { default as xianman123 } from './xianman123';
 export { default as XlecX } from './XlecX';
 export { default as XoxoComics } from './XoxoComics';
 export { default as XXXYaoi } from './XXXYaoi';
+export { default as YanpFansub } from './YanpFansub';
 export { default as YaoiChan } from './YaoiChan';
 export { default as YaoiHavenReborn } from './YaoiHavenReborn';
 export { default as YaoiScan } from './YaoiScan';
