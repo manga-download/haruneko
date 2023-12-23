@@ -23,7 +23,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yawarakaspirits', `やわらかスピリッツ (Yawaraka Spirits)`, 'https://yawaspi.com', Tags.Language.Japanese, Tags.Media.Manga);
+        super('yawarakaspirits', `やわらかスピリッツ (Yawaraka Spirits)`, 'https://yawaspi.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
