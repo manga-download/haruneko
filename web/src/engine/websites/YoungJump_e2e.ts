@@ -5,7 +5,7 @@ const config = {
         id: 'youngjump',
         title: 'となりのヤングジャンプ (Tonari no Young Jump)'
     },
-    /* Content is accebile after login
+    /* Content is accessible after login
     container: {
         url: 'https://www.youngjump.world/reader/reader.html?cid=101012340&u1=10001',
         id: '/reader/reader.html?cid=101012340&u1=10001',
