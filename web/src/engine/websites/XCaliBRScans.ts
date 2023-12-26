@@ -48,13 +48,13 @@ const pagescript = `
         });
 `;
 
-@MangaStream.MangaCSS(/^https?:\/\/xcalibrscans\.com\/webcomics\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/webcomics\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS(undefined, '/webcomics/manga/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('xcalibrscans', 'xCaliBR Scans', 'https://xcalibrscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('xcalibrscans', 'xCaliBR Scans', 'https://xcalibrscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
