@@ -22,7 +22,7 @@ const mangasPerPageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yaoihavenreborn', `Yaoi Haven Reborn`, 'https://www.yaoihavenreborn.com/', Tags.Language.Multilingual, Tags.Media.Comic, Tags.Rating.Pornographic);
+        super('yaoihavenreborn', `Yaoi Haven Reborn`, 'https://www.yaoihavenreborn.com/', Tags.Language.Multilingual, Tags.Media.Comic, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

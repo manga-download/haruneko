@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './YuriVerso.webp';
+import icon from './YanpFansub.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/mangas\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="YANP FANSUB"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yuriverso', 'Yuri Verso', 'https://yuri.live', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Aggregator);
+        super('yanpfansub', 'YanpFansub', 'https://yanpfansub.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
