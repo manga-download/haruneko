@@ -600,6 +600,7 @@ export { default as YumeKomik } from './YumeKomik';
 export { default as YuriVerso } from './YuriVerso';
 export { default as Zebrack } from './Zebrack';
 export { default as ZeroScans } from './ZeroScans';
+export { default as ZeurelScan } from './ZeurelScan';
 export { default as ZinManga } from './ZinManga';
 export { default as ZuiMH } from './ZuiMH';
 // Legacy Websites
