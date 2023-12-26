@@ -270,6 +270,7 @@ export { default as MangaEclipse } from './MangaEclipse';
 export { default as MangaEffect } from './MangaEffect';
 export { default as MangaEighteenClub } from './MangaEighteenClub';
 export { default as MangaEighteenUS } from './MangaEighteenUS';
+export { default as MangaFire } from './MangaFire';
 export { default as MangaForest } from './MangaForest';
 export { default as MangaForFree } from './MangaForFree';
 export { default as MangaFort } from './MangaFort';
