@@ -13,12 +13,12 @@ function MangaExtractor(element: HTMLElement) {
 }
 
 function ChapterExtractor(element: HTMLElement) {
-
     return {
         id: element.querySelector<HTMLAnchorElement>('a').pathname,
         title: element.querySelector('h5').textContent.trim().split('\n')[0]
     };
 }
+
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, '.col > h1')
 @Common.MangasMultiPageCSS('/manga?page={page}', '.grid-item-series', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('.col-chapter', ChapterExtractor)
