@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/title\/\d+\/(vol\/\d+\/)?$/, '#GA_this_page_title_name')
+@Common.MangaCSS(/^{origin}\/title\/\d+(\/vol\/\d+\/)?$/, '#GA_this_page_title_name')
 @Common.MangasNotSupported()
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
@@ -19,9 +19,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
-        const pages = await FetchCSS(request, '#comic_list > .pagination:nth-child(1) li');
+        const pages = await FetchCSS<HTMLAnchorElement>(request, '#comic_list > .pagination:nth-child(1) li:nth-last-child(2) a');
         const chapters = [];
-        const totalPage = pages.length == 0 ? 1 : pages.length - 1;
+        const totalPage = pages.length == 0 ? 1 : parseInt(new URL(pages[0].href).searchParams.get('page'));
         for (let i = 0; i < totalPage; i++) {
             const uri = new URL(manga.Identifier, this.URI);
             uri.searchParams.set('page', String(i + 1));
