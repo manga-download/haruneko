@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './WebtoonTRCOM.webp';
+import icon from './VerManhwa.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/webtoon\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Webtoon TR"])')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Ver Manhwa"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('webtoontrcom', 'Webtoon TR', 'https://webtoontr.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish);
+        super('vermanhwa', 'VerManhwa', 'https://vermanhwa.com', Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

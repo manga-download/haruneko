@@ -25,7 +25,7 @@ type APIMangaEntry = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tsumino', `Tsumino`, 'https://www.tsumino.com', Tags.Language.English, Tags.Source.Aggregator);
+        super('tsumino', `Tsumino`, 'https://www.tsumino.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

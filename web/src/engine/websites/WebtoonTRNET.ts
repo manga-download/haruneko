@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './ToonilyNet.webp';
+import icon from './WebtoonTRNET.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Toonily"])')
+@Madara.MangaCSS(/^{origin}\/webtoon\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Webtoon TR"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('toonilynet', 'Toonily.net', 'https://toonily.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('webtoontrnet', 'Webtoon TR', 'https://webtoontr.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish);
     }
 
     public override get Icon() {
