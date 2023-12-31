@@ -242,7 +242,6 @@ export { default as Manga3S } from './Manga3S';
 export { default as Manga18FX } from './Manga18FX';
 export { default as Manga68 } from './Manga68';
 export { default as Manga347 } from './Manga347';
-export { default as Manga365 } from './Manga365';
 export { default as Manga1001top } from './Manga1001top';
 export { default as MangaAction } from './MangaAction';
 export { default as MangaAy } from './MangaAy';
