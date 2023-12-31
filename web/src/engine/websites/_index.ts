@@ -162,7 +162,6 @@ export { default as HikariScan } from './HikariScan';
 export { default as Hinapyon } from './Hinapyon';
 export { default as HiperCool } from './HiperCool';
 export { default as Hiperdex } from './Hiperdex';
-export { default as HManhwa } from './HManhwa';
 export { default as HniScanTrad } from './HniScanTrad';
 export { default as HqNow } from './HqNow';
 export { default as HunterScan } from './HunterScan';
