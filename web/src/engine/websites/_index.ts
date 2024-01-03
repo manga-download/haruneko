@@ -674,7 +674,6 @@ export { default as MangaFoxFun } from './legacy/MangaFoxFun';
 export { default as MangaFreak } from './legacy/MangaFreak';
 export { default as MangaGo } from './legacy/MangaGo';
 export { default as MangaHereFun } from './legacy/MangaHereFun';
-export { default as MangaHome } from './legacy/MangaHome';
 export { default as MangaHub } from './legacy/MangaHub';
 export { default as MangaKakalotFun } from './legacy/MangaKakalotFun';
 export { default as MangaKu } from './legacy/MangaKu';
