@@ -5,8 +5,10 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
     'azoramanga': 'azoraworld',
-    'bananascan': 'harmonyscan',
+    'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
+    'bananascan': 'harmonyscan',
+    'comicbushi': 'comicgrowl',
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
     'evascans': 'manwe',
@@ -17,16 +19,16 @@ const legacyWebsiteIdentifierMap = {
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'kisscomic': 'readcomiconline',
     'kumascans': 'retsu',
-    'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
     'lovehug': 'welovemanga',
-    'mangaproz': 'mangapro',
-    'manganelos': 'mangapure',
-    'mangaraw': 'mangagecko',
-    'mangaswat': 'goldragon',
+    'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
     'mangamx': 'mangaoni',
     'manganel': 'manganato',
-    'manhwaclub': 'manhwahentai',
+    'manganelos': 'mangapure',
+    'mangaproz': 'mangapro',
+    'mangaraw': 'mangagecko',
+    'mangaswat': 'goldragon',
     'manhuaes': 'manhuaaz',
+    'manhwaclub': 'manhwahentai',
     'muctau': 'bibimanga',
     'nitroscans': 'nitromanga',
     'oxapk': 'manjanoon',
@@ -34,9 +36,13 @@ const legacyWebsiteIdentifierMap = {
     'prismascans': 'demonsect',
     'realmscans': 'rizzcomics',
     'reaperscansid': 'shinigamiid',
+    'scansmangasxyz': 'scansmangasme',
     'secretscans': 'lynxscans',
-    'sushiscanfr': 'animesama',
     'shonenmagazine-pocket': 'shonenmagazine',
+    'smangavfws': 'smangavf',
+    'sushiscanfr': 'animesama',
+    'vermanhwas': 'vermanhwa',
+    'webtoontrcom': 'webtoontrnet',
     'yugenmangas': 'yugenmangas-es'
 };
 
@@ -51,7 +57,7 @@ type BookmarkLegacy = {
     };
 };
 
-class BookmarkFormatError extends Exception {}
+class BookmarkFormatError extends Exception { }
 
 function GetKeys(data: unknown, prefix = ''): string {
     return Object.keys(data ?? {}).map(key => {
@@ -70,7 +76,7 @@ function IsLegacyBookmarkFormat(data: unknown): data is BookmarkLegacy {
 }
 
 export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
-    if(IsSerializedBookmarkFormat(data)) {
+    if (IsSerializedBookmarkFormat(data)) {
         return data;
     }
 
@@ -88,7 +94,7 @@ export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
         }
     };
 
-    if(IsLegacyBookmarkFormat(data)) {
+    if (IsLegacyBookmarkFormat(data)) {
         bookmark.Media.ProviderID = legacyWebsiteIdentifierMap[data.key.connector] ?? data.key.connector;
         bookmark.Media.EntryID = data.key.manga;
         bookmark.Title = data.title.manga;

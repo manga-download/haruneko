@@ -13,7 +13,7 @@ import * as MangaReader from './decorators/MangaReaderCMS';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('scanvf', `Scan VF`, 'https://www.scan-vf.net', Tags.Language.French, Tags.Media.Manga);
+        super('scanvf', `Scan VF`, 'https://www.scan-vf.net', Tags.Language.French, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
