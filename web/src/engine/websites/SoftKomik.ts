@@ -38,11 +38,12 @@ type APIMangas = {
     }
 }
 
-@Common.ImageAjax(true)
+//@Common.ImageAjax(true)
+
 export default class extends DecoratableMangaScraper {
 
     private nextBuild = '';
-    private readonly CDN = 'https://soft1.softdevices.my.id'; // other CDN is 'https://soft2.b-cdn.net' make an option?
+    private readonly CDN = ['https://soft1.softdevices.my.id', 'https://soft2.b-cdn.net'];
     public constructor() {
         super('softkomik', `Softkomik`, 'https://softkomik.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
@@ -95,6 +96,16 @@ export default class extends DecoratableMangaScraper {
         const url = new URL(`/_next/data/${this.nextBuild}/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}.json`, this.URI).href;
         const request = new FetchRequest(url);
         const { pageProps: { data: { imgSrc } } } = await FetchJSON<APIPages>(request);
-        return imgSrc.map(page => new Page(this, chapter, new URL(page, this.CDN)));
+        return imgSrc.map(page => new Page(this, chapter, new URL(page, this.CDN[0]), { alternativeUrl: new URL(page, this.CDN[1]).href}));
     }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        let blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        if (!blob.type.startsWith('image')) {
+            const fakepage = new Page(this, page.Parent as Chapter, new URL(page.Parameters.alternativeUrl as string));
+            blob = await Common.FetchImageAjax.call(this, fakepage, priority, signal, true);
+        }
+        return blob;
+    }
+
 }
