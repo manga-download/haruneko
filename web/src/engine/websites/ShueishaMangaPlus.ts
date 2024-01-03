@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ShueishaMangaPlus.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { protoTypes } from './ShueishaMangaPlus_proto';
+import protoTypes from './ShueishaMangaPlus.proto?raw';
 import { FetchProto, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const titleId = new URL(url).pathname.match(/\/titles\/(\d+)/)[1];
+        const titleId = url.match(/\/titles\/(\d+)/)[1];
         const uri = new URL('/api/title_detailV3', this.apiURL);
         uri.searchParams.set('title_id', titleId);
         const data = await FetchProto<MangaPlusResponse>(new FetchRequest(uri.href), protoTypes, 'MangaPlus.Response');
@@ -115,7 +115,7 @@ export default class extends DecoratableMangaScraper {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
         const key: string = page.Parameters['encryptionKey'] as string;
         if (!key) return data;
-        const encrypted = await new Response(data).arrayBuffer();
+        const encrypted = await data.arrayBuffer();
         const decrypted = XORDecrypt(new Uint8Array(encrypted), key);
         return new Blob([decrypted], { type: data.type });
     }
