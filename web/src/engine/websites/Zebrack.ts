@@ -2,7 +2,7 @@
 import icon from './Zebrack.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { protoTypes } from './Zebrack_proto';
+import protoTypes from './Zebrack.proto?raw';
 import { FetchProto, FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';

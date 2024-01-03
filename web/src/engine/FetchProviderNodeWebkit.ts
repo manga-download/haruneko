@@ -203,12 +203,17 @@ export async function FetchRegex(request: FetchRequest, regex: RegExp): Promise<
     return result;
 }
 
-export async function FetchProto<TResult>(request: FetchRequest, prototypes: string, responsetype: string) : Promise<TResult>{
-    const Root = protobuf.parse(prototypes, { keepCase: true }).root.lookupType(responsetype);
+/**
+ * Fetch and decode a protocol buffer message.
+ * @param schema - The schema of the protocol buffer including all supported message definitions
+ * @param messageTypePath - The name of the package and schema type separated by a `.` which should be used to decode the response
+ * @returns The decoded response data
+ */
+export async function FetchProto<TResult>(request: FetchRequest, schema: string, messageTypePath: string) : Promise<TResult>{
     const response = await fetch(request);
-    const data = await response.arrayBuffer();
-    const message = Root.decode(new Uint8Array(data));
-    return Root.toObject(message) as TResult;
+    const serialized = new Uint8Array(await response.arrayBuffer());
+    const prototype = protobuf.parse(schema, { keepCase: true }).root.lookupType(messageTypePath);
+    return prototype.decode(serialized).toJSON() as TResult;
 }
 
 /*
