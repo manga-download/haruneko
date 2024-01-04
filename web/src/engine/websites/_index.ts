@@ -479,6 +479,7 @@ export { default as RightDarkScan } from './RightDarkScan';
 export { default as Rio2Manga } from './Rio2Manga';
 export { default as RizzComics } from './RizzComics';
 export { default as RomantikManga } from './RomantikManga';
+export { default as RuyaManga } from './RuyaManga';
 export { default as S2Manga } from './S2Manga';
 export { default as Sadscans } from './Sadscans';
 export { default as SamuraiScan } from './SamuraiScan';
