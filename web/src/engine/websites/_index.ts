@@ -485,6 +485,7 @@ export { default as Sadscans } from './Sadscans';
 export { default as SamuraiScan } from './SamuraiScan';
 export { default as ScamberTraslator } from './ScamberTraslator';
 export { default as ScanFR } from './ScanFR';
+export { default as ScanHentaiMenu } from './ScanHentaiMenu';
 export { default as ScansMangasme } from './ScansMangasme';
 export { default as ScantradUnion } from './ScantradUnion';
 export { default as ScanVF } from './ScanVF';
