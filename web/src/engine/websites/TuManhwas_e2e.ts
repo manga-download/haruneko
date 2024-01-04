@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'tumanhwas',
         title: 'TuManhwas'
-    }/*,
+    },
     container: {
-        url: 'https://tumanhwas.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://tumanhwas.com/manga/la-magia-de-un-retornado-debe-ser-especial',
+        id: '/manga/la-magia-de-un-retornado-debe-ser-especial',
+        title: 'La magia de un retornado debe ser especial'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/news/la-magia-de-un-retornado-debe-ser-especial-243.00',
+        title: 'Capítulo 243.00'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 489_311,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
