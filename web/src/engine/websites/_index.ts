@@ -278,6 +278,7 @@ export { default as MangaGG } from './MangaGG';
 export { default as MangaHasu } from './MangaHasu';
 export { default as MangaHentai } from './MangaHentai';
 export { default as MangaHere } from './MangaHere';
+export { default as MangaHubFR } from './MangaHubFR';
 export { default as MangaHubRU } from './MangaHubRU';
 export { default as MangaID } from './MangaID';
 export { default as MangaInn } from './MangaInn';
