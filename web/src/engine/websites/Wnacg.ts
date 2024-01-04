@@ -12,7 +12,7 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('wnacg', `Wnacg`, 'https://www.wnacg.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Rating.Erotica);
+        super('wnacg', `Wnacg`, 'https://www.wnacg.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

@@ -171,7 +171,7 @@ export function script(this: Window) {
                     result = result ?? locate(object[key], id);
                 }
                 return result;
-            })(globalThis.webpackChunk_N_E, 71987)(temp);
+            })(globalThis.webpackChunk_N_E, 28544)(temp);
             globalThis.shuffleSeed = temp.exports;
         })();
 

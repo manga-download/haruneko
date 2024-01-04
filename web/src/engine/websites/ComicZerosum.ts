@@ -3,7 +3,7 @@ import icon from './ComicZerosum.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchProto, FetchRequest } from './../FetchProvider';
-import { protoTypes } from './ComicZerosum_proto';
+import protoTypes from './ComicZerosum.proto?raw';
 
 type APISingleTitle = {
     title: APITitle
