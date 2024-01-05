@@ -22,7 +22,6 @@ type JSONPages = {
 }
 
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     private generateKey(): string {

@@ -16,7 +16,6 @@ type APIChapter = {
 }
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

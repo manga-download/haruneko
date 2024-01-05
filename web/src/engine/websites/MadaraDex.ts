@@ -8,7 +8,6 @@ import type { Priority } from '../taskpool/TaskPool';
 @Madara.MangaCSS(/^{origin}\/title\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Read "])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

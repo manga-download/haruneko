@@ -12,7 +12,6 @@ function ImageExtractor(img: HTMLImageElement) {
 @Common.ChaptersSinglePageCSS('div.chap-item-info h5.name a')
 @Common.PagesSinglePageCSS('div.list-images img', ImageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

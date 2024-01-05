@@ -14,7 +14,6 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/category/all?page={page}', 'div.media-content div.content > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('#chapterList td:nth-child(1) a')
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

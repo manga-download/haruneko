@@ -24,7 +24,6 @@ function MangaInfoExtractor(element: HTMLElement) {
 @Common.MangasSinglePageCSS('/lineup/', 'article.m-lineup-piece', MangaInfoExtractor)
 @Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

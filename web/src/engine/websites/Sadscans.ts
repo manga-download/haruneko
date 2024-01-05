@@ -14,7 +14,6 @@ function MangaInfoExtractor(element: HTMLDivElement) {
 @Common.ChaptersSinglePageCSS('div.chap-link div.link a', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div.swiper-slide img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
