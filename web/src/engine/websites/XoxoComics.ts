@@ -15,7 +15,6 @@ function ImageExtractor(img: HTMLImageElement) {
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
 @Common.PagesSinglePageCSS('div.page-chapter img', ImageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

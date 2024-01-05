@@ -14,7 +14,6 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/manga?page={page}', 'div.row article.flex-item div.post-description a.card-about', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageCSS('img.page-image')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

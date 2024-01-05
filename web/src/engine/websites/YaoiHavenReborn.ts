@@ -18,7 +18,6 @@ const mangasPerPageScript = `
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('v-card-text v-img.mx-auto.my-1')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
