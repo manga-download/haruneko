@@ -8,7 +8,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id: anchor.pathname, title: anchor.title };
 }
 
-@MangaStream.MangaCSS(/^https?:\/\/tempestfansub\.com\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @Common.MangasMultiPageCSS('/manga/?page={page}', 'div.bs div.bsx > a', 1, 1, 0, MangaExtractor )
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
@@ -16,7 +16,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tempestfansub', 'Tempestfansub', 'https://tempestfansub.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
+        super('tempestfansub', 'Tempestfansub', 'https://tempestfansub.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

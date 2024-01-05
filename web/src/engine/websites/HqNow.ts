@@ -32,7 +32,6 @@ type APIPages = {
 };
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://admin.hq-now.com';

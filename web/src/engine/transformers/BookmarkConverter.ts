@@ -5,6 +5,7 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
     'azoramanga': 'azoraworld',
+    'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
     'comicbushi': 'comicgrowl',
@@ -42,6 +43,8 @@ const legacyWebsiteIdentifierMap = {
     'sushiscanfr': 'animesama',
     'truyentranhaudioonline': 'protruyen',
     'truyentranhaudio': 'protruyen',
+    'vermanhwas': 'vermanhwa',
+    'webtoontrcom': 'webtoontrnet',
     'yugenmangas': 'yugenmangas-es'
 };
 

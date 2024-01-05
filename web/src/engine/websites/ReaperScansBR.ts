@@ -32,7 +32,6 @@ type APIPages = {
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', MangaLabelExtractor)
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.reaperscans.net';

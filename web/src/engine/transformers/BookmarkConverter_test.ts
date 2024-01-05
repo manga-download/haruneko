@@ -59,6 +59,7 @@ describe('BookmarkConverter', () => {
 
         it.each<{ sourceID: string, targetID: string }>([
             { sourceID: '9anime', targetID: 'aniwave' },
+            { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
             { sourceID: 'azoramanga', targetID: 'azoraworld' },
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
@@ -97,6 +98,8 @@ describe('BookmarkConverter', () => {
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
             { sourceID: 'truyentranhaudioonline', targetID: 'protruyen' },
             { sourceID: 'truyentranhaudio', targetID: 'protruyen' },
+            { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
+            { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
             { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },
 
             // TODO: Add all test cases from BookmarkConverter::legacyWebsiteIdentifierMap ...

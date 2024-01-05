@@ -46,7 +46,6 @@ type NEXTDATA = {
 }
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     private nextBuild = '';
 

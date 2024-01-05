@@ -8,7 +8,6 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 @Common.MangasSinglePageCSS('/manga/', 'div#myTabContent h4 > a')
 @Common.ChaptersSinglePageCSS('div.col-md-8.text-center > div a')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

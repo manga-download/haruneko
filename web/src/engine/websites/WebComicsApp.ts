@@ -14,9 +14,6 @@ type APIChapters = {
             index: number,
             chapter_id: string,
             name: string,
-            /*is_pay: boolean,   //TODO : filter for paid chapters?
-            is_paid: boolean,
-            is_limit: boolean,*/
         }[]
     }
 };
@@ -36,12 +33,9 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const title = anchor.querySelector<HTMLHeadingElement>('div.item-info h2.info-title').textContent.trim();
     return { id, title };
 }
-//no endpoint found for manga listing. That said, there is the javascript __NUXT__ variable. But it needs more coding and
-//default MangasMultiPageCSS works fine.
 
 @Common.MangasMultiPageCSS('/genres/All/All/Popular/{page}', 'div.list-item a', 1, 1, 0, MangaInfoExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
