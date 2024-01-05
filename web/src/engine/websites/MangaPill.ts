@@ -18,7 +18,6 @@ pathMangas += search.toString();
 @Common.ChaptersSinglePageCSS('div#chapters div a')
 @Common.PagesSinglePageCSS('img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -18,11 +18,10 @@ const mangasPerPageScript = `
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('v-card-text v-img.mx-auto.my-1')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yaoihavenreborn', `Yaoi Haven Reborn`, 'https://www.yaoihavenreborn.com/', Tags.Language.Multilingual, Tags.Media.Comic, Tags.Rating.Pornographic);
+        super('yaoihavenreborn', `Yaoi Haven Reborn`, 'https://www.yaoihavenreborn.com/', Tags.Language.Multilingual, Tags.Media.Comic, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -7,8 +7,8 @@ import * as SinMH from './decorators/SinMH';
 const queryPagesScript = `
             new Promise(resolve => {
                 SMH.imgData = function(data) {
-                    let origin = 'https://' + servs[pVars.curServ].hosts[pVars.curHost].h + '.hamreus.com';
-                    let pageLinks = data.files.map(file => origin + data.path + file + '?cid=' + data.cid + '&md5=' + data.sl.md5);
+                    let origin = pVars.manga.filePath;
+                    let pageLinks = data.files.map(file => origin + file + '?e=' + data.sl.e + '&m=' + data.sl.m);
                     return {
                         preInit: () => resolve(pageLinks)
                     };
@@ -21,9 +21,8 @@ const queryPagesScript = `
 @Common.MangaCSS(/^https?:\/\/(?:www\.)?(mhgui|manhuagui).com\/comic\/\d+\/$/, SinMH.queryManga)
 @Common.MangasNotSupported()
 @SinMH.ChaptersSinglePageJS(SinMH.queryChaptersScript, 'div.chapter-list ul li a')
-@Common.PagesSinglePageJS(queryPagesScript)
+@Common.PagesSinglePageJS(queryPagesScript, 1500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

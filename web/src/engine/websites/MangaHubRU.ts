@@ -11,7 +11,6 @@ type APIPages = {
 @Common.MangaCSS(/^{origin}\/title\//, '#title-detail div.col div.card-padding-x h1')
 @Common.MangasMultiPageCSS('/explore?page={page}', 'div.container div.card a.comic-grid-name')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

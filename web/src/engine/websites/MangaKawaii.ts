@@ -15,7 +15,6 @@ const pagesScript = `
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.manga-view__header h1[itemprop="name headline"]')
 @Common.PagesSinglePageJS(pagesScript, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

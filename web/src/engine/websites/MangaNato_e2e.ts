@@ -11,7 +11,7 @@ const fixtureSameSite = new TestFixture({
         title: 'Sweet Taboo'
     },
     child: {
-        id: 'https://chapmanganato.com/manga-nh990564/chapter-1',
+        id: 'https://chapmanganato.to/manga-nh990564/chapter-1',
         title: 'Chapter 1: Father-Daughter Standoff'
     },
     entry: {
@@ -28,12 +28,12 @@ const fixtureCrossSite = new TestFixture({
         title: 'Manganato'
     },
     container: {
-        url: 'https://chapmanganato.com/manga-mx989932',
-        id: 'https://chapmanganato.com/manga-mx989932',
+        url: 'https://chapmanganato.to/manga-mx989932',
+        id: 'https://chapmanganato.to/manga-mx989932',
         title: 'Keep A Low Profile, Sect Leader'
     },
     child: {
-        id: 'https://chapmanganato.com/manga-mx989932/chapter-1',
+        id: 'https://chapmanganato.to/manga-mx989932/chapter-1',
         title: 'Chapter 1'
     },
     entry: {

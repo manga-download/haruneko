@@ -20,16 +20,10 @@ export type IValue = string | boolean | number | FileSystemDirectoryHandle;
 
 class Setting<T extends IValue> {
 
-    public value: T;
+    private value: T;
     private readonly initial: T;
-    private readonly id: string;
-    private readonly label: keyof IResource;
-    private readonly description: keyof IResource;
 
-    constructor(id: string, label: keyof IResource, description: keyof IResource, initial: T) {
-        this.id = id;
-        this.label = label;
-        this.description = description;
+    constructor(private readonly id: string, private readonly label: keyof IResource, private readonly description: keyof IResource, initial: T) {
         this.value = initial;
         this.initial = initial;
     }
@@ -65,9 +59,17 @@ class Setting<T extends IValue> {
     public get Default(): T {
         return this.initial;
     }
+
+    public fromRaw(value: T) {
+        this.value = value;
+    }
+
+    public toRaw(): T {
+        return this.value;
+    }
 }
 
-export type { Setting };
+export type ISetting<T extends IValue = IValue> = Setting<T>;
 
 export class Text extends Setting<string> {
 
@@ -157,8 +159,6 @@ export class Directory extends Setting<FileSystemDirectoryHandle> {
     }
 }
 
-export type ISetting = Setting<IValue>;
-
 class Settings implements Iterable<ISetting> {
 
     private readonly settings: Record<string, ISetting> = {};
@@ -175,7 +175,7 @@ class Settings implements Iterable<ISetting> {
         this.ValueChanged.Dispatch(sender, args);
         const data: Record<string, IValue> = {};
         for(const key in this.settings) {
-            data[key] = this.settings[key].value;
+            data[key] = this.settings[key].toRaw();
         }
         await this.storage.SavePersistent(data, Store.Settings, this.scope);
     }
@@ -188,7 +188,7 @@ class Settings implements Iterable<ISetting> {
         const data = await this.storage.LoadPersistent<Record<string, IValue>>(Store.Settings, this.scope);
         for(const setting of settings) {
             if(!this.settings[setting.ID]) {
-                setting.value = data && data[setting.ID] ? data[setting.ID] : setting.Value;
+                setting.fromRaw(data && data[setting.ID] ? data[setting.ID] : setting.Value);
                 setting.ValueChanged.Subscribe(this.OnValueChangedCallback.bind(this));
                 this.settings[setting.ID] = setting;
             }

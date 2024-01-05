@@ -1,7 +1,7 @@
 import { mock, mockClear, mockFn } from 'jest-mock-extended';
 import type { HakuNeko } from './HakuNeko';
 import { LocaleID, type EngineResourceKey } from '../i18n/ILocale';
-import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type Setting, type IValue, type ISettings } from './SettingsManager';
+import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type ISetting, type IValue, type ISettings } from './SettingsManager';
 import { type StorageController, Store } from './StorageController';
 import type { Event } from './Event';
 import { Key } from './SettingsGlobal';
@@ -142,7 +142,7 @@ describe('Settings', () => {
 
             const stored = {};
             for(const setting of settings) {
-                stored[setting.ID] = setting.value;
+                stored[setting.ID] = setting.toRaw();
             }
             storage.LoadPersistent.mockReturnValue(Promise.resolve(stored));
 
@@ -167,14 +167,14 @@ describe('Settings', () => {
             const storage = mock<StorageController>();
             const testee = new SettingsManager(storage).OpenScope('test-scope');
 
-            const callback = mockFn<(sender: Setting<IValue>, args: IValue) => void>();
+            const callback = mockFn<(sender: ISetting<IValue>, args: IValue) => void>();
             const settings = CreateSettings();
             await testee.Initialize(...settings);
             testee.ValueChanged.Subscribe(callback);
             testee.ValueChanged.Subscribe(callback);
 
             for(const setting of settings) {
-                (setting.ValueChanged as Event<Setting<IValue>, IValue>).Dispatch(setting, setting.Value);
+                (setting.ValueChanged as Event<ISetting<IValue>, IValue>).Dispatch(setting, setting.Value);
                 expect(callback).toBeCalledTimes(1);
                 expect(callback).toBeCalledWith(setting, setting.Value);
                 mockClear(callback);
@@ -185,14 +185,14 @@ describe('Settings', () => {
             const storage = mock<StorageController>();
             const testee = new SettingsManager(storage).OpenScope('test-scope');
 
-            const callback = mockFn<(sender: Setting<IValue>, args: IValue) => void>();
+            const callback = mockFn<(sender: ISetting<IValue>, args: IValue) => void>();
             const settings = CreateSettings();
             await testee.Initialize(...settings);
             testee.ValueChanged.Subscribe(callback);
             testee.ValueChanged.Unsubscribe(callback);
 
             for(const setting of settings) {
-                (setting.ValueChanged as Event<Setting<IValue>, IValue>).Dispatch(setting, setting.Value);
+                (setting.ValueChanged as Event<ISetting<IValue>, IValue>).Dispatch(setting, setting.Value);
                 expect(callback).toBeCalledTimes(0);
                 mockClear(callback);
             }
