@@ -11,7 +11,6 @@ function IsImage(page: string) {
 @Common.MangaCSS(/^{origin}\/content\/[^/]+$/, 'div.main-content-inner h1.page-header')
 @Common.MangasMultiPageCSS('/directory?page={page}', 'table.directory_list tr td:first-of-type a')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
