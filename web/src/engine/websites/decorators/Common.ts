@@ -323,7 +323,9 @@ export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga
         }
     });
     const data = await FetchWindowScript<{ id: string, title: string }[]>(request, script, delay);
-    return data.map(entry => {
+    // NOTE: The Array prototype of `data` comes from a different window context and therefore is missing prototype extensions made for Array in this window context
+    //       => Spread `data` into a new Array
+    return [ ...data ].map(entry => {
         return new Chapter(this, manga, entry.id, entry.title.replace(manga.Title, '').trim() || manga.Title);
     }).distinct();
 }

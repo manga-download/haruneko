@@ -1,4 +1,3 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './MiniTwoScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -13,24 +12,10 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('minitwoscan', 'MiniTwo Scan', 'https://minitwoscan.com'/*, Tags.Media., Tags.Language.*/, Tags.Accessibility.RegionLocked);
+        super('minitwoscan', 'MiniTwo Scan', 'https://minitwoscan.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MiniTwoScan extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'minitwoscan';
-        super.label = 'MiniTwo Scan';
-        this.tags = [ 'manga', 'webtoon', 'portuguese', 'scanlation' ];
-        this.url = 'https://minitwoscan.com';
-    }
-}
-*/

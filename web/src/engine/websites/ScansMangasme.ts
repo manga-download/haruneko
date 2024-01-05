@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/scansmangas\.me\/manga\/[^/]+\/$/, 'div.bigcontent div.infox h1')
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.bigcontent div.infox h1')
 @MangaStream.MangasSinglePageCSS('div.jdlbar ul li a.series', '/tous-nos-mangas/?list')
 @MangaStream.ChaptersSinglePageCSS('span.lchx.desktop > a')
 @Common.PagesSinglePageJS('pages.map(page => page.page_image);', 1500)
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('scansmangasme', 'ScansMangas (ME)', 'https://scansmangas.me', Tags.Media.Manga, Tags.Language.French);
+        super('scansmangasme', 'ScansMangas (ME)', 'https://scansmangas.me', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

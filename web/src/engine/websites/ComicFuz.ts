@@ -2,7 +2,7 @@
 import icon from './ComicFuz.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { protoTypes } from './ComicFuz_proto';
+import protoTypes from './ComicFuz.proto?raw';
 import { FetchProto, FetchRequest } from '../FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';

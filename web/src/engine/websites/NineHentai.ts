@@ -26,7 +26,6 @@ type APIChapter = {
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

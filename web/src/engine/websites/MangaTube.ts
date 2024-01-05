@@ -24,7 +24,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div.vol-container ul.chapter-list li a[title]', ChapterExtractor)
 @Common.PagesSinglePageJS('manga_reader.pages.map(page => manga_reader.img_path + page.file_name);', 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

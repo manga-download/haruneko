@@ -9,7 +9,6 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
