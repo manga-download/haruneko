@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
 
         //this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
         //this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
-        //this.URI.href = this.Settings.url.value as string;
+        //this.URI.href = this.Settings.url.Value as string;
 
         this.Settings.format = new Choice('image.format',
             W.Plugin_Settings_ImageFormat,
