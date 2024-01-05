@@ -10,7 +10,6 @@ type APIChapter = { name: string, volume: number, number: number, id: string, ma
 const apiUrl = 'https://api.manga.d34d.one';
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

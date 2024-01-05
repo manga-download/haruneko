@@ -4,6 +4,7 @@ import { FetchRedirection } from './AntiScrapingDetection';
 import { CheckAntiScrapingDetection, PreventDialogs } from './AntiScrapingDetectionNodeWebkit';
 import * as protobuf from 'protobufjs';
 import { Exception, InternalError } from './Error';
+import type { JSONObject } from '../../../node_modules/websocket-rpc/dist/types';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -157,11 +158,17 @@ export async function FetchCSS<T extends HTMLElement>(request: FetchRequest, que
     const dom = await FetchHTML(request);
     return [...dom.querySelectorAll(query)] as T[];
 }
-
-export async function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: string): Promise<TResult> {
+/**
+ * Perform a GraphQL request (POST) to a desired endpoint and returns JSON data.
+ * @param request - A base FetchRequest
+ * @param operationName - the name of the query to be performed
+ * @param query - A valid GraphQL query
+ * @param variables - A JSONObject containing the variables of the query.
+ */
+export async function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: JSONObject): Promise<TResult> {
 
     const graphQLRequest = new FetchRequest(request.url, {
-        body: JSON.stringify({ operationName, query, variables }),
+        body: JSON.stringify({ operationName: operationName, query: query, variables: variables }),
         method: 'POST',
         headers: { 'content-type': 'application/json', 'accept': '*/*' }
     });
@@ -196,12 +203,17 @@ export async function FetchRegex(request: FetchRequest, regex: RegExp): Promise<
     return result;
 }
 
-export async function FetchProto<TResult>(request: FetchRequest, prototypes: string, responsetype: string) : Promise<TResult>{
-    const Root = protobuf.parse(prototypes, { keepCase: true }).root.lookupType(responsetype);
+/**
+ * Fetch and decode a protocol buffer message.
+ * @param schema - The schema of the protocol buffer including all supported message definitions
+ * @param messageTypePath - The name of the package and schema type separated by a `.` which should be used to decode the response
+ * @returns The decoded response data
+ */
+export async function FetchProto<TResult>(request: FetchRequest, schema: string, messageTypePath: string) : Promise<TResult>{
     const response = await fetch(request);
-    const data = await response.arrayBuffer();
-    const message = Root.decode(new Uint8Array(data));
-    return Root.toObject(message) as TResult;
+    const serialized = new Uint8Array(await response.arrayBuffer());
+    const prototype = protobuf.parse(schema, { keepCase: true }).root.lookupType(messageTypePath);
+    return prototype.decode(serialized).toJSON() as TResult;
 }
 
 /*

@@ -11,7 +11,7 @@ const config = {
         title: 'Love is an Illusion'
     },
     child: {
-        id: '/bl/love-is-an-illusion/primeira-temporada/capitulo-1/',
+        id: '/bl/love-is-an-illusion/capitulo-1/',
         title: 'Capítulo 1'
     },
     entry: {

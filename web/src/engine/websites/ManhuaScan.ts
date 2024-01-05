@@ -9,7 +9,6 @@ import { FetchCSS, FetchRequest } from '../FetchProvider';
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
 @MadTheme.PagesSinglePageJS()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

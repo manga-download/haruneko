@@ -14,9 +14,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('table#chapters tbody tr td:first-of-type a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div#images img')
 @Common.ImageAjax()
-
-//TODO : CODE LOGIN : 'https://trwebtoon.com/panel/giris'
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

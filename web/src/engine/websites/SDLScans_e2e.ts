@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'sdlscans',
         title: 'SDL Scans'
-    }/*,
+    },
     container: {
-        url: 'https://sdlscans.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://sdlscans.com/manga/permitele-aterrizar/',
+        id: JSON.stringify({ post: '1089', slug: '/manga/permitele-aterrizar/'}),
+        title: 'Permitele Aterrizar'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/permitele-aterrizar/capitulo-1/',
+        title: 'Capitulo 1'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 1_982_850,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

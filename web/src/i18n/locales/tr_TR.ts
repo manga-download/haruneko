@@ -241,8 +241,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingInteractionInfo: "Engellenmeyi veya yasaklanmayı önlemek için web sitesine yapılan istek sayısını sınırlayın",
   Plugin_Settings_UrlOverride: "URL Geçersiz Kılma",
   Plugin_Settings_UrlOverrideInfo: "Bu URL'yi bu web sitesi için geçerli alan adı olarak kullanın",
-  Plugin_Settings_ImageFormat: 'Preferred Image Format',
-  Plugin_Settings_ImageFormatInfo: 'Download pictures using this file format if possible',
+  Plugin_Settings_ImageFormat: "Tercih Edilen Resim Formatı",
+  Plugin_Settings_ImageFormatInfo: "Mümkünse bu dosya biçimini kullanarak resimleri indirin",
   Plugin_Common_MangaIndex_NotSupported: "Bu web sitesi için içerik dizini oluşturulamıyor. Belirli bir URL'nin içeriğine doğrudan erişmek için Kopyala ve Yapıştır özelliğini kullanın!",
   Plugin_Common_Chapter_UnavailableError: "Bölüm mevcut değil (satın alınmadı/kilidi açılmadı/halka açık değil)!",
   Plugin_Common_Chapter_InvalidError: "Sayfalar bölüm içeriğinden ayıklanamadı!",
@@ -252,7 +252,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_UsernameInfo: "Sheep-Scanlations'a otomatik hesap girişi için kullanıcı adı 😉",
   Plugin_SheepScanlations_Settings_Password: "Şifre",
   Plugin_SheepScanlations_Settings_PasswordInfo: "Sheep-Scanlations'a otomatik hesap girişi için şifre 😉",
-  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
-  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN'
+  Plugin_CopyManga_Settings_GlobalCDN: "Global CDN Kullan",
+  Plugin_CopyManga_Settings_GlobalCDNInfo: "Global CDN'den talepte bulunma"
 };
 export default translations;

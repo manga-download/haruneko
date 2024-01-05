@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as FoolSlide from './decorators/FoolSlide';
 import * as Common from './decorators/Common';
 
-@FoolSlide.MangaCSS(/^https?:\/\/lector\.pzykosis666hfansub\.com\/series\/[^/]+\/?$/, 'div.comic .title' )
+@FoolSlide.MangaCSS(/^{origin}\/series\/[^/]+\/?$/, 'div.comic .title' )
 @FoolSlide.MangasMultiPageCSS()
 @FoolSlide.ChaptersSinglePageCSS()
 @FoolSlide.PagesSinglePageREGEX()

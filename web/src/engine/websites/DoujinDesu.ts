@@ -8,7 +8,6 @@ import { FetchCSS, FetchRequest} from '../FetchProvider';
 @Common.MangasMultiPageCSS('/manga/page/{page}/', 'article entry a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

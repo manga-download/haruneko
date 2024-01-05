@@ -25,7 +25,6 @@ type APIPages = {
 
 @Common.MangaCSS(/^{origin}\/[^/]+/, 'h2.tag-title b')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
