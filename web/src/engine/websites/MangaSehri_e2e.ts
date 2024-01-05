@@ -6,7 +6,7 @@ const config = {
         title: 'Manga Şehri'
     },
     container: {
-        url: 'https://mangasehri.com/manga/oshi-no-ko/',
+        url: 'https://manga-sehri.com/manga/oshi-no-ko/',
         id: JSON.stringify({ post: '21820', slug: '/manga/oshi-no-ko/' }),
         title: 'Oshi no Ko'
     },

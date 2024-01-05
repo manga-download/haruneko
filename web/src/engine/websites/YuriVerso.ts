@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yuriverso', 'Yuri Verso', 'https://yuri.live', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese);
+        super('yuriverso', 'Yuri Verso', 'https://yuri.live', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

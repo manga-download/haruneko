@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaNel from './decorators/MangaNel';
 import * as Common from './decorators/Common';
 
-@MangaNel.MangaCSS(/^https?:\/\/(m\.|chap\.)?(read|chap)?manganato\.com\/manga-/)
+@MangaNel.MangaCSS(/^https?:\/\/(m\.|chap\.)?(read|chap)?manganato\.(com|to)\/manga-/)
 @MangaNel.MangasMultiPageCSS()
 @MangaNel.ChaptersSinglePageCSS()
 @MangaNel.PagesSinglePageCSS()

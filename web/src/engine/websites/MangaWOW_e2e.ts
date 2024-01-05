@@ -6,9 +6,9 @@ const config = {
         title: 'MangaWOW'
     },
     container: {
-        url: 'https://mangawow.com/manga/path-of-the-shaman/',
+        url: 'https://mangawow.org/manga/path-of-the-shaman/',
         id: JSON.stringify({ post: '7521', slug: '/manga/path-of-the-shaman/' }),
-        title: 'Path of the Shaman'
+        title: 'Şamanın Yolu'
     },
     child: {
         id: '/manga/path-of-the-shaman/bolum-01/',

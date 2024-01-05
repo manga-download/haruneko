@@ -16,7 +16,6 @@ const pagesScript = `
 @Common.ChaptersSinglePageCSS('tr.item-row a.chapter-link')
 @Common.PagesSinglePageJS(pagesScript, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

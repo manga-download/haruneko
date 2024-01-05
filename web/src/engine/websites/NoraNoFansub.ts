@@ -9,7 +9,6 @@ import * as FoolSlide from './decorators/FoolSlide';
 @FoolSlide.ChaptersSinglePageCSS()
 @FoolSlide.PagesSinglePageREGEX()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -38,7 +38,6 @@ type PagesResult = {
 
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://apicdn.luscious.net/graphql/nobatch/';

@@ -28,7 +28,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/comic\/ep_list\//, 'div.bnr_episode_info p.tit_toon')
 @Common.ChaptersSinglePageCSS('div.episode_list ul a.episode-items', ChapterExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -20,11 +20,10 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div#manga-chapters-item-list a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('img.read-manga-image:not([style])')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangatepesi', `MangaTepesi`, 'http://mangatepesi.com', Tags.Language.Turkish, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Media.Manhwa);
+        super('mangatepesi', `MangaTepesi`, 'https://mangatepesi.com', Tags.Language.Turkish, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Media.Manhwa);
     }
 
     public override get Icon() {

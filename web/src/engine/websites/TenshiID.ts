@@ -9,7 +9,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@MangaStream.MangaCSS(/^https?:\/\/tenshi\.id\/komik\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/komik\/[^/]+\/$/)
 @Common.MangasMultiPageCSS('/komik/?page={page}', 'div.bs div.bsx a', 1, 1, 0, MangaExtractor)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
@@ -17,7 +17,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tenshiid', 'Tenshi.ID', 'https://tenshi.id', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
+        super('tenshiid', 'Tenshi.ID', 'https://tenshi.id', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

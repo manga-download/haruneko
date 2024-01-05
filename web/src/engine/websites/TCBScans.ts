@@ -14,7 +14,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div.col-span-2 > a.block.border.border-border', ChapterExtractor)
 @Common.PagesSinglePageCSS('picture > img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

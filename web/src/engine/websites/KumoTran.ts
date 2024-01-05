@@ -40,7 +40,6 @@ const pagejs = `
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title-custom h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
