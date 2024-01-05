@@ -46,7 +46,6 @@ function ElementLabelExtractor(element: HTMLElement) {
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     private readonly searchPath = '/_search.php';
     public constructor(public readonly Identifier: string = 'mangalife', public readonly Title: string = 'MangaLife', url: string = 'https://manga4life.com', tags: Tag[] = [Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator]) {

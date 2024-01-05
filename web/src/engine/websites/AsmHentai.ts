@@ -26,7 +26,6 @@ const script = `
 @Common.ChaptersUniqueFromManga()
 @MangaStream.PagesSinglePageJS([], script)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -36,7 +36,6 @@ type APiPages = {
 
 @Common.MangasNotSupported()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('kakaopage', `Page Kakao (카카오페이지)`, 'https://page.kakao.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Official);

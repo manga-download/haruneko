@@ -16,7 +16,6 @@ type APIPages = {
 
 @Common.MangasNotSupported()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

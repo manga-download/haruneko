@@ -21,7 +21,6 @@ function MangaExtractor(element: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('ul#listch li span.xkiri.pull-left a', ChapterExtractor)
 @Common.PagesSinglePageJS('link_canx')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

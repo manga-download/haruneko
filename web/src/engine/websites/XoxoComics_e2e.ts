@@ -6,17 +6,17 @@ const config = {
         title: 'XoxoComics'
     },
     container: {
-        url: 'https://xoxocomics.net/comic/marvel-knights-4',
-        id: '/comic/marvel-knights-4',
-        title: 'Marvel Knights 4'
+        url: 'https://xoxocomic.com/comic/largo-winch',
+        id: '/comic/largo-winch',
+        title: 'Largo Winch'
     },
     child: {
-        id: '/comic/marvel-knights-4/issue-30/68310/all',
-        title: 'Issue #30'
+        id: '/comic/largo-winch/issue-20/all',
+        title: 'Issue #20'
     },
     entry: {
         index: 0,
-        size: 556_085,
+        size: 189_375,
         type: 'image/jpeg'
     }
 };

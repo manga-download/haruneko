@@ -26,7 +26,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h1.desc__titulo__comic')
 @Common.MangasSinglePageCSS('/todas-as-obras/', 'div.comics__all__box a.titulo__comic__allcomics')
 @Common.ChaptersSinglePageCSS('ul.capitulos__lista a.link__capitulos', ChapterExtractor)
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

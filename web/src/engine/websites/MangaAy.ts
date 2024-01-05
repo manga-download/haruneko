@@ -18,7 +18,6 @@ function MangaInfoExtractor(element: HTMLElement) {
 @Common.ChaptersSinglePageCSS('div.table-responsive a[title]')
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

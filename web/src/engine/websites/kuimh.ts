@@ -9,7 +9,6 @@ import * as MH from './decorators/MH';
 @Common.ChaptersSinglePageCSS('div#chapterlistload ul#detail-list-select li:not([style]) a', MH.ChapterExtractor)
 @Common.PagesSinglePageCSS(MH.queryPages, MH.PageLinkExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
