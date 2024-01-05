@@ -25,7 +25,6 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/manhua/category/%E5%85%A8%E9%83%A8_-1_-1_9_{page}', 'ul.cartoon-hot-ul li.cartoon-hot-list a.cartoon-cover', 1, 1, 0, MangaExtractor)
 @Common.PagesSinglePageCSS('ul.main-container li.main-item img', MH.PageLinkExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

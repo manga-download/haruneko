@@ -13,7 +13,6 @@ function PageExtractor(image: HTMLImageElement) {
 @Madara.ChaptersSinglePageCSS()
 @Common.PagesSinglePageCSS('div.page-break img', PageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

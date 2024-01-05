@@ -9,7 +9,6 @@ import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 @Common.MangasMultiPageCSS('/list-manga/{page}', 'div.story_item div.mg_info div.mg_name > a' )
 @Common.ChaptersSinglePageCSS(MangaReader.queryChapters, MangaReader.ChapterInfoExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
