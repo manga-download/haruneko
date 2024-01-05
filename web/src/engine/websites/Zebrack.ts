@@ -97,7 +97,6 @@ type VolumePageV3 = {
 }
 
 @Common.MangasNotSupported()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://api.zebrack-comic.com';

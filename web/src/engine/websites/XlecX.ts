@@ -13,7 +13,6 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('article.page a img, div.tabs ul.xfieldimagegallery.manyfotos li img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

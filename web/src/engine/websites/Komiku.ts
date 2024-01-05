@@ -13,7 +13,6 @@ function MangaLabelExtractor(element: HTMLElement) {
 @Common.ChaptersSinglePageCSS('table#Daftar_Chapter td.judulseries a')
 @Common.PagesSinglePageCSS('section#Baca_Komik img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

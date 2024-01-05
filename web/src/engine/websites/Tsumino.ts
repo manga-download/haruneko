@@ -21,7 +21,6 @@ type APIMangaEntry = {
 @Common.MangaCSS(/^{origin}\/entry\/\d+$/, 'head meta[property="og:title"]')
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -20,7 +20,6 @@ const pagesScript = `
 @Common.ChaptersSinglePageCSS(MH.queryChapters, MH.ChapterExtractor)
 @Common.PagesSinglePageJS(pagesScript, 2500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

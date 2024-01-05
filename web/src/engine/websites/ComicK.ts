@@ -62,7 +62,6 @@ const langMap = {
 };
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.comick.cc';

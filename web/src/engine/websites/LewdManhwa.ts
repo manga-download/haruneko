@@ -20,7 +20,6 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div.chapter-list div.chapter-list-items a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('span.single-comic-page img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
