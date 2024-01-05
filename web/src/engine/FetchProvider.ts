@@ -2,6 +2,7 @@ import { type PlatformInfo, Runtime, DetectPlatform, CreateUnsupportedPlatformEr
 import * as FetchProviderNodeWebkit from './FetchProviderNodeWebkit';
 import * as FetchProviderBrowser from './FetchProviderBrowser';
 import { InternalError, NotImplementedError } from './Error';
+import type { JSONObject } from '../../../node_modules/websocket-rpc/dist/types';
 
 export type PreloadAction = (win: typeof window, frame: typeof window) => void;
 
@@ -55,8 +56,8 @@ export function FetchCSS<T extends HTMLElement>(request: FetchRequest, query: st
     return fetchCSS<T>(request, query);
 }
 
-let fetchGraphQL: <TResult>(request: FetchRequest, operationName: string, query: string, variables : string) => Promise<TResult> = fail;
-export function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables : string): Promise<TResult> {
+let fetchGraphQL: <TResult>(request: FetchRequest, operationName: string, query: string, variables: JSONObject) => Promise<TResult> = fail;
+export function FetchGraphQL<TResult>(request: FetchRequest, operationName: string, query: string, variables: JSONObject): Promise<TResult> {
     return fetchGraphQL(request, operationName, query, variables);
 }
 

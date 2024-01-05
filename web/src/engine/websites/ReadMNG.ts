@@ -18,7 +18,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('readmng', 'ReadMangaToday', 'https://www.readmng.com', Tags.Media.Manga, Tags.Language.English);
+        super('readmng', 'ReadMangaToday', 'https://www.readmng.com', Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

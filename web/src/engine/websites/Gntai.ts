@@ -8,7 +8,6 @@ import { FetchRegex, FetchRequest } from '../FetchProvider';
 @Common.MangasMultiPageCSS('/page/{page}/', 'main article div.chapter-thumb > a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

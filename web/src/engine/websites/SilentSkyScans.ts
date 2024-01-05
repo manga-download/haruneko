@@ -4,12 +4,11 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FoolSlide from './decorators/FoolSlide';
 
-@FoolSlide.MangaCSS(/^https?:\/\/reader\.silentsky-scans\.net\/series\//, 'div.large h1.title')
+@FoolSlide.MangaCSS(/^{origin}\/series\//, 'div.large h1.title')
 @FoolSlide.MangasMultiPageCSS()
 @FoolSlide.ChaptersSinglePageCSS()
 @FoolSlide.PagesSinglePageREGEX()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

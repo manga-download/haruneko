@@ -6,7 +6,7 @@ const config: Config = {
         title: 'MangaKita'
     },
     container: {
-        url: 'https://mangakita.net/manga/closer/',
+        url: 'https://mangakita.id/manga/closer/',
         id: '/manga/closer/',
         title: '[C]LOSER'
     },

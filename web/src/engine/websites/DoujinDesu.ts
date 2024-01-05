@@ -5,14 +5,13 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchRequest} from '../FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.ElementLabelExtractor('span.alter'))
-@Common.MangasMultiPageCSS('/komik-list/page/{page}/', '#main .relat div.animepost a', 1, 1, 0, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a')
+@Common.MangasMultiPageCSS('/manga/page/{page}/', 'article entry a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('doujindesu', 'DoujinDesu', 'https://212.32.226.234', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Rating.Erotica);
+        super('doujindesu', 'DoujinDesu', 'https://doujindesu.tv', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Rating.Erotica);
     }
 
     public override get Icon() {

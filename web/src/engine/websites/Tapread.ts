@@ -37,11 +37,10 @@ type APIPages = {
 };
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tapread', `Tapread`, 'https://www.tapread.com', Tags.Language.English, Tags.Source.Official, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa);
+        super('tapread', `Tapread`, 'https://www.tapread.com', Tags.Language.English, Tags.Source.Official, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

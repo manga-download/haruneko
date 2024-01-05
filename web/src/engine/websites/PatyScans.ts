@@ -9,11 +9,10 @@ import * as FoolSlide from './decorators/FoolSlide';
 @FoolSlide.ChaptersSinglePageCSS()
 @FoolSlide.PagesSinglePageREGEX(/"pages":(\[[\S\W]+\]),/)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('patyscans', `PatyScans`, 'http://lector.patyscans.com', Tags.Language.Spanish, Tags.Media.Manga, Tags.Source.Scanlator);
+        super('patyscans', `PatyScans`, 'https://lector.patyscans.com', Tags.Language.Spanish, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

@@ -6,12 +6,12 @@ const config = {
         title: 'Cerise Scans'
     },
     container: {
-        url: 'https://cerisescan.com/home1/manga/adele02/',
-        id: JSON.stringify({ post: '45', slug: '/home1/manga/adele02/' }),
-        title: 'Just Leave Me Be'
+        url: 'https://cerisescan.net/manga/45/',
+        id: JSON.stringify({ post: '45', slug: '/manga/45/' }),
+        title: 'Apenas Me Deixe em Paz'
     },
     child: {
-        id: '/home1/manga/adele02/cap-01/',
+        id: '/manga/45/cap-01/',
         title: 'Cap. 01',
     },
     entry: {

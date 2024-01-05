@@ -9,7 +9,6 @@ import * as Common from './decorators/Common';
 @MadTheme.ChaptersSinglePageAJAX()
 @MadTheme.PagesSinglePageJS()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

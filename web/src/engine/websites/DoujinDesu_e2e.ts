@@ -6,7 +6,7 @@ const config: Config = {
         title: 'DoujinDesu'
     },
     container: {
-        url: 'https://212.32.226.234/manga/hero-villain/',
+        url: 'https://doujindesu.tv/manga/hero-villain/',
         id: '/manga/hero-villain/',
         title: 'Hero Villain'
     },

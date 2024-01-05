@@ -4,21 +4,21 @@ const config: Config = {
     plugin: {
         id: 'mangaschan',
         title: 'Mangás Chan'
-    }/*,
+    },
     container: {
-        url: 'https://mangaschan.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://mangaschan.net/manga/the-beginning-after-the-end/',
+        id: '/manga/the-beginning-after-the-end/',
+        title: 'The Beginning After The End'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/the-beginning-after-the-end-capitulo-1/',
+        title: 'Capítulo 1'
     },
     entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
+        index: 1,
+        size: 154_364,
+        type: 'image/webp'
+    }
 };
 
 const fixture = new TestFixture(config);
