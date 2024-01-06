@@ -3,6 +3,7 @@ import icon from './SoftKomik.webp';
 import * as Common from './decorators/Common';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIMangaDetails = {
     pageProps: {
@@ -37,9 +38,6 @@ type APIMangas = {
         }
     }
 }
-
-//@Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     private nextBuild = '';
