@@ -40,11 +40,11 @@ type APIManga = {
     title: string
     series_type: 'Comic' | 'Novel',
     series_slug: string,
-    seasons? : APISeason[]
+    seasons?: APISeason[]
 }
 
-type APIResult<T> ={
-    data : T[]
+type APIResult<T> = {
+    data: T[]
 }
 
 type APISeason = {
@@ -63,6 +63,9 @@ type APIPages = {
     chapter_type: 'Comic' | 'Novel',
     paywall: boolean,
     data: string[] | string
+    chapter: {
+        storage: string
+    }
 }
 
 /***************************************************
@@ -139,7 +142,7 @@ async function getMangaFromPage(this: MangaScraper, provider: MangaPlugin, page:
  * @param apiUrl - The url of the HeanCMS api for the website
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  */
-export function MangasMultiPageAJAX(apiUrl : string, throttle = 0) {
+export function MangasMultiPageAJAX(apiUrl: string, throttle = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
@@ -197,21 +200,23 @@ export function ChaptersSinglePageAJAX(apiUrl: string) {
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param apiUrl - The url of the HeanCMS api for the website
  */
-export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, apiUrl: string ): Promise<Page[]> {
+export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, apiUrl: string): Promise<Page[]> {
     const request = new FetchRequest(new URL(`/chapter/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl).href);
-    const { chapter_type, data, paywall } = await FetchJSON<APIPages>(request);
+    const { chapter_type, data, paywall, chapter: { storage } } = await FetchJSON<APIPages>(request);
 
-    // check for paywall
-    if (data.length < 1 && paywall) {
+    if (paywall) {
         throw new Error(`${chapter.Title} is paywalled. Please login.`); //localize this
     }
+
+    //in case of novel data is the html string, in case of comic its an array of strings (pictures urls or pathnames)
+    if (!data || data.length < 1) return [];
 
     // check if novel
     if (chapter_type.toLowerCase() === 'novel') {
         return [new Page(this, chapter, new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI), { type: chapter_type })];
     }
 
-    return (data as string[]).map(image => new Page(this, chapter, new URL(image), { type: chapter_type }));
+    return (data as string[]).map(image => new Page(this, chapter, computePageUrl(image, storage, apiUrl), { type: chapter_type }));
 }
 
 /**
@@ -269,4 +274,16 @@ export function ImageAjax(detectMimeType = false, deProxifyLink = true, novelScr
             }
         };
     };
+}
+/**
+ * Compute the image full URL for HeanHMS based websites
+ * @param image - A string containing the full url ( for {@link storage} "s3") or the pathname ( for {@link storage} "local"))
+ * @param storage - As string representing the type of storage used : "s3" or "local"
+ * @param apiUrl - The url of the HeanCMS api for the website *
+ */
+function computePageUrl(image: string, storage: string, apiUrl: string): URL {
+    switch (storage) {
+        case "s3": return new URL(image);
+        case "local": return new URL(image, apiUrl);
+    }
 }
