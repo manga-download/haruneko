@@ -37,5 +37,6 @@
     .logo {
         margin-right: 1em;
         border-radius: 10%;
+        float: left;
     }
 </style>
