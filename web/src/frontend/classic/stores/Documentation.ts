@@ -32,6 +32,16 @@ function slideElement(content:HTMLElement, split:string[]) : HTMLElement {
     const url = 'https://hakuneko.download/docs/haruneko/';
     // TODO Documentation should be cached using a service worker
     const cacheKey = `cache:${url}`;
+    const cacheTimestamp = localStorage.getItem(`${cacheKey}:timestamp`);
+    if (cacheTimestamp) {
+        const timestamp = parseInt(cacheTimestamp);
+        const oneWeek = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
+        const currentTime = Date.now();
+        if (currentTime - timestamp > oneWeek) {
+            localStorage.removeItem(cacheKey);
+            localStorage.removeItem(`${cacheKey}:timestamp`);
+        }
+    }
     let content = localStorage.getItem(cacheKey);
     if (!content?.length) {
         const response = await fetch(url);
