@@ -14,7 +14,6 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('manhuaplus', 'ManhuaPlus', 'https://manhuaplus.org', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
-
     public override get Icon() {
         return icon;
     }
