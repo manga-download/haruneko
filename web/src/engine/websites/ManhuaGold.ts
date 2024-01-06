@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @Common.MangasMultiPageCSS(Liliana.mangaPath, Liliana.queryMangas, 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS(Liliana.queryChapters, Common.AnchorInfoExtractor(true) )
 @Common.PagesSinglePageJS(Liliana.queryPagesScript, 500)
-@Common.ImageAjax()
+@Common.ImageAjax(true, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
