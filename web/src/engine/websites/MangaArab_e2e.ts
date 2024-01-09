@@ -5,6 +5,7 @@ const config = {
         id: 'mangaarab',
         title: 'مانجا العرب (Manga Al-arab)'
     },
+    /* CloudFlare
     container: {
         url: 'https://manga.ae/1onepi-ece/',
         id: '/1onepi-ece/',
@@ -19,6 +20,7 @@ const config = {
         size: 793_237,
         type: 'image/jpeg'
     }
+    */
 };
 
 const fixture = new TestFixture(config);

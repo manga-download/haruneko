@@ -5,6 +5,7 @@ const config = {
         id: 'raijinscans',
         title: 'RaijinScans'
     },
+    /* CloudFlare
     container: {
         url: 'https://raijinscans.fr/manga/legendary-blacksmiths-vengeance/',
         id: JSON.stringify({post: '13579', slug: '/manga/legendary-blacksmiths-vengeance/' }),
@@ -19,6 +20,7 @@ const config = {
         size: 1_348_547,
         type: 'image/png'
     }
+    */
 };
 
 const fixture = new TestFixture(config);

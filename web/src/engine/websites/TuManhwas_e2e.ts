@@ -5,6 +5,7 @@ const config: Config = {
         id: 'tumanhwas',
         title: 'TuManhwas'
     },
+    /* CloudFlare
     container: {
         url: 'https://tumanhwas.com/manga/la-magia-de-un-retornado-debe-ser-especial',
         id: '/manga/la-magia-de-un-retornado-debe-ser-especial',
@@ -19,6 +20,7 @@ const config: Config = {
         size: 489_311,
         type: 'image/jpeg'
     }
+    */
 };
 
 const fixture = new TestFixture(config);

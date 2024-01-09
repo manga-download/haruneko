@@ -5,6 +5,7 @@ const config = {
         id: 'mangahubfr',
         title: 'MangaHubFR'
     },
+    /* CloudFlare
     container: {
         url: 'https://mangahub.fr/manga/black-winter/',
         id: JSON.stringify({ post: '19040', slug: '/manga/black-winter/' }),
@@ -19,6 +20,7 @@ const config = {
         size: 1_092_114,
         type: 'image/png'
     }
+    */
 };
 
 const fixture = new TestFixture(config);

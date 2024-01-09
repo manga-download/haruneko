@@ -5,6 +5,7 @@ const config: Config = {
         id: 'manhwasmen',
         title: 'Manhwas Men'
     },
+    /* CloudFlare
     container: {
         url: 'https://manhwas.men/manga/caffeine-raw',
         id: '/manga/caffeine-raw',
@@ -19,6 +20,7 @@ const config: Config = {
         size: 3_672_990,
         type: 'image/jpeg'
     }
+    */
 };
 
 const fixture = new TestFixture(config);

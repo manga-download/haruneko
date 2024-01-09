@@ -5,6 +5,7 @@ const config = {
         id: 'mangasorigines',
         title: 'Mangas Origines'
     },
+    /* CloudFlare
     container: {
         url: 'https://mangas-origines.fr/oeuvre/top-tier-providence/',
         id: JSON.stringify({ post: '508', slug: '/oeuvre/top-tier-providence/' }),
@@ -19,6 +20,7 @@ const config = {
         size: 865_895,
         type: 'image/jpeg'
     }
+    */
 };
 
 const fixture = new TestFixture(config);

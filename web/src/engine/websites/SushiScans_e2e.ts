@@ -5,7 +5,7 @@ const config: Config = {
         id: 'sushiscans',
         title: 'Sushi Scans'
     },
-    /* Cloudflare
+    /* CloudFlare
     container: {
         url: 'https://sushiscan.net/catalogue/a-fantasy-lazy-life/',
         id: '/catalogue/a-fantasy-lazy-life/',

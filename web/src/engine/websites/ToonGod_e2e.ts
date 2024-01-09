@@ -5,6 +5,7 @@ const config = {
         id: 'toongod',
         title: 'ToonGod'
     },
+    /* CloudFlare
     container: {
         url: 'https://www.toongod.org/webtoon/i-stole-the-number-one-rankers-soul/',
         id: JSON.stringify({ post: '9019', slug: '/webtoon/i-stole-the-number-one-rankers-soul/' }),
@@ -19,6 +20,7 @@ const config = {
         size: 704_355,
         type: 'image/jpeg'
     }
+    */
 };
 
 const fixture = new TestFixture(config);
