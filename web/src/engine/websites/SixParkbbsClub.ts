@@ -21,9 +21,8 @@ export default class extends DecoratableMangaScraper {
 
     //Fetchpages
     protected queryPages = 'td.show_content pre img';
-
-    public constructor(public readonly Identifier: string = 'sixparkbbsclub', public readonly Title: string = '6parkbbs Club (新❀华漫)', url: string = 'https://club.6parkbbs.com', tags: Tag[] = [Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Aggregator]) {
-        super(Identifier, Title, url, ...tags);
+    public constructor( identifier: string = 'sixparkbbsclub', title: string = '6parkbbs Club (新❀华漫)', url: string = 'https://club.6parkbbs.com', tags: Tag[] = [Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Aggregator]) {
+        super(identifier, title, url, ...tags);
     }
     public override get Icon() {
         return icon;
