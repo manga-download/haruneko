@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './KanMan.webp';
+import icon from './TaoManhua.webp';
 import MHKX, { type MHXK_infos } from './decorators/MHKX';
 import * as Common from './decorators/Common';
 
