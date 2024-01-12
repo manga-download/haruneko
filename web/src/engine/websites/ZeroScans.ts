@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ZeroScans.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchRequest } from '../FetchProvider';
 
 type APIManga = {
     id: number,
@@ -38,7 +38,7 @@ type APIChapter = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('zeroscans', `ZeroScans`, 'https://zeroscans.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('zeroscans', `ZeroScans`, 'https://zscans.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
     public override get Icon() {
         return icon;
@@ -49,8 +49,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const request = new FetchRequest(url);
-        const data = await FetchWindowScript<APIManga>(request, `__ZEROSCANS__.data[0].details`, 2000);
+        const slug = url.match(/\/comics\/([^/]+)$/)[1];
+        const request = new FetchRequest(new URL(`/swordflake/comic/${slug}`, this.URI).href);
+        const { data } = await FetchJSON<APIResult<APIManga>>(request);
         return new Manga(this, provider, JSON.stringify({ id: data.id, slug: data.slug }), data.name.trim());
     }
 
