@@ -7,7 +7,7 @@ const config: Config = {
     },
     container: {
         url: 'https://www.cmoa.jp/title/151961/vol/24/',
-        id: '/title/151961/vol/24/',
+        id: '/title/151961/',
         title: '呪術廻戦'
     },
     child: {

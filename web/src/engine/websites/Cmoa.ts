@@ -1,11 +1,10 @@
 ﻿import { Tags } from '../Tags';
 import icon from './Cmoa.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/title\/\d+(\/vol\/\d+\/)?$/, '#GA_this_page_title_name')
 @Common.MangasNotSupported()
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
@@ -15,6 +14,15 @@ export default class extends DecoratableMangaScraper {
     }
     public override get Icon() {
         return icon;
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return /https:\/\/www\.cmoa\.jp\/title\/\d+\/(vol\/\d+\/)?$/.test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const newUrl = url.replace(/\/vol\/\d+\/$/, '/');
+        return await Common.FetchMangaCSS.call(this, provider, newUrl, '#GA_this_page_title_name');
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
