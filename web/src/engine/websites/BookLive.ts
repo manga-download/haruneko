@@ -4,14 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 function ChapterExtractor(element: HTMLElement) {
-    const id = '/bviewer/s/?cid=' + element.dataset.title + '_' + element.dataset.vol;
-    const title = element.dataset.vol.trim();
+    const linkElement = element.querySelector<HTMLAnchorElement>('a.bl-bviewer');
+    const id = '/bviewer/s/?cid=' + linkElement.dataset.title + '_' + linkElement.dataset.vol;
+    const title = element.querySelector<HTMLAnchorElement>('a.cart_action').dataset.vol.trim();
     return { id, title };
 }
 
-@Common.MangaCSS(/^{origin}\/product\/index\/title_id\/\d+\/vol_no\/\d+$/, 'div#product_detail_area div.product_info > h1#product_display_1')
+@Common.MangaCSS(/^{origin}\/product\/index\/title_id\/\d+\/vol_no\/\d+$/, 'li.contents span.book_title')
 @Common.MangasNotSupported()
-@Common.ChaptersSinglePageCSS('div#product_detail_area div.product_actions ul a.bl-bviewer', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div#slide_up_top li.item div.buttons', ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 
