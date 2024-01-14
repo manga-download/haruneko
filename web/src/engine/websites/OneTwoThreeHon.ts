@@ -6,7 +6,6 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchRequest } from '../FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    console.log(anchor.pathname);
     const id = anchor.pathname;
     const title = anchor.pathname.match(/[^/]+\/web-comic\/([^/]+)\//)[1];
     return { id, title };
