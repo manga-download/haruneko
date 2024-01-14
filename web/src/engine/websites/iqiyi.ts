@@ -3,7 +3,7 @@ import icon from './iqiyi.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MH from './decorators/MH';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIChapters = {
     data: {
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const manhuaId = new URL(manga.Identifier, this.URI).href.match(/_(([a-z]|[0-9])*)/)[1];
-        const requestChaps = new FetchRequest(new URL(`/manhua/catalog/${manhuaId}/`, this.URI).href);
+        const requestChaps = new Request(new URL(`/manhua/catalog/${manhuaId}/`, this.URI).href);
         const { data } = await FetchJSON<APIChapters>(requestChaps);
         return data.episodes.map(element => new Chapter(this, manga, `/manhua/reader/${manhuaId}_${element.episodeId}.html`, [element.episodeOrder, element.episodeTitle.trim()].join(' ')));
     }

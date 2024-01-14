@@ -3,7 +3,7 @@ import icon from './FlameComics.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchRequest } from '../FetchProvider';
+import { Fetch, FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
@@ -21,7 +21,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchCSS<HTMLDivElement>(new FetchRequest(new URL(chapter.Identifier, this.URI).href), 'div.composed_figure');
+        const data = await FetchCSS<HTMLDivElement>(new Request(new URL(chapter.Identifier, this.URI).href), 'div.composed_figure');
         if (data.length == 0) return MangaStream.FetchPagesSinglePageCSS.call(this, chapter, [/readonflamescans\.png/]);
 
         return data.map(page => {
@@ -34,7 +34,7 @@ export default class extends DecoratableMangaScraper {
         const blobMainImage = await Common.FetchImageAjax.call(this, page, priority, signal);
         if (!page.Parameters?.secondaryPic) return blobMainImage;
         const pageUrl = (page.Parameters.secondaryPic) as string;
-        const request = new FetchRequest(pageUrl, { headers: { Referer: this.URI.href } });
+        const request = new Request(pageUrl, { headers: { Referer: this.URI.href } });
         const response = await Fetch(request);
         const b1 = await createImageBitmap(blobMainImage);
         const b2 = await createImageBitmap(await response.blob());

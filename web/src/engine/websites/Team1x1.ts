@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Team1x1.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -42,7 +42,7 @@ export default class extends DecoratableMangaScraper {
     }
     private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
         const uri = new URL(`${manga.Identifier}?page=${page}`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div.eplister ul li a:not([data-bs-toggle])');
         return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('.epl-num:nth-of-type(2)').textContent.trim()));
     }

@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Hentaidexy.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIManga = {
     manga: {
@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/\/manga\/([\S]+)\//)[1];
         const uri = new URL('/api/v1/mangas/' + id, this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, id, data.manga.title.trim());
     }
@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
     }
     private async _getMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
         const uri = new URL('/api/v1/mangas?page=' + page + '&sort=createdAt', this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIMangas>(request);
         return data.mangas.map(element => new Manga(this, provider, element._id, element.title));
     }
@@ -83,14 +83,14 @@ export default class extends DecoratableMangaScraper {
 
     private async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const uri = new URL('/api/v1/mangas/' + manga.Identifier + '/chapters?sort=-serialNumber&limit=9999&page=' + page, this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<ApiChapters>(request);
         return data.chapters.map(element => new Chapter(this, manga, element._id, 'Chapter ' + element.serialNumber));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL('/api/v1/chapters/' + chapter.Identifier, this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<ApiPage>(request);
         return data.chapter.images.map(image => {
             const lastpart = image.split('/').pop();
