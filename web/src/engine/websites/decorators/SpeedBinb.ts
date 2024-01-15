@@ -146,22 +146,24 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 
     const cid = viewerUrl.searchParams.get('cid');
     const sharingKey = _tt(cid);
-    const uri = getSanitizedURL(websiteUrl, el.dataset.ptbinb);
+    const uri = getSanitizedURL(viewerUrl.href, el.dataset.ptbinb);
     uri.searchParams.set('cid', cid);
     uri.searchParams.set('dmytime', String(Date.now()));
     uri.searchParams.set('k', sharingKey);
 
     switch (SBVersion) {
         case SpeedBinbVersion.v016113: //Futabanet, Getsuaku (v016700), Ohtabooks
-        case SpeedBinbVersion.v016130: { //Booklive, MangaPlanet, Yanmaga
-            const data = await FetchWindowScript<JSONPageData_v016452>(new FetchRequest(uri.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+        case SpeedBinbVersion.v016130: { //Booklive, MangaPlanet, S-Manga, Yanmaga
+            //Doing it like that because of cookies needed for Mangaplanet
+            const data = await FetchWindowScript<JSONPageData_v016452>(new FetchRequest(this.URI.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016130(this, data.items[0], sharingKey, chapter);
         }
         //YoungJump
         case SpeedBinbVersion.v016201: {
             const u = viewerUrl.searchParams.get('u1');
             uri.searchParams.set('u1', u);
-            const data = await FetchWindowScript<JSONPageData_v016452>(new FetchRequest(uri.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+            //Doing it like that because of cookies needed
+            const data = await FetchWindowScript<JSONPageData_v016452>(new FetchRequest(this.URI.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016201(this, data.items[0], sharingKey, u, chapter);
         }
         //Cmoa
