@@ -1,4 +1,3 @@
-import { type PlatformInfo, Runtime, CreateUnsupportedPlatformError, DetectPlatform } from './Platform';
 import { StorageControllerBrowser } from './StorageControllerBrowser';
 
 export const enum Store {
@@ -18,19 +17,8 @@ export interface StorageController {
     RemoveTemporary(...keys: string[]): Promise<void>;
 }
 
-export function CreateStorageController(info?: PlatformInfo): StorageController {
-
-    info = info ?? DetectPlatform();
-
-    if([ Runtime.Chrome, Runtime.Gecko, Runtime.WebKit ].includes(info.Runtime)) {
-        return new StorageControllerBrowser();
-    }
-
-    if(info.Runtime === Runtime.NodeWebkit) {
-        return new StorageControllerBrowser();
-    }
-
-    throw CreateUnsupportedPlatformError(info);
+export function CreateStorageController(): StorageController {
+    return new StorageControllerBrowser();
 }
 
 export function SanitizeFileName(name: string): string {

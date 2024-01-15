@@ -9,11 +9,10 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/comicextra\.me\/comic\/[^/]+$/, '.title-1')
+@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.title-1')
 @Common.ChaptersSinglePageCSS('#list tr td a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.chapter-container img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

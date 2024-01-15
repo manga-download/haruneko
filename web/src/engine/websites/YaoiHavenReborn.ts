@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './YaoiHavenReborn.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 type JSONManga = {
     name: string,
@@ -14,15 +14,14 @@ const mangasPerPageScript = `
     app.$http.post('/api/accounts/pagination/', {'paginate_by': 200}, {headers: {'X-CSRFToken': csrf_token}});
 `;
 
-@Common.MangaCSS(/^https?:\/\/www\.yaoihavenreborn\.com\/doujinshi/, 'meta[property="og:title"]')
+@Common.MangaCSS(/^{origin}\/doujinshi/, 'meta[property="og:title"]')
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('v-card-text v-img.mx-auto.my-1')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yaoihavenreborn', `Yaoi Haven Reborn`, 'https://www.yaoihavenreborn.com/', Tags.Language.Multilingual, Tags.Media.Comic, Tags.Rating.Pornographic);
+        super('yaoihavenreborn', `Yaoi Haven Reborn`, 'https://www.yaoihavenreborn.com/', Tags.Language.Multilingual, Tags.Media.Comic, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -33,7 +32,7 @@ export default class extends DecoratableMangaScraper {
 
         //change to 200 manga per page
         const uri = new URL(`/doujinshi/`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         await FetchWindowScript(request, mangasPerPageScript, 2000, 10000);
 
         const mangalist = [];
@@ -46,7 +45,7 @@ export default class extends DecoratableMangaScraper {
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL(`/doujinshi/?page=${page}`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchWindowScript<JSONManga[]>(request, 'app.doujinshi');
         return data ? data.map(manga => new Manga(this, provider, '/doujinshi/' + manga.slug, manga.name.trim())) : [];
     }

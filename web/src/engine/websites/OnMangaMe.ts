@@ -4,12 +4,11 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaReader from './decorators/MangaReaderCMS';
 
-@Common.MangaCSS(/^https?:\/\/onma\.me\/manga\/[^/]+$/, 'div.single-managa div.panel-heading') //yes, its managa, not manga
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.single-managa div.panel-heading') //yes, its managa, not manga
 @MangaReader.MangasSinglePageCSS()
 @Common.ChaptersSinglePageCSS(MangaReader.queryChapters, MangaReader.ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaReader.queryPages, MangaReader.ChapterPageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -15,12 +15,11 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/https:\/\/lewdmanhwa\.com/, 'main#main header.entry-header h1.entry-title')
+@Common.MangaCSS(/^{origin}/, 'main#main header.entry-header h1.entry-title')
 @Common.MangasMultiPageCSS('/webtoons/page/{page}/', 'div#content div.is-list-card div.column a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter-list div.chapter-list-items a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('span.single-comic-page img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

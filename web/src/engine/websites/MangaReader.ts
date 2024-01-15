@@ -3,7 +3,7 @@ import icon from './MangaReader.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^https?:\/\/mangareader.tv\/manga\/[^/]+$/, 'table tr td span.name')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'table tr td span.name')
 @Common.MangasSinglePageCSS('/alphabetical', 'ul.d46 li a')
 @Common.ChaptersSinglePageCSS('table tbody tr td:first-of-type a')
 @Common.PagesSinglePageCSS('img[data-id].img-loading')

@@ -10,12 +10,11 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https?:\/\/lire-scan\.me\/manga\/\S+\.html$/, 'div.pmovie__header div.pmovie__header-main h1')
+@Common.MangaCSS(/^{origin}\/manga\/\S+\.html$/, 'div.pmovie__header div.pmovie__header-main h1')
 @Common.MangasMultiPageCSS('/manga/page/{page}', 'div.sect__content div.item a:first-of-type', 1, 1, 0, Common.AnchorInfoExtractor(false, 'div.item-poster__img'))
 @Common.ChaptersSinglePageCSS('ul li div.chapter a', ChapterExtractor)
 @Common.PagesSinglePageJS('manga[currentChapter]')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

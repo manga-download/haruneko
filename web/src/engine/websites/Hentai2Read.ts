@@ -13,12 +13,11 @@ const scriptPages = `
     });
 `;
 
-@Common.MangaCSS(/https:\/\/hentai2read\.com\//, 'h3.block-title a', Common.ElementLabelExtractor('small'))
+@Common.MangaCSS(/^{origin}\//, 'h3.block-title a', Common.ElementLabelExtractor('small'))
 @Common.MangasMultiPageCSS('/hentai-list/all/any/all/name-az/{page}', 'div.book-grid div.overlay div.overlay-title a')
 @Common.ChaptersSinglePageCSS('ul.nav-chapters li div.media > a', Common.AnchorInfoExtractor(false, 'div'))
 @Common.PagesSinglePageJS(scriptPages)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

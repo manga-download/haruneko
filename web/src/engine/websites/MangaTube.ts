@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaTube.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from './../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     success: {
@@ -20,11 +20,10 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/manga-tube\.me\/series\//, 'h1.series-title')
+@Common.MangaCSS(/^{origin}\/series\//, 'h1.series-title')
 @Common.ChaptersSinglePageCSS('div.vol-container ul.chapter-list li a[title]', ChapterExtractor)
 @Common.PagesSinglePageJS('manga_reader.pages.map(page => manga_reader.img_path + page.file_name);', 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -46,7 +45,7 @@ export default class extends DecoratableMangaScraper {
                 'parameter[sortby]': 'alphabetic',
                 'parameter[order]': 'asc'
             });
-            const request = new FetchRequest(url.href, {
+            const request = new Request(url.href, {
                 method: 'POST',
                 body: formBody,
                 headers: {

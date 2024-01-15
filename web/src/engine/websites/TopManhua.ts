@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/www\.topmanhua\.com\/manhua\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Top Manhua"])')
+@Madara.MangaCSS(/^{origin}\/manhua\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Top Manhua"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('topmanhua', 'Top Manhua', 'https://www.topmanhua.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.English);
+        super('topmanhua', 'Top Manhua', 'https://www.topmanhua.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

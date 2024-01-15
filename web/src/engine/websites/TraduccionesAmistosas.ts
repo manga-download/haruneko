@@ -9,7 +9,7 @@ function ChapterExtractor(element: HTMLElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/nartag\.com\/l\/[^/]+$/, 'div.manga__title h2')
+@Common.MangaCSS(/^{origin}\/l\/[^/]+$/, 'div.manga__title h2')
 @Common.MangasMultiPageCSS('/biblioteca?page={page}', 'div.manga__item .manga__title a.manga__link')
 @Common.ChaptersSinglePageCSS('div.chapter__item', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.reader__item img[data-src]')
@@ -17,7 +17,7 @@ function ChapterExtractor(element: HTMLElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('traduccionesamistosas', 'Traducciones Amistosas', 'https://nartag.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish);
+        super('traduccionesamistosas', 'Traducciones Amistosas', 'https://nartag.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

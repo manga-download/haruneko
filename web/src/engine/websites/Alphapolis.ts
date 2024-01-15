@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Alphapolis.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
@@ -19,7 +19,7 @@ function ChaptersExtractor(element: HTMLDivElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.alphapolis\.co\.jp\/manga\/official\/\d+/, 'div.manga-detail-description > div.title')
+@Common.MangaCSS(/^{origin}\/manga\/official\/\d+/, 'div.manga-detail-description > div.title')
 @Common.MangasMultiPageCSS(`/manga/official/search?page={page}`, 'div.official-manga-panel > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.episode-unit', ChaptersExtractor)
 export default class extends DecoratableMangaScraper {
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchCSS(request, 'viewer-manga-horizontal');
         try {
             const pages = JSON.parse(data[0].getAttribute('v-bind:pages'));
