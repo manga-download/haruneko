@@ -528,6 +528,7 @@ export { default as SinensisScan } from './SinensisScan';
 export { default as SirenKomik } from './SirenKomik';
 export { default as Siyahmelek } from './Siyahmelek';
 export { default as SkyMangas } from './SkyMangas';
+export { default as SManga } from './SManga';
 export { default as SMangaVF } from './SMangaVF';
 export { default as SoulScans } from './SoulScans';
 export { default as StickHorse } from './StickHorse';
