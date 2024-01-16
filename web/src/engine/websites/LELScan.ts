@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './LELScan.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function ChapterExtractor(option: HTMLOptionElement) {
     const id = new URL(option.value).pathname;
@@ -31,7 +31,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         let data = await FetchCSS<HTMLAnchorElement>(request, 'div#navigation a');
         data = data.filter(element => parseInt(element.text.trim()));
         return data.map(page => new Page(this, chapter, new URL(page.pathname, this.URI)));

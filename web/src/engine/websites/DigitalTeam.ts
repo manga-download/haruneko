@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './DigitalTeam.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchJSON, FetchRequest } from '../FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
 
 type APIResult = [
     [{ name: string, ex: string }],
@@ -14,7 +14,6 @@ type APIResult = [
 @Common.MangasSinglePageCSS('/reader/series', 'div#series_list ul li.manga_block ul li.manga_info div.manga_title a')
 @Common.ChaptersSinglePageCSS('div.chapter_list ul li div.ch_top a')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -28,13 +27,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         //First : fetch page
         let uri = new URL(chapter.Identifier, this.URI);
-        let request = new FetchRequest(uri.href);
+        let request = new Request(uri.href);
         const response = await Fetch(request);
         const dat = await response.text();
         const external = dat.includes('js/jq_rext.js');
 
         uri = new URL('/reader/c_i', this.URI);
-        request = new FetchRequest(uri.href, {
+        request = new Request(uri.href, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
             body: new URLSearchParams({

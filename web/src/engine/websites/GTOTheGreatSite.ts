@@ -9,7 +9,6 @@ import * as Common from './decorators/Common';
 @PizzaReader.ChaptersSinglePageAJAX()
 @PizzaReader.PagesSinglePageAJAX()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

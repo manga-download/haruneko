@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ComicWalker.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchHTML, FetchJSON, FetchRequest } from '../FetchProvider';
+import { Fetch, FetchCSS, FetchHTML, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type TEndpoints = {
@@ -48,7 +48,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const document = await FetchHTML(new FetchRequest(url));
+        const document = await FetchHTML(new Request(url));
         const title = document.querySelector('div#mainContent div#detailIndex div.comicIndex-box h1').textContent.trim();
 
         //infer manga language from page meta url
@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async setLanguage(language: string): Promise<void> {
-        const request = new FetchRequest(`${this.URI.origin}/set_lang/${language}/`);
+        const request = new Request(`${this.URI.origin}/set_lang/${language}/`);
         (await Fetch(request)).text();
     }
 
@@ -88,7 +88,7 @@ export default class extends DecoratableMangaScraper {
         const mangaID: MangaID = JSON.parse(manga.Identifier);
         await this.setLanguage(mangaID.langCode);
 
-        const request = new FetchRequest(new URL(mangaID.id, this.URI).href);
+        const request = new Request(new URL(mangaID.id, this.URI).href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div#ulreversible ul#reversible li a');
         return data.map(chapter => new Chapter(this, manga, chapter.pathname + chapter.search, chapter.title.replace(manga.Title, '').trim()));
     }
@@ -98,12 +98,12 @@ export default class extends DecoratableMangaScraper {
         await this.setLanguage(language);
 
         //get endpoints data
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const mainApp = await FetchCSS(request, 'main#app');
         const endpoints: string | TEndpoints = mainApp[0].dataset.apiEndpointUrl ? mainApp[0].dataset.apiEndpointUrl : JSON.parse(mainApp[0].dataset.apiEndpointUrls);
         const uri = `${(endpoints as TEndpoints).nc || (endpoints as TEndpoints).cw || endpoints}/api/v1/comicwalker/episodes/${mainApp[0].dataset.episodeId}/frames`;
 
-        const { data } = await FetchJSON<APIPages>(new FetchRequest(uri));
+        const { data } = await FetchJSON<APIPages>(new Request(uri));
         return data.result.map(page => new Page(this, chapter, new URL(page.meta.source_url), { key: page.meta.drm_hash }));
     }
 

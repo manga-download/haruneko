@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './RawDevart.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 const apiUrl = 'https://api.endevart.com/api/';
 
@@ -22,7 +22,6 @@ type JSONPages = {
 }
 
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     private generateKey(): string {
@@ -44,8 +43,8 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    private generateRequest(url: string): FetchRequest {
-        return new FetchRequest(url, {
+    private generateRequest(url: string): Request {
+        return new Request(url, {
             headers: {
                 'Referer': this.URI.href,
                 'Origin': this.URI.href,

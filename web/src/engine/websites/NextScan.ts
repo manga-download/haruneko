@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './NextScan.webp';
 import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 const chapterScript = `
     new Promise(resolve => {
@@ -56,7 +56,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(new URL('/feeds/posts/default/-/Series?orderby=published&alt=json&max-results=999', this.URI).href);
+        const request = new Request(new URL('/feeds/posts/default/-/Series?orderby=published&alt=json&max-results=999', this.URI).href);
         const { feed } = await FetchJSON<APIMangas>(request);
         return feed.entry.map(manga => {
             const goodLink = manga.link.find(link => link.rel === 'alternate');

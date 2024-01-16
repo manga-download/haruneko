@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Luscious.webp';
 import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from './../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 //we do not use FetchGraphQL on purpose, since this website use GET and not POST and ofc pass parameters and query using the url
 
@@ -38,7 +38,6 @@ type PagesResult = {
 
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://apicdn.luscious.net/graphql/nobatch/';
@@ -58,7 +57,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         const id = uri.pathname.match(/_(\d+)\/?$/)[1];
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const name = (await FetchCSS(request, 'main h1.album-heading')).pop().textContent.trim();
         return new Manga(this, provider, id, name);
     }
@@ -108,7 +107,7 @@ export default class extends DecoratableMangaScraper {
         };
 
         url.searchParams.set('variables', JSON.stringify(variables));
-        const request = new FetchRequest(url.href, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
+        const request = new Request(url.href, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
         const data = await FetchJSON<APIMangaPage>(request);
         return data.data.album.list.items.map(manga => new Manga(this, provider, String(manga.id), manga.title.trim()));
 
@@ -157,7 +156,7 @@ export default class extends DecoratableMangaScraper {
             }
         };
         url.searchParams.set('variables', JSON.stringify(variables));
-        const request = new FetchRequest(url.href, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
+        const request = new Request(url.href, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
         return await FetchJSON<PagesResult>(request);
     }
 }
