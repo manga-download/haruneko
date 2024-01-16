@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ZeroScans.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIManga = {
     id: number,
@@ -38,7 +38,7 @@ type APIChapter = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('zeroscans', `ZeroScans`, 'https://zeroscans.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('zeroscans', `ZeroScans`, 'https://zscans.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
     public override get Icon() {
         return icon;
@@ -49,13 +49,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const request = new FetchRequest(url);
-        const data = await FetchWindowScript<APIManga>(request, `__ZEROSCANS__.data[0].details`, 2000);
+        const slug = url.match(/\/comics\/([^/]+)$/)[1];
+        const request = new Request(new URL(`/swordflake/comic/${slug}`, this.URI).href);
+        const { data } = await FetchJSON<APIResult<APIManga>>(request);
         return new Manga(this, provider, JSON.stringify({ id: data.id, slug: data.slug }), data.name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(new URL('/swordflake/comics', this.URI).href);
+        const request = new Request(new URL('/swordflake/comics', this.URI).href);
         const data = await FetchJSON<APIResult<APIMangas>>(request);
         return data.success ? data.data.comics.map(manga => new Manga(this, provider, JSON.stringify({ id: manga.id, slug: manga.slug }), manga.name.trim())) : [];
     }
@@ -77,7 +78,7 @@ export default class extends DecoratableMangaScraper {
         });
         const uri = new URL(`/swordflake/comic/${mangainfos.id}/chapters`, this.URI);
         uri.search = params.toString();
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIResult<APIChapters>>(request);
         return data.success ? data.data.data.map(chapter => new Chapter(this, manga, chapter.id.toString(), `Chapter ${chapter.name}`)) : [];
     }
@@ -85,7 +86,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const mangainfos: APIManga = JSON.parse(chapter.Parent.Identifier);
         const uri = new URL(`/swordflake/comic/${mangainfos.slug}/chapters/${chapter.Identifier}`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIResult<APIPages>>(request);
         return data.success ? data.data.chapter.high_quality.map(page => new Page(this, chapter, new URL(page))) : [];
     }

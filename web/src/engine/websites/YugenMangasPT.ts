@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './YugenMangasPT.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIPages = {
     chapter_images: string[]
@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
 
         const matches = chapter.Identifier.match(/\/series\/([^/]+)\/([^/]+)\//);
         const apiUrl = new URL(`/api/serie/${matches[1]}/chapter/${matches[2]}/images/imgs`, this.URI).href;
-        const request = new FetchRequest(new URL(apiUrl, this.URI).href);
+        const request = new Request(new URL(apiUrl, this.URI).href);
         const pages = await FetchJSON<APIPages>(request);
         return pages.chapter_images.map(page => new Page(this, chapter, new URL(page, this.mediaUrl)));
 

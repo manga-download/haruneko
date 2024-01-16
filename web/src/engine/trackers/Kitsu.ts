@@ -3,7 +3,7 @@ import poster from '../../img/media.webp';
 import { TrackerResourceKey as R } from '../../i18n/ILocale';
 import { type MediaInfoTracker, type Info, MediaType, type TrackingStatus } from './IMediaInfoTracker';
 import { type SettingsManager, type ISettings, Text, Secret } from '../SettingsManager';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import { NotImplementedError } from '../Error';
 
 type APIMediaAttributes = {
@@ -79,12 +79,12 @@ export class Kitsu implements MediaInfoTracker {
     }
 
     public async Search(title: string): Promise<Info[]> {
-        const { media: { index, key } } = await FetchJSON<APIAlgoliaKeys>(new FetchRequest(this.endpoint + '/algolia-keys'));
+        const { media: { index, key } } = await FetchJSON<APIAlgoliaKeys>(new Request(this.endpoint + '/algolia-keys'));
         const uri = new URL(`https://awqo5j657s-dsn.algolia.net/1/indexes/${index}/query`);
         uri.searchParams.set('x-algolia-agent', 'Algolia for vanilla JavaScript (lite) 3.24.12');
         uri.searchParams.set('x-algolia-application-id', 'AWQO5J657S');
         uri.searchParams.set('x-algolia-api-key', key);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             method: 'POST',
             headers: {
                 'Referer': 'https://kitsu.io/',
@@ -121,7 +121,7 @@ export class Kitsu implements MediaInfoTracker {
     }
 
     public async GetInfo(identifier: string): Promise<Info> {
-        const { data: { type, attributes } } = await FetchJSON<APIMedia>(new FetchRequest(this.endpoint + identifier));
+        const { data: { type, attributes } } = await FetchJSON<APIMedia>(new Request(this.endpoint + identifier));
         return {
             Identifier: identifier,
             Type: attributes.subtype === 'novel' ? MediaType.Novel : type,

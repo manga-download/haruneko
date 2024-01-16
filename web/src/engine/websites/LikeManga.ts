@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './LikeManga.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type ChapterData = {
     list_chap : string
@@ -48,7 +48,7 @@ export default class extends DecoratableMangaScraper {
     private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const mangaid = manga.Identifier.match(/-(\d+)\/$/)[1];
         const uri = new URL(`?act=ajax&code=load_list_chapter&manga_id=${mangaid}&page_num=${page}`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const response: ChapterData = await FetchJSON(request);
         const data = new DOMParser().parseFromString(response.list_chap, 'text/html');
         const nodes = [...data.querySelectorAll<HTMLAnchorElement>('li.wp-manga-chapter a')];

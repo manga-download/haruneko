@@ -17,7 +17,7 @@ endif::[]
 This document briefly describes how to add a new websites to HakuNeko.
 
 [WARNING]
-When making requests to a website, only use the methods provided by _/src/engine/FetchProvider.ts_, since it wraps some tricks to bypass certain restrictions.
+When making requests to a website, only use the methods provided by _/src/engine/platform/FetchProvider.ts_, since it wraps some tricks to bypass certain restrictions.
 
 [#decorators]
 === About Decorators
@@ -296,7 +296,7 @@ _MySampleMangas.ts_
 ```typescript
 /* Other Imports */
 import { DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
-import { FetchRequest, Fetch } from '../FetchProviderNodeWebkit';
+import { Fetch } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 
 export default class extends DecoratableMangaScraper {
@@ -305,7 +305,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-            const request = new FetchRequest(page.Link.href, {
+            const request = new Request(page.Link.href, {
                 signal: signal,
                 headers: {
                     Referer: page.Parameters?.Referer || page.Link.origin

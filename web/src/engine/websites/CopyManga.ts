@@ -4,8 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { Check, Choice } from '../SettingsManager';
 import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../i18n/ILocale';
-import { FetchRequest } from '../FetchProviderNodeWebkit';
-import { FetchJSON } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResponse<T> = {
     code: number,
@@ -135,8 +134,8 @@ export default class extends DecoratableMangaScraper {
         return orderedPages.map(page => new Page(this, chapter, new URL(page)));
     }
 
-    private createApiRequest(pathname: string): FetchRequest {
-        const request = new FetchRequest(new URL(`/api/v3/${pathname}`, this.apiurl).href,
+    private createApiRequest(pathname: string): Request {
+        const request = new Request(new URL(`/api/v3/${pathname}`, this.apiurl).href,
             {
                 headers: {
                     Version: this.Apidate,

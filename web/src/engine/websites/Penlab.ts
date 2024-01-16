@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './Penlab.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
 const scriptApiUrl = `
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         try {
-            const request = new FetchRequest(new URL('/genres', this.URI).href);
+            const request = new Request(new URL('/genres', this.URI).href);
             this.apiUrl = await FetchWindowScript<string>(request, scriptApiUrl, 1000);
         } catch {
             //
@@ -80,25 +80,25 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const mangaId = await FetchWindowScript<MangaID>(request, MangaIdScript, 2000);
         return new Manga(this, provider, String(mangaId.id), mangaId.title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(`${this.apiUrl}/comic`);
+        const request = new Request(`${this.apiUrl}/comic`);
         const data = await FetchJSON<APIManga[]>(request);
         return data.map(manga => new Manga(this, provider, String(manga.id), manga.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(`${this.apiUrl}/chapter?comic_id=${manga.Identifier}`);
+        const request = new Request(`${this.apiUrl}/chapter?comic_id=${manga.Identifier}`);
         const data = await FetchJSON<APIChapter[]>(request);
         return data.map(chap => new Chapter(this, manga, String(chap.id), chap.episode_title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(`${this.apiUrl}/episode?episode_id=${chapter.Identifier}`);
+        const request = new Request(`${this.apiUrl}/episode?episode_id=${chapter.Identifier}`);
         const data = await FetchJSON<APIPage[]>(request);
         return data.map(page => new Page(this, chapter, new URL(page.ucarecdn_graphic_link)));
     }
