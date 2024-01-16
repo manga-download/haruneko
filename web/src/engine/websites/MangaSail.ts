@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaSail.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaScraper, type Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function IsImage(page: string) {
     return ['png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp'].includes(page.toLowerCase().split('.').pop());
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
 
     private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier + '?page=' + page, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'table.chlist tr td:first-of-type a');
         return data.map(anchor => new Chapter(this, manga, anchor.pathname + '?page=all', anchor.text.replace(manga.Title, '').trim()));
     }

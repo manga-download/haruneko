@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaSect.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import DeProxify from '../transformers/ImageLinkDeProxifier';
 
 type AJAXResponse = {
@@ -25,7 +25,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterid = chapter.Identifier.match(/\/([\d]+)$/)[1];
-        const request = new FetchRequest(new URL(`/ajax/image/list/chap/${chapterid}`, this.URI).href, {
+        const request = new Request(new URL(`/ajax/image/list/chap/${chapterid}`, this.URI).href, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 Referer: new URL(chapter.Identifier, this.URI).href

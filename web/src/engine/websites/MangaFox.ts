@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './MangaFox.webp';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as DM5 from './decorators/DM5';
@@ -17,7 +17,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         return FetchWindowScript(request, `window.cookie.set('isAdult', '1')`);
     }
 

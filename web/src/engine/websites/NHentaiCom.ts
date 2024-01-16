@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './NHentaiCom.webp';
 import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIManga = {
     title: string,
@@ -34,13 +34,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = new URL(url).pathname.split('/').pop();
-        const request = new FetchRequest(new URL(`/api/comics/${slug}`, this.URI).href);
+        const request = new Request(new URL(`/api/comics/${slug}`, this.URI).href);
         const data = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, data.slug, data.title.trim());
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(`/api/comics/${chapter.Identifier}/images`, this.URI).href);
+        const request = new Request(new URL(`/api/comics/${chapter.Identifier}/images`, this.URI).href);
         const { images } = await FetchJSON<APIPages>(request);
         return images.map(image => new Page(this, chapter, new URL(image.source_url)));
     }

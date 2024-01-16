@@ -3,7 +3,7 @@ import icon from './ComicEarthStar.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
-import { FetchGraphQL, FetchRequest } from '../FetchProvider';
+import { FetchGraphQL } from '../platform/FetchProvider';
 
 const queryOneshots = `
     query Earthstar_Oneshot {
@@ -112,7 +112,7 @@ export default class extends DecoratableMangaScraper {
     async performGraphQL<T>(operationName: string, query: string): Promise<T> {
         const uri = new URL(this.apiUrl);
         uri.searchParams.set('opname', operationName);
-        return FetchGraphQL<T>(new FetchRequest(uri.href), operationName, query, {});
+        return FetchGraphQL<T>(new Request(uri.href), operationName, query, {});
     }
 
 }
