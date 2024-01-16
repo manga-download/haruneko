@@ -1,4 +1,4 @@
-import { FetchCSS, FetchRequest } from "../../FetchProvider";
+import { FetchCSS } from "../../platform/FetchProvider";
 import { Chapter, Manga, type MangaPlugin, type MangaScraper } from "../../providers/MangaPlugin";
 import * as Common from './Common';
 
@@ -158,7 +158,7 @@ async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path:
 
 async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, path: string, query = queryChapters): Promise<Chapter[]>{
     const url = new URL(path.replace('//', '/'), this.URI).href;
-    const request = new FetchRequest(url);
+    const request = new Request(url);
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(chapter => {
         const { id, title } = ChapterExtractor.call(this, chapter, manga.Title);

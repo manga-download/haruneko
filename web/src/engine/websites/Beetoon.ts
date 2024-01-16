@@ -3,7 +3,7 @@ import icon from './Beetoon.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Zbulu from './decorators/WordPressZbulu';
-import { Fetch, FetchRequest } from '../FetchProvider';
+import { Fetch } from '../platform/FetchProvider';
 import DeProxify from '../transformers/ImageLinkDeProxifier';
 
 @Zbulu.MangaCSS(/^https?:\/\/(ww\d*\.)?beetoon\.net\/[^/]+\/$/)
@@ -21,7 +21,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const response = await Fetch(new FetchRequest(this.URI.href));
+        const response = await Fetch(new Request(this.URI.href));
         console.log(`Assigned URL ${response.url} to ${this.Title}`);
         this.URI.href = response.url;
         return;

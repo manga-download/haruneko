@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier, this.URI);
-        const request = new FetchRequest(url.href, {
+        const request = new Request(url.href, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
