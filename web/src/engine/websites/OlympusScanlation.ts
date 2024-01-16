@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './OlympusScanlation.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIManga = {
     slug: string,
@@ -61,7 +61,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const { slug, type, name } = await FetchWindowScript<APIManga>(request, mangaClipboardScript);
         const id = JSON.stringify({ slug: slug, type: type });
         return new Manga(this, provider, id, name.trim());
@@ -78,7 +78,7 @@ export default class extends DecoratableMangaScraper {
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL(`/api/series?page=${page}&direction=asc`, this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIMangas>(request);
         return data.data.series.data.map(element => new Manga(this, provider, JSON.stringify({ slug: element.slug, type: element.type }), element.name.trim()));
     }
@@ -95,7 +95,7 @@ export default class extends DecoratableMangaScraper {
     private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const { slug, type } = JSON.parse(manga.Identifier) as APIManga;
         const uri = new URL(`/api/series/${slug}/chapters?page=${page}&direction=desc&type=${type}`, this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIChapters>(request);
         return data.data.map(element => new Chapter(this, manga, String(element.id), element.name.trim()));
     }
@@ -103,7 +103,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { slug, type } = JSON.parse(chapter.Parent.Identifier) as APIManga;
         const uri = new URL(`/api/series/${slug}/chapters/${chapter.Identifier}?type=${type}`, this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIPages>(request);
         return data.chapter.pages.map(page => new Page(this, chapter, new URL(page)));
     }

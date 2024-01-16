@@ -1,4 +1,4 @@
-import type { IWindowController } from './WindowController';
+import type { IAppWindow } from '../engine/platform/AppWindow';
 import type { IResource } from '../i18n/ILocale';
 
 export interface IFrontendInfo {
@@ -10,5 +10,5 @@ export interface IFrontendInfo {
 }
 
 export interface IFrontendModule {
-    Render(root: HTMLElement, windowController: IWindowController): Promise<void>;
+    Render(root: HTMLElement, windowController: IAppWindow): Promise<void>;
 }

@@ -1,4 +1,4 @@
-import { FetchRequest, FetchCSS } from '../../FetchProvider';
+import { FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, type Chapter, type Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
@@ -41,7 +41,7 @@ function AnchorInfoExtractor(this: MangaScraper, element: HTMLAnchorElement) {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     const uri = new URL(url);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const element = (await FetchCSS<HTMLElement>(request, query)).shift();
     return new Manga(this, provider, uri.origin === this.URI.origin ? uri.pathname : uri.href, element.textContent.trim());
 }

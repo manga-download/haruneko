@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './HeavenManga2.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(element: HTMLAnchorElement) {
     const id = element.pathname;
@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier, this.URI);
-        const request = new FetchRequest(url.href);
+        const request = new Request(url.href);
         request.headers.set('X-Requested-With', 'XMLHttpRequest');
         const data = await FetchJSON<APIChapter>(request);
         return data.data.map(page => new Chapter(this, manga, '/manga/leer/' + page.id, "Chapter " + page.slug));
