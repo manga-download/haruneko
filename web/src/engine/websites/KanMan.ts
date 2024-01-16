@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './KanMan.webp';
 import MHKX, { type MHXK_infos } from './decorators/MHKX';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 import { Manga, type MangaPlugin } from '../providers/MangaPlugin';
 
 @Common.ImageAjax(true)
@@ -21,7 +21,7 @@ export default class extends MHKX {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const [data] = await FetchCSS(new FetchRequest(url), 'h1.title');
+        const [data] = await FetchCSS(new Request(url), 'h1.title');
         const id: string = url.match(/(\d+)\/$/)[1];
         const title = data.textContent.trim();
         return new Manga(this, provider, id, title);

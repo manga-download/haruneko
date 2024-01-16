@@ -2,7 +2,7 @@ import { type Tag } from '../../Tags';
 import { Choice } from '../../SettingsManager';
 import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../../i18n/ILocale';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import { FetchCSS, FetchJSON, FetchRequest } from '../../FetchProvider';
+import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
 
 export type MHXK_infos = {
     id: string,
@@ -59,7 +59,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const [data] = await FetchCSS(new FetchRequest(url), '[data-comic-id], [data-comic_id]');
+        const [data] = await FetchCSS(new Request(url), '[data-comic-id], [data-comic_id]');
         const id: string = data.dataset.comicId || data.dataset.comic_id;
         const title = data.textContent.trim();
         return new Manga(this, provider, id, title);
@@ -67,14 +67,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const uri = this.createCustomerURI('/getComicList/');
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(new FetchRequest(uri.href));
+        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(uri.href));
         return data.map(manga => new Manga(this, provider, manga.comic_id.toString(), manga.comic_name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = this.createCustomerURI('/getComicInfoBody/');
         uri.searchParams.set('comic_id', manga.Identifier);
-        const { data } = await FetchJSON<APIResult<APIManga>>(new FetchRequest(uri.href));
+        const { data } = await FetchJSON<APIResult<APIManga>>(new Request(uri.href));
         return data.comic_chapter.map(chapter => new Chapter(this, manga, chapter.chapter_newid, chapter.chapter_name.trim()));
     }
 
@@ -89,7 +89,7 @@ export default class extends DecoratableMangaScraper {
             isWebp: this.Settings.format.Value as string,
             quality: this.Settings.quality.Value as string
         }).toString();
-        const { data } = await FetchJSON<APIResult<APIManga>>(new FetchRequest(uri.href));
+        const { data } = await FetchJSON<APIResult<APIManga>>(new Request(uri.href));
         return data.current_chapter.chapter_img_list.map(page => new Page(this, chapter, new URL(page)));
     }
 
