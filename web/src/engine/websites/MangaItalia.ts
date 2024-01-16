@@ -3,7 +3,7 @@ import icon from './MangaItalia.webp';
 import { Page, type Chapter } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
     return {
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pageList: Page[] = [];
         for (let i = 1, run = true; run; i++) {
-            const images = await FetchCSS(new FetchRequest(new URL(`${chapter.Identifier}/${i}`, this.URI).href), '.book-page img');
+            const images = await FetchCSS(new Request(new URL(`${chapter.Identifier}/${i}`, this.URI).href), '.book-page img');
             images.length > 0 ? pageList.push(...images.map(image => new Page(this, chapter, new URL(image.getAttribute('src'), this.URI)))) : run = false;
         }
         return pageList;
