@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Ynjn.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 
@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').pop();
-        const request = new FetchRequest(new URL(`book/${id}`, this.apiUrl).href);
+        const request = new Request(new URL(`book/${id}`, this.apiUrl).href);
         const { data } = await FetchJSON<APIResult<APIManga>>(request);
         return new Manga(this, provider, id, data.book.name.trim());
     }
@@ -60,7 +60,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`title/${manga.Identifier}/episode`, this.apiUrl);
         uri.searchParams.set('is_get_all', 'true');
-        const json = await FetchJSON<APIResult<APIChapters>>(new FetchRequest(uri.href));
+        const json = await FetchJSON<APIResult<APIChapters>>(new Request(uri.href));
         return json.is_success ? json.data.episodes.map(episode => new Chapter(this, manga, episode.id.toString(), episode.name.trim())) : [];
     }
 
@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/viewer', this.apiUrl);
         uri.searchParams.set('title_id', chapter.Parent.Identifier);
         uri.searchParams.set('episode_id', chapter.Identifier);
-        const json = await FetchJSON<APIResult<APIPages>>(new FetchRequest(uri.href));
+        const json = await FetchJSON<APIResult<APIPages>>(new Request(uri.href));
         return json.is_success ? json.data.pages
             .filter(page => page.manga_page)
             .map(page => new Page(this, chapter, new URL(page.manga_page.page_image_url))) : [];
