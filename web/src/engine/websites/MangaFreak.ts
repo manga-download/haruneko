@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './MangaFreak.webp';
 import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
 @Common.MangasMultiPageCSS('/Mangalist/All/{page}', 'div.list_item div.list_item_info h3 a')
@@ -21,7 +21,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         const uri = new URL(this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         this.URI.href = await FetchWindowScript(request, `window.location.origin`, 1500);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
