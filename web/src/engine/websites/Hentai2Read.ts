@@ -18,7 +18,6 @@ const scriptPages = `
 @Common.ChaptersSinglePageCSS('ul.nav-chapters li div.media > a', Common.AnchorInfoExtractor(false, 'div'))
 @Common.PagesSinglePageJS(scriptPages)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

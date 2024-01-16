@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Team X'
     },
     container: {
-        url: 'https://team11x11.com/series/villain-is-here',
+        url: 'https://teamxnovel.com/series/villain-is-here',
         id: '/series/villain-is-here',
         title: 'Villain Is Here'
     },

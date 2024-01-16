@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ReaperScans.webp';
 import { type MangaPlugin, DecoratableMangaScraper, type Manga, Chapter, type Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import { Numeric } from '../SettingsManager';
@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     private readonly interactionTaskPool = new TaskPool(1, new RateLimit(15, 60));
 
     public constructor() {
-        super('reaperscans', 'Reaper Scans', 'https://reapercomics.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('reaperscans', 'Reaper Scans', 'https://reaperscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
         this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 15, 1, 60);
         this.Settings.throttle.ValueChanged.Subscribe((_, value: number) => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
     }
@@ -72,7 +72,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier, this.URI);
-        const [ data ] = await this.interactionTaskPool.Add(async () => FetchCSS<HTMLDivElement>(new FetchRequest(uri.href), 'main div[wire\\:id][wire\\:initial-data]'), Priority.Normal);
+        const [ data ] = await this.interactionTaskPool.Add(async () => FetchCSS<HTMLDivElement>(new Request(uri.href), 'main div[wire\\:id][wire\\:initial-data]'), Priority.Normal);
         const chapterList = this.ExtractChapters(manga, data);
         const body = JSON.parse(data.getAttribute('wire:initial-data')) as LaravelLivewireMessage;
         delete body.effects;
@@ -96,7 +96,7 @@ export default class extends DecoratableMangaScraper {
             }
         }];
 
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {

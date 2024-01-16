@@ -3,7 +3,7 @@ import icon from './MangaLink.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import { AddAntiScrapingDetection, FetchRedirection } from '../AntiScrapingDetection';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
 AddAntiScrapingDetection(async (dom) => {
     return dom.querySelector('form#lsrecaptcha-form[action*="/.lsrecap/recaptcha?"]') ? FetchRedirection.Interactive : undefined;

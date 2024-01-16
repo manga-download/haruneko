@@ -1,11 +1,11 @@
 import { type Writable, writable } from 'svelte/store';
-import type { IValue, Setting} from '../../../engine/SettingsManager';
+import type { IValue, ISetting} from '../../../engine/SettingsManager';
 import type { Key } from '../../../engine/SettingsGlobal';
 import { InternalError } from '../../../engine/Error';
 
 const globalsettings = HakuNeko.SettingsManager.OpenScope();
 
-interface SettingStore<V extends IValue, S extends Setting<V>> extends Writable<V> {
+interface SettingStore<V extends IValue, S extends ISetting<V>> extends Writable<V> {
     setting: S,
     reset() : void
 }
@@ -15,17 +15,19 @@ interface SettingStore<V extends IValue, S extends Setting<V>> extends Writable<
  * and updated whenever the value of the underlying setting is changed.
  * @param setting - a specific setting of the frontend
  */
-export function CreateSettingStore<V extends IValue, S extends Setting<V>>(setting: S) : SettingStore<V, S> {
+export function CreateSettingStore<V extends IValue, S extends ISetting<V>>(setting: S) : SettingStore<V, S> {
     const { subscribe, set, update } = writable(setting.Default);
 
-    setting.ValueChanged.Subscribe(
-        (_: typeof setting, value: V) => set(value)
-    );
+    setting.ValueChanged.Subscribe((_, value: V) => set(value));
+
     return {
         subscribe,
         update,
         set: (value: V) => { setting.Value = value; set(value); },
-        reset: () => { setting.Value = setting.Default; set(setting.Default); },
+        reset: () => {
+            setting.Value = setting.Default;
+            set(setting.Default);
+        },
         setting: setting
     };
 }
@@ -35,7 +37,7 @@ export function CreateSettingStore<V extends IValue, S extends Setting<V>>(setti
  * and updated whenever the value of the underlying setting is changed.
  * @param settingKey - an existing key (created in the engine)
  */
-export function CreateExistingSettingStore<V extends IValue, S extends Setting<V>>(settingKey: Key) : SettingStore<V, S> {
+export function CreateExistingSettingStore<V extends IValue, S extends ISetting<V>>(settingKey: Key) : SettingStore<V, S> {
     const setting: S = globalsettings.Get(settingKey);
     if (!setting) throw new InternalError(`Setting ${settingKey} does not exists`);
     return CreateSettingStore<V, S>(setting);

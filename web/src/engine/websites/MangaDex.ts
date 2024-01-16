@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './MangaDex.webp';
-import { FetchRequest, FetchJSON } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import { MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
@@ -127,14 +127,14 @@ export default class extends MangaScraper {
         const uri = new URL(url);
         const regexGUID = /[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}/;
         const id = (uri.pathname.match(regexGUID) || uri.hash.match(regexGUID))[0].toLowerCase();
-        const request = new FetchRequest(`${this.api}/manga/${id}`, { headers: { Referer: this.URI.href }});
+        const request = new Request(`${this.api}/manga/${id}`, { headers: { Referer: this.URI.href }});
         const { data: { attributes: { title: titles } } } = await FetchJSON<APIContainer<APIManga>>(request);
         const title = titles.en || Object.values(titles).shift();
         return new Manga(this, provider, id, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaCache = await FetchJSON<CachedManga[]>(new FetchRequest('https://websites.hakuneko.download/mangadex.json'));
+        const mangaCache = await FetchJSON<CachedManga[]>(new Request('https://websites.hakuneko.download/mangadex.json'));
         const mangaList = mangaCache.map(manga => new Manga(this, provider, manga.id, manga.title));
         /*
         const limit = 100;
@@ -153,7 +153,7 @@ export default class extends MangaScraper {
                         uri.searchParams.append('contentRating[]', 'suggestive');
                         uri.searchParams.append('contentRating[]', 'erotica');
                         uri.searchParams.append('contentRating[]', 'pornographic');
-                        const request = new FetchRequest(uri.href, { headers: { Referer: `https://${Math.random().toString(16).split('.').pop()}.org` }});
+                        const request = new Request(uri.href, { headers: { Referer: `https://${Math.random().toString(16).split('.').pop()}.org` }});
                         const { data } = await FetchJSON<APIContainer<APIManga[]>>(request);
                         return data;
                     }, Priority.Normal);
@@ -183,7 +183,7 @@ export default class extends MangaScraper {
                 uri.searchParams.append('contentRating[]', 'suggestive');
                 uri.searchParams.append('contentRating[]', 'erotica');
                 uri.searchParams.append('contentRating[]', 'pornographic');
-                const request = new FetchRequest(uri.href, { headers: { Referer: this.URI.href }});
+                const request = new Request(uri.href, { headers: { Referer: this.URI.href }});
                 const { data } = await FetchJSON<APIContainer<APIManga[]>>(request);
                 return data;
             }, Priority.Normal);
@@ -232,7 +232,7 @@ export default class extends MangaScraper {
         uri.searchParams.append('contentRating[]', 'erotica');
         uri.searchParams.append('contentRating[]', 'pornographic');
 
-        const request = new FetchRequest(uri.href, { headers: { Referer: this.URI.href }});
+        const request = new Request(uri.href, { headers: { Referer: this.URI.href }});
         const { data } = await FetchJSON<APIContainer<APIChapter[]>>(request);
 
         return !data ? [] : data.map(entry => {
@@ -267,7 +267,7 @@ export default class extends MangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(`${this.api}/at-home/server/${chapter.Identifier}`, { headers: { Referer: this.URI.href }});
+        const request = new Request(`${this.api}/at-home/server/${chapter.Identifier}`, { headers: { Referer: this.URI.href }});
         const { baseUrl, chapter: { hash, data: files } } = await FetchJSON<APIMedia>(request);
         return files.map(file => {
             const slug = [ '/data', hash, file ].join('/');

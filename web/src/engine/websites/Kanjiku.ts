@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Kanjiku.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname.replace(/.$/, '0');
@@ -21,7 +21,6 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div.tab1 div.manga_overview_box a.latest_ch_number', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.container img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -29,7 +28,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         return FetchWindowScript(request, `window.cookieStore.set('clicked', 'true')`);
     }
 

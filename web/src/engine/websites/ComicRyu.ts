@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ComicRyu.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 const pageScript =`
     new Promise(resolve => {
@@ -24,7 +24,6 @@ function MangaInfoExtractor(element: HTMLElement) {
 @Common.MangasSinglePageCSS('/lineup/', 'article.m-lineup-piece', MangaInfoExtractor)
 @Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -40,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const request = new Request(new URL(manga.Identifier, this.URI).href);
         const chapters = await FetchCSS<HTMLAnchorElement>(request, 'div#read ul.readlist li p.readbtn a');
         return chapters.map(anchor => {
             const url = manga.Identifier.replace('/index.html', anchor.pathname);

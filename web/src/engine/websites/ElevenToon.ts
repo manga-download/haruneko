@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './ElevenToon.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
-import { FetchCSS, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
@@ -15,7 +15,6 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/bbs/board.php?bo_table=toon_c&type=upd&page={page}', 'ul.homelist li[data-id] a', 1, 1, 0, MangaExtractor)
 @Common.PagesSinglePageJS('img_list', 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -28,7 +27,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         const uri = new URL(this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         this.URI.href = await FetchWindowScript(request, `window.location.origin`, 1500);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
@@ -45,7 +44,7 @@ export default class extends DecoratableMangaScraper {
     private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const url = new URL(manga.Identifier, this.URI);
         url.searchParams.set('page', String(page));
-        const request = new FetchRequest(url.href);
+        const request = new Request(url.href);
         const data = await FetchCSS(request, 'ul#comic-episode-list li button.episode');
         return data.map(element => {
             const title = element.querySelector('div.episode-title').textContent.replace(manga.Title, '').trim();

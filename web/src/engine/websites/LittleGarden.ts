@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './LittleGarden.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchGraphQL, FetchRequest } from '../FetchProvider';
+import { FetchGraphQL } from '../platform/FetchProvider';
 import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
@@ -30,7 +30,6 @@ type APIPages = {
 @Common.MangaCSS(/^{origin}\/[^/]/, 'h2.super-title')
 @Common.MangasSinglePageCSS('/mangas', 'div.listing a.no-select', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -63,7 +62,7 @@ export default class extends DecoratableMangaScraper {
             limit: 99999,
             isAdmin: true
         };
-        const request = new FetchRequest(new URL('/graphql', this.URI).href);
+        const request = new Request(new URL('/graphql', this.URI).href);
         const data = await FetchGraphQL<APIChapters>(request, 'chapters', query, variables);
         return data.chapters.map(chapter => {
             const name = chapter.name ? String(chapter.number) + ' : ' + chapter.name.trim() : String(chapter.number);
@@ -96,7 +95,7 @@ export default class extends DecoratableMangaScraper {
             number: chapterid.number,
             isAdmin: true
         };
-        const request = new FetchRequest(new URL('/graphql', this.URI).href);
+        const request = new Request(new URL('/graphql', this.URI).href);
         const data = await FetchGraphQL<APIPages>(request, 'chapter', query, variables);
         return data.chapter.pages.map(page => new Page(this, chapter, new URL(`/static/images/${page.original}`, this.URI)));
     }

@@ -1,12 +1,11 @@
 import { readable, writable } from 'svelte/store';
-import type { IWindowController } from '../../WindowController';
-import { CreateWindowController } from '../../WindowController';
 import type { MediaContainer, MediaChild, MediaItem } from '../../../engine/providers/MediaPlugin';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
 import type { DownloadTask } from '../../../engine/DownloadTask';
 import { checkNewContent } from './Settings';
+import type { IAppWindow } from '../../../engine/platform/AppWindow';
 
-export const WindowController = writable<IWindowController>(CreateWindowController());
+export const WindowController = writable<IAppWindow>(null);
 export const selectedPlugin = writable<MediaContainer<MediaContainer<MediaChild>>>();
 export const selectedMedia = writable<MediaContainer<MediaChild>>();
 export const selectedItem = writable<MediaContainer<MediaItem>>();
