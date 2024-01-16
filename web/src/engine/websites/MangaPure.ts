@@ -4,7 +4,7 @@ import type { Manga } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 type MangaID = {
     post: string,
@@ -25,7 +25,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { post } = JSON.parse(manga.Identifier) as MangaID;
-        const request = new FetchRequest(new URL(`/ajax-list-chapter?mangaID=${post}`, this.URI).href, {
+        const request = new Request(new URL(`/ajax-list-chapter?mangaID=${post}`, this.URI).href, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 Referer: this.URI.origin
@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
         return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.trim()));
     }
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchCSS(request, 'p#arraydata');
         return data[0].textContent.split(',').map(link => new Page(this, chapter, new URL(link)));
     }

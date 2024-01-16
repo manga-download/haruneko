@@ -2,7 +2,7 @@ import { type Tag, Tags } from '../Tags';
 import icon from './MangaLife.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin} from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIManga = {
     i: string,
@@ -46,7 +46,6 @@ function ElementLabelExtractor(element: HTMLElement) {
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     private readonly searchPath = '/_search.php';
     public constructor(public readonly Identifier: string = 'mangalife', public readonly Title: string = 'MangaLife', url: string = 'https://manga4life.com', tags: Tag[] = [Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator]) {
@@ -57,13 +56,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         return FetchWindowScript(request, `window.cookieStore.set('FullPage', 'yes')`);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL(this.searchPath, this.URI);
-        const request = new FetchRequest(url.href, { method: 'POST' });
+        const request = new Request(url.href, { method: 'POST' });
         const data = await FetchJSON<APIManga[]>(request);
         return data.map(manga => new Manga(this, provider, `/manga/${manga.i}`, manga.s.trim()));
     }

@@ -2,13 +2,12 @@ import { Tags } from '../Tags';
 import icon from './DoujinDesu.webp';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest} from '../FetchProvider';
+import { FetchCSS} from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.ElementLabelExtractor('span.alter'))
 @Common.MangasMultiPageCSS('/manga/page/{page}/', 'article entry a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -21,12 +20,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         let uri = new URL(chapter.Identifier, this.URI);
-        let request = new FetchRequest(uri.href);
+        let request = new Request(uri.href);
         let data = await FetchCSS(request, "main#reader");
         const chapterid = data[0].dataset['id'];
 
         uri = new URL('/themes/ajax/ch.php', this.URI);
-        request = new FetchRequest(uri.href, {
+        request = new Request(uri.href, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({ id: chapterid })

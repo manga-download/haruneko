@@ -2,7 +2,7 @@ import { Tags } from './../Tags';
 import icon from './Kuaikanmanhua.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 type MangaID = {
     id: string,
@@ -48,7 +48,6 @@ const mangascript = `
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -64,7 +63,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await FetchWindowScript<MangaID>(new FetchRequest(url), mangascript);
+        const data = await FetchWindowScript<MangaID>(new Request(url), mangascript);
         return new Manga(this, provider, data.id, data.title);
 
     }

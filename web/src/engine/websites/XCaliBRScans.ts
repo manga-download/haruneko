@@ -4,7 +4,7 @@ import { Page, type Chapter } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeProxify from '../transformers/ImageLinkDeProxifier';
 import DeScramble from '../transformers/ImageDescrambler';
@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
         // 2
 
         const uri = new URL(chapter.Identifier, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchWindowScript<pageScriptResult>(request, pagescript, 2500);
         const piclist = data.imagz.map(link => DeProxify(new URL(link)).href);
         switch (data.scrambled) {
@@ -121,7 +121,7 @@ export default class extends DecoratableMangaScraper {
             case 2: // Combine/Flip 2 pictures
             {
                 const pageUrl = (page.Parameters.secondaryPic) as string;
-                const request = new FetchRequest(pageUrl, { headers: { Referer: this.URI.href } });
+                const request = new Request(pageUrl, { headers: { Referer: this.URI.href } });
                 const response = await Fetch(request);
                 const b1 = await createImageBitmap(blobMainImage);
                 const b2 = await createImageBitmap(await response.blob());

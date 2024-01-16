@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaNexus.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type JSONMangas = {
     pageProps: {
@@ -46,7 +46,6 @@ type NEXTDATA = {
 }
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     private nextBuild = '';
 
@@ -58,7 +57,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         const data = await FetchWindowScript<NEXTDATA>(request, `__NEXT_DATA__`, 2000);
         this.nextBuild = data.buildId;
     }
@@ -70,7 +69,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url : string): Promise<Manga> {
         const slug = url.split('/').pop();
         const jsonUrl = new URL(`/_next/data/${ this.nextBuild }/manga/${ slug }.json?slug=${ slug }`, this.URI).href;
-        const request = new FetchRequest(jsonUrl);
+        const request = new Request(jsonUrl);
         const data = await FetchJSON<JSONManga>(request);
         return new Manga(this, provider, slug, data.pageProps.manga.name.trim());
     }
@@ -87,7 +86,7 @@ export default class extends DecoratableMangaScraper {
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
             const url = new URL(`/_next/data/${this.nextBuild}/lista-de-mangas.json?p=${page}`, this.URI).href;
-            const request = new FetchRequest(url);
+            const request = new Request(url);
             const data = await FetchJSON<JSONMangas>(request);
             return data.pageProps.mangas.items.map(element => new Manga(this, provider, element.slug, element.name.trim()));
         } catch (error) {
@@ -99,7 +98,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const slug = manga.Identifier;
         const url = new URL(`/_next/data/${this.nextBuild}/manga/${ slug }.json?slug=${ slug }`, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchJSON<JSONManga>(request);
         return data.pageProps.chapters.map(chap => {
             const title = `Capítulo ${chap.number}${chap.name.length != 0 ? ' - ' + chap.name : ''}`;
@@ -110,7 +109,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const mangaSlug = chapter.Parent.Identifier;
         const url = new URL(`/_next/data/${this.nextBuild}/manga/${mangaSlug}/capitulo/${ chapter.Identifier}.json`, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchJSON<JSONChapter>(request);
         return data.pageProps.chapter.pages.map(page => new Page(this, chapter, new URL(page)));
     }

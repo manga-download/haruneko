@@ -2,13 +2,12 @@ import { Tags } from '../Tags';
 import icon from './CarToonMad.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^https?:\/\/(www\.)?cartoonmad\.com\/[^/]+/, 'td:nth-child(2)  tr:nth-child(3) > td:nth-child(2) > a:last-child')
 @Common.MangasMultiPageCSS('/comic99.0{page}.html', 'a.a1')
 @Common.ChaptersSinglePageCSS('#info td > a')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -21,7 +20,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const referer = new URL(chapter.Identifier, this.URI).href;
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI.href.replace('.com', '.cc')).href, {
+        const request = new Request(new URL(chapter.Identifier, this.URI.href.replace('.com', '.cc')).href, {
             headers: { 'referer': referer}
         });
         const data = await FetchCSS(request, 'body');

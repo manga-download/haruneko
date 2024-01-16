@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaHubRU.webp';
 import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from './../FetchProvider';
+import { FetchCSS } from './../platform/FetchProvider';
 
 type APIPages = {
     scans: {id : number, src : string}[]
@@ -11,7 +11,6 @@ type APIPages = {
 @Common.MangaCSS(/^{origin}\/title\//, '#title-detail div.col div.card-padding-x h1')
 @Common.MangasMultiPageCSS('/explore?page={page}', 'div.container div.card a.comic-grid-name')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -24,7 +23,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier.replace('/title/', '/chapters/'), this.URI);
-        const request = new FetchRequest(url.href);
+        const request = new Request(url.href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div.detail-chapters a.d-inline-flex');
         return data.map(element => {
             const span1 = element.querySelector('span.text-truncate'); //main title to trim
@@ -44,7 +43,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(chapter.Identifier, this.URI);
-        const request = new FetchRequest(url.href);
+        const request = new Request(url.href);
         const data = await FetchCSS<HTMLElement>(request, 'reader[data-store]');
         const jObject: APIPages = JSON.parse(data.shift().dataset.store);
         return jObject.scans.map(element => new Page(this, chapter, new URL(element.src, this.URI), { Referer: this.URI.href }));

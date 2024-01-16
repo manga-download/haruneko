@@ -2,13 +2,12 @@ import { Tags } from '../Tags';
 import icon from './MadaraDex.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
-import { Fetch, FetchCSS, FetchRequest } from '../FetchProvider';
+import { Fetch, FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 
 @Madara.MangaCSS(/^{origin}\/title\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Read "])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -21,7 +20,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(chapter.Identifier, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS<HTMLImageElement>(request, 'div.page-break img');
         return data.map(element => {
 
@@ -42,7 +41,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-            const request = new FetchRequest(page.Link.href, {
+            const request = new Request(page.Link.href, {
                 signal: signal,
                 headers: {
                     Referer: page.Parameters.Referer,

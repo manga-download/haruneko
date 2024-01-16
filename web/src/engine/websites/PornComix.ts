@@ -12,7 +12,6 @@ function PageLinkExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('figure a', PageLinkExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
