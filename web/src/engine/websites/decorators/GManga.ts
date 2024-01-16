@@ -1,4 +1,4 @@
-import { FetchRequest, FetchJSON, FetchCSS } from '../../FetchProvider';
+import { FetchJSON, FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, Manga, Chapter, type MangaPlugin, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
@@ -103,7 +103,7 @@ const mangasearch = {
  * The last part of the url will be used as an id to call the api and get the title
  */
 async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
-    const request = new FetchRequest(url);
+    const request = new Request(url);
     const response = await FetchCSS(request, 'script[data-component-name="HomeApp"]');
     const data: APISingleManga = JSON.parse(response[0].textContent);
     const id = data.mangaDataAction.mangaData.id;
@@ -148,7 +148,7 @@ async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugi
 async function getMangasFromPage(provider: MangaPlugin, page: number, apiUrl: string): Promise<Manga[]>
 {
     mangasearch.page = page;
-    const request = new FetchRequest(new URL('/api/mangas/search', apiUrl).href, {
+    const request = new Request(new URL('/api/mangas/search', apiUrl).href, {
         method: 'POST',
         headers: {
             'content-type': 'application/json',
@@ -181,7 +181,7 @@ export function MangasMultiPageAJAX(apiUrl : string) {
  *************************************************/
 
 async function FetchChapterSinglePageAJAX(this: MangaScraper, manga: Manga, apiUrl: string): Promise<Chapter[]> {
-    const request = new FetchRequest(new URL(`/api/mangas/${manga.Identifier}/releases`, apiUrl).href);
+    const request = new Request(new URL(`/api/mangas/${manga.Identifier}/releases`, apiUrl).href);
     const response = await FetchJSON<APIResult>(request);
     const strdata = response.iv ? await decrypt(response.data) : JSON.stringify(response);
     const tmpdata: packedData | APIChapters = JSON.parse(strdata);
@@ -234,7 +234,7 @@ export function PagesSinglePageCSS() {
 }
 
 async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-    const request = new FetchRequest(new URL(`/mangas/${chapter.Identifier}`, this.URI).href);
+    const request = new Request(new URL(`/mangas/${chapter.Identifier}`, this.URI).href);
     const response = await FetchCSS(request, 'script[data-component-name="HomeApp"]');
     const data: APIPages = JSON.parse(response[0].textContent);
 

@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaTales.webp';
 import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as GManga from './decorators/GManga';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 const apiUrl = 'https://mangatales.com/';
 
@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(`/api/mangas/${manga.Identifier}`, apiUrl).href);
+        const request = new Request(new URL(`/api/mangas/${manga.Identifier}`, apiUrl).href);
         const response = await FetchJSON<GManga.APIResult> (request);
         const strdata = response.iv ? await GManga.decrypt(response.data) : JSON.stringify(response);
         const tmpdata: GManga.packedData | APIChapters = JSON.parse(strdata);
@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(`/mangas/${chapter.Identifier}`, this.URI).href);
+        const request = new Request(new URL(`/mangas/${chapter.Identifier}`, this.URI).href);
         const response = await FetchCSS(request, 'script[data-component-name="HomeApp"]');
         const data: APIPages = JSON.parse(response[0].textContent);
 
