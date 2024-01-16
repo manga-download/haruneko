@@ -2,10 +2,9 @@ import { Tags } from '../Tags';
 import icon from './CopyManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Check, Choice, Text } from '../SettingsManager';
+import { Check, Choice } from '../SettingsManager';
 import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../i18n/ILocale';
-import { FetchRequest } from '../FetchProviderNodeWebkit';
-import { FetchJSON } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResponse<T> = {
     code: number,
@@ -49,9 +48,9 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('copymanga', 'CopyManga', 'https://www.copymanga.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
 
-        this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
-        this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
-        this.URI.href = this.Settings.url.value as string;
+        //this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
+        //this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
+        //this.URI.href = this.Settings.url.Value as string;
 
         this.Settings.format = new Choice('image.format',
             W.Plugin_Settings_ImageFormat,
@@ -135,8 +134,8 @@ export default class extends DecoratableMangaScraper {
         return orderedPages.map(page => new Page(this, chapter, new URL(page)));
     }
 
-    private createApiRequest(pathname: string): FetchRequest {
-        const request = new FetchRequest(new URL(`/api/v3/${pathname}`, this.apiurl).href,
+    private createApiRequest(pathname: string): Request {
+        const request = new Request(new URL(`/api/v3/${pathname}`, this.apiurl).href,
             {
                 headers: {
                     Version: this.Apidate,

@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ModeScanlator.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
 import * as JSZip from 'jszip';
 import type { Priority } from '../taskpool/TaskPool';
 
@@ -26,7 +26,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h1.desc__titulo__comic')
 @Common.MangasSinglePageCSS('/todas-as-obras/', 'div.comics__all__box a.titulo__comic__allcomics')
 @Common.ChaptersSinglePageCSS('ul.capitulos__lista a.link__capitulos', ChapterExtractor)
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -38,7 +37,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         //1st : first fetch zip files urls
-        let request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        let request = new Request(new URL(chapter.Identifier, this.URI).href);
         const files: string[] = await FetchWindowScript(request, pagescript);
         if (files.length == 0) return [];
 
@@ -47,7 +46,7 @@ export default class extends DecoratableMangaScraper {
             //handle zip files
             const pages : Page[]= [];
             for (const zipurl of files) {
-                request = new FetchRequest(new URL(zipurl, this.URI).href);
+                request = new Request(new URL(zipurl, this.URI).href);
                 const response = await Fetch(request);
                 const zipdata = await response.arrayBuffer();
                 const zipfile = await JSZip.loadAsync(zipdata);
@@ -71,7 +70,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         if (page.Link.href.endsWith('.zip')) {
-            const request = new FetchRequest(new URL(page.Link, this.URI).href);
+            const request = new Request(new URL(page.Link, this.URI).href);
             const response = await Fetch(request);
             const zipdata = await response.arrayBuffer();
             const zipfile = await JSZip.loadAsync(zipdata);

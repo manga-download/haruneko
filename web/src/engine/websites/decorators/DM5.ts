@@ -1,6 +1,6 @@
 // DM5, MangaFox, MangaHere
 
-import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import { FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
@@ -65,7 +65,7 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
         });
     `;
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const images = await FetchWindowScript<string[]>(request, script, 1000);
     return images.map(url => new Page(this, chapter, new URL(url), { Referer: uri.href }));
 }

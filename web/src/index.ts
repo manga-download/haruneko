@@ -1,107 +1,61 @@
-import { CreateUnsupportedPlatformError, DetectPlatform, Runtime, type PlatformInfo } from './engine/Platform';
-import type { IFrontendModule, IFrontendInfo } from './frontend/IFrontend';
-import type { Event } from './engine/Event';
+import { CreateAppWindow } from './engine/platform/AppWindow';
 
-async function ShowNodeWebkitSplashScreen(nwWindow: NWJS_Helpers.win, event: Event<IFrontendModule, IFrontendInfo>, timeout: number) {
+const appHook = '#app';
+const noticeHook = '#hakuneko-notice';
+const splashPath = '/splash.html';
 
-    nwWindow.hide();
-
-    const nwSplashOptions = {
-        new_instance: true,
-        frame: false,
-        transparent: true,
-        show: true,
-        position: 'center',
-        width: 416,
-        height: 520
-    };
-
-    const nwSplash = await new Promise<NWJS_Helpers.win>(resolve => {
-        nw.Window.open(window.location.origin + '/splash.html', nwSplashOptions, (popup: NWJS_Helpers.win) => {
-            popup.on('closed', () => {
-                nwWindow.show();
-                nwWindow.focus();
-            });
-            popup.focus();
-            resolve(popup);
-        });
-    });
-
-    const hideSplashScreen = () => {
-        event.Unsubscribe(hideSplashScreen);
-        clearTimeout(hideSplashScreenTimeout);
-        nwSplash.close(true);
-    };
-
-    event.Subscribe(hideSplashScreen);
-    const hideSplashScreenTimeout = setTimeout(hideSplashScreen, timeout);
-}
-
-async function InitializeNodeWebkit(info: PlatformInfo) {
-    const { HakuNeko } = await import('./engine/HakuNeko');
-    const { FrontendController } = await import('./frontend/FrontendController');
-
-    const nwWindow = nw.Window.get();
-
-    if(window.localStorage.getItem('hakuneko-nosplash') === 'true') {
-        nwWindow.show();
-    } else {
-        ShowNodeWebkitSplashScreen(nwWindow, FrontendController.FrontendLoaded, 7500);
+function showErrorNotice(root: HTMLElement, error?: Error) {
+    function format(text?: string): string {
+        const div = document.createElement('div');
+        //.replace(new RegExp(window.location.origin, 'g'), '')
+        div.textContent = text?.replace(/\?t=[\d:]+/g, '')?.trim() ?? '';
+        return div.innerHTML;
     }
+    const message = format(error?.message);
+    const stack = format(error?.stack);
+    const html = `
+        <p>
+            <div style="text-align: left; display: inline-block; width: 75%;">
+                <hr>
+                <h2>${message}</h2>
+                <pre style="padding: 0.5em; white-space: pre-wrap; color: red; background-color: white; border: 1px solid darkgrey;">${stack}</pre>
+                <hr>
+            </div>
+        </p>
+    `;
 
-    nwWindow.window.HakuNeko = new HakuNeko(info);
-    await window.HakuNeko.Initialze();
-    new FrontendController(window.HakuNeko.SettingsManager.OpenScope());
-
-    nw.App.registerGlobalHotKey(new nw.Shortcut({
-        key: "F11",
-        active: function () {
-            nw.Window.get().toggleFullscreen();
-        },
-        failed: () => { console.log('F11 failed'); }
-    }));
-}
-
-async function InitializeBrowser(info: PlatformInfo) {
-    const { HakuNeko } = await import('./engine/HakuNeko');
-    const { FrontendController } = await import('./frontend/FrontendController');
-
-    globalThis.window.HakuNeko = new HakuNeko(info);
-    await window.HakuNeko.Initialze();
-    new FrontendController(window.HakuNeko.SettingsManager.OpenScope());
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => root.innerHTML = html);
+    } else {
+        root.innerHTML = html;
+    }
 }
 
 (async function() {
     try {
-        const info = DetectPlatform();
-        if(info.Runtime === Runtime.NodeWebkit) {
-            await InitializeNodeWebkit(info);
-            return;
+        const showSplashScreen = window.localStorage.getItem('hakuneko-nosplash') !== 'true';
+        const appWindow = CreateAppWindow(window.location.origin + splashPath, showSplashScreen);
+        if(showSplashScreen) {
+            appWindow.ShowSplash();
         }
-        if([ Runtime.Chrome, Runtime.Gecko, Runtime.WebKit ].includes(info.Runtime)) {
-            await InitializeBrowser(info);
-            return;
+
+        // Use lazy loading for these large modules to improve start-up performance
+        const { HakuNeko } = await import('./engine/HakuNeko');
+        const { FrontendController } = await import('./frontend/FrontendController');
+
+        window.HakuNeko = new HakuNeko();
+        await window.HakuNeko.Initialze();
+        const frontend = new FrontendController(document.querySelector(appHook), window.HakuNeko.SettingsManager.OpenScope(), appWindow);
+
+        if(showSplashScreen) {
+            await Promise.race([
+                new Promise<void>(resolve => setTimeout(resolve, 7500)),
+                new Promise<void>(resolve => frontend.FrontendLoaded.Subscribe(() => resolve())),
+            ]);
+            appWindow.HideSplash();
         }
-        throw CreateUnsupportedPlatformError(info);
     } catch(error) {
         console.error(error);
-        const html = `
-            <p>
-                <div style="text-align: left; display: inline-block; width: 75%;">
-                    <hr>
-                    <h2>${error?.message}</h2>
-                    <pre style="padding: 0.5em; white-space: pre-wrap; color: red; background-color: white; border: 1px solid darkgrey;">${error?.stack}</pre>
-                    <hr>
-                </div>
-            </p>
-        `
-            //.replace(new RegExp(window.location.origin, 'g'), '')
-            .replace(/\?t=[\d:]+/g, '')
-            .trim();
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => document.querySelector('#hakuneko-notice').innerHTML = html);
-        } else {
-            document.querySelector('#hakuneko-notice').innerHTML = html;
-        }
+        showErrorNotice(document.querySelector(noticeHook), error);
     }
 })();

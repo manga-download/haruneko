@@ -12,7 +12,6 @@ const cdnUrl = apiUrl;
 @ReaderFront.ChaptersSinglePageAJAX(apiUrl)
 @ReaderFront.PagesSinglePageAJAX(apiUrl, cdnUrl)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './NineHentai.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 const tokenScript = `
     new Promise((resolve, reject) => {
@@ -26,7 +26,6 @@ type APIChapter = {
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -40,13 +39,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI).href;
         //Get CSRF and XSRF tokens from meta tag and cookies
-        const tokens = await FetchWindowScript<JSONTokens>(new FetchRequest(chapterurl), tokenScript, 500);
+        const tokens = await FetchWindowScript<JSONTokens>(new Request(chapterurl), tokenScript, 500);
 
         //Now call the API
         const url = new URL('/api/getBookByID', this.URI).href;
         const mangaid = chapter.Identifier.match(/\/g\/([\d]+)/)[1];
         const body = JSON.stringify({ id: mangaid });
-        const request = new FetchRequest(url, {
+        const request = new Request(url, {
             method: 'POST', body: body, headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-Requested-With': 'XMLHttpRequest',

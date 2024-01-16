@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Pururin.webp';
 import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import {FetchCSS, FetchRequest } from './../FetchProvider';
+import {FetchCSS } from '../platform/FetchProvider';
 
 type jsonImg = {
     directory: string,
@@ -21,7 +21,6 @@ function MangaInfoExTractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/gallery\/\d+\//, 'div.title h1 span')
 @Common.MangasMultiPageCSS('/browse/title?page={page}', 'a.card.card-gallery', 1, 1, 0, MangaInfoExTractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -34,14 +33,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div.gallery-action a:first-of-type'); //button "Read Online"
         return [new Chapter(this, manga, data[0].pathname, 'Chapter')];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(chapter.Identifier, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS(request, '.img-viewer');
         const imgdata: jsonImg = JSON.parse(data[0].dataset['img']);
         const server = data[0].dataset['svr'];
