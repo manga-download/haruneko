@@ -3,7 +3,7 @@ import icon from './Zebrack.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import protoTypes from './Zebrack.proto?raw';
-import { FetchProto, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchProto, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
@@ -138,7 +138,7 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('magazine_id', magazineId);
         uri.searchParams.set('magazine_issue_id', magazineIssueId);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         return FetchProto<MagazineDetailViewV3>(request, protoTypes, 'Zebrack.MagazineDetailViewV3');
     }
 
@@ -146,7 +146,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/api/v3/gravure_detail', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('gravure_id', gravureId);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         return FetchProto<GravureDetailViewV3>(request, protoTypes, 'Zebrack.GravureDetailViewV3');
     }
 
@@ -154,7 +154,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/api/browser/title_detail', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('title_id', titleId);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         return FetchProto<ZebrackResponse>(request, protoTypes, this.responseRootType);
     }
 
@@ -197,7 +197,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/api/browser/title_volume_list', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('title_id', id);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         return FetchProto<ZebrackResponse>(request, protoTypes, this.responseRootType);
     }
 
@@ -205,13 +205,13 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/api/v3/title_chapter_list', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('title_id', id);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         return FetchProto<TitleChapterListViewV3>(request, protoTypes, 'Zebrack.TitleChapterListViewV3');
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const [type, titleId, chapterId] = chapter.Identifier.split('/');
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         const secretKey = await FetchWindowScript<string>(request, `localStorage.getItem('device_secret_key') || ''`);
 
         if (type === 'chapter') {
@@ -258,11 +258,11 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('title_id', titleId);
         uri.searchParams.set('volume_id', volumeId);
-        let request = new FetchRequest(uri.href);
+        let request = new Request(uri.href);
         let data = await FetchProto<VolumeViewerViewV3>(request, protoTypes, 'Zebrack.VolumeViewerViewV3');
         if (!data.pages) {
             uri.searchParams.set('is_trial', '1');
-            request = new FetchRequest(uri.href);
+            request = new Request(uri.href);
             data = await FetchProto<VolumeViewerViewV3>(request, protoTypes, 'Zebrack.VolumeViewerViewV3');
         }
         return data;
@@ -275,11 +275,11 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('magazine_id', magazineId);
         uri.searchParams.set('magazine_issue_id', magazineIssueId);
-        let request = new FetchRequest(uri.href);
+        let request = new Request(uri.href);
         let data = await FetchProto<ZebrackResponse>(request, protoTypes, this.responseRootType);
         if (!data.magazineViewerView) {
             uri.searchParams.set('is_trial', '1');
-            request = new FetchRequest(uri.href);
+            request = new Request(uri.href);
             data = await FetchProto<ZebrackResponse>(request, protoTypes, this.responseRootType);
         }
         return data;
@@ -291,11 +291,11 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('is_trial', '0');
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('gravure_id', gravureId);
-        let request = new FetchRequest(uri.href);
+        let request = new Request(uri.href);
         let data = await FetchProto<GravureViewerViewV3>(request, protoTypes, 'Zebrack.GravureViewerViewV3');
         if (!data.images) {
             uri.searchParams.set('is_trial', '1');
-            request = new FetchRequest(uri.href);
+            request = new Request(uri.href);
             data = await FetchProto<GravureViewerViewV3>(request, protoTypes, 'Zebrack.GravureViewerViewV3');
         }
         return data;
@@ -309,7 +309,7 @@ export default class extends DecoratableMangaScraper {
         params.set('title_id', titleId);
         params.set('chapter_id', chapterId);
         params.set('type', 'normal');
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             method: 'POST',
             body: params.toString(),
             headers: {

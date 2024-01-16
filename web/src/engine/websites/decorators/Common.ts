@@ -1,6 +1,6 @@
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception, InternalError } from '../../Error';
-import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchProvider';
+import { Fetch, FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { MediaChild, MediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
@@ -102,7 +102,7 @@ function GetParentReferer(item: MediaContainer<MediaChild>, base: URL): URL {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string, extract = DefaultLabelExtractor as LabelExtractor, includeSearch = false, includeHash = false): Promise<Manga> {
     const uri = new URL(url);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: uri.href
         }
@@ -188,7 +188,7 @@ export function MangasNotSupported() {
  */
 export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const uri = new URL(path, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: this.URI.href
         }
@@ -278,7 +278,7 @@ export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: s
  */
 export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: this.URI.href
         }
@@ -317,7 +317,7 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extr
  */
 export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga, script: string, delay = 0): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: this.URI.href
         }
@@ -376,7 +376,7 @@ export function ChaptersUniqueFromManga() {
  */
 export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, query: string, extract = DefaultPageLinkExtractor as PageLinkExtractor<E>): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: GetParentReferer(chapter, this.URI).href
         }
@@ -415,7 +415,7 @@ export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract
  */
 export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay = 0): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: GetParentReferer(chapter, this.URI).href
         }
@@ -457,7 +457,7 @@ export function PagesSinglePageJS(script: string, delay = 0) {
 export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const imageLink = deProxifyLink ? DeProxify(page.Link) : page.Link;
-        const request = new FetchRequest(imageLink.href, {
+        const request = new Request(imageLink.href, {
             signal: signal,
             headers: {
                 Referer: page.Parameters?.Referer ?? imageLink.origin,
@@ -497,7 +497,7 @@ export function ImageAjax(detectMimeType = false, deProxifyLink = false) {
 export async function FetchImageElement(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, includeRefererHeader = true, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const imageLink = deProxifyLink ? DeProxify(page.Link) : page.Link;
-        const request = new FetchRequest(imageLink.href, {
+        const request = new Request(imageLink.href, {
             signal: signal,
             headers: {
                 'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
@@ -543,7 +543,7 @@ export function ImageElement(includeRefererHeader = true, detectMimeType = false
  */
 export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, queryImage: string, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     const image = await this.imageTaskPool.Add(async () => {
-        const request = new FetchRequest(page.Link.href, {
+        const request = new Request(page.Link.href, {
             signal: signal,
             headers: {
                 Referer: page.Link.origin,
