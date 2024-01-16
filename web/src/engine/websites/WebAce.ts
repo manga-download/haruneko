@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './WebAce.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLDivElement) {
     const anchor = element.querySelector<HTMLAnchorElement>('a');
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
         //we also enforce / a the end of the identifier
         const uri = new URL(url);
         uri.pathname = uri.pathname.match(/(\/[^/]+\/contents\/\d{7}\/)/)[1];
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS<HTMLHeadingElement>(request, 'div#sakuhin-info div.credit h1');
         return new Manga(this, provider, uri.pathname, data[0].textContent.trim());
     }
@@ -55,14 +55,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`${manga.Identifier}episode/`, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div#read ul.table-view li.media:not(.yudo) a.navigate-right');
         return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('div.media-body p.text-bold').textContent.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(`${chapter.Identifier}json/`, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchJSON<string[]>(request);
         return data.map(image => new Page(this, chapter, new URL(image, request.url)));
     }

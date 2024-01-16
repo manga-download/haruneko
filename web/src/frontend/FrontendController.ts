@@ -3,12 +3,11 @@ import { Event } from '../engine/Event';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
 import { Info as InfoFluentCore } from './fluent-core/FrontendInfo';
-import { CreateWindowController } from './WindowController';
 import type { Choice, ISettings } from '../engine/SettingsManager';
 import { Key } from '../engine/SettingsGlobal';
 import { InternalError } from '../engine/Error';
+import type { IAppWindow } from '../engine/platform/AppWindow';
 
-const frontendSelector = '#app';
 export const FrontendList: IFrontendInfo[] = [
     InfoClassic,
     InfoFluentCore
@@ -17,13 +16,17 @@ export const FrontendList: IFrontendInfo[] = [
 export class FrontendController {
 
     private activeFrontendID = '';
-    public static readonly FrontendLoaded = new Event<IFrontendModule, IFrontendInfo>();
+    public readonly FrontendLoaded = new Event<IFrontendModule, IFrontendInfo>();
 
-    constructor(private readonly settings: ISettings) {
+    constructor(root: HTMLElement, private readonly settings: ISettings, private readonly appWindow: IAppWindow) {
+        const load = () => {
+            document.removeEventListener('DOMContentLoaded', load);
+            this.Load(root);
+        };
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', this.Load);
+            document.addEventListener('DOMContentLoaded', load);
         } else {
-            this.Load();
+            this.Load(root);
         }
         this.settings.Get<Choice>(Key.Frontend).ValueChanged.Subscribe((_, value) => this.Reload(value));
     }
@@ -51,15 +54,14 @@ export class FrontendController {
         }
     }
 
-    private async Load(): Promise<void> {
+    private async Load(hook: HTMLElement): Promise<void> {
         try {
             const frontendID = this.GetSettingsFrontendID() || FrontendList[0].ID;
             const frontend = await this.GetFrontendModuleByID(frontendID);
-            const hook = document.querySelector(frontendSelector) as HTMLElement;
             hook.innerHTML = '';
-            await frontend.Render(hook, CreateWindowController());
+            await frontend.Render(hook, this.appWindow);
             this.activeFrontendID = frontendID;
-            FrontendController.FrontendLoaded.Dispatch(frontend, this.GetFrontendInfoByID(frontendID));
+            this.FrontendLoaded.Dispatch(frontend, this.GetFrontendInfoByID(frontendID));
         } catch(error) {
             console.error(`Failed to load frontend!`, error);
         }

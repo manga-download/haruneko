@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './UzayManga.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
     new Promise((resolve, reject) => {
@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
 
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchWindowScript<string>(request, pageScript);
         const jsonString = data.match(/(\[{"path":.*}\])}}/)[1];
         const imagesData: JSONPage[] = JSON.parse(jsonString);
