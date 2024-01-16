@@ -21,7 +21,6 @@ function ChapterInfoExtractor(element: HTMLElement) {
 @Common.ChaptersSinglePageCSS(MangaInn.queryChapters, ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaInn.queryPages)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

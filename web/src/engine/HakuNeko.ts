@@ -1,6 +1,3 @@
-import { DetectPlatform, type PlatformInfo } from './Platform';
-import { Initialize as InitBlockList } from './BlockList';
-import { Initialize as InitFetchProvider } from './FetchProvider';
 import { Initialize as InitGlobalSettings } from './SettingsGlobal';
 import { Tags } from './Tags';
 import { PluginController } from './PluginController';
@@ -13,6 +10,9 @@ import { CreatePlatformIPC } from './ipc/InterProcessCommunicationFactory';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
+import { CreateBloadGuard } from './platform/BloatGuard';
+import { CreateFetchProvider, SetupFetchProviderExports } from './platform/FetchProvider';
+
 export class HakuNeko {
 
     readonly #storageController: StorageController;
@@ -22,11 +22,10 @@ export class HakuNeko {
     readonly #itemflagManager: ItemflagManager;
     readonly #downloadManager: DownloadManager;
 
-    constructor(info?: PlatformInfo) {
-        info = info ?? DetectPlatform();
-        InitBlockList(info);
-        InitFetchProvider(info);
-        this.#storageController = CreateStorageController(info);
+    constructor() {
+        CreateBloadGuard().Initialize();
+        SetupFetchProviderExports(CreateFetchProvider());
+        this.#storageController = CreateStorageController();
         this.#settingsManager = new SettingsManager(this.#storageController);
         this.#pluginController = new PluginController(this.#storageController, this.#settingsManager);
         this.#bookmarkPlugin = new BookmarkPlugin(this.#storageController, this.#pluginController, new InteractiveFileContentProvider());

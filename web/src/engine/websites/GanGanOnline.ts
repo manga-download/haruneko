@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './GanGanOnline.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 type NEXTDATA<T> = {
     props: {
@@ -110,7 +110,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     async getEmbeddedJSON<T>(uri: URL) : Promise<T>{
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const scripts = await FetchCSS<HTMLScriptElement>(request, 'script#__NEXT_DATA__');
         const data: NEXTDATA<T> = JSON.parse(scripts[0].text);
         return data.props.pageProps.data;

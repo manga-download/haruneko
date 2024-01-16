@@ -1,10 +1,12 @@
 import { Tags } from './../Tags';
 import icon from './Kuaikanmanhua.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
-function LabelExtractor(element: HTMLElement) {
-    return element.textContent.split('|').shift().trim();
+type MangaID = {
+    id: string,
+    title: string
 }
 
 const chapterScript = `
@@ -36,12 +38,16 @@ const pageScript = `
     });
 `;
 
-@Common.MangaCSS(/^{origin}/, 'head title', LabelExtractor)
+const mangascript = `
+    new Promise(resolve => {
+        resolve( { id : window.location.pathname, title : __NUXT__.data[0].topicInfo.title });
+    });
+`;
+
 @Common.MangasMultiPageCSS('/tag/0?page={page}', 'div.tagContent div a')
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -51,4 +57,15 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return /^https?:\/\/(m\.|www\.)?kuaikanmanhua\.com\/(mobile|web\/topic)\/\d+\//.test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const data = await FetchWindowScript<MangaID>(new Request(url), mangascript);
+        return new Manga(this, provider, data.id, data.title);
+
+    }
+
 }

@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './IMHentai.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 const script = `
@@ -23,9 +23,9 @@ const script = `
 
 @Common.MangaCSS(/^{origin}/, 'div.right_details h1')
 @Common.MangasNotSupported()
+@Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageJS(script, 2500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -34,9 +34,5 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return [new Chapter(this, manga, manga.Identifier, manga.Title)];
     }
 }

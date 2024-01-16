@@ -9,7 +9,6 @@ import * as MangaInn from './decorators/MangaInn';
 @Common.ChaptersSinglePageCSS(MangaInn.queryChapters, MangaInn.ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaInn.queryPages)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

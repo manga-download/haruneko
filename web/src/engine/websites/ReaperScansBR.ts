@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ReaperScansBR.webp';
 import { Chapter, DecoratableMangaScraper, Page, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from './../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 function MangaLabelExtractor(element: HTMLElement) {
     return element.textContent.split(' - ')[0].trim();
@@ -32,7 +32,6 @@ type APIPages = {
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', MangaLabelExtractor)
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.reaperscans.net';
@@ -60,7 +59,7 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('page', String(page));
         uri.searchParams.set('perPage', '100');
 
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             method: 'GET',
             headers: {
                 'Origin': this.URI.href,
@@ -73,7 +72,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(manga.Identifier, this.apiUrl).href);
+        const request = new Request(new URL(manga.Identifier, this.apiUrl).href);
         const data = await FetchJSON<APISeasons>(request);
         const chapters = [];
         data.seasons.forEach(season => {
@@ -85,7 +84,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier, this.apiUrl).href);
+        const request = new Request(new URL(chapter.Identifier, this.apiUrl).href);
         const { data } = await FetchJSON <APIPages>(request);
         return data.map(page => {
             return new Page(this, chapter, new URL(page));
