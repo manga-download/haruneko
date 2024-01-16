@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
         super('mangas', `MangAs`, 'https://mangas.in', Tags.Language.Spanish, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
         this.Settings.throttle = new Numeric('throttle.images', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 4, 1, 60);
         this.Settings.throttle.ValueChanged.Subscribe((_, value: number) => this.imageTaskPool.RateLimit = new RateLimit(value, 5));
-        this.imageTaskPool.RateLimit = new RateLimit(this.Settings.throttle.value as number, 5);
+        this.imageTaskPool.RateLimit = new RateLimit(this.Settings.throttle.Value as number, 5);
     }
 
     public override get Icon() {
