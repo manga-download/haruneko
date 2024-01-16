@@ -3,7 +3,7 @@ import icon from './LineWebtoonTranslate.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as LineW from './decorators/LineWebtoon';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
        new Promise(async resolve => {
@@ -54,7 +54,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         return FetchWindowScript(request, `window.cookieStore.set('needCCPA', 'false');window.cookieStore.set('pagGDPR', 'true');`);
     }
 

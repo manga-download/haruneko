@@ -1,4 +1,4 @@
-import { FetchRequest, FetchCSS, FetchWindowScript } from '../../FetchProvider';
+import { FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
@@ -214,7 +214,7 @@ export async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga
 async function getChaptersFromPage(scrapper: MangaScraper, manga: Manga, query: string, extractor, page: number): Promise<Chapter[]> {
     const url = new URL(manga.Identifier, scrapper.URI);
     url.searchParams.set('page', String(page));
-    const request = new FetchRequest(url.href);
+    const request = new Request(url.href);
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const { id, title } = extractor.call(scrapper, element);
@@ -259,7 +259,7 @@ function ChapterEndsWith(target: Chapter[], source: Chapter[]) {
  */
 async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string): Promise<Page[]> {
     const url = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(url.href);
+    const request = new Request(url.href);
     const data = await FetchWindowScript(request, script, 1500);
     if (!Array.isArray(data)) return [];
     return typeof data[0] == 'string' ? (data as Array<string>).map(page => new Page(this, chapter, new URL(page))) : createPagesfromData(this, chapter, data as PageData[]);
