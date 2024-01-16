@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MagKan.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchHTML, FetchRequest } from '../FetchProvider';
+import { Fetch, FetchHTML } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
     return {
@@ -26,7 +26,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const request = new Request(new URL(manga.Identifier, this.URI).href);
         const body = await FetchHTML(request);
         const current = [...body.querySelectorAll<HTMLAnchorElement>('div#main div.update_summary div.exp ul.btn li a[href*="/assets/files/"]')].map(element => {
             const id = element.pathname.replace(/\/HTML5\/?$/i, '');
@@ -41,7 +41,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(chapter.Identifier + '/iPhone/ibook.xml', this.URI);
-        const response = await Fetch(new FetchRequest(uri.href));
+        const response = await Fetch(new Request(uri.href));
         const data = await response.text();
         const pages = parseInt(data.match(/<total>(\d+)<\/total>/)[1]);
         return new Array<Page>(pages).fill(null).map((_, index) => new Page(this, chapter, new URL(`${chapter.Identifier}/books/images/2/${index + 1}.jpg`, uri)));
