@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './MangaFire.webp';
 import type { Priority } from '../taskpool/DeferredTask';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
         //fetch page to get languages available
         const id = manga.Identifier.match(this.idRegex)[1];
         const mangauri = new URL(manga.Identifier, this.URI);
-        const data = await FetchCSS(new FetchRequest(mangauri.href), 'section.m-list div.dropdown-menu a');
+        const data = await FetchCSS(new Request(mangauri.href), 'section.m-list div.dropdown-menu a');
         let languageList = data.map(element => element.dataset.code.toLowerCase());
         languageList = [...new Set(languageList)];
 
@@ -62,7 +62,7 @@ export default class extends DecoratableMangaScraper {
         for (const language of languageList) {
             for (const type of types) { // https://mangafire.to/ajax/read/XXXXX/volume/en
                 const uri = new URL(`ajax/read/${id}/${type}/${language}`, this.URI);
-                const data = await FetchJSON<APIResult<APIHtml>>(new FetchRequest(uri.href));
+                const data = await FetchJSON<APIResult<APIHtml>>(new Request(uri.href));
                 const dom = new DOMParser().parseFromString(data.result.html, 'text/html');
                 const chaptersNodes = [...dom.querySelectorAll('a')];
                 chaptersNodes.filter(anchor => anchor.pathname.includes(`/${type}-`))
@@ -87,7 +87,7 @@ export default class extends DecoratableMangaScraper {
         //https://mangafire.to/ajax/read/volume/11111  /  https://mangafire.to/ajax/read/chapter/123456
         const chapterid: ChapterID = JSON.parse(chapter.Identifier);
         const uri = new URL(`ajax/read/${chapterid.itemtype}/${chapterid.itemid}`, this.URI);
-        const data = await FetchJSON<APIResult<APIPages>>(new FetchRequest(uri.href));
+        const data = await FetchJSON<APIResult<APIPages>>(new Request(uri.href));
         return data.result.images.map(imageArray => {
             if (imageArray[2] < 1) {
                 return new Page(this, chapter, new URL(imageArray[0]));
