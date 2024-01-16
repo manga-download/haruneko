@@ -2,7 +2,7 @@
 import icon from './RidiBooks.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIMangas = {
     data: {
@@ -60,7 +60,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await FetchWindowScript<BookDetail>(new FetchRequest(url), 'bookDetail');
+        const data = await FetchWindowScript<BookDetail>(new Request(url), 'bookDetail');
         return new Manga(this, provider, data.series_id, data.series_title.trim());
     }
 
@@ -78,7 +78,7 @@ export default class extends DecoratableMangaScraper {
         }).toString();
 
         while (uri) {
-            const { data } = await FetchJSON<APIMangas>(new FetchRequest(uri.href));
+            const { data } = await FetchJSON<APIMangas>(new Request(uri.href));
             const mangas = data.items.map(({ book }) => {
                 const title = book.serial?.title ? book.serial.title.trim() : book.title.trim();
                 return new Manga(this, provider, book.bookId, title);
@@ -91,7 +91,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`/books/${manga.Identifier}`, this.URI);
-        const data = await FetchWindowScript<ChapterID[]>(new FetchRequest(uri.href), 'seriesBookListJson');
+        const data = await FetchWindowScript<ChapterID[]>(new Request(uri.href), 'seriesBookListJson');
         return data.map(chapter => {
             const title = chapter.title.replace(manga.Title, '').trim();
             return new Chapter(this, manga, chapter.id, title != '' ? title : chapter.title.trim());
@@ -100,7 +100,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL('/api/web-viewer/generate', this.URI);
-        const data = await FetchJSON<APIPages>(new FetchRequest(uri.href, {
+        const data = await FetchJSON<APIPages>(new Request(uri.href, {
             method: 'POST',
             body: JSON.stringify({
                 book_id: chapter.Identifier

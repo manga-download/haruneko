@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './XoxoComics.webp';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function LabelExtractor(head: HTMLHeadingElement) {
     return head.textContent.replace(/ Comic/i, '').trim();
@@ -15,7 +15,6 @@ function ImageExtractor(img: HTMLImageElement) {
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
 @Common.PagesSinglePageCSS('div.page-chapter img', ImageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -47,7 +46,7 @@ export default class extends DecoratableMangaScraper {
 
     async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier + '?page=' + page, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div.chapter > a');
         return data.map(element => new Chapter(this, manga, element.pathname + '/all', element.text.replace(manga.Title, '').trim()));
     }

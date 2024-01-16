@@ -1,10 +1,10 @@
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
 import type { ISetting, ISettings, SettingsManager } from '../SettingsManager';
 import type { StorageController } from '../StorageController';
 import type { Tag } from '../Tags';
 import type { Priority } from '../taskpool/TaskPool';
 import icon from '../../img/media.webp';
 import { NotImplementedError } from '../Error';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 export type MediaChild = MediaContainer<MediaChild> | MediaItem;
 
@@ -127,7 +127,7 @@ export abstract class MediaScraper<T extends MediaContainer<MediaChild>> {
     public abstract CreatePlugin(storageController: StorageController, settingsManager: SettingsManager): T;
 
     public async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         return FetchWindowScript(request, '');
     }
 

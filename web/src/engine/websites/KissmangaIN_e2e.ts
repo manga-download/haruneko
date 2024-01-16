@@ -12,11 +12,11 @@ const config = {
     },
     child: {
         id: '/kissmanga/one-piece-kpp/chapter-1-romance-dawn/',
-        title: 'Chapter 1 Romance Dawn'
+        title: 'Chapter 1  Romance Dawn'
     },
     entry: {
         index: 0,
-        size: 159_252,
+        size: 167_502,
         type: 'image/jpeg'
     }
 };

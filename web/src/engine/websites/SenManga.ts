@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './SenManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from './../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 const mangasPerPage = 100;
 
@@ -44,7 +44,6 @@ type APIMultiChapter = {
 }
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -52,7 +51,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         return FetchWindowScript(request, `window.cookieStore.set('viewer', '1')`);
     }
 
@@ -67,7 +66,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = url.split('/').pop();
         const uri = new URL('/api/title/' + id, this.URI).href;
-        const request = new FetchRequest(uri);
+        const request = new Request(uri);
         const data = await FetchJSON<APISingleManga>(request);
         return new Manga(this, provider, data.data.id, data.data.title.trim());
     }
@@ -83,14 +82,14 @@ export default class extends DecoratableMangaScraper {
 
     private async getMangasFromPage(offset: number, provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL('/api/search?limit=' + mangasPerPage + '&offset=' + offset, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchJSON<APIMultiManga>(request);
         return data.success ? data.data.map(element => new Manga(this, provider, element.id, element.title.trim())) : [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL('/api/title/' + manga.Identifier +'/chapters', this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchJSON<APIMultiChapter>(request);
         return data.success ? data.data.map(element => new Chapter(this, manga, '/read/' + element.id, element.full_title.trim() + ' (' + element.language.code + ')')) : [];
     }
