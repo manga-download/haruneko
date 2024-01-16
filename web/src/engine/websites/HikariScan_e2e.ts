@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Hikari Scan'
     },
     container: {
-        url: 'https://hikariscan.com.br/manga/kaette-kudasai-akutsu-san/',
+        url: 'https://hikariscan.org/manga/kaette-kudasai-akutsu-san/',
         id: '/manga/kaette-kudasai-akutsu-san/',
         title: 'Kaette Kudasai! Akutsu-san'
     },

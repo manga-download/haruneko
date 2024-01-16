@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaJar.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from './../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -14,7 +14,6 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/manga?page={page}', 'div.row article.flex-item div.post-description a.card-about', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageCSS('img.page-image')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -37,7 +36,7 @@ export default class extends DecoratableMangaScraper {
 
     private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier + '/chaptersList?page='+page, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.list-group li.chapter-item a');
         return data.map(anchor => new Chapter(this, manga, anchor.pathname, anchor.text.trim()));
     }

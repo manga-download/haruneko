@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './WeiboManhua.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 const apiURL = 'http://apiwap.vcomic.com';
 
@@ -65,7 +65,6 @@ type JSONPage = {
 };
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -83,7 +82,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/\/(\d+)$/)[1];
         const uri = new URL(`/wbcomic/comic/comic_show?comic_id=${id}&_request_from=pc`, apiURL);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIManga>(request);
         const title = data.data.comic.name;
         return new Manga(this, provider, id, title.trim());
@@ -100,21 +99,21 @@ export default class extends DecoratableMangaScraper {
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL(`/wbcomic/comic/filter_result?page_num=${page}&rows_num=250&cate_id=0&end_status=0&comic_pay_status=0&_request_from=pc`, apiURL);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIMangas>(request);
         return data.data.data.map(manga => new Manga(this, provider, manga.comic_id, manga.comic_name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`/wbcomic/comic/comic_show?comic_id=${manga.Identifier}&_request_from=pc`, apiURL);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIManga>(request);
         return data.code == 1 ? data.data.chapter_list.map(element => new Chapter(this, manga, String(element.chapter_id), element.chapter_name)) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(`/wbcomic/comic/comic_play?chapter_id=${chapter.Identifier}&_request_from=pc`, apiURL);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIChapter>(request);
         return data.code == 1 ? data.data.json_content.page.map(page => new Page(this, chapter, new URL(page.newImgUrl || page.newWebpImgUrl || page.mobileImgUrl || page.mobileWebpImgUrl))) : [];
     }

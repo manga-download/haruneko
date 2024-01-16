@@ -3,6 +3,7 @@ import icon from './NeuManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
+//Note : use Zmanga WP theme. May issue a template in the future
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.series-title h2')
 @Common.MangasSinglePageCSS('/manga-list/', 'div.mangalist-blc ul li a.series')
 @Common.ChaptersSinglePageCSS('ul.series-chapterlist li div.flexch-infoz a', Common.AnchorInfoExtractor(false, 'span.date'))

@@ -2,7 +2,8 @@ import { Tags } from '../Tags';
 import icon from './ArgosScan.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchGraphQL, FetchRequest } from '../FetchProvider';
+import { FetchGraphQL } from '../platform/FetchProvider';
+import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type ApiResult<T> = {
     [id: string]: {
@@ -28,7 +29,6 @@ type APIChapter = {
 }
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -52,10 +52,10 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = { id: id };
-        const request = new FetchRequest(new URL('/graphql', this.URI).href);
+        const vars: JSONObject = { id: id };
+        const request = new Request(new URL('/graphql', this.URI).href);
         const operationName = 'project';
-        const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, JSON.stringify(vars));
+        const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, vars);
         const title = data[operationName].name;
         return new Manga(this, provider, String(id), title.trim());
     }
@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = {
+        const vars: JSONObject = {
             filters: {
                 operator: "AND",
                 childExpressions: [{
@@ -103,8 +103,8 @@ export default class extends DecoratableMangaScraper {
             }
         };
 
-        const request = new FetchRequest(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<ApiResult<APIManga[]>>(request, 'latestProjects', gql, JSON.stringify(vars));
+        const request = new Request(new URL('/graphql', this.URI).href);
+        const data = await FetchGraphQL<ApiResult<APIManga[]>>(request, 'latestProjects', gql, vars);
         return data['getProjects']['projects'].map(manga => new Manga(this, provider, String(manga.id), manga.name));
 
     }
@@ -119,10 +119,10 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = { id: parseInt(manga.Identifier) };
-        const request = new FetchRequest(new URL('/graphql', this.URI).href);
+        const vars: JSONObject = { id: parseInt(manga.Identifier) };
+        const request = new Request(new URL('/graphql', this.URI).href);
         const operationName = 'project';
-        const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, JSON.stringify(vars));
+        const data = await FetchGraphQL<ApiSingleResult<APIManga>>(request, operationName, gql, vars);
         return data[operationName].getChapters.map(chapter => {
             const title = `Ch. ${chapter.number} - ${chapter.title}`;
             return new Chapter(this, manga, String(chapter.id), title.trim());
@@ -139,7 +139,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const vars = {
+        const vars: JSONObject = {
             filters: {
                 operator: "AND",
                 filters: [{
@@ -165,8 +165,8 @@ export default class extends DecoratableMangaScraper {
             }
         };
 
-        const request = new FetchRequest(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<ApiResult<APIChapter[]>>(request, 'getChapter', gql, JSON.stringify(vars));
+        const request = new Request(new URL('/graphql', this.URI).href);
+        const data = await FetchGraphQL<ApiResult<APIChapter[]>>(request, 'getChapter', gql, vars);
         return data['getChapters']['chapters'][0].images.map(image => new Page(this, chapter, new URL(`images/${chapter.Parent.Identifier}/${image}`, this.URI)));
 
     }

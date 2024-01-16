@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './PixivComics.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchJSON, FetchRequest } from '../FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 
@@ -127,7 +127,7 @@ export default class extends DecoratableMangaScraper {
         const plaintext = new TextEncoder().encode(timestamp + 'mAtW1X8SzGS880fsjEXlM73QpS1i4kUMBhyhdaYySk8nWz533nrEunaSplg63fzT');
         const hash = Buffer.from(await crypto.subtle.digest('SHA-256', plaintext)).toString('hex');
         const uri = new URL(`episodes/${chapter.Identifier}/read_v3`, this.apiURL);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             headers: {
                 'x-requested-with': 'pixivcomic',
                 'x-client-time': timestamp,
@@ -142,7 +142,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const payload = page.Parameters as APIPage;
         const data = await this.imageTaskPool.Add(async () => {
-            const request = new FetchRequest(page.Link.href, {
+            const request = new Request(page.Link.href, {
                 method: 'GET',
                 headers: {
                     Referer: this.URI.href,
@@ -213,8 +213,8 @@ export default class extends DecoratableMangaScraper {
         return h;
     }
 
-    prepareRequest(url: string): FetchRequest {
-        return new FetchRequest(url, {
+    prepareRequest(url: string): Request {
+        return new Request(url, {
             headers: {
                 'X-Requested-With': 'pixivcomic',
                 Referer: this.URI.href
