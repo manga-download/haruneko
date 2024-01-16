@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ManmanApp.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIChapter = {
     code: number,
@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
 
     async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const mangaId = manga.Identifier.match(/(\d+).html/)[1];
-        const request = new FetchRequest(new URL('/works/comic-list-ajax.html', this.URI).href, {
+        const request = new Request(new URL('/works/comic-list-ajax.html', this.URI).href, {
             method: 'POST',
             body: new URLSearchParams({ id: mangaId, sort: '0', page: String(page) }).toString(),
             headers: {

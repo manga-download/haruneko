@@ -3,7 +3,7 @@ import icon from './ComicDays.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.ChaptersSinglePageCSS()
@@ -28,14 +28,14 @@ export default class extends DecoratableMangaScraper {
         return mangaList.filter(manga => manga === mangaList.find(m => m.Title === manga.Title));
     }
     private async _getMangaListFromPages(provider: MangaPlugin, path: string, query: string, queryimg: string): Promise<Manga[]> {
-        const request = new FetchRequest(new URL(path, this.URI).href);
+        const request = new Request(new URL(path, this.URI).href);
         const data = await FetchCSS<HTMLAnchorElement>(request, query);
         return data.map(element => new Manga(this, provider, element.pathname, element.querySelector(queryimg).getAttribute('alt').trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         if (/^\/magazine\/\d+$/.test(manga.Identifier)) {
-            const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+            const request = new Request(new URL(manga.Identifier, this.URI).href);
             const data = await FetchCSS(request, '.episode-header-title');
             return [new Chapter(this, manga, manga.Identifier, data[0].textContent.replace(manga.Title, "").trim())];
         } else {
