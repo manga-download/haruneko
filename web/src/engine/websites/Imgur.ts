@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Imgur.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
     new Promise(resolve => {
@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname;
-        const title = await FetchWindowScript<string>(new FetchRequest(url), mangaScript);
+        const title = await FetchWindowScript<string>(new Request(url), mangaScript);
         return new Manga(this, provider, id, title.trim());
     }
 }
