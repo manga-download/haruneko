@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './HeavenManga.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(element: HTMLAnchorElement) {
     const id = element.pathname;

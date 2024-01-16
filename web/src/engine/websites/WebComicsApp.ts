@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './WebComicsApp.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 const apiUrl = 'https://popeye.webcomicsapp.com';
 
@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = url.split('/comic/')[1].split('/')[1];
-        const element = await FetchCSS<HTMLHeadingElement>(new FetchRequest(url), 'div.book-info div.card-info div.info h5');
+        const element = await FetchCSS<HTMLHeadingElement>(new Request(url), 'div.book-info div.card-info div.info h5');
         const title = element.pop().textContent.trim();
         return new Manga(this, provider, id, title);
     }
@@ -60,14 +60,14 @@ export default class extends DecoratableMangaScraper {
     //using chapter.index as identifier because api calls need manga.identifier and chapter.index
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/api/chapter/list?manga_id=${manga.Identifier}`, apiUrl).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchJSON<APIChapters>(request);
         return data.code == 1000 ? data.data.list.map(element => new Chapter(this, manga, String(element.index), element.name)) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(`/api/chapter/detail?manga_id=${chapter.Parent.Identifier}&index=${chapter.Identifier}`, apiUrl).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchJSON<APIPages>(request);
         return data.code == 1000 ? data.data.pages.map(element => new Page(this, chapter, new URL(element.src))) : [];
     }

@@ -3,7 +3,7 @@ import icon from './KumoTran.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchWindowScript<ImageData[]>(request, pagejs, 500);
         return data.map(element => {
             if (element.script) {
