@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './Sukima.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 import * as Common from './decorators/Common';
@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/\/(\w+)\/?$/)[1];
-        const request = new FetchRequest(new URL(`/api/book/v1/title/${id}/`, this.URI).href);
+        const request = new Request(new URL(`/api/book/v1/title/${id}/`, this.URI).href);
         const data = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, id, data.title);
     }
@@ -116,7 +116,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(`/api/book/v1/title/${manga.Identifier}/`, this.URI).href);
+        const request = new Request(new URL(`/api/book/v1/title/${manga.Identifier}/`, this.URI).href);
         const books = await FetchJSON<APIManga>(request);
         const chapters : Chapter[]= [];
 
@@ -131,7 +131,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const pages = await FetchWindowScript<PAGE_INFO[]>(request, pageScript, 1500);
         return pages.map(page => new Page(this, chapter, new URL(page.page_url), { Referer: request.url, ...page }));
     }
@@ -160,7 +160,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     async fetchPOST<T>(uri: string, body: unknown) {
-        const request = new FetchRequest(new URL(uri, this.URI).href, {
+        const request = new Request(new URL(uri, this.URI).href, {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {

@@ -1,6 +1,6 @@
 // https://foolcode.github.io/FoOlSlide/
 
-import { FetchRequest, Fetch, FetchCSS } from '../../FetchProvider';
+import { Fetch, FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
@@ -27,7 +27,7 @@ const regexPageListEntries = [
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
-    const request = new FetchRequest(url, {
+    const request = new Request(url, {
         method: 'POST',
         body: 'adult=true',
         headers: {
@@ -101,7 +101,7 @@ const ChapterInfoExtractor = Common.AnchorInfoExtractor();
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks, extractor = ChapterInfoExtractor): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         method: 'POST',
         body: 'adult=true',
         headers: {
@@ -145,7 +145,7 @@ export function ChaptersSinglePageCSS(query: string = queryChapterListLinks, ext
  */
 export async function FetchPagesSinglePageREGEX(this: MangaScraper, chapter: Chapter, ...matchers: RegExp[]): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         method: 'POST',
         body: 'adult=true',
         headers: {

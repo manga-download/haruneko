@@ -6,7 +6,7 @@ const config: Config = {
         title: 'ZeroScans'
     },
     container: {
-        url: 'https://zeroscans.com/comics/second-life-ranker',
+        url: 'https://zscans.com/comics/second-life-ranker',
         id: JSON.stringify({ id: 7, slug: 'second-life-ranker'}),
         title: 'Second Life Ranker',
         timeout: 10000

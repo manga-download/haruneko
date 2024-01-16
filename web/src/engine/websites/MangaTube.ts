@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaTube.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from './../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     success: {
@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
                 'parameter[sortby]': 'alphabetic',
                 'parameter[order]': 'asc'
             });
-            const request = new FetchRequest(url.href, {
+            const request = new Request(url.href, {
                 method: 'POST',
                 body: formBody,
                 headers: {

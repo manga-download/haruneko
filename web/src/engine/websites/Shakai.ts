@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Shakai.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     create: number,
@@ -42,7 +42,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = url.match(/\/manga\/(\d+)$/)[1];
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchCSS<HTMLHeadingElement>(request, 'div.main__block div.wrapper__heading h1');
         return new Manga(this, provider, id, data[0].textContent.trim());
     }
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
         form.append('itemMarker', new Date(Date.now()).toISOString().replace('T', ' '));
         form.append('searchData', '');
         form.append('selectPage', String(page));
-        const request = new FetchRequest(url.href, {
+        const request = new Request(url.href, {
             method: 'POST',
             body: form,
             headers: {
@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
         const form = new FormData();
         form.append('dataRun', 'api-manga');
         form.append('dataRequest', manga.Identifier);
-        const request = new FetchRequest(url.href, {
+        const request = new Request(url.href, {
             method: 'POST',
             body: form,
             headers: {
@@ -96,7 +96,7 @@ export default class extends DecoratableMangaScraper {
         const form = new FormData();
         form.append('dataRun', 'api-manga');
         form.append('dataRequest', chapter.Parent.Identifier);
-        const request = new FetchRequest(url.href, {
+        const request = new Request(url.href, {
             method: 'POST',
             body: form,
             headers: {
