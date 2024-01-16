@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './Comico.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchRequest } from '../FetchProvider';
+import { Fetch } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
 type APIResult<T> = {
@@ -147,7 +147,7 @@ export default class extends DecoratableMangaScraper {
         const hash = await crypto.subtle.digest('SHA-256', plaintext);
         const checksum = Buffer.from(hash).toString('hex');
         const uri = new URL(path, this.api);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             method: 'GET',
             headers: {
                 'x-referer': this.URI.href,

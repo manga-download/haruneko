@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './Mangaz.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { FetchCSS, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import { type Priority } from './../taskpool/TaskPool';
 
@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(new URL(`/title/addpage_renewal?query=&page=${page}`, this.URI).href, {
+        const request = new Request(new URL(`/title/addpage_renewal?query=&page=${page}`, this.URI).href, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const request = new Request(new URL(manga.Identifier, this.URI).href);
         const data = await FetchCSS(request, 'body');
         return data[0].querySelector("li.item") ?
             [...data[0].querySelectorAll("li.item")].map(ele => new Chapter(this, manga, ele.querySelector('button').dataset['url'].replace('navi', 'virgo/view'), ele.querySelector('span.title').textContent.trim()))
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
                 resolve({img:img,b:b});
             });
         `;
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchWindowScript<ImgObj>(request, script);
         return data.img.map(ele => new Page(this, chapter, new URL(ele), data.b.Enc));
     }
