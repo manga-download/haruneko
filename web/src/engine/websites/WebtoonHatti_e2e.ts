@@ -4,7 +4,7 @@ const config = {
     plugin: {
         id: 'webtoonhatti',
         title: 'Webtoon Hatti'
-    }/*,
+    }/*, Pictures are region locked : need Turkish IP
     container: {
         url: 'https://webtoonhatti.com/manga/.../',
         id: JSON.stringify({ post: '0', slug: '/manga/.../' }),

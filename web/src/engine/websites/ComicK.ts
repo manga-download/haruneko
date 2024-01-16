@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type NEXTDATA = {
     props: {
@@ -62,7 +62,6 @@ const langMap = {
 };
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.comick.cc';
@@ -80,7 +79,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const comicdata = await FetchWindowScript<NEXTDATA>(request, '__NEXT_DATA__', 2000);
         return new Manga(this, provider, comicdata.props.pageProps.comic.hid, comicdata.props.pageProps.comic.title.trim());
     }
@@ -97,7 +96,7 @@ export default class extends DecoratableMangaScraper {
     private async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]>{
         try {
             const uri = new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl);
-            const request = new FetchRequest(uri.href);
+            const request = new Request(uri.href);
             const data = await FetchJSON<APIManga[]>(request);
             return data.map(item => {
                 return new Manga(this, provider, item.hid, item.title.trim());
@@ -118,7 +117,7 @@ export default class extends DecoratableMangaScraper {
 
     private async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const uri = new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIChapters>(request);
         return data.chapters.map(item => {
             let title = '';
@@ -148,7 +147,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL('/chapter/' + chapter.Identifier, this.apiUrl);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIChapter>(request);
         return data.chapter.md_images.map(image => new Page(this, chapter, new URL(`https://meo.comick.pictures/${image.b2key}`), { Referer: this.URI.href }));
     }

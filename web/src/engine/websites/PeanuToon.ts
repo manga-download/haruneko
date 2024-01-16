@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './PeanuToon.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResponse<T> = {
     response: {
@@ -48,7 +48,7 @@ export default class extends DecoratableMangaScraper {
         const mangaList = [];
         for (const menuName of tabs) {
             const url = new URL(`/api/comic/tab?which=days&locale=ko&menuName=${menuName}&start=&count=`, this.URI);
-            const request = new FetchRequest(url.href, {
+            const request = new Request(url.href, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
 
             for (let run = true, offset = 0; run; offset += mangasPerPage) {
                 const url = new URL(`/api/comic/genre?tab=new&genre=${genre}&age_group=&start=${offset}&length=${mangasPerPage}`, this.URI);
-                const request = new FetchRequest(url.href, {
+                const request = new Request(url.href, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }

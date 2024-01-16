@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Daysneo.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRegex, FetchRequest } from '../FetchProvider';
+import { FetchRegex } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/works\/[^/]+\.html$/, 'p.f150.b')
 @Common.MangasMultiPageCSS('/search/?page_num={page}', 'ul.tile li strong.f130 a')
@@ -19,7 +19,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchRegex(request, /src="([^"]*)">'\);/g);
         return data.map(image => new Page(this, chapter, new URL(image, this.URI)));
     }

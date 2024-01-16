@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './HqNow.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchGraphQL, FetchRequest } from '../FetchProvider';
+import { FetchGraphQL } from '../platform/FetchProvider';
 import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIMangas = {
@@ -32,7 +32,6 @@ type APIPages = {
 };
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://admin.hq-now.com';
@@ -62,7 +61,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const request = new FetchRequest(new URL('/graphql', this.apiUrl).href);
+        const request = new Request(new URL('/graphql', this.apiUrl).href);
         const data = await FetchGraphQL<APISingleManga>(request, 'getHqsById', query, variables);
         return new Manga(this, provider, String(id), data.getHqsById[0].name.trim());
     }
@@ -80,7 +79,7 @@ export default class extends DecoratableMangaScraper {
             }
         `;
 
-        const request = new FetchRequest(new URL('/graphql', this.apiUrl).href);
+        const request = new Request(new URL('/graphql', this.apiUrl).href);
         const data = await FetchGraphQL<APIMangas>(request, 'getHqsByNameStartingLetter', query, variables);
         return data.getHqsByNameStartingLetter.map(manga => new Manga(this, provider, String(manga.id), manga.name));
 
@@ -104,7 +103,7 @@ export default class extends DecoratableMangaScraper {
             }
         `;
 
-        const request = new FetchRequest(new URL('/graphql', this.apiUrl).href);
+        const request = new Request(new URL('/graphql', this.apiUrl).href);
         const data = await FetchGraphQL<APISingleManga>(request, 'getHqsById', query, variables);
         return data.getHqsById[0].capitulos.map(chapter => {
             const name = chapter.name ? String(chapter.number) + ' : ' + chapter.name.trim() : String(chapter.number);
@@ -127,7 +126,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `;
-        const request = new FetchRequest(new URL('/graphql', this.apiUrl).href);
+        const request = new Request(new URL('/graphql', this.apiUrl).href);
         const data = await FetchGraphQL<APIPages>(request, 'getChapterById', query, variables);
         return data.getChapterById.pictures.map(page => new Page(this, chapter, new URL(page.pictureUrl)));
 

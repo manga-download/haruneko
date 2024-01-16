@@ -12,7 +12,6 @@ const cdnUrl = 'https://img-cdn1.ravens-scans.com';
 @ReaderFront.ChaptersSinglePageAJAX(apiUrl)
 @ReaderFront.PagesSinglePageAJAX(apiUrl, cdnUrl)
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('ravensscans-es', `RavensScans (Spanish)`, 'https://ravens-scans.com', Tags.Language.Spanish, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Source.Scanlator);

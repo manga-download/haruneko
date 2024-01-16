@@ -12,7 +12,6 @@ function MangaInfoExtractor(element: HTMLTitleElement) {
 @Common.ChaptersSinglePageCSS('div.card.card-body div.text-center a[role="button"]')
 @Common.PagesSinglePageCSS('div.img-manga img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

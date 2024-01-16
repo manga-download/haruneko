@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaGecko.webp';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.main-head h1[itemprop="name"]')
 @Common.PagesSinglePageCSS('section.page-in div img[onerror]')
@@ -19,7 +19,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
 
-        const request = new FetchRequest(`${this.URI.origin}/browse-comics/?results=1`);
+        const request = new Request(`${this.URI.origin}/browse-comics/?results=1`);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.pagination li:not([class]) a');
         const pageMax = parseInt(data[0].text.trim());
         const mangaList: Manga[] = [];
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(`${manga.Identifier}all-chapters/`, this.URI).href);
+        const request = new Request(new URL(`${manga.Identifier}all-chapters/`, this.URI).href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.chapter-list li a');
         return data.map(element => {
             const title = element.querySelector('strong.chapter-title').textContent;

@@ -1,4 +1,3 @@
-export const protoTypes = `
 package Zebrack;
 syntax = "proto3";
 
@@ -100,6 +99,3 @@ message GravureViewerViewV3 {
 message GravureV3 {
   optional string name = 2;
 }
-
-
-`;

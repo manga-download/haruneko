@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './DynastyScans.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
 type APIMangas = {
@@ -25,7 +25,6 @@ type APIPages = {
 
 @Common.MangaCSS(/^{origin}\/[^/]+/, 'h2.tag-title b')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -50,7 +49,7 @@ export default class extends DecoratableMangaScraper {
         const mangas = [];
         for (let i = 1, run = true; run; i++) {
             try {
-                const json = await FetchJSON<APIMangas>(new FetchRequest(new URL(`${category}.json?page=${i}`, this.URI).href));
+                const json = await FetchJSON<APIMangas>(new Request(new URL(`${category}.json?page=${i}`, this.URI).href));
                 run = i < json.total_pages;
                 for (const tags of json.tags) {
                     for (const name in tags) {
@@ -66,7 +65,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const json = await FetchJSON<APIChapters>(new FetchRequest(new URL(`${manga.Identifier}.json`, this.URI).href));
+        const json = await FetchJSON<APIChapters>(new Request(new URL(`${manga.Identifier}.json`, this.URI).href));
         let chapterList = json.taggings.filter(chapter => !('header' in chapter)).map(chapter => {
             return new Chapter(this, manga, `/chapters/${chapter.permalink}`, chapter.title.trim());
         });
@@ -77,7 +76,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const json = await FetchJSON<APIPages>(new FetchRequest(new URL(`${chapter.Identifier}.json`, this.URI).href));
+        const json = await FetchJSON<APIPages>(new Request(new URL(`${chapter.Identifier}.json`, this.URI).href));
         return json.pages.map(page => new Page(this, chapter, new URL(page.url, this.URI)));
     }
 }
