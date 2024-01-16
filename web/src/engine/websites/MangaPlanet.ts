@@ -3,7 +3,7 @@ import icon from './MangaPlanet.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
     const id = element.querySelector('a').pathname;
@@ -25,13 +25,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         return FetchWindowScript(request, `window.cookieStore.set('mpaconf', '18')`);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS(request, '#accordion div[id*="vol_"]');
         const chapters : Chapter[] = [];
         for (const volume of data) {

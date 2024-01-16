@@ -3,7 +3,7 @@ import icon from './SManga.webp';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 type SSD = {
     datas?: [{
@@ -37,13 +37,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { datas } = await FetchWindowScript<SSD>(new FetchRequest(url), 'window.ssd', 2000);
+        const { datas } = await FetchWindowScript<SSD>(new Request(url), 'window.ssd', 2000);
         return new Manga(this, provider, datas[0].series_data.series_id.toString(), datas[0].series_data.series_name.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/search/search.html?seriesid=${manga.Identifier}&order=1`, this.URI);
-        const { data } = await FetchWindowScript<SSD>(new FetchRequest(url.href), 'window.ssd', 2000);
+        const { data } = await FetchWindowScript<SSD>(new Request(url.href), 'window.ssd', 2000);
         return data.item_datas.map(chapter => new Chapter(this, manga, `/reader/main.php?cid=${this.isbnToCid(chapter.isbn)}`, chapter.item_name.replace(manga.Title, '').trim().replace(/^／/, '').trim()));
     }
 

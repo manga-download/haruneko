@@ -3,7 +3,7 @@ import icon from './ComicBrise.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/contents\/[^/]+\/$/, '.post-title')
 @Common.MangasSinglePageCSS('/titlelist', '.list-works a')
@@ -20,7 +20,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS(request, '.modal.modal-chapter .modal-body');
         return data.reverse()
             //.filter(e => e.querySelector(".banner-trial img").getAttribute("alt") == "FREE") //dont filter for free chapter

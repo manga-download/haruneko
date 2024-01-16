@@ -3,7 +3,7 @@ import icon from './Ohtabooks.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -26,14 +26,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         //find real reader url to send to SpeedBinb, since redirection is done by Javascript
-        const data = await FetchCSS<HTMLBodyElement>(new FetchRequest(chapter.Identifier), 'body');
+        const data = await FetchCSS<HTMLBodyElement>(new Request(chapter.Identifier), 'body');
         const reallink = data[0].innerHTML.match(/location.href='(.*)'/)[1];
         return await SpeedBinb.FetchPagesSinglePageAjax.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier, this.URI);
-        const data = await FetchCSS(new FetchRequest(uri.href), 'a[onClick^="return !openBook("]');
+        const data = await FetchCSS(new Request(uri.href), 'a[onClick^="return !openBook("]');
         let chapterList = data.map(element => {
             let partId = element.getAttribute('onclick');
             partId = partId.match(/\d+/)[0];

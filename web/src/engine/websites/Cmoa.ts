@@ -3,7 +3,7 @@ import icon from './Cmoa.webp';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangasNotSupported()
 @SpeedBinb.PagesSinglePageAjax()
@@ -26,14 +26,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const request = new Request(new URL(manga.Identifier, this.URI).href);
         const pages = await FetchCSS<HTMLAnchorElement>(request, '#comic_list > .pagination:nth-child(1) li:nth-last-child(2) a');
         const chapters = [];
         const totalPage = pages.length == 0 ? 1 : parseInt(new URL(pages[0].href).searchParams.get('page'));
         for (let i = 0; i < totalPage; i++) {
             const uri = new URL(manga.Identifier, this.URI);
             uri.searchParams.set('page', String(i + 1));
-            const pageRequest = new FetchRequest(uri.href);
+            const pageRequest = new Request(uri.href);
             const data = await FetchCSS(pageRequest, '.title_vol_vox_vols .title_vol_vox_vols_i');
             for (const element of data) {
                 const chapterLink = element.querySelector<HTMLAnchorElement>('a[href^="/reader/"]');

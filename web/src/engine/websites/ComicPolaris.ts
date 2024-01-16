@@ -3,7 +3,7 @@ import icon from './ComicPolaris.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const request = new Request(new URL(manga.Identifier, this.URI).href);
         const data = (await FetchCSS(request, 'div#contents'))[0];
         let chapterList = [...data.querySelectorAll<HTMLAnchorElement>('div.work_episode div.work_episode_box div.work_episode_table div.work_episode_link_btn a')]
             .map(element => {

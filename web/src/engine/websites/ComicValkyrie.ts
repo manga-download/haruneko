@@ -3,7 +3,7 @@ import icon from './ComicValkyrie.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
     const id = new URL(element.querySelector('a').href).pathname.replace('/new.html', '/');
@@ -34,7 +34,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await FetchCSS<HTMLMetaElement>(new FetchRequest(url), 'meta[property = "og:title"]');
+        const data = await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property = "og:title"]');
         const id = new URL(url).pathname.replace('/new.html', '/');
         const title = data[0].content.replace(/\s*THE COMIC\s*/i, '').trim();
         return new Manga(this, provider, id, title);

@@ -1,4 +1,4 @@
-import { Fetch, FetchJSON, FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
@@ -10,8 +10,8 @@ type JSONPageData_v016452 = {
 
 type Configuration_v016452 = {
     ContentID: string,
-    ctbl: string[],
-    ptbl: string[],
+    ctbl: string | string[],
+    ptbl: string | string[],
     ServerType: number | string
     ContentsServer: string,
     p: string,
@@ -42,17 +42,20 @@ type PageView_v016061 = {
 
 type PageView_v016130 = {
     transfers: {
-        coords: {
-            height: number,
-            width: number,
-            xdest: number,
-            xsrc: number,
-            ydest: number,
-            ysrc: number
-        }[]
+        index: number,
+        coords: DrawImageCoords[]
     }[],
     width: number,
     height: number
+}
+
+type DrawImageCoords = {
+    height: number,
+    width: number,
+    xdest: number,
+    xsrc: number,
+    ydest: number,
+    ysrc: number
 }
 
 type SBCDATA = {
@@ -62,6 +65,11 @@ type SBCDATA = {
 type DescrambleKP = {
     s: string,
     u: string
+}
+
+type Dimensions = {
+    width: number,
+    height: number
 }
 
 const JsonFetchScript = `
@@ -112,7 +120,7 @@ function getSpeedBinbVersion(el: HTMLElement, viewerUrl: URL): SpeedBinbVersion 
 export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, baseUrl = ''): Promise<Page[]> {
     const websiteUrl = baseUrl ? new URL(baseUrl).href : new URL(this.URI).href;
     let viewerUrl = new URL(chapter.Identifier, websiteUrl);
-    const request = new FetchRequest(viewerUrl.href, {
+    const request = new Request(viewerUrl.href, {
         headers: {
             Referer: this.URI.href
         }
@@ -155,7 +163,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         case SpeedBinbVersion.v016113: //Futabanet, Getsuaku (v016700), Ohtabooks
         case SpeedBinbVersion.v016130: { //Booklive, MangaPlanet, S-Manga, Yanmaga
             //Doing it like that because of cookies needed for Mangaplanet
-            const data = await FetchWindowScript<JSONPageData_v016452>(new FetchRequest(this.URI.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+            const data = await FetchWindowScript<JSONPageData_v016452>(new Request(this.URI.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016130(this, data.items[0], sharingKey, chapter);
         }
         //YoungJump
@@ -163,7 +171,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             const u = viewerUrl.searchParams.get('u1');
             uri.searchParams.set('u1', u);
             //Doing it like that because of cookies needed
-            const data = await FetchWindowScript<JSONPageData_v016452>(new FetchRequest(this.URI.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+            const data = await FetchWindowScript<JSONPageData_v016452>(new Request(this.URI.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016201(this, data.items[0], sharingKey, u, chapter);
         }
         //Cmoa
@@ -172,7 +180,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             const u1 = viewerUrl.searchParams.get('u1');
             uri.searchParams.set('u0', u0);
             uri.searchParams.set('u1', u1);
-            const data = await FetchJSON<JSONPageData_v016452>(new FetchRequest(uri.href));
+            const data = await FetchJSON<JSONPageData_v016452>(new Request(uri.href));
             const params: Params_v016452 = { cid, sharingKey, u0, u1 };
             return await getPageLinks_v016452(this, data.items[0], params, chapter);
         }
@@ -199,8 +207,8 @@ export function PagesSinglePageAjax(baseUrl = '') {
 }
 
 async function getPageLinks_v016452(scraper: MangaScraper, configuration: Configuration_v016452, params: Params_v016452, chapter: Chapter): Promise<Page[]> {
-    configuration.ctbl = _pt(params.cid, params.sharingKey, configuration.ctbl);
-    configuration.ptbl = _pt(params.cid, params.sharingKey, configuration.ptbl);
+    configuration.ctbl = _pt(params.cid, params.sharingKey, configuration.ctbl as string);
+    configuration.ptbl = _pt(params.cid, params.sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
     } catch (error) {
@@ -222,8 +230,8 @@ async function getPageLinks_v016452(scraper: MangaScraper, configuration: Config
 
 async function getPageLinks_v016201(scraper: MangaScraper, configuration: Configuration_v016452, sharingKey: string, u: string, chapter: Chapter): Promise<Page[]> {
     const cid = configuration.ContentID;
-    configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl);
-    configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl);
+    configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl as string);
+    configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
     } catch (error) {
@@ -234,11 +242,11 @@ async function getPageLinks_v016201(scraper: MangaScraper, configuration: Config
         const uri = getSanitizedURL(configuration.ContentsServer, 'content');
         uri.searchParams.set('dmytime', configuration.ContentDate);
         uri.searchParams.set('u1', u);
-        const data: SBCDATA = await FetchJSON(new FetchRequest(uri.href));
+        const data: SBCDATA = await FetchJSON(new Request(uri.href));
         const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
         const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
             const src = img.getAttribute('src');
-            uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl, configuration.ptbl)));
+            uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
             return new Page(scraper, chapter, new URL(uri.href.replace('/content', '/img/' + src)));
         });
         return pageLinks;
@@ -248,8 +256,8 @@ async function getPageLinks_v016201(scraper: MangaScraper, configuration: Config
 
 async function getPageLinks_v016130(scraper: MangaScraper, configuration: Configuration_v016452, sharingKey, chapter: Chapter): Promise<Page[]> {
     const cid = configuration.ContentID;
-    configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl);
-    configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl);
+    configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl as string);
+    configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
     } catch (error) {
@@ -266,30 +274,28 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
             return await fetchSBC(scraper, uri, configuration, chapter);
         }
         case 1: {//Futabanet, Getsuaku
-            //return await getPageLinksContentJS_v016130(scraper, configuration, chapter);
             const uri = getSanitizedURL(configuration.ContentsServer, 'content.js');
             if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
-            const response = await Fetch(new FetchRequest(uri.href));
+            const response = await Fetch(new Request(uri.href));
             const data = await response.text();
             const jsonObj: SBCDATA = JSON.parse(data.slice(16, -1));
             const dom = new DOMParser().parseFromString(jsonObj.ttx, 'text/html');
             const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
                 let src = img.getAttribute('src');
-                uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl, configuration.ptbl)));
+                uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
                 if (!src.startsWith('/')) src = '/' + src;
                 return new Page(scraper, chapter, new URL(uri.href.replace('/content.js', src + '/M_H.jpg')));
             });
             return pageLinks;
         }
         case 2: {//MangaPlanet
-            //return await getPageLinksContent_v016130(scraper, configuration, chapter);
             const uri = getSanitizedURL(configuration.ContentsServer, 'content');
             uri.searchParams.set('dmytime', configuration.ContentDate);
-            const data = await FetchJSON<SBCDATA>(new FetchRequest(uri.href, { headers: { Referer: scraper.URI.href } }));
+            const data = await FetchJSON<SBCDATA>(new Request(uri.href, { headers: { Referer: scraper.URI.href } }));
             const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
             const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
                 const src = img.getAttribute('src');
-                uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl, configuration.ptbl)));
+                uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
                 return new Page(scraper, chapter, new URL(uri.href.replace('/content', '/img/' + src)));
             });
             return pageLinks;
@@ -299,12 +305,12 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
 }
 
 async function fetchSBC(scraper: MangaScraper, uri: URL, configuration: Configuration_v016452, chapter: Chapter) {
-    const data = await FetchJSON<SBCDATA>(new FetchRequest(uri.href));
+    const data = await FetchJSON<SBCDATA>(new Request(uri.href));
     const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
     const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
         const src = img.getAttribute('src');
         uri.searchParams.set('src', src);
-        uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl, configuration.ptbl)));
+        uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
         return new Page(scraper, chapter, new URL(uri.href.replace('/sbcGetCntnt.php', '/sbcGetImg.php')));
     });
     return pageLinks;
@@ -336,7 +342,7 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
 }
 
 async function descramble_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    const data = await FetchJSON<JSONImageData_v016061>(new FetchRequest(page.Link.href));
+    const data = await FetchJSON<JSONImageData_v016061>(new Request(page.Link.href));
     const fakepage = new Page(scraper, page.Parent as Chapter, new URL(data.resources.i.src, page.Link.href));
     const imagedata: Blob = await Common.FetchImageAjax.call(scraper, fakepage, priority, signal, detectMimeType);
 
@@ -361,15 +367,9 @@ async function descramble_v016130(scraper: MangaScraper, page: Page, priority: P
     const descrambleKeyPair: DescrambleKP = JSON.parse(window.atob(page.Link.hash.slice(1)));
 
     return DeScramble(imagedata, async (image, ctx) => {
-        const view: PageView_v016130 = _getImageDescrambleCoords(descrambleKeyPair.s, descrambleKeyPair.u, image.width, image.height);
+        const view = getImageDescrambleCoords(descrambleKeyPair.s, descrambleKeyPair.u, image.width, image.height);
         for (const part of view.transfers[0].coords) {
-            const sourceX = part.xsrc;
-            const sourceY = part.ysrc;
-            const targetX = part.xdest;
-            const targetY = part.ydest;
-            const partWidth = part.width;
-            const partHeight = part.height;
-            ctx.drawImage(image, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
+            ctx.drawImage(image, part.xsrc, part.ysrc, part.width, part.height, part.xdest, part.ydest, part.width, part.height);
         }
     });
 }
@@ -390,7 +390,7 @@ export function ImageAjax(detectMimeType = false) {
     };
 }
 
-function _tt(t): string {
+function _tt(t: string): string {
     const n = Date.now().toString(16).padStart(16, 'x'); // w.getRandomString(16)
     const i = Array(Math.ceil(16 / t.length) + 1).join(t);
     const r = i.substring(0, 16);
@@ -410,7 +410,7 @@ function _tt(t): string {
     }).join("");
 }
 
-function _pt(t, i, n) {
+function _pt(t: string, i: string, n: string): string[] {
     const r = t + ':' + i;
     let e = 0;
 
@@ -439,7 +439,7 @@ function _pt(t, i, n) {
  * Determine which descramble key pair from ctbl / ptbl shall be used
  * depending on the given image name  'pages/cu77gvXE.jpg'
  */
-function lt_001(t, ctbl, ptbl) {
+function lt_001(t: string, ctbl: string[], ptbl: string[]): DescrambleKP {
     const i = [0, 0];
     const n = t.lastIndexOf("/") + 1;
     const r = t.length - n;
@@ -459,7 +459,7 @@ function lt_001(t, ctbl, ptbl) {
  * i  width of descrambled image
  * n height of descrambled image
  */
-function _getImageDescrambleCoords(/*t*/s, u, i, n) {
+function getImageDescrambleCoords(/*t*/s: string, u: string, i: number, n: number): PageView_v016130 {
     const r = _lt_002(s, u); // var r = this.lt(t.src);
     if (!r || !r.vt())
         return null;
@@ -483,7 +483,7 @@ function _getImageDescrambleCoords(/*t*/s, u, i, n) {
 /**
  * Get a descrambler based on the descramble key pair from ctbl / ptbl
  */
-function _lt_002(s, u) {
+function _lt_002(s: string, u: string) {
     return "=" === u.charAt(0) && "=" === s.charAt(0) ? new _speedbinb_f(u, s) : u.match(/^[0-9]/) && s.match(/^[0-9]/) ? new _speedbinb_a(u, s) : "" === u && "" === s ? new _speedbinb_h : null;
 }
 
@@ -492,7 +492,7 @@ function _lt_002(s, u) {
  * define prototype for f
  */
 const _speedbinb_f = function () {
-    function s(t, i) {
+    function s(t: string, i: string) {
         this.Mt = null;
         const n = t.match(/^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/),
             r = i.match(/^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/);
@@ -515,24 +515,24 @@ const _speedbinb_f = function () {
             }
         }
     }
-    return s.prototype.vt = function () {
+    return s.prototype.vt = function (): boolean {
         return null !== this.Mt;
     }
     ,
-    s.prototype.bt = function (t) {
+    s.prototype.bt = function (t: Dimensions): boolean {
         const i = 2 * this.C * this.jt,
             n = 2 * this.I * this.jt;
         return t.width >= 64 + i && t.height >= 64 + n && t.width * t.height >= (320 + i) * (320 + n);
     }
     ,
-    s.prototype.dt = function (t) {
+    s.prototype.dt = function (t: Dimensions): Dimensions {
         return this.bt(t) ? {
             width: t.width - 2 * this.C * this.jt,
             height: t.height - 2 * this.I * this.jt
         } : t;
     }
     ,
-    s.prototype.gt = function (t) {
+    s.prototype.gt = function (t: Dimensions): DrawImageCoords[] {
         if (!this.vt())
             return null;
         if (!this.bt(t))
@@ -545,7 +545,7 @@ const _speedbinb_f = function () {
                 ydest: 0
             }];
 
-        const h = [];
+        const h: DrawImageCoords[] = [];
         const i = t.width - 2 * this.C * this.jt,
             n = t.height - 2 * this.I * this.jt,
             r = Math.floor((i + this.C - 1) / this.C),
@@ -576,7 +576,7 @@ const _speedbinb_f = function () {
         return h;
     }
     ,
-    s.prototype.yt = function (t) {
+    s.prototype.yt = function (t: string) {
         let i;
         const n = [], r = [], e = [];
         for (i = 0; i < this.C; i++)
@@ -601,7 +601,7 @@ const _speedbinb_f = function () {
  * define prototype for a
  */
 const _speedbinb_a = function () {
-    function t(t, i) {
+    function t(t: string, i: string) {
         this.mt = null,
         this.wt = null;
         const n = this.yt(t);
@@ -609,19 +609,19 @@ const _speedbinb_a = function () {
         n && r && n.ndx === r.ndx && n.ndy === r.ndy && (this.mt = n,
         this.wt = r);
     }
-    return t.prototype.vt = function () {
+    return t.prototype.vt = function (): boolean {
         return null !== this.mt && null !== this.wt;
     }
     ,
-    t.prototype.bt = function (t) {
+    t.prototype.bt = function (t: Dimensions): boolean {
         return 64 <= t.width && 64 <= t.height && 102400 <= t.width * t.height;
     }
     ,
-    t.prototype.dt = function (t) {
+    t.prototype.dt = function (t: Dimensions): Dimensions {
         return t;
     }
     ,
-    t.prototype.gt = function (t) {
+    t.prototype.gt = function (t: Dimensions): DrawImageCoords[] {
         if (!this.vt())
             return null;
         const i = [];
@@ -674,7 +674,7 @@ const _speedbinb_a = function () {
         i;
     }
     ,
-    t.prototype.yt = function (t) {
+    t.prototype.yt = function (t: string) {
         if (!t)
             return null;
         const i = t.split("-");
@@ -708,7 +708,7 @@ const _speedbinb_a = function () {
         };
     }
     ,
-    t.prototype.Ot = function (t) {
+    t.prototype.Ot = function (t: string) {
         let i = 0;
         let n = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(t);
         return n < 0 ? n = "abcdefghijklmnopqrstuvwxyz".indexOf(t) : i = 1,
@@ -725,19 +725,19 @@ const _speedbinb_a = function () {
 const _speedbinb_h = function () {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     function t() { }
-    return t.prototype.vt = function () {
+    return t.prototype.vt = function (): boolean {
         return !0;
     }
     ,
-    t.prototype.bt = function () {
+    t.prototype.bt = function (): boolean {
         return !1;
     }
     ,
-    t.prototype.dt = function (t) {
+    t.prototype.dt = function (t: Dimensions): Dimensions {
         return t;
     }
     ,
-    t.prototype.gt = function (t) {
+    t.prototype.gt = function (t: Dimensions): DrawImageCoords[] {
         return [{
             xsrc: 0,
             ysrc: 0,

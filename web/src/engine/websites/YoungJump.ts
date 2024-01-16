@@ -3,7 +3,7 @@ import icon from './YoungJump.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIMagazine = {
     url: string,
@@ -29,14 +29,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangatitle = await FetchWindowScript<string>(new FetchRequest(url), 'document.title', 3000);
+        const mangatitle = await FetchWindowScript<string>(new Request(url), 'document.title', 3000);
         const uri = new URL(url);
         return new Manga(this, provider, uri.pathname + uri.search, mangatitle.trim());
 
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(new URL('/yj-rest-apis/getBookInfo.php', this.URI).href);
+        const request = new Request(new URL('/yj-rest-apis/getBookInfo.php', this.URI).href);
         const data = await FetchJSON<APIMagazine[]>(request);
         return data.map(magazine => new Manga(this, provider, magazine.url, `${magazine.issue} - ${magazine.number}`.trim()));
 

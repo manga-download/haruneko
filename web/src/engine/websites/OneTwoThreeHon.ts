@@ -3,7 +3,7 @@ import icon from './OneTwoThreeHon.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        const request = new Request(new URL(manga.Identifier, this.URI).href);
         const data = await FetchCSS(request, 'div.read-episode li');
         return data.map(element => {
             if (element.querySelector('a')) { // otherwise chapter not available

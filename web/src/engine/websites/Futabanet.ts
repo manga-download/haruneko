@@ -3,7 +3,7 @@ import icon from './Futabanet.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/list\/work\/[^/]+$/, 'div.works__grid div.list__text div.mbOff h1')
 @Common.MangasMultiPageCSS('/list/works?page={page}', 'div.works__grid div.list__box h4 a')
@@ -19,7 +19,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(`${this.URI.origin}${manga.Identifier}/episodes`);
+        const request = new Request(`${this.URI.origin}${manga.Identifier}/episodes`);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div.episode__grid a');
         return data.map(chapter => {
             const epnum = chapter.querySelector('.episode__num').textContent.trim();
