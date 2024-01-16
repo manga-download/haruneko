@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Shinigami ID',
     },
     container: {
-        url: 'https://shinigami.sh/series/sss-class-suicide-hunter/',
+        url: 'https://shinigamitoon.com/series/sss-class-suicide-hunter/',
         id: JSON.stringify({ post: "641", slug: "/series/sss-class-suicide-hunter/" }),
         title: 'SSS-Class Suicide Hunter'
     },
@@ -16,7 +16,7 @@ const config: Config = {
     },
     entry: {
         index: 1,
-        size: 879_639, //or 894_830
+        size: 894_830,
         type: 'image/jpeg'
     }
 };

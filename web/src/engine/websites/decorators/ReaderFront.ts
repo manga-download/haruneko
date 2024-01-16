@@ -2,7 +2,7 @@
 //Ajax / GraphQL based
 // Support EN and ES language content
 
-import { FetchRequest, FetchGraphQL } from '../../FetchProvider';
+import { FetchGraphQL } from '../../platform/FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { type Tag, Tags } from '../../Tags';
 import * as Common from './Common';
@@ -106,7 +106,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
         stub: slug
     };
 
-    const request = new FetchRequest(apiUrl);
+    const request = new Request(apiUrl);
     const data = await FetchGraphQL<APIManga>(request, 'Work', query, variables);
     const id = JSON.stringify({
         id: data.work.id,
@@ -165,7 +165,7 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
             }
         }
     `;
-    const request = new FetchRequest(apiUrl);
+    const request = new Request(apiUrl);
     const data = await FetchGraphQL<APIMangas>(request, 'Works', query, variables);
     return data.works.map(manga => {
         const id = JSON.stringify({
@@ -226,7 +226,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
         stub: mangaObj.stub
     };
 
-    const request = new FetchRequest(apiUrl);
+    const request = new Request(apiUrl);
     const data = await FetchGraphQL<APIChapters>(request, 'Work', query, variables);
     return data.work.chapters.map(chapter => {
         let title = `Vol. ${chapter.volume} Ch. ${chapter.chapter}.${chapter.subchapter}`;
@@ -292,7 +292,7 @@ async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnU
             }
         }
     `;
-    const request = new FetchRequest(apiUrl);
+    const request = new Request(apiUrl);
     const data = await FetchGraphQL<APIPages>(request, 'ChapterById', query, variables);
     return data.chapterById.pages.map(page => {
         const uri = new URL(['/works', data.chapterById.work.uniqid, data.chapterById.uniqid, page.filename].join('/'), cdnUrl);

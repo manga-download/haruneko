@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaYeh.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowCSS } from '../FetchProvider';
+import { FetchWindowCSS } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
@@ -25,7 +25,7 @@ export default class extends DecoratableMangaScraper {
     }
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(chapter.Identifier, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchWindowCSS<HTMLImageElement>(request, '.container p img[data-src]', 2500);
         return data.map(page => new Page(this, chapter, new URL(page.dataset['src'])));
 
