@@ -3,7 +3,7 @@ import icon from './WeLoveManga.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 const chapterScript = `
     new Promise(async resolve => {
@@ -36,13 +36,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(chapter.Identifier, this.URI);
-        let request = new FetchRequest(url.href, {
+        let request = new Request(url.href, {
             headers: {
                 'Referer': this.URI.href,
             }
         });
         const chapterid = (await FetchCSS<HTMLInputElement>(request, 'input#chapter'))[0].value;
-        request = new FetchRequest(new URL(`/app/manga/controllers/cont.listImg.php?cid=${chapterid}`, this.URI).href, {
+        request = new Request(new URL(`/app/manga/controllers/cont.listImg.php?cid=${chapterid}`, this.URI).href, {
             headers: {
                 'Referer': this.URI.href,
             }

@@ -1,4 +1,4 @@
-import { FetchCSS, FetchRequest } from "../../FetchProvider";
+import { FetchCSS } from "../../platform/FetchProvider";
 import { Chapter, type Manga, type MangaScraper} from "../../providers/MangaPlugin";
 import { Page } from "../../providers/MangaPlugin";
 import * as Common from './Common';
@@ -77,7 +77,7 @@ export function ChaptersSinglePageCSS(query = queryChapters) {
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapters): Promise<Chapter[]> {
     const url = new URL(manga.Identifier, this.URI);
-    const request = new FetchRequest(url.href);
+    const request = new Request(url.href);
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
 
     return data.map(anchor => {
@@ -109,7 +109,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query: string = queryPages, exclude: RegExp[] = DefaultExcludes): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const data = await FetchCSS<HTMLImageElement>(request, query);
     const pages = data
         .map(element => {
