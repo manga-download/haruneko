@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaParkPublisher.webp';
 import { type Chapter, DecoratableMangaScraper, type Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type APIPages = {
@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(`/api/chapter/${chapter.Identifier}`, this.URI).href);
+        const request = new Request(new URL(`/api/chapter/${chapter.Identifier}`, this.URI).href);
         const { data } = await FetchJSON<APIPages>(request);
         return data.chapter.map(page => new Page(this, chapter, new URL(page.images[0].path), { key: page.images[0].key }));
     }

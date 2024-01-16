@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './CyComi.webp';
 import type { Priority } from '../taskpool/DeferredTask';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').pop();
-        const request = new FetchRequest(`${this.apiURL}/title/detail?titleId=${id}`);
+        const request = new Request(`${this.apiURL}/title/detail?titleId=${id}`);
         const { data } = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, data.titleId.toString(), data.titleName);
     }
@@ -31,7 +31,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         for(let page = 0, run = true; run; page++) {
-            const request = new FetchRequest(`${this.apiURL}/home/paginatedList?limit=${50}&page=${page}`);
+            const request = new Request(`${this.apiURL}/home/paginatedList?limit=${50}&page=${page}`);
             const { data } = await FetchJSON<APIMangas>(request);
             const mangas = data.reduce((accumulator: Manga[], entry) => {
                 if(entry) {
@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchMangaVolumes(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(`${this.apiURL}/singleBook/list?titleId=${manga.Identifier}`);
+        const request = new Request(`${this.apiURL}/singleBook/list?titleId=${manga.Identifier}`);
         const { data, resultCode } = await FetchJSON<APIVolumes>(request);
         return resultCode !== 1 || !data.singleBooks ? [] : data.singleBooks.map(volume => {
             const title = [ volume.name, volume.stories ].filter(item => item).join(' - ');
@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchMangaChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(`${this.apiURL}/chapter/list?titleId=${manga.Identifier}`);
+        const request = new Request(`${this.apiURL}/chapter/list?titleId=${manga.Identifier}`);
         const { data, resultCode } = await FetchJSON<APIChapters>(request);
         return resultCode !== 1 || !data.chapters ? [] : data.chapters.map(chapter => {
             const title = [ chapter.name, chapter.subName ].filter(item => item).join(' - ');
@@ -77,18 +77,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchVolumePages(volume: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(this.apiURL + volume.Identifier);
+        const request = new Request(this.apiURL + volume.Identifier);
         const { data: { id, chapters } } = await FetchJSON<APIChapters>(request);
         return !chapters ? [] : chapters.reduce(async (accumulator: Promise<Page[]>, chapter) => {
             const url = `${this.apiURL}/singleBook/page/list?singleBookId=${id}&chapterId=${chapter.id}`;
-            const { data: { pages }, resultCode } = await FetchJSON<APIPages>(new FetchRequest(url));
+            const { data: { pages }, resultCode } = await FetchJSON<APIPages>(new Request(url));
             return resultCode !== 1 ? accumulator : (await accumulator).concat(this.MapPages(volume, pages));
         }, Promise.resolve<Page[]>([]));
     }
 
     private async FetchChapterPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(this.apiURL + chapter.Identifier);
-        const request = new FetchRequest(uri.origin + uri.pathname, {
+        const request = new Request(uri.origin + uri.pathname, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

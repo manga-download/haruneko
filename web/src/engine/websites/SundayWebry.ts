@@ -3,7 +3,7 @@ import icon from './SundayWebry.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIChapters = {
     html: string,
@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters : Chapter[] = [];
-        let request = new FetchRequest(new URL(manga.Identifier, this.URI).href);
+        let request = new Request(new URL(manga.Identifier, this.URI).href);
         //endpoint links have parameters that must not exceed max chapter of the manga, we cant guess the numbers so we just fetch them
         const endPointlinks = await FetchWindowScript<string[]>(request, chapterScript);
         //0 : first chapters url
@@ -47,26 +47,26 @@ export default class extends DecoratableMangaScraper {
         //2 : last chapters url
 
         //fetch first chapters
-        request = new FetchRequest(endPointlinks[0]);
+        request = new Request(endPointlinks[0]);
         let result = await this.extractChapters(manga, request);
         chapters.push(...result.chapters);
 
         //fetch MORE (paginated)
-        request = new FetchRequest(endPointlinks[1]);
+        request = new Request(endPointlinks[1]);
         let run = true;
         while (run) {
             result = await this.extractChapters(manga, request);
             result.chapters.length > 0 ? chapters.push(...result.chapters): run = false;
-            request = new FetchRequest(result.nextUrl);
+            request = new Request(result.nextUrl);
         }
         //fetch last chapters
-        request = new FetchRequest(endPointlinks[2]);
+        request = new Request(endPointlinks[2]);
         result = await this.extractChapters(manga, request);
         chapters.push(...result.chapters);
         return chapters;
     }
 
-    async extractChapters(manga: Manga, request: FetchRequest): Promise<extractChaptersResult> {
+    async extractChapters(manga: Manga, request: Request): Promise<extractChaptersResult> {
         try {
             const data = await FetchJSON<APIChapters>(request);
             const dom = new DOMParser().parseFromString(data.html, 'text/html');

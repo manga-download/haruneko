@@ -1,6 +1,6 @@
-import { type PlatformInfo, Runtime, DetectPlatform, CreateUnsupportedPlatformError } from './Platform';
-import * as BlockListNodeWebkit from './BlockListNodeWebkit';
-import * as BlockListBrowser from './BlockListBrowser';
+import { Runtime } from './PlatformInfo';
+import { PlatformInstanceActivator } from './PlatformInstanceActivator';
+import NodeWebkitBloatGuard from './nw/BloatGuard';
 
 // Sort: https://www.online-utility.org/text/sort.jsp
 const patterns = [
@@ -41,17 +41,12 @@ const patterns = [
     '*://tumultmarten.com/*',
 ];
 
-export function Initialize(info?: PlatformInfo): void {
+export interface IBloatGuard {
+    Initialize(): void;
+}
 
-    info = info ?? DetectPlatform();
-
-    if(info.Runtime === Runtime.NodeWebkit) {
-        return BlockListNodeWebkit.Initialize(patterns);
-    }
-
-    if([ Runtime.Chrome, Runtime.Gecko, Runtime.WebKit ].includes(info.Runtime)) {
-        return BlockListBrowser.Initialize(/*patterns*/);
-    }
-
-    throw CreateUnsupportedPlatformError(info);
+export function CreateBloadGuard(): IBloatGuard {
+    return new PlatformInstanceActivator<IBloatGuard>()
+        .Configure(Runtime.NodeWebkit, () => new NodeWebkitBloatGuard(patterns))
+        .Create();
 }

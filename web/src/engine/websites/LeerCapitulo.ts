@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './LeerCapitulo.webp';
 import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
     new Promise(resolve => {
@@ -31,7 +31,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         const uri = new URL(this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         await FetchWindowScript(request, `localStorage.setItem('display_mode', '1')`, 1500);
     }
 
