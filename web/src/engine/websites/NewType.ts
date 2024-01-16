@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './NewType.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APIChapter = {
     html: string,
@@ -38,7 +38,7 @@ export default class extends DecoratableMangaScraper {
 
     async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const result: Chapter[] = [];
-        const request = new FetchRequest(new URL(`${manga.Identifier}/more/${page}/`, this.URI).href);
+        const request = new Request(new URL(`${manga.Identifier}/more/${page}/`, this.URI).href);
         const data = await FetchJSON<APIChapter>(request);
         const dom = new DOMParser().parseFromString(data.html, 'text/html');
         const nodes = dom.querySelectorAll('li a h2.detail__txt--ttl-sub');
@@ -51,10 +51,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchCSS(request, 'div#viewerContainer');
         const link = new URL(data[0].dataset.url, request.url);
-        const datta = await FetchJSON<string[]>(new FetchRequest(link.href));
+        const datta = await FetchJSON<string[]>(new Request(link.href));
         return datta.map(image => {
             if (Array.isArray(image))
                 image = image.filter(url => url.startsWith('/'))[0];

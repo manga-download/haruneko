@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './SoftKomik.webp';
 import * as Common from './decorators/Common';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type APIMangaDetails = {
@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         this.nextBuild = await FetchWindowScript<string>(request, `__NEXT_DATA__.buildId`, 5000);
     }
 
@@ -62,7 +62,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = url.split('/').pop();
         const uri = new URL(`/_next/data/${this.nextBuild}/${slug}.json`, this.URI).href;
-        const request = new FetchRequest(uri);
+        const request = new Request(uri);
         const { pageProps: { data: { DataKomik } } } = await FetchJSON<APIMangaDetails>(request);
         return new Manga(this, provider, DataKomik.title_slug, DataKomik.title.trim());
     }
@@ -78,21 +78,21 @@ export default class extends DecoratableMangaScraper {
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL(`/_next/data/${this.nextBuild}/komik/list.json?page=${page}`, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const { pageProps: { data: { data } } } = await FetchJSON<APIMangas>(request);
         return data.map(manga => new Manga(this, provider, manga.title_slug, manga.title.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/_next/data/${this.nextBuild}/${manga.Identifier}.json`, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const { pageProps: { data: { DataChapter } } } = await FetchJSON<APIMangaDetails>(request);
         return DataChapter.map(chapter => new Chapter(this, manga, chapter.chapter, chapter.chapter));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(`/_next/data/${this.nextBuild}/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}.json`, this.URI).href;
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const { pageProps: { data: { imgSrc } } } = await FetchJSON<APIPages>(request);
         return imgSrc.map(page => new Page(this, chapter, new URL(page, this.CDN[0]), { alternativeUrl: new URL(page, this.CDN[1]).href}));
     }

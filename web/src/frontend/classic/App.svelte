@@ -23,17 +23,16 @@
     import { ContentPanel, Theme as ThemeSetting } from './stores/Settings';
     import { selectedItem } from './stores/Stores';
 
-    let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
-    export const FinishLoading = new Promise<void>(
-        (resolve) => (resolveFinishLoading = resolve)
-    );
+    let resolveFinishLoading: () => void;
+    export const FinishLoading = Promise.race([
+        new Promise(resolve => setTimeout(resolve, 7500)),
+        new Promise<void>(resolve => (resolveFinishLoading = resolve))
+    ]);
 
     onMount(async () => {
         // some delay for pre-rendering
         // Todo: find a way to detect if the UI is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(resolveFinishLoading, 2500);
-        });
+        setTimeout(resolveFinishLoading, 2500);
     });
 
     let showHome = true;

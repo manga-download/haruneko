@@ -3,7 +3,7 @@ import icon from './AsuraScans.webp';
 import { type Chapter, DecoratableMangaScraper, Page, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { Fetch, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
 
 type TSReader = source[];
 
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         this.URI.href = await FetchWindowScript<string>(request, 'window.location.origin');
     }
 
@@ -48,7 +48,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         let images: string[] = [];
         try {
-            const response = await Fetch(new FetchRequest(new URL(chapter.Identifier, this.URI).href));
+            const response = await Fetch(new Request(new URL(chapter.Identifier, this.URI).href));
             const data = await response.text();
             const tsreader: TSReader = JSON.parse(data.match(/"sources":(\[[^;]+\]}\])/m)[1]);
             images = tsreader.shift().images.filter(link => !excludes.some(rgx => rgx.test(link)));

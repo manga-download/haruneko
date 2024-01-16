@@ -66,6 +66,7 @@ export { default as ComicTrail } from './ComicTrail';
 export { default as ComicWalker } from './ComicWalker';
 export { default as ComicZenon } from './ComicZenon';
 export { default as ComicZerosum } from './ComicZerosum';
+export { default as Comikey } from './Comikey';
 export { default as ComikeyArchive } from './ComikeyArchive';
 export { default as ConstellarScans } from './ConstellarScans';
 export { default as CopyManga } from './CopyManga';

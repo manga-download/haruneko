@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Mangabox.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APiMangas = {
     manga: {
@@ -30,7 +30,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         const id = uri.pathname.match(/\/reader\/(\d+)/)[1];
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchCSS(request, 'h1.episodes_title');
         return new Manga(this, provider, id, data[0].textContent.trim());
     }
@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new FetchRequest(new URL(`/api/reader/episodes?page=${page}`, this.URI).href, {
+        const request = new Request(new URL(`/api/reader/episodes?page=${page}`, this.URI).href, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
@@ -56,7 +56,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`/reader/${manga.Identifier}/episodes/`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.episodes_list li.episodes_item a');
         return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('span.episodes_strong_text').textContent.trim()));
     }
