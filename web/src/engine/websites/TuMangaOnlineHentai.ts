@@ -11,7 +11,6 @@ function ImageExtractor(img: HTMLImageElement) {
 @Common.MangasMultiPageCSS('/section/all?view=list&order=alphabetic&page={page}', 'div.panel-body table.table tbody tr td.text-left a')
 @Common.PagesSinglePageCSS('div#content-images img.content-image', ImageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

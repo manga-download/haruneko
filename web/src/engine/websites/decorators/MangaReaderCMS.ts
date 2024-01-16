@@ -1,4 +1,4 @@
-import { FetchRequest, FetchCSS } from '../../FetchProvider';
+import { FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
@@ -55,7 +55,7 @@ const DefaultInfoExtractor = Common.AnchorInfoExtractor(false);
  */
 async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, query = queryMangas, path = pathname, extract = DefaultInfoExtractor): Promise<Manga[]> {
     const url = new URL(path + 'changeMangaList?type=text', this.URI);
-    const request = new FetchRequest(url.href, {
+    const request = new Request(url.href, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
         }

@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaCross.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from './../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     comics: APIManga[]
@@ -54,21 +54,21 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/comics\/([^/]+)\//)[1];
         const uri = new URL(`/api/comics/${id}.json`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIChapters>(request);
         return new Manga(this, provider, id, data.comic.title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/api/comics.json', this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIMangas>(request);
         return data.comics.map(comic => new Manga(this, provider, comic.dir_name, comic.title.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`/api/comics/${manga.Identifier}.json`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIChapters>(request);
         return data.comic.episodes.map(episode => {
             let title = episode.volume + ' ';
@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(`${chapter.Identifier}/viewer.json`, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIPages>(request);
         return data.episode_pages.map(page => new Page(this, chapter, new URL(page.image.pc_url)));
     }

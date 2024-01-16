@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './WhimSubs.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from './../FetchProvider';
+import { FetchJSON } from './../platform/FetchProvider';
 
 type APIPages = {
     readingOrder: {
@@ -25,7 +25,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(new URL(chapter.Identifier + 'manifest.json', this.URI).href);
+        const request = new Request(new URL(chapter.Identifier + 'manifest.json', this.URI).href);
         const data = await FetchJSON<APIPages>(request);
         return data.readingOrder.map(page => new Page(this, chapter, new URL(page.href)));
     }
