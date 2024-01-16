@@ -1,4 +1,4 @@
-import { FetchRequest, FetchJSON, FetchWindowScript } from '../../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
@@ -81,7 +81,7 @@ type APIPages = {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: string): Promise<Manga> {
     const slug = new URL(url).pathname.split('/')[2];
-    const request = new FetchRequest(new URL(`/series/${slug}`, apiUrl).href);
+    const request = new Request(new URL(`/series/${slug}`, apiUrl).href);
     const { title, series_slug } = await FetchJSON<APIManga>(request);
     return new Manga(this, provider, series_slug, title);
 }
@@ -129,7 +129,7 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
 }
 
 async function getMangaFromPage(this: MangaScraper, provider: MangaPlugin, page: number, apiUrl: string): Promise<Manga[]> {
-    const request = new FetchRequest(new URL(`/query?series_type=All&order=asc&perPage=100&page=${page}`, apiUrl).href);
+    const request = new Request(new URL(`/query?series_type=All&order=asc&perPage=100&page=${page}`, apiUrl).href);
     const { data } = await FetchJSON<APIResult<APIManga>>(request);
     if (data.length) {
         return data.map((manga) => new Manga(this, provider, manga.series_slug, manga.title));
@@ -164,7 +164,7 @@ export function MangasMultiPageAJAX(apiUrl: string, throttle = 0) {
  * @param apiUrl - The url of the HeanCMS api for the website
  */
 export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, apiUrl: string): Promise<Chapter[]> {
-    const request = new FetchRequest(new URL(`/series/${manga.Identifier}`, apiUrl).href);
+    const request = new Request(new URL(`/series/${manga.Identifier}`, apiUrl).href);
     const { seasons } = await FetchJSON<APIManga>(request);
     const chapterList: Chapter[] = [];
 
@@ -201,7 +201,7 @@ export function ChaptersSinglePageAJAX(apiUrl: string) {
  * @param apiUrl - The url of the HeanCMS api for the website
  */
 export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, apiUrl: string): Promise<Page[]> {
-    const request = new FetchRequest(new URL(`/chapter/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl).href);
+    const request = new Request(new URL(`/chapter/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl).href);
     const { chapter_type, data, paywall, chapter: { storage } } = await FetchJSON<APIPages>(request);
 
     if (paywall) {
@@ -254,7 +254,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
     } else {
         //TODO: test if user want to export the NOVEL as HTML?
 
-        const request = new FetchRequest(page.Link.href);
+        const request = new Request(page.Link.href);
         const data = await FetchWindowScript<string>(request, novelScript, 1000, 10000);
         return Common.FetchImageAjax.call(this, new Page(this, page.Parent as Chapter, new URL(data)), priority, signal, false, false);
     }
