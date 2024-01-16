@@ -2,7 +2,7 @@
 import icon from './Ganma.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIRequest<T> = {
     success: boolean;
@@ -39,7 +39,6 @@ type APIPage = {
 }
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -55,7 +54,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const request = new FetchRequest(new URL('/api/1.0/magazines/web/' + new URL(url).pathname.split('/').pop(), this.URI).href, {
+        const request = new Request(new URL('/api/1.0/magazines/web/' + new URL(url).pathname.split('/').pop(), this.URI).href, {
             headers: {
                 'X-From': this.URI.href
             }
@@ -74,7 +73,7 @@ export default class extends DecoratableMangaScraper {
     }
     private async getMangasCompleted(provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/api/1.1/ranking?flag=Finish', this.URI);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             headers: {
                 'X-From': this.URI.href
             }
@@ -85,7 +84,7 @@ export default class extends DecoratableMangaScraper {
     }
     private async getMangasTop(provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/api/2.2/top', this.URI);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             headers: {
                 'X-From': this.URI.href
             }
@@ -99,7 +98,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`/api/1.0/magazines/web/${manga.Identifier}`, this.URI);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             headers: {
                 'X-From': this.URI.href
             }
@@ -113,7 +112,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL('/api/1.0/magazines/web/' + chapter.Parent.Identifier, this.URI);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             headers: {
                 'X-From': this.URI.href
             }

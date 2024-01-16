@@ -18,7 +18,6 @@ const scriptPages = `
 @Common.ChaptersSinglePageCSS('div#animeView div.expandable ul.chlist li h4 a')
 @Common.PagesSinglePageJS(scriptPages, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './WebNovel.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
 type APIComic = {
@@ -49,7 +49,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         const data = await FetchWindowScript<string>(request, `new Promise( resolve => resolve( decodeURIComponent( document.cookie ).match( /_csrfToken=([^;]+);/ )[1] ) )`);
         this.token = data;
     }
@@ -59,7 +59,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const request = new FetchRequest(url);
+        const request = new Request(url);
         const data = await FetchWindowScript<APIComic>(request, `new Promise( resolve => resolve( window.g_data.book.comicInfo));`);
         return new Manga(this, provider, data.comicId.toString(), data.comicName.trim());
     }
@@ -82,7 +82,7 @@ export default class extends DecoratableMangaScraper {
             categoryType: '2',
         });
         uri.search = params.toString();
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIResult<APIBooklist>>(request);
         return data.code == 0 ? data.data.items.map(manga => new Manga(this, provider, manga.bookId, manga.bookName.trim())) : [];
     }
@@ -94,7 +94,7 @@ export default class extends DecoratableMangaScraper {
             comicId: manga.Identifier
         });
         uri.search = params.toString();
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIResult<APIChapterList>>(request);
         return data.code == 0 ? data.data.comicChapters.map(chapter => new Chapter(this, manga, chapter.chapterId, chapter.chapterIndex + ' : ' + chapter.chapterName)) : [];
     }
@@ -109,7 +109,7 @@ export default class extends DecoratableMangaScraper {
 
         });
         uri.search = params.toString();
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchJSON<APIResult<APIPageList>>(request);
         return data.code == 0 ? data.data.chapterInfo.chapterPage.map(page => new Page(this, chapter, new URL(page.url))) : [];
     }

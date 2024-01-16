@@ -6,7 +6,7 @@ const config = {
         title: 'Reaper Scans'
     },
     container: {
-        url: 'https://reapercomics.com/comics/7833-990k-ex-life-hunter',
+        url: 'https://reaperscans.com/comics/7833-990k-ex-life-hunter',
         id: '/comics/7833-990k-ex-life-hunter',
         title: '990k Ex-Life Hunter',
         timeout: 20000

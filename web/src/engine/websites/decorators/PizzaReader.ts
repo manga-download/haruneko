@@ -1,6 +1,6 @@
 // https://github.com/FedericoHeichou/PizzaReader
 
-import { FetchRequest, FetchJSON } from '../../FetchProvider';
+import { FetchJSON } from '../../platform/FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
@@ -42,7 +42,7 @@ type APIChapter = {
 async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
     const slug = new URL(url).pathname.match(/([^/]*)\/*$/)[1];
     const uri = new URL(`/api/comics/${slug}`, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const data = await FetchJSON<APISingleManga>(request);
     return new Manga(this, provider, slug, data.comic.title);
 }
@@ -72,7 +72,7 @@ export function MangaAJAX(pattern: RegExp) {
 ***********************************************/
 async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
     const uri = new URL('/api/comics', this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const data = await FetchJSON<APIMangas>(request);
     return data.comics.map(manga => new Manga(this, provider, manga.slug, manga.title));
 }
@@ -98,7 +98,7 @@ export function MangasSinglePageAJAX() {
 
 async function FetchChapterSinglePageAJAX(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
     const uri = new URL(`/api/comics/${manga.Identifier}`, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const data = await FetchJSON<APISingleManga>(request);
     return data.comic.chapters.map(chapter => new Chapter(this, manga, chapter.url, chapter.full_title));
 }
@@ -139,7 +139,7 @@ export function PagesSinglePageAJAX() {
 
 async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
     const uri = new URL(`/api${chapter.Identifier}`, this.URI); //chapter.Identifier is a pathname i.e /read/xxx/xxx/xxx, no need to add a '/'
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const data = await FetchJSON<APIPages>(request);
     return data.chapter.pages.map(page => new Page(this, chapter, new URL(page)));
 }

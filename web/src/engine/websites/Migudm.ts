@@ -13,7 +13,6 @@ const script = `
 @Common.ChaptersSinglePageCSS('div.comic div#negCtSectionListBd div.titleList a.item', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageJS(script, 1000)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

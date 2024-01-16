@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './LegacyScans.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     comics: {
@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
     }
     async getMangasFromRange(provider: MangaPlugin, start: number): Promise<Manga[]>{
         const url = new URL(`/misc/comic/search/query?status=&order=&genreNames=&type=&start=${start}&end=${start + this.mangasPerPages}`, this.apiUrl);
-        const request = new FetchRequest(url.href);
+        const request = new Request(url.href);
         const mangas = await FetchJSON<APIMangas>(request);
         return mangas.comics.map(manga => new Manga(this, provider, `/comics/${manga.slug}`, manga.title.trim()));
     }

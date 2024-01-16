@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './XoxoComics.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 function LabelExtractor(head: HTMLHeadingElement) {
     return head.textContent.replace(/ Comic/i, '').trim();
@@ -12,19 +12,27 @@ function ImageExtractor(img: HTMLImageElement) {
     return img.dataset.original;
 }
 
-@Common.MangaCSS(/^{origin}\/comic\/[\da-z-]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
-@Common.MangasMultiPageCSS('/comic-list/alphabet?c=&page={page}', 'div.chapter > a')
+@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
 @Common.PagesSinglePageCSS('div.page-chapter img', ImageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('xoxocomics', `XoxoComics`, 'https://xoxocomics.net', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
+        super('xoxocomics', `XoxoComics`, 'https://xoxocomic.com', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        //if not done letter by letter it stops at page 99, at letter C.
+        const mangaList: Manga[] = [];
+        for (const letter of '0abcdefghijklmnopqrstuvwxyz'.split('')) {
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/comic-list?c=${letter}&page={page}`, 'div.chapter a');
+            mangaList.push(...mangas);
+        }
+        return mangaList.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -38,7 +46,7 @@ export default class extends DecoratableMangaScraper {
 
     async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier + '?page=' + page, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div.chapter > a');
         return data.map(element => new Chapter(this, manga, element.pathname + '/all', element.text.replace(manga.Title, '').trim()));
     }

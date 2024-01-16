@@ -7,7 +7,7 @@ const config: Config = {
     },
     container: {
         url: 'https://aresnov.org/series/martial-god-asura/',
-        id: '/manga/martial-god-asura/',
+        id: '/series/martial-god-asura/',
         title: 'Martial God Asura'
     },
     child: {

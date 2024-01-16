@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Kakaopage.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchGraphQL, FetchRequest } from '../FetchProvider';
+import { FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
 import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
@@ -36,7 +36,6 @@ type APiPages = {
 
 @Common.MangasNotSupported()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('kakaopage', `Page Kakao (카카오페이지)`, 'https://page.kakao.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Official);
@@ -52,7 +51,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/content\/(\d+)/)[1];
-        const data = await FetchCSS<HTMLTitleElement>(new FetchRequest(url), 'title');
+        const data = await FetchCSS<HTMLTitleElement>(new Request(url), 'title');
         return new Manga(this, provider, id, data[0].text.split(' - ')[0].trim());
     }
 
@@ -100,7 +99,7 @@ export default class extends DecoratableMangaScraper {
         `;
 
         do {
-            const request = new FetchRequest(new URL('/graphql', this.URI).href, {
+            const request = new Request(new URL('/graphql', this.URI).href, {
                 headers: {
                     Referer: this.URI.href,
                     Origin: this.URI.href
@@ -148,7 +147,7 @@ export default class extends DecoratableMangaScraper {
             productId: parseInt(chapter.Identifier),
             seriesId: parseInt(chapter.Parent.Identifier)
         };
-        const request = new FetchRequest(new URL('/graphql', this.URI).href, {
+        const request = new Request(new URL('/graphql', this.URI).href, {
             headers: {
                 Referer: this.URI.href,
                 Origin: this.URI.href
