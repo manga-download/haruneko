@@ -2,8 +2,8 @@
 import icon from './ComicFuz.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { protoTypes } from './ComicFuz_proto';
-import { FetchProto, FetchRequest } from '../FetchProvider';
+import protoTypes from './ComicFuz.proto?raw';
+import { FetchProto } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
@@ -87,11 +87,11 @@ export default class extends DecoratableMangaScraper {
         return FetchProto<MangaDetailResponse>(request, protoTypes, 'ComicFuz.MangaDetailResponse');
     }
 
-    private async createPROTORequest(uri: URL, messageProtoType: string, payload: unknown): Promise<FetchRequest> {
+    private async createPROTORequest(uri: URL, messageProtoType: string, payload: unknown): Promise<Request> {
         const root = await protobuf.parse(protoTypes, { keepCase: true }).root;
         const messageType = root.lookupType(messageProtoType);
         const message = messageType.encode(payload);
-        return new FetchRequest(uri.href, {
+        return new Request(uri.href, {
             body: message.finish(),
             method: 'POST'
         });

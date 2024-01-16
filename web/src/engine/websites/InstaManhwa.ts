@@ -3,7 +3,7 @@ import icon from './InstaManhwa.webp';
 import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchRequest } from '../FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 const extract = Common.AnchorInfoExtractor(false, 'span.chapter-release-date');
 
@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
     private async GetToken(manga: Manga): Promise<string> {
         const { slug } = JSON.parse(manga.Identifier);
         const uri = new URL(slug, this.URI);
-        const request = new FetchRequest(uri.href, {});
+        const request = new Request(uri.href, {});
         const data = await FetchCSS<HTMLMetaElement>(request, 'meta[name="csrf-token"]');
         return data.shift().content;
     }
@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const id = JSON.parse(manga.Identifier) as { post: string, slug: string };
         const uri = new URL('/ajax', this.URI);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             method: 'POST',
             body: new URLSearchParams({
                 '_token': await this.GetToken(manga),

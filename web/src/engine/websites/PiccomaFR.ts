@@ -3,7 +3,7 @@ import { Tags } from '../Tags';
 import icon from './Piccoma.webp';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import DeScramble from '../transformers/ImageDescrambler';
 import type { Priority } from '../taskpool/TaskPool';
 
@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = url.split('/').pop();
-        const request = new FetchRequest(`${this.URI.href}/product/${id}`);
+        const request = new Request(`${this.URI.href}/product/${id}`);
         const [ element ] = await FetchCSS<HTMLMetaElement>(request, 'meta[property="og:title"]');
         return new Manga(this, provider, id, element.content.split('|').shift().trim());
     }
@@ -77,19 +77,19 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('search_type', 'P');
         uri.searchParams.set('word', word);
         uri.searchParams.set('page', `${page}`);
-        const { data: { p_products: entries } } = await FetchJSON<APIMangas>(new FetchRequest(uri.href));
+        const { data: { p_products: entries } } = await FetchJSON<APIMangas>(new Request(uri.href));
         return entries.map(entry => new Manga(this, provider, `${entry.product_id}`, entry.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new FetchRequest(`${this.URI.href}/product/episode/${manga.Identifier}`);
+        const request = new Request(`${this.URI.href}/product/episode/${manga.Identifier}`);
         const [ { text: json } ] = await FetchCSS<HTMLScriptElement>(request, 'script#__NEXT_DATA__');
         const chapters = (JSON.parse(json) as NextData).props.pageProps.initialState.episode.episodeList.episode_list;
         return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new FetchRequest(`${this.URI.href}/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`);
+        const request = new Request(`${this.URI.href}/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`);
         const data = await FetchWindowScript<ImageLinks>(request, `(${script})()`, 2500);
         return data.map(entry => new Page(this, chapter, new URL(entry.link), { scrambled: JSON.stringify(entry.tiles) }));
     }

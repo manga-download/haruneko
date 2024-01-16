@@ -23,7 +23,6 @@ const queryPagesScript = `
 @SinMH.ChaptersSinglePageJS(SinMH.queryChaptersScript, 'div.chapter-list ul li a')
 @Common.PagesSinglePageJS(queryPagesScript, 1500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
