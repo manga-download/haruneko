@@ -1,7 +1,7 @@
 import { type Tag, Tags } from '../Tags';
 import icon from './ToCoronaEx.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { FetchJSON, FetchRequest } from '../FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/\/comics\/(\d+)/)[1];
-        const request = new FetchRequest(new URL(`/comics/${id}`, this.apiurl).href, {
+        const request = new Request(new URL(`/comics/${id}`, this.apiurl).href, {
             headers: {
                 'X-API-Environment-Key': this.apikey
             }
@@ -60,7 +60,7 @@ export default class extends DecoratableMangaScraper {
         const mangaList: Manga[] = [];
 
         for (let url: URL | null = new URL('/comics?order=asc&sort=title_yomigana', this.apiurl); url != null;) {
-            const request = new FetchRequest(url.href, {
+            const request = new Request(url.href, {
                 headers: {
                     'X-API-Environment-Key': this.apikey
                 }
@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
         const chapterList: Chapter[] = [];
 
         for (let url: URL | null = new URL(`/episodes?comic_id=${manga.Identifier}&episode_status=free_viewing%2Conly_for_subscription&order=asc&sort=episode_order`, this.apiurl); url != null;) {
-            const request = new FetchRequest(url.href, {
+            const request = new Request(url.href, {
                 headers: {
                     'X-API-Environment-Key': this.apikey
                 }
@@ -98,7 +98,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(`/episodes/${chapter.Identifier}/begin_reading`, this.apiurl);
-        const request = new FetchRequest(url.href, {
+        const request = new Request(url.href, {
             headers: {
                 'X-API-Environment-Key': this.apikey
             }
