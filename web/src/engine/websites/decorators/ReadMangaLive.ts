@@ -1,4 +1,4 @@
-import { FetchRequest, FetchWindowScript } from '../../FetchProvider';
+import { FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
@@ -51,7 +51,7 @@ type ImagesData = {
 async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay : number = 0): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     uri.searchParams.set('mtr', '1');
-    const images = await FetchWindowScript<ImagesData>(new FetchRequest(uri.href), script, delay);
+    const images = await FetchWindowScript<ImagesData>(new Request(uri.href), script, delay);
 
     images.pics = images.pics.map(pic => pic.replace(/^\/\//, 'https://'));
     images.servers = images.servers.map(server => server.replace(/^\/\//, 'https://'));
