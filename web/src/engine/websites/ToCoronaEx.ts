@@ -113,9 +113,9 @@ export default class extends DecoratableMangaScraper {
         const key = page.Parameters.drm_hash as string;
 
         return DeScramble(data, async (image, ctx) => {
-            function decodeKey(e): number[] {
-                const n = [];
-                const t = atob(e);
+            function decodeKey(e: string): number[] {
+                const n: number[] = [];
+                const t = window.atob(e);
                 for (let r = 0; r < t.length; r++) {
                     n[r] = t.charCodeAt(r);
                 }
