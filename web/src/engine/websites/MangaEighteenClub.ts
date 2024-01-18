@@ -22,6 +22,6 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const pictures = await FetchWindowScript<string[]>(request, 'window.slides_p_path', 500);
-        return pictures.map(element => new Page(this, chapter, new URL(window.atob(element), this.URI)));
+        return pictures.map(element => new Page(this, chapter, new URL(globalThis.atob(element), this.URI)));
     }
 }

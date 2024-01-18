@@ -162,7 +162,7 @@ export async function FetchPagesSinglePageREGEX(this: MangaScraper, chapter: Cha
         }
         let result = results[1];
         if(result.includes('atob')) {
-            result = window.atob(result);
+            result = globalThis.atob(result);
         }
         return JSON.parse(result).map((page: { url: string }) => {
             const link = new URL(page.url, request.url);

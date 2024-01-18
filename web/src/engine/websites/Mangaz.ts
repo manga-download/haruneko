@@ -89,7 +89,7 @@ export default class extends DecoratableMangaScraper {
         }, secretKey, encrypted,);
 
         const sdecrypted = new TextDecoder('utf-8').decode(decrypted);
-        decrypted = Uint8Array.from(window.atob(sdecrypted), char => char.charCodeAt(0));
+        decrypted = Uint8Array.from(globalThis.atob(sdecrypted), char => char.charCodeAt(0));
         return await Common.GetTypedData(decrypted);
 
     }
