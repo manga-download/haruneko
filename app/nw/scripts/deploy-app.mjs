@@ -1,7 +1,7 @@
 import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
-import decompress from 'decompress';
+import extract from 'extract-zip';
 import { download } from './tools.mjs';
 
 const pkgFile = 'package.json';
@@ -38,7 +38,7 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     console.log('Extracting:', '$TMP/' + path.basename(tmpFile), '=>', '$TMP/' + path.basename(nwDir));
     await fs.rm(tmpDir, { force: true, recursive: true });
     await fs.rm(nwDir, { force: true, recursive: true });
-    await decompress(tmpFile, os.tmpdir());
+    await extract(tmpFile, { dir: os.tmpdir() });
     await fs.move(tmpDir, nwDir);
     return nwDir;
 }
