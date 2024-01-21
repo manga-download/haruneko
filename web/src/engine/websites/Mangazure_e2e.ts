@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://www.mangazure.com/2024/01/black-corporation-joseon.html',
-        id: '/2024/01/black-corporation-joseon.html',
+        id: 'black-corporation-joseon',
         title: 'Black Corporation: Joseon'
     },
     child: {

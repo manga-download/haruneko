@@ -1,6 +1,6 @@
 ﻿import { Tags } from '../Tags';
 import icon from './Mangazure.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
@@ -9,17 +9,41 @@ type APIitem = {
     url: string;
 }
 
-type PageData = {
-    rawdata: string,
-    server: string
-}
-
 const pageScript = `
     new Promise(resolve =>   {
-        resolve( { rawdata: document.body.innerHTML, server : $ImgHost });
+
+        function getImageUrl(path) {
+            let result = '';
+            if (path.includes('&')) {
+                const y = path.slice(1).split('&');
+                result = $ImgHost;
+                result += y[0] + '/' + y[1] + '/' + y[2] + '/' + y[3] + '/s0/' + y[4] + '.jpg';
+            } else {
+                if (path.includes('@')) {
+                    result = path.replace('@', '');
+                    result = $ImgHost + result + '=s0';
+                } else {
+                    if (path.includes('#')) {
+                        result = path.replace('#', '');
+                        result = $ImgHost + 'drive-viewer/' + result + '=s0';
+                    } else {
+                        path[0] == '$'
+                            ? (result = path.replace('$', ''), result = $ImgHost + 'd/' + result + '=s0')
+                            : result = $ImgHost + path + '=s0';
+                    }
+                }
+            }
+            return result;
+        }
+
+        const rawdata = document.body.innerHTML.match(/\\$chapterContent\\s*=\\s*"([^"]+)/)[1].replace(/<.*>/, '').split('|');
+        resolve( rawdata
+            .filter(page => page != '')
+            .map(page => getImageUrl(page)));
     });
 `;
 
+@Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://fetch.mangazure.com';
@@ -36,7 +60,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const title = await FetchWindowScript<string>(new Request(url), '$bookTitle', 500);
-        return new Manga(this, provider, new URL(url).pathname, title);
+        return new Manga(this, provider, this.convertToSlug(title), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -49,12 +73,12 @@ export default class extends DecoratableMangaScraper {
                 const url = new URL(`/category?q=${category}&start=${offset}&max=${perPage}`, this.apiUrl);
                 const request = new Request(url, {
                     headers: {
-                        Referer: this.URI.href,
-                        Origin: this.URI.href
+                        Referer: this.URI.origin,
+                        Origin: this.URI.origin
                     }
                 });
                 const results = await FetchJSON<APIitem[]>(request);
-                results.forEach(manga => mangaList.push(new Manga(this, provider, new URL(manga.url).pathname, this.cleanMangaTitle(manga.title))));
+                results.forEach(manga => mangaList.push(new Manga(this, provider, this.convertToSlug(manga.title), this.cleanMangaTitle(manga.title))));
                 run = results.length > 0;
             }
         }
@@ -62,48 +86,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const slug = this.convertToSlug(manga.Title);
-        const url = new URL(`/book?q=${slug}`, this.apiUrl);
+        const url = new URL(`/book?q=${manga.Identifier}`, this.apiUrl);
         const request = new Request(url, {
             headers: {
-                Referer: this.URI.href,
-                Origin: this.URI.href
+                Referer: this.URI.origin,
+                Origin: this.URI.origin
             }
         });
         const chapters = await FetchJSON<APIitem[]>(request);
         return chapters.map(chapter => new Chapter(this, manga, new URL(chapter.url).pathname, chapter.title.replace(manga.Title + ' -', '').trim()));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const response = await FetchWindowScript<PageData>(new Request(new URL(chapter.Identifier, this.URI)), pageScript, 2000);
-        const pages = response.rawdata.match(/\$chapterContent\s*=\s*"([^"]+)/)[1].replace(/<.*>/, '').split('|');
-        return pages
-            .filter(page => page != '')
-            .map(page => new Page(this, chapter, new URL(this.getImageUrl(page, response.server))));
-    }
-
-    getImageUrl(path: string, server: string): string {
-        let result = '';
-        if (path.includes('&')) {
-            const y = path.slice(1).split('&');
-            result = server;
-            result += y[0] + '/' + y[1] + '/' + y[2] + '/' + y[3] + '/s0/' + y[4] + '.jpg';
-        } else {
-            if (path.includes('@')) {
-                result = path.replace('@', '');
-                result = server + result + '=s0';
-            } else {
-                if (path.includes('#')) {
-                    result = path.replace('#', '');
-                    result = server + 'drive-viewer/' + result + '=s0';
-                } else {
-                    path[0] == '$'
-                        ? (result = path.replace('$', ''), result = server + 'd/' + result + '=s0')
-                        : result = server + path + '=s0';
-                }
-            }
-        }
-        return result;
     }
 
     cleanMangaTitle(title: string): string {
