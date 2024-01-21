@@ -347,6 +347,7 @@ export { default as MangaWOW } from './MangaWOW';
 export { default as MangaWT } from './MangaWT';
 export { default as MangaYeh } from './MangaYeh';
 export { default as Mangaz } from './Mangaz';
+export { default as Mangazure } from './Mangazure';
 export { default as ManHatic } from './ManHatic';
 export { default as ManhuaAZ } from './ManhuaAZ';
 export { default as ManHuaDex } from './ManHuaDex';
