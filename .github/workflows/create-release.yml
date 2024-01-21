@@ -27,7 +27,7 @@ jobs:
       - name: Upload Release Builds
         uses: actions/upload-artifact@v4
         with:
-          name: release-builds
+          name: bundle-${{ matrix.os }}
           retention-days: 3
           path: app/nw/bundle
       - name: Upload Release Templates
@@ -51,9 +51,9 @@ jobs:
       - name: Create Release Description
         run: |
           DESCRIPTION=$(cat ./release-templates/pre-release.md | tr '\r\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_64_ZIP}/$(ls ./release-builds | grep 'x64.zip')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_32_ZIP}/$(ls ./release-builds | grep 'ia32.zip')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_64_DMG}/$(ls ./release-builds | grep 'x64.dmg')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_64_ZIP}/$(ls ./bundle-* | grep 'x64.zip')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_32_ZIP}/$(ls ./bundle-* | grep 'ia32.zip')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_64_DMG}/$(ls ./bundle-* | grep 'x64.dmg')/g)
           echo -n $DESCRIPTION > ./release-templates/description.md
       - name: Create Release Tag
         run: |
@@ -78,7 +78,7 @@ jobs:
           rm body.json response.json
       - name: Upload Release Assets
         run: |
-          for FILE in ./release-builds/*.*; do \
+          for FILE in ./bundle-*/*.*; do \
             curl \
               -X POST \
               -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
