@@ -11,13 +11,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
           ref: ${{ github.ref }}
           fetch-depth: 1
       - name: Install NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20.11.x
       - name: Install NPM Packages
@@ -25,13 +25,13 @@ jobs:
       - name: Build Application
         run: npm run bundle --workspace app/nw
       - name: Upload Release Builds
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: release-builds
           retention-days: 3
           path: app/nw/bundle
       - name: Upload Release Templates
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'windows-latest' }}
         with:
           name: release-templates
@@ -47,7 +47,7 @@ jobs:
           echo "RELEASE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
           echo "RELEASE_TAG=$(date -u +"%y%m%dT%H%M")" >> $GITHUB_ENV
       - name: Download Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
       - name: Create Release Description
         run: |
           DESCRIPTION=$(cat ./release-templates/pre-release.md | tr '\r\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)
