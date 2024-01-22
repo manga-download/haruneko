@@ -57,30 +57,23 @@ class MediaStreamHLS implements MediaStream {
 
     constructor(private readonly playlistURL: string) {}
 
-    public async GetSource(): Promise<HTMLSourceElement> {
+    public async GetSource(): Promise<string> {
         const source = document.createElement('source');
         source.type = 'application/x-mpegURL';
         source.src = '';
-        return source;
+        return '';
     }
 }
 */
 
 class MediaStreamMP4 implements MediaStream {
 
-    constructor(private readonly streamURL: string) {}
-
-    /*
-    public async GetSource(): Promise<HTMLSourceElement> {
-        const source = document.createElement('source');
-        source.type = 'video/mp4'; // 'application/x-mpegURL';
-        source.src = this.streamURL;
-        return source;
+    constructor(private readonly player: HTMLVideoElement, private readonly streamURL: string) {
+        this.GetSource();
     }
-    */
 
     private async DetectMimeCodec(): Promise<string> {
-        return 'video/mp4; codecs="avc1.42E01E, mp4a.40.2'; // 'video/webm; codecs="vorbis,vp8"'
+        return 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'; // 'video/webm; codecs="vorbis,vp8"'
     }
 
     public async GetSource(): Promise<string> {
@@ -88,8 +81,7 @@ class MediaStreamMP4 implements MediaStream {
         const mediaSource = new MediaSource();
         const uri = URL.createObjectURL(mediaSource);
 
-        const player = createPlayer();
-        player.src = uri;
+        this.player.src = uri;
 
         mediaSource.addEventListener('sourceclose', (event) => {
             console.log('sourceclose', event);
@@ -119,15 +111,13 @@ class MediaStreamMP4 implements MediaStream {
 
 async function playMediaStream() {
     try {
-        //const player = createPlayer();
-        //player.src = await new MediaStreamMP4('https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4').GetSource();
-        //console.log('Video.src', player.src);
-        //setTimeout(() => player.play(), 5000);
-        await new MediaStreamMP4('https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4').GetSource();
+        await new MediaStreamMP4(createPlayer(), 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4').GetSource();
     } catch(error) {
         console.warn(error);
     }
 }
+
+playMediaStream();
 
 // http://docs.evostream.com/sample_content/assets/sintel1m720p.mp4
 // https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_h264.mov
@@ -137,12 +127,14 @@ async function playMediaStream() {
 // http://docs.evostream.com/sample_content/assets/hls-sintel-abr3/playlist.m3u8
 // http://docs.evostream.com/sample_content/assets/hls-sintel-abr3/sintel480p/playlist.m3u8
 
-const assetURL = "https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4";
+/*
+
+const assetURL = 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4';
 // Need to be specific for Blink regarding codecs
 // ./mp4info frag_bunny.mp4 | grep Codec
 const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
 
-const player = document.querySelector<HTMLVideoElement>("#player");
+const player = createPlayer();
 
 function loadVideo() {
     if (MediaSource.isTypeSupported(mimeCodec)) {
@@ -172,9 +164,6 @@ async function onSourceOpen(this: MediaSource) {
     sourceBuffer.appendBuffer(buffer);
 }
 
-/*
-const load = document.querySelector("#load");
-load.addEventListener("click", loadVideo);
-*/
-
 loadVideo();
+
+*/
