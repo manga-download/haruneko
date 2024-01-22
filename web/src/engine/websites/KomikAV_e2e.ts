@@ -4,19 +4,19 @@ const config: Config = {
     plugin: {
         id: 'komikav',
         title: 'KomikAV'
-    }/*,
+    }/* CloudFlare,
     container: {
-        url: 'https://komikav.com/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://komikav.com/manga/a-bad-person/',
+        id: '/manga/a-bad-person/',
+        title: 'A Bad Person (Bad Guy)'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/a-bad-person-chapter-01-bahasa-indonesia/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 172_827,
         type: 'image/jpeg'
     }*/
 };
