@@ -41,8 +41,6 @@ const legacyWebsiteIdentifierMap = {
     'shonenmagazine-pocket': 'shonenmagazine',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
-    'truyentranhaudioonline': 'protruyen',
-    'truyentranhaudio': 'protruyen',
     'vermanhwas': 'vermanhwa',
     'webtoontrcom': 'webtoontrnet',
     'yugenmangas': 'yugenmangas-es'
