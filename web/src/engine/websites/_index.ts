@@ -448,7 +448,6 @@ export { default as PornComixOnline } from './PornComixOnline';
 export { default as PowerManga } from './PowerManga';
 export { default as PrismaHentai } from './PrismaHentai';
 export { default as ProjetoScanlator } from './ProjetoScanlator';
-export { default as ProTruyen } from './ProTruyen';
 export { default as Pururin } from './Pururin';
 export { default as Pzykosis666HFansub } from './Pzykosis666HFansub';
 export { default as QuantumScans } from './QuantumScans';
