@@ -53,7 +53,8 @@ jobs:
           DESCRIPTION=$(cat ./release-templates/pre-release.md | tr '\r\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_64_ZIP}/$(ls ./bundle-* | grep 'x64.zip')/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_32_ZIP}/$(ls ./bundle-* | grep 'ia32.zip')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_64_DMG}/$(ls ./bundle-* | grep 'x64.dmg')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_X64_DMG}/$(ls ./bundle-* | grep 'x64.dmg')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_ARM64_DMG}/$(ls ./bundle-* | grep 'arm64.dmg')/g)
           echo -n $DESCRIPTION > ./release-templates/description.md
       - name: Create Release Tag
         run: |
