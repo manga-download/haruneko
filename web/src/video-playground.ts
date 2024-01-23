@@ -2,6 +2,10 @@
 //import videojs from 'video.js';
 //import * as xxx from '../../node_modules/@videojs/http-streaming';
 
+alert('MEOW!');
+setTimeout(() => globalThis.nw.Window.get().show(), 5000);
+
+/*
 function createPlayer() {
     const player = document.createElement('video');
     player.id = 'video';
@@ -14,6 +18,7 @@ function createPlayer() {
     document.body.appendChild(player);
     return player;
 }
+*/
 
 /*
 export async function playHLS() {
@@ -47,10 +52,12 @@ export async function playVideo() {
 }
 */
 
+/*
 interface MediaStream {
     //GetSource(): Promise<HTMLSourceElement>;
     GetSource(): Promise<string>;
 }
+*/
 
 /*
 class MediaStreamHLS implements MediaStream {
@@ -66,6 +73,7 @@ class MediaStreamHLS implements MediaStream {
 }
 */
 
+/*
 class MediaStreamMP4 implements MediaStream {
 
     constructor(private readonly player: HTMLVideoElement, private readonly streamURL: string) {
@@ -117,7 +125,8 @@ async function playMediaStream() {
     }
 }
 
-playMediaStream();
+//playMediaStream();
+*/
 
 // http://docs.evostream.com/sample_content/assets/sintel1m720p.mp4
 // https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_h264.mov
