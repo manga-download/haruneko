@@ -406,6 +406,7 @@ export { default as MundoManhwa } from './MundoManhwa';
 export { default as NatsuID } from './NatsuID';
 export { default as Nekomik } from './Nekomik';
 export { default as NeoxScan } from './NeoxScan';
+export { default as NetComics } from './NetComics';
 export { default as NeuManga } from './NeuManga';
 export { default as NewType } from './NewType';
 export { default as NextScan } from './NextScan';
