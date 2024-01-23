@@ -1,8 +1,5 @@
 import { CreateAppWindow } from './engine/platform/AppWindow';
 
-import { Stream } from './video-playground';
-Stream();
-
 const appHook = '#app';
 const noticeHook = '#hakuneko-notice';
 const splashPath = '/splash.html';
