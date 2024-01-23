@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './PojokManga.webp';
+import icon from './MangaHubFR.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/komik\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MANGAHUB"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Madara.PagesSinglePageCSS('div.page-break noscript img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('pojokmanga', 'PojokManga', 'https://pojokmanga.id', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('mangahubfr', 'MangaHubFR', 'https://mangahub.fr', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
