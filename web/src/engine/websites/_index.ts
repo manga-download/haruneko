@@ -333,6 +333,7 @@ export { default as MangasOrigines } from './MangasOrigines';
 export { default as MangaSpark } from './MangaSpark';
 export { default as MangaStarz } from './MangaStarz';
 export { default as MangaSushi } from './MangaSushi';
+export { default as MangaSusuku } from './MangaSusuku';
 export { default as MangaSY } from './MangaSY';
 export { default as MangaTale } from './MangaTale';
 export { default as Mangatellers } from './Mangatellers';
