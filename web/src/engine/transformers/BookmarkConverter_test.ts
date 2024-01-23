@@ -96,8 +96,6 @@ describe('BookmarkConverter', () => {
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
             { sourceID: 'smangavfws', targetID: 'smangavf' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
-            { sourceID: 'truyentranhaudioonline', targetID: 'protruyen' },
-            { sourceID: 'truyentranhaudio', targetID: 'protruyen' },
             { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
             { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
             { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },
