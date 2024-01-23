@@ -10,12 +10,12 @@ import * as Mojo from './decorators/MojoPortalComic';
 @Common.MangasMultiPageCSS(Mojo.path, Mojo.queryMangas)
 @Common.ChaptersSinglePageCSS(Mojo.queryChapter)
 @Mojo.PagesSinglePageCSS([], Mojo.queryPages)
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nettruyen', `NetTruyen`, 'https://www.nettruyenus.com', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('nettruyen', `NetTruyen`, 'https://www.nettruyenclub.com', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
         //this.Settings.url = new Text('urloverride', R.Plugin_Settings_UrlOverride, R.Plugin_Settings_UrlOverrideInfo, this.URI.origin);
         //this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
         //this.URI.href = this.Settings.url.Value as string;
