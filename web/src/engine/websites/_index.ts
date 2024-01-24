@@ -612,6 +612,7 @@ export { default as Ynjn } from './Ynjn';
 export { default as YugenMangasES } from './YugenMangasES';
 export { default as YugenMangasPT } from './YugenMangasPT';
 export { default as YumeKomik } from './YumeKomik';
+export { default as Yurineko } from './Yurineko';
 export { default as YuriVerso } from './YuriVerso';
 export { default as Zebrack } from './Zebrack';
 export { default as ZeroScans } from './ZeroScans';
