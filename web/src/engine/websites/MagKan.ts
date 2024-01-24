@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MagKan.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchHTML } from '../platform/FetchProvider';
+import { Fetch, FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
     return {
@@ -27,12 +27,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(manga.Identifier, this.URI).href);
-        const body = await FetchHTML(request);
-        const current = [...body.querySelectorAll<HTMLAnchorElement>('div#main div.update_summary div.exp ul.btn li a[href*="/assets/files/"]')].map(element => {
+        const [mainDiv] = await FetchCSS<HTMLDivElement>(request, 'div#main');
+        const current = [...mainDiv.querySelectorAll<HTMLAnchorElement>('div#main div.update_summary div.exp ul.btn li a[href*="/assets/files/"]')].map(element => {
             const id = element.pathname.replace(/\/HTML5\/?$/i, '');
             return new Chapter(this, manga, id, element.text.replace('を読む', '').trim());
         });
-        const previous = [...body.querySelectorAll('div#main div.sam_exp div.exp')].map(element => {
+        const previous = [...mainDiv.querySelectorAll('div#main div.sam_exp div.exp')].map(element => {
             const id = element.querySelector<HTMLAnchorElement>('ul.btn li a[href*="/assets/files/"]').pathname.replace(/\/HTML5\/?$/i, '');
             return new Chapter(this, manga, id, element.querySelector('div.back_number_summary div.ttl').textContent.trim());
         });
