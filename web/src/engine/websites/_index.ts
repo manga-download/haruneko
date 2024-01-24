@@ -39,6 +39,7 @@ export { default as BestManhua } from './BestManhua';
 export { default as BibiManga } from './BibiManga';
 export { default as BlogTruyen } from './BlogTruyen';
 export { default as Bokugents } from './Bokugents';
+export { default as BookHodai } from './BookHodai';
 export { default as BookLive } from './BookLive';
 export { default as Boosei } from './Boosei';
 export { default as BoysLove } from './BoysLove';
