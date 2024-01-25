@@ -169,6 +169,7 @@ export { default as HqNow } from './HqNow';
 export { default as HunterScan } from './HunterScan';
 export { default as HunterScanEN } from './HunterScanEN';
 export { default as IceKr } from './IceKr';
+export { default as Ikanmh } from './Ikanmh';
 export { default as IMHentai } from './IMHentai';
 export { default as ImmortalUpdates } from './ImmortalUpdates';
 export { default as ImperioScans } from './ImperioScans';
