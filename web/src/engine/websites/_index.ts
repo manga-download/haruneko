@@ -154,6 +154,7 @@ export { default as Hentai2Read } from './Hentai2Read';
 export { default as Hentai3z } from './Hentai3z';
 export { default as HentaiCafe } from './HentaiCafe';
 export { default as Hentaidexy } from './Hentaidexy';
+export { default as HentaiForce } from './HentaiForce';
 export { default as HentaiFox } from './HentaiFox';
 export { default as HentaiHand } from './HentaiHand';
 export { default as HentaiHere } from './HentaiHere';
