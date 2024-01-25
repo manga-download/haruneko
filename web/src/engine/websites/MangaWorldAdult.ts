@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaWorld.webp';
+import icon from './MangaWorldAdult.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -13,7 +13,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+\/$/, 'div.info h1.name.bigger')
+@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.info h1.name.bigger')
 @Common.MangasMultiPageCSS('/archive?page={page}', 'div.comics-grid div.content a.manga-title')
 @Common.ChaptersSinglePageCSS('div.chapters-wrapper div.chapter a.chap', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('div#reader div#page img.page-image')
@@ -21,7 +21,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaworld', `Manga World`, 'https://www.mangaworld.ac', Tags.Language.Italian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangaworldadult', `Manga World Adult`, 'https://www.mangaworldadult.net', Tags.Language.Italian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

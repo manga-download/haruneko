@@ -350,6 +350,7 @@ export { default as MangaTX } from './MangaTX';
 export { default as MangaWeebs } from './MangaWeebs';
 export { default as MangaWindow } from './MangaWindow';
 export { default as MangaWorld } from './MangaWorld';
+export { default as MangaWorldAdult } from './MangaWorldAdult';
 export { default as MangaWOW } from './MangaWOW';
 export { default as MangaWT } from './MangaWT';
 export { default as MangaYeh } from './MangaYeh';
