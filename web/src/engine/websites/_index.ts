@@ -265,6 +265,7 @@ export { default as MangaCross } from './MangaCross';
 export { default as MangaCultivator } from './MangaCultivator';
 export { default as MangaDenizi } from './MangaDenizi';
 export { default as MangaDex } from './MangaDex';
+export { default as MangaDistrict } from './MangaDistrict';
 export { default as MangaDiyari } from './MangaDiyari';
 export { default as MangaDoom } from './MangaDoom';
 export { default as MangaDoor } from './MangaDoor';
