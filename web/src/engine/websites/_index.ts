@@ -322,6 +322,7 @@ export { default as MangaPanda } from './MangaPanda';
 export { default as MangaParkPublisher } from './MangaParkPublisher';
 export { default as MangaPill } from './MangaPill';
 export { default as MangaPlanet } from './MangaPlanet';
+export { default as MangaPlaza } from './MangaPlaza';
 export { default as MangaPro } from './MangaPro';
 export { default as MangaPure } from './MangaPure';
 export { default as MangaRead } from './MangaRead';
