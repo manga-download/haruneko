@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
                 'Referer': this.URI.href,
             }
         });
-        const nodes = await FetchCSS(request, 'img.chapter-img');
+        const nodes = await FetchCSS(request, 'img.chapter-img:not([alt*="nicoscan"])');
         return nodes.map(image => new Page(this, chapter, new URL(image.dataset.original.replace(/\n/g, ''))));
     }
 
