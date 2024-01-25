@@ -556,6 +556,7 @@ export { default as TopManhuaNet } from './TopManhuaNet';
 export { default as TopToon } from './TopToon';
 export { default as TortugaCeviri } from './TortugaCeviri';
 export { default as TraduccionesAmistosas } from './TraduccionesAmistosas';
+export { default as TraduccionesMoonlight } from './TraduccionesMoonlight';
 export { default as TritiniaScans } from './TritiniaScans';
 export { default as TrueManga } from './TrueManga';
 export { default as TruyenTranhOnline } from './TruyenTranhOnline';
