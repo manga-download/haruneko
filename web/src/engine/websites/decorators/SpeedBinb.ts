@@ -79,7 +79,7 @@ const JsonFetchScript = `
                 .then(json => resolve(json))
          });
 `;
-enum SpeedBinbVersion { v016113, v016201, v016452, v016130, _default_v016061, vUnknown }
+export enum SpeedBinbVersion { v016113 = 1, v016201, v016452, v016130, _default_v016061, vUnknown }
 function getSanitizedURL(base: string, append: string): URL {
     const baseURI = new URL(append, base + '/');
     baseURI.pathname = baseURI.pathname.replaceAll(/\/\/+/g, '/');
@@ -88,21 +88,84 @@ function getSanitizedURL(base: string, append: string): URL {
 }
 
 function getSpeedBinbVersion(el: HTMLElement, viewerUrl: URL): SpeedBinbVersion {
+    //Comic Brise, Comic Meteor, Comic Polaris, Comic Valkyrie, Digital MargaRet, OneTwoThreeHon : _default_v016061
+    //(el.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]')
+
+    /*CMOA :v016452
+    ptbinb : "/bib/sws/bibGetCntntInfo.php?u0=1&u1=0" U0 U1
+    ptbinbCid : "0000151961_jp_0001"
+    'https://www.cmoa.jp/bib/speedreader/?cid=0000151961_jp_0001&u0=1&u1=0' U0 U1 CID
+
+    BOOKHODAI :v016113 / v016130
+    ptbinb "https://viewer.bookhodai.jp/sws/apis/bibGetCntntInfo.php?s=1&u0=8bec5433d58929b4ab4b5a07398fff33&u1=4554f324862d187e7c9d27c85e1d8d84" UO U1
+    ptbinbCid "300010065401"
+    'https://viewer.bookhodai.jp/speedreader/main.php?cid=300010065401&u0=8bec5433d58929b4ab4b5a07398fff33&u1=4554f324862d187e7c9d27c85e1d8d84&rurl=https%3A%2F%2Fbookhodai.jp%2F&member_id=0' U0 U1 CID
+
+    BOOKLIVE :v016113 / v016130
+    ptbinb : "/bib-api/bibGetCntntInfo" NOTHING
+    ptbinbCid: "60114561_001"
+    'https://booklive.jp/bviewer/s/?cid=60114561_001' CID
+
+    FUTBANET :v016113 / v016130
+    ptbinb: "/sws/bibGetCntntInfo?hash=60ebb4277765619176000000&display_order=1" NOTHING
+    ptbinbCid: "60ebb4277765619176000000_001-001_1"
+    https://gaugau.futabanet.jp/list/work/60ebb4277765619176000000/episodes/1 NOTHING
+
+    GETSUAKU :v016113 / v016130
+    ptbinb: "../sws/bibGetCntntInfo" NOTHING
+    ptbinbCid: "001_gaw_makinasan"
+    https://getsuaku.com/episode/001_gaw_makinasan' NOTHING
+
+    ManpaPlanet :v016113 / v016130
+    ptbinb : "https://mangaplanet.com/sws/apis/bibGetCntntInfo.php NOTHING
+    'https://mangaplanet.com/reader?cid=64c77843994e3' CID
+
+    ManpaPlaza :v016113 / v016130
+    ptbinb: "/sws/apis/bibGetCntntInfo.php?u0=0&u1=https%3A%2F%2Fmangaplaza.com%2Ftitle%2F0303001706%2F%3Forder%3Ddown%26content_id%3D103030017060001" U0 U1
+    ptbinbCid: "103030017060001"
+    'https://reader.mangaplaza.com/speedreader/?cid=103030017060001&u0=0&u1=https%3A%2F%2Fmangaplaza.com%2Ftitle%2F0303001706%2F%3Forder%3Ddown%26content_id%3D103030017060001' U0 U1
+
+    OHTABOOK :v016113 / v016130
+    ptbinb: "https://console.binb.bricks.pub/bibGetCntntInfo?u0=83605b7e01f64a70baeec6bfe102f043" U0
+    ptbinbCid: "cbb2ef02-0210-4050-804d-406713f40f61_1677753204"
+    'https://binb.bricks.pub/contents/cbb2ef02-0210-4050-804d-406713f40f61_1677753204/speed_reader' NOTHING
+
+    S-MANGA: :v016113 / v016130
+    ptbinb: "./sws/apis/bibGetCntntInfo.php" NOTHING
+    ptbinbCid: "4088725093"
+    https://www.s-manga.net/reader/main.php?cid=4088725093' CID
+
+    YANMAGA : v016113 / v016130
+    ptbinb: "/viewer/bibGetCntntInfo?type=comics" NOTHING
+    ptbinbCid: "06A0000000000731237F"
+    'https://yanmaga.jp/viewer/comics/%E5%A4%A2%E3%81%86%E3%81%A4%E3%81%A4%E3%81%AE%E8%8A%B1%E3%81%AE%E5%9C%92/351192c0f7d1cf3b88175f3d9dfae594?cid=06A0000000000731237F' CID
+
+    YOUNGJUMP :v016201
+    ptbinb :"/sws/apis/bibGetCntntInfo.php?u1=10001"  U1
+    ptbinbCid: "101012340"
+    https://www.youngjump.world/reader/reader.html?cid=101012340&u1=10001': CID U1
+*/
+
     if (el.dataset['ptbinb'] && el.dataset['ptbinbCid']) {
         return SpeedBinbVersion.v016113;
     }
+
     if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && viewerUrl.searchParams.get('u0') && viewerUrl.searchParams.get('u1')) {
         return SpeedBinbVersion.v016452;
     }
+
     if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && viewerUrl.searchParams.get('u1')) {
         return SpeedBinbVersion.v016201;
     }
+
     if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo')) {
         return SpeedBinbVersion.v016130;
     }
+
     if (el.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]').length > 0) {
         return SpeedBinbVersion._default_v016061;
     }
+
     return SpeedBinbVersion.vUnknown;
 }
 
@@ -110,34 +173,56 @@ function getSpeedBinbVersion(el: HTMLElement, viewerUrl: URL): SpeedBinbVersion 
  ******** Page List Extraction Methods ********
  **********************************************/
 
+const pageScript = `
+    new Promise(resolve  => {
+        resolve ( { location : window.location.href, pages : document.querySelector("div#content.pages")});
+    });
+`;
+
+type pageScriptResult = {
+    location: string,
+    pages: HTMLElement
+}
+
 /**
  * An extension method for extracting all pages for the given {@link chapter} using the given CSS {@link query}.
  * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param baseUrl - Override base chapter url
+ * @param useScript - use FetchWindowScript and not Fetch for first request
+ * @param SBVersionOverride - Override SpeedBinb version detection
  */
-export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, baseUrl = ''): Promise<Page[]> {
-    const websiteUrl = baseUrl ? new URL(baseUrl).href : new URL(this.URI).href;
-    let viewerUrl = new URL(chapter.Identifier, websiteUrl);
+export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, useScript = false, SBVersionOverride: SpeedBinbVersion = undefined): Promise<Page[]> {
+    let viewerUrl = new URL(chapter.Identifier, this.URI);
     const request = new Request(viewerUrl.href, {
         headers: {
-            Referer: this.URI.href
+            Referer: this.URI.origin
         }
     });//referer needed for ManpaPlanet
 
-    const response = await Fetch(request);
-    const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
-    const data = [...dom.querySelectorAll<HTMLElement>('div#content.pages')];
-    if (data.length == 0) return []; //chapter may be paywalled, no need to throw an error, so quit gracefully
+    let el: HTMLElement = undefined;
 
-    //handle redirection. Sometimes chapter is redirected
-    if (response.redirected) {
-        viewerUrl = new URL(response.url);
+    // Raw fetching Gives the most accurate version detection and it handle automatic redirection.
+    // We dont use FetchCSS because we must know if request is redirected (302, 303) to get real url
+    // Also, FetchWindowScript doesnt works with Referer, and sometimes Referer is mandatory (MangaPlanet)
+    if (!useScript) {
+        const response = await Fetch(request);
+        const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
+        const data = dom.querySelector<HTMLElement>('div#content.pages');
+        //handle redirection. Sometimes chapter is redirected
+        if (response.redirected) {
+            viewerUrl = new URL(response.url);
+        }
+        el = data[0];
+    } else {
+        //Use this if chapter is redirected using javascript, or if it must be opened in a window to gather access Cookies (MangaPlaza)
+        const data = await FetchWindowScript<pageScriptResult>(request, pageScript, 2500);
+        if (!data.pages) return []; //chapter may be paywalled, no need to throw an error, so quit gracefully
+        viewerUrl = new URL(data.location);
+        el = data.pages;
     }
 
-    const el = data[0];
-    const SBVersion = getSpeedBinbVersion(el, viewerUrl);
+    const SBVersion = SBVersionOverride || getSpeedBinbVersion(el, viewerUrl);
 
     if (SBVersion == SpeedBinbVersion.v016113) {
         viewerUrl.searchParams.set('cid', el.dataset['ptbinbCid']);
@@ -160,21 +245,21 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
     uri.searchParams.set('k', sharingKey);
 
     switch (SBVersion) {
-        case SpeedBinbVersion.v016113: //Futabanet, Getsuaku (v016700), Ohtabooks
-        case SpeedBinbVersion.v016130: { //Booklive, MangaPlanet, S-Manga, Yanmaga
-            //Doing it like that because of cookies needed for Mangaplanet
-            const data = await FetchWindowScript<JSONPageData_v016452>(new Request(this.URI.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+        case SpeedBinbVersion.v016113: //BookHodai,  Futabanet, Getsuaku (v016700), MangaPlaza, Ohtabooks
+        case SpeedBinbVersion.v016130: { // Booklive, MangaPlanet, S-Manga, Yanmaga
+            //Doing it like that because of cookies needed for Mangaplanet using viewerUrl on purpose because of CORS issues
+            const data = await FetchWindowScript<JSONPageData_v016452>(new Request(viewerUrl.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016130(this, data.items[0], sharingKey, chapter);
         }
         //YoungJump
         case SpeedBinbVersion.v016201: {
             const u = viewerUrl.searchParams.get('u1');
             uri.searchParams.set('u1', u);
-            //Doing it like that because of cookies needed for YoungJump
-            const data = await FetchWindowScript<JSONPageData_v016452>(new Request(this.URI.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+            //Doing it like that because of cookies needed for YoungJump using viewerUrl on purpose because of CORS issues
+            const data = await FetchWindowScript<JSONPageData_v016452>(new Request(viewerUrl.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016201(this, data.items[0], sharingKey, u, chapter);
         }
-        //Cmoa, BookHodai
+        //Cmoa
         case SpeedBinbVersion.v016452: {
             const u0 = viewerUrl.searchParams.get('u0');
             const u1 = viewerUrl.searchParams.get('u1');
@@ -192,15 +277,16 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter using the given CSS {@link query}.
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
- * @param baseUrl - base url to use. Used to create full url when partial endpoint are found
+ * @param useScript - use FetchWindowScript and not Fetch for first request
+ * @param SBVersionOverride - Override SpeedBinb version detection
  */
-export function PagesSinglePageAjax(baseUrl = '') {
+export function PagesSinglePageAjax(useScript = false, SBVersionOverride: SpeedBinbVersion = undefined) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageAjax.call(this, chapter, baseUrl);
+                return FetchPagesSinglePageAjax.call(this, chapter, useScript, SBVersionOverride);
             }
         };
     };
@@ -224,23 +310,6 @@ async function getPageLinks_v016452(scraper: MangaScraper, configuration: Config
         uri.searchParams.set('u0', params.u0);
         uri.searchParams.set('u1', params.u1);
         return await fetchSBC(scraper, uri, configuration, chapter);
-
-    } else if (configuration.ServerType === 1) {//BookHodai
-        const uri = getSanitizedURL(configuration.ContentsServer, 'content.js');
-        uri.searchParams.set('dmytime', String(Date.now()));
-        uri.searchParams.set('u0', params.u0);
-        uri.searchParams.set('u1', params.u1);
-        const response = await Fetch(new Request(uri.href));
-        const data = await response.text();
-        const jsonObj: SBCDATA = JSON.parse(data.slice(16, -1));
-        const dom = new DOMParser().parseFromString(jsonObj.ttx, 'text/html');
-        const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
-            let src = img.getAttribute('src');
-            uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
-            if (!src.startsWith('/')) src = '/' + src;
-            return new Page(scraper, chapter, new URL(uri.href.replace('/content.js', src + '/M_H.jpg')));
-        });
-        return pageLinks;
     }
     return Promise.reject(new Error('Content server type not supported!'));
 }
@@ -290,7 +359,7 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
             uri.searchParams.set('vm', String(configuration.ViewMode));
             return await fetchSBC(scraper, uri, configuration, chapter);
         }
-        case 1: {//Futabanet, Getsuaku
+        case 1: {//Futabanet, Getsuaku, BookHodai
             const uri = getSanitizedURL(configuration.ContentsServer, 'content.js');
             if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
             const response = await Fetch(new Request(uri.href));
@@ -305,7 +374,7 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
             });
             return pageLinks;
         }
-        case 2: {//MangaPlanet
+        case 2: {//MangaPlanet, MangaPlaza
             const uri = getSanitizedURL(configuration.ContentsServer, 'content');
             uri.searchParams.set('dmytime', configuration.ContentDate);
             const data = await FetchJSON<SBCDATA>(new Request(uri.href, { headers: { Referer: scraper.URI.href } }));
