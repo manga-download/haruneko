@@ -12,11 +12,12 @@ const config = {
     },
     child: {
         id: '/viewer?book_id=3000071024&branch_no=01&book_type=4',
-        title: '(1)'
+        title: '(1)',
+        timeout: 15000
     },
     entry: {
         index: 0,
-        size: 1_950_670,
+        size: 2_198_026,
         type: 'image/png'
     }
 };

@@ -9,7 +9,7 @@ function MangaLabelExtractor(element: HTMLElement): string {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/backnumber\/\d+$/, 'section.breadcrumb div.bread-text', MangaLabelExtractor)
-@SpeedBinb.PagesSinglePageAjax()
+@SpeedBinb.PagesSinglePageAjax(true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
