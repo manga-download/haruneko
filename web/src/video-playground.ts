@@ -1,11 +1,3 @@
-//import Hls from 'hls.js';
-//import videojs from 'video.js';
-//import * as xxx from '../../node_modules/@videojs/http-streaming';
-
-alert('MEOW!');
-setTimeout(() => globalThis.nw.Window.get().show(), 5000);
-
-/*
 function createPlayer() {
     const player = document.createElement('video');
     player.id = 'video';
@@ -18,7 +10,6 @@ function createPlayer() {
     document.body.appendChild(player);
     return player;
 }
-*/
 
 /*
 export async function playHLS() {
@@ -52,14 +43,11 @@ export async function playVideo() {
 }
 */
 
-/*
 interface MediaStream {
     //GetSource(): Promise<HTMLSourceElement>;
     GetSource(): Promise<string>;
 }
-*/
 
-/*
 class MediaStreamHLS implements MediaStream {
 
     constructor(private readonly playlistURL: string) {}
@@ -71,9 +59,7 @@ class MediaStreamHLS implements MediaStream {
         return '';
     }
 }
-*/
 
-/*
 class MediaStreamMP4 implements MediaStream {
 
     constructor(private readonly player: HTMLVideoElement, private readonly streamURL: string) {
@@ -119,14 +105,17 @@ class MediaStreamMP4 implements MediaStream {
 
 async function playMediaStream() {
     try {
-        await new MediaStreamMP4(createPlayer(), 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4').GetSource();
+        const player = createPlayer();
+        player.src = 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4';
+        //await new MediaStreamMP4(player, 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4').GetSource();
     } catch(error) {
         console.warn(error);
     }
 }
 
-//playMediaStream();
-*/
+playMediaStream();
+
+nw.Window.get().show();
 
 // http://docs.evostream.com/sample_content/assets/sintel1m720p.mp4
 // https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_h264.mov
@@ -135,44 +124,3 @@ async function playMediaStream() {
 // .webm
 // http://docs.evostream.com/sample_content/assets/hls-sintel-abr3/playlist.m3u8
 // http://docs.evostream.com/sample_content/assets/hls-sintel-abr3/sintel480p/playlist.m3u8
-
-/*
-
-const assetURL = 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4';
-// Need to be specific for Blink regarding codecs
-// ./mp4info frag_bunny.mp4 | grep Codec
-const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
-
-const player = createPlayer();
-
-function loadVideo() {
-    if (MediaSource.isTypeSupported(mimeCodec)) {
-        const mediaSource = new MediaSource();
-        console.log(mediaSource.readyState, '=== closed');
-        player.src = URL.createObjectURL(mediaSource);
-        mediaSource.addEventListener('sourceopen', onSourceOpen);
-    } else {
-        console.error('Unsupported MIME type or codec: ', mimeCodec);
-    }
-}
-
-async function onSourceOpen(this: MediaSource) {
-    console.log(this.readyState, '=== open');
-    const sourceBuffer = this.addSourceBuffer(mimeCodec);
-    const response = await fetch(assetURL);
-    const buffer = await response.arrayBuffer();
-    console.log('Buffer: ', buffer.byteLength);
-    sourceBuffer.addEventListener('updateend', () => {
-        // TODO: If readyState is closed, mime may be wrong, or MP4 is not fragmented
-        // See: https://www.reddit.com/r/learnjavascript/comments/hsvz2z/mediasource_isnt_playing_video_possible_an/
-        console.log(this.readyState, '=== ended'); // ended
-        this.endOfStream();
-        player.play();
-    });
-    console.log('onSourceOpen()', this);
-    sourceBuffer.appendBuffer(buffer);
-}
-
-loadVideo();
-
-*/
