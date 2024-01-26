@@ -33,7 +33,8 @@ export function SanitizeFileName(name: string): string {
         '?': '？', // https://unicode-table.com/en/FF1F/, https://unicode-table.com/en/FE56/
         '*': '＊', // https://unicode-table.com/en/FF0A/
     };
-    return name.replace(/./g, c => c.charCodeAt(0) < 32 ? '' : lookup[c] ?? c).replace(/[\s.]+$/, '').trim() || 'untitled';
+    //https://en.wikipedia.org/wiki/C0_and_C1_control_codes
+    return name.replace(/./g, c => c.charCodeAt(0) < 32 ? '' : c.charCodeAt(0) > 0x7E && c.charCodeAt(0) < 0xA0 ? '' : lookup[c] ?? c).replace(/[\s.]+$/, '').trim() || 'untitled';
 }
 
 /*
