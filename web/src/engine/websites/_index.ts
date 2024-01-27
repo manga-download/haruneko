@@ -120,6 +120,7 @@ export { default as FreeComicOnline } from './FreeComicOnline';
 export { default as FreeManga } from './FreeManga';
 export { default as FreeWebtoonCoins } from './FreeWebtoonCoins';
 export { default as FRScan } from './FRScan';
+export { default as FRTiretScan } from './FRTiretScan';
 export { default as FunManga } from './FunManga';
 export { default as FuryoSquad } from './FuryoSquad';
 export { default as Futari } from './Futari';
