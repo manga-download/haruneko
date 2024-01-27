@@ -587,6 +587,7 @@ export { default as WantedTeam } from './WantedTeam';
 export { default as WarungKomik } from './WarungKomik';
 export { default as WebAce } from './WebAce';
 export { default as WebComicsApp } from './WebComicsApp';
+export { default as WebDexScans } from './WebDexScans';
 export { default as WebNovel } from './WebNovel';
 export { default as WebtoonHatti } from './WebtoonHatti';
 export { default as WebtoonTR } from './WebtoonTR';
