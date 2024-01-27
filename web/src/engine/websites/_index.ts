@@ -446,6 +446,7 @@ export { default as Piccoma } from './Piccoma';
 export { default as PiccomaFR } from './PiccomaFR';
 export { default as PiedPiper } from './PiedPiper';
 export { default as PijamaliKoi } from './PijamaliKoi';
+export { default as PinkSeaUnicorn } from './PinkSeaUnicorn';
 export { default as PixivComics } from './PixivComics';
 export { default as PlatinumScans } from './PlatinumScans';
 export { default as PojokManga } from './PojokManga';
