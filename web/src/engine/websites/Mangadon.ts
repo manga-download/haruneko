@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https:\/\/mangadon\.me\/catalogs\/show\?tb=\d+$/.test(url);
+        return new RegExp(`^${this.URI.origin}/catalogs/show\\?tb=\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -78,7 +78,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
+        const blob = await this.imageTaskPool.Add(async () => {
 
             //Compute cookie data for image request, otherwise we got a 403
             const cookiesData = page.Parameters as CookieSigner;
@@ -97,34 +97,35 @@ export default class extends DecoratableMangaScraper {
             });
 
             const response = await Fetch(request);
-            const blob = await response.blob();
-
-            return DeScramble(blob, async (image, ctx) => {
-                ctx.drawImage(image, 0, 0);
-                const numCols = Math.floor(image.width / this.partsWidth);
-                const numLines = Math.floor(image.height / this.partsHeight);
-                const numPieces = numCols * numLines;
-                const m: string[] = [];
-
-                for (let i = 0; i <= numPieces - 1; i++) {
-                    m.push(await this.sha256(''.concat(i.toString(), '_').concat(this.decodeKey)));
-                }
-                const v = Array.from(m).sort();
-                const f: number[] = [];
-                m.forEach(function (t, i) {
-                    f[i] = v.indexOf(t);
-                });
-
-                for (let index = 0; index <= numPieces - 1; index++) {
-                    const value = f[index];
-                    const r = this.partsWidth * (index % numCols);
-                    const l = this.partsHeight * Math.floor(index / numCols);
-                    const d = this.partsWidth * (value % numCols);
-                    const m = this.partsHeight * Math.floor(value / numCols);
-                    ctx.drawImage(image, r, l, this.partsWidth, this.partsHeight, d, m, this.partsWidth, this.partsHeight);
-                }
-            });
+            return response.blob();
         }, priority, signal);
+
+        return DeScramble(blob, async (image, ctx) => {
+            ctx.drawImage(image, 0, 0);
+            const numCols = Math.floor(image.width / this.partsWidth);
+            const numLines = Math.floor(image.height / this.partsHeight);
+            const numPieces = numCols * numLines;
+            const m: string[] = [];
+
+            for (let i = 0; i <= numPieces - 1; i++) {
+                m.push(await this.sha256(''.concat(i.toString(), '_').concat(this.decodeKey)));
+            }
+            const v = Array.from(m).sort();
+            const f: number[] = [];
+            m.forEach(function (t, i) {
+                f[i] = v.indexOf(t);
+            });
+
+            for (let index = 0; index <= numPieces - 1; index++) {
+                const value = f[index];
+                const r = this.partsWidth * (index % numCols);
+                const l = this.partsHeight * Math.floor(index / numCols);
+                const d = this.partsWidth * (value % numCols);
+                const m = this.partsHeight * Math.floor(value / numCols);
+                ctx.drawImage(image, r, l, this.partsWidth, this.partsHeight, d, m, this.partsWidth, this.partsHeight);
+            }
+        });
+
     }
 
     async sha256(str: string): Promise<string> {
