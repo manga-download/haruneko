@@ -595,6 +595,7 @@ export { default as WinterScan } from './WinterScan';
 export { default as Wnacg } from './Wnacg';
 export { default as WonderlandWebtoons } from './WonderlandWebtoons';
 export { default as WordHero } from './WordHero';
+export { default as WorldManhwas } from './WorldManhwas';
 export { default as XCaliBRScans } from './XCaliBRScans';
 export { default as xianman123 } from './xianman123';
 export { default as XlecX } from './XlecX';
