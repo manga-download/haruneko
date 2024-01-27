@@ -23,7 +23,12 @@
     import { filterByCategory, Tags, type Tag } from '../../../engine/Tags';
     import { Locale } from '../stores/Settings';
 
-    import type { StoreableMediaContainer, MediaContainer, MediaChild, MediaItem } from '../../../engine/providers/MediaPlugin';
+    import type {
+        StoreableMediaContainer,
+        MediaContainer,
+        MediaChild,
+        MediaItem,
+    } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
 
     let items: StoreableMediaContainer<MediaItem>[] = [];
@@ -37,16 +42,19 @@
         $selectedItemNext = filteredItems[position - 1];
     });
 
-    const onItemView = (item: StoreableMediaContainer<MediaItem>) => (_event: any) => {
-        selectedItems.push(item);
-        $selectedItem = item;
-    };
+    const onItemView =
+        (item: StoreableMediaContainer<MediaItem>) => (event) => {
+            if (item === $selectedItem || event.ctrlKey || event.shiftKey)
+                return;
+            $selectedItem = item;
+        };
 
     selectedMedia.subscribe(async (value) => {
         items = [];
         selectedItems = [];
         loadItem = value?.Update().then(() => {
-            items = (value?.Entries ?? []) as unknown as StoreableMediaContainer<MediaItem>[];
+            items = (value?.Entries ??
+                []) as unknown as StoreableMediaContainer<MediaItem>[];
         });
     });
 
@@ -56,8 +64,8 @@
         if (itemNameFilter)
             conditions.push(
                 item.Title.toLowerCase().indexOf(
-                    itemNameFilter.toLowerCase()
-                ) !== -1
+                    itemNameFilter.toLowerCase(),
+                ) !== -1,
             );
         if (langFilter) conditions.push(item.Tags.includes(langFilter));
         return conditions.every((condition) => condition);
@@ -71,7 +79,7 @@
         const Languages = new Set<Tag>();
         items.forEach((item) => {
             filterByCategory(item.Tags, Tags.Language).forEach((tag) =>
-                Languages.add(tag)
+                Languages.add(tag),
             );
         });
         MediaLanguages = [...Languages];
@@ -98,62 +106,36 @@
     let multipleSelectionFrom: number = -1;
     let multipleSelectionTo: number = -1;
 
-    const onItemClick = (item: StoreableMediaContainer<MediaItem>) => (event: any) => {
-        if (event.shiftKey) {
-            //range mode
-            if (multipleSelectionFrom === -1) {
-                multipleSelectionFrom = filteredItems.indexOf(item);
-                multipleSelectionTo = multipleSelectionFrom;
-                selectedItems = [item];
-            } else {
-                multipleSelectionTo = filteredItems.indexOf(item);
-                if (multipleSelectionFrom > multipleSelectionTo) {
-                    const swap: number = multipleSelectionFrom;
-                    multipleSelectionFrom = multipleSelectionTo;
-                    multipleSelectionTo = swap;
-                }
-                selectedItems = filteredItems.slice(
-                    multipleSelectionFrom,
-                    multipleSelectionTo + 1
-                );
-            }
-        } else if (event.ctrlKey) {
-            //multiple mode
-            multipleSelectionFrom = filteredItems.indexOf(item);
-            multipleSelectionTo = -1;
-            //const positionInSelectedItems = selectedItems.indexOf(item);
-            if (selectedItems.includes(item))
-                selectedItems = selectedItems.filter(
-                    (search) => search !== item
-                );
-            else selectedItems = [...selectedItems, item];
-        } else {
-            //single item
-            multipleSelectionFrom = filteredItems.indexOf(item);
-            multipleSelectionTo = multipleSelectionFrom;
-            selectedItems = [item];
-        }
-    };
-
     let multipleSelectionDragFrom: number = -1;
     let multipleSelectionDragTo: number = -1;
     let selectedDragItems: StoreableMediaContainer<MediaItem>[] = [];
 
-    const mouseHandler = (item: StoreableMediaContainer<MediaItem>) => (event: any) => {
-        switch (event.type) {
-            case 'mousedown':
-                multipleSelectionDragFrom = filteredItems.indexOf(item);
-                multipleSelectionDragTo = -1;
-                selectedDragItems = [];
-                break;
-            case 'mouseenter':
-                multipleSelectionDragTo = filteredItems.indexOf(item);
-                break;
-            case 'mouseup':
-                multipleSelectionDragTo = filteredItems.indexOf(item);
-                if (multipleSelectionDragFrom === multipleSelectionDragTo) {
-                    onItemClick(item)(event);
-                } else {
+    const mouseHandler =
+        (item: StoreableMediaContainer<MediaItem>) => (event: any) => {
+            if (event.button === 0) {
+                // left click
+                switch (event.type) {
+                    case 'mousedown':
+                        multipleSelectionDragFrom = filteredItems.indexOf(item);
+                        multipleSelectionDragTo = -1;
+                        selectedDragItems = [];
+                        break;
+                    case 'mouseenter':
+                        multipleSelectionDragTo = filteredItems.indexOf(item);
+                        break;
+                    case 'mouseup':
+                        multipleSelectionDragTo = filteredItems.indexOf(item);
+                        onItemClick(event, item);
+                        break;
+                }
+            }
+
+            function onItemClick(
+                event: MouseEvent,
+                item: StoreableMediaContainer<MediaItem>,
+            ) {
+                if (multipleSelectionDragFrom !== multipleSelectionDragTo) {
+                    // multiple item
                     filteredItems.forEach((item, index) => {
                         // Select all items between first and last drag
                         if (
@@ -177,17 +159,55 @@
                         selectedItems = selectedDragItems;
                     }
                     selectedDragItems = [];
+                } else {
+                    // click on item
+                    if (event.shiftKey) {
+                        //range mode
+                        if (multipleSelectionFrom === -1) {
+                            multipleSelectionFrom = filteredItems.indexOf(item);
+                            multipleSelectionTo = multipleSelectionFrom;
+                            selectedItems = [item];
+                        } else {
+                            multipleSelectionTo = filteredItems.indexOf(item);
+                            if (multipleSelectionFrom > multipleSelectionTo) {
+                                const swap: number = multipleSelectionFrom;
+                                multipleSelectionFrom = multipleSelectionTo;
+                                multipleSelectionTo = swap;
+                            }
+                            selectedItems = filteredItems.slice(
+                                multipleSelectionFrom,
+                                multipleSelectionTo + 1,
+                            );
+                        }
+                    } else if (event.ctrlKey) {
+                        //multiple mode
+                        multipleSelectionFrom = filteredItems.indexOf(item);
+                        multipleSelectionTo = -1;
+                        if (selectedItems.includes(item))
+                            selectedItems = selectedItems.filter(
+                                (search) => search !== item,
+                            );
+                        else selectedItems = [...selectedItems, item];
+                    } else {
+                        //single item
+                        multipleSelectionFrom = filteredItems.indexOf(item);
+                        multipleSelectionTo = multipleSelectionFrom;
+                        selectedItems = [item];
+                    }
                 }
-                break;
-        }
-    };
+            }
+        };
 </script>
 
 <ContextMenu target={[itemsdiv]}>
-    {#if selectedItems.length > 1}
-        <ContextMenuOption indented labelText="Download selecteds" />
-    {:else}
+    {#if selectedItems.length === 1}
         <ContextMenuOption indented labelText="Download" shortcutText="⌘D" />
+        <ContextMenuOption
+            indented
+            labelText="Download All"
+            shortcutText="⌘D"
+        />
+        <ContextMenuDivider />
         <ContextMenuOption
             indented
             labelText="View"
@@ -202,7 +222,7 @@
                 labelText="Not viewed"
                 on:click={async () => {
                     window.HakuNeko.ItemflagManager.UnflagItem(
-                        selectedItems[0]
+                        selectedItems[0],
                     );
                 }}
             />
@@ -212,7 +232,7 @@
                 on:click={async () => {
                     window.HakuNeko.ItemflagManager.FlagItem(
                         selectedItems[0],
-                        FlagType.Viewed
+                        FlagType.Viewed,
                     );
                 }}
             />
@@ -222,11 +242,24 @@
                 on:click={async () => {
                     window.HakuNeko.ItemflagManager.FlagItem(
                         selectedItems[0],
-                        FlagType.Current
+                        FlagType.Current,
                     );
                 }}
             />
         </ContextMenuOption>
+    {:else if selectedItems.length > 1}
+        <ContextMenuOption indented labelText="Download selecteds" />
+        <ContextMenuOption
+            indented
+            labelText="Download all"
+            shortcutText="⌘D"
+        />
+    {:else}
+        <ContextMenuOption
+            indented
+            labelText="Download all"
+            shortcutText="⌘D"
+        />
     {/if}
     <ContextMenuDivider />
     <ContextMenuOption indented labelText="Copy">
@@ -274,8 +307,7 @@
                     {item}
                     multilang={!langFilter && MediaLanguages.length > 1}
                     selected={selectedItems.includes(item)}
-                    on:view={onItemView(item)}
-                    on:contextmenu={onItemClick(item)}
+                    on:view={(event) => onItemView(item)(event.detail)}
                     on:mousedown={mouseHandler(item)}
                     on:mouseup={mouseHandler(item)}
                     on:mouseenter={mouseHandler(item)}

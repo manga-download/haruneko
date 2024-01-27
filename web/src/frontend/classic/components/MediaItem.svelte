@@ -3,13 +3,7 @@
     import { fade } from 'svelte/transition';
 
     const dispatch = createEventDispatcher();
-    import {
-        Button,
-        ClickableTile,
-        //ContextMenu,
-        //ContextMenuDivider,
-        //ContextMenuOption,
-    } from 'carbon-components-svelte';
+    import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
         BookmarkFilled as IconBookmarkFilled,
         View,
@@ -19,7 +13,10 @@
 
     import { filterByCategory, Tags } from '../../../engine/Tags';
 
-    import type { StoreableMediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
+    import type {
+        StoreableMediaContainer,
+        MediaItem,
+    } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
     import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
@@ -36,7 +33,7 @@
 
     async function OnFlagChangedCallback(
         changedItem: StoreableMediaContainer<MediaItem>,
-        changedFlag: FlagType
+        changedFlag: FlagType,
     ) {
         if (changedItem === item) flag = changedFlag;
         else if (changedFlag === FlagType.Current)
@@ -59,7 +56,6 @@
     class:selected
     class:active={$selectedItem?.Identifier === item?.Identifier}
     on:click
-    on:contextmenu
     on:mousedown
     on:mouseup
     on:mouseenter
@@ -81,15 +77,9 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="View"
-        on:click={() => dispatch('view', item)}
+        on:click={(event) => dispatch('view', event)}
     />
-    <ClickableTile
-        class="title"
-        on:click={(e) => {
-            e.preventDefault();
-            dispatch('view', item);
-        }}
-    >
+    <ClickableTile class="title" on:click={(event) => dispatch('view', event)}>
         {#if multilang}
             <span class="multilang">
                 {multilang
