@@ -267,6 +267,7 @@ export { default as MangaCultivator } from './MangaCultivator';
 export { default as MangaDenizi } from './MangaDenizi';
 export { default as MangaDex } from './MangaDex';
 export { default as MangaDiyari } from './MangaDiyari';
+export { default as Mangadon } from './Mangadon';
 export { default as MangaDoom } from './MangaDoom';
 export { default as MangaDoor } from './MangaDoor';
 export { default as MangaEclipse } from './MangaEclipse';
