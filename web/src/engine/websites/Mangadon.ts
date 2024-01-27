@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
     private readonly partsHeight = 240;
     private readonly decodeKey = 'wwwave-bago';
     public constructor() {
-        super('mangadon', 'Mangadon', 'https://mangadon.me', Tags.Media.Manhwa, Tags.Language.French);
+        super('mangadon', 'Mangadon', 'https://mangadon.me', Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official);
     }
 
     public override get Icon() {
