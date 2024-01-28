@@ -24,6 +24,7 @@ image:https://img.shields.io/github/downloads/manga-download/haruneko/latest/tot
 ////
 image:https://img.shields.io/github/downloads-pre/manga-download/haruneko/latest/total?color=blue&label=HaruNeko%20%28Nightly%29&logo=azure-devops[link=https://github.com/manga-download/haruneko/releases, title="Download the latest pre-release (nightly build) of HaruNeko", window="_blank"]
 image:https://github.com/manga-download/haruneko/actions/workflows/continuous-integration.yml/badge.svg[link=https://github.com/manga-download/haruneko/actions/workflows/continuous-integration.yml, title="Continuous Integration", window="_blank"]
+image:https://app.codacy.com/project/badge/Grade/814f4127d85245e0a763f13a901ba1b4[link=https://app.codacy.com/gh/manga-download/haruneko/dashboard, title="Code Quality Gate", window="_blank"]
 image:https://badges.crowdin.net/hakuneko/localized.svg[link=https://crowdin.com/project/hakuneko, title="Crowdin Translation", window="_blank"]
 
 ## Development
@@ -38,13 +39,11 @@ git clone "https://github.com/manga-download/haruneko.git"
 ```
 
 Then change into the project directory and install the dependencies +
-⚠️ NW.js is not yet available for Apple Silicon (M1/arm64)
 ```bash
-# If you are developing on an Apple Silicon (M1/arm64) device, run:
-export npm_config_nwjs_process_arch="x64" && npm install
-
-# Otherwise, run:
 npm install
+# If you are on Apple Silicon (arm64) and NW isn't starting, try:
+# See: https://github.com/nwjs/nw.js/issues/8157
+xattr -cr ./node_modules/nw/nwjs/nwjs.app
 ```
 
 ### Run
