@@ -49,6 +49,8 @@ await fs.mkdir(dirOut, { recursive: true });
 if (process.platform === 'darwin') {
     dirNW = await redist(nwVersion, nwBuildType, 'osx', 'x64');
     await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirNW, dirRes, dirOut);
+    dirNW = await redist(nwVersion, nwBuildType, 'osx', 'arm64');
+    await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirNW, dirRes, dirOut);
 }
 
 if (process.platform === 'win32') {

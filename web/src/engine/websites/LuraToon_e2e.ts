@@ -2,21 +2,21 @@
 
 const config = {
     plugin: {
-        id: 'randomscan',
-        title: 'Random Scans'
+        id: 'luratoon',
+        title: 'Lura Toon'
     },
     container: {
-        url: 'https://randomscanlators.net/manga/eu-caminho-na-noite-consumido-pelas-laminas/',
-        id: JSON.stringify({ post: '73', slug: '/manga/eu-caminho-na-noite-consumido-pelas-laminas/' }),
+        url: 'https://luratoon.com/manga/eu-caminho-na-noite1/',
+        id: JSON.stringify({ post: '73', slug: '/manga/eu-caminho-na-noite1/' }),
         title: 'Eu Caminho na Noite consumido Pelas Lâminas'
     },
     child: {
-        id: '/manga/eu-caminho-na-noite-consumido-pelas-laminas/cap-01/',
+        id: '/manga/eu-caminho-na-noite1/cap-01/',
         title: 'Cap. 01'
     },
     entry: {
         index: 1,
-        size: 574_291,
+        size: 548_165,
         type: 'image/jpeg'
     }
 };

@@ -34,6 +34,7 @@ const legacyWebsiteIdentifierMap = {
     'oxapk': 'manjanoon',
     'ozulscans': 'kingofmanga',
     'prismascans': 'demonsect',
+    'randomscan': 'luratoon',
     'realmscans': 'rizzcomics',
     'reaperscansid': 'shinigamiid',
     'scansmangasxyz': 'scansmangasme',
