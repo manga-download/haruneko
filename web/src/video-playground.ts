@@ -1,18 +1,16 @@
 function createPlayer() {
     const player = document.createElement('video');
-    player.id = 'video';
+    //player.id = 'video';
     player.crossOrigin = 'anonymous';
     player.controls = true;
     player.style.width = '100%';
     player.style.height = '100%';
     player.style.background = '#404080';
-    document.body.innerHTML = null;
     document.body.appendChild(player);
     return player;
 }
 
-/*
-export async function playHLS() {
+async function playHLS() {
     try {
         const player = createPlayer();
         console.log('HLS:', Hls.isSupported());
@@ -28,7 +26,7 @@ export async function playHLS() {
     }
 }
 
-export async function playVideo() {
+async function playVideoJS() {
     try {
         const player = createPlayer();
         const source = document.createElement('source');
@@ -41,7 +39,6 @@ export async function playVideo() {
         console.warn(error);
     }
 }
-*/
 
 interface MediaStream {
     //GetSource(): Promise<HTMLSourceElement>;
@@ -113,9 +110,13 @@ async function playMediaStream() {
     }
 }
 
-playMediaStream();
-
-nw.Window.get().show();
+(async function() {
+    document.body.innerHTML = null;
+    nw.Window.get().show();
+    //await playHLS();
+    await playVideoJS();
+    //await playMediaStream();
+})();
 
 // http://docs.evostream.com/sample_content/assets/sintel1m720p.mp4
 // https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_h264.mov
