@@ -1,3 +1,6 @@
+import Hls from 'hls.js';
+import videojs from 'video.js';
+
 function createPlayer() {
     const player = document.createElement('video');
     //player.id = 'video';
@@ -8,6 +11,11 @@ function createPlayer() {
     player.style.background = '#404080';
     document.body.appendChild(player);
     return player;
+}
+
+async function playRAW() {
+    const player = createPlayer();
+    player.src = 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4';
 }
 
 async function playHLS() {
@@ -30,8 +38,11 @@ async function playVideoJS() {
     try {
         const player = createPlayer();
         const source = document.createElement('source');
-        source.type = 'application/x-mpegURL';
-        source.src = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+        //source.type = 'application/x-mpegURL';
+        //source.src = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+        //source.type = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+        source.type = 'video/mp4';
+        source.src = 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4';
         player.appendChild(source);
         const vjs = videojs(player);
         console.log(vjs);
@@ -110,11 +121,15 @@ async function playMediaStream() {
     }
 }
 
+// https://nwjs.readthedocs.io/en/latest/For%20Developers/Enable%20Proprietary%20Codecs/#enable-proprietary-codecs
+// https://github.com/nwjs-ffmpeg-prebuilt/nwjs-ffmpeg-prebuilt/releases
+
 (async function() {
     document.body.innerHTML = null;
-    nw.Window.get().show();
+    globalThis.nw?.Window.get().show();
+    await playRAW();
     //await playHLS();
-    await playVideoJS();
+    //await playVideoJS();
     //await playMediaStream();
 })();
 
