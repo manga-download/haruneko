@@ -375,6 +375,7 @@ export { default as ManhuaFast } from './ManhuaFast';
 export { default as Manhuaga } from './Manhuaga';
 export { default as ManhuaGold } from './ManhuaGold';
 export { default as ManHuaGui } from './ManHuaGui';
+export { default as ManhuaHot } from './ManhuaHot';
 export { default as ManhuaMix } from './ManhuaMix';
 export { default as ManhuaPlus } from './ManhuaPlus';
 export { default as ManhuaScan } from './ManhuaScan';
