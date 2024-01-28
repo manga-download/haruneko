@@ -366,6 +366,7 @@ export { default as ManhuaMix } from './ManhuaMix';
 export { default as ManhuaPlus } from './ManhuaPlus';
 export { default as ManhuaScan } from './ManhuaScan';
 export { default as Manhuass } from './Manhuass';
+export { default as ManhuaSY } from './ManhuaSY';
 export { default as ManhuaUs } from './ManhuaUs';
 export { default as Manhwa18 } from './Manhwa18';
 export { default as Manhwa18cc } from './Manhwa18cc';
