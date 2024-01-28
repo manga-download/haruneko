@@ -173,6 +173,7 @@ export { default as HniScanTrad } from './HniScanTrad';
 export { default as HqNow } from './HqNow';
 export { default as HunterScan } from './HunterScan';
 export { default as HunterScanEN } from './HunterScanEN';
+export { default as HwagoID } from './HwagoID';
 export { default as IceKr } from './IceKr';
 export { default as IMHentai } from './IMHentai';
 export { default as ImmortalUpdates } from './ImmortalUpdates';
