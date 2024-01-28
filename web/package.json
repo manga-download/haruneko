@@ -6,10 +6,10 @@
         "npm": ">=10.2.4"
     },
     "dependencies": {
-        "hls.js": "^1.4.12",
+        "hls.js": "^1.5.2",
         "jszip": "^3.10.1",
         "protobufjs": "^7.2.6",
-        "video.js": "^8.6.1"
+        "video.js": "^8.10.0"
     },
     "devDependencies": {
         "@fluentui/svg-icons": "^1.1.225",
