@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './Mangadon.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { Exception } from '../Error';
@@ -29,11 +29,22 @@ type CookieSigner = {
     'CloudFront-Signature': string,
     'CloudFront-Key-Pair-Id': string
 }
+
+const auhTokenScript = `
+    new Promise(resolve => {
+        window.cookieStore.get('auth._token.local')
+            .then(cookie => !cookie ? resolve(cookie) : resolve(decodeURIComponent(cookie.value))) ;
+    });
+`;
+
 export default class extends DecoratableMangaScraper {
     private readonly imgCDN = 'https://contents.mangadon.me';
     private readonly partsWidth = 240;
     private readonly partsHeight = 240;
     private readonly decodeKey = 'wwwave-bago';
+
+    private authToken = '';
+
     public constructor() {
         super('mangadon', 'Mangadon', 'https://mangadon.me', Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official);
     }
@@ -67,7 +78,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        await this.checkAuth();
+
         const request = new Request(new URL(`/api/v1/episodes/${chapter.Identifier}?params%5Bcookie_signer%5D=true&params%5Bpages%5D=true`, this.URI));
+        if (this.authToken) request.headers.set('Authorization', this.authToken);
         const { data } = await FetchJSON<APIResult>(request);
         const cookies = (data as APIItem).attributes.cookie_signer;
 
@@ -75,6 +89,10 @@ export default class extends DecoratableMangaScraper {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return (data as APIItem).attributes.pages.map(page => new Page(this, chapter, new URL(page.path, this.imgCDN), { ...cookies }));
+    }
+
+    async checkAuth(): Promise<void> {
+        this.authToken = await FetchWindowScript<string>(new Request(this.URI), auhTokenScript, 500);
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
