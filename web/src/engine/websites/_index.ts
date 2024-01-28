@@ -399,6 +399,7 @@ export { default as MaviManga } from './MaviManga';
 export { default as MenudoFansub } from './MenudoFansub';
 export { default as Mexat } from './Mexat';
 export { default as Mgkomik } from './Mgkomik';
+export { default as Mi2mangaES } from './Mi2mangaES';
 export { default as Migudm } from './Migudm';
 export { default as MilfToon } from './MilfToon';
 export { default as MindaFanSub } from './MindaFanSub';
