@@ -1,7 +1,7 @@
 // Template: https://github.com/mangadventure/MangAdventure
 
 import { Tags } from '../Tags';
-import icon from './AssortedScans.webp';
+import icon from './ArcRelight.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('assortedscans', `Assorted Scans`, 'https://assortedscans.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Scanlator);
+        super('arcrelight', 'Arc-Relight', 'https://arc-relight.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
