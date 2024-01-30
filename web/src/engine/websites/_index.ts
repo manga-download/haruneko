@@ -107,6 +107,7 @@ export { default as EarlyManga } from './EarlyManga';
 export { default as EightMuses } from './EightMuses';
 export { default as EightMusesXXX } from './EightMusesXXX';
 export { default as ElevenToon } from './ElevenToon';
+export { default as EuphoriaScan } from './EuphoriaScan';
 export { default as EvilFlowers } from './EvilFlowers';
 export { default as FallenAngelsScans } from './FallenAngelsScans';
 export { default as FayScans } from './FayScans';
