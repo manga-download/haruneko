@@ -249,6 +249,7 @@ export { default as MagComi } from './MagComi';
 export { default as MagicalTranslators } from './MagicalTranslators';
 export { default as MagKan } from './MagKan';
 export { default as MaID } from './MaID';
+export { default as MajorScans } from './MajorScans';
 export { default as Manga3S } from './Manga3S';
 export { default as Manga18FX } from './Manga18FX';
 export { default as Manga68 } from './Manga68';
