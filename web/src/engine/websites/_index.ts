@@ -292,6 +292,7 @@ export { default as MangaFox } from './MangaFox';
 export { default as MangaFoxFull } from './MangaFoxFull';
 export { default as MangaFreak } from './MangaFreak';
 export { default as MangaGecko } from './MangaGecko';
+export { default as MangaGezgini } from './MangaGezgini';
 export { default as MangaGG } from './MangaGG';
 export { default as MangaHack } from './MangaHack';
 export { default as MangaHasu } from './MangaHasu';
