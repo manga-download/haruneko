@@ -85,6 +85,7 @@ export { default as DeathTollScans } from './DeathTollScans';
 export { default as DecadenceScans } from './DecadenceScans';
 export { default as DemoneCeleste } from './DemoneCeleste';
 export { default as DemonSect } from './DemonSect';
+export { default as DessertScan } from './DessertScan';
 export { default as Desu } from './Desu';
 export { default as DiamondFansub } from './DiamondFansub';
 export { default as DigitalTeam } from './DigitalTeam';
