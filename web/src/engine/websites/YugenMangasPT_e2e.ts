@@ -6,18 +6,18 @@ const config = {
         title: 'YugenMangas (PT)'
     },
     container: {
-        url: 'https://yugenmangas.org/series/para-amar-seu-inimigo/',
-        id: '/series/para-amar-seu-inimigo/',
+        url: 'https://yugenmangas.net.br/series/para-amar-seu-inimigo',
+        id: 'para-amar-seu-inimigo',
         title: 'Para Amar seu Inimigo'
     },
     child: {
-        id: '/series/para-amar-seu-inimigo/capitulo-31/',
+        id: 'capitulo-31',
         title: 'Capítulo 31'
     },
     entry: {
-        index: 1,
-        size: 117_205,
-        type: 'image/png'
+        index: 3,
+        size: 111_768,
+        type: 'image/webp'
     }
 };
 
