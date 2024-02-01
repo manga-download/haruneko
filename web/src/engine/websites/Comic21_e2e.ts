@@ -2,21 +2,23 @@
 
 const config = {
     plugin: {
-        id: 'nonbiri',
-        title: 'Nonbiri'
+        id: 'comic21',
+        title: 'Comic21'
     },
     container: {
-        url: 'https://nonbiri.space/manga/martial-peak/',
+        url: 'https://comic21.me/manga/martial-peak/',
         id: '/manga/martial-peak/',
-        title: 'Martial Peak'
+        title: 'Martial Peak',
+        timeout: 15000,
     },
     child: {
         id: '/martial-peak-chapter-3633/',
-        title: 'Chapter 3633'
+        title: 'Chapter 3633',
+        timeout: 15000,
     },
     entry: {
         index: 0,
-        size: 875_889,
+        size: 241_154,
         type: 'image/jpeg'
     }
 };

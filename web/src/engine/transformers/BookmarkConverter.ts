@@ -31,6 +31,7 @@ const legacyWebsiteIdentifierMap = {
     'manhwaclub': 'manhwahentai',
     'muctau': 'bibimanga',
     'nitroscans': 'nitromanga',
+    'nonbiri': 'comic21',
     'oxapk': 'manjanoon',
     'ozulscans': 'kingofmanga',
     'prismascans': 'demonsect',
