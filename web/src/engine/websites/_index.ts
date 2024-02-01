@@ -181,6 +181,7 @@ export { default as HunterScanEN } from './HunterScanEN';
 export { default as HwagoID } from './HwagoID';
 export { default as IceKr } from './IceKr';
 export { default as Ikanmh } from './Ikanmh';
+export { default as IllusionScan } from './IllusionScan';
 export { default as IMHentai } from './IMHentai';
 export { default as ImmortalUpdates } from './ImmortalUpdates';
 export { default as ImperioScans } from './ImperioScans';
