@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './WeLoveManga.webp';
+import icon from './NicoManga.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
@@ -7,8 +7,12 @@ import { FetchCSS } from '../platform/FetchProvider';
 
 const chapterScript = `
     new Promise(async resolve => {
-        loadChapterData(mIds);
-        const nodes = [...document.querySelectorAll('ul.list-chapters a[title]')];
+        const uri = new URL('app/manga/controllers/cont.Listchapterapi.php', window.location.origin);
+        uri.searchParams.set('slug', sLugs);
+        const response = await fetch(uri);
+        data = await response.text();
+        const dom = new DOMParser().parseFromString(data, "text/html");
+        const nodes = [...dom.querySelectorAll('ul > a')];
         const chapters= nodes.map(chapter => {
             return {
                 id : chapter.pathname,
@@ -19,7 +23,7 @@ const chapterScript = `
     });
 `;
 
-@Common.MangaCSS(/^{origin}\/(mgraw-)?\d+\/$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/manga[^/]+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
 @Common.ChaptersSinglePageJS(chapterScript, 1000)
 @Common.ImageAjax()
@@ -27,7 +31,7 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('welovemanga', `WeloveManga`, 'https://welovemanga.one', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('nicomanga', `NicoManga`, 'https://NicoManga.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -42,13 +46,12 @@ export default class extends DecoratableMangaScraper {
             }
         });
         const chapterid = (await FetchCSS<HTMLInputElement>(request, 'input#chapter'))[0].value;
-        request = new Request(new URL(`/app/manga/controllers/cont.listImg.php?cid=${chapterid}`, this.URI).href, {
+        request = new Request(new URL(`/app/manga/controllers/cont.imgsList.php?cid=${chapterid}`, this.URI).href, {
             headers: {
                 'Referer': this.URI.href,
             }
         });
         const nodes = await FetchCSS(request, 'img.chapter-img:not([alt*="nicoscan"])');
-        return nodes.map(image => new Page(this, chapter, new URL(image.dataset.original.replace(/\n/g, ''), this.URI)));
+        return nodes.map(image => new Page(this, chapter, new URL(image.dataset.src.replace(/\n/g, ''), this.URI)));
     }
-
 }
