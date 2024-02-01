@@ -235,6 +235,7 @@ export { default as Leitor } from './Leitor';
 export { default as LELManga } from './LELManga';
 export { default as LELScan } from './LELScan';
 export { default as LELScanVF } from './LELScanVF';
+export { default as LerManga } from './LerManga';
 export { default as LerYaoi } from './LerYaoi';
 export { default as LeviatanScans } from './LeviatanScans';
 export { default as LewdManhwa } from './LewdManhwa';
