@@ -86,6 +86,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'nitroscans', targetID: 'nitromanga' },
+            { sourceID: 'nonbiri', targetID: 'comic21' },
             { sourceID: 'oxapk', targetID: 'manjanoon' },
             { sourceID: 'ozulscans', targetID: 'kingofmanga' },
             { sourceID: 'prismascans', targetID: 'demonsect' },
