@@ -6,12 +6,12 @@ import * as Common from './Common';
 export function MangaLabelExtractor(element: HTMLElement) {
     let title = element.getAttribute('text') ? element.getAttribute('text') : element.textContent;
     title = title.replace(/\s*-\s*RAW$/i, '');
-    return title;
+    return title.trim();
 }
 export function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
     let title = anchor.getAttribute('text') ? anchor.getAttribute('text') : anchor.textContent;
-    title = title.replace(/\s*-\s*RAW$/i, '');
+    title = title.replace(/\s*-\s*RAW$/i, '').trim();
     return { id, title };
 }
 
