@@ -7,6 +7,7 @@ export { default as Alceascan } from './Alceascan';
 export { default as AlliedFansub } from './AlliedFansub';
 export { default as AllPornComic } from './AllPornComic';
 export { default as Alphapolis } from './Alphapolis';
+export { default as AmuyScan } from './AmuyScan';
 export { default as AnataNoMotokare } from './AnataNoMotokare';
 export { default as AniGliScans } from './AniGliScans';
 export { default as Anikiga } from './Anikiga';
