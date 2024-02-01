@@ -17,6 +17,7 @@ export function MangaExtractor(anchor: HTMLAnchorElement) {
 
 export const DefaultExcludes = [/3282f6a4b7_o/, /donate/];
 export const pathSinglePageManga = '/manga-list.html?listType=allABC';
+export const pathMultiPageManga = '/manga-list.html?page={page}';
 
 export const queryMangaTitle = [
     'li:last-of-type span[itemprop="name"]',
