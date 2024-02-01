@@ -9,12 +9,12 @@ const config = {
         url: 'https://comic21.me/manga/martial-peak/',
         id: '/manga/martial-peak/',
         title: 'Martial Peak',
-        timeout: 10000,
+        timeout: 15000,
     },
     child: {
         id: '/martial-peak-chapter-3633/',
         title: 'Chapter 3633',
-        timeout: 10000,
+        timeout: 15000,
     },
     entry: {
         index: 0,
