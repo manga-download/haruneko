@@ -186,6 +186,7 @@ export { default as IllusionScan } from './IllusionScan';
 export { default as IMHentai } from './IMHentai';
 export { default as ImmortalUpdates } from './ImmortalUpdates';
 export { default as ImperioScans } from './ImperioScans';
+export { default as InariManga } from './InariManga';
 export { default as InfraFandub } from './InfraFandub';
 export { default as InManga } from './InManga';
 export { default as InmortalScan } from './InmortalScan';
