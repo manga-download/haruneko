@@ -8,7 +8,7 @@
     } from 'carbon-components-svelte';
 
     import { UpdateNow, CopyLink } from 'carbon-icons-svelte';
-    import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
+    import type { ComboBoxItem } from 'carbon-components-svelte/src/ComboBox/ComboBox.svelte';
     // Third Party
     import Fuse from 'fuse.js';
     // Svelte
