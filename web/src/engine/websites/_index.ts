@@ -479,6 +479,7 @@ export { default as PlatinumScans } from './PlatinumScans';
 export { default as PojokManga } from './PojokManga';
 export { default as PornComix } from './PornComix';
 export { default as PornComixOnline } from './PornComixOnline';
+export { default as PortalYaoi } from './PortalYaoi';
 export { default as PowerManga } from './PowerManga';
 export { default as PrismaHentai } from './PrismaHentai';
 export { default as ProjetoScanlator } from './ProjetoScanlator';
