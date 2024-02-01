@@ -90,6 +90,7 @@ export { default as DemonSect } from './DemonSect';
 export { default as DessertScan } from './DessertScan';
 export { default as Desu } from './Desu';
 export { default as DiamondFansub } from './DiamondFansub';
+export { default as DianxiaTrads } from './DianxiaTrads';
 export { default as DigitalTeam } from './DigitalTeam';
 export { default as DisasterScans } from './DisasterScans';
 export { default as DiskusScan } from './DiskusScan';
