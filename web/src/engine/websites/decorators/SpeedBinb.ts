@@ -200,7 +200,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         }
     });//referer needed for ManpaPlanet
 
-    let el: HTMLElement = undefined;
+    let SBpagesElement: HTMLElement = undefined;
 
     // Raw fetching Gives the most accurate version detection and it handle automatic redirection.
     // We dont use FetchCSS because we must know if request is redirected (302, 303) to get real url
@@ -213,25 +213,25 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         if (response.redirected) {
             viewerUrl = new URL(response.url);
         }
-        el = data[0];
+        SBpagesElement = data;
     } else {
         //Use this if chapter is redirected using javascript, or if it must be opened in a window to gather access Cookies (MangaPlaza)
         const data = await FetchWindowScript<pageScriptResult>(request, pageScript, 2500);
         if (!data.pages) return []; //chapter may be paywalled, no need to throw an error, so quit gracefully
         viewerUrl = new URL(data.location);
-        el = data.pages;
+        SBpagesElement = data.pages;
     }
 
-    const SBVersion = SBVersionOverride || getSpeedBinbVersion(el, viewerUrl);
+    const SBVersion = SBVersionOverride || getSpeedBinbVersion(SBpagesElement, viewerUrl);
 
     if (SBVersion == SpeedBinbVersion.v016113) {
-        viewerUrl.searchParams.set('cid', el.dataset['ptbinbCid']);
+        viewerUrl.searchParams.set('cid', SBpagesElement.dataset['ptbinbCid']);
     }
 
     //Handle _default_v016061 : there is no parameter at all
-    //Comic Brise, Comic Meteor, Comic Polaris, Comic Valkyrie, Digital MargaRet, OneTwoThreeHon
+    //Comic Brise, Comic Meteor, Comic Polaris, Comic Valkyrie, Digital MargaRet, OneTwoThreeHon, TKSuperheroComics
     if (SBVersion == SpeedBinbVersion._default_v016061) {
-        const [...imageConfigurations] = el.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
+        const [...imageConfigurations] = SBpagesElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
         return imageConfigurations.map(element => {
             return new Page(this, chapter, getSanitizedURL(viewerUrl.href, element.dataset.ptimg));
         });
@@ -239,7 +239,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 
     const cid = viewerUrl.searchParams.get('cid');
     const sharingKey = _tt(cid);
-    const uri = getSanitizedURL(viewerUrl.href, el.dataset.ptbinb);
+    const uri = getSanitizedURL(viewerUrl.href, SBpagesElement.dataset.ptbinb);
     uri.searchParams.set('cid', cid);
     uri.searchParams.set('dmytime', String(Date.now()));
     uri.searchParams.set('k', sharingKey);
