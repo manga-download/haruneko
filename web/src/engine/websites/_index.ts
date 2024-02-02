@@ -555,6 +555,7 @@ export { default as TempestScans } from './TempestScans';
 export { default as TenshiID } from './TenshiID';
 export { default as TheGuildScans } from './TheGuildScans';
 export { default as TitanManga } from './TitanManga';
+export { default as TKSuperheroComics } from './TKSuperheroComics';
 export { default as TmoManga } from './TmoManga';
 export { default as TonariNoYoungJump } from './TonariNoYoungJump';
 export { default as TonizuToon } from './TonizuToon';
