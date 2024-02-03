@@ -51,6 +51,9 @@
 {/await}
 
 <style>
+    img {
+        display: flex;
+    }
     img.wide {
         transition: width 50ms ease-in-out;
         transition: height 50ms ease-in-out;
