@@ -428,6 +428,7 @@ export { default as ManyToonCOM } from './ManyToonCOM';
 export { default as ManyToonKR } from './ManyToonKR';
 export { default as MaviManga } from './MaviManga';
 export { default as MenudoFansub } from './MenudoFansub';
+export { default as MerlinScans } from './MerlinScans';
 export { default as Mexat } from './Mexat';
 export { default as Mgkomik } from './Mgkomik';
 export { default as MHScans } from './MHScans';
