@@ -364,6 +364,7 @@ export { default as MangasChan } from './MangasChan';
 export { default as MangaSect } from './MangaSect';
 export { default as MangaSee } from './MangaSee';
 export { default as MangaSehri } from './MangaSehri';
+export { default as MangaSehriNet } from './MangaSehriNet';
 export { default as MangaShiro } from './MangaShiro';
 export { default as MangasOrigines } from './MangasOrigines';
 export { default as MangaSpark } from './MangaSpark';
