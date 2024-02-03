@@ -620,6 +620,7 @@ export { default as Tuttoanimemanga } from './Tuttoanimemanga';
 export { default as UmeTruyen } from './UmeTruyen';
 export { default as UraSunday } from './UraSunday';
 export { default as UzayManga } from './UzayManga';
+export { default as ValkyrieScan } from './ValkyrieScan';
 export { default as VerManhwa } from './VerManhwa';
 export { default as ViewComics } from './ViewComics';
 export { default as ViyaFansub } from './ViyaFansub';
