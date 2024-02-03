@@ -232,6 +232,7 @@ export { default as kuimh } from './kuimh';
 export { default as KumoTran } from './KumoTran';
 export { default as KurageBunch } from './KurageBunch';
 export { default as LamiManga } from './LamiManga';
+export { default as LectorUnitoon } from './LectorUnitoon';
 export { default as LeerCapitulo } from './LeerCapitulo';
 export { default as LegacyScans } from './LegacyScans';
 export { default as Leitor } from './Leitor';
