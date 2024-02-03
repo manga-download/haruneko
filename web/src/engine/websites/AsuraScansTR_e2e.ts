@@ -4,21 +4,19 @@ const config: Config = {
     plugin: {
         id: 'asurascans-tr',
         title: 'Asura Scans (TR)',
-        timeout: 30000
     },
     container: {
-        url: 'https://armoniscans.com/manga/kuduz-hancerin-intikami/',
-        id: '/manga/kuduz-hancerin-intikami/',
-        title: 'Kuduz Hançerin İntikamı',
+        url: 'https://asurascans.com.tr/manga/age-of-arrogance/',
+        id: JSON.stringify({ post: "605", slug: "/manga/age-of-arrogance/" }),
+        title: 'Age of Arrogance',
     },
     child: {
-        id: '/kuduz-hancerin-intikami-bolum-1/',
-        title: 'Bölüm 1',
-        timeout: 25000
+        id: '/manga/age-of-arrogance/bolum-28/',
+        title: 'Bölüm 28',
     },
     entry: {
         index: 1,
-        size: 3_983_216,
+        size: 199_932,
         type: 'image/jpeg'
     }
 };
