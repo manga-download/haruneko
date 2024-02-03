@@ -16,7 +16,7 @@ const pagescript = `
             const imgdata = JSON.parse(atob(parseJwt(tokenElement.getAttribute('value')).data)); 
             resolve(imgdata.map(image => new URL(image, imgCdnUrl).href));
         }
-        const images = [...document.querySelectorAll("div.reading-detail.box_doc img:not(noscript img)")];
+        const images = [...document.querySelectorAll("div.reading-detail.box_doc img")].filter(element => element.dataset.index);
         resolve(images.map(image => image.getAttribute('src')));
     });
 `;
@@ -28,7 +28,7 @@ const pagescript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('likemanga', 'LikeManga', 'https://likemanga.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('likemanga', 'LikeManga', 'https://likemanga.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
