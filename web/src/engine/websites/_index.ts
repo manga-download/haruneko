@@ -44,6 +44,7 @@ export { default as BlogTruyen } from './BlogTruyen';
 export { default as Bokugents } from './Bokugents';
 export { default as Boosei } from './Boosei';
 export { default as BoysLove } from './BoysLove';
+export { default as CartelDeManhwas } from './CartelDeManhwas';
 export { default as CarToonMad } from './CarToonMad';
 export { default as CatTranslator } from './CatTranslator';
 export { default as CeriseScans } from './CeriseScans';
