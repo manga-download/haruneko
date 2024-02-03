@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './YugenMangasPT.webp';
-import { Chapter, DecoratableMangaScraper, Page, MangaPlugin, Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Page, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
@@ -12,7 +12,6 @@ type APIManga = {
     name: string,
     slug: string
 }
-
 
 type APIChapters = {
     chapters: APIChapter[]
@@ -55,7 +54,7 @@ export default class extends DecoratableMangaScraper {
         const { series } = await FetchJSON<APIMangas>(new Request(new URL('/api/all_series/', this.apiUrl)));
         return series.map(manga => new Manga(this, provider, manga.slug, manga.name.trim()));
     }
-    
+
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { chapters } = await FetchJSON<APIChapters>(new Request(new URL('/api/get_chapters_by_serie/', this.apiUrl), {
             method: 'POST',
@@ -64,7 +63,7 @@ export default class extends DecoratableMangaScraper {
             })
         }));
         return chapters
-            .sort((chapterA, chapterB) => { return chapterB.name.localeCompare(chapterA.name,undefined,  {numeric: true, sensitivity: 'base'}) })
+            .sort((chapterA, chapterB) => { return chapterB.name.localeCompare(chapterA.name, undefined, { numeric: true, sensitivity: 'base' }); })
             .map(chapter => new Chapter(this, manga, chapter.slug, chapter.name.trim()));
     }
 
