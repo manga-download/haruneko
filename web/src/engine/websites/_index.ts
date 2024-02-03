@@ -27,6 +27,7 @@ export { default as Ascalon } from './Ascalon';
 export { default as AsmHentai } from './AsmHentai';
 export { default as AssortedScans } from './AssortedScans';
 export { default as AstralManga } from './AstralManga';
+export { default as AstraScans } from './AstraScans';
 export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansTR } from './AsuraScansTR';
 export { default as Atikrost } from './Atikrost';
