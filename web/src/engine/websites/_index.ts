@@ -600,7 +600,6 @@ export { default as YaoiHavenReborn } from './YaoiHavenReborn';
 export { default as YaoiScan } from './YaoiScan';
 export { default as YaoiToshokan } from './YaoiToshokan';
 export { default as YawarakaSpirits } from './YawarakaSpirits';
-export { default as YugenMangasES } from './YugenMangasES';
 export { default as YugenMangasPT } from './YugenMangasPT';
 export { default as YumeKomik } from './YumeKomik';
 export { default as YuriVerso } from './YuriVerso';
