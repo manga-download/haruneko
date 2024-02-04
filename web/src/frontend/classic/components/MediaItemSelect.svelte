@@ -204,68 +204,87 @@
                 }
             }
         };
+
+    function downloadItems(items: StoreableMediaContainer<MediaItem>[]) {
+        items.forEach((item) => {
+            window.HakuNeko.DownloadManager.Enqueue(item);
+        });
+    }
 </script>
 
-<ContextMenu bind:open={contextMenuOpen} target={[itemsdiv]}>
-    {#if contextItem}
+{#if filteredItems.length > 0}
+    <ContextMenu bind:open={contextMenuOpen} target={[itemsdiv]}>
+        {#if contextItem}
+            <ContextMenuOption
+                labelText="Download - {contextItem?.Title}"
+                shortcutText="⌘D"
+                on:click={() => downloadItems([contextItem])}
+            />
+        {/if}
+        {#if selectedItems.length > 1}
+            <ContextMenuOption
+                labelText="Download {selectedItems.length} selecteds"
+                shortcutText="⌘S"
+                on:click={() => downloadItems(selectedItems)}
+            />
+        {/if}
         <ContextMenuOption
-            labelText="Download - {contextItem?.Title}"
-            shortcutText="⌘D"
+            labelText="Download all"
+            shortcutText="⌘A"
+            on:click={() => downloadItems(filteredItems)}
         />
-    {/if}
-    {#if selectedItems.length === 1}
-        <ContextMenuOption labelText="Download All" shortcutText="⌘D" />
-        <ContextMenuDivider />
-        <ContextMenuOption
-            labelText="View"
-            shortcutText="⌘V"
-            on:click={() => {
-                $selectedItem = selectedItems[0];
-            }}
-        />
-        <ContextMenuOption labelText="Flag as">
+        {#if contextItem}
+            <ContextMenuDivider />
             <ContextMenuOption
-                labelText="Not viewed"
-                on:click={async () => {
-                    window.HakuNeko.ItemflagManager.UnflagItem(
-                        selectedItems[0],
-                    );
+                labelText="View"
+                shortcutText="⌘V"
+                on:click={() => {
+                    $selectedItem = contextItem;
                 }}
             />
-            <ContextMenuOption
-                labelText="Viewed"
-                on:click={async () => {
-                    window.HakuNeko.ItemflagManager.FlagItem(
-                        selectedItems[0],
-                        FlagType.Viewed,
-                    );
-                }}
-            />
-            <ContextMenuOption
-                labelText="Current"
-                on:click={async () => {
-                    window.HakuNeko.ItemflagManager.FlagItem(
-                        selectedItems[0],
-                        FlagType.Current,
-                    );
-                }}
-            />
-        </ContextMenuOption>
-    {:else if selectedItems.length > 1}
-        <ContextMenuOption labelText="Download selecteds" />
-        <ContextMenuOption labelText="Download all" shortcutText="⌘D" />
-    {:else}
-        <ContextMenuOption labelText="Download all" shortcutText="⌘D" />
-    {/if}
-    <ContextMenuDivider />
-    <ContextMenuOption labelText="Copy">
-        <ContextMenuGroup labelText="Copy options">
-            <ContextMenuOption id="url" labelText="URL" shortcutText="⌘C" />
-            <ContextMenuOption id="name" labelText="name" shortcutText="⌘N" />
-        </ContextMenuGroup>
-    </ContextMenuOption>
-    <ContextMenuDivider />
-</ContextMenu>
+            <ContextMenuOption labelText="Flag as">
+                <ContextMenuOption
+                    labelText="Not viewed"
+                    on:click={async () => {
+                        window.HakuNeko.ItemflagManager.UnflagItem(contextItem);
+                    }}
+                />
+                <ContextMenuOption
+                    labelText="Viewed"
+                    on:click={async () => {
+                        window.HakuNeko.ItemflagManager.FlagItem(
+                            contextItem,
+                            FlagType.Viewed,
+                        );
+                    }}
+                />
+                <ContextMenuOption
+                    labelText="Current"
+                    on:click={async () => {
+                        window.HakuNeko.ItemflagManager.FlagItem(
+                            contextItem,
+                            FlagType.Current,
+                        );
+                    }}
+                />
+            </ContextMenuOption>
+            <ContextMenuOption labelText="Copy">
+                <ContextMenuGroup labelText="Copy options">
+                    <ContextMenuOption
+                        id="url"
+                        labelText="URL"
+                        shortcutText="⌘C"
+                    />
+                    <ContextMenuOption
+                        id="name"
+                        labelText="name"
+                        shortcutText="⌘N"
+                    />
+                </ContextMenuGroup>
+            </ContextMenuOption>
+        {/if}
+    </ContextMenu>
+{/if}
 
 <div id="Item" transition:fade>
     <div id="ItemTitle">
