@@ -444,6 +444,7 @@ export { default as MomoNoHanaScan } from './MomoNoHanaScan';
 export { default as MonochromeScans } from './MonochromeScans';
 export { default as MonoManga } from './MonoManga';
 export { default as MoonWitchInLove } from './MoonWitchInLove';
+export { default as MrYaoi } from './MrYaoi';
 export { default as MundoManhwa } from './MundoManhwa';
 export { default as NatsuID } from './NatsuID';
 export { default as Nekomik } from './Nekomik';
