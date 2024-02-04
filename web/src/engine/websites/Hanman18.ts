@@ -13,7 +13,7 @@ import { pageScript } from './MangaEighteenClub';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hanman18', 'Hanman18', 'https://hanman18.com', Tags.Media.Manhwa, Tags.Language.Chinese, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+        super('hanman18', 'Hanman18', 'https://hanman18.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

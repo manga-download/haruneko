@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('pinkseaunicorn', 'Pink Sea Unicorn', 'https://psunicorn.com', Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('pinkseaunicorn', 'Pink Sea Unicorn', 'https://psunicorn.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

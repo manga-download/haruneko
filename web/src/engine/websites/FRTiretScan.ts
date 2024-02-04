@@ -19,7 +19,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('frtiretscan', `FR-Scan`, 'https://fr-scan.com', Tags.Language.French, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('frtiretscan', `FR-Scan`, 'https://fr-scan.com', Tags.Language.French, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

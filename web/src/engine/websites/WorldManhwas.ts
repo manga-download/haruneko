@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^{origin}\/komik\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="WorldManhwas"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript, 2500)
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

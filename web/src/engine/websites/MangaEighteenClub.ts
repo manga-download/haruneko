@@ -18,7 +18,7 @@ export const pageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manga18-club', `Manga18.club`, 'https://manga18.club', Tags.Language.English, Tags.Media.Manhwa, Tags.Rating.Erotica, Tags.Source.Aggregator);
+        super('manga18-club', `Manga18.club`, 'https://manga18.club', Tags.Language.English, Tags.Media.Manhwa, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
