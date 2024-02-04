@@ -624,6 +624,7 @@ export { default as TukangKomik } from './TukangKomik';
 export { default as TuMangaNet } from './TuMangaNet';
 export { default as TuMangaOnlineHentai } from './TuMangaOnlineHentai';
 export { default as TuManhwas } from './TuManhwas';
+export { default as TurkceMangaOku } from './TurkceMangaOku';
 export { default as Turktoon } from './Turktoon';
 export { default as Tuttoanimemanga } from './Tuttoanimemanga';
 export { default as UmeTruyen } from './UmeTruyen';
