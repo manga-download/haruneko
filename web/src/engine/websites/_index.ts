@@ -558,6 +558,7 @@ export { default as Shakai } from './Shakai';
 export { default as SheaKomik } from './SheaKomik';
 export { default as SheepManga } from './SheepManga';
 export { default as SheepMangaBroken } from './SheepMangaBroken';
+export { default as ShijieScans } from './ShijieScans';
 export { default as ShinigamiID } from './ShinigamiID';
 export { default as Shirakami } from './Shirakami';
 export { default as ShonenJumpPlus } from './ShonenJumpPlus';
