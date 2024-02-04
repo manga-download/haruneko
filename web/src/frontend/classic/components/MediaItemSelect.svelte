@@ -109,9 +109,16 @@
     let multipleSelectionDragFrom: number = -1;
     let multipleSelectionDragTo: number = -1;
     let selectedDragItems: StoreableMediaContainer<MediaItem>[] = [];
+    let contextItem: StoreableMediaContainer<MediaItem>;
+    let contextMenuOpen;
+
+    $: if (!contextMenuOpen) contextItem = null;
 
     const mouseHandler =
         (item: StoreableMediaContainer<MediaItem>) => (event: any) => {
+            if (event.button === 2) {
+                contextItem = item;
+            }
             if (event.button === 0) {
                 // left click
                 switch (event.type) {
@@ -199,26 +206,25 @@
         };
 </script>
 
-<ContextMenu target={[itemsdiv]}>
-    {#if selectedItems.length === 1}
-        <ContextMenuOption indented labelText="Download" shortcutText="⌘D" />
+<ContextMenu bind:open={contextMenuOpen} target={[itemsdiv]}>
+    {#if contextItem}
         <ContextMenuOption
-            indented
-            labelText="Download All"
+            labelText="Download - {contextItem?.Title}"
             shortcutText="⌘D"
         />
+    {/if}
+    {#if selectedItems.length === 1}
+        <ContextMenuOption labelText="Download All" shortcutText="⌘D" />
         <ContextMenuDivider />
         <ContextMenuOption
-            indented
             labelText="View"
             shortcutText="⌘V"
             on:click={() => {
                 $selectedItem = selectedItems[0];
             }}
         />
-        <ContextMenuOption indented labelText="Flag as">
+        <ContextMenuOption labelText="Flag as">
             <ContextMenuOption
-                indented
                 labelText="Not viewed"
                 on:click={async () => {
                     window.HakuNeko.ItemflagManager.UnflagItem(
@@ -227,7 +233,6 @@
                 }}
             />
             <ContextMenuOption
-                indented
                 labelText="Viewed"
                 on:click={async () => {
                     window.HakuNeko.ItemflagManager.FlagItem(
@@ -237,7 +242,6 @@
                 }}
             />
             <ContextMenuOption
-                indented
                 labelText="Current"
                 on:click={async () => {
                     window.HakuNeko.ItemflagManager.FlagItem(
@@ -248,21 +252,13 @@
             />
         </ContextMenuOption>
     {:else if selectedItems.length > 1}
-        <ContextMenuOption indented labelText="Download selecteds" />
-        <ContextMenuOption
-            indented
-            labelText="Download all"
-            shortcutText="⌘D"
-        />
+        <ContextMenuOption labelText="Download selecteds" />
+        <ContextMenuOption labelText="Download all" shortcutText="⌘D" />
     {:else}
-        <ContextMenuOption
-            indented
-            labelText="Download all"
-            shortcutText="⌘D"
-        />
+        <ContextMenuOption labelText="Download all" shortcutText="⌘D" />
     {/if}
     <ContextMenuDivider />
-    <ContextMenuOption indented labelText="Copy">
+    <ContextMenuOption labelText="Copy">
         <ContextMenuGroup labelText="Copy options">
             <ContextMenuOption id="url" labelText="URL" shortcutText="⌘C" />
             <ContextMenuOption id="name" labelText="name" shortcutText="⌘N" />
@@ -307,6 +303,7 @@
                     {item}
                     multilang={!langFilter && MediaLanguages.length > 1}
                     selected={selectedItems.includes(item)}
+                    hover={item === contextItem}
                     on:view={(event) => onItemView(item)(event.detail)}
                     on:mousedown={mouseHandler(item)}
                     on:mouseup={mouseHandler(item)}
