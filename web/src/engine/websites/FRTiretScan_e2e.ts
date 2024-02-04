@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '/manga/blue-lock/chapitre-248-vf/',
-        title: 'Chapitre 248 VF'
+        title: 'Chapitre 248'
     },
     entry: {
         index: 1,
