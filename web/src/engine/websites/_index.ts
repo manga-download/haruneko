@@ -510,6 +510,7 @@ export { default as RavensScansES } from './RavensScansES';
 export { default as RawDevart } from './RawDevart';
 export { default as Rawkuma } from './Rawkuma';
 export { default as RawSenManga } from './RawSenManga';
+export { default as RawXZ } from './RawXZ';
 export { default as ReadComicOnline } from './ReadComicOnline';
 export { default as ReadComicsOnline } from './ReadComicsOnline';
 export { default as ReadFreeComics } from './ReadFreeComics';
