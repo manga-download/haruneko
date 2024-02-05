@@ -30,7 +30,7 @@ const englishconfig = {
         title: 'NetComics'
     },
     container: {
-        url: 'https://www.netcomics.com/eb/comic/some-kind-of-marriage',
+        url: 'https://www.netcomics.com/en/comic/some-kind-of-marriage',
         id: '17817',
         title: 'Some Kind of Marriage'
     },
