@@ -6,7 +6,7 @@ const config = {
         title: 'Gekkou Scans'
     },
     container: {
-        url: 'https://gekkouscans.top/manga/a29c1576-d191-479a-8206-f7df70e9a7c8/',
+        url: 'https://gekkou.site/manga/a29c1576-d191-479a-8206-f7df70e9a7c8/',
         id: JSON.stringify({ post: '1897', slug: '/manga/a29c1576-d191-479a-8206-f7df70e9a7c8/' }),
         title: 'ꜱᴏᴜꜱᴏᴜ ɴᴏ ꜰʀɪᴇʀᴇɴ'
     },
