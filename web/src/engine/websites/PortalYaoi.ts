@@ -1,12 +1,10 @@
-import { Tags } from '../Tags';
-import icon from './YugenMangasES.webp';
+﻿import { Tags } from '../Tags';
+import icon from './PortalYaoi.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-//TODO: needs to be recoded with novel support && Yugenmanga API
-
-@Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -14,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yugenmangas-es', 'YugenMangas (ES)', 'https://yugenmangas.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish);
+        super('portalyaoi', 'Portal Yaoi', 'https://portalyaoi.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Rating.Pornographic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

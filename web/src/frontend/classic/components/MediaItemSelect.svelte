@@ -109,9 +109,16 @@
     let multipleSelectionDragFrom: number = -1;
     let multipleSelectionDragTo: number = -1;
     let selectedDragItems: StoreableMediaContainer<MediaItem>[] = [];
+    let contextItem: StoreableMediaContainer<MediaItem>;
+    let contextMenuOpen;
+
+    $: if (!contextMenuOpen) contextItem = null;
 
     const mouseHandler =
         (item: StoreableMediaContainer<MediaItem>) => (event: any) => {
+            if (event.button === 2) {
+                contextItem = item;
+            }
             if (event.button === 0) {
                 // left click
                 switch (event.type) {
@@ -197,79 +204,87 @@
                 }
             }
         };
+
+    function downloadItems(items: StoreableMediaContainer<MediaItem>[]) {
+        items.forEach((item) => {
+            window.HakuNeko.DownloadManager.Enqueue(item);
+        });
+    }
 </script>
 
-<ContextMenu target={[itemsdiv]}>
-    {#if selectedItems.length === 1}
-        <ContextMenuOption indented labelText="Download" shortcutText="⌘D" />
-        <ContextMenuOption
-            indented
-            labelText="Download All"
-            shortcutText="⌘D"
-        />
-        <ContextMenuDivider />
-        <ContextMenuOption
-            indented
-            labelText="View"
-            shortcutText="⌘V"
-            on:click={() => {
-                $selectedItem = selectedItems[0];
-            }}
-        />
-        <ContextMenuOption indented labelText="Flag as">
+{#if filteredItems.length > 0}
+    <ContextMenu bind:open={contextMenuOpen} target={[itemsdiv]}>
+        {#if contextItem}
             <ContextMenuOption
-                indented
-                labelText="Not viewed"
-                on:click={async () => {
-                    window.HakuNeko.ItemflagManager.UnflagItem(
-                        selectedItems[0],
-                    );
-                }}
+                labelText="Download - {contextItem?.Title}"
+                shortcutText="⌘D"
+                on:click={() => downloadItems([contextItem])}
             />
+        {/if}
+        {#if selectedItems.length > 1}
             <ContextMenuOption
-                indented
-                labelText="Viewed"
-                on:click={async () => {
-                    window.HakuNeko.ItemflagManager.FlagItem(
-                        selectedItems[0],
-                        FlagType.Viewed,
-                    );
-                }}
+                labelText="Download {selectedItems.length} selecteds"
+                shortcutText="⌘S"
+                on:click={() => downloadItems(selectedItems)}
             />
-            <ContextMenuOption
-                indented
-                labelText="Current"
-                on:click={async () => {
-                    window.HakuNeko.ItemflagManager.FlagItem(
-                        selectedItems[0],
-                        FlagType.Current,
-                    );
-                }}
-            />
-        </ContextMenuOption>
-    {:else if selectedItems.length > 1}
-        <ContextMenuOption indented labelText="Download selecteds" />
+        {/if}
         <ContextMenuOption
-            indented
             labelText="Download all"
-            shortcutText="⌘D"
+            shortcutText="⌘A"
+            on:click={() => downloadItems(filteredItems)}
         />
-    {:else}
-        <ContextMenuOption
-            indented
-            labelText="Download all"
-            shortcutText="⌘D"
-        />
-    {/if}
-    <ContextMenuDivider />
-    <ContextMenuOption indented labelText="Copy">
-        <ContextMenuGroup labelText="Copy options">
-            <ContextMenuOption id="url" labelText="URL" shortcutText="⌘C" />
-            <ContextMenuOption id="name" labelText="name" shortcutText="⌘N" />
-        </ContextMenuGroup>
-    </ContextMenuOption>
-    <ContextMenuDivider />
-</ContextMenu>
+        {#if contextItem}
+            <ContextMenuDivider />
+            <ContextMenuOption
+                labelText="View"
+                shortcutText="⌘V"
+                on:click={() => {
+                    $selectedItem = contextItem;
+                }}
+            />
+            <ContextMenuOption labelText="Flag as">
+                <ContextMenuOption
+                    labelText="Not viewed"
+                    on:click={async () => {
+                        window.HakuNeko.ItemflagManager.UnflagItem(contextItem);
+                    }}
+                />
+                <ContextMenuOption
+                    labelText="Viewed"
+                    on:click={async () => {
+                        window.HakuNeko.ItemflagManager.FlagItem(
+                            contextItem,
+                            FlagType.Viewed,
+                        );
+                    }}
+                />
+                <ContextMenuOption
+                    labelText="Current"
+                    on:click={async () => {
+                        window.HakuNeko.ItemflagManager.FlagItem(
+                            contextItem,
+                            FlagType.Current,
+                        );
+                    }}
+                />
+            </ContextMenuOption>
+            <ContextMenuOption labelText="Copy">
+                <ContextMenuGroup labelText="Copy options">
+                    <ContextMenuOption
+                        id="url"
+                        labelText="URL"
+                        shortcutText="⌘C"
+                    />
+                    <ContextMenuOption
+                        id="name"
+                        labelText="name"
+                        shortcutText="⌘N"
+                    />
+                </ContextMenuGroup>
+            </ContextMenuOption>
+        {/if}
+    </ContextMenu>
+{/if}
 
 <div id="Item" transition:fade>
     <div id="ItemTitle">
@@ -307,6 +322,7 @@
                     {item}
                     multilang={!langFilter && MediaLanguages.length > 1}
                     selected={selectedItems.includes(item)}
+                    hover={item === contextItem}
                     on:view={(event) => onItemView(item)(event.detail)}
                     on:mousedown={mouseHandler(item)}
                     on:mouseup={mouseHandler(item)}

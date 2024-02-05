@@ -1,8 +1,8 @@
 <script lang="ts">
     import { onMount, onDestroy, createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
-
     const dispatch = createEventDispatcher();
+
     import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
         BookmarkFilled as IconBookmarkFilled,
@@ -23,6 +23,7 @@
 
     export let item: StoreableMediaContainer<MediaItem>;
     export let selected: boolean;
+    export let hover: boolean;
     export let multilang = false;
     let flag: FlagType;
     const flagiconmap = new Map<FlagType, any>([
@@ -54,6 +55,7 @@
     role="listitem"
     in:fade
     class:selected
+    class:hover
     class:active={$selectedItem?.Identifier === item?.Identifier}
     on:click
     on:mousedown
@@ -98,9 +100,14 @@
         display: flex;
         user-select: none;
     }
-    .listitem:hover {
+    .listitem:hover,
+    .listitem.hover {
         background-color: var(--cds-hover-row);
         --cds-ui-01: var(--cds-hover-row);
+    }
+    .listitem.hover {
+        background-color: var(--cds-active-secondary);
+        --cds-ui-01: var(--cds-active-secondary);
     }
     .listitem.selected {
         background-color: var(--cds-selected-ui);
