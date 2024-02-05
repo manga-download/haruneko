@@ -10,7 +10,7 @@ type APIResult<T> = {
     status: number,
     message: string,
     data?: T
-    error? : ApiError
+    error?: ApiError
 }
 
 type ApiError = {
@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         const languages = ['EN', 'ES', 'FR', 'DE'];
-        for(const language of languages) {
+        for (const language of languages) {
             for (let page = 1, run = true; run; page++) {
                 const mangas = await this.getMangasFromPage(page, provider, language);
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -77,7 +77,7 @@ export default class extends DecoratableMangaScraper {
         return mangaList.distinct();
     }
 
-    async getMangasFromPage(page: number, provider: MangaPlugin, language : string) {
+    async getMangasFromPage(page: number, provider: MangaPlugin, language: string) {
         const request = new Request(new URL(`title/genre?no=${page}&size=18&genre=`, this.apiUrl), {
             headers: this.getRequestHeaders(language)
         });
@@ -87,7 +87,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(`chapter/order/${manga.Identifier}/rent`, this.apiUrl));
-        const { data } = await FetchJSON <APIResult<APIChapter[]>>(request);
+        const { data } = await FetchJSON<APIResult<APIChapter[]>>(request);
         return data.map(chapter => {
             const title = [chapter.chapter_no.toString(), chapter.chapter_name.trim()].join(' ').trim();
             return new Chapter(this, manga, chapter.chapter_id.toString(), title);
@@ -97,7 +97,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new Request(new URL(`chapter/viewer/625/${chapter.Parent.Identifier}/${chapter.Identifier}?otp=`, this.apiUrl));
         const { data, error } = await FetchJSON<APIResult<APIPages>>(request);
-        if (error?.error.status == 400 ) throw Error(W.Plugin_Common_Chapter_UnavailableError);
+        if (error?.error.status == 400) throw Error(W.Plugin_Common_Chapter_UnavailableError);
         return data.images.map(image => new Page(this, chapter, new URL(image.image_url)));
 
     }
