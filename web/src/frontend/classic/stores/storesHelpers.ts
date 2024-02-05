@@ -64,8 +64,8 @@ export function CreateCountStore(initialValue: number, increment: number, minimu
         subscribe,
         set,
         update,
-        increment: () => update(n => n + increment <= maximum ? n + increment : n),
-        decrement: () => update(n => n - increment >= minimum ? n - increment : n),
+        increment: () => update(n => Math.min(maximum, n + increment)),
+        decrement: () => update(n => Math.max(minimum, n - increment)),
         reset: () => set(initialValue)
     };
 }

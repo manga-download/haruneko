@@ -57,6 +57,8 @@ async function cleanupNW(dirNW) {
         await fs.unlink(dirNW + '.dmg');
     } catch(error) {/**/}
     await fs.move(path.join(dirNW, 'nwjs.app'), path.join(dirNW, product + '.app'));
+    // HACK: Workaround for https://github.com/nwjs/nw.js/issues/8157
+    await run(`xattr -cr '${path.join(dirNW, product + '.app')}'`);
 }
 
 async function createDiskImage(dirNW, dirRes, dirOut) {

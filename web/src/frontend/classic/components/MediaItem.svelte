@@ -1,15 +1,9 @@
 <script lang="ts">
     import { onMount, onDestroy, createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
-
     const dispatch = createEventDispatcher();
-    import {
-        Button,
-        ClickableTile,
-        //ContextMenu,
-        //ContextMenuDivider,
-        //ContextMenuOption,
-    } from 'carbon-components-svelte';
+
+    import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
         BookmarkFilled as IconBookmarkFilled,
         View,
@@ -19,13 +13,17 @@
 
     import { filterByCategory, Tags } from '../../../engine/Tags';
 
-    import type { StoreableMediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
+    import type {
+        StoreableMediaContainer,
+        MediaItem,
+    } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
     import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
 
     export let item: StoreableMediaContainer<MediaItem>;
     export let selected: boolean;
+    export let hover: boolean;
     export let multilang = false;
     let flag: FlagType;
     const flagiconmap = new Map<FlagType, any>([
@@ -36,7 +34,7 @@
 
     async function OnFlagChangedCallback(
         changedItem: StoreableMediaContainer<MediaItem>,
-        changedFlag: FlagType
+        changedFlag: FlagType,
     ) {
         if (changedItem === item) flag = changedFlag;
         else if (changedFlag === FlagType.Current)
@@ -57,9 +55,9 @@
     role="listitem"
     in:fade
     class:selected
+    class:hover
     class:active={$selectedItem?.Identifier === item?.Identifier}
     on:click
-    on:contextmenu
     on:mousedown
     on:mouseup
     on:mouseenter
@@ -81,15 +79,9 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="View"
-        on:click={() => dispatch('view', item)}
+        on:click={(event) => dispatch('view', event)}
     />
-    <ClickableTile
-        class="title"
-        on:click={(e) => {
-            e.preventDefault();
-            dispatch('view', item);
-        }}
-    >
+    <ClickableTile class="title" on:click={(event) => dispatch('view', event)}>
         {#if multilang}
             <span class="multilang">
                 {multilang
@@ -108,9 +100,14 @@
         display: flex;
         user-select: none;
     }
-    .listitem:hover {
+    .listitem:hover,
+    .listitem.hover {
         background-color: var(--cds-hover-row);
         --cds-ui-01: var(--cds-hover-row);
+    }
+    .listitem.hover {
+        background-color: var(--cds-active-secondary);
+        --cds-ui-01: var(--cds-active-secondary);
     }
     .listitem.selected {
         background-color: var(--cds-selected-ui);
