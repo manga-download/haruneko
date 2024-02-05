@@ -1,6 +1,7 @@
 // Implemented Websites
 export { default as AdonisFansub } from './AdonisFansub';
 export { default as AGCScanlation } from './AGCScanlation';
+export { default as AGS } from './AGS';
 export { default as Ainzscans } from './Ainzscans';
 export { default as Alceascan } from './Alceascan';
 export { default as AlliedFansub } from './AlliedFansub';
@@ -468,6 +469,7 @@ export { default as NoraNoFansub } from './NoraNoFansub';
 export { default as Noromax } from './Noromax';
 export { default as NovelMic } from './NovelMic';
 export { default as NvManga } from './NvManga';
+export { default as Nyrax } from './Nyrax';
 export { default as OlympusScanlation } from './OlympusScanlation';
 export { default as OnMangaMe } from './OnMangaMe';
 export { default as Opiatoon } from './Opiatoon';
