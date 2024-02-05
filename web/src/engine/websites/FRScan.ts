@@ -12,7 +12,7 @@ import * as MangaReader from './decorators/MangaReaderCMS';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('frscan', `FrScan`, 'https://www.frscans.com', Tags.Language.French, Tags.Media.Manga);
+        super('frscan', `FrScan`, 'https://www.frscans.com', Tags.Language.French, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
