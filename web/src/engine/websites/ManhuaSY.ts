@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './MangaSY.webp';
+import icon from './ManhuaSY.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manhua\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript, 2000)
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangasy', 'Manga SY', 'https://www.mangasy.com', Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('manhuasy', 'Manhua SY', 'https://www.manhuasy.com', Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

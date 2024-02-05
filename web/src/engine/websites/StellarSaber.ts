@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './MangaSY.webp';
+import icon from './StellarSaber.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript, 2000)
-@Common.ImageAjax(false, true)
+@Madara.PagesSinglePageCSS()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangasy', 'Manga SY', 'https://www.mangasy.com', Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('stellarsaber', 'Stellar Saber', 'https://stellarsaber.com', Tags.Media.Manga, Tags.Language.Arabic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

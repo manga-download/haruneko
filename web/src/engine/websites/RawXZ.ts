@@ -1,19 +1,21 @@
 import { Tags } from '../Tags';
-import icon from './MangaSehri.webp';
+import icon from './RawXZ.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
+import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Şehri"])')
+@Madara.MangaCSS(/^{origin}\/comic\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageCSS([/07c400d9d4ae35c494529\.jpg$/], 'div.page-break img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangasehri', 'Manga Şehri', 'https://manga-sehri.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('rawxz', 'RawXZ', 'https://rawxz.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
+
     public override get Icon() {
         return icon;
     }
