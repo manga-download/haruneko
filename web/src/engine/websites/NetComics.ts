@@ -38,24 +38,16 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://beta-api.netcomics.com';
 
     public constructor() {
-        super('netcomics', `NetComics`, 'https://www.netcomics.com', Tags.Language.English, Tags.Language.Japanese, Tags.Language.Chinese, Tags.Language.Korean,
-            Tags.Language.Spanish, Tags.Language.French, Tags.Language.German, Tags.Language.Indonesian, Tags.Language.Thai, Tags.Language.Vietnamese,
-            Tags.Media.Manhwa, Tags.Source.Official);
+        super('netcomics', `NetComics`, 'https://www.netcomics.com', Tags.Language.English, Tags.Language.Spanish, Tags.Language.French, Tags.Language.German, Tags.Media.Manhwa, Tags.Source.Official);
 
         this.Settings.language = new Choice('mangalist.language',
             E.Settings_Global_Language,
             E.Settings_Global_LanguageInfo,
             'EN',
             { key: 'EN', label: R.Tags_Language_English },
-            //{ key: 'JA', label: R.Tags_Language_Japanese },
-            //{ key: 'CN', label: R.Tags_Language_Chinese },
-            //{ key: 'KO', label: R.Tags_Language_Korean },
             { key: 'ES', label: R.Tags_Language_Spanish },
             { key: 'FR', label: R.Tags_Language_French },
             { key: 'DE', label: R.Tags_Language_German },
-            //{ key: 'ID', label: R.Tags_Language_Indonesian },
-            //{ key: 'TH', label: R.Tags_Language_Thai },
-            //{ key: 'VI', label: R.Tags_Language_Vietnamese }
         );
 
     }
