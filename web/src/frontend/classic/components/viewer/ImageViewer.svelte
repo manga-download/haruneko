@@ -19,6 +19,7 @@
         ViewerMode,
         ViewerPadding,
         ViewerZoom,
+        ViewerZoomRatio,
         ViewerReverseDirection,
     } from '../../stores/Settings';
     import { selectedItemNext } from '../../stores/Stores';
@@ -32,6 +33,7 @@
     onDestroy(() => {
         document.removeEventListener('keydown', onKeyDown);
         viewer?.removeEventListener('mousedown', onMouseDown);
+        zoomunsubscribe();
     });
 
     $: entries = item.Entries;
@@ -79,10 +81,10 @@
                 ViewerZoom.reset();
                 break;
             case event.key === '+' && !event.ctrlKey:
-                zoomIn();
+                ViewerZoom.increment();
                 break;
             case event.key === '-' && !event.ctrlKey:
-                zoomOut();
+                ViewerZoom.decrement();
                 break;
             case event.key === '+' && event.ctrlKey:
                 ViewerPadding.increment();
@@ -98,7 +100,7 @@
                     viewer,
                     '.imgpreview',
                     window.innerHeight * 0.8,
-                    onNextItemCallback
+                    onNextItemCallback,
                 );
                 event.preventDefault();
                 break;
@@ -107,61 +109,28 @@
         }
     }
 
-    let previousOffset = { x: 0, y: 0 };
-    let previousSize = { width: 0, height: 0 };
-
-    /**
-     *
-     */
-    function zoomIn() {
-        observeZoom();
-        ViewerZoom.increment();
-    }
-
-    /**
-     *
-     */
-    function zoomOut() {
-        observeZoom();
-        ViewerZoom.decrement();
-    }
-
-    const zoomObserver = new ResizeObserver(function () {
+    let previousZoom = $ViewerZoomRatio;
+    const zoomunsubscribe = ViewerZoomRatio.subscribe((newZoom) => {
         switch ($ViewerMode) {
             case Key.ViewerMode_Longstrip: {
-                viewer.scrollTo({
-                    top:
-                        viewer.scrollHeight *
-                        (previousOffset.y / previousSize.height),
+                viewer?.scrollTo({
+                    top: viewer.scrollTop * (newZoom / previousZoom),
                     behavior: 'smooth',
                 });
                 break;
             }
             case Key.ViewerMode_Paginated: {
-                viewer.scrollTo({
-                    left:
-                        viewer.scrollWidth *
-                        (previousOffset.x / previousSize.width),
+                viewer?.scrollTo({
+                    left: viewer.scrollLeft * (newZoom / previousZoom),
                     behavior: 'smooth',
                 });
                 break;
             }
         }
+        previousZoom = newZoom;
     });
 
-    function observeZoom() {
-        previousOffset = { x: viewer.scrollTop, y: viewer.scrollLeft };
-        previousSize = {
-            width: viewer.scrollWidth,
-            height: viewer.scrollHeight,
-        };
-        zoomObserver.disconnect();
-        // We observe the size of all children to detect the full container scrollHeight change
-        for (var i = 0; i < viewer.children.length; i++) {
-            zoomObserver.observe(viewer.children[i]);
-        }
-    }
-
+    // Auto next item after reaching end of page
     let autoNextItem = false;
     function onNextItemCallback() {
         if (autoNextItem && selectedItemNext) dispatch('nextItem');
@@ -173,6 +142,7 @@
         }
     }
 
+    // Drag and drop scroll
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
     function onMouseDown(e: MouseEvent) {
@@ -209,6 +179,7 @@
         viewer.style.removeProperty('user-select');
     };
 
+    // Dynamic css values
     $: cssvars = {
         'viewer-padding': `${$ViewerPadding}em`,
     };
@@ -216,6 +187,7 @@
         .map(([key, value]) => `--${key}:${value}`)
         .join(';');
 
+    // Entering wide mode : scroll to image
     $: if (wide) {
         if (currentImageIndex != -1) {
             // delay because of smooth transition
