@@ -95,7 +95,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(`chapter/viewer/625/${chapter.Parent.Identifier}/${chapter.Identifier}?otp=`, this.apiUrl)); //60446
+        const request = new Request(new URL(`chapter/viewer/625/${chapter.Parent.Identifier}/${chapter.Identifier}?otp=`, this.apiUrl));
         const { data, error } = await FetchJSON<APIResult<APIPages>>(request);
         if (error?.error.status == 400 ) throw Error(W.Plugin_Common_Chapter_UnavailableError);
         return data.images.map(image => new Page(this, chapter, new URL(image.image_url)));
