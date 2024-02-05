@@ -14,10 +14,9 @@ type APIResult<T> = {
 }
 
 type APIManga = {
-    title_id: string,
+    title_id: number,
     site: string,
     title_name: string,
-    //title_slug: string
 }
 
 type APIChapter = {
@@ -41,10 +40,10 @@ export default class extends DecoratableMangaScraper {
         super('netcomics', `NetComics`, 'https://www.netcomics.com', Tags.Language.English, Tags.Language.Spanish, Tags.Language.French, Tags.Language.German, Tags.Media.Manhwa, Tags.Source.Official);
 
         this.Settings.language = new Choice('mangalist.language',
-            E.Settings_Global_Language,
-            E.Settings_Global_LanguageInfo,
+            E.Settings_Global_Language, //TODO: create a "Preferred language" string?
+            E.Settings_Global_LanguageInfo, //TODO : use proper langage setting string description: "This will affect manga list or smg like that"
             'EN',
-            { key: 'EN', label: R.Tags_Language_English },
+            { key: 'EN', label: R.Tags_Language_English }, //TODO : create langage string without flag emoji or support emoji in dialog?
             { key: 'ES', label: R.Tags_Language_Spanish },
             { key: 'FR', label: R.Tags_Language_French },
             { key: 'DE', label: R.Tags_Language_German },
@@ -67,7 +66,7 @@ export default class extends DecoratableMangaScraper {
             headers: this.getRequestHeaders(site)
         });
         const { data } = await FetchJSON<APIResult<APIManga>>(request);
-        return new Manga(this, provider, data.title_id, data.title_name.trim());
+        return new Manga(this, provider, data.title_id.toString(), data.title_name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -84,14 +83,14 @@ export default class extends DecoratableMangaScraper {
             headers: this.getRequestHeaders(this.Settings.language.Value as string)
         });
         const { data } = await FetchJSON<APIResult<APIManga[]>>(request);
-        return data.map(manga => new Manga(this, provider, manga.title_id, manga.title_name.trim()));
+        return data.map(manga => new Manga(this, provider, manga.title_id.toString(), manga.title_name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(`/api/v1/chapter/order/${manga.Identifier}/rent`, this.apiUrl));
         const { data } = await FetchJSON <APIResult<APIChapter[]>>(request);
         return data.map(chapter => {
-            const title = ['Chapter', chapter.chapter_no.toString(), chapter.chapter_name.trim()].join(' ').trim();
+            const title = [chapter.chapter_no.toString(), chapter.chapter_name.trim()].join(' ').trim();
             return new Chapter(this, manga, chapter.chapter_id.toString(), title);
         });
     }
