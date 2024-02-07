@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Comico (コミコ)'
     },
     container: {
-        url: 'https://comico.jp/comic/9331',
+        url: 'https://www.comico.jp/comic/9331',
         id: '/comic/9331',
         title: '生意気殿下の家庭教師になりました'
     },
