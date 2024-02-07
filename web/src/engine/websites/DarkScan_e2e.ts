@@ -2,8 +2,8 @@
 
 const config = {
     plugin: {
-        id: 'rightdarkscan',
-        title: 'RightDarkScan'
+        id: 'darkscan',
+        title: 'Dark Scan'
     },
     container: {
         url: 'https://rightdark-scan.com/manga/okashi-na-tensei/',

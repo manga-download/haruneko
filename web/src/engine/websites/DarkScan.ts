@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './RightDarkScan.webp';
+import icon from './DarkScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rightdarkscan', 'RightDarkScan', 'https://rightdark-scan.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('darkscan', 'Dark Scan', 'https://rightdark-scan.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
