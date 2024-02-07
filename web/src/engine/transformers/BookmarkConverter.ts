@@ -38,6 +38,7 @@ const legacyWebsiteIdentifierMap = {
     'randomscan': 'luratoon',
     'realmscans': 'rizzcomics',
     'reaperscansid': 'shinigamiid',
+    'rightdarkscan': 'darkscan',
     'scansmangasxyz': 'scansmangasme',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',

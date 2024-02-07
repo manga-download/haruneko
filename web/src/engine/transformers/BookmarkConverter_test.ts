@@ -93,6 +93,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'randomscan', targetID: 'luratoon' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
+            { sourceID: 'rightdarkscan', targetID: 'darkscan' },
             { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
