@@ -275,8 +275,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 }
 
 /**
- * A class decorator that adds the ability to extract all pages for a given chapter using the given CSS {@link query}.
- * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
+ * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
  * @param useScript - use FetchWindowScript and not Fetch for first request
  * @param SBVersionOverride - Override SpeedBinb version detection
  */
