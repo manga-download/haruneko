@@ -243,20 +243,11 @@
                         size="small"
                         kind="secondary"
                         tooltipPosition="left"
-                        icon={CertificateCheck}
-                        iconDescription="Test plugin"
-                        on:click={(e) => {
-                            e.stopPropagation();
-                        }}
-                    />
-                    <Button
-                        size="small"
-                        kind="secondary"
-                        tooltipPosition="left"
                         icon={ContentDeliveryNetwork}
                         iconDescription="Open website URL"
                         on:click={(e) => {
                             e.stopPropagation();
+                            window.open(cell.value.URI);
                         }}
                     />
                 </div>
