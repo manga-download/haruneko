@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/luminousscans\.com\/series\/[^/]+\/$/)
+@MangaStream.MangaCSS(/{origin}\/series\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/series/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('luminousscans', 'Luminous Scans', 'https://luminousscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('luminousscans', 'Luminous Scans', 'https://lumitoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
