@@ -6,17 +6,17 @@ const config: Config = {
         title: 'Luminous Scans'
     },
     container: {
-        url: 'https://luminousscans.com/series/1694588401-sword-king-survival-story/',
-        id: '/series/1694588401-sword-king-survival-story/',
+        url: 'https://lumitoon.com/series/1706860801-sword-king-survival-story/',
+        id: '/series/1706860801-sword-king-survival-story/',
         title: 'Survival Story of a Sword King in a Fantasy World'
     },
     child: {
-        id: '/survival-story-of-a-sword-king-in-a-fantasy-world-chapter-184/',
+        id: '/1706860801-survival-story-of-a-sword-king-in-a-fantasy-world-chapter-184/',
         title: 'Chapter 184'
     },
     entry: {
         index: 0,
-        size: 709_967,
+        size: 1_961_579,
         type: 'image/png'
     }
 };
