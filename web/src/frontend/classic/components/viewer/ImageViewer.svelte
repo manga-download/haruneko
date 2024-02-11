@@ -1,7 +1,7 @@
 <script lang="ts">
     import { crossfade, fade } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
-    import { createEventDispatcher, onDestroy } from 'svelte';
+    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
     const dispatch = createEventDispatcher();
     // UI
     import { InlineNotification } from 'carbon-components-svelte';
@@ -30,9 +30,14 @@
     export let currentImageIndex: number = -1;
     export let wide: Boolean;
 
+    onMount(() => {
+        viewer.addEventListener('scroll', onScroll);
+    });
+
     onDestroy(() => {
         document.removeEventListener('keydown', onKeyDown);
         viewer?.removeEventListener('mousedown', onMouseDown);
+        viewer?.removeEventListener('scroll', onScroll);
         zoomunsubscribe();
     });
 
@@ -132,13 +137,20 @@
 
     // Auto next item after reaching end of page
     let autoNextItem = false;
-    function onNextItemCallback() {
+    async function onNextItemCallback() {
         if (autoNextItem && selectedItemNext) dispatch('nextItem');
         else {
             autoNextItem = true;
             setTimeout(function () {
                 autoNextItem = false;
             }, 4000);
+        }
+    }
+
+    async function onScroll() {
+        const scrollableHeight = viewer.scrollHeight - viewer.clientHeight;
+        if (viewer.scrollTop >= scrollableHeight) {
+            if (!autoNextItem) onNextItemCallback();
         }
     }
 
@@ -265,19 +277,19 @@
             />
         </button>
     {/each}
-    {#if autoNextItem && $selectedItemNext !== undefined}
-        <div transition:fade>
-            <InlineNotification
-                kind="info"
-                title="Bottom reached"
-                subtitle="Click or Press space again to go to next item."
-                on:click={() => dispatch('nextitem')}
-                on:close={() => (autoNextItem = false)}
-                style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
-            />
-        </div>
-    {/if}
 </div>
+{#if autoNextItem && $selectedItemNext !== undefined}
+    <div transition:fade>
+        <InlineNotification
+            kind="info"
+            title="Bottom reached"
+            subtitle="Click or Press space again to go to next item."
+            on:click={() => dispatch('nextitem')}
+            on:close={() => (autoNextItem = false)}
+            style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
+        />
+    </div>
+{/if}
 
 <style>
     button {
