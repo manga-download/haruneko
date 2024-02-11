@@ -9,6 +9,12 @@ import { Exception } from '../Error';
 
 @Common.ImageAjax()
 export default class extends Comico {
+
+    private readonly langageTitleMap = {
+        'en-US': '[EN]',
+        'fr-FR': '[FR]',
+        'zh-TW': '[CN]',
+    };
     public constructor() {
         super('pocketcomics', `Pocket-Comics (コミコ)`, 'https://www.pocketcomics.com', [Tags.Language.French, Tags.Language.English, Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Official]);
 
@@ -16,11 +22,11 @@ export default class extends Comico {
         this.Settings.language = new Choice('language',
             W.Plugin_Common_Preferred_Language,
             W.Plugin_Common_Preferred_LanguageInfo,
-            'en-US', ...[
-                { key: 'en-US', label: T.Tags_Language_English },
-                { key: 'fr-FR', label: T.Tags_Language_French },
-                { key: 'zh-TW', label: T.Tags_Language_Chinese },
-            ]);
+            'en-US',
+            { key: 'en-US', label: T.Tags_Language_English },
+            { key: 'fr-FR', label: T.Tags_Language_French },
+            { key: 'zh-TW', label: T.Tags_Language_Chinese },
+        );
     }
     public override get Icon() {
         return icon;
@@ -33,21 +39,11 @@ export default class extends Comico {
         const id = new URL(url).pathname;
         const data = await this.fetchPOST<APIResult<ApiChapters>>(id, this.Settings.language.Value as string);
         if (data.result.code == 404) throw new Exception(W.Plugin_MissingManga_LanguageMismatchError, id, this.Settings.language.Value as string);
-        const title = data.data.volume.content != null ? data.data.volume.content.name : data.data.episode.content.name;
+        const title = [ (data.data.volume?.content?.name ?? data.data.episode.content.name).trim(), this.langageTitleMap[this.Settings.language.Value as string]].join(' ');
         return new Manga(this, provider, JSON.stringify({ id: id, lang: this.Settings.language.Value as string }), title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
-        const languages = ['en-US', 'fr-FR', 'zh-TW'];
-        for (const language of languages) {
-            for (const path of this.mangaPaths) {
-                for (let page = 0, run = true; run; page++) {
-                    const mangas = await this.getMangasFromPage(page, provider, path, language);
-                    mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-                }
-            }
-        }
-        return mangaList.distinct();
+        return super.FetchMangasLanguages(provider, Object.keys(this.langageTitleMap));
     }
 }

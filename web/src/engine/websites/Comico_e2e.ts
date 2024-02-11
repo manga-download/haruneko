@@ -7,7 +7,7 @@ const config: Config = {
     },
     container: {
         url: 'https://www.comico.jp/comic/9331',
-        id: '/comic/9331',
+        id: JSON.stringify({ id: '/comic/9331', lang: 'ja-JP' }),
         title: '生意気殿下の家庭教師になりました'
     },
     child: {

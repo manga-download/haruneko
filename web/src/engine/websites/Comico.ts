@@ -68,7 +68,7 @@ type ApiImage = {
 
 type MangaID = {
     id: string,
-    lang : string
+    lang: string
 }
 
 @Common.ImageAjax()
@@ -78,7 +78,7 @@ export default class extends DecoratableMangaScraper {
     protected mangaPaths = ['new_release', 'read_for_free'];
 
     public constructor(id = 'Comico', label = `Comico(コミコ)`, url = 'https://www.comico.jp', tags = [Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official]) {
-        super(id, label, url, ...tags );
+        super(id, label, url, ...tags);
     }
     public override get Icon() {
         return icon;
@@ -90,30 +90,32 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname;
-        const data = await this.fetchPOST<APIResult<ApiChapters>>(id);
-        const title = data.data.volume.content != null ? data.data.volume.content.name : data.data.episode.content.name;
+        const data = await this.fetchPOST<APIResult<ApiChapters>>(id, 'ja-JP');
+        const title = data.data.volume?.content?.name ?? data.data.episode.content.name;
         return new Manga(this, provider, JSON.stringify({ id: id, lang: 'ja-JP' }), title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
-        for (const path of this.mangaPaths) {
-            for (let page = 0, run = true; run; page++) {
-                const mangas = await this.getMangasFromPage(page, provider, path);
-                mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        return this.FetchMangasLanguages(provider, ['ja-JP']);
+    }
+
+    protected async FetchMangasLanguages(provider: MangaPlugin, languages: string[]): Promise<Manga[]> {
+        const mangaList: Manga[] = [];
+        for (const language of languages) {
+            for (const path of this.mangaPaths) {
+                for (let page = 0, run = true; run; page++) {
+                    const data = await this.fetchPOST<APIResult<ApiMangas>>(`/all_comic/${path}?pageNo=${page}`, language);
+                    const mangas = data.result.code != 200 ? [] : data.data.contents.map(manga => new Manga(this, provider, JSON.stringify({ id: `/${manga.type}/${manga.id}`, lang: language }), manga.name));
+                    mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+                }
             }
         }
         return mangaList.distinct();
     }
 
-    protected async getMangasFromPage(page: number, provider: MangaPlugin, path: string, language = 'ja-JP'): Promise<Manga[]> {
-        const data = await this.fetchPOST<APIResult<ApiMangas>>(`/all_comic/${path}?pageNo=${page}`, language);
-        return data.result.code != 200 ? [] : data.data.contents.map(manga => new Manga(this, provider, JSON.stringify({ id: `/${manga.type}/${manga.id}`, lang: language }), manga.name));
-    }
-
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaid: MangaID = JSON.parse(manga.Identifier);
-        const data = await this.fetchPOST<APIResult<ApiChapters>>(mangaid.id, mangaid.lang);
+        const { id, lang }: MangaID = JSON.parse(manga.Identifier);
+        const data = await this.fetchPOST<APIResult<ApiChapters>>(id, lang);
         //episode or volume?
         const element = data.data.episode.content != null ? data.data.episode.content : data.data.volume.content;
         return element.chapters
@@ -122,8 +124,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaid: MangaID = JSON.parse(chapter.Parent.Identifier);
-        const data = await this.fetchPOST<APIResult<ApiPage>>(`${mangaid.id}/chapter/${chapter.Identifier}/product`, mangaid.lang);
+        const{ id, lang }: MangaID = JSON.parse(chapter.Parent.Identifier);
+        const data = await this.fetchPOST<APIResult<ApiPage>>(`${id}/chapter/${chapter.Identifier}/product`, lang);
         if (data.data.content.chapterFileFormat == 'epub') {
             throw Error('This chapter is an Epub :/');
         }
@@ -154,7 +156,7 @@ export default class extends DecoratableMangaScraper {
         return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
     }
 
-    async fetchPOST<T>(path: string, language = 'ja-JP'): Promise<T> {
+    async fetchPOST<T>(path: string, language: string): Promise<T> {
         const webkey = '9241d2f090d01716feac20ae08ba791a';
         const ip = '0.0.0.0';
         const tm = Math.round(new Date().getTime() / 1000);

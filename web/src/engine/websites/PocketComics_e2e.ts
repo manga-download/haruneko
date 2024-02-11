@@ -8,7 +8,7 @@ const config = {
     container: {
         url: 'https://www.pocketcomics.com/comic/10040',
         id: JSON.stringify({ id: '/comic/10040', lang: 'en-US' }),
-        title: 'The Devilishly Trash Duke'
+        title: 'The Devilishly Trash Duke [EN]'
     },
     child: {
         id: '1',
