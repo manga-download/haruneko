@@ -25,6 +25,7 @@
     import { selectedItemNext } from '../../stores/Stores';
     // others
     import { scrollSmoothly, scrollMagic, toggleFullScreen } from './utilities';
+    import { dragscroll } from '@svelte-put/dragscroll';
 
     export let item: MediaContainer<MediaItem>;
     export let currentImageIndex: number = -1;
@@ -36,7 +37,6 @@
 
     onDestroy(() => {
         document.removeEventListener('keydown', onKeyDown);
-        viewer?.removeEventListener('mousedown', onMouseDown);
         viewer?.removeEventListener('scroll', onScroll);
         zoomunsubscribe();
     });
@@ -157,40 +157,6 @@
     // Drag and drop scroll
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
-    function onMouseDown(e: MouseEvent) {
-        viewer.style.cursor = 'grabbing';
-        viewer.style.userSelect = 'none';
-        pos = {
-            // The current scroll
-            left: viewer.scrollLeft,
-            top: viewer.scrollTop,
-            // Get the current mouse position
-            x: e.clientX,
-            y: e.clientY,
-        };
-
-        viewer.addEventListener('mousemove', onMouseMove);
-        viewer.addEventListener('mouseup', onMouseUp);
-    }
-
-    const onMouseMove = function (e: MouseEvent) {
-        // How far the mouse has been moved
-        const dx = e.clientX - pos.x;
-        const dy = e.clientY - pos.y;
-
-        // Scroll the element
-        viewer.scrollTop = pos.top - dy;
-        viewer.scrollLeft = pos.left - dx;
-    };
-
-    const onMouseUp = function () {
-        viewer.removeEventListener('mousemove', onMouseMove);
-        viewer.removeEventListener('mouseup', onMouseUp);
-
-        viewer.style.cursor = 'grab';
-        viewer.style.removeProperty('user-select');
-    };
-
     // Dynamic css values
     $: cssvars = {
         'viewer-padding': `${$ViewerPadding}em`,
@@ -216,10 +182,8 @@
             }, 200);
         }
         document.addEventListener('keydown', onKeyDown);
-        viewer?.addEventListener('mousedown', onMouseDown);
     } else {
         document.removeEventListener('keydown', onKeyDown);
-        viewer?.removeEventListener('mousedown', onMouseDown);
         if (viewer) viewer.style.userSelect = 'none';
     }
 
@@ -240,6 +204,7 @@
         ? 'reverse'
         : ''}"
     style={cssVarStyles}
+    use:dragscroll={{ axis: 'both' }}
 >
     {#if wide}
         <ImageViewerWideSettings

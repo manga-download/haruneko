@@ -13,6 +13,7 @@
         "@fluentui/svg-icons": "^1.1.225",
         "@fluentui/web-components": "^2.5.16",
         "@microsoft/fast-element": "^1.12.0",
+        "@svelte-put/dragscroll": "^3.0.0",
         "@sveltejs/svelte-virtual-list": "^3.0.1",
         "@sveltejs/vite-plugin-svelte": "^3.0.1",
         "@tsconfig/svelte": "^5.0.2",
