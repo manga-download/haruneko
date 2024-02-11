@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import { Fetch } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
-type APIResult<T> = {
+export type APIResult<T> = {
     result: {
         code: number
     },
@@ -37,7 +37,7 @@ type ApiChapter = {
     name: string
 }
 
-type ApiChapters = {
+export type ApiChapters = {
     episode: {
         content: {
             chapters: ApiChapter[]
