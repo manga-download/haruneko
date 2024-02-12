@@ -117,7 +117,7 @@ export default class extends DecoratableMangaScraper {
         const { id, lang }: MangaID = JSON.parse(manga.Identifier);
         const data = await this.fetchPOST<APIResult<ApiChapters>>(id, lang);
         //episode or volume?
-        const element = data.data.episode.content != null ? data.data.episode.content : data.data.volume.content;
+        const element = data.data.episode?.content ?? data.data.volume.content;
         return element.chapters
             .filter(chapter => chapter.activity.rented || chapter.activity.unlocked || chapter.salesConfig.free)
             .map(chapter => new Chapter(this, manga, String(chapter.id), chapter.name));
