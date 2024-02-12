@@ -77,7 +77,7 @@ export default class extends DecoratableMangaScraper {
     protected api = 'https://api.comico.jp';
     protected mangaPaths = ['new_release', 'read_for_free'];
 
-    public constructor(id = 'Comico', label = `Comico(コミコ)`, url = 'https://www.comico.jp', tags = [Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official]) {
+    public constructor(id = 'comico', label = `Comico (コミコ)`, url = 'https://www.comico.jp', tags = [Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official]) {
         super(id, label, url, ...tags);
     }
     public override get Icon() {

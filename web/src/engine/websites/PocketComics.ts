@@ -9,12 +9,6 @@ import { Exception } from '../Error';
 
 @Common.ImageAjax()
 export default class extends Comico {
-
-    private readonly langageTitleMap = {
-        'en-US': '[EN]',
-        'fr-FR': '[FR]',
-        'zh-TW': '[CN]',
-    };
     public constructor() {
         super('pocketcomics', `Pocket-Comics (コミコ)`, 'https://www.pocketcomics.com', [Tags.Language.French, Tags.Language.English, Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Official]);
 
@@ -39,11 +33,11 @@ export default class extends Comico {
         const id = new URL(url).pathname;
         const data = await this.fetchPOST<APIResult<ApiChapters>>(id, this.Settings.language.Value as string);
         if (data.result.code == 404) throw new Exception(W.Plugin_MissingManga_LanguageMismatchError, id, this.Settings.language.Value as string);
-        const title = [ (data.data.volume?.content?.name ?? data.data.episode.content.name).trim(), this.langageTitleMap[this.Settings.language.Value as string]].join(' ');
+        const title = data.data.volume?.content?.name ?? data.data.episode.content.name;
         return new Manga(this, provider, JSON.stringify({ id: id, lang: this.Settings.language.Value as string }), title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return super.FetchMangasLanguages(provider, Object.keys(this.langageTitleMap));
+        return super.FetchMangasLanguages(provider, ['en-US', 'fr-FR', 'zh-TW']);
     }
 }
