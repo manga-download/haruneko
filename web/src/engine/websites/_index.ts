@@ -493,6 +493,7 @@ export { default as PijamaliKoi } from './PijamaliKoi';
 export { default as PinkSeaUnicorn } from './PinkSeaUnicorn';
 export { default as PixivComics } from './PixivComics';
 export { default as PlatinumScans } from './PlatinumScans';
+export { default as PocketComics } from './PocketComics';
 export { default as PojokManga } from './PojokManga';
 export { default as PornComix } from './PornComix';
 export { default as PornComixOnline } from './PornComixOnline';
