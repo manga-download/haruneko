@@ -25,7 +25,6 @@ export { default as ArgosScan } from './ArgosScan';
 export { default as ArthurScan } from './ArthurScan';
 export { default as Ascalon } from './Ascalon';
 export { default as AsmHentai } from './AsmHentai';
-export { default as AssortedScans } from './AssortedScans';
 export { default as AstralManga } from './AstralManga';
 export { default as AstraScans } from './AstraScans';
 export { default as AsuraScans } from './AsuraScans';

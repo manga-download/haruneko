@@ -1,7 +1,7 @@
 <script lang="ts">
     import { crossfade, fade } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
-    import { createEventDispatcher, onDestroy } from 'svelte';
+    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
     const dispatch = createEventDispatcher();
     // UI
     import { InlineNotification } from 'carbon-components-svelte';
@@ -25,14 +25,19 @@
     import { selectedItemNext } from '../../stores/Stores';
     // others
     import { scrollSmoothly, scrollMagic, toggleFullScreen } from './utilities';
+    import { dragscroll } from '@svelte-put/dragscroll';
 
     export let item: MediaContainer<MediaItem>;
     export let currentImageIndex: number = -1;
     export let wide: Boolean;
 
+    onMount(() => {
+        viewer.addEventListener('scroll', onScroll);
+    });
+
     onDestroy(() => {
         document.removeEventListener('keydown', onKeyDown);
-        viewer?.removeEventListener('mousedown', onMouseDown);
+        viewer?.removeEventListener('scroll', onScroll);
         zoomunsubscribe();
     });
 
@@ -132,7 +137,7 @@
 
     // Auto next item after reaching end of page
     let autoNextItem = false;
-    function onNextItemCallback() {
+    async function onNextItemCallback() {
         if (autoNextItem && selectedItemNext) dispatch('nextItem');
         else {
             autoNextItem = true;
@@ -142,42 +147,15 @@
         }
     }
 
-    // Drag and drop scroll
-    let pos = { top: 0, left: 0, x: 0, y: 0 };
-
-    function onMouseDown(e: MouseEvent) {
-        viewer.style.cursor = 'grabbing';
-        viewer.style.userSelect = 'none';
-        pos = {
-            // The current scroll
-            left: viewer.scrollLeft,
-            top: viewer.scrollTop,
-            // Get the current mouse position
-            x: e.clientX,
-            y: e.clientY,
-        };
-
-        viewer.addEventListener('mousemove', onMouseMove);
-        viewer.addEventListener('mouseup', onMouseUp);
+    async function onScroll() {
+        const scrollableHeight = viewer.scrollHeight - viewer.clientHeight;
+        if (viewer.scrollTop >= scrollableHeight) {
+            if (!autoNextItem) onNextItemCallback();
+        }
     }
 
-    const onMouseMove = function (e: MouseEvent) {
-        // How far the mouse has been moved
-        const dx = e.clientX - pos.x;
-        const dy = e.clientY - pos.y;
-
-        // Scroll the element
-        viewer.scrollTop = pos.top - dy;
-        viewer.scrollLeft = pos.left - dx;
-    };
-
-    const onMouseUp = function () {
-        viewer.removeEventListener('mousemove', onMouseMove);
-        viewer.removeEventListener('mouseup', onMouseUp);
-
-        viewer.style.cursor = 'grab';
-        viewer.style.removeProperty('user-select');
-    };
+    // Drag and drop scroll
+    let pos = { top: 0, left: 0, x: 0, y: 0 };
 
     // Dynamic css values
     $: cssvars = {
@@ -204,10 +182,8 @@
             }, 200);
         }
         document.addEventListener('keydown', onKeyDown);
-        viewer?.addEventListener('mousedown', onMouseDown);
     } else {
         document.removeEventListener('keydown', onKeyDown);
-        viewer?.removeEventListener('mousedown', onMouseDown);
         if (viewer) viewer.style.userSelect = 'none';
     }
 
@@ -228,6 +204,7 @@
         ? 'reverse'
         : ''}"
     style={cssVarStyles}
+    use:dragscroll={{ axis: 'both' }}
 >
     {#if wide}
         <ImageViewerWideSettings
@@ -265,19 +242,19 @@
             />
         </button>
     {/each}
-    {#if autoNextItem && $selectedItemNext !== undefined}
-        <div transition:fade>
-            <InlineNotification
-                kind="info"
-                title="Bottom reached"
-                subtitle="Click or Press space again to go to next item."
-                on:click={() => dispatch('nextitem')}
-                on:close={() => (autoNextItem = false)}
-                style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
-            />
-        </div>
-    {/if}
 </div>
+{#if autoNextItem && $selectedItemNext !== undefined}
+    <div transition:fade>
+        <InlineNotification
+            kind="info"
+            title="Bottom reached"
+            subtitle="Click or Press space again to go to next item."
+            on:click={() => dispatch('nextitem')}
+            on:close={() => (autoNextItem = false)}
+            style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
+        />
+    </div>
+{/if}
 
 <style>
     button {

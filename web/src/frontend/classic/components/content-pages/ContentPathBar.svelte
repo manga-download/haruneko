@@ -1,31 +1,30 @@
 <script>
     import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
-    import { Link, useLocation } from 'svelte-navigator';
-
-    const location = useLocation();
-    let path;
-    $: path = $location.pathname.replace('/index.html');
-    let steps;
-    $: steps = path.split('/').slice(1);
+    import { contentscreen } from '../../stores/Stores';
 </script>
 
 <div id="contentpathbar">
     <Breadcrumb noTrailingSlash>
-        <BreadcrumbItem isCurrentPage={path === '/'}>
-            <Link class="contentpath" to="/"><h5>Hakuneko</h5></Link>
+        <BreadcrumbItem
+            href="#"
+            isCurrentPage={$contentscreen === '/'}
+            on:click={() => ($contentscreen = '/')}
+        >
+            Hakuneko
         </BreadcrumbItem>
-        {#if path !== '/'}
+        {#if $contentscreen !== '/'}
+            {@const steps = $contentscreen.split('/').slice(1)}
             {#each steps as step, index}
-                <BreadcrumbItem isCurrentPage={index === steps.length - 1}>
-                    <Link
-                        class="contentpath"
-                        to={path
+                <BreadcrumbItem
+                    href="#"
+                    isCurrentPage={index === steps.length - 1}
+                    on:click={() =>
+                        ($contentscreen = $contentscreen
                             .split('/')
                             .slice(0, index + 2)
-                            .join('/')}
-                    >
-                        <h5>{step.charAt(0).toUpperCase() + step.slice(1)}</h5>
-                    </Link>
+                            .join('/'))}
+                >
+                    {step.charAt(0).toUpperCase() + step.slice(1)}
                 </BreadcrumbItem>
             {/each}
         {/if}
@@ -33,11 +32,16 @@
 </div>
 
 <style>
-    #contentpathbar :global(.contentpath) {
-        color: var(--cds-text-01);
+    #contentpathbar {
+        transform: translateY(50%);
     }
 
-    #contentpathbar :global(.bx--breadcrumb-item--current .contentpath) {
-        text-decoration-line: unset;
+    #contentpathbar :global(nav ol li a) {
+        font-weight: bold;
+        user-select: none;
+    }
+    #contentpathbar
+        :global(nav ol li a):not(.bx--breadcrumb-item--current):hover {
+        cursor: pointer;
     }
 </style>

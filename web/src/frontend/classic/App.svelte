@@ -8,7 +8,6 @@
     // Svelte
     import { fade } from 'svelte/transition';
     import { onMount } from 'svelte';
-    import { navigate } from 'svelte-navigator';
 
     // UI: Components
     import Theme from './components/Theme.svelte';
@@ -21,12 +20,12 @@
     import ContentPage from './components/content-pages/ContentRouter.svelte';
     // UI: Stores
     import { ContentPanel, Theme as ThemeSetting } from './stores/Settings';
-    import { selectedItem } from './stores/Stores';
+    import { selectedItem, contentscreen } from './stores/Stores';
 
     let resolveFinishLoading: () => void;
     export const FinishLoading = Promise.race([
-        new Promise(resolve => setTimeout(resolve, 7500)),
-        new Promise<void>(resolve => (resolveFinishLoading = resolve))
+        new Promise((resolve) => setTimeout(resolve, 7500)),
+        new Promise<void>((resolve) => (resolveFinishLoading = resolve)),
     ]);
 
     onMount(async () => {
@@ -44,7 +43,7 @@
     <AppBar
         on:home={() => {
             $selectedItem = null;
-            navigate('/');
+            $contentscreen = '/';
         }}
     />
     <Content
