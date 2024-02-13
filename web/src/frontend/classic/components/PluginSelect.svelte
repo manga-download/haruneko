@@ -5,6 +5,7 @@
         Tile,
         Modal,
         DataTable,
+        OutboundLink,
         Toolbar,
         ToolbarContent,
         ToolbarSearch,
@@ -22,7 +23,10 @@
     // UI: Components
     import Chip from '../lib/Tag.svelte';
     import { type Tag, Tags } from '../../../engine/Tags';
-    import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
+    import type {
+        MediaContainer,
+        MediaChild,
+    } from '../../../engine/providers/MediaPlugin';
     import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
     import { Locale } from '../stores/Settings';
@@ -34,6 +38,7 @@
         return {
             id: item.Identifier,
             name: item.Title,
+            website: new URL(item.URI),
             image: item.Icon,
             tags: item.Tags,
             overflow: item,
@@ -77,7 +82,7 @@
                 if (
                     pluginNameFilter !== '' &&
                     plugin.Title.toLowerCase().indexOf(
-                        pluginNameFilter.toLowerCase()
+                        pluginNameFilter.toLowerCase(),
                     ) === -1
                 )
                     rejectconditions.push(true);
@@ -88,7 +93,7 @@
                     });
                 }
                 return !rejectconditions.length;
-            }
+            },
         ).map((item) => createDataRow(item));
         pagination.totalItems = filteredPluginlist.length;
     }
@@ -161,6 +166,7 @@
             { key: 'favorite', empty: false },
             { key: 'image', empty: true },
             { key: 'name', value: 'Name' },
+            { key: 'website', value: 'Website' },
             { key: 'tags', value: 'Tags' },
             { key: 'overflow', empty: true },
         ]}
@@ -207,6 +213,10 @@
                         e.stopPropagation();
                     }}
                 />
+            {:else if cell.key === 'website'}
+                <OutboundLink href={cell.value}
+                    >{cell.value.hostname}
+                </OutboundLink>
             {:else if cell.key === 'image'}
                 <img src={cell.value} alt="Logo" height="24" />
             {:else if cell.key === 'tags'}
@@ -233,20 +243,11 @@
                         size="small"
                         kind="secondary"
                         tooltipPosition="left"
-                        icon={CertificateCheck}
-                        iconDescription="Test plugin"
-                        on:click={(e) => {
-                            e.stopPropagation();
-                        }}
-                    />
-                    <Button
-                        size="small"
-                        kind="secondary"
-                        tooltipPosition="left"
                         icon={ContentDeliveryNetwork}
                         iconDescription="Open website URL"
                         on:click={(e) => {
                             e.stopPropagation();
+                            window.open(cell.value.URI);
                         }}
                     />
                 </div>

@@ -6,7 +6,7 @@ const config = {
         title: 'Fay Scans'
     },
     container: {
-        url: 'https://fayscans.com.br/manga/i-trying-to-be-a-loyal-sword/',
+        url: 'https://fayscans.net/manga/i-trying-to-be-a-loyal-sword/',
         id: JSON.stringify({ post: '99', slug: '/manga/i-trying-to-be-a-loyal-sword/' }),
         title: 'I Tried To Be Your Loyal Sword'
     },

@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import { Fetch } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
-type APIResult<T> = {
+export type APIResult<T> = {
     result: {
         code: number
     },
@@ -15,8 +15,14 @@ type ApiMangas = {
     contents: {
         id: number,
         type: string,
-        name: string
-    }[]
+        name: string,
+    }[],
+    page: ApiPagination
+}
+
+type ApiPagination = {
+    currentPageNo: number,
+    hasNext: boolean
 }
 
 type ApiChapter = {
@@ -31,7 +37,7 @@ type ApiChapter = {
     name: string
 }
 
-type ApiChapters = {
+export type ApiChapters = {
     episode: {
         content: {
             chapters: ApiChapter[]
@@ -60,15 +66,20 @@ type ApiImage = {
     parameter: string
 }
 
+type MangaID = {
+    id: string,
+    lang: string
+}
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly api = 'https://api.comico.jp';
+    protected api = 'https://api.comico.jp';
+    protected mangaPaths = ['new_release', 'read_for_free'];
 
-    public constructor() {
-        super('comico', `Comico (コミコ)`, 'https://comico.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+    public constructor(id = 'comico', label = `Comico (コミコ)`, url = 'https://www.comico.jp', tags = [Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official]) {
+        super(id, label, url, ...tags);
     }
-
     public override get Icon() {
         return icon;
     }
@@ -79,36 +90,42 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname;
-        const data = await this.fetchPOST<APIResult<ApiChapters>>(id);
-        const title = data.data.volume.content != null ? data.data.volume.content.name : data.data.episode.content.name;
-        return new Manga(this, provider, id, title);
+        const data = await this.fetchPOST<APIResult<ApiChapters>>(id, 'ja-JP');
+        const title = data.data.volume?.content?.name ?? data.data.episode.content.name;
+        return new Manga(this, provider, JSON.stringify({ id: id, lang: 'ja-JP' }), title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
+        return this.FetchMangasLanguages(provider, ['ja-JP']);
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const data = await this.fetchPOST<APIResult<ApiMangas>>(`/all_comic/new_release?pageNo=${page}&pageSize=50`);
-        return data.result.code != 200 ? [] : data.data.contents.map(manga => new Manga(this, provider, `/${manga.type}/${manga.id}`, manga.name));
+    protected async FetchMangasLanguages(provider: MangaPlugin, languages: string[]): Promise<Manga[]> {
+        const mangaList: Manga[] = [];
+        for (const language of languages) {
+            for (const path of this.mangaPaths) {
+                for (let page = 0, run = true; run; page++) {
+                    const data = await this.fetchPOST<APIResult<ApiMangas>>(`/all_comic/${path}?pageNo=${page}`, language);
+                    const mangas = data.result.code != 200 ? [] : data.data.contents.map(manga => new Manga(this, provider, JSON.stringify({ id: `/${manga.type}/${manga.id}`, lang: language }), manga.name));
+                    mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+                }
+            }
+        }
+        return mangaList.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await this.fetchPOST<APIResult<ApiChapters>>(manga.Identifier);
+        const { id, lang }: MangaID = JSON.parse(manga.Identifier);
+        const data = await this.fetchPOST<APIResult<ApiChapters>>(id, lang);
         //episode or volume?
-        const element = data.data.episode.content != null ? data.data.episode.content : data.data.volume.content;
+        const element = data.data.episode?.content ?? data.data.volume.content;
         return element.chapters
             .filter(chapter => chapter.activity.rented || chapter.activity.unlocked || chapter.salesConfig.free)
             .map(chapter => new Chapter(this, manga, String(chapter.id), chapter.name));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await this.fetchPOST<APIResult<ApiPage>>(`${chapter.Parent.Identifier}/chapter/${chapter.Identifier}/product`);
+        const{ id, lang }: MangaID = JSON.parse(chapter.Parent.Identifier);
+        const data = await this.fetchPOST<APIResult<ApiPage>>(`${id}/chapter/${chapter.Identifier}/product`, lang);
         if (data.data.content.chapterFileFormat == 'epub') {
             throw Error('This chapter is an Epub :/');
         }
@@ -139,7 +156,7 @@ export default class extends DecoratableMangaScraper {
         return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
     }
 
-    async fetchPOST<T>(path: string): Promise<T> {
+    async fetchPOST<T>(path: string, language: string): Promise<T> {
         const webkey = '9241d2f090d01716feac20ae08ba791a';
         const ip = '0.0.0.0';
         const tm = Math.round(new Date().getTime() / 1000);
@@ -150,10 +167,10 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(uri.href, {
             method: 'GET',
             headers: {
-                'x-referer': this.URI.href,
-                'x-origin': this.URI.href,
+                'x-referer': this.URI.origin,
+                'x-origin': this.URI.origin,
                 'accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'ja-JP',
+                'Accept-Language': language,
                 'X-comico-client-os': 'other',
                 'X-comico-client-store': 'other',
                 'X-comico-request-time': String(tm),
