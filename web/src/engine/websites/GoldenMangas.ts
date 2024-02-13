@@ -18,12 +18,11 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/goldenmangas\.top\/[^/]+/, 'header.breadcrumbs div.container h1')
+@Common.MangaCSS(/^{origin}\/[^/]+/, 'header.breadcrumbs div.container h1')
 @Common.MangasMultiPageCSS('/mangas&pagina={page}', 'div.mangas a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('ul#capitulos li.row > a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('div#capitulos_images img.img-responsive')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

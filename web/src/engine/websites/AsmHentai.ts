@@ -21,12 +21,11 @@ const script = `
             });
         `;
 
-@Common.MangaCSS(/^https?:\/\/asmhentai\.com\/g\/[^/]+\/$/, 'div.book_page div.info h1')
+@Common.MangaCSS(/^{origin}\/g\/[^/]+\/$/, 'div.book_page div.info h1')
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
 @MangaStream.PagesSinglePageJS([], script)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

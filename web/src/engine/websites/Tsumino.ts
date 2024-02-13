@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Tsumino.webp';
 import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchRequest, FetchWindowScript } from '../FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIMangas = {
     pageNumber: number,
@@ -18,14 +18,13 @@ type APIMangaEntry = {
     }
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.tsumino\.com\/entry\/\d+$/, 'head meta[property="og:title"]')
+@Common.MangaCSS(/^{origin}\/entry\/\d+$/, 'head meta[property="og:title"]')
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tsumino', `Tsumino`, 'https://www.tsumino.com', Tags.Language.English, Tags.Source.Aggregator);
+        super('tsumino', `Tsumino`, 'https://www.tsumino.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
@@ -56,7 +55,7 @@ export default class extends DecoratableMangaScraper {
         });
 
         uri.search = params.toString();
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -78,7 +77,7 @@ export default class extends DecoratableMangaScraper {
                     resolve(link.href);
                 });
             `;
-        const referer = new FetchRequest(new URL(chapter.Identifier, this.URI).href);
+        const referer = new Request(new URL(chapter.Identifier, this.URI).href);
         const link = await FetchWindowScript<string>(referer, script);
         script = `
                 new Promise(async (resolve, reject) => {
@@ -106,7 +105,7 @@ export default class extends DecoratableMangaScraper {
                     }
                 });
             `;
-        const request = new FetchRequest(link);
+        const request = new Request(link);
         const pages = await FetchWindowScript<string[]>(request, script, 500);
         return pages.map(page => new Page(this, chapter, new URL(page), { Referer: referer.url }));
 

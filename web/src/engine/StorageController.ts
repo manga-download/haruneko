@@ -1,4 +1,3 @@
-import { type PlatformInfo, Runtime, CreateUnsupportedPlatformError, DetectPlatform } from './Platform';
 import { StorageControllerBrowser } from './StorageControllerBrowser';
 
 export const enum Store {
@@ -18,19 +17,8 @@ export interface StorageController {
     RemoveTemporary(...keys: string[]): Promise<void>;
 }
 
-export function CreateStorageController(info?: PlatformInfo): StorageController {
-
-    info = info ?? DetectPlatform();
-
-    if([ Runtime.Chrome, Runtime.Gecko, Runtime.WebKit ].includes(info.Runtime)) {
-        return new StorageControllerBrowser();
-    }
-
-    if(info.Runtime === Runtime.NodeWebkit) {
-        return new StorageControllerBrowser();
-    }
-
-    throw CreateUnsupportedPlatformError(info);
+export function CreateStorageController(): StorageController {
+    return new StorageControllerBrowser();
 }
 
 export function SanitizeFileName(name: string): string {
@@ -45,7 +33,20 @@ export function SanitizeFileName(name: string): string {
         '?': '？', // https://unicode-table.com/en/FF1F/, https://unicode-table.com/en/FE56/
         '*': '＊', // https://unicode-table.com/en/FF0A/
     };
-    return name.replace(/./g, c => c.charCodeAt(0) < 32 ? '' : lookup[c] ?? c).replace(/[\s.]+$/, '').trim() || 'untitled';
+
+    // eslint-disable-next-line no-control-regex
+    const patternControlCharsUTF8 = /[\u0000-\u001F\u007F-\u009F]/gu; //https://en.wikipedia.org/wiki/C0_and_C1_control_codes
+
+    if (patternControlCharsUTF8.test(name)) {
+        const sequenceCharsUTF8 = name.split('').map(c => c.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0'));
+        console.warn(`The filename '${name}' contains one or more invalid control characters which are going to be removed:`, sequenceCharsUTF8, '=>', name.match(patternControlCharsUTF8));
+    }
+
+    return name
+        .replace(patternControlCharsUTF8, '')
+        .replace(/./g, c => lookup[c] ?? c)
+        .replace(/[\s.]+$/, '')
+        .trim() || 'untitled';
 }
 
 /*

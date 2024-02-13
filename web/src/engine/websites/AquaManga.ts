@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/aquamanga\.com\/read\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Aqua manga"])')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="AquaManga"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('aquamanga', 'AquaManga', 'https://aquamanga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('aquamanga', 'AquaManga', 'https://aquamanga.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English);
     }
 
     public override get Icon() {

@@ -1,32 +1,36 @@
 <script lang="ts">
     import { onMount, onDestroy, createEventDispatcher, SvelteComponent } from 'svelte';
     import { fade } from 'svelte/transition';
-
     const dispatch = createEventDispatcher();
-    import {
-        Button,
-        ClickableTile,
-        //ContextMenu,
-        //ContextMenuDivider,
-        //ContextMenuOption,
-    } from 'carbon-components-svelte';
+
+    import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
         BookmarkFilled as IconBookmarkFilled,
         CarbonIcon,
+        CloudDownload,
+        Download,
+        Error,
+        FolderOpen,
+        Pause,
+        PauseFuture,
         View,
         ViewFilled,
-        CloudDownload,
+        VolumeFileStorage,
     } from 'carbon-icons-svelte';
 
     import { filterByCategory, Tags } from '../../../engine/Tags';
 
-    import type { StoreableMediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
+    import type {
+        StoreableMediaContainer,
+        MediaItem,
+    } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
-    import { selectedItem } from '../stores/Stores';
+    import { selectedItem, DownloadTasks } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
-
+    import { DownloadTask, Status } from '../../../engine/DownloadTask';
     export let item: StoreableMediaContainer<MediaItem>;
     export let selected: boolean;
+    export let hover: boolean;
     export let multilang = false;
     const flagiconmap: Record<FlagType, typeof CarbonIcon> = {
         [FlagType.None]: View,
@@ -37,7 +41,7 @@
 
     async function OnFlagChangedCallback(
         changedItem: StoreableMediaContainer<MediaItem>,
-        changedFlag: FlagType
+        changedFlag: FlagType,
     ) {
         if (changedItem === item) flagicon = flagiconmap[changedFlag];
         else if (changedFlag === FlagType.Current)
@@ -49,7 +53,23 @@
     });
     onDestroy(() => {
         HakuNeko.ItemflagManager.FlagChanged.Unsubscribe(OnFlagChangedCallback);
+        downloadTask?.StatusChanged.Unsubscribe(refreshDownloadStatus);
+        tasksunsubscribe();
     });
+
+    let downloadTask: DownloadTask;
+
+    let tasksunsubscribe = DownloadTasks.subscribe((tasks) => {
+        downloadTask?.StatusChanged.Unsubscribe(refreshDownloadStatus);
+        downloadTask = tasks.find(
+            (task) => task.Media.Identifier === item.Identifier,
+        );
+        downloadTask?.StatusChanged.Subscribe(refreshDownloadStatus);
+    });
+
+    async function refreshDownloadStatus(_sender, status) {
+        downloadTask = downloadTask;
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -58,9 +78,9 @@
     role="listitem"
     in:fade
     class:selected
+    class:hover
     class:active={$selectedItem?.Identifier === item?.Identifier}
     on:click
-    on:contextmenu
     on:mousedown
     on:mouseup
     on:mouseenter
@@ -69,12 +89,32 @@
     <Button
         size="small"
         kind="ghost"
-        icon={CloudDownload}
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="Download"
         on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
-    />
+    >
+        {#if downloadTask}
+            {@const status = downloadTask.Status}
+            {#if status === Status.Queued}
+                <PauseFuture fill="var(--cds-icon-secondary)" />
+            {:else if status === Status.Paused}
+                <Pause fill="var(--cds-toggle-off)" />
+            {:else if status === Status.Downloading}
+                <Download fill="var(--cds-support-info)" />
+            {:else if status === Status.Processing}
+                <VolumeFileStorage fill="var(--cds-support-info)" />
+            {:else if status === Status.Failed}
+                <Error fill="var(--cds-support-error-inverse)" />
+            {:else if status === Status.Completed}
+                <FolderOpen fill="var(--cds-support-03)" />
+            {:else}
+                <CloudDownload fill="var(--cds-icon-01)" />
+            {/if}
+        {:else}
+            <CloudDownload fill="var(--cds-icon-01)" />
+        {/if}
+    </Button>
     <Button
         size="small"
         kind="ghost"
@@ -82,15 +122,9 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="View"
-        on:click={() => dispatch('view', item)}
+        on:click={(event) => dispatch('view', event)}
     />
-    <ClickableTile
-        class="title"
-        on:click={(e) => {
-            e.preventDefault();
-            dispatch('view', item);
-        }}
-    >
+    <ClickableTile class="title" on:click={(event) => dispatch('view', event)}>
         {#if multilang}
             <span class="multilang">
                 {multilang
@@ -109,9 +143,14 @@
         display: flex;
         user-select: none;
     }
-    .listitem:hover {
+    .listitem:hover,
+    .listitem.hover {
         background-color: var(--cds-hover-row);
         --cds-ui-01: var(--cds-hover-row);
+    }
+    .listitem.hover {
+        background-color: var(--cds-active-secondary);
+        --cds-ui-01: var(--cds-active-secondary);
     }
     .listitem.selected {
         background-color: var(--cds-selected-ui);

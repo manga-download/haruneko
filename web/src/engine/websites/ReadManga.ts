@@ -11,12 +11,11 @@ const pagesScript = `
     });
 `;
 
-@Common.MangaCSS(/^https?:\/\/readmanga\.live/, 'h1.names span.name')
+@Common.MangaCSS(/^{origin}/, 'h1.names span.name')
 @Common.MangasMultiPageCSS('/list?offset={page}', 'div.tile div.desc h3 a', 0, 70, 0)
 @Common.ChaptersSinglePageCSS('tr.item-row a.chapter-link')
 @Common.PagesSinglePageJS(pagesScript, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

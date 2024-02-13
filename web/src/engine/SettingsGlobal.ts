@@ -61,9 +61,9 @@ export async function Initialize(settingsManager: SettingsManager): Promise<void
             R.Settings_Global_DescramblingFormat,
             R.Settings_Global_DescramblingFormatInfo,
             'image/png',
-            { key: 'image/png', label: R.Settings_Global_DescramblingFormat_PNG },
-            { key: 'image/jpeg', label: R.Settings_Global_DescramblingFormat_JPEG },
-            { key: 'image/webp', label: R.Settings_Global_DescramblingFormat_WEBP },
+            { key: 'image/png', label: R.Settings_Global_Format_PNG },
+            { key: 'image/jpeg', label: R.Settings_Global_Format_JPEG },
+            { key: 'image/webp', label: R.Settings_Global_Format_WEBP },
         ),
         new Numeric(
             Key.DescramblingQuality,

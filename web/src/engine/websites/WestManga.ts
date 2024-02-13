@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/westmanga\.info\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('westmanga', 'WestManga', 'https://westmanga.info', Tags.Media.Manga, Tags.Language.Indonesian);
+        super('westmanga', 'WestManga', 'https://westmanga.fun', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

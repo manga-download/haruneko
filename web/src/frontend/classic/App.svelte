@@ -4,40 +4,34 @@
     import './theme/hakuneko.css';
     import './theme/global.css';
     import './theme/sidenav-hack.css';
-    import {
-        Content,
-        Accordion,
-        AccordionItem,
-    } from 'carbon-components-svelte';
+    import { Content } from 'carbon-components-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
     import { onMount } from 'svelte';
-    import { navigate } from 'svelte-navigator';
 
     // UI: Components
     import Theme from './components/Theme.svelte';
     import MediaSelect from './components/MediaSelect.svelte';
     import MediaItemSelect from './components/MediaItemSelect.svelte';
-    import Jobs from './components/DownloadManager.svelte';
+    import DownloadsStatus from './components/DownloadManagerStatus.svelte';
     import Viewer from './components/viewer/Viewer.svelte';
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
     // UI: Stores
     import { ContentPanel, Theme as ThemeSetting } from './stores/Settings';
-    import { selectedItem } from './stores/Stores';
+    import { selectedItem, contentscreen } from './stores/Stores';
 
-    let resolveFinishLoading: (value: void | PromiseLike<void>) => void;
-    export const FinishLoading = new Promise<void>(
-        (resolve) => (resolveFinishLoading = resolve)
-    );
+    let resolveFinishLoading: () => void;
+    export const FinishLoading = Promise.race([
+        new Promise((resolve) => setTimeout(resolve, 7500)),
+        new Promise<void>((resolve) => (resolveFinishLoading = resolve)),
+    ]);
 
     onMount(async () => {
         // some delay for pre-rendering
         // Todo: find a way to detect if the UI is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(resolveFinishLoading, 2500);
-        });
+        setTimeout(resolveFinishLoading, 2500);
     });
 
     let showHome = true;
@@ -49,7 +43,7 @@
     <AppBar
         on:home={() => {
             $selectedItem = null;
-            navigate('/');
+            $contentscreen = '/';
         }}
     />
     <Content
@@ -67,12 +61,8 @@
                 {/if}
             </div>
         {/if}
-        <div id="Bottom" transition:fade>
-            <Accordion id="DownloadManager">
-                <AccordionItem title="DownloadManager">
-                    <Jobs />
-                </AccordionItem>
-            </Accordion>
+        <div id="Bottom">
+            <DownloadsStatus />
         </div>
     </Content>
 </Theme>
@@ -120,12 +110,6 @@
     }
     #Bottom {
         grid-area: Bottom;
-        max-height: 20em;
-    }
-    #Bottom :global(#DownloadManager .bx--accordion__content) {
-        padding-right: 0.5em;
-        background-color: var(--cds-field-01);
-        box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
     }
     :global(#Header) {
         -webkit-app-region: drag;

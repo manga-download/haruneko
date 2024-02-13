@@ -141,11 +141,11 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_WebsiteSubDirectoryInfo: "Tetapkan apakah HakuNeko akan menyimpan media secara langsung di direktori, atau menggunakan subdirektori per situs web",
   Settings_Global_DescramblingFormat: 'De-Scrambling Format',
   Settings_Global_DescramblingFormatInfo: "Pilih format gambar keluaran untuk situs web yang menghosting gambar puzzled (ini TIDAK akan berlaku untuk situs web yang sudah menyediakan gambar yang valid)",
-  Settings_Global_DescramblingFormat_PNG: 'PNG (*.png)',
-  Settings_Global_DescramblingFormat_JPEG: 'JPEG (*.jpg)',
-  Settings_Global_DescramblingFormat_WEBP: 'WEBP (*.webp)',
   Settings_Global_DescramblingQuality: "De-Scrambling Kualitas",
   Settings_Global_DescramblingQualityInfo: "Atur kualitas di mana gambar yang diacak akan disimpan (ini TIDAK akan berlaku untuk PNG)",
+  Settings_Global_Format_PNG: 'PNG (*.png)',
+  Settings_Global_Format_JPEG: 'JPEG (*.jpg)',
+  Settings_Global_Format_WEBP: 'WEBP (*.webp)',
   Settings_Global_UserAgent: 'User-Agent',
   Settings_Global_UserAgentInfo: 'The User-Agent that HakuNeko will be pretend to be for each website request (leave blank to use default)',
   Settings_Global_HCaptchaToken: "Token H-Captcha",
@@ -239,6 +239,10 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingDownloadsInfo: '...',
   Plugin_Settings_ThrottlingInteraction: 'Interaction Rate Limit [requests/minute]',
   Plugin_Settings_ThrottlingInteractionInfo: 'Limit the number of requests to this website to prevent being blocked or banned',
+  Plugin_Settings_UrlOverride: 'Url Override',
+  Plugin_Settings_UrlOverrideInfo: 'Use this URL as current domain for this website',
+  Plugin_Settings_ImageFormat: 'Preferred Image Format',
+  Plugin_Settings_ImageFormatInfo: 'Download pictures using this file format if possible',
   Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
   Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
@@ -247,6 +251,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_Username: "Nama Pengguna",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Nama Pengguna untuk login akun otomatis ke Sheep-Scanlations 😉",
   Plugin_SheepScanlations_Settings_Password: "Kata Sandi",
-  Plugin_SheepScanlations_Settings_PasswordInfo: "Kata sandi untuk login akun otomatis ke Sheep-Scanlations 😉"
+  Plugin_SheepScanlations_Settings_PasswordInfo: "Kata sandi untuk login akun otomatis ke Sheep-Scanlations 😉",
+  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
+  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN'
 };
 export default translations;

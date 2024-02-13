@@ -13,12 +13,11 @@ const search = new URLSearchParams({ 'q': '', 'type': '', 'status': ''});
 genres.forEach(genre => search.append('genre', genre));
 pathMangas += search.toString();
 
-@Common.MangaCSS(/^https?:\/\/mangapill\.com\/manga\//, 'div.container h1')
+@Common.MangaCSS(/^{origin}\/manga\//, 'div.container h1')
 @Common.MangasMultiPageCSS(pathMangas, 'div.container a.mb-2')
 @Common.ChaptersSinglePageCSS('div#chapters div a')
 @Common.PagesSinglePageCSS('img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

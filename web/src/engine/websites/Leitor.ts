@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import { FetchRequest, FetchCSS, FetchJSON, FetchWindowScript } from '../FetchProvider';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
         const paths = [ '/', '/manga/_/_/capitulo-' ];
         for(const path of paths) {
             const uri = new URL(path, this.URI);
-            const request = new FetchRequest(uri.href);
+            const request = new Request(uri.href);
             await FetchWindowScript(request, '');
         }
     }
@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
         const match = manga.Identifier.match(/\/(\d+)\/?$/);
         uri.searchParams.set('id_serie', match ? match[1] : '');
         uri.searchParams.set('page', String(page));
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         request.headers.set('X-Requested-With', 'XMLHttpRequest');
         const data = await FetchJSON<APIChapters>(request);
         return !data.chapters ? [] : data.chapters.reduce((accumulator: Chapter[], chapter: APIChapter) => {
@@ -86,7 +86,7 @@ export default class extends DecoratableMangaScraper {
 
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(chapter.Identifier, this.URI);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         // TODO: token extraction seems broken ...
         const data = await FetchCSS<HTMLScriptElement>(request, 'script[src*="token="]');
         const source = new URL(data[0].src);
@@ -99,7 +99,7 @@ export default class extends DecoratableMangaScraper {
     private async FetchImageLinks(release: string, token: string): Promise<URL[]> {
         const uri = new URL(`/leitor/pages/${release}.json`, this.URI);
         uri.searchParams.set('key', token);
-        const request = new FetchRequest(uri.href);
+        const request = new Request(uri.href);
         request.headers.set('X-Requested-With', 'XMLHttpRequest');
         const data = await FetchJSON<APIPages>(request);
         return data.images.map(image => new URL(image.legacy));

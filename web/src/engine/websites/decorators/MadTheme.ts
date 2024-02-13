@@ -1,4 +1,4 @@
-import { FetchRequest, FetchCSS } from '../../FetchProvider';
+import { FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, type Manga, Chapter, type Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
@@ -45,7 +45,7 @@ export function ChaptersSinglePageAJAX(query = queryChapterListLinks, extract = 
 export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const id = manga.Identifier.split('/').pop();
     const uri = new URL(`/api/manga/${id}/chapters?source=detail`, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const { id, title } = extract.call(this, element);

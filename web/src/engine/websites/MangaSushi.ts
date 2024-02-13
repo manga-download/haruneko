@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/mangasushi\.org\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -19,17 +19,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
-// Original Source
-/*
-class MangaSushi extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'mangasushi';
-        super.label = 'Mangasushi';
-        this.tags = [ 'manga', 'english' ];
-        this.url = 'https://mangasushi.net';
-    }
-}
-*/

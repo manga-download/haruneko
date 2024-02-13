@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/tonizutoon\.com\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tonizutoon', 'Tonizu Toon', 'https://tonizutoon.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
+        super('tonizutoon', 'Tonizu Toon', 'https://tonizu.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

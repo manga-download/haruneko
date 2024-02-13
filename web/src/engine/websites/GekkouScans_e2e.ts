@@ -6,18 +6,18 @@ const config = {
         title: 'Gekkou Scans'
     },
     container: {
-        url: 'https://gekkou.com.br/manga/31ce6cda-3241-11ee-be56-0242ac120002/',
-        id: JSON.stringify({ post: '329', slug: '/manga/31ce6cda-3241-11ee-be56-0242ac120002/' }),
-        title: 'Sousou no Frieren'
+        url: 'https://gekkou.site/manga/a29c1576-d191-479a-8206-f7df70e9a7c8/',
+        id: JSON.stringify({ post: '1897', slug: '/manga/a29c1576-d191-479a-8206-f7df70e9a7c8/' }),
+        title: 'ꜱᴏᴜꜱᴏᴜ ɴᴏ ꜰʀɪᴇʀᴇɴ'
     },
     child: {
-        id: '/manga/31ce6cda-3241-11ee-be56-0242ac120002/01/',
-        title: 'Capítulo 01'
+        id: '/manga/a29c1576-d191-479a-8206-f7df70e9a7c8/capitulo-118/',
+        title: 'Capítulo 118'
     },
     entry: {
-        index: 0,
-        size: 358_968,
-        type: 'image/jpeg'
+        index: 1,
+        size: 967_904,
+        type: 'image/webp'
     }
 };
 

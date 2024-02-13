@@ -1,4 +1,4 @@
-import { FetchRequest, FetchCSS } from '../../FetchProvider';
+import { FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, type Chapter, type Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 
@@ -41,7 +41,7 @@ function AnchorInfoExtractor(this: MangaScraper, element: HTMLAnchorElement) {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     const uri = new URL(url);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const element = (await FetchCSS<HTMLElement>(request, query)).shift();
     return new Manga(this, provider, uri.origin === this.URI.origin ? uri.pathname : uri.href, element.textContent.trim());
 }
@@ -49,7 +49,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
 /**
  * A class decorator that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
  * For same-site references the `pathname` of the given {@link url} will be used as identifier for the extracted manga, for cross-site references the `href` will be used.
- * @param pattern - An expression to check if a manga can be extracted from an url or not
+ * @param pattern - An expression to check if a manga can be extracted from an url or not, it may contain the placeholders `{origin}` and `{hostname}` which will be replaced with the corresponding parameters based on the website's base URL
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
@@ -57,7 +57,8 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
-                return pattern.test(url);
+                const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
+                return new RegExp(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query);

@@ -13,12 +13,11 @@ const scriptPages = `
     });
 `;
 
-@Common.MangaCSS(/^https?:\/\/desu\.me\/[^/]+\//, 'div.titleBar h1 span.name')
+@Common.MangaCSS(/^{origin}\/[^/]+\//, 'div.titleBar h1 span.name')
 @Common.MangasMultiPageCSS('/manga/?page={page}', 'h3 a.animeTitle.oTitle')
 @Common.ChaptersSinglePageCSS('div#animeView div.expandable ul.chlist li h4 a')
 @Common.PagesSinglePageJS(scriptPages, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

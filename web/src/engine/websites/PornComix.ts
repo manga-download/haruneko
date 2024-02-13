@@ -7,12 +7,11 @@ function PageLinkExtractor(anchor: HTMLAnchorElement) {
     return anchor.href;
 }
 
-@Common.MangaCSS(/^https?:\/\/bestporncomix\.com\/gallery/, 'div.entry-inner header h1')
+@Common.MangaCSS(/^{origin}\/gallery/, 'div.entry-inner header h1')
 @Common.MangasMultiPageCSS('/multporn-net/page/{page}/', 'div.entry-body header h3 a')
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('figure a', PageLinkExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

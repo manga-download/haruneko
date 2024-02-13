@@ -9,16 +9,15 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/webtoontr\.com\/_\//, 'div.tanitim li.list-group-item blockquote.h3')
+@Common.MangaCSS(/^{origin}\/_\/[^/]+/, 'div.tanitim li.list-group-item blockquote.h3')
 @Common.MangasSinglePageCSS('/webtoon-listesi', 'ul.list-inline li a')
 @Common.ChaptersSinglePageCSS('table.table tbody tr td a', ChapterExtractor)
 @Common.PagesSinglePageCSS('img.cImg')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('webtoontr', `WebtoonTR`, 'https://webtoontr.com', Tags.Language.Turkish, Tags.Media.Manga);
+        super('webtoontr', `WebtoonTR`, 'https://webtoontr.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

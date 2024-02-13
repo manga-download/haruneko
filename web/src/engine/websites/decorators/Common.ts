@@ -1,6 +1,6 @@
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception, InternalError } from '../../Error';
-import { FetchRequest, Fetch, FetchCSS, FetchWindowScript } from '../../FetchProvider';
+import { Fetch, FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { MediaChild, MediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
@@ -102,7 +102,7 @@ function GetParentReferer(item: MediaContainer<MediaChild>, base: URL): URL {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string, extract = DefaultLabelExtractor as LabelExtractor, includeSearch = false, includeHash = false): Promise<Manga> {
     const uri = new URL(url);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: uri.href
         }
@@ -118,7 +118,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * A class decorator that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
  * The `pathname` of the url will be used as identifier for the extracted manga.
  * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
- * @param pattern - An expression to check if a manga can be extracted from an url or not
+ * @param pattern - An expression to check if a manga can be extracted from an url or not, it may contain the placeholders `{origin}` and `{hostname}` which will be replaced with the corresponding parameters based on the website's base URL
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  * @param includeSearch - append Uri.search to the manga identifier
  * @param includeHash - append Uri.hash to the manga identifier
@@ -128,7 +128,8 @@ export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelE
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
-                return pattern.test(url);
+                const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
+                return new RegExp(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query, extract, includeSearch, includeHash);
@@ -187,7 +188,7 @@ export function MangasNotSupported() {
  */
 export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const uri = new URL(path, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: this.URI.href
         }
@@ -196,7 +197,7 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
     return data.map(element => {
         const { id, title } = extract.call(this, element);
         return new Manga(this, provider, id, title);
-    });
+    }).distinct();
 }
 
 /**
@@ -229,7 +230,7 @@ export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: 
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
 export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, step = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
-    const mangaList = [];
+    const mangaList: Manga[] = [];
     let reducer = Promise.resolve();
     for (let page = start, run = true; run; page += step) {
         await reducer;
@@ -239,7 +240,7 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
         mangas.length > 0 && !EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
     }
-    return mangaList;
+    return mangaList.distinct();
 }
 
 /**
@@ -277,7 +278,7 @@ export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: s
  */
 export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: this.URI.href
         }
@@ -286,7 +287,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
     return data.map(element => {
         const { id, title } = extract.call(this, element);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
-    });
+    }).distinct();
 }
 
 /**
@@ -316,15 +317,17 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, extr
  */
 export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga, script: string, delay = 0): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: this.URI.href
         }
     });
     const data = await FetchWindowScript<{ id: string, title: string }[]>(request, script, delay);
-    return data.map(entry => {
+    // NOTE: The Array prototype of `data` comes from a different window context and therefore is missing prototype extensions made for Array in this window context
+    //       => Spread `data` into a new Array
+    return [ ...data ].map(entry => {
         return new Chapter(this, manga, entry.id, entry.title.replace(manga.Title, '').trim() || manga.Title);
-    });
+    }).distinct();
 }
 
 /**
@@ -353,7 +356,7 @@ export function ChaptersUniqueFromManga() {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return [new Chapter(this, manga, manga.Identifier, manga.Title)];
+                return [ new Chapter(this, manga, manga.Identifier, manga.Title) ];
             }
         };
     };
@@ -373,7 +376,7 @@ export function ChaptersUniqueFromManga() {
  */
 export async function FetchPagesSinglePageCSS<E extends HTMLElement>(this: MangaScraper, chapter: Chapter, query: string, extract = DefaultPageLinkExtractor as PageLinkExtractor<E>): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: GetParentReferer(chapter, this.URI).href
         }
@@ -412,7 +415,7 @@ export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract
  */
 export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay = 0): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         headers: {
             Referer: GetParentReferer(chapter, this.URI).href
         }
@@ -454,7 +457,7 @@ export function PagesSinglePageJS(script: string, delay = 0) {
 export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const imageLink = deProxifyLink ? DeProxify(page.Link) : page.Link;
-        const request = new FetchRequest(imageLink.href, {
+        const request = new Request(imageLink.href, {
             signal: signal,
             headers: {
                 Referer: page.Parameters?.Referer ?? imageLink.origin,
@@ -494,7 +497,7 @@ export function ImageAjax(detectMimeType = false, deProxifyLink = false) {
 export async function FetchImageElement(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, includeRefererHeader = true, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const imageLink = deProxifyLink ? DeProxify(page.Link) : page.Link;
-        const request = new FetchRequest(imageLink.href, {
+        const request = new Request(imageLink.href, {
             signal: signal,
             headers: {
                 'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
@@ -540,7 +543,7 @@ export function ImageElement(includeRefererHeader = true, detectMimeType = false
  */
 export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, queryImage: string, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     const image = await this.imageTaskPool.Add(async () => {
-        const request = new FetchRequest(page.Link.href, {
+        const request = new Request(page.Link.href, {
             signal: signal,
             headers: {
                 Referer: page.Link.origin,

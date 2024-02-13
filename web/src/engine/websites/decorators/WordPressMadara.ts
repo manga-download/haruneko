@@ -2,7 +2,7 @@
 
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
-import { FetchRequest, FetchCSS, FetchHTML } from '../../FetchProvider';
+import { FetchCSS, FetchHTML } from '../../platform/FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 import * as Common from './Common';
@@ -61,7 +61,7 @@ async function delay(milliseconds: number) {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     const uri = new URL(url);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const data = await FetchHTML(request);
     const post = data.querySelector<HTMLElement>('div#manga-chapters-holder')?.dataset?.id
         || data.querySelector<HTMLInputElement>('input.rating-post-id')?.value
@@ -76,7 +76,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * A class decorator factory that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
  * The `pathname` of the given {@link url} and the detected `postID` will be used as identifier for the extracted manga.
  * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
- * @param pattern - An expression to check if a manga can be extracted from an url or not
+ * @param pattern - An expression to check if a manga can be extracted from an url or not, it may contain the placeholders `{origin}` and `{hostname}` which will be replaced with the corresponding parameters based on the website's base URL
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
@@ -84,7 +84,8 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
-                return pattern.test(url);
+                const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
+                return new RegExp(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query);
@@ -157,7 +158,7 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
     for (let page = 0, run = true; run; page++) {
         form.set('page', `${page}`);
         const uri = new URL(path + '/wp-admin/admin-ajax.php', this.URI);
-        const request = new FetchRequest(uri.href, {
+        const request = new Request(uri.href, {
             method: 'POST',
             body: form.toString(),
             headers: {
@@ -199,7 +200,7 @@ export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, p
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
-async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: FetchRequest, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
+async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Request, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const { id, title } = extract.call(this, element);
@@ -218,7 +219,7 @@ async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Fetch
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const { slug } = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL(slug, this.URI);
-    const request = new FetchRequest(uri.href);
+    const request = new Request(uri.href);
     const chapters = await FetchChaptersCSS.call(this, manga, request, query, extract);
     if(!chapters.length) {
         throw new Exception(R.Plugin_Common_Chapter_InvalidError);
@@ -255,7 +256,7 @@ export function ChaptersSinglePageCSS(query = queryChapterListLinks, extract = D
 export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: Manga, query = queryChapterListLinks, path = pathname, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const id = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL(path + '/wp-admin/admin-ajax.php', this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         method: 'POST',
         body: new URLSearchParams({
             'action': 'manga_get_chapters',
@@ -296,7 +297,7 @@ export function ChaptersSinglePageAJAXv1(query = queryChapterListLinks, path = p
 export async function FetchChaptersSinglePageAJAXv2(this: MangaScraper, manga: Manga, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const id = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL((id.slug + '/ajax/chapters/').replace(/\/+/g, '/'), this.URI);
-    const request = new FetchRequest(uri.href, {
+    const request = new Request(uri.href, {
         method: 'POST',
         headers: {
             'Referer': this.URI.href
@@ -340,12 +341,12 @@ function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement): stri
  */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query = queryPageListLinks): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
-    let request = new FetchRequest(uri.href);
+    let request = new Request(uri.href);
     const [ body ] = await FetchCSS<HTMLBodyElement>(request, 'body');
     let data: HTMLImageElement[] = [];
     if(body.querySelector(queryPageListSelector)) {
         uri.searchParams.set('style', 'list');
-        request = new FetchRequest(uri.href);
+        request = new Request(uri.href);
         data = await FetchCSS<HTMLImageElement>(request, query);
     } else {
         data = [...body.querySelectorAll<HTMLImageElement>(query)];

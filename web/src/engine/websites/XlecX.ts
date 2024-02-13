@@ -8,12 +8,11 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id: anchor.pathname, title: titleElement.textContent.trim() };
 }
 
-@Common.MangaCSS(/^https?:\/\/xlecx\.one\/\d+-[\S]+\.html/, 'main div.sect__content div#dle-content article.page div.page__col-left h1')
+@Common.MangaCSS(/^{origin}\/\d+-[\S]+\.html/, 'main div.sect__content div#dle-content article.page div.page__col-left h1')
 @Common.MangasMultiPageCSS('/page/{page}/', 'main section.sect div#dle-content > a.thumb', 1, 1, 0, MangaExtractor)
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('article.page a img, div.tabs ul.xfieldimagegallery.manyfotos li img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

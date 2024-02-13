@@ -257,11 +257,11 @@ export enum EngineResourceKey {
     Settings_Global_WebsiteSubDirectoryInfo = 'Settings_Global_WebsiteSubDirectoryInfo',
     Settings_Global_DescramblingFormat = 'Settings_Global_DescramblingFormat',
     Settings_Global_DescramblingFormatInfo = 'Settings_Global_DescramblingFormatInfo',
-    Settings_Global_DescramblingFormat_PNG = 'Settings_Global_DescramblingFormat_PNG',
-    Settings_Global_DescramblingFormat_JPEG = 'Settings_Global_DescramblingFormat_JPEG',
-    Settings_Global_DescramblingFormat_WEBP = 'Settings_Global_DescramblingFormat_WEBP',
     Settings_Global_DescramblingQuality = 'Settings_Global_DescramblingQuality',
     Settings_Global_DescramblingQualityInfo = 'Settings_Global_DescramblingQualityInfo',
+    Settings_Global_Format_PNG = 'Settings_Global_Format_PNG',
+    Settings_Global_Format_JPEG = 'Settings_Global_Format_JPEG',
+    Settings_Global_Format_WEBP = 'Settings_Global_Format_WEBP',
     Settings_Global_UserAgent = 'Settings_Global_UserAgent',
     Settings_Global_UserAgentInfo = 'Settings_Global_UserAgentInfo',
     Settings_Global_HCaptchaToken = 'Settings_Global_HCaptchaToken',
@@ -306,11 +306,18 @@ export enum WebsiteResourceKey {
     Plugin_Settings_ThrottlingDownloadsInfo = 'Plugin_Settings_ThrottlingDownloadsInfo',
     Plugin_Settings_ThrottlingInteraction = 'Plugin_Settings_ThrottlingInteraction',
     Plugin_Settings_ThrottlingInteractionInfo = 'Plugin_Settings_ThrottlingInteractionInfo',
+    Plugin_Settings_UrlOverride = 'Plugin_Settings_UrlOverride',
+    Plugin_Settings_UrlOverrideInfo = 'Plugin_Settings_UrlOverrideInfo',
+    Plugin_Settings_ImageFormat = 'Plugin_Settings_ImageFormat',
+    Plugin_Settings_ImageFormatInfo = 'Plugin_Settings_ImageFormatInfo',
     Plugin_Common_MangaIndex_NotSupported = 'Plugin_Common_MangaIndex_NotSupported',
     Plugin_Common_Chapter_InvalidError = 'Plugin_Common_Chapter_InvalidError',
     Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',
+    Plugin_Common_Preferred_Language = 'Plugin_Common_Preferred_Language',
+    Plugin_Common_Preferred_LanguageInfo = 'Plugin_Common_Preferred_LanguageInfo',
     Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
     Plugin_MissingWebsiteEntry_UpdateError = 'Plugin_MissingWebsiteEntry_UpdateError',
+    Plugin_MissingManga_LanguageMismatchError = 'Plugin_MissingManga_LanguageMismatchError',
 }
 
 // [SECTION]: Website SheepScanlations
@@ -319,6 +326,9 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
+    Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
+    Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
+
 }
 
 export const VariantResourceKey = {

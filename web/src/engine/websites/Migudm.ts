@@ -8,12 +8,11 @@ const script = `
     const images = [...document.querySelectorAll('${queryPages}')];
     images.map(image => image.dataset['src'] || image.dataset['data-src'] || image.src);
 `;
-@Common.MangaCSS(/^https?:\/\/www\.migudm\.cn\/comic\//, 'div.inner h1.title', Common.ElementLabelExtractor('span'))
+@Common.MangaCSS(/^{origin}\/comic\//, 'div.inner h1.title', Common.ElementLabelExtractor('span'))
 @Common.MangasMultiPageCSS('/comic/list_p{page}/', 'div.classificationList ul li div.clItemRight h4.title a')
 @Common.ChaptersSinglePageCSS('div.comic div#negCtSectionListBd div.titleList a.item', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageJS(script, 1000)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

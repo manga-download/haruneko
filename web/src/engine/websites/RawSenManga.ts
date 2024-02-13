@@ -2,9 +2,9 @@ import { Tags } from '../Tags';
 import icon from './RawSenManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRequest, FetchWindowScript } from './../FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^https?:\/\/raw\.senmanga\.com/, 'div.desc h1.series')
+@Common.MangaCSS(/^{origin}/, 'div.desc h1.series')
 @Common.MangasMultiPageCSS('/directory?page={page}', 'div.item-info div.series-title a')
 @Common.ChaptersSinglePageCSS('ul.chapter-list li > a')
 @Common.PagesSinglePageCSS('div.reader img.picture')
@@ -16,7 +16,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new FetchRequest(this.URI.href);
+        const request = new Request(this.URI.href);
         return FetchWindowScript(request, `window.cookieStore.set('viewer', '1')`);
     }
 

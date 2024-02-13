@@ -8,6 +8,7 @@
         selectedPlugin,
         selectedMedia,
         selectedItem,
+        contentscreen,
     } from '../stores/Stores';
 
     import type { Bookmark } from '../../../engine/providers/Bookmark';
@@ -17,10 +18,11 @@
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Check } from '../../../engine/SettingsManager';
 
-    import { useNavigate } from 'svelte-navigator';
     import { FlagType } from '../../../engine/ItemflagManager';
-    import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
-    const navigate = useNavigate();
+    import type {
+        MediaContainer,
+        MediaItem,
+    } from '../../../engine/providers/MediaPlugin';
 
     const settings = HakuNeko.SettingsManager.OpenScope();
     let checkNewContent = settings.Get<Check>(GlobalKey.CheckNewContent).Value;
@@ -49,24 +51,29 @@
     // on bookmark change
     EventWatcher(
         HakuNeko.BookmarkPlugin.Entries,
-        HakuNeko.BookmarkPlugin.EntriesUpdated
+        HakuNeko.BookmarkPlugin.EntriesUpdated,
     ).subscribe(() => refreshSuggestions());
     // on marks change
     EventWatcher(null, HakuNeko.ItemflagManager.MediaFlagsChanged).subscribe(
-        () => refreshSuggestions()
+        () => refreshSuggestions(),
     );
 
     async function selectBookmark(bookmark: MediaContainer<MediaContainer<MediaItem>>) {
         let unFlaggedContent = await HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None);
         $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
-        $selectedItem = unFlaggedContent[unFlaggedContent.length - 1] as MediaContainer<MediaItem>;
+        $selectedItem = unFlaggedContent[
+            unFlaggedContent.length - 1
+        ] as MediaContainer<MediaItem>;
     }
 </script>
 
 {#if checkNewContent}
     <Tile id="Suggestions" class="border">
-        <ClickableTile id="Continue" on:click={() => navigate('/bookmarks')}>
+        <ClickableTile
+            id="Continue"
+            on:click={() => ($contentscreen = '/bookmarks')}
+        >
             <h4 style="text-align:center;">
                 Continue
                 <BookmarkAdd size={24} />
@@ -106,11 +113,9 @@
     :global(#Suggestions) {
         display: grid;
         grid-template-columns: repeat(auto-fit, 10em);
-        grid-template-rows: auto auto auto; /* 2 rows */
-        grid-auto-rows: 0; /* next rows equal to 0 */
         grid-gap: 0.5em;
         overflow-y: hidden;
-        max-height: 20em;
+        max-height: 18em;
     }
 
     :global(#Suggestions .suggesttile) {

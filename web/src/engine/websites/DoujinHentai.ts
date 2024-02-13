@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../pr
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https?:\/\/doujinhentai\.net\/manga-hentai\/[^/]+$/, 'div.post-content meta[itemprop="itemreviewed"]')
+@Madara.MangaCSS(/^{origin}\/manga-hentai\/[^/]+$/, 'div.post-content meta[itemprop="itemreviewed"]')
 @Madara.PagesSinglePageCSS('div#all img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

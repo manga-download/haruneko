@@ -4,12 +4,11 @@ import { DecoratableMangaScraper } from './../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Guya from './decorators/Guya';
 
-@Guya.MangaAJAX(/^https?:\/\/mahoushoujobu\.com\/read\/manga\//)
+@Guya.MangaAJAX(/^{origin}\/read\/manga\//)
 @Guya.MangasSinglePageAJAX()
 @Guya.ChaptersSinglePageAJAX()
 @Guya.PagesSinglePageAJAX()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

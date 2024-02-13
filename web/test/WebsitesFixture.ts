@@ -1,11 +1,13 @@
 import type { JSHandle, Page } from 'puppeteer-core';
 import type { MediaContainer, MediaChild, MediaItem } from '../src/engine/providers/MediaPlugin';
+import type { IValue } from '../src/engine/SettingsManager';
 
 export type Config = {
     plugin: {
         id: string;
         title: string;
         timeout?: number;
+        settings?: Record<string, IValue>;
     };
     container?: {
         url: string;
@@ -38,12 +40,15 @@ export class TestFixture<TWebsitePlugin extends MediaContainer<MediaChild>, TCon
         this.config = config;
     }
 
-    private async GetRemotePlugin(pluginID: string): Promise<JSHandle<TWebsitePlugin>> {
-        return this.page.evaluateHandle(async (id: string) => {
+    private async GetRemotePlugin(pluginID: string, settings?: Record<string, IValue>): Promise<JSHandle<TWebsitePlugin>> {
+        return this.page.evaluateHandle(async (id: string, setup: Record<string, IValue>) => {
             const plugin = window.HakuNeko.PluginController.WebsitePlugins.find(website => website.Identifier === id);
+            for (const key in setup) {
+                plugin.Settings.Get(key).Value = setup[key];
+            }
             await (plugin as MediaPuginInstance)?.Initialize();
             return plugin as TWebsitePlugin;
-        }, pluginID);
+        }, pluginID, settings ?? {});
     }
 
     private async GetRemoteContainer(remotePlugin: JSHandle<TWebsitePlugin>, containerURL: string): Promise<JSHandle<TContainer>> {
@@ -88,7 +93,7 @@ export class TestFixture<TWebsitePlugin extends MediaContainer<MediaChild>, TCon
         let remotePlugin: JSHandle<TWebsitePlugin>;
 
         (this.config.plugin ? it : it.skip)('Should get initialized website plugin', async () => {
-            remotePlugin = await this.GetRemotePlugin(this.config.plugin.id);
+            remotePlugin = await this.GetRemotePlugin(this.config.plugin.id, this.config.plugin.settings);
             expect(await remotePlugin.evaluate(plugin => plugin?.Identifier || 'Website plugin not found!')).toEqual(this.config.plugin.id);
             expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual(this.config.plugin.title);
         }, this.config.plugin.timeout ?? 25_000);

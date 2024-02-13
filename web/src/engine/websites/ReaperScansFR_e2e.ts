@@ -5,9 +5,10 @@ const config: Config = {
         id: 'reaperscansfr',
         title: 'Reaper Scans (French)'
     },
+    /* CloudFlare
     container: {
         url: 'https://reaperscans.fr/serie/perfect-surgeon/',
-        id: '{"post":"212","slug":"/serie/perfect-surgeon/"}',
+        id: JSON.stringify({ post: '212', slug: '/serie/perfect-surgeon/' }),
         title: 'Perfect Surgeon'
     },
     child: {
@@ -16,9 +17,10 @@ const config: Config = {
     },
     entry: {
         index: 2,
-        size: 1_809_163,
+        size: 1_809_155,
         type: 'image/jpeg'
     }
+    */
 };
 
 const fixture = new TestFixture(config);

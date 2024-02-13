@@ -10,7 +10,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.readmng\.com\/[^/]+$/, 'div.titleArea > h1')
+@Common.MangaCSS(/^{origin}\/[^/]+$/, 'div.titleArea > h1')
 @Common.MangasMultiPageCSS('/manga-list/{page}?', '.mangaSliderCard a', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div#chapters-tabContent div.checkBoxCard a.chnumber', Common.AnchorInfoExtractor(false, 'i'))
 @MangaStream.PagesSinglePageJS()
@@ -18,7 +18,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('readmng', 'ReadMangaToday', 'https://www.readmng.com', Tags.Media.Manga, Tags.Language.English);
+        super('readmng', 'ReadMangaToday', 'https://www.readmng.com', Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

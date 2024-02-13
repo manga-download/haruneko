@@ -13,16 +13,15 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangaCSS(/^https?:\/\/www\.mangaworld\.so\/manga\//, 'div.info h1.name.bigger')
+@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+\/$/, 'div.info h1.name.bigger')
 @Common.MangasMultiPageCSS('/archive?page={page}', 'div.comics-grid div.content a.manga-title')
 @Common.ChaptersSinglePageCSS('div.chapters-wrapper div.chapter a.chap', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('div#reader div#page img.page-image')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaworld', `Manga World`, 'https://www.mangaworld.so', Tags.Language.Italian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangaworld', `Manga World`, 'https://www.mangaworld.ac', Tags.Language.Italian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
