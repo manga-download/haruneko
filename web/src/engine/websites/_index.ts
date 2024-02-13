@@ -256,6 +256,7 @@ export { default as LittleGarden } from './LittleGarden';
 export { default as LSHiver } from './LSHiver';
 export { default as LuminousScans } from './LuminousScans';
 export { default as LunarScans } from './LunarScans';
+export { default as LunarScansFR } from './LunarScansFR';
 export { default as LupiTeam } from './LupiTeam';
 export { default as LuraToon } from './LuraToon';
 export { default as Luscious } from './Luscious';
