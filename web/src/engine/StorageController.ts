@@ -46,6 +46,7 @@ export function SanitizeFileName(name: string): string {
         .replace(patternControlCharsUTF8, '')
         .replace(/./g, c => lookup[c] ?? c)
         .replace(/[\s.]+$/, '')
+        .replace(/~$/, '')//While Windows allows it, it seems NodeJS somehow dont like paths with hyphen at the end
         .trim() || 'untitled';
 }
 
