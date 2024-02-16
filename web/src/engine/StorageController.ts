@@ -32,6 +32,7 @@ export function SanitizeFileName(name: string): string {
         '|': '｜', // https://unicode-table.com/en/FF5C/
         '?': '？', // https://unicode-table.com/en/FF1F/, https://unicode-table.com/en/FE56/
         '*': '＊', // https://unicode-table.com/en/FF0A/
+        '~': '～', //https://unicode-explorer.com/c/FF5E //File System API cannot handle trailing hyphens
     };
 
     // eslint-disable-next-line no-control-regex
