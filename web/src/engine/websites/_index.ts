@@ -20,6 +20,7 @@ export { default as AquaManga } from './AquaManga';
 export { default as ArabToons } from './ArabToons';
 export { default as ArcaneScans } from './ArcaneScans';
 export { default as ArcRelight } from './ArcRelight';
+export { default as ArcuraFansub } from './ArcuraFansub';
 export { default as AresManga } from './AresManga';
 export { default as ArgosScan } from './ArgosScan';
 export { default as ArthurScan } from './ArthurScan';
