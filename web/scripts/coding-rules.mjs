@@ -1,7 +1,13 @@
 import { exec } from 'node:child_process';
 
+async function run(command) {
+    return new Promise((resolve, reject) => exec(command, (error, stdout, _stderr) => error ? reject(error) : resolve(stdout)));
+}
+
 await (async function check() {
-    const restrictedSourceFilesWithChanges = (await new Promise((resolve, reject) => exec(`git diff --name-only origin/master`, (error, stdout, _stderr) => error ? reject(error) : resolve(stdout?.split('\n')))))
+    await run(`git fetch origin master:master-local`);
+    const stdout = await run(`git diff --name-only master-local`);
+    const restrictedSourceFilesWithChanges = (stdout.split('\n') ?? [])
         .filter(line => /locales\/[a-z]{2,3}_[A-Z]{2,3}\.ts/.test(line))
         .filter(line => !line.includes('en_US.ts'))
         .map(line => `- ${line}`);
