@@ -37,7 +37,7 @@ type APIPage = {
 export function MangaExtractor(element: HTMLAnchorElement) {
     const titleElement = element.querySelector<HTMLElement>(queryMangaTitle);
     return {
-        id: element.pathname,
+        id: element.pathname.endsWith('/') ? element.pathname : `${element.pathname}/`,
         title: titleElement ? titleElement.textContent.trim() : element.text.trim()
     };
 }
@@ -63,7 +63,7 @@ export function ChapterExtractor(element: HTMLAnchorElement) {
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapter, extract = ChapterExtractor): Promise<Chapter[]> {
-    const uri = new URL(manga.Identifier+ '/list', this.URI);
+    const uri = new URL(manga.Identifier+ 'list', this.URI);//we enforced a trailing /
     const request = new Request(uri.href, {
         headers: {
             Referer: this.URI.href
