@@ -2,8 +2,8 @@
 
 const config = {
     plugin: {
-        id: 'comicwalker',
-        title: 'コミックウォーカー (ComicWalker)'
+        id: 'kadocomi',
+        title: 'カドコミ (KadoComi)'
     },
     container: {
         url: 'https://comic-walker.com/detail/KC_001050_S',

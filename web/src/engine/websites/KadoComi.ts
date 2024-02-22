@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './ComicWalker.webp';
+import icon from './KadoComi.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURL = 'https://comic-walker.com/api/';
 
     public constructor() {
-        super('comicwalker', `コミックウォーカー (ComicWalker)`, 'https://comic-walker.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('kadocomi', `カドコミ (KadoComi)`, 'https://comic-walker.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
