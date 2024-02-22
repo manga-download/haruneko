@@ -2,41 +2,56 @@ import { Tags } from '../Tags';
 import icon from './ComicWalker.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchHTML, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
-type TEndpoints = {
-    nc: string,
-    cw: string
-}
-
-type APIPages = {
-    data: {
+type APIManga = {
+    work: {
+        code: string,
+        title: string,
+    },
+    firstEpisodes: {
+        result: APIChapter[]
+    },
+    latestEpisodes: {
+        result: APIChapter[]
+    },
+    comics: {
         result: {
-            meta: {
-                source_url: string,
-                drm_hash: string
-            }
+            episodes: APIChapter[]
         }[]
     }
 }
 
-const langMap = {
-    en: Tags.Language.English,
-    tw: Tags.Language.Chinese,
-    jp: Tags.Language.Japanese
-};
-
-type MangaID = {
+type APIChapter = {
     id: string,
-    langCode: string
+    title: string,
+    subtitle: string
+}
 
+type APIMangas = {
+    initial: string,
+    items: {
+        code: string,
+        title: string
+    }[]
+}[]
+
+type APIPages = {
+    manuscripts: APIPage[]
+}
+
+type APIPage = {
+    drmMode: string,
+    drmHash: string,
+    drmImageUrl: string
 }
 
 export default class extends DecoratableMangaScraper {
+    private readonly apiURL = 'https://comic-walker.com/api/';
 
     public constructor() {
-        super('comicwalker', `コミックウォーカー (ComicWalker)`, 'https://comic-walker.com', Tags.Language.Japanese, Tags.Language.Chinese, Tags.Language.English, Tags.Source.Official, Tags.Media.Manga);
+        super('comicwalker', `コミックウォーカー (ComicWalker)`, 'https://comic-walker.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
@@ -44,81 +59,72 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/contents/detail/[^/]+/$`).test(url);
+        return new RegExp(`^${this.URI.origin}/detail/[^/]+`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const document = await FetchHTML(new Request(url));
-        const title = document.querySelector('div#mainContent div#detailIndex div.comicIndex-box h1').textContent.trim();
-
-        //infer manga language from page meta url
-        //<meta property="og:url" content="https://comic-walker.com/tw/contents/detail/KDCW_KS02000002030000_68/" />
-
-        const metaUrl = new URL(document.querySelector<HTMLMetaElement>('meta[property="og:url"]').content);
-        const langCode = metaUrl.pathname.match(/^\/([a-z]{2})\//)[1];
-
-        const mangaid: MangaID = {
-            id: new URL(url).pathname,
-            langCode: langCode
-        };
-        const manga = new Manga(this, provider, JSON.stringify(mangaid), title);
-        manga.Tags.push(langMap[langCode]);
-
-        return manga;
+        const workCode = new URL(url).pathname.match(/\/detail\/([^/]+)/)[1]; //strip search
+        const apiCallUrl = new URL(`contents/details/work?workCode=${workCode}`, this.apiURL);
+        const { work } = await FetchJSON<APIManga>(new Request(apiCallUrl));
+        return new Manga(this, provider, workCode, work.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangasList : Manga[] = [];
-        for (const language of ['en', 'tw', 'jp']) {
-            await this.setLanguage(language);
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, '/contents/list/?p={page}', 'div.comicPage ul.tileList li a', 1, 1, 0, Common.AnchorInfoExtractor(false, '.contents_tile_epi'));
-            const langMangas = mangas.map(manga => new Manga(this, provider, JSON.stringify({ id: manga.Identifier, langCode: language }), manga.Title));
-            langMangas.forEach(manga => manga.Tags.push(langMap[language]));
-            mangasList.push(...langMangas);
+        const mangasList: Manga[] = [];
+        const apiCallUrl = new URL(`search/initial`, this.apiURL);
+        const data = await FetchJSON<APIMangas>(new Request(apiCallUrl));
+        for (const entry of data) {
+            mangasList.push(...entry.items.map(manga => new Manga(this, provider, manga.code, manga.title.trim())));
         }
-        return mangasList;
-    }
-
-    private async setLanguage(language: string): Promise<void> {
-        const request = new Request(`${this.URI.origin}/set_lang/${language}/`);
-        (await Fetch(request)).text();
+        return mangasList.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaID: MangaID = JSON.parse(manga.Identifier);
-        await this.setLanguage(mangaID.langCode);
+        const chapterList: Chapter[] = [];
+        const apiCallUrl = new URL(`contents/details/work?workCode=${manga.Identifier}`, this.apiURL);
+        const data = await FetchJSON<APIManga>(new Request(apiCallUrl));
 
-        const request = new Request(new URL(mangaID.id, this.URI).href);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'div#ulreversible ul#reversible li a');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname + chapter.search, chapter.title.replace(manga.Title, '').trim()));
+        chapterList.push(...data.firstEpisodes.result.map(episode => {
+            const title = [episode.title, episode.subtitle].join(' ').trim();
+            return new Chapter(this, manga, episode.id, title);
+        }));
+
+        chapterList.push(...data.latestEpisodes.result.map(episode => {
+            const title = [episode.title, episode.subtitle].join(' ').trim();
+            return new Chapter(this, manga, episode.id, title);
+        }));
+
+        for (const comic of data.comics.result) {
+            chapterList.push(...comic.episodes.map(episode => new Chapter(this, manga, episode.id, episode.title.trim())));
+        }
+
+        return chapterList.distinct();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const language = (JSON.parse(chapter.Parent.Identifier) as MangaID).langCode;
-        await this.setLanguage(language);
-
-        //get endpoints data
-        const request = new Request(new URL(chapter.Identifier, this.URI).href);
-        const mainApp = await FetchCSS(request, 'main#app');
-        const endpoints: string | TEndpoints = mainApp[0].dataset.apiEndpointUrl ? mainApp[0].dataset.apiEndpointUrl : JSON.parse(mainApp[0].dataset.apiEndpointUrls);
-        const uri = `${(endpoints as TEndpoints).nc || (endpoints as TEndpoints).cw || endpoints}/api/v1/comicwalker/episodes/${mainApp[0].dataset.episodeId}/frames`;
-
-        const { data } = await FetchJSON<APIPages>(new Request(uri));
-        return data.result.map(page => new Page(this, chapter, new URL(page.meta.source_url), { key: page.meta.drm_hash }));
+        const apiCallUrl = new URL(`contents/viewer?episodeId=${chapter.Identifier}&imageSizeType=width:1284`, this.apiURL);
+        const { manuscripts } = await FetchJSON<APIPages>(new Request(apiCallUrl));
+        return manuscripts.map(page => new Page(this, chapter, new URL(page.drmImageUrl), { ...page }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (!page.Parameters.key) return data;
+        const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        const payload = page.Parameters as APIPage;
+        switch (payload.drmMode) {
+            case 'raw':
+                return data;
+            case 'xor': {
+                return this.decryptXor(new Uint8Array(await data.arrayBuffer()), payload.drmHash);
+            }
+            default:
+                throw Error('Encryption not supported');
+        }
 
-        const encrypted = await new Response(data).arrayBuffer();
-        return this.decrypt(new Uint8Array(encrypted), page.Parameters.key as string);
     }
 
-    private async decrypt(encrypted: Uint8Array, passphrase : string) : Promise<Blob>{
+    private async decryptXor(encrypted: Uint8Array, passphrase: string): Promise<Blob> {
         const key = this.generateKey(passphrase);
-        const decrypted = this.xor(encrypted, key);
-        return Common.GetTypedData(decrypted);
+        return Common.GetTypedData(this.xor(encrypted, key));
     }
 
     private generateKey(t: string): Uint8Array {

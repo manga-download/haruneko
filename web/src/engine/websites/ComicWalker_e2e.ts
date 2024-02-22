@@ -6,18 +6,18 @@ const config = {
         title: 'コミックウォーカー (ComicWalker)'
     },
     container: {
-        url: 'https://comic-walker.com/contents/detail/KDCW_AM06204400010000_68/',
-        id: JSON.stringify({id: '/contents/detail/KDCW_AM06204400010000_68/', langCode: 'jp'}),
+        url: 'https://comic-walker.com/detail/KC_001050_S',
+        id: 'KC_001050_S',
         title: 'いつかのLo-fiみゅーじっく'
     },
     child: {
-        id: '/viewer/?tw=2&dlcl=ja&cid=KDCW_AM06204400010001_68',
-        title: '第1話'
+        id: '018d6c44-a85b-750b-bda1-b23582d67441',
+        title: '第2話'
     },
     entry: {
         index: 0,
-        size: 133_710,
-        type: 'image/jpeg'
+        size: 94_478,
+        type: 'image/webp'
     }
 };
 
