@@ -1,37 +1,17 @@
 <script lang="ts">
     import { Select, SelectItem, Toggle } from 'carbon-components-svelte';
-    import SettingItem from './SettingItem.svelte';
+    import SettingItem from '../settings/SettingItem.svelte';
     import {
-        ContentPanel,
         Key,
         Locale,
         FuzzySearch,
         SidenavTrail,
         SidenavIconsOnTop,
-        Theme,
         ViewerDoublePage,
         ViewerMode,
         ViewerReverseDirection,
     } from '../../stores/Settings';
 </script>
-
-<SettingItem
-    labelText={$Locale[ContentPanel.setting.Label]()}
-    helperText={$Locale[ContentPanel.setting.Description]()}
->
-    <Toggle bind:toggled={$ContentPanel} />
-</SettingItem>
-
-<SettingItem
-    labelText={$Locale[Theme.setting.Label]()}
-    helperText={$Locale[Theme.setting.Description]()}
->
-    <Select bind:selected={$Theme}>
-        {#each Theme.setting.Options as option}
-            <SelectItem value={option.key} text={$Locale[option.label]()} />
-        {/each}
-    </Select>
-</SettingItem>
 
 <SettingItem
     labelText={$Locale[ViewerMode.setting.Label]()}

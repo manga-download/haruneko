@@ -23,6 +23,7 @@
         LogoGithub,
         NetworkOverlay,
         PlugFilled,
+        ScreenMap,
         Settings,
         SettingsAdjust,
         SettingsView,
@@ -109,6 +110,14 @@
                 />
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Interface()}
+                    icon={ScreenMap}
+                    on:click={() => {
+                        settingsSelectedTabs = 1;
+                        isSettingsModalOpen = true;
+                    }}
+                />
+                <SideNavLink
+                    text="Viewer"
                     icon={SettingsView}
                     on:click={() => {
                         settingsSelectedTabs = 1;
@@ -119,7 +128,7 @@
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Trackers()}
                     icon={TaskSettings}
                     on:click={() => {
-                        settingsSelectedTabs = 2;
+                        settingsSelectedTabs = 3;
                         isSettingsModalOpen = true;
                     }}
                 />
@@ -127,7 +136,7 @@
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Network()}
                     icon={NetworkOverlay}
                     on:click={() => {
-                        settingsSelectedTabs = 3;
+                        settingsSelectedTabs = 4;
                         isSettingsModalOpen = true;
                     }}
                 />
@@ -139,7 +148,7 @@
                     class="clik-item"
                     on:click={() =>
                         window.open(
-                            'https://hakuneko.download/docs/interface/'
+                            'https://hakuneko.download/docs/interface/',
                         )}
                 />
                 <SideNavLink
@@ -155,7 +164,7 @@
                     class="clik-item"
                     on:click={() =>
                         window.open(
-                            'https://hakuneko.download/docs/troubleshoot/'
+                            'https://hakuneko.download/docs/troubleshoot/',
                         )}
                 />
                 <SideNavLink
@@ -178,7 +187,7 @@
                     class="clik-item"
                     on:click={() =>
                         window.open(
-                            'https://hakuneko.download/docs/interface/'
+                            'https://hakuneko.download/docs/interface/',
                         )}
                 />
                 <SideNavLink
@@ -200,7 +209,7 @@
                     class="clik-item"
                     on:click={() =>
                         window.open(
-                            'https://hakuneko.download/docs/troubleshoot/'
+                            'https://hakuneko.download/docs/troubleshoot/',
                         )}
                 />
                 <SideNavLink
