@@ -64,6 +64,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
             { sourceID: 'comicbushi', targetID: 'comicgrowl' },
+            { sourceID: 'comicwalker', targetID: 'kadocomi' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'dalsei', targetID: 'viyafansub' },
             { sourceID: 'evascans', targetID: 'manwe' },
@@ -74,6 +75,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
             { sourceID: 'kumascans', targetID: 'retsu' },
+            { sourceID: 'imperioscans', targetID: 'neroxus' },
             { sourceID: 'lovehug', targetID: 'welovemanga' },
             { sourceID: 'lyrascans', targetID: 'quantumscans' },
             { sourceID: 'mangamx', targetID: 'mangaoni' },
@@ -93,6 +95,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'randomscan', targetID: 'luratoon' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
+            { sourceID: 'rightdarkscan', targetID: 'darkscan' },
             { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },

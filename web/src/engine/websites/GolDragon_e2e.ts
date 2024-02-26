@@ -6,7 +6,7 @@ const config: Config = {
         title: 'GolDragon'
     },
     container: {
-        url: 'https://goldragon.me/manga/emperor-and-the-female-knight',
+        url: 'https://swatmanhua.com/manga/emperor-and-the-female-knight',
         id: '/manga/emperor-and-the-female-knight',
         title: 'Emperor And The Female Knight'
     },
