@@ -4,21 +4,23 @@ const config = {
     plugin: {
         id: 'manga-scantrad',
         title: 'Manga-Scantrad'
-    }/*,
+    },
+    /* CloudFlare
     container: {
-        url: 'https://manga-scantrad.net/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://manga-scantrad.io/manga/martial-peak/',
+        id: JSON.stringify({ post: '3280', slug: '/manga/martial-peak/' }),
+        title: 'Martial Peak'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/manga/martial-peak/chapitre-1321/',
+        title: 'Chapter 1321'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 2,
+        size: 446_328,
         type: 'image/jpeg'
-    }*/
+    }
+    */
 };
 
 const fixture = new TestFixture(config);

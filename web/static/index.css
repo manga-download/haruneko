@@ -18,12 +18,14 @@ html, body, #app, #hakuneko-notice {
 #hakuneko-notice a {
     text-decoration: none;
 }
+
 #windowbar {
     position: absolute;
     z-index:10;
     top:0;
     right: 0;
 }
+
 .container {
     display: flex;
     justify-content: center;

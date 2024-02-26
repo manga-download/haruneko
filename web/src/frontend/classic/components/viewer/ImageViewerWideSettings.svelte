@@ -3,92 +3,224 @@
         ChevronLeft,
         ChevronRight,
         Misuse,
-        RowDelete,
-        RowInsert,
+        IntentRequestScaleIn,
+        IntentRequestScaleOut,
+        CloudServiceManagement,
+        ScreenMap,
         ZoomIn,
         ZoomOut,
     } from 'carbon-icons-svelte';
+    import {
+        ContentSwitcher,
+        Switch,
+        Button,
+        HeaderAction,
+        HeaderGlobalAction,
+        HeaderPanelDivider,
+        Tooltip,
+    } from 'carbon-components-svelte';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
-
+    import {
+        Key,
+        Locale,
+        ViewerDoublePage,
+        ViewerMode,
+        ViewerReverseDirection,
+    } from '../../stores/Settings';
     import { ViewerPadding, ViewerZoom } from '../../stores/Settings';
+    import type {
+        MediaContainer,
+        MediaItem,
+    } from '../../../../engine/providers/MediaPlugin';
+    export let item: MediaContainer<MediaItem>;
 
     export let title: string;
 </script>
 
-<div id="Buttons">
-    <span class="title">{title}</span>
-    <button class="button" on:click={() => dispatch('previousItem')}>
-        <ChevronLeft size={24} title="Preview item (ArrowLeft)" />
-    </button>
-    <button class="button" on:click={() => dispatch('nextItem')}>
-        <ChevronRight size={24} title="Next item (ArrowRight)" />
-    </button>
-    &nbsp;
-    <button class="button" on:click={ViewerPadding.decrement}>
-        <RowDelete
-            size={24}
-            title="Decrease spacing between images (CTRL ➖)"
-        />
-    </button>
-    <button class="button" on:click={ViewerPadding.increment}>
-        <RowInsert
-            size={24}
-            title="Increase spacing between images (CTRL ➕)"
-        />
-    </button>
-    &nbsp;
-    <button class="button" on:click={ViewerZoom.increment}>
-        <ZoomIn size={24} title="Zoom In (➕)" />
-    </button>
-    <button class="button" on:click={ViewerZoom.decrement}>
-        <ZoomOut size={24} title="Zoom Out (➖)" />
-    </button>
-    &nbsp
-    <button class="button" on:click={() => dispatch('close')}>
-        <Misuse size={24} title="Close (ESC)" />
-    </button>
+<div id="vieweractions">
+    <HeaderGlobalAction
+        class="previousitem"
+        icon={ChevronLeft}
+        on:click={() => dispatch('previousItem')}
+    />
+    <HeaderGlobalAction
+        class="nextitem"
+        icon={ChevronRight}
+        on:click={() => dispatch('nextItem')}
+    />
+    <HeaderAction
+        icon={CloudServiceManagement}
+        closeIcon={ScreenMap}
+        class="opensettings"
+    >
+        <HeaderPanelDivider>{item?.Parent.Title}</HeaderPanelDivider>
+        <div>{item?.Title}</div>
+        <HeaderPanelDivider>Controls</HeaderPanelDivider>
+        <div>
+            <Button
+                icon={ChevronLeft}
+                kind="ghost"
+                size="small"
+                iconDescription="Previous item (ArrowLeft)"
+                on:click={() => dispatch('previousItem')}
+            />
+            <Button
+                icon={ChevronRight}
+                kind="ghost"
+                size="small"
+                iconDescription="Next item (ArrowRight)"
+                on:click={() => dispatch('nextItem')}
+            />
+            <Button
+                icon={ZoomIn}
+                kind="ghost"
+                size="small"
+                iconDescription="Zoom In (➕)"
+                on:click={ViewerZoom.increment}
+            />
+            <Button
+                icon={ZoomOut}
+                kind="ghost"
+                size="small"
+                iconDescription="Zoom Out (➖)"
+                on:click={ViewerZoom.decrement}
+            />
+        </div>
+        <div>
+            <Button
+                icon={IntentRequestScaleIn}
+                kind="ghost"
+                size="small"
+                iconDescription="Decrease spacing between images (CTRL ➖)"
+                on:click={ViewerPadding.decrement}
+            />
+            <Button
+                icon={IntentRequestScaleOut}
+                kind="ghost"
+                size="small"
+                iconDescription="Increase spacing between images (CTRL ➕)"
+                on:click={ViewerPadding.increment}
+            />
+        </div>
+        <HeaderPanelDivider>Reader</HeaderPanelDivider>
+        <div class="setting block">
+            <Tooltip
+                triggerText={$Locale[ViewerMode.setting.Label]()}
+                align="start"
+                class="tooltip"
+            >
+                <p>{$Locale[ViewerMode.setting.Description]()}</p>
+            </Tooltip>
+            <ContentSwitcher size="sm">
+                {#each ViewerMode.setting.Options as option}
+                    <Switch
+                        selected={$ViewerMode === option.key}
+                        text={$Locale[option.label]()}
+                        on:click={() => ($ViewerMode = option.key)}
+                    />
+                {/each}
+            </ContentSwitcher>
+        </div>
+        {#if $ViewerMode === Key.ViewerMode_Paginated}
+            <div class="setting block">
+                <Tooltip
+                    triggerText={$Locale[
+                        ViewerReverseDirection.setting.Label
+                    ]()}
+                    align="start"
+                    class="tooltip"
+                >
+                    <p>
+                        {$Locale[ViewerReverseDirection.setting.Description]()}
+                    </p>
+                </Tooltip>
+                <ContentSwitcher size="sm">
+                    <Switch
+                        selected={!$ViewerReverseDirection}
+                        on:click={() => ($ViewerReverseDirection = false)}
+                    >
+                        LeftToRight
+                    </Switch>
+                    <Switch
+                        selected={$ViewerReverseDirection}
+                        on:click={() => ($ViewerReverseDirection = true)}
+                        >RightToLeft
+                    </Switch>
+                </ContentSwitcher>
+            </div>
+            <div class="setting block">
+                <Tooltip
+                    triggerText={$Locale[ViewerDoublePage.setting.Label]()}
+                    align="start"
+                    class="tooltip"
+                >
+                    <p>{$Locale[ViewerDoublePage.setting.Description]()}</p>
+                </Tooltip>
+                <ContentSwitcher size="sm">
+                    <Switch
+                        selected={!$ViewerDoublePage}
+                        on:click={() => ($ViewerDoublePage = false)}
+                    >
+                        Single
+                    </Switch>
+                    <Switch
+                        selected={$ViewerDoublePage}
+                        on:click={() => ($ViewerDoublePage = true)}
+                    >
+                        Double
+                    </Switch>
+                </ContentSwitcher>
+            </div>
+        {/if}
+    </HeaderAction>
+    <HeaderGlobalAction
+        class="close"
+        icon={Misuse}
+        on:click={() => dispatch('close')}
+    />
 </div>
 
 <style>
-    button {
-        all: unset;
-        cursor: pointer;
+    #vieweractions {
+        opacity: 5%;
     }
-    #Buttons {
-        display: flex;
-        align-content: center;
-        justify-content: center;
-        align-items: center;
-        position: fixed;
+    #vieweractions:hover {
+        opacity: 100%;
+    }
+    #vieweractions :global(.bx--header__action) {
+        position: absolute;
+        z-index: 9000;
+    }
+    #vieweractions :global(.close) {
+        top: 0;
+        right: 1.5em;
+    }
+    #vieweractions :global(.opensettings) {
+        top: 0;
+        right: 5em;
+    }
+    #vieweractions :global(.nextitem) {
+        top: 0;
+        right: 8.5em;
+    }
+    #vieweractions :global(.previousitem) {
+        top: 0;
+        right: 12em;
+    }
+    #vieweractions :global(div.bx--header-panel) {
+        position: absolute;
         top: 0;
         right: 0;
-        height: 3rem;
-        padding-left: 1em;
-        padding-right: 2em;
-        opacity: 0.05;
-        transition: opacity 0.25s;
-        background-color: var(--cds-ui-04);
-        border-bottom-left-radius: 1em;
-        box-shadow: 0em 0em 1em var(--cds-ui-01);
-        outline: none; /* disable focus border */
+        padding: 3em 0 0 0;
     }
-    #Buttons:hover {
-        opacity: 1;
-        cursor: pointer;
+    #vieweractions :global(div.bx--header-panel > li) {
+        margin: 1em 1em 0;
     }
-    #Buttons:hover > .title {
-        display: inline;
+    .setting.block {
+        margin-top: 0.4em;
     }
-
-    .title {
-        display: none;
-        font-weight: bold;
-        font-size: 1.25em;
-        color: var(--cds-text-01);
-    }
-
-    #Buttons .button:hover {
-        color: var(--cds-active-ui);
+    .setting.block :global(.tooltip) {
+        margin-bottom: 0.2em;
     }
 </style>
