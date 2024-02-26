@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Tag } from 'carbon-components-svelte';
-    import type { TagProps } from 'carbon-components-svelte/types/Tag/Tag.svelte';
+    import type { TagProps } from 'carbon-components-svelte/src/Tag/Tag.svelte';
     import { Tags } from '../../../engine/Tags';
     import type { IResource } from '../../../i18n/ILocale';
     import { Locale } from '../stores/Settings';

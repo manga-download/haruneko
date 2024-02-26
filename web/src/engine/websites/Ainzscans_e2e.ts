@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Ainzscans'
     },
     container: {
-        url: 'https://ainzscans.site/series/disastrous-necromancer/',
+        url: 'https://ainzscans.net/series/disastrous-necromancer/',
         id: '/series/disastrous-necromancer/',
         title: 'Disastrous Necromancer'
     },

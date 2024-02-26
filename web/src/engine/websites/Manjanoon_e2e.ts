@@ -6,12 +6,12 @@ const config = {
         title: 'Manjanoon'
     },
     container: {
-        url: 'https://manjanoon.com/manga/holding-you-captive/',
-        id: '/manga/holding-you-captive/',
+        url: 'https://manjanoon.net/manga/nn-holding-you-captive/',
+        id: '/manga/nn-holding-you-captive/',
         title: 'Holding You Captive'
     },
     child: {
-        id: '/holding-you-captive-%d8%a7%d9%84%d9%81%d8%b5%d9%84-22/',
+        id: '/nn-holding-you-captive-%d8%a7%d9%84%d9%81%d8%b5%d9%84-22/',
         title: 'الفصل 22'
     },
     entry: {
