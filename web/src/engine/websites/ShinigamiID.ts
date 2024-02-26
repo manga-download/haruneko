@@ -22,7 +22,7 @@ const pageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('shinigamiid', `Shinigami ID`, 'https://shinigamitoon.com', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('shinigamiid', `Shinigami ID`, 'https://home.shinigami.cx', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

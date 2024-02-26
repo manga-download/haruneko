@@ -271,7 +271,10 @@ const translations: VariantResource = {
     Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
     Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
     Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
+    Plugin_Common_Preferred_Language: 'Preferred Language for the website',
+    Plugin_Common_Preferred_LanguageInfo: 'Preferred language for website content.',
 
+    Plugin_MissingManga_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
     Plugin_MissingWebsite_UpdateError: 'Failed to update the content index for a non-existing website!',
     Plugin_MissingWebsiteEntry_UpdateError: 'Failed to update the media index for a non-existing website!',
 
@@ -282,6 +285,7 @@ const translations: VariantResource = {
 
     Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
     Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
+
 };
 
 export default translations;

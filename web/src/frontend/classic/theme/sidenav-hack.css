@@ -3,15 +3,19 @@
     color: var(--cds-text-02);
     border-right: 1px solid var(--cds-ui-02);
 }
+
 .bx--side-nav__divider {
     background-color: var(--cds-ui-03);
 }
+
 a.bx--side-nav__link > .bx--side-nav__link-text {
     color: var(--cds-text-02);
 }
+
 .bx--side-nav__submenu {
     color: var(--cds-text-02);
 }
+
 .bx--side-nav__menu a.bx--side-nav__link--current,
 .bx--side-nav__menu a.bx--side-nav__link[aria-current="page"],
 a.bx--side-nav__link--current {
@@ -27,14 +31,17 @@ a.bx--side-nav__link--current > span {
 .bx--side-nav__icon > svg {
     fill: var(--cds-text-02);
 }
+
 a.bx--side-nav__link[aria-current="page"],
 a.bx--side-nav__link--current {
     background-color: var(--cds-hover-ui);
 }
+
 a.bx--side-nav__link[aria-current="page"] .bx--side-nav__link-text,
 a.bx--side-nav__link--current .bx--side-nav__link-text {
     color: var(--cds-text-01);
 }
+
 .bx--side-nav__item:not(.bx--side-nav__item--active)
     > .bx--side-nav__link:hover,
 .bx--side-nav__menu
@@ -43,6 +50,7 @@ a.bx--side-nav__link--current .bx--side-nav__link-text {
     background-color: var(--cds-hover-ui);
 
 }
+
 .bx--side-nav__item:not(.bx--side-nav__item--active)
     > .bx--side-nav__link:hover
     > span,
@@ -52,6 +60,7 @@ a.bx--side-nav__link--current .bx--side-nav__link-text {
     > span {
     color: var(--cds-text-01);
 }
+
 .bx--side-nav__submenu:hover {
     color: var(--cds-text-01) !important;
     background-color: var(--cds-hover-ui) !important;

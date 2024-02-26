@@ -51,9 +51,12 @@
 {/await}
 
 <style>
+    img {
+        display: flex;
+    }
     img.wide {
-        transition: width 50ms ease-in-out;
-        transition: height 50ms ease-in-out;
+        transition: width 200ms ease-in-out;
+        transition: height 200ms ease-in-out;
     }
     img.thumbnail {
         transition: width 100ms ease-in-out;

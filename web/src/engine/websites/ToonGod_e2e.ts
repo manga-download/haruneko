@@ -4,21 +4,23 @@ const config = {
     plugin: {
         id: 'toongod',
         title: 'ToonGod'
-    }/*,
+    },
+    /* CloudFlare
     container: {
-        url: 'https://www.toongod.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://www.toongod.org/webtoon/i-stole-the-number-one-rankers-soul/',
+        id: JSON.stringify({ post: '9019', slug: '/webtoon/i-stole-the-number-one-rankers-soul/' }),
+        title: 'I Stole the Number One Ranker’s Soul'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/webtoon/i-stole-the-number-one-rankers-soul/chapter-64/',
+        title: 'Chapter 64'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 704_355,
         type: 'image/jpeg'
-    }*/
+    }
+    */
 };
 
 const fixture = new TestFixture(config);
