@@ -2,11 +2,11 @@
 
 const config = {
     plugin: {
-        id: 'imperioscans',
-        title: 'Império Scans'
+        id: 'neroxus',
+        title: 'Neroxus'
     },
     container: {
-        url: 'https://imperioscans.com.br/manga/the-mad-gate/',
+        url: 'https://neroxus.com.br/manga/the-mad-gate/',
         id: JSON.stringify({ post: '2436', slug: '/manga/the-mad-gate/' }),
         title: 'The Mad Gate'
     },
