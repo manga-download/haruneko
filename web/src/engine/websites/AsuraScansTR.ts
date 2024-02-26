@@ -1,17 +1,17 @@
 import { Tags } from '../Tags';
 import icon from './AsuraScansTR.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/armoniscans\.com\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS([/ENDING-PAGE/i])
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+@Madara.MangasMultiPageAJAX()
+@Madara.ChaptersSinglePageAJAXv2()
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('asurascans-tr', `Asura Scans (TR)`, 'https://armoniscans.com', Tags.Language.Turkish, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Source.Scanlator);
+        super('asurascans-tr', `Asura Scans (TR)`, 'https://asurascans.com.tr', Tags.Language.Turkish, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Source.Scanlator);
     }
     public override get Icon() {
         return icon;

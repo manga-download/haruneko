@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('gekkouscans', `Gekkou Scans`, 'https://gekkouscans.top', Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Media.Manhwa);
+        super('gekkouscans', `Gekkou Scans`, 'https://gekkou.site', Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Media.Manhwa);
     }
 
     public override get Icon() {

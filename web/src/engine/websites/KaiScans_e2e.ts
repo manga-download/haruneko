@@ -6,17 +6,17 @@ const config = {
         title: 'Kai Scans'
     },
     container: {
-        url: 'https://www.kaiscans.com/series/hybrid/',
-        id: '/series/hybrid/',
-        title: 'Hybrid'
+        url: 'https://kaiscans.org/manga/my-in-laws-are-obsessed-with-me-9571/',
+        id: '/manga/my-in-laws-are-obsessed-with-me-9571/',
+        title: 'My In-Laws Are Obsessed With Me'
     },
     child: {
-        id: '/hybrid-chapter-1/',
-        title: 'Chapter 1'
+        id: '/my-in-laws-are-obsessed-with-me-chapter-96/',
+        title: 'Chapter 96'
     },
     entry: {
         index: 1,
-        size: 1_358_261,
+        size: 1_318_903,
         type: 'image/jpeg'
     }
 };

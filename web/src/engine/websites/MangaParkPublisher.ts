@@ -66,7 +66,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private xor(t: Uint8Array, key: string) {
-        const e = atob(key).split('').map(s => s.charCodeAt(0));
+        const e = window.atob(key).split('').map(s => s.charCodeAt(0));
         const r = t.length;
         const i = e.length;
         const o = new Uint8Array(r);

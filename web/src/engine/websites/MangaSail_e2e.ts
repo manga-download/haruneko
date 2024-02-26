@@ -6,7 +6,7 @@ const config: Config = {
         title: 'MangaSail',
     },
     container: {
-        url: 'https://www.sailmanga.com/content/rooster-fighter',
+        url: 'https://www.sailmg.com/content/rooster-fighter',
         id: '/content/rooster-fighter',
         title: 'Rooster Fighter',
         //timeout: 15_000,

@@ -3,7 +3,6 @@
         Button,
         Header,
         HeaderUtilities,
-        HeaderAction,
         HeaderGlobalAction,
         SkipToContent,
     } from 'carbon-components-svelte';
@@ -15,7 +14,7 @@
         Home,
         Subtract,
     } from 'carbon-icons-svelte';
-    import MenuLeftPanel from './MenuLeftPanel.svelte';
+    import Sidenav from './Sidenav.svelte';
 
     import {
         selectedPlugin,
@@ -23,7 +22,6 @@
         selectedItem,
         WindowController,
     } from '../stores/Stores';
-    import SettingsPanel from './settings/SettingsPanel.svelte';
     import { Locale, SidenavIconsOnTop } from '../stores/Settings';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
@@ -118,16 +116,10 @@
                 class="close"
             />
         {/if}
-        <HeaderAction>
-            <!-- Show global HakuNeko settings?
-            <SettingsViewer scope={Scope} />
-            -->
-            <SettingsPanel />
-        </HeaderAction>
     </HeaderUtilities>
 </Header>
 
-<MenuLeftPanel bind:isOpen={isSideNavOpen} on:home />
+<Sidenav bind:isOpen={isSideNavOpen} on:home />
 
 <style>
     :global(#Header) {
