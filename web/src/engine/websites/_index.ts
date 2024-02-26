@@ -48,7 +48,6 @@ export { default as CartelDeManhwas } from './CartelDeManhwas';
 export { default as CarToonMad } from './CarToonMad';
 export { default as CatTranslator } from './CatTranslator';
 export { default as CeriseScans } from './CeriseScans';
-export { default as ChibiManga } from './ChibiManga';
 export { default as CloverManga } from './CloverManga';
 export { default as Cocorip } from './Cocorip';
 export { default as CoffeeManga } from './CoffeeManga';
