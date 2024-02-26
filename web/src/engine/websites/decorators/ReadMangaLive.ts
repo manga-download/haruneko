@@ -54,12 +54,19 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
     const images = await FetchWindowScript<ImagesData>(new Request(uri.href), script, delay);
 
     images.pics = images.pics.map(pic => pic.replace(/^\/\//, 'https://'));
-    images.servers = images.servers.map(server => server.replace(/^\/\//, 'https://'));
+    images.servers = images.servers
+        .map(server => server.replace(/^\/\//, 'https://'))
+        .filter((server, index) => index === images.servers.findIndex(s => s === server));
 
     return images.pics.map(url => {
-        return new Page(this, chapter, new URL(url), {
+        const imageUrl = new URL(url);
+        const alternativeUrls = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server).href)
+            .filter(altUrl => altUrl != imageUrl.href )
+            .join(',');
+        return new Page(this, chapter, imageUrl, {
             Referer: uri.href,
-            servers: JSON.stringify(images.servers) });
+            alternativeUrls: alternativeUrls
+        });
     });
 }
 /**
@@ -82,30 +89,27 @@ export function PagesSinglePageJS(script = pagesWithServersScript, delay = 0) {
 
 /**
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
- * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
- * This method fetch pages by trying different servers. Page must have "servers: string[] (an array or string servers)" in Parameters.
+ * This method fetch pages by trying different urls. Page must have "alternativeUrls: url,url, url, etc..." in Parameters.
  */
-export function ImageAjax(detectMimeType = false) {
+export function ImageAjax() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal, detectMimeType );
+                return FetchImage.call(this, page, priority, signal );
             }
         };
     };
 }
 
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    let blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
+async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    let blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
     if (blob.type.startsWith('image/')) return blob;
 
-    const servers: string[] = JSON.parse(page.Parameters.servers as string);
-    for (const server of servers) {
-        if (!page.Link.href.includes(server)) {
-            page.Link.href = new URL(page.Link.pathname, server).href + page.Link.search;
-            blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
-            if (blob.type.startsWith('image/')) return blob;
-        }
+    const alternativeUrls: string[] = (page.Parameters.alternativeUrls as string).split(',');
+    for (const alternativeUrl of alternativeUrls) {
+        page.Link.href = alternativeUrl;
+        blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        if (blob.type.startsWith('image/')) return blob;
     }
 }
