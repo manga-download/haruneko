@@ -14,7 +14,7 @@ function IsImage(page: string) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangasail', `MangaSail`, 'https://www.sailmanga.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangasail', `MangaSail`, 'https://www.sailmg.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -313,8 +313,11 @@ export enum WebsiteResourceKey {
     Plugin_Common_MangaIndex_NotSupported = 'Plugin_Common_MangaIndex_NotSupported',
     Plugin_Common_Chapter_InvalidError = 'Plugin_Common_Chapter_InvalidError',
     Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',
+    Plugin_Common_Preferred_Language = 'Plugin_Common_Preferred_Language',
+    Plugin_Common_Preferred_LanguageInfo = 'Plugin_Common_Preferred_LanguageInfo',
     Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
     Plugin_MissingWebsiteEntry_UpdateError = 'Plugin_MissingWebsiteEntry_UpdateError',
+    Plugin_MissingManga_LanguageMismatchError = 'Plugin_MissingManga_LanguageMismatchError',
 }
 
 // [SECTION]: Website SheepScanlations
