@@ -74,6 +74,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
             { sourceID: 'kumascans', targetID: 'retsu' },
+            { sourceID: 'imperioscans', targetID: 'neroxus' },
             { sourceID: 'lovehug', targetID: 'welovemanga' },
             { sourceID: 'lyrascans', targetID: 'quantumscans' },
             { sourceID: 'mangamx', targetID: 'mangaoni' },
