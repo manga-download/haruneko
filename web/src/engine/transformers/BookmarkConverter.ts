@@ -9,6 +9,7 @@ const legacyWebsiteIdentifierMap = {
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
     'comicbushi': 'comicgrowl',
+    'comicwalker': 'kadocomi',
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
     'evascans': 'manwe',
