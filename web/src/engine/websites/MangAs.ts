@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangAsin.webp';
+import icon from './MangAs.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaReader from './decorators/MangaReaderCMS';
