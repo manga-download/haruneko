@@ -9,6 +9,7 @@ const legacyWebsiteIdentifierMap = {
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
     'comicbushi': 'comicgrowl',
+    'comicwalker': 'kadocomi',
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
     'evascans': 'manwe',
@@ -18,6 +19,7 @@ const legacyWebsiteIdentifierMap = {
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'kisscomic': 'readcomiconline',
+    'imperioscans': 'neroxus',
     'kumascans': 'retsu',
     'lovehug': 'welovemanga',
     'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
@@ -38,6 +40,7 @@ const legacyWebsiteIdentifierMap = {
     'randomscan': 'luratoon',
     'realmscans': 'rizzcomics',
     'reaperscansid': 'shinigamiid',
+    'rightdarkscan': 'darkscan',
     'scansmangasxyz': 'scansmangasme',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',

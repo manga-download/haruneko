@@ -6,7 +6,7 @@ const config = {
         title: 'MangaDemon'
     },
     container: {
-        url: 'https://demoncomics.org/manga/Martial-Peak-VA48',
+        url: 'https://demontoon.com/manga/Martial-Peak-VA48',
         id: '/manga/Martial-Peak-VA48',
         title: 'Martial Peak'
     },
