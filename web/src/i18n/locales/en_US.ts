@@ -12,7 +12,7 @@ const translations: VariantResource = {
     FrontendController_Reload_ConfirmNotice: 'The frontend was changed. Restart now to switch to the new frontend?',
 
     // [SECTION]: Frontend (Common/Shared)
-    Frontend_Product_Title: 'HakuNeko',
+    Frontend_Product_Title: 'HakuNeko_',
     Frontend_Product_Description: 'Manga, Anime and Novel Downloader',
     Frontend_Setting: 'Setting',
     Frontend_Settings: 'Settings',

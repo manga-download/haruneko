@@ -7,7 +7,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: FrontendController
   FrontendController_Reload_ConfirmNotice: "Die Benutzeroberfläche wurde geändert. Jetzt neu starten, um zur neuen Benutzeriberfläche zu wechseln?",
   // [SECTION]: Frontend (Common/Shared)
-  Frontend_Product_Title: 'HakuNeko',
+  Frontend_Product_Title: 'HakuNeko_',
   Frontend_Product_Description: "Manga, Anime und Novellen Downloader",
   Frontend_Setting: "Einstellung",
   Frontend_Settings: "Einstellungen",
