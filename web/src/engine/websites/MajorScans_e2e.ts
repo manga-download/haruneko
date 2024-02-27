@@ -6,18 +6,18 @@ const config = {
         title: 'Major Scans'
     },
     container: {
-        url: 'https://www.majorscans.com/manga/standard-of-reincarnation/',
-        id: JSON.stringify({ slug: '/manga/standard-of-reincarnation/' }),
-        title: 'Standard of Reincarnation'
+        url: 'https://www.majorscans.com/manga/the-reincarnation-of-the-forbidden-archmage/',
+        id: '/manga/the-reincarnation-of-the-forbidden-archmage/',
+        title: 'The Reincarnation of the Forbidden Archmage'
     },
     child: {
-        id: '/manga/standard-of-reincarnation/chapter-86-4/',
-        title: 'Chapter 86.4'
+        id: '/the-reincarnation-of-the-forbidden-archmage-bolum-66/',
+        title: 'Bölüm 66'
     },
     entry: {
-        index: 0,
-        size: 390_932,
-        type: 'image/webp'
+        index: 1,
+        size: 452_621,
+        type: 'image/jpeg'
     }
 };
 
