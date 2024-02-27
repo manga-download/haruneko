@@ -23,6 +23,6 @@ await (async function check() {
             ''
         ].join('\n'));
     }
-    await run(`git branch --delete ${tempLocalMasterBranch}`);
+    await run(`git branch --delete --force ${tempLocalMasterBranch}`);
     process.exit(exitCode);
 })();
