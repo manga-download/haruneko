@@ -3,7 +3,7 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 const config: Config = {
     plugin: {
         id: 'apkomik',
-        title: 'ApKomik'
+        title: 'APKomik'
     }/* CloudFlare,
     container: {
         url: 'https://apkomik.cc/manga/a-bad-person/',

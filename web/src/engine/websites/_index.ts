@@ -15,7 +15,7 @@ export { default as AnimeSama } from './AnimeSama';
 export { default as Anisamanga } from './Anisamanga';
 export { default as AnshScans } from './AnshScans';
 export { default as AnzManga } from './AnzManga';
-export { default as ApKomik } from './ApKomik';
+export { default as APKomik } from './APKomik';
 export { default as ApollComics } from './ApollComics';
 export { default as AquaManga } from './AquaManga';
 export { default as ArabToons } from './ArabToons';
