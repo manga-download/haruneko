@@ -20,6 +20,7 @@ const legacyWebsiteIdentifierMap = {
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'kisscomic': 'readcomiconline',
     'imperioscans': 'neroxus',
+    'komikav': 'apkomic',
     'kumascans': 'retsu',
     'lovehug': 'welovemanga',
     'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
