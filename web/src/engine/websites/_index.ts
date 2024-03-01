@@ -695,7 +695,6 @@ export { default as AnimExtremist } from './legacy/AnimExtremist';
 export { default as Aniwave } from './legacy/Aniwave';
 export { default as ArazNovel } from './legacy/ArazNovel';
 export { default as Baozimh } from './legacy/Baozimh';
-export { default as BilibiliComics } from './legacy/BilibiliComics';
 export { default as BilibiliManhua } from './legacy/BilibiliManhua';
 export { default as BookLive } from './legacy/BookLive';
 export { default as CocoManHua } from './legacy/CocoManHua';
