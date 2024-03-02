@@ -4,18 +4,14 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 const pageScript = `
-    new Promise((resolve, reject) => {
-        try {
-            const pagelist = (window.chapterImages ?? window.chapter_preloaded_images);
-            resolve(pagelist.map(image => {
-                const uri = new URL(image.src);
-                uri.searchParams.set('quality', '100');
-                uri.searchParams.delete('w');
-                return uri.href;
-            }));
-        } catch (error) {
-            reject(error);
-        }
+    new Promise( resolve => {
+        const pagelist = (window.chapterImages ?? window.chapter_preloaded_images);
+        resolve(pagelist.map(image => {
+            const uri = new URL(image.src);
+            uri.searchParams.set('quality', '100');
+            uri.searchParams.delete('w');
+            return uri.href;
+        }));
     });
 `;
 
