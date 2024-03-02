@@ -64,6 +64,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
             { sourceID: 'comicbushi', targetID: 'comicgrowl' },
+            { sourceID: 'comicwalker', targetID: 'kadocomi' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'dalsei', targetID: 'viyafansub' },
             { sourceID: 'evascans', targetID: 'manwe' },
@@ -73,7 +74,9 @@ describe('BookmarkConverter', () => {
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
+            { sourceID: 'komikav', targetID: 'apkomik' },
             { sourceID: 'kumascans', targetID: 'retsu' },
+            { sourceID: 'imperioscans', targetID: 'neroxus' },
             { sourceID: 'lovehug', targetID: 'welovemanga' },
             { sourceID: 'lyrascans', targetID: 'quantumscans' },
             { sourceID: 'mangamx', targetID: 'mangaoni' },
