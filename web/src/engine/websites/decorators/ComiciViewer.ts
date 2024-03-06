@@ -37,7 +37,7 @@ type APIPage = {
 export function MangaExtractor(element: HTMLAnchorElement) {
     const titleElement = element.querySelector<HTMLElement>(queryMangaTitle);
     return {
-        id: element.pathname.endsWith('/') ? element.pathname : `${element.pathname}/`,
+        id: element.pathname.replace(/\/$/, ''),
         title: titleElement ? titleElement.textContent.trim() : element.text.trim()
     };
 }
@@ -63,7 +63,7 @@ export function ChapterExtractor(element: HTMLAnchorElement) {
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapter, extract = ChapterExtractor): Promise<Chapter[]> {
-    const uri = new URL(manga.Identifier+ 'list', this.URI);//we enforced a trailing /
+    const uri = new URL(manga.Identifier+ '/list', this.URI);
     const request = new Request(uri.href, {
         headers: {
             Referer: this.URI.href
@@ -114,7 +114,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     if (!viewer) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
     const coord = await fetchCoordInfo(this, viewer);
-    return coord.result.map(image => new Page(this, chapter, new URL(image.imageUrl), { scramble: image.scramble }));
+    return coord.result.map(image => new Page(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.origin }));
 }
 
 /**

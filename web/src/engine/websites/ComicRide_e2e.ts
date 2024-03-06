@@ -6,8 +6,8 @@ const config = {
         title: 'Comic Ride'
     },
     container: {
-        url: 'https://comicride.jp/series/24a2c5eb2d433/',
-        id: '/series/24a2c5eb2d433/',
+        url: 'https://comicride.jp/series/24a2c5eb2d433',
+        id: '/series/24a2c5eb2d433',
         title: '呪われ侯爵様の訳ありメイド'
     },
     child: {

@@ -6,8 +6,8 @@ const config = {
         title: 'COMIC MeDu (こみっくめづ)'
     },
     container: {
-        url: 'https://comic-medu.com/series/c2f3978c40eea/',
-        id: '/series/c2f3978c40eea/',
+        url: 'https://comic-medu.com/series/c2f3978c40eea',
+        id: '/series/c2f3978c40eea',
         title: 'ぱらのいあけ〜じ'
     },
     child: {

@@ -6,8 +6,8 @@ const config = {
         title: 'Young Champion'
     },
     container: {
-        url: 'https://youngchampion.jp/series/b20f6fa2cc69a/',
-        id: '/series/b20f6fa2cc69a/',
+        url: 'https://youngchampion.jp/series/b20f6fa2cc69a',
+        id: '/series/b20f6fa2cc69a',
         title: '惨家'
     },
     child: {

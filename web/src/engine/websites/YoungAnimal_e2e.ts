@@ -6,8 +6,8 @@ const config = {
         title: 'Young Animal'
     },
     container: {
-        url: 'https://younganimal.com/series/8f24a114d125e/',
-        id: '/series/8f24a114d125e/',
+        url: 'https://younganimal.com/series/8f24a114d125e',
+        id: '/series/8f24a114d125e',
         title: '拷問バイトくんの日常'
     },
     child: {
