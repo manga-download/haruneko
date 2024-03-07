@@ -694,6 +694,7 @@ export { default as YaoiToshokan } from './YaoiToshokan';
 export { default as YaoiTR } from './YaoiTR';
 export { default as YawarakaSpirits } from './YawarakaSpirits';
 export { default as Ynjn } from './Ynjn';
+export { default as YoMonga } from './YoMonga';
 export { default as YoungJump } from './YoungJump';
 export { default as YugenMangasPT } from './YugenMangasPT';
 export { default as YumeKomik } from './YumeKomik';
