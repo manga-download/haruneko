@@ -402,6 +402,7 @@ export { default as ManhuaMix } from './ManhuaMix';
 export { default as ManhuaPlus } from './ManhuaPlus';
 export { default as Manhuaren } from './Manhuaren';
 export { default as ManhuaScan } from './ManhuaScan';
+export { default as ManhuaScarlet } from './ManhuaScarlet';
 export { default as Manhuass } from './Manhuass';
 export { default as ManhuaSY } from './ManhuaSY';
 export { default as ManhuaUs } from './ManhuaUs';
