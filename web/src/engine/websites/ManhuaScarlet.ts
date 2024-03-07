@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './AresManga.webp';
+import icon from './ManhuaScarlet.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('aresmanga', 'Ares Manga', 'https://fl-ares.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
+        super('manhuascarlet', 'Manhua Scarlet', 'https://manhuascarlet.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
