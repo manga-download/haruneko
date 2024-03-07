@@ -7,7 +7,7 @@ const config: Config = {
     },
     /* CloudFlare
     container: {
-        url: 'https://home.shinigami.cx/series/sss-class-suicide-hunter/',
+        url: 'https://shinigami.cx/series/sss-class-suicide-hunter/',
         id: JSON.stringify({ post: "641", slug: "/series/sss-class-suicide-hunter/" }),
         title: 'SSS-Class Suicide Hunter'
     },
