@@ -8,7 +8,8 @@ export default class extends MangaDig {
         super('colamanga', `Coco漫画`, 'https://www.colamanga.com', [Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Aggregator]);
     }
 
-    public override get Icon() {
+    public get Icon() {
         return icon;
     }
+
 }
