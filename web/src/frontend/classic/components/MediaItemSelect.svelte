@@ -95,8 +95,8 @@
               ]
             : [{ id: '*', text: '*' }];
 
-    let langFilterID: string | Tag = '*';
-    $: langFilter = langFilterID === '*' ? null : (langFilterID as Tag);
+    let langFilterID: '*' | Tag = '*';
+    $: langFilter = langFilterID === '*' ? null : langFilterID;
     /*
      * Multi Item Selection
      * CTRL + click = individual add to selected list
