@@ -4,13 +4,13 @@ import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
 
 const pagesWithServersScript = `
-new Promise(resolve => {
-    const payload = {
-        pics: rm_h.pics.map(pic => rm_h.reader.preparePicUrl(pic.url)),
-        servers: rm_h.servers.map(server => server.path)
-    };
-    resolve(payload)
-});
+    new Promise(resolve => {
+        const payload = {
+            pics: rm_h.pics.map(pic => rm_h.reader.preparePicUrl(pic.url)),
+            servers: rm_h.servers.map(server => server.path)
+        };
+        resolve(payload)
+    });
 `;
 
 export const queryMangas = [
@@ -48,7 +48,7 @@ type ImagesData = {
  * @param chapter - A reference to the {@link Chapter} which contains the pages
  * @param script - A script to extract the pages as \{ pics : string[], servers: string[] \}
  */
-async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay : number = 0): Promise<Page[]> {
+async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay: number = 0): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     uri.searchParams.set('mtr', '1');
     const images = await FetchWindowScript<ImagesData>(new Request(uri.href), script, delay);
@@ -61,7 +61,7 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
     return images.pics.map(url => {
         const imageUrl = new URL(url);
         const alternativeUrls = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server).href)
-            .filter(altUrl => altUrl != imageUrl.href )
+            .filter(altUrl => altUrl != imageUrl.href)
             .join(',');
         return new Page(this, chapter, imageUrl, {
             Referer: uri.href,
@@ -96,7 +96,7 @@ export function ImageAjax() {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal );
+                return FetchImage.call(this, page, priority, signal);
             }
         };
     };
