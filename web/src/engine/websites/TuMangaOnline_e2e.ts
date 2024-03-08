@@ -16,7 +16,7 @@ const configs: Config[] = [
             id: '/view_uploads/1408620',
             title: 'Capítulo 97.00 [RE HOMOS SCAN] (es)'
         },
-        entry: { // TODO: Address invalid CERT error for image downloads
+        entry: {
             index: 5,
             size: 53_022,
             type: 'image/webp'
@@ -37,7 +37,7 @@ const configs: Config[] = [
             id: '/view_uploads/558145',
             title: 'Capítulo 53.00  Adicta a la Feromona [FINAL] [Plot Twist No Fansub] (es)'
         },
-        entry: { // TODO: Address invalid CERT error for image downloads
+        entry: {
             index: 1,
             size: 149_946,
             type: 'image/webp'

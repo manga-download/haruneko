@@ -23,6 +23,10 @@ const manifest = {
         'http://localhost/*',
         'https://haruneko.pages.dev/*'
     ],
+    // See: https://peter.sh/experiments/chromium-command-line-switches/
+    'chromium-args': [
+        '--ignore-certificate-errors',
+    ].join(' '),
     /*
     webkit: {
         plugin: true,
