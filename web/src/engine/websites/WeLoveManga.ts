@@ -38,13 +38,13 @@ export default class extends DecoratableMangaScraper {
         const url = new URL(chapter.Identifier, this.URI);
         let request = new Request(url.href, {
             headers: {
-                'Referer': this.URI.href,
+                'Referer': this.URI.origin,
             }
         });
         const chapterid = (await FetchCSS<HTMLInputElement>(request, 'input#chapter'))[0].value;
         request = new Request(new URL(`/app/manga/controllers/cont.listImg.php?cid=${chapterid}`, this.URI).href, {
             headers: {
-                'Referer': this.URI.href,
+                'Referer': this.URI.origin,
             }
         });
         const nodes = await FetchCSS(request, 'img.chapter-img:not([alt*="nicoscan"])');

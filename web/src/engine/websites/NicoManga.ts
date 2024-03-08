@@ -31,7 +31,7 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nicomanga', `NicoManga`, 'https://NicoManga.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('nicomanga', `NicoManga`, 'https://nicomanga.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -42,13 +42,13 @@ export default class extends DecoratableMangaScraper {
         const url = new URL(chapter.Identifier, this.URI);
         let request = new Request(url.href, {
             headers: {
-                'Referer': this.URI.href,
+                'Referer': this.URI.origin
             }
         });
         const chapterid = (await FetchCSS<HTMLInputElement>(request, 'input#chapter'))[0].value;
         request = new Request(new URL(`/app/manga/controllers/cont.imgsList.php?cid=${chapterid}`, this.URI).href, {
             headers: {
-                'Referer': this.URI.href,
+                'Referer': this.URI.origin
             }
         });
         const nodes = await FetchCSS(request, 'img.chapter-img:not([alt*="nicoscan"])');
