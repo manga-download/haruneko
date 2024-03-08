@@ -10,9 +10,9 @@ type MangaID = {
     slug: string
 }
 
-type APIResult<T> = {
+type APIManga = {
     success: boolean,
-    data: T
+    data: string;
 }
 
 @Madara.MangaCSS(/^{origin}\/pornhwa\/[^/]+\/$/, 'div.post-summary div.post-title')
@@ -32,12 +32,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaid: MangaID = JSON.parse(manga.Identifier);
         const url = new URL(`/wp-admin/admin-ajax.php?action=get-all-chapters-list&post_id=${mangaid.post}&chapters_per_page=9999&offset=0`, this.URI);
-        const { data } = await FetchJSON<APIResult<string>>(new Request(url));
+        const { data } = await FetchJSON<APIManga>(new Request(url));
 
         const dom = new DOMParser().parseFromString(data, 'text/html');
         const links = [...dom.querySelectorAll<HTMLAnchorElement>('li a')];
-        return links.map(chapter => new Chapter(this, manga, `${mangaid.slug}${chapter.getAttribute('href')}/`, chapter.querySelector('p.truncate').textContent.trim())).distinct();
-
+        return links.map(chapter => {
+            return new Chapter(this, manga, `${mangaid.slug}${chapter.pathname.split('/').pop()}`, chapter.querySelector('p.truncate').textContent.trim());
+        }).distinct();
     }
 
 }

@@ -11,7 +11,7 @@ const config = {
         title: 'Young Aunt'
     },
     child: {
-        id: '/pornhwa/young-aunt/chapter-1/',
+        id: '/pornhwa/young-aunt/chapter-1',
         title: 'Chapter 1'
     },
     entry: {
