@@ -23,7 +23,7 @@ export function PageExtractor(element: HTMLImageElement): string {
  * @param query - A CSS query to locate the elements from which the page information shall be extracted
  */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, exclude: RegExp[] = [], query = queryPages): Promise<Page[]> {
-    const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, query, PageExtractor.bind(this));
+    const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, query, PageExtractor);
     return pages.filter(page => !exclude.some(pattern => pattern.test(page.Link.pathname)));
 }
 
