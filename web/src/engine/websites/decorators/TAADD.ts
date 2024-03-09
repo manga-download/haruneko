@@ -2,8 +2,7 @@
 import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 export function MangaLabelExtractor(element: HTMLElement) {
-    const title = ((element as HTMLMetaElement).content || element.textContent).replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
-    return title ;
+    return ((element as HTMLMetaElement).content || element.textContent).replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
 }
 
 type LinkExtractor = (this: MangaScraper, element: HTMLElement) => string;
@@ -64,8 +63,7 @@ async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, quer
         url.searchParams.set('waring', '1'); //NineManga typo
     }
 
-    const request = new Request(url.href);
-    const data = await FetchCSS<HTMLAnchorElement>(request, query);
+    const data = await FetchCSS<HTMLAnchorElement>(new Request(url), query);
     return data.map(element => {
         const { id, title } = extractor.call(this, element);
         const mangaTitle = manga.Title.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&'); //escape special regex chars in manga name
@@ -105,21 +103,19 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param queryPages_arg - A CSS selector to the element containing all subpages : Typically a <select> element
- * @param querySubPages_arg - A CSS query to match all elements from {@link queryPages_arg}. Ie. 'option'
+ * @param querySubPages_arg - A CSS query to match all elements from {@link queryPages_arg}. Ie. '<option>
  * @param queryImages_arg - A CSS query to locate the images in each subpage
  * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link querySubPages_arg})
   * */
 export async function FetchPagesMultiPagesCSS(this: MangaScraper, chapter: Chapter, queryPages_arg: string, querySubPages_arg: string, queryImages_arg: string, extractSubPages: LinkExtractor): Promise<Page[]> {
-    const uri = new URL(chapter.Identifier, this.URI);
-    let request = new Request(uri.href);
     //using FetchWindowCSS because TAADD websites have a tendency to redirect to another site for chapters page
-    const data = await FetchWindowCSS<HTMLElement>(request, queryPages_arg); //Here we got the sub pages list NODES
+    const data = await FetchWindowCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), queryPages_arg); //Here we got the sub pages list NODES
     //There may be MORE than one page list element on the page, we need only one !
     const subpages = [...data[0].querySelectorAll(querySubPages_arg)].map(element => extractSubPages.call(this, element));
 
     const pagelist: Page[] = [];
     for (const subpage of subpages) {
-        request = new Request(subpage);
+        const request = new Request(subpage);
         const imgdata = await FetchCSS<HTMLImageElement>(request, queryImages_arg);
         imgdata.map(element => {
             const picUrl = element.src;
