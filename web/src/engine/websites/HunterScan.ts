@@ -38,9 +38,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const slug = url.match(/\/manga\/([^/]+)/)[1];
-        const request = new Request(new URL(`manga/${slug}`, this.apiUrl).href);
-        const { data } = await FetchJSON<APIResult<APIManga>>(request);
+        const slug = url.match(/\/(manga\/[^/]+)/)[1];
+        const { data } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(slug, this.apiUrl)));
         return new Manga(this, provider, data.id, data.title.trim());
     }
 
@@ -54,7 +53,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL(`manga?page[number]=${page}`, this.apiUrl).href);
+        const request = new Request(new URL(`manga?page[number]=${page}`, this.apiUrl));
         const { data } = await FetchJSON<APIResult<APIManga[]>>(request);
         return data.map(manga => new Manga(this, provider, manga.id, manga.title.trim()));
     }
@@ -69,13 +68,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`manga/${manga.Identifier}/chapters?page[number]=${page}`, this.apiUrl).href);
+        const request = new Request(new URL(`manga/${manga.Identifier}/chapters?page[number]=${page}`, this.apiUrl));
         const { data } = await FetchJSON<APIResult<APIChapter[]>>(request);
         return data.map(chapter => new Chapter(this, manga, chapter.id, chapter.number));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(`chapter/${chapter.Identifier}/?includes[pages]=true`, this.apiUrl).href);
+        const request = new Request(new URL(`chapter/${chapter.Identifier}/?includes[pages]=true`, this.apiUrl));
         const { data } = await FetchJSON<APIResult<APIChapter>>(request);
         return data.pages.map(page => new Page(this, chapter, new URL(page.page_url)));
     }
