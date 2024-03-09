@@ -47,30 +47,17 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/\/comics\/(\d+)/)[1];
-        const request = new Request(new URL(`/comics/${id}`, this.apiurl).href, {
-            headers: {
-                'X-API-Environment-Key': this.apikey
-            }
-        });
-        const data = await FetchJSON<APIManga>(request);
+        const data = await FetchJSON<APIManga>(this.createRequest(new URL(`/comics/${id}`, this.apiurl)));
         return new Manga(this, provider, data.id, data.title.replace('@COMIC', '').trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
-
         for (let url: URL | null = new URL('/comics?order=asc&sort=title_yomigana', this.apiurl); url != null;) {
-            const request = new Request(url.href, {
-                headers: {
-                    'X-API-Environment-Key': this.apikey
-                }
-            });
-
-            const data = await FetchJSON<APIResults<APIManga[]>>(request);
+            const data = await FetchJSON<APIResults<APIManga[]>>(this.createRequest(url));
             data.resources.forEach(manga => mangaList.push(
                 new Manga(this, provider, manga.id, manga.title.replace('@COMIC', '').trim())
             ));
-
             url = data.next_cursor ? new URL(`/comics?order=asc&sort=title_yomigana&after_than=${data.next_cursor}`, this.apiurl) : null;
         }
         return mangaList.distinct();
@@ -80,17 +67,10 @@ export default class extends DecoratableMangaScraper {
         const chapterList: Chapter[] = [];
 
         for (let url: URL | null = new URL(`/episodes?comic_id=${manga.Identifier}&episode_status=free_viewing%2Conly_for_subscription&order=asc&sort=episode_order`, this.apiurl); url != null;) {
-            const request = new Request(url.href, {
-                headers: {
-                    'X-API-Environment-Key': this.apikey
-                }
-            });
-
-            const data = await FetchJSON<APIResults<APIChapter[]>>(request);
+            const data = await FetchJSON<APIResults<APIChapter[]>>(this.createRequest(url));
             data.resources.forEach(chapter => chapterList.push(
                 new Chapter(this, manga, chapter.id, chapter.title.trim())
             ));
-
             url = data.next_cursor ? new URL(`/episodes?comic_id=${manga.Identifier}&episode_status=free_viewing%2Conly_for_subscription&order=asc&sort=episode_order&after_than=${data.next_cursor}`, this.apiurl) : null;
         }
         return chapterList.distinct();
@@ -98,12 +78,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(`/episodes/${chapter.Identifier}/begin_reading`, this.apiurl);
-        const request = new Request(url.href, {
-            headers: {
-                'X-API-Environment-Key': this.apikey
-            }
-        });
-        const data = await FetchJSON<APIPages>(request);
+        const data = await FetchJSON<APIPages>(this.createRequest(url));
         return data.pages.map(page => new Page(this, chapter, new URL(page.page_image_url), { drm_hash: page.drm_hash }));
     }
 
@@ -142,6 +117,14 @@ export default class extends DecoratableMangaScraper {
             }
 
         });
-
     }
+
+    createRequest(url: URL): Request {
+        return new Request(url, {
+            headers: {
+                'X-API-Environment-Key': this.apikey
+            }
+        });
+    }
+
 }
