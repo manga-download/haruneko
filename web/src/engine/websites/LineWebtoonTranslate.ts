@@ -6,31 +6,29 @@ import * as LineW from './decorators/LineWebtoon';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
-       new Promise(async resolve => {
-                 let pages = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img div.img_info')].map(page => {
-                            let cover = page.querySelector('img');
-                            return {
-                                width: cover.width,
-                                height: cover.height,
-                                background: {
-                                    image: cover.src,
-                                },
-                                layers: [...page.querySelectorAll('span.ly_img_text')].map(layer => {
-                                    let image = layer.querySelector('img');
-                                    return {
-                                        type: 'image|text',
-                                        asset: image.src,
-                                        top: parseInt(layer.style.top),
-                                        left: parseInt(layer.style.left),
-                                        effects: {}
-                                    };
-                                })
-                            };
-                        });
-                        resolve(pages);
-                        return;
-                    })
-                   
+       new Promise(resolve => {
+           const pages = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img div.img_info')].map(page => {
+               const cover = page.querySelector('img');
+               return {
+                   width: cover.width,
+                   height: cover.height,
+                   background: {
+                       image: cover.src,
+                   },
+                   layers: [...page.querySelectorAll('span.ly_img_text')].map(layer => {
+                       const image = layer.querySelector('img');
+                       return {
+                           type: 'image|text',
+                           asset: image.src,
+                           top: parseInt(layer.style.top),
+                           left: parseInt(layer.style.left),
+                           effects: {}
+                       };
+                   })
+               };
+           });
+           resolve(pages);
+       })
 `;
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname + anchor.search;
@@ -54,8 +52,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new Request(this.URI.href);
-        return FetchWindowScript(request, `window.cookieStore.set('needCCPA', 'false');window.cookieStore.set('pagGDPR', 'true');`);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('needCCPA', 'false');window.cookieStore.set('pagGDPR', 'true');`);
     }
 
 }

@@ -76,54 +76,57 @@ type ImageLayer = {
 }
 
 const pageScript = `
-               new Promise(async resolve => {
+    new Promise(async (resolve, reject) => {
 
-                    // Process motion webtoon
-                    if(document.querySelector('div#ozViewer div.oz-pages')) {
-                        let templateURLs = window.__motiontoonViewerState__.motiontoonParam.pathRuleParam;
-                        let uri = window.__motiontoonViewerState__.motiontoonParam.viewerOptions.documentURL;
-                        let response = await fetch(uri);
-                        let data = await response.json();
-                        for(let page of data.pages) {
-                            console.log('PAGE:', page.id);
-                            for(let layer of page.layers) {
-                                let layerAsset = layer.asset.split('/');
-                                let layerAssetFile = data.assets[layerAsset[0]][layerAsset[1]];
-                                let layerAssetExtension = layerAssetFile.split('.').pop();
-                                if(layer.type === 'image') {
-                                    layer.asset = templateURLs['image'][layerAssetExtension].replace('{=filename}', layerAssetFile);
-                                }
-                                console.log('  LAYER:', layer.type, '=>', layer.asset);
-                                for(let keyframe in layer.effects) {
-                                    let effect = layer.effects[keyframe]['sprite'];
-                                    if(effect && effect.type === 'sprite') {
-                                        let effectAsset = effect.asset.split('/');
-                                        let effectAssetFile = data.assets[effectAsset[0]][effectAsset[1]];
-                                        let effectAssetExtension = effectAssetFile.split('.').pop();
-                                        effect.asset = templateURLs['image'][effectAssetExtension].replace('{=filename}', effectAssetFile);
-                                        console.log('    EFFECT:', effect.type, '=>', effect.asset);
-                                        for(let index in effect.collection) {
-                                            let collectionAsset = effect.collection[index].split('/');
-                                            let collectionAssetFile = data.assets[collectionAsset[0]][collectionAsset[1]];
-                                            let collectionAssetExtension = collectionAssetFile.split('.').pop();
-                                            effect.collection[index] = templateURLs['image'][collectionAssetExtension].replace('{=filename}', collectionAssetFile);
-                                            console.log('      COLLECTION:', index, '=>', effect.collection[index]);
-                                        }
-                                    }
+        try {
+            // Process motion webtoon
+            if (document.querySelector('div#ozViewer div.oz-pages')) {
+                let templateURLs = window.__motiontoonViewerState__.motiontoonParam.pathRuleParam;
+                let uri = window.__motiontoonViewerState__.motiontoonParam.viewerOptions.documentURL;
+                let response = await fetch(uri);
+                let data = await response.json();
+                for (let page of data.pages) {
+                    console.log('PAGE:', page.id);
+                    for (let layer of page.layers) {
+                        let layerAsset = layer.asset.split('/');
+                        let layerAssetFile = data.assets[layerAsset[0]][layerAsset[1]];
+                        let layerAssetExtension = layerAssetFile.split('.').pop();
+                        if (layer.type === 'image') {
+                            layer.asset = templateURLs['image'][layerAssetExtension].replace('{=filename}', layerAssetFile);
+                        }
+                        console.log('  LAYER:', layer.type, '=>', layer.asset);
+                        for (let keyframe in layer.effects) {
+                            let effect = layer.effects[keyframe]['sprite'];
+                            if (effect && effect.type === 'sprite') {
+                                let effectAsset = effect.asset.split('/');
+                                let effectAssetFile = data.assets[effectAsset[0]][effectAsset[1]];
+                                let effectAssetExtension = effectAssetFile.split('.').pop();
+                                effect.asset = templateURLs['image'][effectAssetExtension].replace('{=filename}', effectAssetFile);
+                                console.log('    EFFECT:', effect.type, '=>', effect.asset);
+                                for (let index in effect.collection) {
+                                    let collectionAsset = effect.collection[index].split('/');
+                                    let collectionAssetFile = data.assets[collectionAsset[0]][collectionAsset[1]];
+                                    let collectionAssetExtension = collectionAssetFile.split('.').pop();
+                                    effect.collection[index] = templateURLs['image'][collectionAssetExtension].replace('{=filename}', collectionAssetFile);
+                                    console.log('      COLLECTION:', index, '=>', effect.collection[index]);
                                 }
                             }
                         }
-                        resolve(data.pages);
-                        return;
                     }
+                }
+                resolve(data.pages);
+            } else {
+            // Process hard-sub webtoon (default)
+                let images = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img img[data-url]')];
+                let links = images.map(element => new URL(element.dataset.url, window.location).href);
+                resolve(links);
+            }
 
-                    // Process hard-sub webtoon (default)
-                    {
-                        let images = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img img[data-url]')];
-                        let links = images.map(element => new URL(element.dataset.url, window.location).href);
-                        resolve(links);
-                    }
-                });
+        } catch (error) {
+            reject(error);
+        }
+
+    });
 `;
 
 function ChapterExtractor(element: HTMLAnchorElement) {
@@ -258,17 +261,15 @@ function ChapterEndsWith(target: Chapter[], source: Chapter[]) {
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  */
 async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string): Promise<Page[]> {
-    const url = new URL(chapter.Identifier, this.URI);
-    const request = new Request(url.href);
-    const data = await FetchWindowScript(request, script, 1500);
+    const data = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), script, 1500);
     if (!Array.isArray(data)) return [];
-    return typeof data[0] == 'string' ? (data as Array<string>).map(page => new Page(this, chapter, new URL(page))) : createPagesfromData(this, chapter, data as PageData[]);
+    return typeof data[0] === 'string' ? (data as Array<string>).map(page => new Page(this, chapter, new URL(page))) : createPagesfromData(this, chapter, data as PageData[]);
 }
 
 //sample for descrambling : //https://www.webtoons.com/id/horror/guidao/list?title_no=874
 async function createPagesfromData(scraper: MangaScraper, chapter: Chapter, data: PageData[]): Promise<Page[]> {
     return data.map(page => {
-        const parameters = { Referer: scraper.URI.href, page: JSON.stringify(page) };
+        const parameters = { Referer: scraper.URI.origin, page: JSON.stringify(page) };
         return new Page(scraper, chapter, new URL(scraper.URI), parameters);
     });
 
