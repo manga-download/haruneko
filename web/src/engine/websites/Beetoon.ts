@@ -21,7 +21,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const response = await Fetch(new Request(this.URI.href));
+        const response = await Fetch(new Request(this.URI));
         console.log(`Assigned URL ${response.url} to ${this.Title}`);
         this.URI.href = response.url;
         return;

@@ -18,12 +18,8 @@ type APIChapter = {
 }
 
 const scriptPages = `
-    new Promise((resolve, reject) => {
-        try {
-            resolve(window.pUrl.map(page => page.imgURL));
-        } catch (error) {
-            reject(error);
-        }
+    new Promise(resolve) => {
+        resolve(window.pUrl.map(page => page.imgURL));
     });
 `;
 
@@ -42,8 +38,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL(manga.Identifier, this.URI);
-        const request = new Request(url.href, {
+        const request = new Request(new URL(manga.Identifier, this.URI), {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }

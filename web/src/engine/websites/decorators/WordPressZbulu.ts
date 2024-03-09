@@ -157,8 +157,7 @@ async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path:
 }
 
 async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, path: string, query = queryChapters): Promise<Chapter[]>{
-    const url = new URL(path.replace('//', '/'), this.URI).href;
-    const request = new Request(url);
+    const request = new Request(new URL(path.replace('//', '/'), this.URI));
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(chapter => {
         const { id, title } = ChapterExtractor.call(this, chapter, manga.Title);

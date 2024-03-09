@@ -29,7 +29,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI).href);
+        const request = new Request(new URL(chapter.Identifier, this.URI));
         const data = await FetchCSS(request, 'div.container-chap p#arraydata');
         return data[0].textContent.split(',').map(link => new Page(this, chapter, new URL(link)));
     }
