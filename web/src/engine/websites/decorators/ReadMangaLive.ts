@@ -51,7 +51,7 @@ type ImagesData = {
 async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay: number = 0): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     uri.searchParams.set('mtr', '1');
-    const images = await FetchWindowScript<ImagesData>(new Request(uri.href), script, delay);
+    const images = await FetchWindowScript<ImagesData>(new Request(uri), script, delay);
 
     images.pics = images.pics.map(pic => pic.replace(/^\/\//, 'https://'));
     images.servers = images.servers
@@ -60,11 +60,11 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
 
     return images.pics.map(url => {
         const imageUrl = new URL(url);
-        const alternativeUrls = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server).href)
-            .filter(altUrl => altUrl != imageUrl.href)
+        const alternativeUrls = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server))
+            .filter(altUrl => altUrl.href != imageUrl.href)
             .join(',');
         return new Page(this, chapter, imageUrl, {
-            Referer: uri.href,
+            Referer: uri.origin,
             alternativeUrls: alternativeUrls
         });
     });
