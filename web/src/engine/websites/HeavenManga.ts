@@ -5,9 +5,10 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(element: HTMLAnchorElement) {
-    const id = element.pathname;
-    const title = element.querySelector('img').alt.trim();
-    return { id, title };
+    return {
+        id: element.pathname,
+        title: element.querySelector('img').alt.trim()
+    };
 }
 
 type APIChapter = {
