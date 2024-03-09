@@ -23,8 +23,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const uri = new URL('/manga-list.html', this.URI);
-        const request = new Request(uri.href);
+        const request = new Request(new URL('/manga-list.html', this.URI));
         return FetchWindowScript(request, `window.cookieStore.set('read_type', '1')`, 0, 30000);
     }
 
@@ -39,7 +38,7 @@ export default class extends DecoratableMangaScraper {
     private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
         const mangaslug = manga.Identifier.match(/manga-([^/]+)\.html/)[1];
         const url = new URL('/cek/fetch_pages_manga.php?manga_cek=' + mangaslug, this.URI);
-        const request = new Request(url.href, {
+        const request = new Request(url, {
             method: 'POST',
             body: 'page=' + page,
             headers: {
