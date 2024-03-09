@@ -64,9 +64,9 @@ export function ChapterExtractor(element: HTMLAnchorElement) {
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapter, extract = ChapterExtractor): Promise<Chapter[]> {
     const uri = new URL(manga.Identifier+ '/list', this.URI);
-    const request = new Request(uri.href, {
+    const request = new Request(uri, {
         headers: {
-            Referer: this.URI.href
+            Referer: this.URI.origin
         }
     });
     const data = await FetchCSS(request, query);
@@ -104,8 +104,7 @@ export function ChaptersSinglePageCSS(query: string = queryChapter, extract = Ch
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  */
 export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-    const uri = new URL(chapter.Identifier, this.URI);
-    const request = new Request(uri.href, {
+    const request = new Request(new URL(chapter.Identifier, this.URI), {
         headers: {
             Referer: this.URI.origin
         }
@@ -168,7 +167,7 @@ async function fetchCoordInfo(scraper: MangaScraper, viewer: HTMLElement): Promi
             Referer: scraper.URI.origin
         }
     });
-    return await FetchJSON<APIResult<APIPage[]>>(request);
+    return FetchJSON<APIResult<APIPage[]>>(request);
 }
 
 /***********************************************
