@@ -36,8 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL('/yj-rest-apis/getBookInfo.php', this.URI).href);
-        const data = await FetchJSON<APIMagazine[]>(request);
+        const data = await FetchJSON<APIMagazine[]>(new Request(new URL('/yj-rest-apis/getBookInfo.php', this.URI)));
         return data.map(magazine => new Manga(this, provider, magazine.url, `${magazine.issue} - ${magazine.number}`.trim()));
 
     }

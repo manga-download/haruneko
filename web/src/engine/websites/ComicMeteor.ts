@@ -6,9 +6,10 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('img').getAttribute('alt').trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('img').getAttribute('alt').trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div.h2ttl_other')
@@ -24,11 +25,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier, this.URI).href);
-        const contents = await FetchCSS(request, 'div#contents');
-        const data = contents[0];
+        const [ data ] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'div#contents');
+
         let chapterList = [...data.querySelectorAll<HTMLAnchorElement>('div.work_episode div.work_episode_box div.work_episode_table div.work_episode_link_btn.work_episode_link_orange a')]
             .map(element => new Chapter(this, manga, element.pathname, element.closest('div.work_episode_table').querySelector<HTMLDivElement>('div.work_episode_txt').innerText.replace(manga.Title, '').trim()));
+
         if (chapterList.length == 0) {
             chapterList = [...data.querySelectorAll<HTMLAnchorElement>('div.latest_info_box div.latest_info_link_btn01 a')]
                 .map(element => new Chapter(this, manga, element.pathname, element.text.replace('読む', '').trim()));

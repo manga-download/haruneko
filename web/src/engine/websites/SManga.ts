@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/search/search.html?seriesid=${manga.Identifier}&order=1`, this.URI);
-        const { data } = await FetchWindowScript<SSD>(new Request(url.href), 'window.ssd', 2000);
+        const { data } = await FetchWindowScript<SSD>(new Request(url), 'window.ssd', 2000);
         return data.item_datas.map(chapter => new Chapter(this, manga, `/reader/main.php?cid=${this.isbnToCid(chapter.isbn)}`, chapter.item_name.replace(manga.Title, '').trim().replace(/^／/, '').trim()));
     }
 

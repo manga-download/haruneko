@@ -19,10 +19,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(manga.Identifier, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchCSS(request, '.modal.modal-chapter .modal-body');
-        return data.reverse()
+        return (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.modal.modal-chapter .modal-body'))
+            .reverse()
             //.filter(e => e.querySelector(".banner-trial img").getAttribute("alt") == "FREE") //dont filter for free chapter
             .map(element => new Chapter(this, manga, element.querySelector<HTMLAnchorElement>('.banner-trial a').pathname, element.querySelector('.primary-title').textContent.trim()));
     }

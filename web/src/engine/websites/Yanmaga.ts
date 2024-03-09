@@ -5,9 +5,10 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('.mod-book-title').textContent.trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('.mod-book-title').textContent.trim()
+    };
 }
 
 const chapterScript = `

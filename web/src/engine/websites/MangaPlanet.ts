@@ -25,14 +25,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new Request(this.URI.href);
-        return FetchWindowScript(request, `window.cookieStore.set('mpaconf', '18')`);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('mpaconf', '18')`);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(manga.Identifier, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchCSS(request, '#accordion div[id*="vol_"]');
+        const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '#accordion div[id*="vol_"]');
         const chapters : Chapter[] = [];
         for (const volume of data) {
             const title = volume.querySelector('h3').textContent.trim() + " - ";

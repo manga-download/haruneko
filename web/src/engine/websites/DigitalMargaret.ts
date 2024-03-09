@@ -5,14 +5,16 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('img').getAttribute('alt').trim();
-    return {id, title};
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('img').getAttribute('alt').trim()
+    };
 }
 function ChapterExtractor(element: HTMLElement) {
-    const id = element.querySelector('a').pathname;
-    const title = element.querySelector('p').textContent.trim();
-    return { id, title };
+    return {
+        id: element.querySelector('a').pathname,
+        title: element.querySelector('p').textContent.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/detail\/[^/]+\/$/, 'section#product div.content h3')

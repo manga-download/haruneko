@@ -6,9 +6,10 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.pathname.match(/[^/]+\/web-comic\/([^/]+)\//)[1];
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.pathname.match(/[^/]+\/web-comic\/([^/]+)\//)[1]
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/web-comic\/[^/]+\/$/, 'div.title-area h2')
@@ -17,7 +18,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('onetwothreehon', `123hon`, 'https://www.123hon.com', Tags.Media.Manga, Tags.Language.Japanese );
+        super('onetwothreehon', `123hon`, 'https://www.123hon.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
     public override get Icon() {
@@ -35,12 +36,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier, this.URI).href);
-        const data = await FetchCSS(request, 'div.read-episode li');
-        return data.map(element => {
+        const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'div.read-episode li');
+        const chapterlist : Chapter[] = data.map(element => {
             if (element.querySelector('a')) { // otherwise chapter not available
                 return new Chapter(this, manga, new URL(element.querySelector('a').pathname.replace(/index.html$/, ''), this.URI).pathname, element.innerText.match(/\s*(.*?)\s+/)[1]);
             }
-        }).filter(element => element !== undefined).filter(element => element.Identifier != '/');
+        });
+        return chapterlist.distinct();
     }
 }

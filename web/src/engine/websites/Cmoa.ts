@@ -26,14 +26,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier, this.URI).href);
-        const pages = await FetchCSS<HTMLAnchorElement>(request, '#comic_list > .pagination:nth-child(1) li:nth-last-child(2) a');
+        const pages = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI).href), '#comic_list > .pagination:nth-child(1) li:nth-last-child(2) a');
         const chapters = [];
         const totalPage = pages.length == 0 ? 1 : parseInt(new URL(pages[0].href).searchParams.get('page'));
         for (let i = 0; i < totalPage; i++) {
             const uri = new URL(manga.Identifier, this.URI);
             uri.searchParams.set('page', String(i + 1));
-            const pageRequest = new Request(uri.href);
+            const pageRequest = new Request(uri);
             const data = await FetchCSS(pageRequest, '.title_vol_vox_vols .title_vol_vox_vols_i');
             for (const element of data) {
                 const chapterLink = element.querySelector<HTMLAnchorElement>('a[href^="/reader/"]');

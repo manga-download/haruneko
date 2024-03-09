@@ -6,9 +6,10 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('.title').textContent.trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('.title').textContent.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h2.contentTitle')
@@ -26,30 +27,18 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         //find real reader url to send to SpeedBinb, since redirection is done by Javascript
-        const data = await FetchCSS<HTMLBodyElement>(new Request(chapter.Identifier), 'body');
-        const reallink = data[0].innerHTML.match(/location.href='(.*)'/)[1];
-        return await SpeedBinb.FetchPagesSinglePageAjax.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
+        const [ data ] = await FetchCSS<HTMLBodyElement>(new Request(chapter.Identifier), 'body');
+        const reallink = data.innerHTML.match(/location.href='(.*)'/)[1];
+        return SpeedBinb.FetchPagesSinglePageAjax.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(manga.Identifier, this.URI);
-        const data = await FetchCSS(new Request(uri.href), 'a[onClick^="return !openBook("]');
-        let chapterList = data.map(element => {
-            let partId = element.getAttribute('onclick');
-            partId = partId.match(/\d+/)[0];
-
-            let title = element.querySelector('.title') ? element.querySelector('.title').textContent : element.querySelector('btnMini') ? element.querySelector('btnMini').textContent : 'マンガをよむ';
-            title = title.trim();
-            return {
-                id: 'https://yondemill.jp/contents/' + partId + '?view=1&u0=1',
-                title: title
-            };
+        const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'a[onClick^="return !openBook("]');
+        const chapterList = data.map(element => {
+            const partId = element.getAttribute('onclick').match(/\d+/)[0];
+            const title = element.querySelector('.title') ? element.querySelector('.title').textContent : element.querySelector('btnMini') ? element.querySelector('btnMini').textContent : 'マンガをよむ';
+            return new Chapter(this, manga, `https://yondemill.jp/contents/${partId}?view=1&u0=1`, title.trim());
         });
-        // Remove duplicates
-        chapterList = chapterList.reverse().filter((chapter, index) => {
-            return index === chapterList.findIndex(c => c.id === chapter.id);
-        });
-
-        return chapterList.map(chapter => new Chapter(this, manga, chapter.id, chapter.title));
+        return chapterList.reverse().distinct();
     }
 }

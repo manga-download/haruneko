@@ -6,15 +6,16 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
-    const id = new URL(element.querySelector('a').href).pathname.replace('/new.html', '/');
-    const title = element.querySelector('.title').textContent.replace(/\s*THE COMIC\s*/i, '').trim();
-    return { id, title };
+    return {
+        id: new URL(element.querySelector('a').href).pathname.replace('/new.html', '/'),
+        title: element.querySelector('.title').textContent.replace(/\s*THE COMIC\s*/i, '').trim()
+    };
 }
 function ChapterExtractor(element: HTMLElement) {
-    const a = element.parentElement.querySelector<HTMLAnchorElement>('a.read_bt');
-    const id = a.pathname;
-    const title = element.textContent.trim();
-    return { id, title };
+    return {
+        id: element.parentElement.querySelector<HTMLAnchorElement>('a.read_bt').pathname,
+        title: element.textContent.trim()
+    };
 }
 
 @Common.MangasSinglePageCSS('/list', '.box_wrap .box', MangaExtractor)
