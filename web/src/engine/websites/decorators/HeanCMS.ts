@@ -7,33 +7,33 @@ import * as Common from './Common';
 //add a listener on the aforementionned setting
 
 const DefaultNovelScript = `
-            new Promise((resolve, reject) => {
-                document.body.style.width = '56em';
-                let container = document.querySelector('div.container');
-                container.style.maxWidth = '56em';
-                container.style.padding = '0';
-                container.style.margin = '0';
-	            let novel = document.querySelector('div#reader-container');
-                novel.style.padding = '1.5em';
-                [...novel.querySelectorAll(":not(:empty)")].forEach(ele => {
-                    ele.style.backgroundColor = 'black'
-                    ele.style.color = 'white'
-                })
-                novel.style.backgroundColor = 'black'
-                novel.style.color = 'white'
-                let script = document.createElement('script');
-                script.onerror = error => reject(error);
-                script.onload = async function() {
-                    try {
-                        let canvas = await html2canvas(novel);
-                        resolve([canvas.toDataURL('image/png')]);
-                    } catch (error){
-                        reject(error)
-                    }
-                }
-                script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
-                document.body.appendChild(script);
-            });
+    new Promise((resolve, reject) => {
+        document.body.style.width = '56em';
+        let container = document.querySelector('div.container');
+        container.style.maxWidth = '56em';
+        container.style.padding = '0';
+        container.style.margin = '0';
+        let novel = document.querySelector('div#reader-container');
+        novel.style.padding = '1.5em';
+        [...novel.querySelectorAll(":not(:empty)")].forEach(ele => {
+            ele.style.backgroundColor = 'black'
+            ele.style.color = 'white'
+        })
+        novel.style.backgroundColor = 'black'
+        novel.style.color = 'white'
+        let script = document.createElement('script');
+        script.onerror = error => reject(error);
+        script.onload = async function() {
+            try {
+                let canvas = await html2canvas(novel);
+                resolve([canvas.toDataURL('image/png')]);
+            } catch (error) {
+                reject(error)
+            }
+        }
+        script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+        document.body.appendChild(script);
+    });
  `;
 
 type APIManga = {
@@ -81,8 +81,7 @@ type APIPages = {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: string): Promise<Manga> {
     const slug = new URL(url).pathname.split('/')[2];
-    const request = new Request(new URL(`/series/${slug}`, apiUrl).href);
-    const { title, series_slug } = await FetchJSON<APIManga>(request);
+    const { title, series_slug } = await FetchJSON<APIManga>(new Request(new URL(`/series/${slug}`, apiUrl)));
     return new Manga(this, provider, series_slug, title);
 }
 
@@ -129,7 +128,7 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
 }
 
 async function getMangaFromPage(this: MangaScraper, provider: MangaPlugin, page: number, apiUrl: string): Promise<Manga[]> {
-    const request = new Request(new URL(`/query?series_type=All&order=asc&perPage=100&page=${page}`, apiUrl).href);
+    const request = new Request(new URL(`/query?series_type=All&order=asc&perPage=100&page=${page}`, apiUrl));
     const { data } = await FetchJSON<APIResult<APIManga>>(request);
     if (data.length) {
         return data.map((manga) => new Manga(this, provider, manga.series_slug, manga.title));
@@ -164,7 +163,7 @@ export function MangasMultiPageAJAX(apiUrl: string, throttle = 0) {
  * @param apiUrl - The url of the HeanCMS api for the website
  */
 export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, apiUrl: string): Promise<Chapter[]> {
-    const request = new Request(new URL(`/series/${manga.Identifier}`, apiUrl).href);
+    const request = new Request(new URL(`/series/${manga.Identifier}`, apiUrl));
     const { seasons } = await FetchJSON<APIManga>(request);
     const chapterList: Chapter[] = [];
 
@@ -201,7 +200,7 @@ export function ChaptersSinglePageAJAX(apiUrl: string) {
  * @param apiUrl - The url of the HeanCMS api for the website
  */
 export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, apiUrl: string): Promise<Page[]> {
-    const request = new Request(new URL(`/chapter/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl).href);
+    const request = new Request(new URL(`/chapter/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl));
     const { chapter_type, data, paywall, chapter: { storage } } = await FetchJSON<APIPages>(request);
 
     if (paywall) {
@@ -253,9 +252,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
         return Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType, deProxifyLink);
     } else {
         //TODO: test if user want to export the NOVEL as HTML?
-
-        const request = new Request(page.Link.href);
-        const data = await FetchWindowScript<string>(request, novelScript, 1000, 10000);
+        const data = await FetchWindowScript<string>(new Request(page.Link), novelScript, 1000, 10000);
         return Common.FetchImageAjax.call(this, new Page(this, page.Parent as Chapter, new URL(data)), priority, signal, false, false);
     }
 }
