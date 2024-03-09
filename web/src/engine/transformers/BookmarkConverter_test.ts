@@ -59,6 +59,7 @@ describe('BookmarkConverter', () => {
 
         it.each<{ sourceID: string, targetID: string }>([
             { sourceID: '9anime', targetID: 'aniwave' },
+            { sourceID: 'aresnov', targetID: 'manhuascarlet' },
             { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
             { sourceID: 'azoramanga', targetID: 'azoraworld' },
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
@@ -75,6 +76,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'kissaway', targetID: 'klmanga' },
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
+            { sourceID: 'komikav', targetID: 'apkomik' },
             { sourceID: 'kumascans', targetID: 'retsu' },
             { sourceID: 'imperioscans', targetID: 'neroxus' },
             { sourceID: 'lovehug', targetID: 'welovemanga' },

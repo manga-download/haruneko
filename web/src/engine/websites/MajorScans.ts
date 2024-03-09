@@ -1,13 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './MajorScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Major Scans"])')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageCSS()
-@Madara.PagesSinglePageCSS()
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS()
+@MangaStream.ChaptersSinglePageCSS()
+@Common.PagesSinglePageCSS('div#readerarea noscript img[src]:not([src=""])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

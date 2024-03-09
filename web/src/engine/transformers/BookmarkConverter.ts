@@ -4,6 +4,7 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
+    'aresnov': 'manhuascarlet',
     'azoramanga': 'azoraworld',
     'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
@@ -18,7 +19,9 @@ const legacyWebsiteIdentifierMap = {
     'gateanimemanga': 'gatemanga',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
+    'imperioscans': 'neroxus',
     'kisscomic': 'readcomiconline',
+    'komikav': 'apkomik',
     'kissaway': 'klmanga',
     'imperioscans': 'neroxus',
     'kumascans': 'retsu',

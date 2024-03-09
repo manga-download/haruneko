@@ -14,12 +14,12 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'section.series h1.title')
 @Common.MangasSinglePageCSS('/manga/', 'div.lastest-serie > a', Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div.chapter-li > a', ChapterExtractor)
-@MangaStream.PagesSinglePageJS([/ajax-loader/])
+@MangaStream.PagesSinglePageJS([/ajax-loader/, /100\.5.gif$/ ])
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manhwafreak', 'ManhwaFreak', 'https://manhwa-freak.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('manhwafreak', 'ManhwaFreak', 'https://freakcomic.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
