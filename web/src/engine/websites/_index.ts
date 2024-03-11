@@ -248,7 +248,6 @@ export { default as LianScans } from './LianScans';
 export { default as LightScans } from './LightScans';
 export { default as LikeManga } from './LikeManga';
 export { default as LilyManga } from './LilyManga';
-export { default as LimaScans } from './LimaScans';
 export { default as LireScan } from './LireScan';
 export { default as LittleGarden } from './LittleGarden';
 export { default as LowerWorld } from './LowerWorld';
