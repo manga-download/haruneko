@@ -59,11 +59,13 @@ describe('BookmarkConverter', () => {
 
         it.each<{ sourceID: string, targetID: string }>([
             { sourceID: '9anime', targetID: 'aniwave' },
+            { sourceID: 'aresnov', targetID: 'manhuascarlet' },
             { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
             { sourceID: 'azoramanga', targetID: 'azoraworld' },
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
             { sourceID: 'comicbushi', targetID: 'comicgrowl' },
+            { sourceID: 'comicwalker', targetID: 'kadocomi' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
             { sourceID: 'dalsei', targetID: 'viyafansub' },
             { sourceID: 'evascans', targetID: 'manwe' },
@@ -73,7 +75,9 @@ describe('BookmarkConverter', () => {
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
+            { sourceID: 'komikav', targetID: 'apkomik' },
             { sourceID: 'kumascans', targetID: 'retsu' },
+            { sourceID: 'imperioscans', targetID: 'neroxus' },
             { sourceID: 'lovehug', targetID: 'welovemanga' },
             { sourceID: 'lyrascans', targetID: 'quantumscans' },
             { sourceID: 'mangamx', targetID: 'mangaoni' },
@@ -86,11 +90,14 @@ describe('BookmarkConverter', () => {
             { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'nitroscans', targetID: 'nitromanga' },
+            { sourceID: 'nonbiri', targetID: 'comic21' },
             { sourceID: 'oxapk', targetID: 'manjanoon' },
             { sourceID: 'ozulscans', targetID: 'kingofmanga' },
             { sourceID: 'prismascans', targetID: 'demonsect' },
+            { sourceID: 'randomscan', targetID: 'luratoon' },
             { sourceID: 'realmscans', targetID: 'rizzcomics' },
             { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
+            { sourceID: 'rightdarkscan', targetID: 'darkscan' },
             { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },

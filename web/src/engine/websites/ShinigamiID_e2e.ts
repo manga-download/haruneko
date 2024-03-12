@@ -5,8 +5,9 @@ const config: Config = {
         id: 'shinigamiid',
         title: 'Shinigami ID',
     },
+    /* CloudFlare
     container: {
-        url: 'https://shinigamitoon.com/series/sss-class-suicide-hunter/',
+        url: 'https://shinigami.cx/series/sss-class-suicide-hunter/',
         id: JSON.stringify({ post: "641", slug: "/series/sss-class-suicide-hunter/" }),
         title: 'SSS-Class Suicide Hunter'
     },
@@ -18,7 +19,7 @@ const config: Config = {
         index: 1,
         size: 894_830,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

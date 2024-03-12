@@ -5,13 +5,13 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangasResult = {
-    data : APIManga[]
+    data: APIManga[]
 }
 
 type APIManga = {
     id: number
     title: string
-    slug : string
+    slug: string
 }
 
 type APIChaptersResult = APIChapter[];
@@ -20,19 +20,24 @@ type APIChapter = {
     id: number
     slug: string
     title: string
-    chapter_number : string
+    chapter_number: string
 }
 
 type APISingleManga = {
-    main_manga: {id : number, title : string, slug : string}
+    main_manga: {
+        id: number,
+        title: string,
+        slug: string
+    }
 }
 
 type APIChapterForPages = {
-    chapter : {
+    chapter: {
         images: string[]
         manga_id: number
-        slug : string
-     }
+        slug: string,
+        on_disk: number
+    }
 }
 
 @Common.ImageAjax()
@@ -47,14 +52,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/manga/\\d+/\\S+`).test(url);
+        return new RegExp(`^${this.URI.origin}/manga/\\d+/[^/]+`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = url.match(/\/manga\/(\S+)/)[1];
-        const apicallurl = new URL('/api/manga/' + mangaid, this.URI);
-        const request = new Request(apicallurl.href);
-        const data = await FetchJSON<APISingleManga>(request);
+        const uri = new URL('/api/manga/' + mangaid, this.URI);
+        const data = await FetchJSON<APISingleManga>(new Request(uri.href));
         const id = { id: data.main_manga.id, slug: data.main_manga.slug };
         return new Manga(this, provider, JSON.stringify(id), data.main_manga.title.trim());
     }
@@ -89,8 +93,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaid: APIManga = JSON.parse(manga.Identifier);
         const uri = new URL(`/api/manga/${mangaid.id}/${mangaid.slug}/chapterlist`, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchJSON<APIChaptersResult>(request);
+        const data = await FetchJSON<APIChaptersResult>(new Request(uri.href));
         return data.map(item => {
             const id = { id: item.id, slug: item.slug };
             return new Chapter(this, manga, JSON.stringify(id), 'Chapter ' + item.chapter_number);
@@ -101,8 +104,10 @@ export default class extends DecoratableMangaScraper {
         const mangaid: APIManga = JSON.parse(chapter.Parent.Identifier);
         const chapterid: APIChapter = JSON.parse(chapter.Identifier);
         const uri = new URL(`/api/manga/${mangaid.id}/${mangaid.slug}/${chapterid.id}/chapter-${chapterid.slug}`, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchJSON<APIChapterForPages>(request);
-        return data.chapter.images.map(page => new Page(this, chapter, new URL(`/storage/uploads/manga/manga_${data.chapter.manga_id}/chapter_${data.chapter.slug}/${page}`, this.URI)));
+        const data = await FetchJSON<APIChapterForPages>(new Request(uri.href));
+        return data.chapter.images.map(page => {
+            const path = !data.chapter.on_disk ? '/e-storage/uploads/manga' : '/storage/uploads/manga';
+            return new Page(this, chapter, new URL(`${path}/manga_${data.chapter.manga_id}/chapter_${data.chapter.slug}/${page}`, this.URI));
+        });
     }
 }

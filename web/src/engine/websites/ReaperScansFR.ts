@@ -4,10 +4,14 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Madara from './decorators/WordPressMadara';
 
+function PageExtractor(image: HTMLImageElement) {
+    return image.getAttribute('src').trim().replace(/^http:/, 'https:');
+}
+
 @Madara.MangaCSS(/^{origin}\/serie\/[\w-]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageCSS()
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageCSS('div.page-break img', PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
