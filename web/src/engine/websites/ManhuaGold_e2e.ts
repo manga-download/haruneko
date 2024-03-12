@@ -6,7 +6,7 @@ const config = {
         title: 'Manhua Gold'
     },
     container: {
-        url: 'https://manhuagold.com/manga/cultivator-against-hero-society',
+        url: 'https://manhuagold.top/manga/cultivator-against-hero-society',
         id: '/manga/cultivator-against-hero-society',
         title: 'Cultivator Against Hero Society'
     },
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 1_624_425,
+        size: 869_273,
         type: 'image/jpeg'
     }
 };
