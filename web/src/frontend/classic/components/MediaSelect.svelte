@@ -5,10 +5,11 @@
         Button,
         Search,
         Loading,
+        InlineNotification,
     } from 'carbon-components-svelte';
 
     import { UpdateNow, CopyLink } from 'carbon-icons-svelte';
-    import type { ComboBoxItem } from 'carbon-components-svelte/types/ComboBox/ComboBox.svelte';
+    import type { ComboBoxItem } from 'carbon-components-svelte/src/ComboBox/ComboBox.svelte';
     // Third Party
     import Fuse from 'fuse.js';
     // Svelte
@@ -25,7 +26,10 @@
     } from '../stores/Stores';
     import { FuzzySearch } from '../stores/Settings';
     // Hakuneko Engine
-    import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
+    import type {
+        MediaContainer,
+        MediaChild,
+    } from '../../../engine/providers/MediaPlugin';
     import type { MediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
@@ -103,7 +107,7 @@
             return fuse.search(mediaNameFilter).map((item) => item.item);
         else
             return medias.filter((item) =>
-                item.Title.includes(mediaNameFilter)
+                item.Title.includes(mediaNameFilter),
             );
     }
     let mediaNameFilter = '';
@@ -131,9 +135,7 @@
         try {
             const link = new URL(await navigator.clipboard.readText()).href;
             for (const website of HakuNeko.PluginController.WebsitePlugins) {
-                const media = (await website.TryGetEntry(
-                    link
-                ));
+                const media = await website.TryGetEntry(link);
                 if (media) {
                     $selectedItem = undefined;
                     if (!$selectedPlugin?.IsSameAs(media.Parent)) {
@@ -156,7 +158,7 @@
 
     async function selectPlugin(id: string) {
         $selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
-            (plugin) => plugin.Identifier === id
+            (plugin) => plugin.Identifier === id,
         );
     }
 </script>
@@ -224,8 +226,14 @@
                     }}
                 />
             </VirtualList>
-        {:catch}
-            Error loading medias
+        {:catch error}
+            <div class="error">
+                <InlineNotification
+                    lowContrast
+                    title={error}
+                    subtitle={error.message}
+                />
+            </div>
         {/await}
     </div>
     <div id="MediaCount">
@@ -249,7 +257,7 @@
         grid-area: Media;
         overflow-x: hidden;
         resize: horizontal;
-        min-width: 19em;
+        min-width: 22em;
     }
     #Plugin {
         grid-area: Plugin;
@@ -280,5 +288,8 @@
         display: inline-block;
         height: 100%;
         padding-top: 0.3em;
+    }
+    .error {
+        padding: 0 1em 0 1em;
     }
 </style>

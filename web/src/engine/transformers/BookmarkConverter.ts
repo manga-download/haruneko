@@ -4,11 +4,13 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
+    'aresnov': 'manhuascarlet',
     'azoramanga': 'azoraworld',
     'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
     'comicbushi': 'comicgrowl',
+    'comicwalker': 'kadocomi',
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
     'evascans': 'manwe',
@@ -17,7 +19,9 @@ const legacyWebsiteIdentifierMap = {
     'gateanimemanga': 'gatemanga',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
+    'imperioscans': 'neroxus',
     'kisscomic': 'readcomiconline',
+    'komikav': 'apkomik',
     'kumascans': 'retsu',
     'lovehug': 'welovemanga',
     'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
@@ -31,11 +35,14 @@ const legacyWebsiteIdentifierMap = {
     'manhwaclub': 'manhwahentai',
     'muctau': 'bibimanga',
     'nitroscans': 'nitromanga',
+    'nonbiri': 'comic21',
     'oxapk': 'manjanoon',
     'ozulscans': 'kingofmanga',
     'prismascans': 'demonsect',
+    'randomscan': 'luratoon',
     'realmscans': 'rizzcomics',
     'reaperscansid': 'shinigamiid',
+    'rightdarkscan': 'darkscan',
     'scansmangasxyz': 'scansmangasme',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',
