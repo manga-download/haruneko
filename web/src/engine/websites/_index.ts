@@ -144,7 +144,6 @@ export { default as GDScans } from './GDScans';
 export { default as GekkouScans } from './GekkouScans';
 export { default as GhostFansub } from './GhostFansub';
 export { default as GloryManga } from './GloryManga';
-export { default as GManga } from './GManga';
 export { default as Gntai } from './Gntai';
 export { default as GoldenMangas } from './GoldenMangas';
 export { default as GolDragon } from './GolDragon';
