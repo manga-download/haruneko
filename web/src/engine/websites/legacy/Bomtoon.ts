@@ -5,7 +5,6 @@ import { Page, type Chapter, type MangaPlugin, Manga } from '../../providers/Man
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import icon from './Bomtoon.webp';
 import Delitoon, { type APIManga, type APIPages, type APIResult } from './Delitoon';
-//import * as Common from '../decorators/Common';
 
 type APIMangas = {
     content: APIManga[]
