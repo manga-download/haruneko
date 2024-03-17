@@ -6,7 +6,7 @@ const config = {
         title: 'NetTruyen'
     },
     container: {
-        url: 'https://www.nettruyenbb.com/truyen-tranh/sau-khi-max-do-yeu-thich-550760',
+        url: 'https://www.nettruyenff.com/truyen-tranh/sau-khi-max-do-yeu-thich-550760',
         id: '/truyen-tranh/sau-khi-max-do-yeu-thich-550760',
         title: 'Sau Khi Max Độ Yêu Thích'
     },
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 1_806_313,
+        size: 125_468,
         type: 'image/jpeg'
     }
 };
