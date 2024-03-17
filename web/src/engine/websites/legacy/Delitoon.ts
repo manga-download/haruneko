@@ -6,7 +6,7 @@ import { FetchJSON } from '../../platform/FetchProvider';
 import { Exception } from '../../Error';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 
-type APIResult<T> = {
+export type APIResult<T> = {
     result: string,
     data: T
 }
@@ -25,7 +25,7 @@ type APIChapter = {
     subTitle: string
 }
 
-type APIPages = {
+export type APIPages = {
     images: {
         imagePath: string
     }[]
@@ -74,7 +74,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = new URL(url).href.match(/\/detail\/([^/]+)/)[1];
-        const req = new URL('/api/balcony-api-v2/contents/' + mangaid, this.URI);
+        const req = new URL(`/api/balcony-api-v2/contents/${mangaid}`, this.URI);
         req.searchParams.set('isNotLoginAdult', 'true');
         const { data } = await FetchJSON<APIResult<APIManga>>(this.createRequest(req));
         return new Manga(this, provider, mangaid, data.title.trim());
@@ -94,7 +94,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         await this.getToken();
-        const url = new URL('/api/balcony-api-v2/contents/' + manga.Identifier, this.URI);
+        const url = new URL(`/api/balcony-api-v2/contents/${manga.Identifier}`, this.URI);
         url.searchParams.set('isNotLoginAdult', 'true');
         const { data } = await FetchJSON<APIResult<APIManga>>(this.createRequest(url));
         return data.episodes.map(element => {
@@ -106,7 +106,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         await this.getToken();
-        const url = new URL('/api/balcony-api-v2/contents/' + chapter.Parent.Identifier + '/' + chapter.Identifier, this.URI);
+        const url = new URL(`/api/balcony-api-v2/contents/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
         url.searchParams.set('isNotLoginAdult', 'true');
         const apiresult = await FetchJSON<APIResult<APIPages>>(this.createRequest(url));
         if (apiresult.result == 'ERROR') {
@@ -158,7 +158,7 @@ export default class extends DecoratableMangaScraper {
             }
 
             //if token is defined, check for expiration  and refresh if needed
-            if (this.Token && this.Token.accessToken.expiredAt > Date.now()) { //24h expiration
+            if (this.Token && Date.now() > this.Token.accessToken.expiredAt) { //24h expiration
                 const url = new URL('/api/balcony/auth/refresh', this.URI);
                 const body = JSON.stringify({
                     accessToken: this.Token.accessToken.token,
