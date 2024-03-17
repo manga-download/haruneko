@@ -1,13 +1,16 @@
 import { Exception } from '../../Error';
 import { Tags } from '../../Tags';
 import { FetchJSON } from '../../platform/FetchProvider';
-import { Page, type Chapter } from '../../providers/MangaPlugin';
+import { Page, type Chapter, type MangaPlugin, Manga } from '../../providers/MangaPlugin';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import icon from './Bomtoon.webp';
-import Delitoon, { type APIPages, type APIResult } from './Delitoon';
-import * as Common from '../decorators/Common';
+import Delitoon, { type APIManga, type APIPages, type APIResult } from './Delitoon';
+//import * as Common from '../decorators/Common';
 
-@Common.MangasNotSupported()
+type APIMangas = {
+    content: APIManga[]
+}
+
 export default class extends Delitoon {
 
     public constructor() {
@@ -16,6 +19,19 @@ export default class extends Delitoon {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const url = new URL('/api/balcony-api/novelwriter/search/contents', this.URI);
+        url.search = new URLSearchParams({
+            searchText: '',
+            isCheckDevice: 'true',
+            isIncludeAdult: 'true',
+            contentsThumbnailType: 'MAIN',
+            size: '99999'
+        }).toString();
+        const { data } = await FetchJSON<APIResult<APIMangas>>(this.createRequest(url));
+        return data.content.map(element => new Manga(this, provider, element.alias, element.title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

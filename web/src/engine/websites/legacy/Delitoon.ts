@@ -11,7 +11,7 @@ export type APIResult<T> = {
     data: T
 }
 
-type APIManga = {
+export type APIManga = {
     id: number,
     alias: string,
     title: string
