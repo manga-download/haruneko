@@ -738,6 +738,7 @@ export { default as kuman5 } from './legacy/kuman5';
 export { default as KuManga } from './legacy/KuManga';
 export { default as LectorManga } from './legacy/LectorManga';
 export { default as LezhinEN } from './legacy/LezhinEN';
+export { default as LezhinES } from './legacy/LezhinES';
 export { default as LezhinJA } from './legacy/LezhinJA';
 export { default as LezhinKO } from './legacy/LezhinKO';
 export { default as LineWebtoonEN } from './legacy/LineWebtoonEN';
