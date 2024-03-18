@@ -229,6 +229,7 @@ export { default as Kuaikanmanhua } from './Kuaikanmanhua';
 export { default as kuimh } from './kuimh';
 export { default as KumoTran } from './KumoTran';
 export { default as KurageBunch } from './KurageBunch';
+export { default as Laimanhua8 } from './Laimanhua8';
 export { default as LamiManga } from './LamiManga';
 export { default as LaviniaFansub } from './LaviniaFansub';
 export { default as LectorUnitoon } from './LectorUnitoon';
