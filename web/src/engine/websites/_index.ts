@@ -504,6 +504,7 @@ export { default as PortalYaoi } from './PortalYaoi';
 export { default as PrismaHentai } from './PrismaHentai';
 export { default as Pururin } from './Pururin';
 export { default as Pzykosis666HFansub } from './Pzykosis666HFansub';
+export { default as Qimeitj } from './Qimeitj';
 export { default as QuantumScans } from './QuantumScans';
 export { default as Rackus } from './Rackus';
 export { default as RagnarokScan } from './RagnarokScan';
