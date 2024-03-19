@@ -1,10 +1,10 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Delitoon.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchJSON } from '../../platform/FetchProvider';
-import { Exception } from '../../Error';
-import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON } from '../platform/FetchProvider';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 export type APIResult<T> = {
     result: string,

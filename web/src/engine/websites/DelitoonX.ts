@@ -1,4 +1,4 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './DelitoonX.webp';
 import Delitoon from './Delitoon';
 

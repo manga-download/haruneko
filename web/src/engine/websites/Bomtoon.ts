@@ -1,8 +1,8 @@
-import { Exception } from '../../Error';
-import { Tags } from '../../Tags';
-import { FetchJSON } from '../../platform/FetchProvider';
-import { Page, type Chapter, type MangaPlugin, Manga } from '../../providers/MangaPlugin';
-import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
+import { Exception } from '../Error';
+import { Tags } from '../Tags';
+import { FetchJSON } from '../platform/FetchProvider';
+import { Page, type Chapter, type MangaPlugin, Manga } from '../providers/MangaPlugin';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import icon from './Bomtoon.webp';
 import Delitoon, { type APIManga, type APIPages, type APIResult } from './Delitoon';
 
