@@ -6,17 +6,17 @@ const config = {
         title: 'MangaDemon'
     },
     container: {
-        url: 'https://demontoon.com/manga/Martial-Peak-VA48',
-        id: '/manga/Martial-Peak-VA48',
+        url: 'https://demonreader.org/manga/Martial-Peak-VA50',
+        id: '/manga/Martial-Peak-VA50',
         title: 'Martial Peak'
     },
     child: {
-        id: '/manga/Martial-Peak/chapter/3670-VA48',
+        id: '/manga/Martial-Peak/chapter/3670-VA50',
         title: '3670'
     },
     entry: {
         index: 0,
-        size: 328_479,
+        size: 189_790,
         type: 'image/jpeg'
     }
 };

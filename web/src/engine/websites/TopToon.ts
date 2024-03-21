@@ -6,7 +6,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 //TODO : TEST/CODE LOGIN
 
-const clearMangaLimitScript = 'delete localStorage["freeComicCount"];';
+const clearMangaLimitScript = `localStorage.removeItem('freeComicCount');`;
 
 type APIComic = {
     id: number,
@@ -19,14 +19,14 @@ type APIComic = {
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = `/comic/ep_view/${anchor.dataset.comicId}/${anchor.dataset.episodeId}`;
-    let title = anchor.querySelector('p.episode_title').textContent.trim();
-    const subtitle = anchor.querySelector('p.episode_stitle');
-    title += subtitle ? ' - ' + subtitle.textContent.trim() : '';
+    let title = anchor.querySelector('p.ep_title').textContent.trim();
+    const subtitle = anchor.querySelector('p.ep_stitle');
+    title += subtitle && subtitle.textContent.trim() != '' ? ' - ' + subtitle.textContent.trim() : '';
     return { id, title };
 }
 
-@Common.MangaCSS(/^{origin}\/comic\/ep_list\//, 'div.bnr_episode_info p.tit_toon')
-@Common.ChaptersSinglePageCSS('div.episode_list ul a.episode-items', ChapterExtractor)
+@Common.MangaCSS(/^{origin}\/comic\/ep_list\/[^/]+/, 'div.ep_comic_info span.comic_tit span')
+@Common.ChaptersSinglePageCSS('div.eplist ul a.episode-items', ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -40,12 +40,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         //HashTag.list.comic got the filtered manga list. Dont directly fetch the json at HashTag.fileUrl, it has junk mangas
-        const data = await FetchWindowScript<APIComic[]>(new Request(new URL('/hashtag', this.URI).href), 'HashTag.list.comic', 500);
+        const data = await FetchWindowScript<APIComic[]>(new Request(new URL('/hashtag', this.URI)), 'HashTag.list.comic', 500);
         return data.map(entry => new Manga(this, provider, entry.meta.comicsListUrl, entry.meta.title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await FetchWindowScript(new Request(this.URI.href), clearMangaLimitScript); //clear free chapter limit
+        await FetchWindowScript(new Request(this.URI), clearMangaLimitScript); //clear free chapter limit
         return Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#viewerContentsWrap img.document_img');
     }
 
