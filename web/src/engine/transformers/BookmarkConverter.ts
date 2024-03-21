@@ -4,6 +4,7 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
+    'aresnov': 'manhuascarlet',
     'azoramanga': 'azoraworld',
     'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
@@ -18,8 +19,9 @@ const legacyWebsiteIdentifierMap = {
     'gateanimemanga': 'gatemanga',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
-    'kisscomic': 'readcomiconline',
     'imperioscans': 'neroxus',
+    'kisscomic': 'readcomiconline',
+    'komikav': 'apkomik',
     'kumascans': 'retsu',
     'lovehug': 'welovemanga',
     'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
