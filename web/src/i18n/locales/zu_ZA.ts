@@ -235,7 +235,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tracker_Kitsu_Settings_Password: "crwdns1543:0crwdne1543:0",
   Tracker_Kitsu_Settings_PasswordInfo: "crwdns1545:0crwdne1545:0",
   // [SECTION]: Plugins
-  Plugin_Settings_ThrottlingDownloads: "crwdns1598:0[ms]crwdne1598:0",
+  Plugin_Settings_ThrottlingDownloads: "crwdns1598:0crwdne1598:0",
   Plugin_Settings_ThrottlingDownloadsInfo: "crwdns1600:0crwdne1600:0",
   Plugin_Settings_ThrottlingInteraction: "crwdns1602:0crwdne1602:0",
   Plugin_Settings_ThrottlingInteractionInfo: "crwdns1604:0crwdne1604:0",
@@ -246,6 +246,9 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "crwdns1606:0crwdne1606:0",
   Plugin_Common_Chapter_UnavailableError: "crwdns1608:0crwdne1608:0",
   Plugin_Common_Chapter_InvalidError: "crwdns1610:0crwdne1610:0",
+  Plugin_Common_Preferred_Language: "crwdns2102:0crwdne2102:0",
+  Plugin_Common_Preferred_LanguageInfo: "crwdns2104:0crwdne2104:0",
+  Plugin_MissingManga_LanguageMismatchError: "crwdns2106:0{0}crwdnd2106:0{1}crwdne2106:0",
   Plugin_MissingWebsite_UpdateError: "crwdns1612:0crwdne1612:0",
   Plugin_MissingWebsiteEntry_UpdateError: "crwdns1614:0crwdne1614:0",
   Plugin_SheepScanlations_Settings_Username: "crwdns1553:0crwdne1553:0",

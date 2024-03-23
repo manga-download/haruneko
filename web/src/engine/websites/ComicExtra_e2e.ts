@@ -6,7 +6,7 @@ const config: Config = {
         title: 'ComicExtra'
     },
     container: {
-        url: 'https://comicextra.me/comic/grimm-fairy-tales-2016',
+        url: 'https://comicextra.org/comic/grimm-fairy-tales-2016',
         id: '/comic/grimm-fairy-tales-2016',
         title: 'Grimm Fairy Tales (2016)'
     },
