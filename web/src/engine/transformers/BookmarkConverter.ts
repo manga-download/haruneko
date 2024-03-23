@@ -46,6 +46,7 @@ const legacyWebsiteIdentifierMap = {
     'scansmangasxyz': 'scansmangasme',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',
+    'siyahmelek': 'grimelek',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
     'vermanhwas': 'vermanhwa',
