@@ -1,5 +1,3 @@
-import { CreateAppWindow } from './engine/platform/AppWindow';
-
 const appHook = '#app';
 const noticeHook = '#hakuneko-notice';
 const splashPath = '/splash.html';
@@ -34,17 +32,20 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
 (async function() {
     try {
         const showSplashScreen = window.localStorage.getItem('hakuneko-nosplash') !== 'true';
-        const appWindow = CreateAppWindow(window.location.origin + splashPath, showSplashScreen);
+        const { CreateAppWindow } = await import('./engine/platform/AppWindow');
+        const appWindow = CreateAppWindow(window.location.origin + splashPath);
         if(showSplashScreen) {
             appWindow.ShowSplash();
+        } else {
+            appWindow.HideSplash();
         }
 
         // Use lazy loading for these large modules to improve start-up performance
         const { HakuNeko } = await import('./engine/HakuNeko');
-        const { FrontendController } = await import('./frontend/FrontendController');
+        const { FrontendController, FrontendList } = await import('./frontend/FrontendController');
 
         window.HakuNeko = new HakuNeko();
-        await window.HakuNeko.Initialze();
+        await window.HakuNeko.Initialze(FrontendList);
         const frontend = new FrontendController(document.querySelector(appHook), window.HakuNeko.SettingsManager.OpenScope(), appWindow);
 
         if(showSplashScreen) {

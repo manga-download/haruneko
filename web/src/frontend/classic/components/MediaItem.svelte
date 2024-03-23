@@ -6,9 +6,15 @@
     import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
         BookmarkFilled as IconBookmarkFilled,
+        CloudDownload,
+        Download,
+        Error,
+        FolderOpen,
+        Pause,
+        PauseFuture,
         View,
         ViewFilled,
-        CloudDownload,
+        VolumeFileStorage,
     } from 'carbon-icons-svelte';
 
     import { filterByCategory, Tags } from '../../../engine/Tags';
@@ -18,9 +24,9 @@
         MediaItem,
     } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
-    import { selectedItem } from '../stores/Stores';
+    import { selectedItem, DownloadTasks } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
-
+    import { DownloadTask, Status } from '../../../engine/DownloadTask';
     export let item: StoreableMediaContainer<MediaItem>;
     export let selected: boolean;
     export let hover: boolean;
@@ -46,7 +52,23 @@
     });
     onDestroy(() => {
         HakuNeko.ItemflagManager.FlagChanged.Unsubscribe(OnFlagChangedCallback);
+        downloadTask?.StatusChanged.Unsubscribe(refreshDownloadStatus);
+        tasksunsubscribe();
     });
+
+    let downloadTask: DownloadTask;
+
+    let tasksunsubscribe = DownloadTasks.subscribe((tasks) => {
+        downloadTask?.StatusChanged.Unsubscribe(refreshDownloadStatus);
+        downloadTask = tasks.find(
+            (task) => task.Media.Identifier === item.Identifier,
+        );
+        downloadTask?.StatusChanged.Subscribe(refreshDownloadStatus);
+    });
+
+    async function refreshDownloadStatus(_sender, status) {
+        downloadTask = downloadTask;
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -66,12 +88,32 @@
     <Button
         size="small"
         kind="ghost"
-        icon={CloudDownload}
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="Download"
         on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
-    />
+    >
+        {#if downloadTask}
+            {@const status = downloadTask.Status}
+            {#if status === Status.Queued}
+                <PauseFuture fill="var(--cds-icon-secondary)" />
+            {:else if status === Status.Paused}
+                <Pause fill="var(--cds-toggle-off)" />
+            {:else if status === Status.Downloading}
+                <Download fill="var(--cds-support-info)" />
+            {:else if status === Status.Processing}
+                <VolumeFileStorage fill="var(--cds-support-info)" />
+            {:else if status === Status.Failed}
+                <Error fill="var(--cds-support-error-inverse)" />
+            {:else if status === Status.Completed}
+                <FolderOpen fill="var(--cds-support-03)" />
+            {:else}
+                <CloudDownload fill="var(--cds-icon-01)" />
+            {/if}
+        {:else}
+            <CloudDownload fill="var(--cds-icon-01)" />
+        {/if}
+    </Button>
     <Button
         size="small"
         kind="ghost"

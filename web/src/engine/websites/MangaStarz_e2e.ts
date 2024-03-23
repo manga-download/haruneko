@@ -6,7 +6,7 @@ const config = {
         title: 'مانجا ستارز (Mangastarz)'
     },
     container: {
-        url: 'https://mangastarz.org/manga/getter-robo-go/',
+        url: 'https://manga-starz.com/manga/getter-robo-go/',
         id: JSON.stringify({ post: '82737', slug: '/manga/getter-robo-go/' }),
         title: 'Getter Robo Go'
     },

@@ -6,17 +6,17 @@ const config: Config = {
         title: 'Stellar Saber'
     },
     container: {
-        url: 'https://stellarsaber.com/manga/jujutsu-kaisen/',
-        id: JSON.stringify({ post: '2054', slug: '/manga/jujutsu-kaisen/'}),
+        url: 'https://stellarsaber.pro/manga/jujutsu-kaisen/',
+        id: '/manga/jujutsu-kaisen/',
         title: 'Jujutsu Kaisen'
     },
     child: {
-        id: '/manga/jujutsu-kaisen/-249/',
-        title: 'الفصل 249'
+        id: '/jujutsu-kaisen-%d8%a7%d9%84%d9%81%d8%b5%d9%84-249/',
+        title: 'Chapter 249'
     },
     entry: {
         index: 0,
-        size: 2_866_377,
+        size: 1_498_400,
         type: 'image/jpeg'
     }
 };

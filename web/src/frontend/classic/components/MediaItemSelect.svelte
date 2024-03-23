@@ -7,6 +7,7 @@
         ContextMenuDivider,
         ContextMenuGroup,
         ContextMenuOption,
+        InlineNotification,
         Loading,
     } from 'carbon-components-svelte';
     import { EarthFilled } from 'carbon-icons-svelte';
@@ -94,8 +95,8 @@
               ]
             : [{ id: '*', text: '*' }];
 
-    let langFilterID: string | Tag = '*';
-    $: langFilter = langFilterID === '*' ? null : (langFilterID as Tag);
+    let langFilterID: '*' | Tag = '*';
+    $: langFilter = langFilterID === '*' ? null : langFilterID;
     /*
      * Multi Item Selection
      * CTRL + click = individual add to selected list
@@ -329,6 +330,14 @@
                     on:mouseenter={mouseHandler(item)}
                 />
             {/each}
+        {:catch error}
+            <div class="error">
+                <InlineNotification
+                    lowContrast
+                    title={error}
+                    subtitle={error.message}
+                />
+            </div>
         {/await}
     </div>
     <div id="ItemCount">
@@ -352,7 +361,7 @@
         grid-area: Item;
         overflow-x: hidden;
         resize: horizontal;
-        min-width: 19em;
+        min-width: 22em;
     }
     #LanguageFilter {
         grid-area: LanguageFilter;

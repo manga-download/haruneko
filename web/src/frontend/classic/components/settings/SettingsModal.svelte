@@ -9,7 +9,7 @@
         InlineNotification,
     } from 'carbon-components-svelte';
     import SettingsViewer from './SettingsViewer.svelte';
-    import SettingsPanel from './SettingsPanel.svelte';
+    import ViewerSettings from '../viewer/Settings.svelte';
 
     import { Scope } from '../../../../engine/SettingsGlobal';
 
@@ -31,7 +31,8 @@
 >
     <Tabs type="container" selected={selectedTab}>
         <Tab label="General" />
-        <Tab label="Style" />
+        <Tab label="Interface" />
+        <Tab label="Viewer" />
         <Tab label="Trackers" />
         <Tab label="Network" />
         <svelte:fragment slot="content">
@@ -43,7 +44,15 @@
                 />
             </TabContent>
             <TabContent class="settingtab">
-                <SettingsPanel />
+                TODO : UI Scope needs to be defined
+                <SettingsViewer
+                    settings={[
+                        ...window.HakuNeko.SettingsManager.OpenScope(Scope),
+                    ]}
+                />
+            </TabContent>
+            <TabContent class="settingtab">
+                <ViewerSettings />
             </TabContent>
             <TabContent class="settingtab">
                 {#each [...window.HakuNeko.PluginController.InfoTrackers].filter((tracker) => [...tracker.Settings].length > 0) as tracker}
@@ -52,6 +61,7 @@
                 {/each}
             </TabContent>
             <TabContent class="settingtab">
+                <div>Placeholders, they do nothing</div>
                 <div style="padding-bottom:2em;">
                     <Toggle
                         toggled
