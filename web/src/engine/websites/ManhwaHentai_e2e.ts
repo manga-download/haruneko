@@ -6,17 +6,17 @@ const config = {
         title: 'ManhwaHentai'
     },
     container: {
-        url: 'https://manhwahentai.to/pornhwa/secret-class-uncensored/',
-        id: JSON.stringify({ post: '66098', slug: '/pornhwa/secret-class-uncensored/' }),
-        title: 'Secret Class Uncensored'
+        url: 'https://manhwahentai.to/pornhwa/young-aunt/',
+        id: JSON.stringify({ post: '96722', slug: '/pornhwa/young-aunt/' }),
+        title: 'Young Aunt'
     },
     child: {
-        id: '/pornhwa/secret-class-uncensored/chapter-01/',
-        title: 'Chapter 01'
+        id: '/pornhwa/young-aunt/chapter-1',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 170_686,
+        size: 2_250_720,
         type: 'image/jpeg'
     }
 };
