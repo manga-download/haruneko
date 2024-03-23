@@ -6,7 +6,7 @@ const config = {
         title: 'MangaFlame'
     },
     container: {
-        url: 'https://mangaflame.org/manga/apocalyptic-super-farm/',
+        url: 'https://arisescans.com/manga/apocalyptic-super-farm/',
         id: '/manga/apocalyptic-super-farm/',
         title: 'Apocalyptic super farm'
     },
