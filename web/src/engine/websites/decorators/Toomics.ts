@@ -26,12 +26,14 @@ export const queryChapter = [
 
 export const queryChapterNum = [
     'div.cell-num', //Toomics
-    'div.ep__turning, div.ep__turning-txt'//Lalatoon
+    'div.ep__turning, div.ep__turning-txt', //Lalatoon
+    'div.ep__episode' // ToomicsKO
 ].join(',');
 
 export const queryChapterTitle = [
     'div.cell-title', //Toomics
-    'div.ep__name'//Lalatoon
+    'div.ep__name',//Lalatoon
+    'strong.ep__title'//ToomicsKO
 ].join(',');
 
 export const queryPages = '#viewer-img img';
@@ -53,8 +55,8 @@ function ChapterExtractor(element: HTMLAnchorElement) {
             element.href = action.match(/popup\s*\(\s*'[^']+'\s*,\s*'[^']*'\s*,\s*'([^']+)'/)[1];
         }
     }
-    const chapterNumber = element.querySelector(queryChapterNum).textContent.trim();
-    const subtitle = element.querySelector(queryChapterTitle).textContent.trim();
+    const chapterNumber = element.querySelector(queryChapterNum)?.textContent.trim();
+    const subtitle = element.querySelector(queryChapterTitle)?.textContent.trim();
     return {
         id: element.pathname,
         title: [chapterNumber, subtitle].join(' ').trim()
