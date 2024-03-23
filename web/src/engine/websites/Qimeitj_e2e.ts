@@ -2,21 +2,21 @@
 
 const config = {
     plugin: {
-        id: 'mangademon',
-        title: 'MangaDemon'
+        id: 'qimeitj',
+        title: 'Qimeitj'
     },
     container: {
-        url: 'https://demonreader.org/manga/Martial-Peak-VA50',
-        id: '/manga/Martial-Peak-VA50',
-        title: 'Martial Peak'
+        url: 'https://qimeitj.com/book/2324',
+        id: '/book/2324',
+        title: '后宫太多，只好飞升了'
     },
     child: {
-        id: '/manga/Martial-Peak/chapter/3670-VA50',
-        title: '3670'
+        id: '/chapter/144045',
+        title: '035.5 洞天之内',
     },
     entry: {
         index: 0,
-        size: 189_790,
+        size: 212_602,
         type: 'image/jpeg'
     }
 };
