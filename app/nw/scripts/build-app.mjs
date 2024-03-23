@@ -23,10 +23,6 @@ const manifest = {
         'http://localhost/*',
         `${new URL(pkgConfig.url).origin}/*`
     ],
-    // See: https://peter.sh/experiments/chromium-command-line-switches/
-    'chromium-args': [
-        '--ignore-certificate-errors',
-    ].join(' '),
     /*
     webkit: {
         plugin: true,
