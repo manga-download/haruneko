@@ -6,12 +6,12 @@ import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
 import { InteractiveFileContentProvider } from './InteractiveFileContentProvider';
 import { SettingsManager } from './SettingsManager';
-import { CreatePlatformIPC } from './ipc/InterProcessCommunicationFactory';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
 import { CreateBloadGuard } from './platform/BloatGuard';
 import { CreateFetchProvider, SetupFetchProviderExports } from './platform/FetchProvider';
+import { CreatePlatformIPC } from './platform/InterProcessCommunication';
 import type { IFrontendInfo } from '../frontend/IFrontend';
 
 export class HakuNeko {

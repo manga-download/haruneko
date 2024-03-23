@@ -1,9 +1,9 @@
 {
-    "name": "hakuneko-app-nw",
+    "name": "hakuneko-app-electron",
     "title": "HaruNeko",
     "description": "Manga, Anime & Novel Downloader",
     "type": "module",
-    "main": "app.js",
+    "main": "main.js",
     "url": "https://haruneko.pages.dev",
     "engines": {
         "node": ">=20.11.0",
@@ -17,7 +17,7 @@
         "@types/ws": "^8.5.10",
         "extract-zip": "2.0.1",
         "node-fetch": "3.3.2",
-        "nw": "0.85.0-sdk",
+        "electron": "^29.1.5",
         "plist": "^3.1.0"
     },
     "scripts": {
@@ -25,7 +25,7 @@
         "build": "node ./scripts/build-app.mjs && vite build",
         "bundle": "npm run build && node ./scripts/deploy-app.mjs",
         "test": "jest --passWithNoTests --config=test/jest.config.js",
-        "launch:dev": "npm run build && nw ./build --origin=http://localhost:3000",
-        "launch:prod": "npm run build && nw ./build --origin=http://localhost:5000"
+        "launch:dev": "npm run build && electron ./build --origin=http://localhost:3000",
+        "launch:prod": "npm run build && electron ./build --origin=http://localhost:5000"
     }
 }
