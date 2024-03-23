@@ -13,11 +13,11 @@ const config: Config = {
     child: {
         id: '/undead-king-teihen-bouken-sha-mamono-no-chikara-de-shinka-musou-chapter-1/',
         title: 'Chapter 1',
-        timeout: 15000
+        //timeout: 15000
     },
     entry: {
-        index: 0,
-        size: 491_304,
+        index: 1,
+        size: 1_274_763,
         type: 'image/jpeg'
     }
 };
