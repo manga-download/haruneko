@@ -8,7 +8,7 @@ const config: Config = {
     container: {
         url: 'https://readmanga.live/tomo_tian___devushka_',
         id: '/tomo_tian___devushka_',
-        title: 'Томо-тян — девушка!'
+        title: 'Tomo-chan is a girl!'
     },
     child: {
         id: '/tomo_tian___devushka_/vol8/951.6',
