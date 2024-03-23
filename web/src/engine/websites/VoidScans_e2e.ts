@@ -6,7 +6,7 @@ const config = {
         title: 'Void Scans'
     },
     container: {
-        url: 'https://void-scans.com/manga/99-reinforced-wooden-stick/',
+        url: 'https://hivescans.com/manga/99-reinforced-wooden-stick/',
         id: '/manga/99-reinforced-wooden-stick/',
         title: '+99 Reinforced Wooden Stick'
     },

@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '/comic/ep_view/im_mother/1',
-        title: '제1화 - 엄마와 딸'
+        title: '시즌1 제1화 - 엄마와 딸'
     },
     entry: {
         index: 0,

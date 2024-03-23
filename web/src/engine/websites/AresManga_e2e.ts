@@ -5,20 +5,21 @@ const config: Config = {
         id: 'aresmanga',
         title: 'Ares Manga'
     },
+    /* Cloudflare
     container: {
-        url: 'https://aresnov.org/series/martial-god-asura/',
-        id: '/series/martial-god-asura/',
-        title: 'Martial God Asura'
+        url: 'https://fl-ares.com/series/solo-max-level-newbie/',
+        id: '/series/solo-max-level-newbie/',
+        title: 'Solo Max Level Newbie'
     },
     child: {
-        id: '/45454-martial-god-asura-chapter-1/',
-        title: 'الفصل 1'
+        id: '/solo-max-level-newbie-chapter-140/',
+        title: 'الفصل 140'
     },
     entry: {
-        index: 1,
-        size: 177_147,
+        index: 0,
+        size: 523_911,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);
