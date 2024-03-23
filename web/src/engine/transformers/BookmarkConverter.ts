@@ -9,6 +9,7 @@ const legacyWebsiteIdentifierMap = {
     'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
+    'cocomanhua': 'colamanga',
     'comicbushi': 'comicgrowl',
     'comicwalker': 'kadocomi',
     'crazyscans': 'mangacultivator',
