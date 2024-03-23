@@ -11,12 +11,12 @@ const config = {
         title: 'Meccha Kimochi Yokattassho?'
     },
     child: {
-        id: '/hentai/meccha-kimochi-yokattassho/english/',
+        id: '/hentai/meccha-kimochi-yokattassho/english/p/1/',
         title: 'Meccha Kimochi Yokattassho?'
     },
     entry: {
         index: 0,
-        size: 177_123,
+        size: 185_694,
         type: 'image/jpeg'
     }
 };
