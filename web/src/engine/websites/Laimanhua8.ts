@@ -28,8 +28,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist : Manga[] = [];
-        const paths = 'abcdefghijklmnopqrstuvwxyz'.split('');
-        for (const letter of paths) {
+        const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        for (const letter of alphabet) {
             mangalist.push(... await Common.FetchMangasSinglePageCSS.call(this, provider, `/kanmanhua/${letter}.html`, 'div#dmList ul li dl dt a'));
         }
         return mangalist.distinct();
