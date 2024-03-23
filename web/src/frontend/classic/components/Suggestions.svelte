@@ -8,6 +8,7 @@
         selectedPlugin,
         selectedMedia,
         selectedItem,
+        contentscreen,
     } from '../stores/Stores';
 
     import type { Bookmark } from '../../../engine/providers/Bookmark';
@@ -17,12 +18,10 @@
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Check } from '../../../engine/SettingsManager';
 
-    import { useNavigate } from 'svelte-navigator';
     import type {
         MediaContainer,
         MediaItem,
     } from '../../../engine/providers/MediaPlugin';
-    const navigate = useNavigate();
 
     const settings = HakuNeko.SettingsManager.OpenScope();
     let checkNewContent = settings.Get<Check>(GlobalKey.CheckNewContent).Value;
@@ -46,11 +45,11 @@
     // on bookmark change
     EventWatcher(
         HakuNeko.BookmarkPlugin.Entries,
-        HakuNeko.BookmarkPlugin.EntriesUpdated
+        HakuNeko.BookmarkPlugin.EntriesUpdated,
     ).subscribe(() => refreshSuggestions());
     // on marks change
     EventWatcher(null, HakuNeko.ItemflagManager.MediaFlagsChanged).subscribe(
-        () => refreshSuggestions()
+        () => refreshSuggestions(),
     );
 
     async function selectBookmark(bookmark: Bookmark) {
@@ -65,7 +64,10 @@
 
 {#if checkNewContent}
     <Tile id="Suggestions" class="border">
-        <ClickableTile id="Continue" on:click={() => navigate('/bookmarks')}>
+        <ClickableTile
+            id="Continue"
+            on:click={() => ($contentscreen = '/bookmarks')}
+        >
             <h4 style="text-align:center;">
                 Continue
                 <BookmarkAdd size={24} />

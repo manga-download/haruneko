@@ -11,6 +11,7 @@ export const selectedMedia = writable<MediaContainer<MediaChild>>();
 export const selectedItem = writable<MediaContainer<MediaItem>>();
 export const selectedItemPrevious = writable<MediaContainer<MediaItem>>();
 export const selectedItemNext = writable<MediaContainer<MediaItem>>();
+export const contentscreen = writable<string>('/');
 
 export const bookmarksToContinue = readable<Bookmark[]>([], (set) => {
     async function refreshSuggestions() {

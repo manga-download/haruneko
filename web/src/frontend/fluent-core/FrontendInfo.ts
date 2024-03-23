@@ -6,5 +6,5 @@ export const Info: IFrontendInfo = {
     Label: R.Frontend_FluentCore_Label,
     Description: R.Frontend_FluentCore_Description,
     Screenshots: [],
-    LoadModule: async () => (await import('./Frontend')).default
+    LoadModule: async () => (await import('./FrontendFluentCore')).default
 };

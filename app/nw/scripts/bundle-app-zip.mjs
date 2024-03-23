@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { run } from './tools.mjs';
+import { run } from '../../tools.mjs';
 
 const pkgFile = 'package.json';
 const pkgConfig = await fs.readJSON(pkgFile);

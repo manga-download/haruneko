@@ -1,22 +1,22 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const config: Config = {
     plugin: {
         id: 'mangatx',
-        title: 'Mangatx'
+        title: 'MangaTX'
     },
     container: {
-        url: 'https://mangatx.com/manga/the-knight-king-who-returned-with-a-god/',
-        id: JSON.stringify({ post: '10243', slug: '/manga/the-knight-king-who-returned-with-a-god/' }),
-        title: 'The Knight King Who Returned with a God'
+        url: 'https://mangatx.to/manhua/the-10th-class-lout-of-the-knight-family-all-chapters/',
+        id: JSON.stringify({ post: '1690', slug: '/manhua/the-10th-class-lout-of-the-knight-family-all-chapters/'}),
+        title: 'The 10th Class Lout of the Knight Family'
     },
     child: {
-        id: '/manga/the-knight-king-who-returned-with-a-god/chapter-1/',
-        title: 'Chapter 1'
+        id: '/manhua/the-10th-class-lout-of-the-knight-family-all-chapters/chapter-20/',
+        title: 'Chapter 20'
     },
     entry: {
-        index: 0,
-        size: 1_675_411,
+        index: 1,
+        size: 465_941,
         type: 'image/jpeg'
     }
 };
