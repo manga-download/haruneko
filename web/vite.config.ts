@@ -3,6 +3,8 @@ import vue from '@vitejs/plugin-vue';
 import react from '@vitejs/plugin-react';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 
+const buildID = Date.now().toString(36).toUpperCase();
+
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
@@ -18,9 +20,18 @@ export default defineConfig({
     build: {
         sourcemap: true,
         outDir: 'build',
+        chunkSizeWarningLimit: 2 * 1024,
         rollupOptions: {
             output: {
-                chunkFileNames: 'assets/[hash].js'
+                //chunkFileNames: 'assets/[name]-[hash].js',
+                entryFileNames: `${buildID}/[name].js`,
+                assetFileNames: `${buildID}/[name].[ext]`,
+                chunkFileNames: `${buildID}/[name].js`,
+                manualChunks: function(id) {
+                    if (/\/web\/src\/engine\/websites\//.test(id) && /\/[a-zA-Z0-9_-]+\.webp$/.test(id)) {
+                        return 'WebsiteIcons';
+                    }
+                }
             }
         }
     },

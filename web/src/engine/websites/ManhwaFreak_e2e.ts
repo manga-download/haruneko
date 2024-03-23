@@ -6,12 +6,12 @@ const config = {
         title: 'ManhwaFreak'
     },
     container: {
-        url: 'https://manhwa-freak.com/manga/i-am-reborn-as-the-sword-master/',
+        url: 'https://freakcomic.com/manga/i-am-reborn-as-the-sword-master/',
         id: '/manga/i-am-reborn-as-the-sword-master/',
         title: 'I Am Reborn as the Sword Master'
     },
     child: {
-        id: '/i-am-reborn-as-the-sword-master-ch-77/',
+        id: '/i-am-reborn-as-the-sword-master-ch-77-hOtrB/',
         title: 'Chapter 77'
     },
     entry: {
