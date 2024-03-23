@@ -1,5 +1,3 @@
-import { CreateAppWindow } from './engine/platform/AppWindow';
-
 const appHook = '#app';
 const noticeHook = '#hakuneko-notice';
 const splashPath = '/splash.html';
@@ -34,9 +32,12 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
 (async function() {
     try {
         const showSplashScreen = window.localStorage.getItem('hakuneko-nosplash') !== 'true';
-        const appWindow = CreateAppWindow(window.location.origin + splashPath, showSplashScreen);
+        const { CreateAppWindow } = await import('./engine/platform/AppWindow');
+        const appWindow = CreateAppWindow(window.location.origin + splashPath);
         if(showSplashScreen) {
             appWindow.ShowSplash();
+        } else {
+            appWindow.HideSplash();
         }
 
         // Use lazy loading for these large modules to improve start-up performance
