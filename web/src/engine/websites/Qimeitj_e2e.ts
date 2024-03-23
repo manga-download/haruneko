@@ -2,21 +2,21 @@
 
 const config = {
     plugin: {
-        id: 'toptoon',
-        title: 'TOPTOON (탑툰)'
+        id: 'qimeitj',
+        title: 'Qimeitj'
     },
     container: {
-        url: 'https://toptoon.com/comic/ep_list/im_mother',
-        id: '/comic/ep_list/im_mother',
-        title: '나는 엄마다'
+        url: 'https://qimeitj.com/book/2324',
+        id: '/book/2324',
+        title: '后宫太多，只好飞升了'
     },
     child: {
-        id: '/comic/ep_view/im_mother/1',
-        title: '시즌1 제1화 - 엄마와 딸'
+        id: '/chapter/144045',
+        title: '035.5 洞天之内',
     },
     entry: {
         index: 0,
-        size: 164_346,
+        size: 212_602,
         type: 'image/jpeg'
     }
 };

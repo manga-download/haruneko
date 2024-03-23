@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './MangaStarz.webp';
+import icon from './MangaTX.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title')
+@Madara.MangaCSS(/^{origin}\/manhua\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Mangatx"])')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangastarz', 'مانجا ستارز (Mangastarz)', 'https://manga-starz.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Arabic, Tags.Source.Aggregator);
+        super('mangatx', 'MangaTX', 'https://mangatx.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -13,11 +13,8 @@ export default class implements IAppWindow {
         height: 520
     };
 
-    constructor(private readonly nwWindow: NWJS_Helpers.win, private readonly splashURL: string, private readonly useSplash: boolean) {
+    constructor(private readonly nwWindow: NWJS_Helpers.win, private readonly splashURL: string) {
         this.RegisterKeyboardShortcuts();
-        if(!useSplash) {
-            this.nwWindow.show();
-        }
     }
 
     private RegisterKeyboardShortcuts() {
@@ -47,19 +44,15 @@ export default class implements IAppWindow {
     }
 
     public async ShowSplash() {
-        if(this.useSplash) {
-            await this.InitializeSplash();
-            this.nwWindow.hide();
-            this.nwSplash.show();
-        }
+        await this.InitializeSplash();
+        this.nwWindow.hide();
+        this.nwSplash.show();
     }
 
     public async HideSplash() {
-        if(this.useSplash) {
-            await this.InitializeSplash();
-            this.nwSplash.close(true);
-            this.nwWindow.show();
-        }
+        await this.InitializeSplash();
+        this.nwSplash.close(true);
+        this.nwWindow.show();
     }
 
     public get HasControls() {
