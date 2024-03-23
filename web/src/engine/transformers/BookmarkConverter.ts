@@ -4,6 +4,7 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
 
 const legacyWebsiteIdentifierMap = {
     '9anime': 'aniwave',
+    'aresnov': 'manhuascarlet',
     'azoramanga': 'azoraworld',
     'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
@@ -45,6 +46,7 @@ const legacyWebsiteIdentifierMap = {
     'scansmangasxyz': 'scansmangasme',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',
+    'siyahmelek': 'grimelek',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
     'vermanhwas': 'vermanhwa',

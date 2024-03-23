@@ -3,8 +3,9 @@ import { Runtime } from './PlatformInfo';
 import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitFetchProvider from './nw/FetchProvider';
+import ElectronFetchProvider from './electron/FetchProvider';
 
-export type PreloadAction = (win: typeof window, frame: typeof window) => void;
+export type ScriptInjection<T> = string | ((this: Window) => Promise<T>);
 
 class HttpResponseError extends InternalError {
     constructor(public readonly response: Response) {
@@ -90,26 +91,27 @@ export interface IFetchProvider {
     /**
      * Open the given {@link request} in a new browser window and inject the given {@link script}.
      * @param request - ...
-     * @param script - The JavaScript that will be evaluated within the browser window
+     * @param script - The JavaScript or function that will be evaluated within the browser window
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    FetchWindowScript<T>(request: Request, script: string, delay?: number, timeout?: number): Promise<T>;
+    FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T>;
 
     /**
      * Open the given {@link request} in a new browser window and inject the given {@link script}.
      * @param request - ...
-     * @param preload - ...
-     * @param script - The JavaScript that will be evaluated within the browser window
+     * @param preload - The JavaScript or function that will be evaluated within the browser window before page is loaded
+     * @param script - The JavaScript or function that will be evaluated within the browser window
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    FetchWindowPreloadScript<T>(request: Request, preload: PreloadAction, script: string, delay?: number, timeout?: number): Promise<T>
+    FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: string, delay?: number, timeout?: number): Promise<T>
 }
 
 export function CreateFetchProvider(): IFetchProvider {
     return new PlatformInstanceActivator<IFetchProvider>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitFetchProvider())
+        .Configure(Runtime.Electron, () => new ElectronFetchProvider())
         .Create();
 }
 

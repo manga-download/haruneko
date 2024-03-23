@@ -208,7 +208,6 @@
 >
     {#if wide}
         <ImageViewerWideSettings
-            {title}
             {item}
             on:nextItem
             on:previousItem

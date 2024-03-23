@@ -9,24 +9,29 @@ import type { Priority } from '../taskpool/DeferredTask';
 type MangaPlusResponse = {
     success: {
         titleDetailView: TitleDetailView;
-        allTitlesView: AllTitlesView;
+        allTitlesViewV2: AllTitlesViewV2
         mangaViewer: MangaViewer;
     }
 }
 
-type AllTitlesView = {
-    titles: Title[]
+type AllTitlesViewV2 = {
+    alltitlegroups: AllTitlesGroup[]
 }
 
-type TitleDetailView = {
-    title: Title
-    chapterListGroup : ChapterGroup
+type AllTitlesGroup = {
+    thetitle: string,
+    titles: Title[]
 }
 
 type Title = {
     titleId: number,
     name: string,
     language: number
+}
+
+type TitleDetailView = {
+    title: Title
+    chapterListGroup: ChapterGroup
 }
 
 type ChapterGroup = {
@@ -40,9 +45,8 @@ type APIChapter = {
     name: string,
     subTitle: string
 }
-
 type MangaViewer = {
-    pages : MangaPage[]
+    pages: MangaPage[]
 }
 
 type MangaPage = {
@@ -56,7 +60,7 @@ export default class extends DecoratableMangaScraper {
     private apiURL = 'https://jumpg-webapi.tokyo-cdn.com';
 
     public constructor() {
-        super('shueishamangaplus', `MANGA Plus by Shueisha`, 'https://mangaplus.shueisha.co.jp', Tags.Media.Manga, Tags.Language.Spanish, Tags.Language.French, Tags.Language.Indonesian, Tags.Language.Portuguese, Tags.Language.Russian, Tags.Language.Thai, Tags.Source.Official, Tags.Accessibility.RegionLocked);
+        super('shueishamangaplus', `MANGA Plus by Shueisha`, 'https://mangaplus.shueisha.co.jp', Tags.Media.Manga, Tags.Language.Spanish, Tags.Language.French, Tags.Language.Indonesian, Tags.Language.Portuguese, Tags.Language.Russian, Tags.Language.Thai, Tags.Language.Vietnamese, Tags.Language.German, Tags.Source.Official, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -65,7 +69,7 @@ export default class extends DecoratableMangaScraper {
 
     private getLanguage(language): string {
         const languages = {
-            1: '[es]', 2: '[fr]', 3: '[id]', 4: '[pt-br]', 5: '[ru]', 6: '[th]'
+            0: ['en'], 1: '[es]', 2: '[fr]', 3: '[id]', 4: '[pt-br]', 5: '[ru]', 6: '[th]', 7: '[de]', 8: '[unk]', 9: '[vi]'
         };
         return languages[language] || '[en]';
     }
@@ -84,9 +88,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL('/api/title_list/all', this.apiURL).href);
+        const mangalist: Manga[] =[];
+        const request = new Request(new URL('/api/title_list/allV2', this.apiURL).href);
         const data = await FetchProto<MangaPlusResponse>(request, protoTypes, 'MangaPlus.Response');
-        return data.success.allTitlesView.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), `${manga.name} ${this.getLanguage(manga.language)}`));
+        for (const group of data.success.allTitlesViewV2.alltitlegroups) {
+            mangalist.push(...group.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), `${manga.name} ${this.getLanguage(manga.language)}`)));
+        }
+        return mangalist;
+
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
