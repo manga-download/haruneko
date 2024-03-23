@@ -1,6 +1,6 @@
 import { type SettingsManager, Check, Numeric, Text, Secret, Choice, Directory } from './SettingsManager';
 import { EngineResourceKey as R, LocaleID } from '../i18n/ILocale';
-import { FrontendList } from '../frontend/FrontendController';
+import type { IFrontendInfo } from '../frontend/IFrontend';
 import { Info as InfoClassic } from '../frontend/classic/FrontendInfo';
 
 export const Scope = '*';
@@ -23,7 +23,7 @@ export const enum Key {
     RPCSecret = 'RPCSecret',
 }
 
-export async function Initialize(settingsManager: SettingsManager): Promise<void> {
+export async function Initialize(settingsManager: SettingsManager, frontends: IFrontendInfo[]): Promise<void> {
     const settings = settingsManager.OpenScope(Scope);
     await settings.Initialize(
         new Choice(
@@ -31,7 +31,7 @@ export async function Initialize(settingsManager: SettingsManager): Promise<void
             R.Settings_Global_Frontend,
             R.Settings_Global_FrontendInfo,
             InfoClassic.ID,
-            ...FrontendList.map(info => {
+            ...frontends.map(info => {
                 return { key: info.ID, label: info.Label /* description: info.Description */ };
             })
         ),
