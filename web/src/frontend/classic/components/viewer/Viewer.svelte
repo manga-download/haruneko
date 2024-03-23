@@ -39,23 +39,18 @@
     async function markAsCurrent(itemtoflag: MediaContainer<MediaItem>) {
         let currentIndex = -1;
         let itemtoflagIndex = -1;
-        const flags = await HakuNeko.ItemflagManager.GetContainerItemsFlags(
-            itemtoflag.Parent
-        );
 
         await Promise.all(
             item.Parent.Entries.map(async (entry, index) => {
                 if (entry.IsSameAs(itemtoflag))
                     itemtoflagIndex = index;
-                const flag = await HakuNeko.ItemflagManager.GetItemFlagType(
-                    entry
-                );
+                const flag = await HakuNeko.ItemflagManager.GetFlag(entry);
                 if (flag === FlagType.Current) currentIndex = index;
             })
         );
 
         const isCurrentBookmarkAfter = itemtoflagIndex < currentIndex;
-        HakuNeko.ItemflagManager.FlagItem(
+        HakuNeko.ItemflagManager.SetFlag(
             itemtoflag,
             isCurrentBookmarkAfter ? FlagType.Current : FlagType.Viewed
         );

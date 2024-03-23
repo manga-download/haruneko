@@ -1,7 +1,6 @@
 import { mock } from 'jest-mock-extended';
 import type { StorageController } from './StorageController';
 import { ItemflagManager } from './ItemflagManager';
-import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
 
 class TestFixture {
 
@@ -16,18 +15,9 @@ describe('ItemflagManager', () => {
 
     describe('Constructor', () => {
 
-        it('Should load on demand', async () => {
+        it('Should not load flag when creating instance', () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreateTestee();
-            testee.LoadContainerFlags(mock<MediaContainer<MediaChild>>({ Identifier: 'Title', Parent: { Identifier: 'Website' } }));
-            expect(fixture.MockStorageController.LoadPersistent).toBeCalledWith('Itemflags', 'Website :: Title');
-            // TODO: complete assertions ...
-        });
-
-        it('Should skip bookmarked media for which the website was removed (no parent)', () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateTestee();
-            testee.LoadContainerFlags(mock<MediaContainer<MediaChild>>({ Identifier: '-', Parent: undefined }));
+            fixture.CreateTestee();
             expect(fixture.MockStorageController.LoadPersistent).toBeCalledTimes(0);
         });
     });

@@ -37,10 +37,10 @@ export class HakuNeko {
     public async Initialze(frontends: IFrontendInfo[]): Promise<void> {
         await InitGlobalSettings(this.SettingsManager, frontends);
         /*const ipc = */CreatePlatformIPC(this.#settingsManager);
-        // Preload bookmarks flags to show content to view
-        const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;
-        if (checkNewContent) this.BookmarkPlugin.RefreshAllFlags();
-
+        if (this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value) {
+            // WORKAROUND: Manually triggering `MediaFlagsChanged` is necessary for Frontend.Classic to get notified, because it does not observe the `Entries` for each bookmark
+            this.BookmarkPlugin.UpdateEntries().forEach(promise => promise.then(bookmark => this.ItemflagManager.MediaFlagsChanged.Dispatch(null, bookmark), () => {}));
+        }
     }
 
     public get Tags() {

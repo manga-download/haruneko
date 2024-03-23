@@ -18,6 +18,7 @@
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Check } from '../../../engine/SettingsManager';
 
+    import { FlagType } from '../../../engine/ItemflagManager';
     import type {
         MediaContainer,
         MediaItem,
@@ -30,14 +31,19 @@
         checkNewContent = shouldCheck;
     });
 
-    let suggestions: Bookmark[] = [];
+    let suggestions: MediaContainer<MediaContainer<MediaItem>>[] = [];
     let isRefreshing = false;
     async function refreshSuggestions() {
         if (isRefreshing) return;
         isRefreshing = true;
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        suggestions =
-            await HakuNeko.BookmarkPlugin.getEntriesWithUnflaggedContent();
+        const accumulator = [];
+        for(const bookmark of HakuNeko.BookmarkPlugin.Entries) {
+            if((await HakuNeko.ItemflagManager.FilterEntries(bookmark as MediaContainer<MediaContainer<MediaItem>>, FlagType.None)).length > 0) {
+                accumulator.push(bookmark);
+            }
+        }
+        suggestions = accumulator;
         isRefreshing = false;
     }
     refreshSuggestions();
@@ -52,8 +58,8 @@
         () => refreshSuggestions(),
     );
 
-    async function selectBookmark(bookmark: Bookmark) {
-        let unFlaggedContent = await bookmark.getUnflaggedContent();
+    async function selectBookmark(bookmark: MediaContainer<MediaContainer<MediaItem>>) {
+        let unFlaggedContent = await HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None);
         $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
         $selectedItem = unFlaggedContent[
@@ -87,7 +93,7 @@
                         <span title={bookmark.Title}>{bookmark.Title}</span>
                     </Tag>
 
-                    {#await bookmark.getUnflaggedContent() then value}
+                    {#await window.HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None) then value}
                         <Tag
                             class="suggestcount"
                             type="outline"
