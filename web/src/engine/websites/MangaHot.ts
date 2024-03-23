@@ -95,7 +95,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const scrambletype = this.getScrambletType(page.Link.href);
+        const scrambletype = this.getScrambleType(page.Link.href);
         return DeScramble(blob, async (image, ctx) => {
 
             const CELL_SIZE = 50;
@@ -181,7 +181,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    getScrambletType(href: string): number {
+    getScrambleType(href: string): number {
         let t = 0;
         href = href.split('/').pop();
         const ptn: RegExp = /^[0-9]$/;
