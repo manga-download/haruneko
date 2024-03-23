@@ -1,8 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './WebtoonHatti.webp';
+import { Fetch } from '../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, type Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+
+const allowedImageOrigins = [
+    'https://cdn-2.webtoonhatti.com',
+];
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
@@ -19,41 +24,39 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages = await Madara.FetchPagesSinglePageCSS.call(this, chapter);
-        try {
-            const links = pages.filter(page => page.Link.origin !== 'https://cdn-2.webtoonhatti.com').map(page => `- ${page.Link.href}`);
-            if (links.length > 0) {
-                await this.NotifyBrokenImageLinks(chapter, links);
-            }
-        } catch(error) {
-            console.log('Failed to report broken image links', error);
-        }
-        return pages.filter(page => {
-            return page.Link.origin === 'https://cdn-2.webtoonhatti.com';
+        const pages = (await Madara.FetchPagesSinglePageCSS.call(this, chapter)).filter(page => {
+            return allowedImageOrigins.includes(page.Link.origin);
         });
+        const status = await Promise.all(pages.map(async page => {
+            try {
+                return (await Fetch(new Request(page.Link, { method: 'HEAD' }))).status;
+            } catch {
+                return 0;
+            }
+        }));
+        return pages.filter((_, index) => status[index] !== 404);
     }
 
-    private async NotifyBrokenImageLinks(chapter: Chapter, brokenLinks: string[]): Promise<void> {
-        const sender = Date.now().toString(32) + Math.random().toString(32);
-        const content = {
-            sender: {
-                name: chapter.Parent?.Title ?? sender.toUpperCase().replace('.', ' '),
-                email: sender + '@gmail.com',
-            },
-            subject: chapter.Title,
-            text: [
-                'Hi,', '',
-                'just wanted to let you know, that some image links on your website are broken ;)', '',
-                ...brokenLinks,
-            ].join('\n')
-        };
-
-        const response = await fetch('https://smtp.hakuneko.workers.dev/webtoonhatti', {
+    /*
+    TODO: Extract reporting function to push user encountered image errors into a timeseries database ...
+    import type { MediaChild, MediaContainer } from '../providers/MediaPlugin';
+    private async NotifyBrokenImageLinks(media: MediaContainer<MediaChild>, brokenURLs: string[]): Promise<void> {
+        const response = await fetch('https://report.hakuneko.workers.dev/webtoonhatti', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(content),
+            body: JSON.stringify({
+                media: {
+                    id: media.Identifier,
+                    title: media.Title,
+                },
+                parent: {
+                    id: media.Parent?.Identifier ?? '-',
+                    title: media.Parent?.Title ?? '-',
+                },
+                resources: brokenURLs,
+            }, null, 2),
         });
 
         if (response.status !== 201) {
@@ -62,4 +65,5 @@ export default class extends DecoratableMangaScraper {
             //console.log('Reported:', await response.text());
         }
     }
+    */
 }
