@@ -7,26 +7,22 @@ syntax = "proto3";
 
 message Response {
   optional SuccessResult success = 1;
+
 }
 
 message SuccessResult {
-  optional AllTitlesView allTitlesView = 5;
+  optional AllTitlesViewV2 allTitlesViewV2 = 25;
   optional TitleDetailView titleDetailView = 8;
   optional MangaViewer mangaViewer = 10;
-
 }
 
-message AllTitlesView {
-  repeated Title titles = 1;
+message AllTitlesViewV2 {
+  repeated AllTitlesGroup alltitlegroups = 1;
 }
 
-message TitleDetailView {
-  optional Title title = 1;
-  optional ChapterGroup chapterListGroup = 28;
-}
-
-message MangaViewer {
-  repeated Page pages = 1;
+message AllTitlesGroup {
+    optional string theTitle = 1;
+    repeated Title titles = 2;
 }
 
 message Title {
@@ -35,16 +31,25 @@ message Title {
   optional int32 language = 7;
 }
 
-message Chapter {
-  optional uint32 chapterId = 2;
-  optional string name = 3;
-  optional string subTitle = 4;
+message TitleDetailView {
+  optional Title title = 1;
+  optional ChapterGroup chapterListGroup = 28;
 }
 
 message ChapterGroup {
     repeated Chapter firstChapterList = 2;
     repeated Chapter midChapterList = 3;
     repeated Chapter lastChapterList = 4;
+}
+
+message Chapter {
+  optional uint32 chapterId = 2;
+  optional string name = 3;
+  optional string subTitle = 4;
+}
+
+message MangaViewer {
+  repeated Page pages = 1;
 }
 
 message Page {

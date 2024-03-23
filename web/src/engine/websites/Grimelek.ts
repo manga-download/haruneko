@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './LimaScans.webp';
+import icon from './Grimelek.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/v2\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX('div.post-title h3 a', 0, '/v2')
-@Madara.ChaptersSinglePageAJAXv1('ul li.wp-manga-chapter > a', '/v2')
+@Madara.MangaCSS(/^{origin}\/seri\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangasMultiPageAJAX()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('limascans', 'Lima Scans', 'http://limascans.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese);
+        super('grimelek', 'Grimelek', 'https://grimelek.co', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

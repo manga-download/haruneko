@@ -6,18 +6,18 @@ const config = {
         title: 'Hunters Scan'
     },
     container: {
-        url: 'https://huntersscan.xyz/series/grand-general2232/',
-        id: JSON.stringify({ post: '182', slug: '/series/grand-general2232/' }),
-        title: 'Grand General'
+        url: 'https://huntersscan.xyz/manga/civilizacao-de-nebula',
+        id: '9b3be276-e31e-4e85-8f70-085e96661b80',
+        title: 'Civilização de Nebula'
     },
     child: {
-        id: '/series/grand-general2232/capitulo-00-5/',
-        title: 'Capítulo 00.5'
+        id: '9b69a878-c2b5-4523-983d-43c716cae509',
+        title: '20'
     },
     entry: {
         index: 0,
-        size: 1_030_060,
-        type: 'image/jpeg'
+        size: 606_110,
+        type: 'image/webp'
     }
 };
 
