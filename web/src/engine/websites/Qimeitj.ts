@@ -29,9 +29,7 @@ export default class extends DecoratableMangaScraper {
     }
     async getPagesFromChapterPage(page: number, chapter: Chapter): Promise<Page[]> {
         const url = new URL(chapter.Identifier, this.URI);
-        url.search = new URLSearchParams({
-            page: page.toString(),
-        }).toString();
+        url.searchParams.set('page', page.toString());
         const data = await FetchCSS<HTMLImageElement>(new Request(url), MH.queryPages);
         return data.map(element => {
             const link = MH.PageLinkExtractor.call(this, element);
