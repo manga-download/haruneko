@@ -59,6 +59,7 @@ describe('BookmarkConverter', () => {
 
         it.each<{ sourceID: string, targetID: string }>([
             { sourceID: '9anime', targetID: 'aniwave' },
+            { sourceID: 'aresnov', targetID: 'manhuascarlet' },
             { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
             { sourceID: 'azoramanga', targetID: 'azoraworld' },
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
@@ -100,6 +101,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
+            { sourceID: 'siyahmelek', targetID: 'grimelek' },
             { sourceID: 'smangavfws', targetID: 'smangavf' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
             { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
