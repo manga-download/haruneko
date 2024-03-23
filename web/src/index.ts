@@ -41,10 +41,10 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
 
         // Use lazy loading for these large modules to improve start-up performance
         const { HakuNeko } = await import('./engine/HakuNeko');
-        const { FrontendController } = await import('./frontend/FrontendController');
+        const { FrontendController, FrontendList } = await import('./frontend/FrontendController');
 
         window.HakuNeko = new HakuNeko();
-        await window.HakuNeko.Initialze();
+        await window.HakuNeko.Initialze(FrontendList);
         const frontend = new FrontendController(document.querySelector(appHook), window.HakuNeko.SettingsManager.OpenScope(), appWindow);
 
         if(showSplashScreen) {
