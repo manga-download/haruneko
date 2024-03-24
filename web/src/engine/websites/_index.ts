@@ -265,6 +265,7 @@ export { default as MadaraDex } from './MadaraDex';
 export { default as MagComi } from './MagComi';
 export { default as MagicalTranslators } from './MagicalTranslators';
 export { default as MagKan } from './MagKan';
+export { default as MagusManga } from './MagusManga';
 export { default as MaID } from './MaID';
 export { default as MajorScans } from './MajorScans';
 export { default as Manga3S } from './Manga3S';
