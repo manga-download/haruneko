@@ -550,6 +550,7 @@ export { default as RuyaManga } from './RuyaManga';
 export { default as S2Manga } from './S2Manga';
 export { default as Sadscans } from './Sadscans';
 export { default as SamuraiScan } from './SamuraiScan';
+export { default as Sany } from './Sany';
 export { default as SarcasmScans } from './SarcasmScans';
 export { default as ScamberTraslator } from './ScamberTraslator';
 export { default as ScanFR } from './ScanFR';
