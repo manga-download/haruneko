@@ -156,6 +156,13 @@ export default class implements IFetchProvider {
         return fetch(request);
     }
 
+    /**
+     * Fetch and parse the remote HTML content into a virtual {@link Document} for further processing.
+     * @param request - The request used to fetch the remote content.
+     * @returns A virtual DOM with limited capabilities:
+     *   - Since the document is detached it will not be rendered, therefore certain behavior may not be as expected (e.g., innerText is the same as textContent)
+     *   - The document uses the base URL of the application instead of `request.url`, which affects all expanded links in the document
+     */
     public async FetchHTML(request: Request): Promise<Document> {
         const mime = 'text/html';
         const charsetPattern = /charset=([\w-]+)/;
