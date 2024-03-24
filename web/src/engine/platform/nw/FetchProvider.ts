@@ -1,5 +1,5 @@
 import { EngineResourceKey as R } from '../../../i18n/ILocale';
-import type { IFetchProvider, PreloadAction } from '../FetchProvider';
+import type { IFetchProvider, ScriptInjection } from '../FetchProvider';
 import { FetchRedirection } from '../AntiScrapingDetection';
 import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
 import * as protobuf from 'protobufjs';
@@ -235,7 +235,11 @@ export default class implements IFetchProvider {
     }
     */
 
-    public async FetchWindow(request: Request, timeout: number, preload: PreloadAction = () => undefined): Promise<NWJS_Helpers.win> {
+    public async FetchWindow(request: Request, timeout: number, preload: ScriptInjection<void> = () => undefined): Promise<NWJS_Helpers.win> {
+
+        // TODO: Handle abort signals
+        //request.signal.addEventListener('abort', () => undefined);
+        //if(request.signal.aborted) { /* */ }
 
         const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
             new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
@@ -248,66 +252,61 @@ export default class implements IFetchProvider {
             //inject_js_end: 'filename'
         };
 
-        return await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(request.url/*'data:text/plain,'*/, options, win => {
+        return await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(request.url, options, win => {
 
             const invocations: {
                 name: string;
                 info: string
             }[] = [];
 
+            invocations.push({ name: 'nw.Window.open()', info: `Request URL: ${request.url}, Window URL: ${win?.window?.location.href}`});
+
             function destroy() {
-                if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
-                    console.warn(`FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!`, invocations);
-                }
-                if(this.IsVerboseModeEnabled) {
-                    console.log('FetchWindow()::invocations', invocations);
-                } else {
-                    win.close(true);
-                }
+                teardownOpenedWindow();
                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
             }
 
             let cancellation = setTimeout(destroy, timeout);
+            let teardownOpenedWindow = () => {};
 
             let performRedirectionOrFinalize = async () => {
                 try {
                     const redirect = await CheckAntiScrapingDetection(win);
+                    invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[redirect]}`});
                     switch (redirect) {
                         case FetchRedirection.Interactive:
                             // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
                             clearTimeout(cancellation);
                             cancellation = setTimeout(destroy, 150_000);
                             win.show();
+                            win.requestAttention(3);
                             break;
                         case FetchRedirection.Automatic:
                             break;
                         default:
-                            performRedirectionOrFinalize = () => Promise.resolve();
-                            clearTimeout(cancellation);
+                            teardownOpenedWindow();
                             resolve(win);
                             break;
                     }
                 } catch(error) {
-                    clearTimeout(cancellation);
-                    if(this.IsVerboseModeEnabled) {
-                        win.close(true);
-                    }
+                    teardownOpenedWindow();
                     reject(error);
-                } finally {
-                    if(this.IsVerboseModeEnabled) {
-                        console.log('FetchWindow()::invocations', invocations);
-                    }
                 }
             };
 
-            if(win?.window?.window) {
-                invocations.push({ name: 'opened', info: win.window?.location?.href });
-                preload(win.window.window, win.window.window);
+            if(!win.window || nw.Window.get().window === win.window) {
+                invocations.push({ name: 'win.reload()', info: `DOM Window: ${win.window}`});
+                win.reload();
+            } else {
+                win.eval(null, preload instanceof Function ? `(${preload})()` : preload);
+                //preload(win.window.window, win.window.window);
                 //PreventDialogs(win, win.window.window);
             }
 
             win.on('document-start', (frame: typeof window) => {
+                invocations.push({ name: `win.on('document-start')`, info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
                 if(win.window === frame) {
+                    //preload(win.window.window, frame);
                     if (win.window.document.readyState === 'loading') {
                         win.window.document.addEventListener('DOMContentLoaded', () => {
                             invocations.push({ name: 'DOMContentLoaded', info: win.window?.location?.href });
@@ -318,31 +317,43 @@ export default class implements IFetchProvider {
                         performRedirectionOrFinalize();
                     }
                 }
-                invocations.push({ name: 'document-start', info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
-                preload(win.window.window, frame);
                 //PreventDialogs(win, frame);
             });
 
             // NOTE: Use policy to prevent any new popup windows
             win.on('new-win-policy', (_frame, url, policy) => {
-                invocations.push({ name: 'new-win-policy', info: url });
+                invocations.push({ name: `win.on('new-win-policy')`, info: url });
                 policy.ignore();
             });
 
-            win.on('navigation', (_frame, url/*, policy*/) => {
-                invocations.push({ name: 'navigation', info: url });
+            win.on('navigation', (_frame, url, _policy) => {
+                invocations.push({ name: `win.on('navigation')`, info: url });
                 //policy.ignore();
                 win.hide();
             });
 
             win.on('loaded', () => {
-                // NOTE: The getter `win.window` throws an exception => disable access for now
-                invocations.push({ name: 'loaded', info: '' /* win.window?.location?.href */ });
-                performRedirectionOrFinalize();
+                invocations.push({ name: `win.on('loaded')`, info: win.window?.location?.href });
+                if(win.window && win.window !== nw.Window.get().window) {
+                    performRedirectionOrFinalize();
+                }
             });
 
-            // HACK: win.on('loaded', load) alone seems quite unreliable => enforce reload after event was attached ...
-            //win.reload();
+            teardownOpenedWindow = () => {
+                clearTimeout(cancellation);
+                performRedirectionOrFinalize = () => Promise.resolve();
+                // NOTE: removing listeners seems to have no effect, probably a bug in NW.js
+                win.removeAllListeners('document-start');
+                win.removeAllListeners('new-win-policy');
+                win.removeAllListeners('navigation');
+                win.removeAllListeners('loaded');
+                win.removeAllListeners();
+                if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
+                    console.warn('FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
+                } else if(this.IsVerboseModeEnabled) {
+                    console.log('FetchWindow()::invocations', invocations);
+                }
+            };
         }));
     }
 
@@ -359,11 +370,11 @@ export default class implements IFetchProvider {
         }
     }
 
-    public async FetchWindowScript<T>(request: Request, script: string, delay = 0, timeout = 60_000): Promise<T> {
+    public async FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
         return this.FetchWindowPreloadScript(request, () => undefined, script, delay, timeout);
     }
 
-    public async FetchWindowPreloadScript<T>(request: Request, preload: PreloadAction, script: string, delay = 0, timeout = 60_000): Promise<T> {
+    public async FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
         const start = Date.now();
         const win = await this.FetchWindow(request, timeout, preload);
         const elapsed = Date.now() - start;
@@ -371,7 +382,7 @@ export default class implements IFetchProvider {
             await this.Wait(delay);
             let result: T | Promise<T>;
             try {
-                result = win.eval(null, script) as unknown as T | Promise<T>;
+                result = win.eval(null, script instanceof Function ? `(${script})()` : script) as unknown as T | Promise<T>;
             } catch(inner) {
                 const outer = new EvalError('<script>', { cause: inner });
                 console.error(inner, outer);

@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { purge, run } from './tools.mjs';
+import { purge, run } from '../../tools.mjs';
 
 const dirBuild = path.resolve('build');
 const pkgFile = 'package.json';
@@ -21,7 +21,7 @@ const manifest = {
     url: pkgConfig.url,
     'node-remote': [
         'http://localhost/*',
-        'https://haruneko.pages.dev/*'
+        `${new URL(pkgConfig.url).origin}/*`
     ],
     /*
     webkit: {
@@ -29,7 +29,7 @@ const manifest = {
         'page-cache': false
     },
     */
-    'user-agent': targetConfig['user-agent'] || null,
+    'user-agent': targetConfig['user-agent'] ?? null,
     dependencies: pkgConfig.dependencies
 };
 

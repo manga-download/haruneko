@@ -1,4 +1,4 @@
-import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/ipc/InterProcessCommunication';
+import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunication';
 import type { RPCServer } from '../rpc/Server';
 import * as fs from 'node:fs/promises';
 
@@ -15,7 +15,7 @@ export class IPC implements PlatformIPC {
 
     private async Send<R extends IPCResponse>(method: keyof WebIPC, ...parameters: IPCParameters): Promise<R> {
         // TODO: improve query filter e.g., windowID or tabID
-        const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active : true }, resolve));
+        const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
         const tab = tabs.length > 0 ? tabs.shift() : undefined;
         return new Promise<R>(resolve => {
             if(tab?.id) {
