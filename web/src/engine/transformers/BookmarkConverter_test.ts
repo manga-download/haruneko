@@ -74,6 +74,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
+            { sourceID: 'kissaway', targetID: 'klmanga' },
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
             { sourceID: 'komikav', targetID: 'apkomik' },
             { sourceID: 'kumascans', targetID: 'retsu' },

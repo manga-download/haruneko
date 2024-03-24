@@ -20,6 +20,7 @@ const legacyWebsiteIdentifierMap = {
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'imperioscans': 'neroxus',
+    'kissaway': 'klmanga',
     'kisscomic': 'readcomiconline',
     'komikav': 'apkomik',
     'kumascans': 'retsu',
