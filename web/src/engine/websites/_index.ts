@@ -518,6 +518,7 @@ export { default as RagnarokScan } from './RagnarokScan';
 export { default as RaijinScans } from './RaijinScans';
 export { default as RaikiScan } from './RaikiScan';
 export { default as RainDropFansub } from './RainDropFansub';
+export { default as RavenSeries } from './RavenSeries';
 export { default as RavensScansEN } from './RavensScansEN';
 export { default as RavensScansES } from './RavensScansES';
 export { default as RawDevart } from './RawDevart';
