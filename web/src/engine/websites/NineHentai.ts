@@ -29,7 +29,7 @@ type APIChapter = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('9hentai', `9hentai`, 'https://9hentai.to', Tags.Language.Multilingual, Tags.Rating.Erotica, Tags.Source.Aggregator, Tags.Media.Manga);
+        super('9hentai', `9hentai`, 'https://9hentai.com', Tags.Language.Multilingual, Tags.Rating.Pornographic, Tags.Source.Aggregator, Tags.Media.Manga);
     }
 
     public override get Icon() {
