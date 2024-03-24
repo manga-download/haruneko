@@ -54,7 +54,6 @@ export const queryPages = [
 
 /**
  * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
- * This method utilizes the HTML pages provided by the **MadTheme Admin AJAX endpoint** to extract the chapters.
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export function ChaptersSinglePageCSS(query = queryChapters) {
@@ -71,7 +70,6 @@ export function ChaptersSinglePageCSS(query = queryChapters) {
 
 /**
  * An extension method for extracting all chapters for the given {@link manga} using the given CSS {@link query}.
- * This method utilizes the HTML pages provided by the **MadTheme Admin AJAX endpoint** to extract the chapters.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
