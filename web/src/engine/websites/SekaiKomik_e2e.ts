@@ -6,7 +6,7 @@ const config: Config = {
         title: 'SekaiKomik'
     },
     container: {
-        url: 'https://sekaikomik.bio/manga/circles/',
+        url: 'https://sekaikomik.guru/manga/circles/',
         id: '/manga/circles/',
         title: 'Circles'
     },

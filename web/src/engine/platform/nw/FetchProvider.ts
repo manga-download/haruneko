@@ -1,5 +1,5 @@
 import { EngineResourceKey as R } from '../../../i18n/ILocale';
-import type { IFetchProvider, PreloadAction } from '../FetchProvider';
+import type { IFetchProvider, ScriptInjection } from '../FetchProvider';
 import { FetchRedirection } from '../AntiScrapingDetection';
 import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
 import * as protobuf from 'protobufjs';
@@ -235,7 +235,11 @@ export default class implements IFetchProvider {
     }
     */
 
-    public async FetchWindow(request: Request, timeout: number, preload: PreloadAction = () => undefined): Promise<NWJS_Helpers.win> {
+    public async FetchWindow(request: Request, timeout: number, preload: ScriptInjection<void> = () => undefined): Promise<NWJS_Helpers.win> {
+
+        // TODO: Handle abort signals
+        //request.signal.addEventListener('abort', () => undefined);
+        //if(request.signal.aborted) { /* */ }
 
         const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
             new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
@@ -294,14 +298,15 @@ export default class implements IFetchProvider {
                 invocations.push({ name: 'win.reload()', info: `DOM Window: ${win.window}`});
                 win.reload();
             } else {
-                preload(win.window.window, win.window.window);
+                win.eval(null, preload instanceof Function ? `(${preload})()` : preload);
+                //preload(win.window.window, win.window.window);
                 //PreventDialogs(win, win.window.window);
             }
 
             win.on('document-start', (frame: typeof window) => {
                 invocations.push({ name: `win.on('document-start')`, info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
                 if(win.window === frame) {
-                    preload(win.window.window, frame);
+                    //preload(win.window.window, frame);
                     if (win.window.document.readyState === 'loading') {
                         win.window.document.addEventListener('DOMContentLoaded', () => {
                             invocations.push({ name: 'DOMContentLoaded', info: win.window?.location?.href });
@@ -365,11 +370,11 @@ export default class implements IFetchProvider {
         }
     }
 
-    public async FetchWindowScript<T>(request: Request, script: string, delay = 0, timeout = 60_000): Promise<T> {
+    public async FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
         return this.FetchWindowPreloadScript(request, () => undefined, script, delay, timeout);
     }
 
-    public async FetchWindowPreloadScript<T>(request: Request, preload: PreloadAction, script: string, delay = 0, timeout = 60_000): Promise<T> {
+    public async FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
         const start = Date.now();
         const win = await this.FetchWindow(request, timeout, preload);
         const elapsed = Date.now() - start;
@@ -377,7 +382,7 @@ export default class implements IFetchProvider {
             await this.Wait(delay);
             let result: T | Promise<T>;
             try {
-                result = win.eval(null, script) as unknown as T | Promise<T>;
+                result = win.eval(null, script instanceof Function ? `(${script})()` : script) as unknown as T | Promise<T>;
             } catch(inner) {
                 const outer = new EvalError('<script>', { cause: inner });
                 console.error(inner, outer);

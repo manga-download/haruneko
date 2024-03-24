@@ -1,6 +1,7 @@
-import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunication';
-import type { RPCServer } from '../rpc/Server';
-import * as fs from 'node:fs/promises';
+import { ipcMain } from 'electron';
+import { RPCServer } from '../../../nw/src/rpc/Server';
+import { Contract } from '../../../nw/src/rpc/Contract';
+import type { PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunication';
 
 /**
  * Inter Process Communication for NodeWebkit (background page)
@@ -10,42 +11,41 @@ export class IPC implements PlatformIPC {
     public RPC?: RPCServer;
 
     constructor() {
-        chrome.runtime.onMessage.addListener(this.Listen.bind(this));
+        this.RPC = new RPCServer('/hakuneko', new Contract(this));
+        ipcMain.handle('StopRPC', () => this.StopRPC());
+        ipcMain.handle('RestartRPC', (_, port: number, secret: string) => this.RestartRPC(port, secret));
+        ipcMain.handle('SetCloudFlareBypass', (_, userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]) => this.SetCloudFlareBypass(userAgent, cookies));
     }
 
+    /*
     private async Send<R extends IPCResponse>(method: keyof WebIPC, ...parameters: IPCParameters): Promise<R> {
         // TODO: improve query filter e.g., windowID or tabID
-        const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
+        const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active : true }, resolve));
         const tab = tabs.length > 0 ? tabs.shift() : undefined;
         return new Promise<R>(resolve => {
             if(tab?.id) {
                 //console.log(`App::IPC.Send::${method}`, parameters);
                 chrome.tabs.sendMessage<IPCPayload<WebIPC>, R>(tab.id, { method, parameters }, resolve);
             } else {
-                throw new Error(/* TODO: Message */);
+                throw new Error();
             }
         });
     }
-
-    private Listen(payload: IPCPayload<AppIPC>, sender: chrome.runtime.MessageSender, callback: (response: IPCResponse) => void): boolean | void {
-        //console.log('App::IPC.Received', payload, sender, callback);
-        if(payload.method in this) {
-            this[payload.method].call<WebIPC, IPCParameters, Promise<IPCResponse>>(this, ...payload.parameters).then(callback);
-            return true;
-        } else {
-            console.error('No IPC callback handler found for:', payload.method);
-        }
-    }
+    */
 
     public async StopRPC() {
-        return this.RPC?.Stop();
+        console.log('IPC::StopRPC()');
+        //return this.RPC?.Stop();
     }
 
     public async RestartRPC(port: number, secret: string) {
-        return this.RPC?.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
+        console.log('IPC::RestartRPC()', port, secret);
+        //return this.RPC?.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
     }
 
     public async SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void> {
+        console.log('IPC::SetCloudFlareBypass()', userAgent, cookies);
+        /*
         for(const cookie of cookies) {
             await chrome.cookies.set({
                 domain: cookie.domain,
@@ -71,9 +71,11 @@ export class IPC implements PlatformIPC {
             // Show 'Restart Application' message
             alert('[I18N] User-Agent ID for CloudFlare Bypass updated, please restart the application to take effect.');
         }
+        */
     }
 
     public async LoadMediaContainerFromURL(url: string) {
-        return this.Send<void>('LoadMediaContainerFromURL', url);
+        console.log('IPC::LoadMediaContainerFromURL()', url);
+        //this.win.webContents.send('LoadMediaContainerFromURL', url);
     }
 }
