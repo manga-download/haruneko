@@ -38,7 +38,7 @@ export function ElementLabelExtractor(queryBloat: string = undefined) {
                 }
             }
         }
-        return element instanceof HTMLMetaElement ? element.content : element.textContent.trim();
+        return element instanceof HTMLMetaElement ? element.content : element.innerText.trim();
     };
 }
 
@@ -64,7 +64,7 @@ export function AnchorInfoExtractor(useTitleAttribute = false, queryBloat: strin
         }
         return {
             id: element.pathname,
-            title: useTitleAttribute ? element.title.trim() : element.text.trim()
+            title: useTitleAttribute ? element.title.trim() : element.innerText.trim()
         };
     };
 }

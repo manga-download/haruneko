@@ -43,14 +43,24 @@ export abstract class FetchProvider {
 
         const response = await this.Fetch(request);
         const data = await response.arrayBuffer();
-        const dom = new DOMParser().parseFromString(new TextDecoder().decode(data), mime);
+        let document = new DOMParser().parseFromString(new TextDecoder().decode(data), mime);
 
-        const charset = dom.head?.querySelector<HTMLMetaElement>('meta[charset]')?.getAttribute('charset')
-            ?? dom.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
+        const charset = document.head?.querySelector<HTMLMetaElement>('meta[charset]')?.getAttribute('charset')
+            ?? document.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
             ?? response.headers?.get('Content-Type')?.match(charsetPattern)?.at(1)
             ?? 'UTF-8';
 
-        return /UTF-?8/i.test(charset) ? dom : new DOMParser().parseFromString(new TextDecoder(charset).decode(data), mime);
+        document = /UTF-?8/i.test(charset) ? document : new DOMParser().parseFromString(new TextDecoder(charset).decode(data), mime);
+
+        // NOTE: Monkey patching the `innerText` property, stripping whitespaces as it would be rendered when attached to window DOM
+        const selectors = [ 'h1', 'h2', 'h3', 'h4', 'div', 'span', 'a', 'li' ].join(', ');
+        for(const element of document.body.querySelectorAll<HTMLElement>(selectors)) {
+            Object.defineProperty(element, 'innerText', {
+                get: () => element.textContent?.replace(/\s+/g, ' ').trim()
+            });
+        }
+
+        return document;
     }
 
     /**
