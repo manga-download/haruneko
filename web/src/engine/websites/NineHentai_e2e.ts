@@ -8,11 +8,11 @@ const config: Config = {
     container: {
         url: 'https://9hentai.com/g/61506/',
         id: '/g/61506/',
-        title: '(@RoBosquat) Aphrodisiacs and Giyushino (Demon Slayer)',
+        title: '(@RoBosquat)  Aphrodisiacs and Giyushino (Demon Slayer)',
     },
     child: {
         id: '/g/61506/',
-        title: '(@RoBosquat) Aphrodisiacs and Giyushino (Demon Slayer)',
+        title: '(@RoBosquat)  Aphrodisiacs and Giyushino (Demon Slayer)',
     },
     entry: {
         index: 0,
