@@ -109,6 +109,7 @@ export { default as DoujinZa } from './DoujinZa';
 export { default as DragonTea } from './DragonTea';
 export { default as DragonTranslation } from './DragonTranslation';
 export { default as DrakeScans } from './DrakeScans';
+export { default as DuaLeoTruyen } from './DuaLeoTruyen';
 export { default as DynastyScans } from './DynastyScans';
 export { default as EarlyManga } from './EarlyManga';
 export { default as EightMuses } from './EightMuses';
