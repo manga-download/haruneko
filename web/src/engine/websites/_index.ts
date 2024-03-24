@@ -690,6 +690,7 @@ export { default as YawarakaSpirits } from './YawarakaSpirits';
 export { default as Ynjn } from './Ynjn';
 export { default as YugenMangasPT } from './YugenMangasPT';
 export { default as YumeKomik } from './YumeKomik';
+export { default as YuraManga } from './YuraManga';
 export { default as Yurineko } from './Yurineko';
 export { default as YuriVerso } from './YuriVerso';
 export { default as Zebrack } from './Zebrack';
