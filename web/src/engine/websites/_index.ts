@@ -647,6 +647,7 @@ export { default as TurkceMangaOku } from './TurkceMangaOku';
 export { default as Turktoon } from './Turktoon';
 export { default as Tuttoanimemanga } from './Tuttoanimemanga';
 export { default as UmeTruyen } from './UmeTruyen';
+export { default as UngTyComic } from './UngTyComic';
 export { default as UraSunday } from './UraSunday';
 export { default as UzayManga } from './UzayManga';
 export { default as ValkyrieScan } from './ValkyrieScan';
