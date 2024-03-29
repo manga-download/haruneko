@@ -27,7 +27,7 @@ type APIChapter = {
 }
 
 type MangaID = {
-    id: number,
+    id: string,
     slug: string,
     title?: string
 }
@@ -43,18 +43,12 @@ type APIPages = {
 const mangaIdScript = `
     new Promise((resolve, reject) => {
        const myregexp = /"postId"\\s*:\\s*(\\d+)/i;
-        __next_f.forEach(element => {
-            const el = element[1];
-            if (el) {
-                if((myregexp.test(el)))  {
-                   const id = parseInt(el.match(myregexp)[1]);
-                   const title = document.querySelector('meta[property="og:title"]').content.trim();
-                   const slug = window.location.pathname.split('/').pop();
-                   resolve({id: id, title: title, slug: slug});
-                }
-            }
-        });
-        reject();
+       const element = __next_f.find(el => el[1] && el[1].match(myregexp));
+       if (!element) reject("Regex didnt match :/");
+       const id = element[1].match(myregexp)[1];
+       const title = document.querySelector('meta[property="og:title"]').content.trim();
+       const slug = window.location.pathname.split('/').pop();
+       resolve({id: id, title: title, slug: slug});
     });
 
 `;
@@ -76,8 +70,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await FetchWindowScript<MangaID>(new Request(url), mangaIdScript, 500);
-        return new Manga(this, provider, JSON.stringify({ id: data.id, slug: data.slug }), data.title);
+        const data = await FetchWindowScript<MangaID>(new Request(url), mangaIdScript, 1500);
+        return new Manga(this, provider, JSON.stringify({ id: data.id.toString(), slug: data.slug }), data.title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
