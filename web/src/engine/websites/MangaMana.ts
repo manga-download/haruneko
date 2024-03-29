@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
         });
         const result = await FetchJSON<APIMangas>(request);
         const dom = new DOMParser().parseFromString(result.html, 'text/html');
-        const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('div.mangalist_item a[class= ""]')];
+        const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('a[class= ""]')];
         return nodes.map(manga => new Manga(this, provider, manga.pathname, manga.text.trim()));
     }
 
