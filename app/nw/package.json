@@ -3,7 +3,7 @@
     "title": "HaruNeko",
     "description": "Manga, Anime & Novel Downloader",
     "type": "module",
-    "main": "App.js",
+    "main": "app.js",
     "url": "https://haruneko.pages.dev",
     "engines": {
         "node": ">=20.11.0",
@@ -14,7 +14,6 @@
         "yargs": "17.7.2"
     },
     "devDependencies": {
-        "@rollup/plugin-typescript": "^11.1.6",
         "@types/ws": "^8.5.10",
         "extract-zip": "2.0.1",
         "node-fetch": "3.3.2",
@@ -23,9 +22,9 @@
     },
     "scripts": {
         "check": "eslint ./src",
-        "build": "node ./scripts/build-app.mjs && rollup --config rollup.config.js",
+        "build": "node ./scripts/build-app.mjs && vite build",
         "bundle": "npm run build && node ./scripts/deploy-app.mjs",
-        "test": "jest --detectOpenHandles --passWithNoTests --config=test/jest.config.js",
+        "test": "jest --passWithNoTests --config=test/jest.config.js",
         "launch:dev": "npm run build && nw ./build --origin=http://localhost:3000",
         "launch:prod": "npm run build && nw ./build --origin=http://localhost:5000"
     }

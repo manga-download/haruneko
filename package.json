@@ -7,7 +7,8 @@
     "type": "module",
     "workspaces": [
         "web",
-        "app/nw"
+        "app/nw",
+        "app/electron"
     ],
     "devDependencies": {
         "@types/chrome": "^0.0.258",
@@ -29,7 +30,8 @@
         "ts-jest": "^29.1.2",
         "ts-node": "^10.9.2",
         "tslib": "^2.6.2",
-        "typescript": "^5.4.3"
+        "typescript": "^5.4.3",
+        "vite": "^5.2.4"
     },
     "scripts": {
         "check": "npm run check --workspaces",
