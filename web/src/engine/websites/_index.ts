@@ -322,7 +322,6 @@ export { default as MangaID } from './MangaID';
 export { default as MangaInn } from './MangaInn';
 export { default as MangaIro } from './MangaIro';
 export { default as MangaItalia } from './MangaItalia';
-export { default as MangaJar } from './MangaJar';
 export { default as Mangajp } from './Mangajp';
 export { default as MangaKakalot } from './MangaKakalot';
 export { default as MangaKatana } from './MangaKatana';
