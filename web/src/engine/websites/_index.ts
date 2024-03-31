@@ -651,6 +651,7 @@ export { default as ViewComics } from './ViewComics';
 export { default as ViyaFansub } from './ViyaFansub';
 export { default as VNSharing } from './VNSharing';
 export { default as VoidScans } from './VoidScans';
+export { default as VortexScans } from './VortexScans';
 export { default as VyManga } from './VyManga';
 export { default as WarungKomik } from './WarungKomik';
 export { default as WebAce } from './WebAce';
