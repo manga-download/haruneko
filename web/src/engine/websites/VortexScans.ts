@@ -41,10 +41,9 @@ type APIPages = {
 }
 
 const mangaIdScript = `
-    new Promise((resolve, reject) => {
+    new Promise(resolve => {
        const myregexp = /"postId"\\s*:\\s*(\\d+)/i;
        const element = __next_f.find(el => el[1] && el[1].match(myregexp));
-       if (!element) reject("Regex didnt match :/");
        const id = element[1].match(myregexp)[1];
        const title = document.querySelector('meta[property="og:title"]').content.trim();
        const slug = window.location.pathname.split('/').pop();
