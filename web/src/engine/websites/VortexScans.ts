@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './VortexScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
@@ -32,14 +32,6 @@ type MangaID = {
     title?: string
 }
 
-type APIPages = {
-    chapter: {
-        images: {
-            url: string
-        }[]
-    }
-}
-
 const mangaIdScript = `
     new Promise(resolve => {
        const myregexp = /"postId"\\s*:\\s*(\\d+)/i;
@@ -52,6 +44,16 @@ const mangaIdScript = `
 
 `;
 
+const pageScript = `
+    new Promise( resolve => {
+        resolve([...document.querySelectorAll('section img[loading="lazy"][srcset]')].map(img => {
+            const url = new URL(img.srcset, window.location.origin);
+            return (decodeURIComponent(url.searchParams.get('url')));
+        }))
+    })
+`;
+
+@Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiURL = new URL('/api/', this.URI);
@@ -86,13 +88,6 @@ export default class extends DecoratableMangaScraper {
         const mangaid: MangaID = JSON.parse(manga.Identifier);
         const endpoint = new URL(`chapters/?postId=${mangaid.id}&skip=0&take=99999&order=asc`, this.apiURL);
         const { post } = await FetchJSON<APIChapters>(new Request(endpoint));
-        return post.chapters.map(chapter => new Chapter(this, manga, chapter.slug, [chapter.number.toString(), chapter.title].join(' ').trim()));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaid: MangaID = JSON.parse(chapter.Parent.Identifier);
-        const endpoint = new URL(`chapter/${mangaid.slug}/${chapter.Identifier}`, this.apiURL);
-        const data = await FetchJSON<APIPages>(new Request(endpoint));
-        return data.chapter.images.map(page => new Page(this, chapter, new URL(page.url, this.URI)));
+        return post.chapters.map(chapter => new Chapter(this, manga, `/series/${mangaid.slug}/${chapter.slug}`, [chapter.number.toString(), chapter.title].join(' ').trim()));
     }
 }
