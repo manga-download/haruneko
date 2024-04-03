@@ -71,8 +71,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'evascans', targetID: 'manwe' },
             { sourceID: 'firstkiss', targetID: 'likemanga' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
-            { sourceID: 'galaxyaction', targetID: 'flixaction' },
-            { sourceID: 'galaxymanga', targetID: 'galaxyshoujo' },
+            { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
