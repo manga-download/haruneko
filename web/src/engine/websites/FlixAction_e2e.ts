@@ -2,8 +2,8 @@
 
 const config = {
     plugin: {
-        id: 'galaxyaction',
-        title: 'Galaxy Action'
+        id: 'flixaction',
+        title: 'Flix Action'
     },
     container: {
         url: 'https://galaxyaction.site/manga/eternal-club/',

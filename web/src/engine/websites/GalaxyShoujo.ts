@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './GalaxyManga.webp';
+import icon from './GalaxyShoujo.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
@@ -40,7 +40,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiurl = 'https://api.flixscans.com';
 
     public constructor() {
-        super('galaxymanga', 'Galaxy Manga', 'https://flixscans.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
+        super('galaxyshoujo', 'Galaxy Shoujo', 'https://flixscans.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
