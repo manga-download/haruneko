@@ -35,9 +35,9 @@ type APIPages = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    protected readonly apiurl = 'https://ar.flixscans.site/api/v1/webtoon/';
-    protected readonly cdnUrl = 'https://media.flixscans.com';
-    protected readonly categories = ['action', 'romance'];
+    protected apiurl = 'https://ar.flixscans.site/api/v1/webtoon/';
+    protected cdnUrl = 'https://media.flixscans.com';
+    protected categories = ['action', 'romance'];
 
     public constructor(id = 'galaxymanga', label = 'Galaxy Manga', url = 'https://flixscans.com', tags = [Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator]) {
         super(id, label, url, ...tags);
