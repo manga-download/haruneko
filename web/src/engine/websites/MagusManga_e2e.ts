@@ -6,7 +6,7 @@ const config = {
         title: 'MagusManga'
     },
     container: {
-        url: 'https://vofeg.com/series/4741157281-absolute-threshold/',
+        url: 'https://neroscans.com/series/4741157281-absolute-threshold/',
         id: '/series/4741157281-absolute-threshold/',
         title: 'Absolute Threshold'
     },
