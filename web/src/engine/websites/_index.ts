@@ -132,7 +132,6 @@ export { default as FRTiretScan } from './FRTiretScan';
 export { default as FunManga } from './FunManga';
 export { default as FuryoSquad } from './FuryoSquad';
 export { default as Futari } from './Futari';
-export { default as GalaxyAction } from './GalaxyAction';
 export { default as GalaxyManga } from './GalaxyManga';
 export { default as GanGanOnline } from './GanGanOnline';
 export { default as Ganma } from './Ganma';
