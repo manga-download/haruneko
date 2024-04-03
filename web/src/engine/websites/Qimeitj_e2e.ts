@@ -2,21 +2,21 @@
 
 const config = {
     plugin: {
-        id: 'mangajar',
-        title: 'MangaJar'
+        id: 'qimeitj',
+        title: 'Qimeitj'
     },
     container: {
-        url: 'https://mangajar.com/manga/yuan-zun',
-        id: '/manga/yuan-zun',
-        title: 'Yuan Zun'
+        url: 'https://qimeitj.com/book/2324',
+        id: '/book/2324',
+        title: '后宫太多，只好飞升了'
     },
     child: {
-        id: '/manga/yuan-zun/chapter/472.5',
-        title: 'Chapter 472.5'
+        id: '/chapter/144045',
+        title: '035.5 洞天之内',
     },
     entry: {
         index: 0,
-        size: 560_783,
+        size: 212_602,
         type: 'image/jpeg'
     }
 };
