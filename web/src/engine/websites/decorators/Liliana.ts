@@ -9,12 +9,11 @@ export const queryChapters = [
 ].join(',');
 
 export const queryPagesScript = `
-    new Promise((resolve, reject) => {
+    new Promise(resolve => {
 
         function parseResults(data) {
             const dom = new DOMParser().parseFromString(data, 'text/html');
             let nodes = [...dom.querySelectorAll('div.separator')];
-            if (nodes.length == 0) reject();
 
             //sort if needed
             if (nodes[0].hasAttribute('data-index')) {
