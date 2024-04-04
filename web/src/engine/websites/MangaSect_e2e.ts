@@ -6,17 +6,17 @@ const config = {
         title: 'MangaSect'
     },
     container: {
-        url: 'https://mangasect.com/manga/shen-yin-wang-zuo/298',
-        id: '/manga/shen-yin-wang-zuo/298',
-        title: 'Shen Yin Wang Zuo'
+        url: 'https://mangasect.net/manga/eternal-club',
+        id: '/manga/eternal-club',
+        title: 'Eternal Club'
     },
     child: {
-        id: '/manga/shen-yin-wang-zuo/chapter-310/97235',
-        title: 'Chapter 310'
+        id: '/manga/eternal-club/chapter-274',
+        title: 'Chapter 274'
     },
     entry: {
-        index: 1,
-        size: 200_749,
+        index: 0,
+        size: 897_274,
         type: 'image/jpeg'
     }
 };
