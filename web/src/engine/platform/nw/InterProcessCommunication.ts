@@ -1,11 +1,11 @@
-import type { Numeric, Text, Check, SettingsManager } from '../SettingsManager';
-import { Key as GlobalKey } from '../SettingsGlobal';
-import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from './InterProcessCommunication';
+import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
+import { Key as GlobalKey } from '../../SettingsGlobal';
+import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../InterProcessCommunication';
 
 /**
  * Inter Process Communication for NodeWebkit (content page)
  */
-export class NodeWebkitIPC implements PlatformIPC {
+export default class implements PlatformIPC {
 
     constructor(private readonly settingsManager: SettingsManager) {
         chrome.runtime.onMessage.addListener(this.Listen.bind(this));
