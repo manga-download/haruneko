@@ -1,10 +1,8 @@
+import { Exception } from '../../Error';
 import { EngineResourceKey as R } from '../../../i18n/ILocale';
-import type { IFetchProvider, ScriptInjection } from '../FetchProvider';
+import { FetchProvider, type ScriptInjection } from '../FetchProviderCommon';
 import { FetchRedirection } from '../AntiScrapingDetection';
 import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
-import * as protobuf from 'protobufjs';
-import { Exception, InternalError } from '../../Error';
-import type { JSONObject } from '../../../../../node_modules/websocket-rpc/dist/types';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -16,14 +14,6 @@ const fetchApiForbiddenHeaders = [
     'Host',
     'Sec-Fetch-Dest'
 ];
-
-type GraphQLResult<T> = {
-    errors: {
-        code: number;
-        message: string;
-    }[];
-    data: T;
-};
 
 async function UpdateCookieHeader(url: string, headers: Headers) {
     const name = fetchApiSupportedPrefix + 'Cookie';
@@ -94,19 +84,7 @@ class FetchRequest extends Request {
     }
 }
 
-export default class implements IFetchProvider {
-
-    public get IsVerboseModeEnabled() {
-        return window.localStorage.getItem('hakuneko-fetchwindow-verbose') === 'true';
-    }
-
-    public set IsVerboseModeEnabled(value: boolean) {
-        window.localStorage.setItem('hakuneko-fetchwindow-verbose', value.toString());
-    }
-
-    private async Wait(delay: number) {
-        return new Promise(resolve => setTimeout(resolve, delay));
-    }
+export default class extends FetchProvider {
 
     /**
      * Configure various system globals to bypass FetchAPI limitations.
@@ -155,85 +133,6 @@ export default class implements IFetchProvider {
         await UpdateCookieHeader(request.url, request.headers);
         return fetch(request);
     }
-
-    public async FetchHTML(request: Request): Promise<Document> {
-        const mime = 'text/html';
-        const charsetPattern = /charset=([\w-]+)/;
-
-        const response = await this.Fetch(request);
-        const data = await response.arrayBuffer();
-        const dom = new DOMParser().parseFromString(new TextDecoder().decode(data), mime);
-
-        const charset = dom.head?.querySelector<HTMLMetaElement>('meta[charset]')?.getAttribute('charset')
-            ?? dom.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
-            ?? response.headers?.get('Content-Type')?.match(charsetPattern)?.at(1)
-            ?? 'UTF-8';
-
-        return /UTF-?8/i.test(charset) ? dom : new DOMParser().parseFromString(new TextDecoder(charset).decode(data), mime);
-    }
-
-    public async FetchJSON<TResult>(request: Request): Promise<TResult> {
-        const response = await this.Fetch(request);
-        return response.json();
-    }
-
-    public async FetchCSS<T extends HTMLElement>(request: Request, query: string): Promise<T[]> {
-        const dom = await this.FetchHTML(request);
-        return [...dom.querySelectorAll(query)] as T[];
-    }
-
-    public async FetchGraphQL<TResult>(request: Request, operationName: string, query: string, variables: JSONObject): Promise<TResult> {
-
-        const graphQLRequest = new Request(request.url, {
-            body: JSON.stringify({ operationName: operationName, query: query, variables: variables }),
-            method: 'POST',
-            headers: { 'content-type': 'application/json', 'accept': '*/*' }
-        });
-
-        //copy custom headers from parent request
-        for (const header of request.headers) {
-            graphQLRequest.headers.set(header[0], header[1]);
-        }
-
-        const data = await this.FetchJSON<GraphQLResult<TResult>>(graphQLRequest);
-        if (data.errors && data.errors.length > 0) {
-            throw new Exception(R.FetchProvider_FetchGraphQL_AggregateError, data.errors.map(error => error.message).join('\n'));
-        }
-        if (!data.data) {
-            throw new Exception(R.FetchProvider_FetchGraphQL_MissingDataError);
-        }
-        return data.data;
-    }
-
-    public async FetchRegex(request: Request, regex: RegExp): Promise<string[]> {
-        if (regex.flags.indexOf('g') == -1) {
-            throw new InternalError(`The provided RegExp must contain the global 'g' modifier!`);
-        }
-        const response = await fetch(request);
-        const data = await response.text();
-        const result : string[] = [];
-        let match = undefined;
-        // eslint-disable-next-line no-cond-assign
-        while (match = regex.exec(data)) {
-            result.push(match[1]);
-        }
-        return result;
-    }
-
-    public async FetchProto<TResult>(request: Request, schema: string, messageTypePath: string) : Promise<TResult> {
-        const response = await fetch(request);
-        const serialized = new Uint8Array(await response.arrayBuffer());
-        const prototype = protobuf.parse(schema, { keepCase: true }).root.lookupType(messageTypePath);
-        return prototype.decode(serialized).toJSON() as TResult;
-    }
-
-    /*
-    public async FetchXPATH(request: Request, xpath: string): Promise<Node[]> {
-        const dom = await this.FetchHTML(request);
-        const result = document.evaluate(xpath, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-        return new Array(result.snapshotLength).fill(null).map((_, index) => result.snapshotItem(index) as Node);
-    }
-    */
 
     public async FetchWindow(request: Request, timeout: number, preload: ScriptInjection<void> = () => undefined): Promise<NWJS_Helpers.win> {
 
@@ -360,7 +259,7 @@ export default class implements IFetchProvider {
     public async FetchWindowCSS<T extends HTMLElement>(request: Request, query: string, delay = 0, timeout = 60_000): Promise<T[]> {
         const win = await this.FetchWindow(request, timeout);
         try {
-            await this.Wait(delay);
+            await super.Wait(delay);
             const dom = win.window.document as Document;
             return [...dom.querySelectorAll(query)] as T[];
         } finally {
@@ -379,7 +278,7 @@ export default class implements IFetchProvider {
         const win = await this.FetchWindow(request, timeout, preload);
         const elapsed = Date.now() - start;
         try {
-            await this.Wait(delay);
+            await super.Wait(delay);
             let result: T | Promise<T>;
             try {
                 result = win.eval(null, script instanceof Function ? `(${script})()` : script) as unknown as T | Promise<T>;

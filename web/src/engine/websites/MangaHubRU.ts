@@ -30,7 +30,7 @@ export default class extends DecoratableMangaScraper {
         const url = new URL(manga.Identifier.replace('/title/', '/chapters/'), this.URI);
         const data = await FetchCSS<HTMLAnchorElement>(new Request(url), 'div.detail-chapters a.d-inline-flex');
         return data.map(element => {
-            const title = element.textContent.replaceAll(/\s+/g, ' ').trim();
+            const title = element.innerText.trim();
             return new Chapter(this, manga, element.pathname, title);
         });
     }

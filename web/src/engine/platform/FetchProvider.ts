@@ -1,11 +1,9 @@
 import { InternalError } from '../Error';
 import { Runtime } from './PlatformInfo';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
+import type { FetchProvider } from './FetchProviderCommon';
 import NodeWebkitFetchProvider from './nw/FetchProvider';
 import ElectronFetchProvider from './electron/FetchProvider';
-
-export type ScriptInjection<T> = string | ((this: Window) => Promise<T>);
 
 class HttpResponseError extends InternalError {
     constructor(public readonly response: Response) {
@@ -19,114 +17,25 @@ class HttpResponseError extends InternalError {
 
 export type { HttpResponseError };
 
-/*
-const fail = function() {
-    throw new NotImplementedError();
-};
-*/
-
-export interface IFetchProvider {
-
-    IsVerboseModeEnabled: boolean;
-
-    Initialize(): void;
-
-    /**
-     * ...
-     * @param request - ...
-     */
-    Fetch(request: Request): Promise<Response>;
-
-    /**
-     * ...
-     * @param request - ...
-     */
-    FetchHTML(request: Request): Promise<Document>;
-
-    /**
-     * ...
-     * @param request - ...
-     */
-    FetchJSON<TResult>(request: Request): Promise<TResult>;
-
-    /**
-     * ...
-     * @param request - ...
-     * @param query - ...
-     */
-    FetchCSS<T extends HTMLElement>(request: Request, query: string): Promise<T[]>;
-
-    /**
-     * Perform a GraphQL request (POST) to a desired endpoint and returns JSON data.
-     * @param operationName - The name of the query to be performed
-     * @param query - A valid GraphQL query
-     * @param variables - A JSONObject containing the variables of the query.
-     */
-    FetchGraphQL<TResult>(request: Request, operationName: string, query: string, variables: JSONObject): Promise<TResult>;
-
-    /**
-     * ...
-     * @param request - ...
-     * @param regex - ...
-     */
-    FetchRegex(request: Request, regex: RegExp): Promise<string[]>;
-
-    /**
-     * Fetch and decode a protocol buffer message.
-     * @param schema - The schema of the protocol buffer including all supported message definitions
-     * @param messageTypePath - The name of the package and schema type separated by a `.` which should be used to decode the response
-     * @returns The decoded response data
-     */
-    FetchProto<TResult>(request: Request, schema: string, messageTypePath: string) : Promise<TResult>;
-
-    /**
-     * Open the given {@link request} in a new browser window and execute the given {@link query}.
-     * @param request - ...
-     * @param query - The CSS query that will be performed for the DOM of the browser window
-     * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link query} will be executed
-     * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
-     */
-    FetchWindowCSS<T extends HTMLElement>(request: Request, query: string, delay?: number, timeout?: number): Promise<T[]>;
-
-    /**
-     * Open the given {@link request} in a new browser window and inject the given {@link script}.
-     * @param request - ...
-     * @param script - The JavaScript or function that will be evaluated within the browser window
-     * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
-     * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
-     */
-    FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T>;
-
-    /**
-     * Open the given {@link request} in a new browser window and inject the given {@link script}.
-     * @param request - ...
-     * @param preload - The JavaScript or function that will be evaluated within the browser window before page is loaded
-     * @param script - The JavaScript or function that will be evaluated within the browser window
-     * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
-     * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
-     */
-    FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: string, delay?: number, timeout?: number): Promise<T>
-}
-
-export function CreateFetchProvider(): IFetchProvider {
-    return new PlatformInstanceActivator<IFetchProvider>()
+export function CreateFetchProvider(): FetchProvider {
+    return new PlatformInstanceActivator<FetchProvider>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitFetchProvider())
         .Configure(Runtime.Electron, () => new ElectronFetchProvider())
         .Create();
 }
 
-export let Fetch: IFetchProvider['Fetch'];
-export let FetchHTML: IFetchProvider['FetchHTML'];
-export let FetchJSON: IFetchProvider['FetchJSON'];
-export let FetchCSS: IFetchProvider['FetchCSS'];
-export let FetchGraphQL: IFetchProvider['FetchGraphQL'];
-export let FetchRegex: IFetchProvider['FetchRegex'];
-export let FetchProto: IFetchProvider['FetchProto'];
-export let FetchWindowCSS: IFetchProvider['FetchWindowCSS'];
-export let FetchWindowScript: IFetchProvider['FetchWindowScript'];
-export let FetchWindowPreloadScript: IFetchProvider['FetchWindowPreloadScript'];
+export let Fetch: FetchProvider['Fetch'];
+export let FetchHTML: FetchProvider['FetchHTML'];
+export let FetchJSON: FetchProvider['FetchJSON'];
+export let FetchCSS: FetchProvider['FetchCSS'];
+export let FetchGraphQL: FetchProvider['FetchGraphQL'];
+export let FetchRegex: FetchProvider['FetchRegex'];
+export let FetchProto: FetchProvider['FetchProto'];
+export let FetchWindowCSS: FetchProvider['FetchWindowCSS'];
+export let FetchWindowScript: FetchProvider['FetchWindowScript'];
+export let FetchWindowPreloadScript: FetchProvider['FetchWindowPreloadScript'];
 
-export function SetupFetchProviderExports(instance: IFetchProvider) {
+export function SetupFetchProviderExports(instance: FetchProvider) {
     instance.Initialize();
     Fetch = instance.Fetch.bind(instance);
     FetchHTML = instance.FetchHTML.bind(instance);

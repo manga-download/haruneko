@@ -2,21 +2,21 @@
 
 const config = {
     plugin: {
-        id: 'mangajar',
-        title: 'MangaJar'
+        id: 'turkmanga',
+        title: 'TurkManga'
     },
     container: {
-        url: 'https://mangajar.com/manga/yuan-zun',
-        id: '/manga/yuan-zun',
-        title: 'Yuan Zun'
+        url: 'https://turkmanga.com.tr/manga/mercenary-enrollment',
+        id: '/manga/mercenary-enrollment',
+        title: 'Mercenary Enrollment'
     },
     child: {
-        id: '/manga/yuan-zun/chapter/472.5',
-        title: 'Chapter 472.5'
+        id: 'bolum-1',
+        title: 'Bölüm 0'
     },
     entry: {
         index: 0,
-        size: 560_783,
+        size: 646_789,
         type: 'image/jpeg'
     }
 };
