@@ -142,6 +142,7 @@ export { default as GateManga } from './GateManga';
 export { default as GDScans } from './GDScans';
 export { default as GekkouScans } from './GekkouScans';
 export { default as GhostFansub } from './GhostFansub';
+export { default as GhostScan } from './GhostScan';
 export { default as GloryManga } from './GloryManga';
 export { default as Gntai } from './Gntai';
 export { default as GoldenMangas } from './GoldenMangas';
