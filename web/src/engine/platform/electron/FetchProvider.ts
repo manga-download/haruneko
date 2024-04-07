@@ -56,11 +56,6 @@ export default class extends FetchProvider {
         return fetch(request);
     }
 
-    public async FetchWindowCSS<T extends HTMLElement>(request: Request, query: string, delay?: number, timeout?: number): Promise<T[]> {
-        console.warn('Platform::Electron::FetchProvider::FetchWindowCSS()', '=>', request, query, delay, timeout);
-        throw new Error('Method not implemented.');
-    }
-
     public async FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
         console.warn('Platform::Electron::FetchProvider::FetchWindowScript()', '=>', request, script, delay, timeout);
         return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout);
