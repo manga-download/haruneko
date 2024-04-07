@@ -697,6 +697,7 @@ export { default as YuraManga } from './YuraManga';
 export { default as Yurineko } from './Yurineko';
 export { default as YuriVerso } from './YuriVerso';
 export { default as Zebrack } from './Zebrack';
+export { default as ZenithScans } from './ZenithScans';
 export { default as ZeroScans } from './ZeroScans';
 export { default as ZeurelScan } from './ZeurelScan';
 export { default as ZinManga } from './ZinManga';
