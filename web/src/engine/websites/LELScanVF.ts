@@ -1,22 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './LELScanVF.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import * as FuzzyDoodle from './decorators/FuzzyDoodle';
 
-function MangaLabelExtractor(element: HTMLImageElement): string {
-    return element.alt.trim();
-}
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLImageElement>('img').getAttribute('alt').trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'section img.object-cover', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div#card-real a', 1, 1, 0, MangaInfoExtractor)
-@Common.PagesSinglePageCSS('div#chapter-container img.chapter-image')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, FuzzyDoodle.queryMangatitle, FuzzyDoodle.MangaLabelExtractor)
+@Common.MangasMultiPageCSS(FuzzyDoodle.mangaPath, FuzzyDoodle.queryMangas, 1, 1, 0, FuzzyDoodle.MangaInfoExtractor)
+@FuzzyDoodle.ChaptersMultiPageCSS()
+@Common.PagesSinglePageCSS(FuzzyDoodle.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -26,21 +17,6 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(manga, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList.distinct();
-    }
-
-    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const uri = new URL(`${manga.Identifier}?page=${page}`, this.URI);
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(uri), 'div#chapters-list a');
-        return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('span').textContent.trim()));
     }
 
 }
