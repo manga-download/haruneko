@@ -18,7 +18,7 @@ export const queryMangas = 'div.comics__all__box a.titulo__comic__allcomics';
 export const queryChapters = 'ul.capitulos__lista a.link__capitulos';
 
 const pagescript = `
-    new Promise((resolve, reject) => {
+    new Promise( resolve => {
         try {
             resolve(urls);
         } catch (error) {
