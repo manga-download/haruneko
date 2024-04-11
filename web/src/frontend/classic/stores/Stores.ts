@@ -4,6 +4,7 @@ import type { Bookmark } from '../../../engine/providers/Bookmark';
 import type { DownloadTask } from '../../../engine/DownloadTask';
 import { checkNewContent } from './Settings';
 import type { IAppWindow } from '../../../engine/platform/AppWindow';
+import { FlagType } from '../../../engine/ItemflagManager';
 
 export const WindowController = writable<IAppWindow>(null);
 export const selectedPlugin = writable<MediaContainer<MediaContainer<MediaChild>>>();
@@ -15,7 +16,13 @@ export const contentscreen = writable<string>('/');
 
 export const bookmarksToContinue = readable<Bookmark[]>([], (set) => {
     async function refreshSuggestions() {
-        set(await HakuNeko.BookmarkPlugin.getEntriesWithUnflaggedContent());
+        const accumulator: Bookmark[] = [];
+        for(const bookmark of HakuNeko.BookmarkPlugin.Entries) {
+            if((await HakuNeko.ItemflagManager.FilterEntries(bookmark as MediaContainer<MediaContainer<MediaItem>>, FlagType.None)).length > 0) {
+                accumulator.push(bookmark);
+            }
+        }
+        set(accumulator);
     }
     refreshSuggestions();
     const unsubcribe = checkNewContent.subscribe(shouldCheck => {

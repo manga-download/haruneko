@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher, SvelteComponent } from 'svelte';
     import { fade } from 'svelte/transition';
     const dispatch = createEventDispatcher();
 
     import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
         BookmarkFilled as IconBookmarkFilled,
+        CarbonIcon,
         CloudDownload,
         Download,
         Error,
@@ -31,24 +32,24 @@
     export let selected: boolean;
     export let hover: boolean;
     export let multilang = false;
-    let flag: FlagType;
-    const flagiconmap = new Map<FlagType, any>([
-        [FlagType.Viewed, ViewFilled],
-        [FlagType.Current, IconBookmarkFilled],
-    ]);
-    $: flagicon = flagiconmap.get(flag) || View;
+    const flagiconmap: Record<FlagType, typeof CarbonIcon> = {
+        [FlagType.None]: View,
+        [FlagType.Viewed]: ViewFilled,
+        [FlagType.Current]: IconBookmarkFilled,
+    };
+    let flagicon: typeof CarbonIcon = View;
 
     async function OnFlagChangedCallback(
         changedItem: StoreableMediaContainer<MediaItem>,
         changedFlag: FlagType,
     ) {
-        if (changedItem === item) flag = changedFlag;
+        if (changedItem === item) flagicon = flagiconmap[changedFlag];
         else if (changedFlag === FlagType.Current)
-            flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
+            flagicon = flagiconmap[await HakuNeko.ItemflagManager.GetFlag(item)];
     }
     HakuNeko.ItemflagManager.FlagChanged.Subscribe(OnFlagChangedCallback);
     onMount(async () => {
-        flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
+        flagicon = flagiconmap[await HakuNeko.ItemflagManager.GetFlag(item)];
     });
     onDestroy(() => {
         HakuNeko.ItemflagManager.FlagChanged.Unsubscribe(OnFlagChangedCallback);

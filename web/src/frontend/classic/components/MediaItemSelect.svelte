@@ -247,25 +247,19 @@
                 <ContextMenuOption
                     labelText="Not viewed"
                     on:click={async () => {
-                        window.HakuNeko.ItemflagManager.UnflagItem(contextItem);
+                        window.HakuNeko.ItemflagManager.SetFlag(selectedItems[0], FlagType.None);
                     }}
                 />
                 <ContextMenuOption
                     labelText="Viewed"
                     on:click={async () => {
-                        window.HakuNeko.ItemflagManager.FlagItem(
-                            contextItem,
-                            FlagType.Viewed,
-                        );
+                        window.HakuNeko.ItemflagManager.SetFlag(selectedItems[0], FlagType.Viewed);
                     }}
                 />
                 <ContextMenuOption
                     labelText="Current"
                     on:click={async () => {
-                        window.HakuNeko.ItemflagManager.FlagItem(
-                            contextItem,
-                            FlagType.Current,
-                        );
+                        window.HakuNeko.ItemflagManager.SetFlag(selectedItems[0], FlagType.Current);
                     }}
                 />
             </ContextMenuOption>

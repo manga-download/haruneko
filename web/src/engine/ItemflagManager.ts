@@ -1,52 +1,70 @@
-import type { MediaChild, MediaContainer } from './providers/MediaPlugin';
+import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
 import { type StorageController, Store } from './StorageController';
 import { Event } from './Event';
 
 export class ItemflagManager {
 
+    private readonly cache: Map<string, ItemFlag[]> = new Map();
     public readonly FlagChanged: Event<MediaContainer<MediaChild>, FlagType> = new Event<MediaContainer<MediaChild>, FlagType>();
     public readonly MediaFlagsChanged: Event<ItemflagManager, MediaContainer<MediaChild>> = new Event<this, MediaContainer<MediaChild>>();
 
-    private items:Map<string, ItemFlag[]> = new Map();
-    constructor(private readonly storage: StorageController) {
+    constructor(private readonly storage: StorageController) {}
+
+    /**
+     * Load the flags for the given {@link key} from the persistent storage into the internal {@link cache}.
+     * @param key - The identifier for the flags to be loaded
+     */
+    private async LoadFlags(key: string) {
+        const flags = await this.storage.LoadPersistent<ItemFlag[]>(Store.Itemflags, key);
+        this.cache.set(key, flags ?? []);
     }
 
-    public async LoadContainerFlags(media: MediaContainer<MediaChild>) {
-        if(media.Parent) {
-            const mediaflags = await this.storage.LoadPersistent<ItemFlag[]>(Store.Itemflags, this.StorageKey(media));
-            this.items.set(this.StorageKey(media), mediaflags);
-            this.MediaFlagsChanged.Dispatch(this, media);
+    /**
+     * Save the flags for the given {@link key} from the internal {@link cache} into the persistent storage.
+     * @param key - The identifier for the flags to be stored
+     */
+    private async SaveFlags(key: string) {
+        const flags = this.cache.get(key).filter(flag => flag.kind !== FlagType.None);
+        if(flags.length > 0) {
+            await this.storage.SavePersistent<ItemFlag[]>(flags, Store.Itemflags, key);
+        } else {
+            await this.storage.RemovePersistent(Store.Itemflags, key);
         }
     }
 
-    private async SaveContainerFlags(container: MediaContainer<MediaChild>, flags: ItemFlag[]) {
-        await this.storage.SavePersistent<ItemFlag[]>(flags, Store.Itemflags, this.StorageKey(container));
+    /**
+     * Create a pseudo-unique identifier for a given {@link container}.
+     */
+    private StorageKey(container: MediaContainer<MediaChild>): string {
+        return `${container.Parent.Identifier} :: ${container.Identifier}`;
     }
 
-    /* Key to store flags by plugin-media */
-    private StorageKey(item: MediaContainer<MediaChild>): string {
-        return `${item.Parent.Identifier} :: ${item.Identifier}`;
-    }
-
+    /**
+     * Create a pseudeo-unique identifier for a given {@link text}.
+     */
     private Hash(text: string): string {
         return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
     }
 
-    private isContainerSameItem(flag: ItemFlag, container: MediaContainer<MediaChild>): boolean {
-        const doesIdentifierMatch = flag.IdentifierHash === this.Hash(container.Identifier);
-        const doesTitleMatch = flag.TitleHash === this.Hash(container.Title);
-        return doesIdentifierMatch || doesTitleMatch;
+    private isFlagRepresentingEntry(flag: ItemFlag, entry: MediaContainer<MediaChild>): boolean {
+        return flag.IdentifierHash === this.Hash(entry.Identifier) || flag.TitleHash === this.Hash(entry.Title);
     }
 
-    /* Retrieves the flags of a media */
-    public async GetContainerItemsFlags(container: MediaContainer<MediaChild>) {
+    private findFlagType(flags: ItemFlag[], entry: MediaContainer<MediaChild>) {
+        return flags?.find(flag => this.isFlagRepresentingEntry(flag, entry))?.kind ?? FlagType.None;
+    }
+
+    /**
+     * Get the cached/stored flags for all entries within the given {@link container}.
+     */
+    private async GetContainerItemsFlags(container: MediaContainer<MediaChild>): Promise<ItemFlag[]> {
         const storagekey = this.StorageKey(container);
-        if (!this.items.has(storagekey)) await this.LoadContainerFlags(container);
-        return this.items.get(storagekey);
+        if (!this.cache.has(storagekey)) await this.LoadFlags(storagekey);
+        return this.cache.get(storagekey);
     }
 
     /* Add a flag of an item */
-    public async FlagItem(entry: MediaContainer<MediaChild>, kind: FlagType) {
+    public async SetFlag(entry: MediaContainer<MediaChild>, kind: FlagType) {
         const newflag: ItemFlag = {
             IdentifierHash: this.Hash(entry.Identifier),
             TitleHash: this.Hash(entry.Title),
@@ -72,52 +90,35 @@ export class ItemflagManager {
                 && !(newflag.TitleHash === flag.TitleHash);
         });
         flags.push(newflag);
-        this.items.set(this.StorageKey(entry.Parent), flags);
-        await this.SaveContainerFlags(entry.Parent, flags);
+        const storagekey = this.StorageKey(entry.Parent);
+        this.cache.set(storagekey, flags);
+        await this.SaveFlags(storagekey);
         this.FlagChanged.Dispatch(entry, kind);
         this.MediaFlagsChanged.Dispatch(this, entry.Parent);
     }
 
-    /* Remove the flag of an item */
-    public async UnflagItem(itemToRemove: MediaContainer<MediaChild>) {
-        let flags = await this.GetContainerItemsFlags(itemToRemove.Parent);
-        if (!flags) return;
-        flags = flags.filter(flag => {
-            return ! this.isContainerSameItem(flag, itemToRemove);
-        });
-        this.items.set(this.StorageKey(itemToRemove.Parent), flags);
-        await this.SaveContainerFlags(itemToRemove.Parent, flags);
-        this.FlagChanged.Dispatch(itemToRemove, undefined);
-        this.MediaFlagsChanged.Dispatch(this, itemToRemove.Parent);
-    }
-
     /* Get the flagType of an item */
-    public async GetItemFlagType(item: MediaContainer<MediaChild>) {
-        const marks = await this.GetContainerItemsFlags(item.Parent);
-        if (!marks) return undefined;
-        const mark = marks.find(mark => {
-            return this.isContainerSameItem(mark, item);
-        });
-        return mark?.kind;
+    public async GetFlag(entry: MediaContainer<MediaChild>) : Promise<FlagType> {
+        return this.findFlagType(await this.GetContainerItemsFlags(entry.Parent), entry);
     }
 
-    public async GetUnFlaggedItems(media: MediaContainer<MediaContainer<MediaChild>>) {
-        const marks = await this.GetContainerItemsFlags(media);
-        return media.Entries.filter(item => {
-            const mark = marks?.find(mark => {
-                return this.isContainerSameItem(mark, item);
-            });
-            return mark === undefined;
+    public async FilterEntries(container: MediaContainer<MediaChild>, mask: FlagType) {
+        const marks = await this.GetContainerItemsFlags(container);
+        return container.Entries.filter(entry => {
+            const flag = this.findFlagType(marks, entry as MediaContainer<MediaChild>);
+            return (mask & flag) === flag;
         });
     }
 }
 
-export type ItemFlag = {
+type ItemFlag = {
     IdentifierHash: string,
     TitleHash: string,
     kind:FlagType,
 }
+
 export const enum FlagType {
-    Current,
-    Viewed,
+    None = 0,
+    Viewed = 1 << 0,
+    Current = 1 << 1,
 }

@@ -133,13 +133,6 @@ export class Bookmark extends MediaContainer<MediaChild> {
         this.infoID = infoID;
         this.Changed.Dispatch(this);
     }
-
-    /**
-     * determine which entries have unflagged items
-     */
-    public async getUnflaggedContent() {
-        return await HakuNeko.ItemflagManager.GetUnFlaggedItems(this as MediaContainer<MediaContainer<MediaChild>>);
-    }
 }
 
 export type BookmarkSerialized = {

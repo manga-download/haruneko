@@ -9,6 +9,7 @@
     } from './../../stores/Stores';
     import MediaIcon from '../../../../img/media.webp';
     import type { Bookmark } from '../../../../engine/providers/Bookmark';
+    import { FlagType } from '../../../../engine/ItemflagManager';
 
     //export let onlyNewContent = false;
 
@@ -35,7 +36,7 @@
                         <span title={bookmark.Title}>{bookmark.Title}</span>
                     </Tag>
 
-                    {#await bookmark.getUnflaggedContent() then value}
+                    {#await window.HakuNeko.ItemflagManager.FilterEntries(bookmark, FlagType.None) then value}
                         {#if value.length > 0}
                             <Tag
                                 class="suggestcount"
