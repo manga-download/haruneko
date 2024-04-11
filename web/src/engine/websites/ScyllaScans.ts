@@ -13,7 +13,7 @@ import * as FuzzyDoodle from './decorators/FuzzyDoodle';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('scyllascans', `Scylla Scans`, 'https://scyllascans.org', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('scyllascans', `Scylla Scans`, 'https://scyllacomics.xyz', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

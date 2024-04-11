@@ -6,7 +6,7 @@ const config = {
         title: 'Scylla Scans'
     },
     container: {
-        url: 'https://scyllascans.org/manga/alya-sometimes-hides-her-feelings-in-russian',
+        url: 'https://scyllacomics.xyz/manga/alya-sometimes-hides-her-feelings-in-russian',
         id: '/manga/alya-sometimes-hides-her-feelings-in-russian',
         title: 'Alya Sometimes Hides Her Feelings in Russian'
     },
