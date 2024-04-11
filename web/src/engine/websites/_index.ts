@@ -99,6 +99,7 @@ export { default as DisasterScans } from './DisasterScans';
 export { default as DiskusScan } from './DiskusScan';
 export { default as Dm5 } from './Dm5';
 export { default as Dmzj } from './Dmzj';
+export { default as Dokuha } from './Dokuha';
 export { default as Doujin69 } from './Doujin69';
 export { default as DoujinDesu } from './DoujinDesu';
 export { default as DoujinHentai } from './DoujinHentai';
