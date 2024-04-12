@@ -6,12 +6,13 @@ import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
 import { InteractiveFileContentProvider } from './InteractiveFileContentProvider';
 import { SettingsManager } from './SettingsManager';
-import { CreatePlatformIPC } from './ipc/InterProcessCommunicationFactory';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
 import { CreateBloadGuard } from './platform/BloatGuard';
 import { CreateFetchProvider, SetupFetchProviderExports } from './platform/FetchProvider';
+import { CreatePlatformIPC } from './platform/InterProcessCommunication';
+import type { IFrontendInfo } from '../frontend/IFrontend';
 
 export class HakuNeko {
 
@@ -33,8 +34,8 @@ export class HakuNeko {
         this.#downloadManager = new DownloadManager(this.#storageController);
     }
 
-    public async Initialze(): Promise<void> {
-        await InitGlobalSettings(this.SettingsManager);
+    public async Initialze(frontends: IFrontendInfo[]): Promise<void> {
+        await InitGlobalSettings(this.SettingsManager, frontends);
         /*const ipc = */CreatePlatformIPC(this.#settingsManager);
         // Preload bookmarks flags to show content to view
         const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;

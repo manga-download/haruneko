@@ -34,8 +34,6 @@
         MediaItem,
     } from '../../../../engine/providers/MediaPlugin';
     export let item: MediaContainer<MediaItem>;
-
-    export let title: string;
 </script>
 
 <div id="vieweractions">

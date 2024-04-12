@@ -6,17 +6,17 @@ const config = {
         title: 'Hunters Scan'
     },
     container: {
-        url: 'https://huntersscan.xyz/series/grand-general2232/',
-        id: JSON.stringify({ post: '182', slug: '/series/grand-general2232/' }),
-        title: 'Grand General'
+        url: 'https://huntersscan.xyz/series/civilizacao-de-nebula/',
+        id: JSON.stringify({ post: '6001', slug: '/series/civilizacao-de-nebula/' }),
+        title: 'Civilização de Nebula'
     },
     child: {
-        id: '/series/grand-general2232/capitulo-00-5/',
-        title: 'Capítulo 00.5'
+        id: '/series/civilizacao-de-nebula/capitulo-37/',
+        title: 'Capítulo 37'
     },
     entry: {
-        index: 0,
-        size: 1_030_060,
+        index: 1,
+        size: 3_308_367,
         type: 'image/jpeg'
     }
 };
