@@ -5,7 +5,8 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-AddAntiScrapingDetection(async (dom) => {
+AddAntiScrapingDetection(async (render) => {
+    const dom = await render();
     return dom.querySelector('form#lsrecaptcha-form[action*="/.lsrecap/recaptcha?"]') ? FetchRedirection.Interactive : undefined;
 });
 
