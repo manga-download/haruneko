@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
         //if files are zip
         if (files[0].endsWith('.zip')) {
             //handle zip files
-            const pages: Page[] = [];
+            const pages : Page[] = [];
             for (const zipurl of files) {
                 request = new Request(new URL(zipurl, this.URI).href);
                 const response = await Fetch(request);
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
         }
 
     }
-    extractNumber(fileName): number {
+    extractNumber(fileName) : number {
         return parseInt(fileName.split(".")[0]);
     }
 
