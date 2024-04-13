@@ -5,20 +5,22 @@ const config = {
         id: 'luratoon',
         title: 'Lura Toon'
     },
+    /* Cloudflare
     container: {
-        url: 'https://luratoon.com/manga/eu-caminho-na-noite1/',
-        id: JSON.stringify({ post: '73', slug: '/manga/eu-caminho-na-noite1/' }),
-        title: 'Eu Caminho na Noite consumido Pelas Lâminas'
+        url: 'https://luratoon.com/assassino-pietro/',
+        id: '/assassino-pietro/',
+        title: 'Assassino Pietro'
     },
     child: {
-        id: '/manga/eu-caminho-na-noite1/cap-01/',
-        title: 'Cap. 01'
+        id: '/assassino-pietro/30/',
+        title: 'Capítulo 30'
     },
     entry: {
-        index: 1,
-        size: 548_165,
-        type: 'image/jpeg'
+        index: 0,
+        size: 102_715,
+        type: 'image/avif'
     }
+    */
 };
 
 const fixture = new TestFixture(config);
