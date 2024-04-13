@@ -7,7 +7,7 @@ const apiUrl = 'https://api.perf-scan.fr';
 
 @HeamCMS.MangaCSS(/^{origin}\/series\/[^/]+$/, apiUrl)
 @HeamCMS.MangasMultiPageAJAX(apiUrl)
-@HeamCMS.ChaptersSinglePageAJAX(apiUrl)
+@HeamCMS.ChaptersSinglePageAJAXv2(apiUrl)
 @HeamCMS.PagesSinglePageAJAX(apiUrl)
 @HeamCMS.ImageAjax()
 export default class extends DecoratableMangaScraper {

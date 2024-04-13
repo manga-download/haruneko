@@ -7,11 +7,11 @@ const ComicConfig = {
     },
     container: {
         url: 'https://omegascans.org/series/trapped-in-the-academys-eroge',
-        id: 'trapped-in-the-academys-eroge',
+        id: JSON.stringify({ id: '8', slug: 'trapped-in-the-academys-eroge' }),
         title: `Trapped in the Academy's Eroge`
     },
     child: {
-        id: 'chapter-76',
+        id: JSON.stringify({ id: '3245', slug: 'chapter-76' }),
         title: 'Chapter 76'
     },
     entry: {
@@ -31,11 +31,11 @@ const NovelConfig = {
     },
     container: {
         url: 'https://omegascans.org/series/the-scion-of-the-labyrinth-city',
-        id: 'the-scion-of-the-labyrinth-city',
+        id: JSON.stringify({ id: '186', slug: 'the-scion-of-the-labyrinth-city' }),
         title: 'The Scion of the Labyrinth City'
     },
     child: {
-        id: 'chapter-28',
+        id: JSON.stringify({ id: '3226', slug: 'chapter-28' }),
         title: 'Chapter 28'
     },
     entry: {

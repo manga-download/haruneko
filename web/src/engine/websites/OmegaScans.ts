@@ -7,7 +7,7 @@ const apiUrl = 'https://api.omegascans.org';
 
 @HeamCMS.MangaCSS(/^{origin}\/series\/[^/]+$/, apiUrl)
 @HeamCMS.MangasMultiPageAJAX(apiUrl)
-@HeamCMS.ChaptersSinglePageAJAX(apiUrl)
+@HeamCMS.ChaptersSinglePageAJAXv2(apiUrl)
 @HeamCMS.PagesSinglePageAJAX(apiUrl)
 @HeamCMS.ImageAjax(true)
 export default class extends DecoratableMangaScraper {

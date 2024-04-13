@@ -6,18 +6,18 @@ const ComicConfig = {
         title: 'Perf Scan'
     },
     container: {
-        url: 'https://perf-scan.fr/series/martial-peak-1702249200756',
-        id: 'martial-peak-1702249200756',
+        url: 'https://perf-scan.fr/series/martial-peak',
+        id: JSON.stringify({ id: '1', slug: 'martial-peak' }),
         title: 'Martial Peak'
     },
     child: {
-        id: 'chapitre-1298',
-        title: 'S6 Chapitre 1298'
+        id: JSON.stringify({ id: '28768', slug: 'chapitre-1298' }),
+        title: 'Chapitre 1298'
     },
     entry: {
         index: 2,
-        size: 215_840,
-        type: 'image/webp'
+        size: 939_807,
+        type: 'image/jpg'
     }
 };
 
@@ -30,13 +30,13 @@ const NovelConfig = {
         title: 'Perf Scan'
     },
     container: {
-        url: 'https://perf-scan.fr/series/demonic-emperor-novel-1702249200676',
-        id: 'demonic-emperor-novel-1702249200676',
+        url: 'https://perf-scan.fr/series/demonic-emperor-novel',
+        id: JSON.stringify({ id: '17', slug: 'demonic-emperor-novel' }),
         title: 'Demonic emperor - Novel'
     },
     child: {
-        id: 'chapitre-492',
-        title: 'S4 Chapitre 492'
+        id: JSON.stringify({ id: '28668', slug: 'chapitre-492' }),
+        title: 'Chapitre 492'
     },
     entry: {
         index: 0,

@@ -7,11 +7,11 @@ const ComicConfig = {
     },
     container: {
         url: 'https://templescan.net/comic/predatory-marriage-complete-edition',
-        id: 'predatory-marriage-complete-edition',
+        id: JSON.stringify({ id: '55', slug: 'predatory-marriage-complete-edition' }),
         title: `Predatory Marriage (Complete Edition)`
     },
     child: {
-        id: 'chapter-15',
+        id: JSON.stringify({ id: '1028', slug: '83662-chapter-15' }),
         title: 'Chapter 15'
     },
     entry: {

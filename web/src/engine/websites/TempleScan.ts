@@ -3,11 +3,11 @@ import icon from './TempleScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as HeamCMS from './decorators/HeanCMS';
 
-const apiUrl = 'https://api.templescan.net';
+const apiUrl = 'https://templescan.net/apiv1';
 
 @HeamCMS.MangaCSS(/^{origin}\/comic\/[^/]+$/, apiUrl)
 @HeamCMS.MangasMultiPageAJAX(apiUrl)
-@HeamCMS.ChaptersSinglePageAJAX(apiUrl)
+@HeamCMS.ChaptersSinglePageAJAXv1(apiUrl)
 @HeamCMS.PagesSinglePageAJAX(apiUrl)
 @HeamCMS.ImageAjax(true)
 export default class extends DecoratableMangaScraper {

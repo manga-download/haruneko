@@ -36,15 +36,16 @@ const DefaultNovelScript = `
     });
  `;
 
-type APIManga = {
+type APIMangaV1 = {
     title: string
+    id: number,
     series_type: 'Comic' | 'Novel',
     series_slug: string,
     seasons?: APISeason[]
 }
 
 type APIResult<T> = {
-    data: T[]
+    data: T
 }
 
 type APISeason = {
@@ -54,6 +55,7 @@ type APISeason = {
 
 type APIChapter = {
     index: string,
+    id: number,
     chapter_name: string,
     chapter_title: string,
     chapter_slug: string,
@@ -64,8 +66,18 @@ type APIPages = {
     paywall: boolean,
     data: string[] | string
     chapter: {
-        storage: string
+        chapter_type: 'Comic' | 'Novel',
+        storage: string,
+        chapter_data?: {
+            images: string[]
+        }
+
     }
+}
+
+type MangaOrChapterId = {
+    id: string,
+    slug: string
 }
 
 /***************************************************
@@ -81,8 +93,11 @@ type APIPages = {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: string): Promise<Manga> {
     const slug = new URL(url).pathname.split('/')[2];
-    const { title, series_slug } = await FetchJSON<APIManga>(new Request(new URL(`/series/${slug}`, apiUrl)));
-    return new Manga(this, provider, series_slug, title);
+    const { title, series_slug, id } = await FetchJSON<APIMangaV1>(new Request(new URL(`${apiUrl}/series/${slug}`)));
+    return new Manga(this, provider, JSON.stringify({
+        id: id.toString(),
+        slug: series_slug
+    }), title);
 }
 
 /**
@@ -119,19 +134,25 @@ export function MangaCSS(pattern: RegExp, apiURL: string) {
  */
 export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: string, throttle = 0): Promise<Manga[]> {
     const mangaList: Manga[] = [];
+    //First loop get adult mangas
     for (let page = 1, run = true; run; page++) {
-        const mangas = await getMangaFromPage.call(this, provider, page, apiUrl);
+        const mangas = await getMangaFromPage.call(this, provider, page, apiUrl, true);
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         await new Promise(resolve => setTimeout(resolve, throttle));
     }
-    return mangaList;
+    //First loop get non adult mangas
+    for (let page = 1, run = true; run; page++) {
+        const mangas = await getMangaFromPage.call(this, provider, page, apiUrl, false);
+        mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        await new Promise(resolve => setTimeout(resolve, throttle));
+    }
+    return mangaList.distinct();
 }
-
-async function getMangaFromPage(this: MangaScraper, provider: MangaPlugin, page: number, apiUrl: string): Promise<Manga[]> {
-    const request = new Request(new URL(`/query?series_type=All&order=asc&perPage=100&page=${page}`, apiUrl));
-    const { data } = await FetchJSON<APIResult<APIManga>>(request);
+async function getMangaFromPage(this: MangaScraper, provider: MangaPlugin, page: number, apiUrl: string, adult: boolean): Promise<Manga[]> {
+    const request = new Request(new URL(`${apiUrl}/query?perPage=100&page=${page}&adult=${adult}`));
+    const { data } = await FetchJSON<APIResult<APIMangaV1[]>>(request);
     if (data.length) {
-        return data.map((manga) => new Manga(this, provider, manga.series_slug, manga.title));
+        return data.map((manga) => new Manga(this, provider, JSON.stringify({ id: manga.id.toString(), slug: manga.series_slug }), manga.title));
     }
     return [];
 }
@@ -162,29 +183,68 @@ export function MangasMultiPageAJAX(apiUrl: string, throttle = 0) {
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param apiUrl - The url of the HeanCMS api for the website
  */
-export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, apiUrl: string): Promise<Chapter[]> {
-    const request = new Request(new URL(`/series/${manga.Identifier}`, apiUrl));
-    const { seasons } = await FetchJSON<APIManga>(request);
-    const chapterList: Chapter[] = [];
+export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: Manga, apiUrl: string): Promise<Chapter[]> {
+    try {
+        const mangaslug = (JSON.parse(manga.Identifier) as MangaOrChapterId).slug;
+        const request = new Request(new URL(`${apiUrl}/series/${mangaslug}`));
+        const { seasons } = await FetchJSON<APIMangaV1>(request);
+        const chapterList: Chapter[] = [];
 
-    seasons.map((season) => season.chapters.map((chapter) => {
-        const id = chapter.chapter_slug;
-        const title = `${seasons.length > 1 ? 'S' + season.index : ''} ${chapter.chapter_name} ${chapter.chapter_title || ''}`.trim();
-        chapterList.push(new Chapter(this, manga, id, title));
-    }));
-    return chapterList;
+        seasons.map((season) => season.chapters.map((chapter) => {
+            const id = JSON.stringify({
+                id: chapter.id.toString(),
+                slug: chapter.chapter_slug
+            });
+            const title = `${seasons.length > 1 ? 'S' + season.index : ''} ${chapter.chapter_name} ${chapter.chapter_title || ''}`.trim();
+            chapterList.push(new Chapter(this, manga, id, title));
+        }));
+        return chapterList;
+    } catch (error) {
+        return [];
+    }
 }
 
 /**
  * A class decorator that adds the ability to extract all chapters for a given manga from this website using the HeanCMS api url {@link apiUrl}.
  * @param apiUrl - The url of the HeanCMS api for the website
  */
-export function ChaptersSinglePageAJAX(apiUrl: string) {
+export function ChaptersSinglePageAJAXv1(apiUrl: string) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageAJAX.call(this, manga, apiUrl);
+                return FetchChaptersSinglePageAJAXv1.call(this, manga, apiUrl);
+            }
+        };
+    };
+}
+
+/**
+ * An extension method for extracting all chapters for the given {@link manga} using the HeanCMS api url {@link apiUrl}.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
+ * @param apiUrl - The url of the HeanCMS api for the website
+ */
+export async function FetchChaptersSinglePageAJAXv2(this: MangaScraper, manga: Manga, apiUrl: string): Promise<Chapter[]> {
+    const mangaid: MangaOrChapterId = JSON.parse(manga.Identifier);
+    const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`${apiUrl}/chapter/query?series_id=${mangaid.id}&perPage=9999&page=1`)));
+    return data.map(chapter => new Chapter(this, manga, JSON.stringify({
+        id: chapter.id.toString(),
+        slug: chapter.chapter_slug,
+    }), `${chapter.chapter_name} ${chapter.chapter_title || ''}`.trim()));
+
+}
+
+/**
+ * A class decorator that adds the ability to extract all chapters for a given manga from this website using the HeanCMS api url {@link apiUrl}.
+ * @param apiUrl - The url of the HeanCMS api for the website
+ */
+export function ChaptersSinglePageAJAXv2(apiUrl: string) {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+                return FetchChaptersSinglePageAJAXv2.call(this, manga, apiUrl);
             }
         };
     };
@@ -200,9 +260,24 @@ export function ChaptersSinglePageAJAX(apiUrl: string) {
  * @param apiUrl - The url of the HeanCMS api for the website
  */
 export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, apiUrl: string): Promise<Page[]> {
-    const request = new Request(new URL(`/chapter/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl));
-    const { chapter_type, data, paywall, chapter: { storage } } = await FetchJSON<APIPages>(request);
+    const chapterid: MangaOrChapterId = JSON.parse(chapter.Identifier);
+    const mangaid: MangaOrChapterId = JSON.parse(chapter.Parent.Identifier);
+    const request = new Request(new URL(`${apiUrl}/chapter/${mangaid.slug}/${chapterid.slug}`));
+    const data = await FetchJSON<APIPages>(request);
 
+    // check for paywall
+    if (data.paywall) {
+        throw new Error(`${chapter.Title} is paywalled. Please login.`);
+    }
+    // check if novel
+    if (data.chapter.chapter_type.toLowerCase() === 'novel') {
+        return [new Page(this, chapter, new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI), { type: data.chapter_type })];
+    }
+
+    const listImages = data.data as string[] || data.chapter.chapter_data.images;
+    return listImages.map(image => new Page(this, chapter, computePageUrl(image, data.chapter.storage, apiUrl), { type: data.chapter.chapter_type }));
+
+    /*
     if (paywall) {
         throw new Error(`${chapter.Title} is paywalled. Please login.`); //localize this
     }
@@ -215,7 +290,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
         return [new Page(this, chapter, new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI), { type: chapter_type })];
     }
 
-    return (data as string[]).map(image => new Page(this, chapter, computePageUrl(image, storage, apiUrl), { type: chapter_type }));
+    return (data as string[]).map(image => new Page(this, chapter, computePageUrl(image, storage, apiUrl), { type: chapter_type }));*/
 }
 
 /**
@@ -281,6 +356,6 @@ export function ImageAjax(detectMimeType = false, deProxifyLink = true, novelScr
 function computePageUrl(image: string, storage: string, apiUrl: string): URL {
     switch (storage) {
         case "s3": return new URL(image);
-        case "local": return new URL(image, apiUrl);
+        case "local": return new URL(`${apiUrl}/${image}`);
     }
 }
