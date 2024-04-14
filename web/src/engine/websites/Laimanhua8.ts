@@ -15,7 +15,6 @@ const pageScript = `
 @Common.ChaptersSinglePageCSS('div.plist ul li a')
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
