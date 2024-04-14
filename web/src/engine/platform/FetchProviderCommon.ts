@@ -1,7 +1,6 @@
 import protobuf from 'protobufjs';
 import { Exception, InternalError } from '../Error';
 import { EngineResourceKey as R } from '../../i18n/ILocale';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 export type ScriptInjection<T> = string | ((this: Window) => Promise<T>);
 
