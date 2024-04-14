@@ -134,19 +134,15 @@ export function MangaCSS(pattern: RegExp, apiURL: string) {
  */
 export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: string, throttle = 0): Promise<Manga[]> {
     const mangaList: Manga[] = [];
-    //First loop get adult mangas
-    for (let page = 1, run = true; run; page++) {
-        const mangas = await getMangaFromPage.call(this, provider, page, apiUrl, true);
-        mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        await new Promise(resolve => setTimeout(resolve, throttle));
+
+    for (const adult of [true, false]) { //there is no "dont care if adult or not flag"" on "new" api, and old dont care about the flag
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await getMangaFromPage.call(this, provider, page, apiUrl, adult);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+            await new Promise(resolve => setTimeout(resolve, throttle));
+        }
     }
-    //First loop get non adult mangas
-    for (let page = 1, run = true; run; page++) {
-        const mangas = await getMangaFromPage.call(this, provider, page, apiUrl, false);
-        mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        await new Promise(resolve => setTimeout(resolve, throttle));
-    }
-    return mangaList.distinct();
+    return mangaList.distinct();//filter in case of old api
 }
 async function getMangaFromPage(this: MangaScraper, provider: MangaPlugin, page: number, apiUrl: string, adult: boolean): Promise<Manga[]> {
     const request = new Request(new URL(`${apiUrl}/query?perPage=100&page=${page}&adult=${adult}`));
