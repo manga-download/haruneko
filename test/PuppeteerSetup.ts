@@ -24,7 +24,13 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 
 async function LaunchNW() {
     const nwApp = path.resolve('app', 'nw', 'build');
-    const nwExe = path.resolve('app', 'nw', 'node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
+    const nwExe = [
+        path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw'),
+        path.resolve('app', 'nw', 'node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw'),
+    ].filter(file => fs.existsSync(file)).shift();
+    if(!nwExe) {
+        throw new Error('Failed to detect location of nw executable!');
+    }
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
