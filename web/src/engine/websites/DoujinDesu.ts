@@ -20,12 +20,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
-        let request = new Request(chapterurl.href);
-        let data = await FetchCSS(request, "main#reader");
+        let data = await FetchCSS(new Request(chapterurl), "main#reader");
         const chapterid = data[0].dataset['id'];
 
         const url = new URL('/themes/ajax/ch.php', this.URI);
-        request = new Request(url, {
+        const request = new Request(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
