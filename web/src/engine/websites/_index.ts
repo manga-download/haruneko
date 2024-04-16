@@ -468,6 +468,7 @@ export { default as NewType } from './NewType';
 export { default as NextScan } from './NextScan';
 export { default as Ngomik } from './Ngomik';
 export { default as NHentaiCom } from './NHentaiCom';
+export { default as NiceOppai } from './NiceOppai';
 export { default as NightComic } from './NightComic';
 export { default as Nightow } from './Nightow';
 export { default as NightScans } from './NightScans';
