@@ -202,6 +202,7 @@ export { default as ItsYourRightManhua } from './ItsYourRightManhua';
 export { default as JapScan } from './JapScan';
 export { default as JiangzaiToon } from './JiangzaiToon';
 export { default as Jpmangas } from './Jpmangas';
+export { default as JuinJutsuTeam } from './JuinJutsuTeam';
 export { default as KadoComi } from './KadoComi';
 export { default as KaiScans } from './KaiScans';
 export { default as Kakaopage } from './Kakaopage';
