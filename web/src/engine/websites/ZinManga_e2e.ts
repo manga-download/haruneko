@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '/manga/my-teacher-has-chosen-my-husband-candidates/chapter-0/',
-        title: 'chapter 0'
+        title: 'Chapter 0'
     },
     entry: {
         index: 0,
