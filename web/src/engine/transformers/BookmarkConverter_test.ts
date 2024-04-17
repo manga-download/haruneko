@@ -64,6 +64,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'azoramanga', targetID: 'azoraworld' },
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
+            { sourceID: 'blogtruyen', targetID: 'blogtruyenmoi'},
             { sourceID: 'comicbushi', targetID: 'comicgrowl' },
             { sourceID: 'comicwalker', targetID: 'kadocomi' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },

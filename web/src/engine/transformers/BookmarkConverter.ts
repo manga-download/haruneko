@@ -9,6 +9,7 @@ const legacyWebsiteIdentifierMap = {
     'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
+    'blogtruyen': 'blogtruyenmoi', //there is also a blogtruyen now, same website template
     'comicbushi': 'comicgrowl',
     'comicwalker': 'kadocomi',
     'crazyscans': 'mangacultivator',
