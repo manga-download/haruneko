@@ -41,6 +41,7 @@ export { default as Batoto } from './Batoto';
 export { default as BestManga } from './BestManga';
 export { default as BestManhua } from './BestManhua';
 export { default as BlogTruyen } from './BlogTruyen';
+export { default as BlogTruyenMoi } from './BlogTruyenMoi';
 export { default as Bokugents } from './Bokugents';
 export { default as Boosei } from './Boosei';
 export { default as BoysLove } from './BoysLove';
