@@ -6,7 +6,7 @@ const config = {
         title: 'ZinManga'
     },
     container: {
-        url: 'https://zinmanga.com/manga/my-teacher-has-chosen-my-husband-candidates/',
+        url: 'https://mangazin.org/manga/my-teacher-has-chosen-my-husband-candidates/',
         id: JSON.stringify({ post: '39008', slug: '/manga/my-teacher-has-chosen-my-husband-candidates/' }),
         title: 'My Teacher Has Chosen My Husband Candidates'
     },
