@@ -44,6 +44,7 @@ const legacyWebsiteIdentifierMap = {
     'reaperscansid': 'shinigamiid',
     'rightdarkscan': 'darkscan',
     'scansmangasxyz': 'scansmangasme',
+    'scanhentaimenu': 'xmanga',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',
     'siyahmelek': 'grimelek',

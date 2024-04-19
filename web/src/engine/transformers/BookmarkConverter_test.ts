@@ -99,6 +99,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
             { sourceID: 'rightdarkscan', targetID: 'darkscan' },
             { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
+            { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
             { sourceID: 'secretscans', targetID: 'lynxscans' },
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
             { sourceID: 'siyahmelek', targetID: 'grimelek' },
