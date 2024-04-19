@@ -459,6 +459,7 @@ export { default as MonzeeKomik } from './MonzeeKomik';
 export { default as MoonWitchInLove } from './MoonWitchInLove';
 export { default as MrYaoi } from './MrYaoi';
 export { default as MundoManhwa } from './MundoManhwa';
+export { default as MyHentaiGallery } from './MyHentaiGallery';
 export { default as NatsuID } from './NatsuID';
 export { default as Nekomik } from './Nekomik';
 export { default as NeoxScan } from './NeoxScan';
