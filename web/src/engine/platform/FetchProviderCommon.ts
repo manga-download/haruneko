@@ -136,7 +136,6 @@ export abstract class FetchProvider {
         const data = await response.text();
         const result : string[] = [];
         let match = undefined;
-        // eslint-disable-next-line no-cond-assign
         while (match = regex.exec(data)) {
             result.push(match[1]);
         }
