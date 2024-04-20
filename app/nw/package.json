@@ -21,7 +21,7 @@
         "plist": "^3.1.0"
     },
     "scripts": {
-        "check": "eslint ./src",
+        "check": "eslint",
         "build": "node ./scripts/build-app.mjs && vite build",
         "bundle": "npm run build && node ./scripts/deploy-app.mjs",
         "test": "jest --passWithNoTests --config=test/jest.config.js",
