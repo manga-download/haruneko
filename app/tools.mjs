@@ -1,6 +1,5 @@
-import path from 'path';
-import fs from 'fs-extra';
-import fetch from 'node-fetch';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 import { exec } from 'node:child_process';
 
 /**

@@ -14,11 +14,10 @@
         "yargs": "17.7.2"
     },
     "devDependencies": {
-        "@types/ws": "^8.5.10",
+        "@types/ws": "8.5.10",
         "extract-zip": "2.0.1",
-        "node-fetch": "3.3.2",
         "nw": "0.85.0-sdk",
-        "plist": "^3.1.0"
+        "plist": "3.1.0"
     },
     "scripts": {
         "check": "eslint",
