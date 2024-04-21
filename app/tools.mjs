@@ -25,11 +25,15 @@ export async function purge(directory) {
  */
 export async function download(source, target) {
     const response = await fetch(source);
-    const stream = await fs.createWriteStream(target, { mode: 0o755, highWaterMark: 262144 });
-    await new Promise((resolve, reject) => {
-        response.body.pipe(stream, { end: true }).on('finish', resolve).on('error', reject);
-    });
-    stream.close();
+    const file = await fs.open(target);
+    const stream = file.createWriteStream(target, { mode: 0o755, highWaterMark: 262144 });
+    try {
+        await new Promise((resolve, reject) => {
+            response.body.pipe(stream, { end: true }).on('finish', resolve).on('error', reject);
+        });
+    } finally {
+       stream.close();
+    }
 }
 
 /**
