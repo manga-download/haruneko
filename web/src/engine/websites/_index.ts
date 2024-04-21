@@ -284,6 +284,7 @@ export { default as MangaBat } from './MangaBat';
 export { default as Mangabaz } from './Mangabaz';
 export { default as MangaBob } from './MangaBob';
 export { default as Mangabox } from './Mangabox';
+export { default as MangaBTT } from './MangaBTT';
 export { default as MangaBuddy } from './MangaBuddy';
 export { default as MangaCanBlog } from './MangaCanBlog';
 export { default as MangaChan } from './MangaChan';
