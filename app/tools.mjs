@@ -1,5 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { Readable } from 'node:stream';
+import stream from 'node:stream/promises';
 import { exec } from 'node:child_process';
 
 /**
@@ -26,13 +28,11 @@ export async function purge(directory) {
 export async function download(source, target) {
     const response = await fetch(source);
     const file = await fs.open(target, 'w', 0o755);
-    const stream = file.createWriteStream(target, { highWaterMark: 262144 });
+    const filestream = file.createWriteStream(target, { highWaterMark: 262144 });
     try {
-        await new Promise((resolve, reject) => {
-            response.body.pipe(stream, { end: true }).on('finish', resolve).on('error', reject);
-        });
+        await stream.finished(Readable.fromWeb(response.body).pipe(filestream));
     } finally {
-       stream.close();
+        filestream.close();
     }
 }
 
