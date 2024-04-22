@@ -54,10 +54,7 @@ export default class extends DecoratableMangaScraper {
             }
         });
         const data = await FetchCSS<HTMLAnchorElement>(request, 'a[class]');
-        return data.map(item => {
-            const id = item.pathname;
-            return new Manga(this, provider, id, item.querySelector('h2').textContent.trim().replace(/comic porn$/i, '').trim());
-        });
+        return data.map(item => new Manga(this, provider, item.pathname, item.querySelector('h2').textContent.trim().replace(/comic porn$/i, '').trim()));
     }
 
 }
