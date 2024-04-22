@@ -1,4 +1,4 @@
-/* eslint-disable indent */
+/* eslint-disable indent - Must keep this eslint rule for inclusion in auto-generated translations! */
 import type { VariantResource } from '../ILocale';
 import base from "./en_US";
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -24,11 +24,11 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Media_Select: "Wählen Sie ein Medium",
   Frontend_Media_Selection: "Medienauswahl",
   Frontend_Media_PasteLink_NotFoundError: "Der übergebene Link wird nicht unterstützt (es wurde keine passende Webseite gefunden): {0}",
-  Frontend_Item: 'Item',
-  Frontend_Items: 'items',
-  Frontend_Item_List: 'Item list',
-  Frontend_Item_Select: 'Select an item',
-  Frontend_Item_Selection: 'Item selection',
+  Frontend_Item: "Eintrag",
+  Frontend_Items: "Einträge",
+  Frontend_Item_List: "Liste",
+  Frontend_Item_Select: "Bitte wählen",
+  Frontend_Item_Selection: "Auswahl",
   // [SECTION]: Frontend Classic
   Frontend_Classic_Label: "Klassisch",
   Frontend_Classic_Description: "Die Standard Benutzeroberfläche basiert größtenteils auf der alten Version",
@@ -221,7 +221,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Language_Vietnamese: "🇻🇳Vietnamesisch",
   Tags_Others: "Sonstige",
   // [SECTION]: Annotations
-  Annotations_ViewProgress: 'Progress',
+  Annotations_ViewProgress: "Fortschritt",
   Annotations_ViewProgressDescription: 'A custom status indicating the reading/viewing progression',
   Annotations_ViewProgress_None: '-',
   Annotations_ViewProgress_NoneDescription: 'Not yet read/viewed',
@@ -241,8 +241,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingInteractionInfo: "Einschränkung der Anzahl von Abfragen an die Webseite zur Prävention einer temporären oder dauerhaften Sperrung",
   Plugin_Settings_UrlOverride: 'Url Override',
   Plugin_Settings_UrlOverrideInfo: 'Use this URL as current domain for this website',
-  Plugin_Settings_ImageFormat: 'Preferred Image Format',
-  Plugin_Settings_ImageFormatInfo: 'Download pictures using this file format if possible',
+  Plugin_Settings_ImageFormat: "Bevorzugtes Bild-Format",
+  Plugin_Settings_ImageFormatInfo: "Wenn möglich Bilder mit diesem Dateiformat herunterladen",
   Plugin_Common_MangaIndex_NotSupported: "Ein Inhaltsverzeichnis kann für diese Webseite nicht erstellt werden. Benutze die Kopieren & Einfügen Funktionalität um direkt auf den Inhalt einer URL zuzugreifen!",
   Plugin_Common_Chapter_UnavailableError: "Das Kapitel ist nicht verfügbar (gekauft/freigeschaltet/öffentlich)!",
   Plugin_Common_Chapter_InvalidError: "Fehler beim extrahieren der einzelnen Seiten aus dem Kapitel!",
@@ -255,7 +255,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_UsernameInfo: "Benutzername für die automatische Anmeldung bei der Webseite",
   Plugin_SheepScanlations_Settings_Password: "Passwort",
   Plugin_SheepScanlations_Settings_PasswordInfo: "Passwort für die automatische Anmeldung bei der Webseite",
-  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
+  Plugin_CopyManga_Settings_GlobalCDN: "Globales CDN verwenden",
   Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN'
 };
 export default translations;
