@@ -60,7 +60,8 @@ export class IPC implements PlatformIPC {
                 //storeId: cookie.storeId,
             });
         }
-
+        // FIXME: navigator.userAgent in Background Script is Node.js/21 => https://github.com/nwjs/nw.js/issues/8162
+        //console.log(`User-Agent Change (${userAgent !== navigator.userAgent})`, navigator.userAgent, '=>', userAgent);
         if(userAgent !== navigator.userAgent) {
             // TODO: Is it safe to assume this is always correct manifest path?
             const file = 'package.json';

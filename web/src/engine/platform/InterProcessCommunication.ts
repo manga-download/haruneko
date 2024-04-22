@@ -1,4 +1,3 @@
-import type { JSONElement } from '../../../../node_modules/websocket-rpc/dist/types';
 import type { SettingsManager } from '../SettingsManager';
 import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
@@ -10,7 +9,7 @@ export type TypeFromInterface<T> = {
     [key in keyof T]: T[key];
 };
 
-export type IPCParameters = JSONElement[];
+export type IPCParameters = JSONArray;
 
 export type IPCPayload<T> = {
     method: keyof T,

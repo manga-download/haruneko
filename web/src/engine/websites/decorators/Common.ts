@@ -12,7 +12,6 @@ export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContex
     }
 }
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ //=> A mixin class must have a constructor with a single rest parameter of type 'any[]'
 export type Constructor = new (...args: any[]) => DecoratableMangaScraper;
 
 type LabelExtractor = (this: MangaScraper, element: HTMLElement) => string;

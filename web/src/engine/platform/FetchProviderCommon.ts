@@ -1,7 +1,6 @@
 import protobuf from 'protobufjs';
 import { Exception, InternalError } from '../Error';
 import { EngineResourceKey as R } from '../../i18n/ILocale';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 export type ScriptInjection<T> = string | ((this: Window) => Promise<T>);
 
@@ -137,7 +136,6 @@ export abstract class FetchProvider {
         const data = await response.text();
         const result : string[] = [];
         let match = undefined;
-        // eslint-disable-next-line no-cond-assign
         while (match = regex.exec(data)) {
             result.push(match[1]);
         }
@@ -165,15 +163,6 @@ export abstract class FetchProvider {
         return new Array(result.snapshotLength).fill(null).map((_, index) => result.snapshotItem(index) as Node);
     }
     */
-
-    /**
-     * Open the given {@link request} in a new browser window and execute the given {@link query}.
-     * @param request - ...
-     * @param query - The CSS query that will be performed for the DOM of the browser window
-     * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link query} will be executed
-     * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
-     */
-    public abstract FetchWindowCSS<T extends HTMLElement>(request: Request, query: string, delay?: number, timeout?: number): Promise<T[]>;
 
     /**
      * Open the given {@link request} in a new browser window and inject the given {@link script}.
