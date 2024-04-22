@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import type { VariantResource } from '../ILocale';
 import base from './xx_XX';
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
