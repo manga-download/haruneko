@@ -87,8 +87,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: "Schaltet die Sichtbarkeit der Liste mit den Downloads ein/aus",
   Frontend_FluentCore_Settings_ShowSplashScreen_Label: "Startbild anzeigen",
   Frontend_FluentCore_Settings_ShowSplashScreen_Description: "Schaltet das Startbild Fensters an/aus",
-  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label: 'Show FetchBrowser Windows',
-  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description: 'This developer focused option toggles the visibility of the browser windows for fetching data in the background on/off',
+  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label: "Zeige das versteckte Browser-Fenster",
+  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description: "Diese Entwickler-fokussierte Option schaltet die Sichtbarkeit des Browserfensters für das Abrufen von Daten im Hintergrund ein oder aus",
   //
   Frontend_FluentCore_SettingsDialog_Title: "Einstellungen",
   Frontend_FluentCore_SettingsDialog_CloseButton_Label: "Fertig",
@@ -156,7 +156,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_NewContent_Check: "Prüfung auf neue Inhalte",
   Settings_NewContent_CheckInfo: "Prüft automatisch, ob neue Inhalte für die Titel aus den Lesezeichen verfügbar sind",
   Settings_NewContent_CheckPeriod: "Zeitspanne (Minuten)",
-  Settings_NewContent_CheckPeriodInfo: 'How many minutes before checking again for new content',
+  Settings_NewContent_CheckPeriodInfo: "Das Intervall in dem nach neuen Inhalten gesucht wird (Minuten)",
   Settings_NewContent_Notify: "Benachrichtigung",
   Settings_NewContent_NotifyInfo: "Aktiviert die Desktop-Benachrichtigung für neue Inhalte",
   Settings_Global_RPCEnabled: "RPC aktivieren",
@@ -225,11 +225,11 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Annotations_ViewProgress: "Fortschritt",
   Annotations_ViewProgressDescription: 'A custom status indicating the reading/viewing progression',
   Annotations_ViewProgress_None: '-',
-  Annotations_ViewProgress_NoneDescription: 'Not yet read/viewed',
+  Annotations_ViewProgress_NoneDescription: "Noch nicht gelesen/angesehen",
   Annotations_ViewProgress_Viewed: 'x',
-  Annotations_ViewProgress_ViewedDescription: 'Already read/viewed',
+  Annotations_ViewProgress_ViewedDescription: "Bereits gelesen/angesehen",
   Annotations_ViewProgress_Current: 'o',
-  Annotations_ViewProgress_CurrentDescription: 'Currently reading/viewing',
+  Annotations_ViewProgress_CurrentDescription: "Aktuell am lesen/ansehen",
   // [SECTION]: Trackers
   Tracker_Kitsu_Settings_Username: "Benutzername",
   Tracker_Kitsu_Settings_UsernameInfo: "Benutzername für die automatische Anmeldung bei Kitsu",
@@ -256,7 +256,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_SheepScanlations_Settings_UsernameInfo: "Benutzername für die automatische Anmeldung bei der Webseite",
   Plugin_SheepScanlations_Settings_Password: "Passwort",
   Plugin_SheepScanlations_Settings_PasswordInfo: "Passwort für die automatische Anmeldung bei der Webseite",
-  Plugin_CopyManga_Settings_GlobalCDN: "Globales CDN verwenden",
-  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN'
+  Plugin_CopyManga_Settings_GlobalCDN: "Globalen Server verwenden",
+  Plugin_CopyManga_Settings_GlobalCDNInfo: "Für die Anfragen wird der globale Server anstelle des regionalen Servers verwendet"
 };
 export default translations;
