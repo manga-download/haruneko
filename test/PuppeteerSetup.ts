@@ -37,7 +37,7 @@ async function LaunchNW() {
 
     if (process.platform == 'win32') {
         args = ['/c', nwExe].concat(args);
-        nwExe = path.resolve(process.env['SystemRoot'], 'System32', 'cmd.exe')
+        nwExe = path.resolve(process.env['SystemRoot'], 'System32', 'cmd.exe');
     }
 
     const browser = await puppeteer.launch({
