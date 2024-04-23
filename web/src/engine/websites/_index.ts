@@ -373,6 +373,7 @@ export { default as MangaScantrad } from './MangaScantrad';
 export { default as MangasChan } from './MangasChan';
 export { default as MangaSect } from './MangaSect';
 export { default as MangaSee } from './MangaSee';
+export { default as MangaSefiri } from './MangaSefiri';
 export { default as MangaSehri } from './MangaSehri';
 export { default as MangaSehriNet } from './MangaSehriNet';
 export { default as MangaShip } from './MangaShip';
