@@ -26,6 +26,7 @@ const legacyWebsiteIdentifierMap = {
     'kumascans': 'retsu',
     'lovehug': 'welovemanga',
     'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
+    'mangacross': 'championcross',
     'mangamx': 'mangaoni',
     'manganel': 'manganato',
     'manganelos': 'mangapure',
