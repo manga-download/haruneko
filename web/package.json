@@ -38,7 +38,7 @@
     },
     "scripts": {
         "update-website-index": "node ./scripts/website-index.mjs",
-        "check": "node ./scripts/coding-rules.mjs && eslint && svelte-check --tsconfig=tsconfig.json --compiler-warnings a11y-click-events-have-key-events:ignore && vue-tsc --skipLibCheck --noEmit",
+        "check": "eslint && svelte-check --tsconfig=tsconfig.json --compiler-warnings a11y-click-events-have-key-events:ignore && vue-tsc --skipLibCheck --noEmit && node ./scripts/coding-rules.mjs",
         "build": "vite build",
         "test": "jest --detectOpenHandles --config=test/jest.config.js",
         "serve:dev": "vite --port=3000 --strictPort",
