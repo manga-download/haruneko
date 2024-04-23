@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './ScanHentaiMenu.webp';
+import icon from './YuraManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="X-Manga"])')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="YuraManga"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('scanhentaimenu', 'ScanHentaiMenu', 'https://scan.hentai.menu', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('yuramanga', 'YuraManga', 'https://yuramanga.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

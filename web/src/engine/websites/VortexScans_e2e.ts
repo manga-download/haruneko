@@ -7,11 +7,11 @@ const config = {
     },
     container: {
         url: 'https://vortexscans.com/series/regenerate-top-players',
-        id: JSON.stringify({ id: "8", slug: 'regenerate-top-players'}),
+        id: JSON.stringify({ id: '8', slug: 'regenerate-top-players'}),
         title: 'Regenerate Top Players'
     },
     child: {
-        id: 'chapter-5',
+        id: '/series/regenerate-top-players/chapter-5',
         title: '5 Crushing Desperation'
     },
     entry: {
