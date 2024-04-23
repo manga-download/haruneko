@@ -10,7 +10,7 @@ import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 
 export const mangaListPath = '/series/list?page={page}';
 export const queryMangaTitleURI = 'h1.series-h-title span:not([class])';
-export const queryManga = 'div.series-box-vertical a';
+export const queryManga = 'div.series-box-vertical > a';
 const queryMangaTitle = 'h2.title-text';
 export const queryChapter = 'div.series-ep-list a[data-href]';
 const queryChapterTitle = 'span.series-ep-list-item-h-text';
