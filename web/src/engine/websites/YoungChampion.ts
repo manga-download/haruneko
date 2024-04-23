@@ -9,9 +9,7 @@ import * as Comici from './decorators/ComiciViewer';
 @Comici.ChaptersSinglePageCSS()
 @Comici.PagesSinglePageAJAX()
 @Comici.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('youngchampion', `Young Champion`, 'https://youngchampion.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
