@@ -18,7 +18,7 @@ export async function bundle(dirApp, dirNW, dirRes, dirOut) {
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
-    await cleanupNW(dirNW);
+    await cleanup(dirNW);
     await createDiskImage(dirNW, dirRes, dirOut);
 }
 
@@ -48,7 +48,7 @@ async function replacePlist(dirNW) {
     await fs.rename(binary, binary.replace(/nwjs$/i, pkgConfig.name));
 }
 
-async function cleanupNW(dirNW) {
+async function cleanup(dirNW) {
     const entries = await fs.readdir(dirNW);
     for(const entry of entries.filter(entry => entry !== 'nwjs.app')) {
         await fs.unlink(path.join(dirNW, entry));
