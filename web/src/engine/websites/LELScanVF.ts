@@ -1,21 +1,46 @@
 import { Tags } from '../Tags';
 import icon from './LELScanVF.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as MangaReader from './decorators/MangaReaderCMS';
+import { FetchCSS } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryMangaTitle)
-@MangaReader.MangasSinglePageCSS()
-@Common.ChaptersSinglePageCSS(MangaReader.queryChapters, MangaReader.ChapterInfoExtractor)
-@Common.PagesSinglePageCSS(MangaReader.queryPages, MangaReader.ChapterPageExtractor)
+function MangaLabelExtractor(element: HTMLImageElement): string {
+    return element.alt.trim();
+}
+function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector<HTMLImageElement>('img').getAttribute('alt').trim()
+    };
+}
+
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'section img.object-cover', MangaLabelExtractor)
+@Common.MangasMultiPageCSS('/manga?page={page}', 'div#card-real a', 1, 1, 0, MangaInfoExtractor)
+@Common.PagesSinglePageCSS('div#chapter-container img.chapter-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('lelscanvf', `LELSCAN-VF`, 'https://www.lelscanvf.cc', Tags.Language.French, Tags.Media.Manga);
+        super('lelscanvf', `LELSCAN-VF`, 'https://lelscanfr.com', Tags.Language.French, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const chapterList = [];
+        for (let page = 1, run = true; run; page++) {
+            const chapters = await this.getChaptersFromPage(manga, page);
+            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
+        }
+        return chapterList.distinct();
+    }
+
+    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
+        const uri = new URL(`${manga.Identifier}?page=${page}`, this.URI);
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(uri), 'div#chapters-list a');
+        return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('span').textContent.trim()));
+    }
+
 }

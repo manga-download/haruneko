@@ -3,7 +3,6 @@ import icon from './LittleGarden.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchGraphQL } from '../platform/FetchProvider';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
     chapters: {

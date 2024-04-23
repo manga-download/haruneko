@@ -1,7 +1,8 @@
-import os from 'os';
-import path from 'path';
-import fs from 'fs-extra';
-import { spawn } from 'child_process';
+import os from 'node:os';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
 //import type { Config } from '@jest/types';
 
@@ -24,7 +25,13 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 
 async function LaunchNW() {
     const nwApp = path.resolve('app', 'nw', 'build');
-    const nwExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw');
+    const nwExe = [
+        path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw'),
+        path.resolve('app', 'nw', 'node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw'),
+    ].filter(file => existsSync(file)).shift();
+    if(!nwExe) {
+        throw new Error('Failed to detect location of nw executable!');
+    }
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
