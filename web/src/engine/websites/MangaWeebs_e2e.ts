@@ -6,7 +6,7 @@ const config = {
         title: 'Manga Weebs'
     },
     container: {
-        url: 'https://mangaweebs.in/manga/demon-magic-emperor/',
+        url: 'https://mangaweebs.org/manga/demon-magic-emperor/',
         id: JSON.stringify({ post: '2006', slug: '/manga/demon-magic-emperor/' }),
         title: 'Demon Magic Emperor'
     },

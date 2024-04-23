@@ -2,8 +2,9 @@
 //import { EngineResourceKey as R } from '../../../i18n/ILocale';
 import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
 //import { FetchRedirection } from '../AntiScrapingDetection';
-//import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
+import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
 import { FetchProvider, type ScriptInjection } from '../FetchProviderCommon';
+import { FetchRedirection } from '../AntiScrapingDetection';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -51,14 +52,9 @@ export default class extends FetchProvider {
         globalThis.ipcRenderer.invoke('FetchProvider::Initialize', fetchApiSupportedPrefix);
     }
 
-    Fetch(request: Request): Promise<Response> {
+    async Fetch(request: Request): Promise<Response> {
         console.log('Platform::Electron::FetchProvider::Fetch()', '=>', request);
         return fetch(request);
-    }
-
-    public async FetchWindowCSS<T extends HTMLElement>(request: Request, query: string, delay?: number, timeout?: number): Promise<T[]> {
-        console.warn('Platform::Electron::FetchProvider::FetchWindowCSS()', '=>', request, query, delay, timeout);
-        throw new Error('Method not implemented.');
     }
 
     public async FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
@@ -104,11 +100,31 @@ export default class extends FetchProvider {
             };
             await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::LoadURL', windowID, request.url, JSON.stringify(loadOptions));
             // 2. Check Anti-Scraping and show/redirect window
-            if (!windowID) {
-                await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::SetVisibility', windowID, true);
+            if (windowID) {
+                const redirect = await CheckAntiScrapingDetection(windowID);
+                console.log('Fetch Redirect:', redirect);
+                switch (redirect) {
+                    case FetchRedirection.Interactive:
+                        // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
+                        //clearTimeout(cancellation);
+                        //cancellation = setTimeout(destroy, 150_000);
+                        //win.show();
+                        await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::SetVisibility', windowID, true);
+                        // TODO: Wait for Load event or timeout
+                        //win.requestAttention(3);
+                        break;
+                    case FetchRedirection.Automatic:
+                        // TODO: Wait for Load event
+                        break;
+                    default:
+                        //teardownOpenedWindow();
+                        //resolve(win);
+                        break;
+                }
             }
             // 3. Wait for window to load expected location
             const result = await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::ExecuteScript', windowID, script instanceof Function ? `(${script})()` : script);
+            console.log('FetchWindowPreloadScript()', 'Result =>', result);
             return result;
         } finally {
             await destroy(windowID);

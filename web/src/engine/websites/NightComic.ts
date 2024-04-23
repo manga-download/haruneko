@@ -6,13 +6,13 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Night Comic"])')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nightcomic', 'NIGHT COMIC', 'https://www.nightcomic.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
+        super('nightcomic', 'NIGHT COMIC', 'https://nightcomic.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
 
     public override get Icon() {
