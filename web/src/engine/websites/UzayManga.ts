@@ -10,7 +10,8 @@ const pageScript = `
             const el = element[1];
             if (el) {
                 if(el.includes('[{"path":'))  {
-                    resolve(el)
+                    resolve(el);
+                    return;
                 }
             }
         });
@@ -49,7 +50,7 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchWindowScript<string>(request, pageScript);
         const jsonString = data.match(/(\[{"path":.*}\])}}/)[1];
         const imagesData: JSONPage[] = JSON.parse(jsonString);
-        return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/series/image/${ image.path }`)));
+        return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/upload/series/${ image.path }`)));
     }
 
 }
