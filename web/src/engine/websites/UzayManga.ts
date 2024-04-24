@@ -5,17 +5,15 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
-    new Promise((resolve, reject) => {
-        __next_f.forEach(element => {
-            const el = element[1];
-            if (el) {
-                if(el.includes('[{"path":'))  {
-                    resolve(el);
-                    return;
-                }
+    new Promise(resolve => {
+        let element = undefined;
+        for (const el of __next_f) {
+            if (el[1] && el[1].includes('[{"path":')) {
+                element = el[1];
+                break;
             }
-        });
-        reject();
+        }
+        element ? resolve(element): reject();
     });
 `;
 
