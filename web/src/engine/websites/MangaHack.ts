@@ -24,7 +24,6 @@ const chapterScript = `
 @Common.ChaptersSinglePageJS(chapterScript, 2500)
 @Common.PagesSinglePageCSS('div.episodeViewer div.comic_img img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
