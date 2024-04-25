@@ -389,7 +389,7 @@ export { default as MangaTitan } from './MangaTitan';
 export { default as MangaTown } from './MangaTown';
 export { default as MangaTube } from './MangaTube';
 export { default as MangaTX } from './MangaTX';
-export { default as MangaUp } from './MangaUp';
+export { default as MangaUpGlobal } from './MangaUpGlobal';
 export { default as MangaWeebs } from './MangaWeebs';
 export { default as MangaWindow } from './MangaWindow';
 export { default as MangaWorld } from './MangaWorld';
