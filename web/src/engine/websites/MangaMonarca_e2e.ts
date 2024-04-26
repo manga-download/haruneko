@@ -6,7 +6,7 @@ const config = {
         title: 'Monarcamanga'
     },
     container: {
-        url: 'https://monarcamanga.com/manga/trabajo-de-nueve-a-cinco-en-el-mundo-del-cultivo-inmortal/',
+        url: 'https://visormonarca.com/manga/trabajo-de-nueve-a-cinco-en-el-mundo-del-cultivo-inmortal/',
         id: JSON.stringify({ post: '2758', slug: '/manga/trabajo-de-nueve-a-cinco-en-el-mundo-del-cultivo-inmortal/' }),
         title: 'Trabajo de nueve a cinco en el mundo del cultivo inmortal'
     },

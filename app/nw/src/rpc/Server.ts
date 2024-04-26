@@ -1,7 +1,6 @@
 import { createServer, type Server, type IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
-// NOTE: Import with absolute path to integrate this file when bundling with roll-up
-import { CreateServer, type WebSocketServer } from '../../../../node_modules/websocket-rpc/dist/server';
+import { CreateServer} from 'websocket-rpc/server';
 import type { Contract } from './Contract';
 
 class AccessDeniedError extends Error {
@@ -14,7 +13,7 @@ class AccessDeniedError extends Error {
 export class RPCServer {
 
     private readonly httpd: Server;
-    private readonly websocket: Promise<WebSocketServer>;
+    private readonly websocket: ReturnType<typeof CreateServer>;
     private allowedOrigins: RegExp[] = [];
     private token?: string = undefined;
 

@@ -6,7 +6,7 @@ const config = {
         title: 'Summertoon'
     },
     container: {
-        url: 'https://summertoon.com/manga/yirtici-evlilik/',
+        url: 'https://summertoon.me/manga/yirtici-evlilik/',
         id: '/manga/yirtici-evlilik/',
         title: 'Yırtıcı Evlilik'
     },
