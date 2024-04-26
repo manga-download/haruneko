@@ -44,11 +44,11 @@ export class RemoteBrowserWindowController {
         return show ? win.show() : win.hide();
     }
 
-    private async ExecuteScript(windowID: number, script: string): Promise<unknown> {
+    private async ExecuteScript<T>(windowID: number, script: string): Promise<T> {
         return this.FindWindow(windowID).webContents.executeJavaScript(script, true);
     }
 
-    private async LoadURL(windowID: number, url: string, options: string) {
+    private async LoadURL(windowID: number, url: string, options: string): Promise<void> {
         await this.FindWindow(windowID).loadURL(url, JSON.parse(options));
     }
 }

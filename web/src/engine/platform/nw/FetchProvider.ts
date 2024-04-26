@@ -256,19 +256,6 @@ export default class extends FetchProvider {
         }));
     }
 
-    public async FetchWindowCSS<T extends HTMLElement>(request: Request, query: string, delay = 0, timeout = 60_000): Promise<T[]> {
-        const win = await this.FetchWindow(request, timeout);
-        try {
-            await super.Wait(delay);
-            const dom = win.window.document as Document;
-            return [...dom.querySelectorAll(query)] as T[];
-        } finally {
-            if(!this.IsVerboseModeEnabled) {
-                win.close(true);
-            }
-        }
-    }
-
     public async FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
         return this.FetchWindowPreloadScript(request, () => undefined, script, delay, timeout);
     }

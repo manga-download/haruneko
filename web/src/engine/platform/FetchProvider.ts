@@ -31,7 +31,6 @@ export let FetchCSS: FetchProvider['FetchCSS'];
 export let FetchGraphQL: FetchProvider['FetchGraphQL'];
 export let FetchRegex: FetchProvider['FetchRegex'];
 export let FetchProto: FetchProvider['FetchProto'];
-export let FetchWindowCSS: FetchProvider['FetchWindowCSS'];
 export let FetchWindowScript: FetchProvider['FetchWindowScript'];
 export let FetchWindowPreloadScript: FetchProvider['FetchWindowPreloadScript'];
 
@@ -44,7 +43,6 @@ export function SetupFetchProviderExports(instance: FetchProvider) {
     FetchGraphQL = instance.FetchGraphQL.bind(instance);
     FetchRegex = instance.FetchRegex.bind(instance);
     FetchProto = instance.FetchProto.bind(instance);
-    FetchWindowCSS = instance.FetchWindowCSS.bind(instance);
     FetchWindowScript = instance.FetchWindowScript.bind(instance);
     FetchWindowPreloadScript = instance.FetchWindowPreloadScript.bind(instance);
 }

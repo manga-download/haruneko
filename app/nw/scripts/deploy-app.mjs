@@ -1,11 +1,11 @@
-import os from 'os';
-import path from 'path';
-import fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 import extract from 'extract-zip';
 import { download } from '../../tools.mjs';
 
 const pkgFile = 'package.json';
-const pkgConfig = await fs.readJSON(pkgFile);
+const pkgConfig = JSON.parse(await fs.readFile(pkgFile));
 const dirRes = path.join('..', 'res');
 const dirApp = path.join('.', 'build');
 const dirOut = path.join('.', 'bundle');
@@ -39,7 +39,7 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     await fs.rm(tmpDir, { force: true, recursive: true });
     await fs.rm(nwDir, { force: true, recursive: true });
     await extract(tmpFile, { dir: os.tmpdir() });
-    await fs.move(tmpDir, nwDir);
+    await fs.rename(tmpDir, nwDir);
     return nwDir;
 }
 
