@@ -11,12 +11,12 @@ const config: Config = {
         title: 'Kaette Kudasai! Akutsu-san'
     },
     child: {
-        id: '/kaette-kudasai-akutsu-san-1/',
-        title: 'Capítulo 1'
+        id: '/kaette-kudasai-akutsu-san-170/',
+        title: 'Capítulo 170'
     },
     entry: {
-        index: 0,
-        size: 595_477,
+        index: 1,
+        size: 1_028_169,
         type: 'image/jpeg'
     }
 };

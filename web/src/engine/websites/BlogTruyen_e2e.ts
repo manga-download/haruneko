@@ -1,4 +1,4 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
@@ -15,7 +15,7 @@ const config: Config = {
         title: 'chap 1'
     },
     entry: {
-        index: 5,
+        index: 6,
         size: 267_787,
         type: 'image/jpeg'
     }

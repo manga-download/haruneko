@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './DoujinDesu.webp';
-import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS} from '../platform/FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.ElementLabelExtractor('span.alter'))
-@Common.MangasMultiPageCSS('/manga/page/{page}/', 'article entry a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('/manga/page/{page}/', 'article.entry a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -19,15 +19,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        let uri = new URL(chapter.Identifier, this.URI);
-        let request = new Request(uri.href);
-        let data = await FetchCSS(request, "main#reader");
+        const chapterurl = new URL(chapter.Identifier, this.URI);
+        let data = await FetchCSS(new Request(chapterurl), "main#reader");
         const chapterid = data[0].dataset['id'];
 
-        uri = new URL('/themes/ajax/ch.php', this.URI);
-        request = new Request(uri.href, {
+        const url = new URL('/themes/ajax/ch.php', this.URI);
+        const request = new Request(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Referer': chapterurl.href
+            },
             body: new URLSearchParams({ id: chapterid })
         });
         data = await FetchCSS<HTMLImageElement>(request, 'img');
