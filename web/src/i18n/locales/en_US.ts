@@ -1,4 +1,4 @@
-/* eslint-disable indent */
+/* eslint-disable indent */ // Must keep this eslint rule for inclusion in auto-generated translations!
 import type { VariantResource } from '../ILocale';
 import base from './xx_XX';
 

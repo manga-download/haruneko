@@ -1,14 +1,14 @@
-import path from 'path';
-import fs from 'fs-extra';
-import { purge, run } from './tools.mjs';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { purge, run } from '../../tools.mjs';
 
 const dirBuild = path.resolve('build');
 const pkgFile = 'package.json';
-const pkgConfig = await fs.readJSON(pkgFile);
+const pkgConfig = JSON.parse(await fs.readFile(pkgFile));
 const targetFile = path.resolve(dirBuild, pkgFile);
 let targetConfig = {};
 try {
-    targetConfig = await fs.readJSON(targetFile);
+    targetConfig = JSON.parse(await fs.readFile(targetFile));
 } catch { /* IGNORE */ }
 
 await purge(dirBuild);
@@ -21,7 +21,7 @@ const manifest = {
     url: pkgConfig.url,
     'node-remote': [
         'http://localhost/*',
-        'https://haruneko.pages.dev/*'
+        `${new URL(pkgConfig.url).origin}/*`
     ],
     /*
     webkit: {
@@ -29,9 +29,9 @@ const manifest = {
         'page-cache': false
     },
     */
-    'user-agent': targetConfig['user-agent'] || null,
+    'user-agent': targetConfig['user-agent'] ?? null,
     dependencies: pkgConfig.dependencies
 };
 
-await fs.writeJSON(targetFile, manifest, { spaces: 4 });
+await fs.writeFile(targetFile, JSON.stringify(manifest, null, 4));
 await run('npm install --only=production', dirBuild);

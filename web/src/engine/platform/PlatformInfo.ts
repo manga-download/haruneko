@@ -43,7 +43,7 @@ export class PlatformInfo {
             }
         }
 
-        if(/Electron\/\d+/i.test(ua)) {
+        if(globalThis?.ipcRenderer) {
             this.OS = this.DetectSystemBrowser(ua);
             this.Runtime = Runtime.Electron;
             return;

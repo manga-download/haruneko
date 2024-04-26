@@ -3,7 +3,6 @@ import icon from './Kakaopage.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
     contentHomeProductList: {

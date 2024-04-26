@@ -39,7 +39,6 @@ type APIPages = {
 }
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://beta-api.netcomics.com/api/v1/';
 
