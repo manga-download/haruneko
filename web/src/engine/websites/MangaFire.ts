@@ -37,7 +37,6 @@ const chapterLanguageMap = {
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.info h1[itemprop="name"]')
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.info > a', 1, 1, 250)
-
 export default class extends DecoratableMangaScraper {
     private readonly idRegex = /manga\/[^.]+\.(\w+)/;
 

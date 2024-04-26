@@ -17,7 +17,6 @@ type APIChapter = {
 
 @Common.PagesSinglePageJS('__NEXT_DATA__.props.pageProps.chapterData.url', 1000)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.yurineko.net';
 
