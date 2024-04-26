@@ -1,4 +1,4 @@
-﻿import { FetchCSS, FetchWindowCSS } from '../../platform/FetchProvider';
+﻿import { FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import * as Common from './Common';
 export function MangaLabelExtractor(element: HTMLElement) {
@@ -108,8 +108,7 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
  * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link querySubPages_arg})
   * */
 export async function FetchPagesMultiPagesCSS(this: MangaScraper, chapter: Chapter, queryPages_arg: string, querySubPages_arg: string, queryImages_arg: string, extractSubPages: LinkExtractor): Promise<Page[]> {
-    //using FetchWindowCSS because TAADD websites have a tendency to redirect to another site for chapters page
-    const data = await FetchWindowCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), queryPages_arg); //Here we got the sub pages list NODES
+    const data = await FetchCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), queryPages_arg); //Here we got the sub pages list NODES
     //There may be MORE than one page list element on the page, we need only one !
     const subpages = [...data[0].querySelectorAll(querySubPages_arg)].map(element => extractSubPages.call(this, element));
 
@@ -118,7 +117,7 @@ export async function FetchPagesMultiPagesCSS(this: MangaScraper, chapter: Chapt
         const request = new Request(subpage);
         const imgdata = await FetchCSS<HTMLImageElement>(request, queryImages_arg);
         imgdata.map(element => {
-            const picUrl = element.src;
+            const picUrl = element.getAttribute('src');
             pagelist.push(new Page(this, chapter, new URL(picUrl, this.URI), { Referer: subpage }));
         });
     }
