@@ -12,7 +12,6 @@ export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContex
     }
 }
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */ //=> A mixin class must have a constructor with a single rest parameter of type 'any[]'
 export type Constructor = new (...args: any[]) => DecoratableMangaScraper;
 
 type LabelExtractor = (this: MangaScraper, element: HTMLElement) => string;
@@ -38,7 +37,7 @@ export function ElementLabelExtractor(queryBloat: string = undefined) {
                 }
             }
         }
-        return element instanceof HTMLMetaElement ? element.content : element.textContent.trim();
+        return element instanceof HTMLMetaElement ? element.content : element.innerText.trim();
     };
 }
 
@@ -64,7 +63,7 @@ export function AnchorInfoExtractor(useTitleAttribute = false, queryBloat: strin
         }
         return {
             id: element.pathname,
-            title: useTitleAttribute ? element.title.trim() : element.text.trim()
+            title: useTitleAttribute ? element.title.trim() : element.innerText.trim()
         };
     };
 }
