@@ -33,7 +33,6 @@ type APIPages = {
 }
 
 @Common.MangasNotSupported()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://webapi.ynjn.jp';
