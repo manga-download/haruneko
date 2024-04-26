@@ -6,8 +6,8 @@ const config = {
         title: 'Fleur Blanche Squads'
     },
     container: {
-        url: 'https://fbsquads.com/manga/polar-attraction/',
-        id: JSON.stringify({ post: '5169', slug: '/manga/polar-attraction/' }),
+        url: 'https://fbsscan.com/manga/polar-attraction/',
+        id: JSON.stringify({ slug: '/manga/polar-attraction/' }),
         title: 'Polar Attraction',
     },
     child: {
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 2,
-        size: 417_842,
+        size: 353_179,
         type: 'image/jpeg'
     }
 };
