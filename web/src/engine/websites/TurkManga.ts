@@ -38,7 +38,6 @@ type APIPages = {
 }
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.turkmanga.com.tr/';
     private nextBuild = '';

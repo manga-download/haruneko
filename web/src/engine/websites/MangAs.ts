@@ -27,7 +27,6 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageCSS(MangaReader.queryPages, MangaReader.ChapterPageExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

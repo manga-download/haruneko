@@ -23,7 +23,6 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangasMultiPageCSS('/manga?page={page}', '.grid-item-series', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('.col-chapter', ChapterExtractor)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
