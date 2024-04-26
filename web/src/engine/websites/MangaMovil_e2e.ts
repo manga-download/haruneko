@@ -2,21 +2,21 @@
 
 const config = {
     plugin: {
-        id: 'mangademon',
-        title: 'MangaDemon'
+        id: 'mangamovil',
+        title: 'MangaMovil'
     },
     container: {
-        url: 'https://comicdemons.com/manga/Martial-Peak-VA54',
-        id: '/manga/Martial-Peak-VA54',
-        title: 'Martial Peak'
+        url: 'https://mangamovil.net/manga/lilith-side-story',
+        id: '/manga/lilith-side-story',
+        title: 'Lilith Side Story'
     },
     child: {
-        id: '/manga/Martial-Peak/chapter/3670-VA54',
-        title: '3670'
+        id: '/capitulo/lilith-side-story-4.00',
+        title: '4.00'
     },
     entry: {
         index: 0,
-        size: 328_479,
+        size: 538_520,
         type: 'image/jpeg'
     }
 };

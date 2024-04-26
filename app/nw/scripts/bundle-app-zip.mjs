@@ -1,9 +1,9 @@
-import path from 'path';
-import fs from 'fs-extra';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 import { run } from '../../tools.mjs';
 
 const pkgFile = 'package.json';
-const pkgConfig = await fs.readJSON(pkgFile);
+const pkgConfig = JSON.parse(await fs.readFile(pkgFile));
 
 /**
  * Bundle Portable Binary for Windows
@@ -21,16 +21,16 @@ export async function bundle(dirApp, dirNW, dirRes, dirOut) {
 
 async function bundleApp(dirApp, dirNW) {
     const target = path.join(dirNW, 'package.nw');
-    await fs.copy(dirApp, target);
+    await fs.cp(dirApp, target, { recursive: true });
 }
 
 async function makePortable(dirNW) {
     const userdata = path.join(dirNW, 'userdata');
     await fs.mkdir(userdata, { recursive: true });
     const pkgfile = path.join(dirNW, 'package.nw', 'package.json');
-    const pkg = await fs.readJSON(pkgfile);
+    const pkg = await JSON.parse(await fs.readFile(pkgfile));
     pkg['chromium-args'] += ' --user-data-dir=userdata';
-    await fs.writeJSON(pkgfile, pkg, { spaces: 4 });
+    await fs.writeFile(pkgfile, JSON.stringify(pkg, null, 4));
 }
 
 async function updateBinary(dirNW, dirRes) {
@@ -51,7 +51,7 @@ async function updateBinary(dirNW, dirRes) {
         `--set-icon "${icon}"`
     ].join(' ');
     await run(command);
-    await fs.move(binary, binary.replace(/nw\.exe$/i, `${pkgConfig.name}.exe`));
+    await fs.rename(binary, binary.replace(/nw\.exe$/i, `${pkgConfig.name}.exe`));
 }
 
 async function createZipArchive(dirNW, dirOut) {

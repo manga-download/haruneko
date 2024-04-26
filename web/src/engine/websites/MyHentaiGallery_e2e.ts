@@ -2,21 +2,21 @@
 
 const config = {
     plugin: {
-        id: 'mangademon',
-        title: 'MangaDemon'
+        id: 'myhentaigallery',
+        title: 'MyHentaiGallery'
     },
     container: {
-        url: 'https://comicdemons.com/manga/Martial-Peak-VA54',
-        id: '/manga/Martial-Peak-VA54',
-        title: 'Martial Peak'
+        url: 'https://myhentaigallery.com/g/39592',
+        id: '/g/39592',
+        title: 'Trying Anal With Nino'
     },
     child: {
-        id: '/manga/Martial-Peak/chapter/3670-VA54',
-        title: '3670'
+        id: '/g/39592',
+        title: 'Trying Anal With Nino'
     },
     entry: {
         index: 0,
-        size: 328_479,
+        size: 247_601,
         type: 'image/jpeg'
     }
 };
