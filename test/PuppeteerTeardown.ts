@@ -1,6 +1,6 @@
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import type { Browser } from 'puppeteer-core';
-import { ChildProcess, exec } from 'child_process';
+import { ChildProcess, exec } from 'node:child_process';
 
 export default async function(/*config: Config.ConfigGlobals*/) {
     const server = global.SERVER as ChildProcess;

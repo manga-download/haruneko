@@ -51,7 +51,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div.plylist-single-content > a[onclick]', ChapterExtractor) //some chapters are mobile app only
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

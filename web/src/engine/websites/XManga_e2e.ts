@@ -2,12 +2,12 @@
 
 const config = {
     plugin: {
-        id: 'scanhentaimenu',
-        title: 'ScanHentaiMenu'
+        id: 'xmanga',
+        title: 'XManga'
     },
     /* CloudFlare
     container: {
-        url: 'https://scan.hentai.menu/manga/konna-elf-ni-you-wa-nai/',
+        url: 'https://x-manga.net/manga/konna-elf-ni-you-wa-nai/',
         id: JSON.stringify({ post: '4237', slug: '/manga/konna-elf-ni-you-wa-nai/' }),
         title: 'Konna Elf ni You wa Nai'
     },

@@ -35,8 +35,7 @@ export function SanitizeFileName(name: string): string {
         '~': '～', //https://unicode-explorer.com/c/FF5E //File System API cannot handle trailing hyphens
     };
 
-    // eslint-disable-next-line no-control-regex
-    const patternControlCharsUTF8 = /[\u0000-\u001F\u007F-\u009F]/gu; //https://en.wikipedia.org/wiki/C0_and_C1_control_codes
+    const patternControlCharsUTF8 = /[\u0000-\u001F\u007F-\u009F]/gu; // https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 
     if (patternControlCharsUTF8.test(name)) {
         const sequenceCharsUTF8 = name.split('').map(c => c.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0'));

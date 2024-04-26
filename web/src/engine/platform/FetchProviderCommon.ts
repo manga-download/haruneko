@@ -1,7 +1,6 @@
 import protobuf from 'protobufjs';
 import { Exception, InternalError } from '../Error';
 import { EngineResourceKey as R } from '../../i18n/ILocale';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 export type ScriptInjection<T> = string | ((this: Window) => Promise<T>);
 
@@ -137,7 +136,6 @@ export abstract class FetchProvider {
         const data = await response.text();
         const result : string[] = [];
         let match = undefined;
-        // eslint-disable-next-line no-cond-assign
         while (match = regex.exec(data)) {
             result.push(match[1]);
         }
