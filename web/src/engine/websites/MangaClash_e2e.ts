@@ -6,9 +6,9 @@ const config = {
         title: 'Manga Clash'
     },
     container: {
-        url: 'https://mangaclash.com/manga/trapped-in-a-webnovel-as-a-good-for-nothing/',
+        url: 'https://toonclash.com/manga/trapped-in-a-webnovel-as-a-good-for-nothing/',
         id: JSON.stringify({ post: '20283', slug: '/manga/trapped-in-a-webnovel-as-a-good-for-nothing/' }),
-        title: 'Trapped in a Webnovel as a Good for Nothing'
+        title: 'I Woke Up as the Villain'
     },
     child: {
         id: '/manga/trapped-in-a-webnovel-as-a-good-for-nothing/chapter-1/',

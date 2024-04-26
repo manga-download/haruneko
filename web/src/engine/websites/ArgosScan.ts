@@ -3,7 +3,6 @@ import icon from './ArgosScan.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchGraphQL } from '../platform/FetchProvider';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type ApiResult<T> = {
     [id: string]: {
