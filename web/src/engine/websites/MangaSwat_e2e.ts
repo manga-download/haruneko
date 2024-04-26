@@ -2,11 +2,11 @@
 
 const config: Config = {
     plugin: {
-        id: 'goldragon',
-        title: 'GolDragon'
+        id: 'mangaswat',
+        title: 'MangaSwat'
     },
     container: {
-        url: 'https://swatmanhua.com/manga/emperor-and-the-female-knight',
+        url: 'https://normoyun.com/manga/emperor-and-the-female-knight',
         id: '/manga/emperor-and-the-female-knight',
         title: 'Emperor And The Female Knight'
     },

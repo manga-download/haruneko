@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './ScanHentaiMenu.webp';
+import icon from './XManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('scanhentaimenu', 'ScanHentaiMenu', 'https://scan.hentai.menu', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('xmanga', 'XManga', 'https://x-manga.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

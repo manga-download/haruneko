@@ -9,6 +9,7 @@ const legacyWebsiteIdentifierMap = {
     'apolltoons': 'mundomanhwa',
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
+    'blogtruyen': 'blogtruyenmoi', //there is also a blogtruyen now, same website template
     'comicbushi': 'comicgrowl',
     'comicwalker': 'kadocomi',
     'crazyscans': 'mangacultivator',
@@ -30,7 +31,6 @@ const legacyWebsiteIdentifierMap = {
     'manganelos': 'mangapure',
     'mangaproz': 'mangapro',
     'mangaraw': 'mangagecko',
-    'mangaswat': 'goldragon',
     'manhuaes': 'manhuaaz',
     'manhwaclub': 'manhwahentai',
     'muctau': 'bibimanga',
@@ -44,6 +44,7 @@ const legacyWebsiteIdentifierMap = {
     'reaperscansid': 'shinigamiid',
     'rightdarkscan': 'darkscan',
     'scansmangasxyz': 'scansmangasme',
+    'scanhentaimenu': 'xmanga',
     'secretscans': 'lynxscans',
     'shonenmagazine-pocket': 'shonenmagazine',
     'siyahmelek': 'grimelek',
