@@ -65,6 +65,13 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
  ******** Manga List Extraction Methods ********
  ***********************************************/
 
+function MangaInfosExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: MangaLabelExtractor.call(this, anchor)
+    };
+}
+
 /**
  * An extension method for extracting multiple mangas from the given relative {@link path} using the given CSS {@link query}.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
@@ -73,7 +80,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, path = pathname, query = queryMangaListLinks): Promise<Manga[]> {
-    return Common.FetchMangasSinglePageCSS.call(this, provider, path, query);
+    return Common.FetchMangasSinglePageCSS.call(this, provider, path, query, MangaInfosExtractor);
 }
 
 /**
@@ -82,7 +89,7 @@ export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: Man
  * @param path - The path relative to the scraper's base url from which the mangas shall be extracted
  */
 export function MangasSinglePageCSS(query: string = queryMangaListLinks, path: string = pathname) {
-    return Common.MangasSinglePageCSS(path, query);
+    return Common.MangasSinglePageCSS(path, query, MangaInfosExtractor);
 }
 
 /*************************************************
@@ -102,7 +109,7 @@ function CreateChapterInfoExtractor<T extends HTMLAnchorElement>(manga: Manga, q
             }
         }
         const id = anchor.pathname;
-        let title = (anchor.querySelector(queryTitle)?.textContent || anchor.text).replace(/[\n\s]+/g, ' ').trim();
+        let title = (anchor.querySelector<HTMLElement>(queryTitle)?.innerText ?? anchor.innerText).trim();
         title = title.replace(manga.Title, '').trim() || manga.Title;
         return { id, title };
     };

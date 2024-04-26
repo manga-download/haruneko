@@ -6,7 +6,6 @@ import { FetchGraphQL } from '../../platform/FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { type Tag, Tags } from '../../Tags';
 import * as Common from './Common';
-import type { JSONObject } from '../../../../../node_modules/websocket-rpc/dist/types';
 
 const languageMap = {
     'es': 1,
