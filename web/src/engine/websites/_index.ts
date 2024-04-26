@@ -687,7 +687,6 @@ export { default as WebtoonXYZ } from './WebtoonXYZ';
 export { default as WeiboManhua } from './WeiboManhua';
 export { default as WestManga } from './WestManga';
 export { default as WhimSubs } from './WhimSubs';
-export { default as WieManga } from './WieManga';
 export { default as WinterScan } from './WinterScan';
 export { default as Wnacg } from './Wnacg';
 export { default as WonderlandWebtoons } from './WonderlandWebtoons';
