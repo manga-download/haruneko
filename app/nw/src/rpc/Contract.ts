@@ -1,6 +1,5 @@
-// NOTE: Import with absolute path to integrate this file when bundling with roll-up
-import type { RemoteContract } from '../../../../node_modules/websocket-rpc/dist/types';
-import type { PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/ipc/InterProcessCommunication';
+import type { RemoteContract } from 'websocket-rpc';
+import type { PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunication';
 
 // TODO: Maybe make Contract an interface and implement it in IPC,
 //       because Contract just relays all calls anyway ...
