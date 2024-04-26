@@ -5,7 +5,7 @@ const config = {
         id: 'tapas',
         title: 'Tapas'
     },
-    container: {
+    container: { //content is region locked, keep it in mind !
         url: 'https://tapas.io/series/279061',
         id: '279061',
         title: `When You're in Love`

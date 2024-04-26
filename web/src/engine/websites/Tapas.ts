@@ -1,8 +1,8 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './Tapas.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     data: {
