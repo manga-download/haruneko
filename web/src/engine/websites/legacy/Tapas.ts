@@ -1,148 +1,85 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './Tapas.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+
+type APIMangas = {
+    data: {
+        items: APIManga[]
+    }
+}
+
+type APISingleManga = {
+    data: {
+        id: number,
+        title: string
+    }
+}
+
+type APIManga = {
+    seriesId: number,
+    title: string
+}
+
+type APIChapters = {
+    data: {
+        body: string;
+    }
+}
+
+@Common.PagesSinglePageCSS('article.viewer__body img.content__img')
+@Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
 
+    private readonly apiUrl = 'https://story-api.tapas.io/cosmos/api/v1/landing/';
+
     public constructor() {
-        super('tapas', `Tapas`, 'https://tapas.io' /*, Tags.Language.English, Tags ... */);
+        super('tapas', `Tapas`, 'https://tapas.io', Tags.Media.Manga, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class Tapas extends Connector {
-
-    constructor() {
-        super();
-        super.id = 'tapas';
-        super.label = 'Tapas';
-        this.tags = [ 'webtoon', 'english', 'novel' ];
-        this.url = 'https://tapas.io';
-        this.requestOptions.headers.set('x-cookie', 'adjustedBirthDate=1990-01-01');
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExp(`^${this.URI.origin}/series/[^/]+$`).test(url);
     }
 
-    async _getMangaFromURI(uri) {
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'head title');
-        let id = uri.pathname;
-        let title = data[0].textContent.trim();
-        return new Manga(this, id, title);
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const seriesId = (await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property="al:android:url"]'))[0].content.split('/').pop();
+        const { data } = await FetchJSON<APISingleManga>(new Request(new URL(`/series/${seriesId}?`, this.URI), {
+            headers: {
+                Accept: 'application/json, text/javascript, */*;',
+                'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            }
+        }));
+        return new Manga(this, provider, data.id.toString(), data.title.trim());
     }
 
-    async _getMangas() {
-        let mangaList = [];
-        for(let page = 1, run = true; run; page++) {
-            let mangas = await this._getMangasFromPage(page);
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList = [];
+        for (let page = 0, run = true; run; page++) {
+            const mangas = await this.getMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async _getMangasFromPage(page) {
-        let uri = new URL('/comics', this.url);
-        uri.searchParams.set('b', 'ALL');
-        uri.searchParams.set('g', 0);
-        uri.searchParams.set('pageNumber', page);
-        //uri.searchParams.set('pageSize', 20);
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, 'div.section__body ul.content__list li.list__item a.thumb');
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element.pathname, this.url),
-                title: element.querySelector('source').attributes.getNamedItem('alt').value.trim()
-            };
+    async getMangasFromPage(page: number, provider: MangaPlugin) {
+        const url = new URL(`${this.apiUrl}genre?category_type=COMIC&size=200&page=${page}`);
+        const { data: { items } } = await FetchJSON<APIMangas>(new Request(url));
+        return items.map(manga => new Manga(this, provider, manga.seriesId.toString(), manga.title.trim()));
+    }
+
+    public async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const url = new URL(`/series/${manga.Identifier}/episodes?max_limit=9999`, this.URI);
+        const { data: { body } } = await FetchJSON<APIChapters>(new Request(url));
+        const dom = new DOMParser().parseFromString(body, 'text/html');
+        return [...dom.querySelectorAll('li')].map(chapter => {
+            const title = chapter.querySelector('a.item__thumb img').getAttribute('alt').trim();
+            return new Chapter(this, manga, `/episode/${chapter.dataset.id}`, title);
         });
     }
-
-    async _getChapters(manga) {
-        let chapterList = [];
-
-        let request = new Request(new URL(manga.id, this.url), this.requestOptions);
-        let data = await this.fetchDOM(request, 'meta[name="twitter:app:url:iphone"]');
-        const series_id = data[0].content.match(/\/series\/\d+/)[0];
-
-        let has_next = true;
-        const time = Date.now();
-        let page = 1;
-        while (has_next) {
-            request = new Request(new URL(series_id+'/episodes?page='+page+'&sort=OLDEST&init_load=0&since='+time+'&large=true&last_access=0&', this.url), this.requestOptions);
-            request.headers.set('x-referer', this.getRootRelativeOrAbsoluteLink(manga.id, this.url));
-            let response = await this.fetchJSON(request, this.requestOptions);
-            has_next = response.data.pagination.has_next;
-            chapterList.push(...await this._getChaptersFromHtml(response.data.body));
-            page++;
-        }
-
-        return chapterList;
-    }
-
-    async _getChaptersFromHtml(payload) {
-        let data = [...this.createDOM(payload).querySelectorAll('li.episode-list__item  > a')];
-
-        return data
-            .filter(element => !element.querySelector('i.sp-ico-episode-lock, i.sp-ico-schedule-white'))
-            .map(element => {
-                let scene = element.querySelector('div.info p.scene').textContent.trim();
-                let title = element.querySelector('p.title span.title__body').textContent.trim();
-                return {
-                    id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                    title: scene + ' - ' + title,
-                    language: ''
-                };
-            });
-    }
-
-    async _getPagesManga(chapter) {
-        let request = new Request(new URL(chapter.id, this.url), this.requestOptions);
-        let data = await this.fetchDOM(request, 'div.viewer > article > source.content__img');
-        return data.map(image => this.getAbsolutePath(image.dataset.src, request.url));
-    }
-
-    async _getPages(chapter) {
-        let uri = new URL(chapter.id, this.url);
-        uri.searchParams.set('style', 'list');
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, '.ep-epub-contents');
-        return data.length > 0 ? this._getPagesNovel(request) : this._getPagesManga(chapter);
-    }
-
-    async _getPagesNovel(request) {
-        let darkmode = Engine.Settings.NovelColorProfile();
-        let script = `
-            new Promise((resolve, reject) => {
-                document.body.style.width = '56em';
-                let novel = document.querySelector('.ep-epub-content');
-                novel.style.padding = '1.5em';
-                [...novel.querySelectorAll(":not(:empty)")].forEach(ele => {
-                    ele.style.backgroundColor = '${darkmode.background}'
-                    ele.style.color = '${darkmode.text}'
-                })
-                novel.style.backgroundColor = '${darkmode.background}'
-                novel.style.color = '${darkmode.text}'
-                let script = document.createElement('script');
-                script.onerror = error => reject(error);
-                script.onload = async function() {
-                    try{
-                        let canvas = await html2canvas(novel);
-                        resolve(canvas.toDataURL('image/png'));
-                    }catch (error){
-                        reject(error)
-                    }
-                }
-                script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
-                document.body.appendChild(script);
-            });
-        `;
-        return [ await Engine.Request.fetchUI(request, script, 30000, true) ];
-    }
-
 }
-*/
