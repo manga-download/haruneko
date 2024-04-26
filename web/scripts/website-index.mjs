@@ -1,5 +1,5 @@
-import path from 'path';
-import fs from 'fs-extra';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 
 const current = path.resolve('src', 'engine', 'websites');
 const legacy = path.resolve('src', 'engine', 'websites', 'legacy');
