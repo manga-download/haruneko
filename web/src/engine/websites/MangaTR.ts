@@ -13,7 +13,6 @@ function MangaLabelExtractor(element: HTMLTitleElement) {
 @Common.MangasSinglePageCSS('/manga-list.html', FlatManga.queryMangas)
 @FlatManga.PagesSinglePageCSS('img.chapter-img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('mangatr', `Manga-TR`, 'https://manga-tr.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Source.Aggregator);
@@ -30,12 +29,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(manga, page);
+            const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList.distinct();
     }
-    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
         const mangaslug = manga.Identifier.match(/manga-([^/]+)\.html/)[1];
         const url = new URL('/cek/fetch_pages_manga.php?manga_cek=' + mangaslug, this.URI);
         const request = new Request(url, {

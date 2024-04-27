@@ -41,7 +41,6 @@ const pageScript = `
 @Common.PagesSinglePageJS(pageScript, 1000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('mangagun', `MangaGun`, 'https://mangagun.net', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }

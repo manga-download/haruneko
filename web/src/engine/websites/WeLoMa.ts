@@ -10,7 +10,6 @@ import * as FlatManga from './decorators/FlatManga';
 @Common.PagesSinglePageCSS(FlatManga.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('weloma', `WeLoMa`, 'https://weloma.art', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }

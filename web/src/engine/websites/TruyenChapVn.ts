@@ -3,14 +3,12 @@ import icon from './TruyenChapVn.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
-
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
         title: anchor.text.replace(/\(chap.vn\)/i, '').trim()
     };
 }
-
 function MangaLabelExtractor(element: HTMLElement) {
     return element.textContent.replace(/\(chap.vn\)/i, '').trim();
 }
@@ -19,7 +17,6 @@ function MangaLabelExtractor(element: HTMLElement) {
 @Common.MangasSinglePageCSS(FlatManga.pathSinglePageManga, FlatManga.queryMangas, MangaExtractor)
 @Common.PagesSinglePageCSS('img.chapter-img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

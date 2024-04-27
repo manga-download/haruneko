@@ -40,7 +40,6 @@ const pageScript = `
 @Common.ChaptersSinglePageJS(chapterScript, 1000)
 @Common.PagesSinglePageJS(pageScript, 1000)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

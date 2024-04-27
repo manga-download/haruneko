@@ -31,7 +31,6 @@ const chapterScript = `
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
 @Common.ChaptersSinglePageJS(chapterScript, 1000)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

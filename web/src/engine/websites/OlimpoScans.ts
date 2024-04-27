@@ -9,7 +9,6 @@ import * as FlatManga from './decorators/FlatManga';
 @FlatManga.ChaptersSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('olimposcans', `OlimpoScans`, 'https://olimposcans.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
@@ -20,12 +19,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pages = await FlatManga.FetchPagesSinglePageCSS.call(this, chapter);
-        return pages.map(page => new Page(this, chapter, this.stripSearch(page.Link)));
+        return pages.map(page => new Page(this, chapter, this.StripSearch(page.Link)));
     }
 
-    stripSearch(Link: URL): URL {
-        Link.pathname = Link.pathname.replace(/&.*/g, '');
-        return Link;
+    StripSearch(link: URL): URL {
+        link.pathname = link.pathname.replace(/&.*/g, '');
+        return link;
 
     }
 }

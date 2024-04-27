@@ -42,7 +42,6 @@ const pageScript = `
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('rawinu', `RawInu`, 'https://rawinu.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
