@@ -71,11 +71,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').pop();
-        const data = await this.fetchMangaDetail(id);
+        const data = await this.FetchMangaDetail(id);
         return new Manga(this, provider, id, data.manga.title);
     }
 
-    private async fetchMangaDetail(titleId: string): Promise<MangaDetailResponse> {
+    private async FetchMangaDetail(titleId: string): Promise<MangaDetailResponse> {
         const uri = new URL('v1/manga_detail', this.apiUrl);
         const payload = {
             deviceInfo: {
@@ -83,11 +83,11 @@ export default class extends DecoratableMangaScraper {
             },
             mangaId: titleId
         };
-        const request = await this.createPROTORequest(uri, 'ComicFuz.MangaDetailRequest', payload);
+        const request = await this.CreatePROTORequest(uri, 'ComicFuz.MangaDetailRequest', payload);
         return FetchProto<MangaDetailResponse>(request, protoTypes, 'ComicFuz.MangaDetailResponse');
     }
 
-    private async createPROTORequest(uri: URL, messageProtoType: string, payload: unknown): Promise<Request> {
+    private async CreatePROTORequest(uri: URL, messageProtoType: string, payload: unknown): Promise<Request> {
         const root = await protobuf.parse(protoTypes, { keepCase: true }).root;
         const messageType = root.lookupType(messageProtoType);
         const message = messageType.encode(payload);
@@ -105,13 +105,13 @@ export default class extends DecoratableMangaScraper {
             },
             dayOfWeek: 0
         };
-        const request = await this.createPROTORequest(uri, 'ComicFuz.MangasByDayOfWeekRequest', payload);
+        const request = await this.CreatePROTORequest(uri, 'ComicFuz.MangasByDayOfWeekRequest', payload);
         const data = await FetchProto<MangasByDayOfWeekResponse>(request, protoTypes, 'ComicFuz.MangasByDayOfWeekResponse');
         return data.mangas.map(manga => new Manga(this, provider, manga.id.toString(), manga.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await this.fetchMangaDetail(manga.Identifier);
+        const data = await this.FetchMangaDetail(manga.Identifier);
         return data.chapters.map(group => group.chapters.map(chapt => new Chapter(this, manga, chapt.id.toString(), chapt.title))).flat();
     }
 
@@ -128,7 +128,7 @@ export default class extends DecoratableMangaScraper {
                 paid: 0
             }
         };
-        const request = await this.createPROTORequest(uri, 'ComicFuz.MangaViewerRequest', payload);
+        const request = await this.CreatePROTORequest(uri, 'ComicFuz.MangaViewerRequest', payload);
         let data: MangaViewerResponse = undefined;
         try {
             data = await FetchProto<MangaViewerResponse>(request, protoTypes, 'ComicFuz.MangaViewerResponse');
@@ -145,11 +145,11 @@ export default class extends DecoratableMangaScraper {
         const payload = page.Parameters as ApiImage;
         if (!payload.encryptionKey) return data;
         const encrypted = await data.arrayBuffer();
-        const decrypted = await this.decryptPicture(new Uint8Array(encrypted), payload);
+        const decrypted = await this.DecryptPicture(new Uint8Array(encrypted), payload);
         return Common.GetTypedData(decrypted);
     }
 
-    async decryptPicture(encrypted: Uint8Array, page: ApiImage): Promise<ArrayBuffer> {
+    private async DecryptPicture(encrypted: Uint8Array, page: ApiImage): Promise<ArrayBuffer> {
         const iv = Buffer.from(page.iv, 'hex');
         const key = Buffer.from(page.encryptionKey, 'hex');
 

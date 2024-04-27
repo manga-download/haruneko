@@ -41,7 +41,7 @@ export default class extends DecoratableMangaScraper {
         super('piccoma-fr', 'Piccoma (French)', 'https://piccoma.com/fr', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.French, Tags.Source.Official);
     }
 
-    private getAPI(endpoint: string): URL {
+    private GetAPI(endpoint: string): URL {
         return new URL(this.URI.href + '/api/haribo/api/public/v2' + endpoint);
     }
 
@@ -65,15 +65,15 @@ export default class extends DecoratableMangaScraper {
         const vowels = 'aeiou'.split('');
         for (const word of vowels) {
             for (let page = 1, run = true; run; page++) {
-                const mangas = await this.getMangasFromPage(word, page, provider);
+                const mangas = await this.GetMangasFromPage(word, page, provider);
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             }
         }
         return [...new Set(mangaList.map(manga => manga.Identifier))].map(id => mangaList.find(manga => manga.Identifier === id));
     }
 
-    private async getMangasFromPage(word: string, page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const uri = this.getAPI('/search/product');
+    private async GetMangasFromPage(word: string, page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const uri = this.GetAPI('/search/product');
         uri.searchParams.set('search_type', 'P');
         uri.searchParams.set('word', word);
         uri.searchParams.set('page', `${page}`);

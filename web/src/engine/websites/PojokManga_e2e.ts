@@ -5,9 +5,8 @@ const config = {
         id: 'pojokmanga',
         title: 'PojokManga'
     },
-    /* CloudFlare
     container: {
-        url: 'https://pojokmanga.id/komik/magic-emperor/',
+        url: 'https://pojokmanga.org/komik/magic-emperor/',
         id: JSON.stringify({ post: '2447', slug: '/komik/magic-emperor/' }),
         title: 'Magic Emperor'
     },
@@ -20,7 +19,6 @@ const config = {
         size: 563_233,
         type: 'image/jpeg'
     }
-    */
 };
 
 const fixture = new TestFixture(config);

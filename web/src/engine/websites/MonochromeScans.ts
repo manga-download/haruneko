@@ -34,14 +34,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 0, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
 
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin) {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin) {
         const uri = new URL('/manga', apiUrl);
         uri.searchParams.set('limit', '50');
         uri.searchParams.set('offset', String(page * 50));
@@ -62,7 +62,6 @@ export default class extends DecoratableMangaScraper {
                 chapter.name
             ].filter(entry => entry).join(' ');
             return new Chapter(this, manga, chapter.id, title);
-
         });
     }
 
@@ -71,6 +70,5 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchJSON<APIChapter>(request);
         const images = Array.from({ length: data.length }, (_, i) => i + 1).map(index => `${apiUrl}/media/${data.mangaId}/${chapter.Identifier}/${index}.jpg?version=${data.version}`);
         return images.map(page => new Page(this, chapter, new URL(page)));
-
     }
 }
