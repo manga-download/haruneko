@@ -21,12 +21,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga ): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(page, manga);
+            const chapters = await this.GetChaptersFromPage(page, manga);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
-    private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
+    private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}?page=${page}`, this.URI)), 'div.seri-page-list ul.spl-list li.spl-list-item > a');
         return data.map(anchor => new Chapter(this, manga, anchor.pathname, anchor.title.replace(manga.Title, '').replace('Manga Oku', '').replace(' - ', '').trim()));
     }
