@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-// Must keep this eslint rule for inclusion in auto-generated translations!
 import type { VariantResource } from '../ILocale';
 import base from './xx_XX';
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -235,7 +233,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tracker_Kitsu_Settings_UsernameInfo: "crwdns1541:0crwdne1541:0",
   Tracker_Kitsu_Settings_Password: "crwdns1543:0crwdne1543:0",
   Tracker_Kitsu_Settings_PasswordInfo: "crwdns1545:0crwdne1545:0",
-  // [SECTION]: Plugins
+  // [SECTION]: Plugins (common)
   Plugin_Settings_ThrottlingDownloads: "crwdns1598:0crwdne1598:0",
   Plugin_Settings_ThrottlingDownloadsInfo: "crwdns1600:0crwdne1600:0",
   Plugin_Settings_ThrottlingInteraction: "crwdns1602:0crwdne1602:0",
@@ -249,14 +247,15 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "crwdns1610:0crwdne1610:0",
   Plugin_Common_Preferred_Language: "crwdns2102:0crwdne2102:0",
   Plugin_Common_Preferred_LanguageInfo: "crwdns2104:0crwdne2104:0",
-  Plugin_MissingManga_LanguageMismatchError: "crwdns2106:0{0}crwdnd2106:0{1}crwdne2106:0",
   Plugin_MissingWebsite_UpdateError: "crwdns1612:0crwdne1612:0",
   Plugin_MissingWebsiteEntry_UpdateError: "crwdns1614:0crwdne1614:0",
+  // [SECTION]: Plugins (specific)
+  Plugin_CopyManga_Settings_GlobalCDN: "crwdns2098:0crwdne2098:0",
+  Plugin_CopyManga_Settings_GlobalCDNInfo: "crwdns2100:0crwdne2100:0",
+  Plugin_PocketComics_LanguageMismatchError: "crwdns2108:0{0}crwdnd2108:0{1}crwdne2108:0",
   Plugin_SheepScanlations_Settings_Username: "crwdns1553:0crwdne1553:0",
   Plugin_SheepScanlations_Settings_UsernameInfo: "crwdns1555:0crwdne1555:0",
   Plugin_SheepScanlations_Settings_Password: "crwdns1557:0crwdne1557:0",
-  Plugin_SheepScanlations_Settings_PasswordInfo: "crwdns1559:0crwdne1559:0",
-  Plugin_CopyManga_Settings_GlobalCDN: "crwdns2098:0crwdne2098:0",
-  Plugin_CopyManga_Settings_GlobalCDNInfo: "crwdns2100:0crwdne2100:0"
+  Plugin_SheepScanlations_Settings_PasswordInfo: "crwdns1559:0crwdne1559:0"
 };
 export default translations;
