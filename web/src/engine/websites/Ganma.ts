@@ -67,11 +67,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
-            ...await this.getMangasTop(provider),
-            ...await this.getMangasCompleted(provider)
+            ...await this.GetMangasTop(provider),
+            ...await this.GetMangasCompleted(provider)
         ];
     }
-    private async getMangasCompleted(provider: MangaPlugin): Promise<Manga[]> {
+
+    private async GetMangasCompleted(provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/api/1.1/ranking?flag=Finish', this.URI);
         const request = new Request(uri.href, {
             headers: {
@@ -80,9 +81,9 @@ export default class extends DecoratableMangaScraper {
         });
         const data = await FetchJSON<APIRequest<APIManga[]>>(request);
         return data.root.map(manga => new Manga(this, provider, manga.id, manga.title.trim()));
-
     }
-    private async getMangasTop(provider: MangaPlugin): Promise<Manga[]> {
+
+    private async GetMangasTop(provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/api/2.2/top', this.URI);
         const request = new Request(uri.href, {
             headers: {
