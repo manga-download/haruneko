@@ -40,12 +40,12 @@ export function ChapterExtractor(anchor: HTMLAnchorElement) {
 export async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
     const chapterList = [];
     for (let page = 1, run = true; run; page++) {
-        const chapters = await getChaptersFromPage.call(this, manga, page, query, extractor);
+        const chapters = await GetChaptersFromPage.call(this, manga, page, query, extractor);
         chapters.length > 0 ? chapterList.push(...chapters) : run = false;
     }
     return chapterList.distinct();
 }
-async function getChaptersFromPage(this: MangaScraper, manga: Manga, page: number, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
+async function GetChaptersFromPage(this: MangaScraper, manga: Manga, page: number, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
     const uri = new URL(`${manga.Identifier}?page=${page}`, this.URI);
     const data = await FetchCSS<HTMLAnchorElement>(new Request(uri), query);
     return data.map(element => {
