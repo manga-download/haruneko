@@ -14,7 +14,7 @@ type APIManga = {
     episodes: APIChapter[]
 }
 
-type NEXT_Manga = {
+type NextManga = {
     pageProps: {
         data: {
             manga: APIManga
@@ -61,7 +61,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = new URL(url).pathname;
         const uri = new URL(`/_next/data/${this.nextBuild}${slug}.json`, this.URI);
-        const { pageProps: { data: { manga } } } = await FetchJSON<NEXT_Manga>(new Request(uri));
+        const { pageProps: { data: { manga } } } = await FetchJSON<NextManga>(new Request(uri));
         return new Manga(this, provider, slug, manga.name.trim());
 
     }
@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`/_next/data/${this.nextBuild}${manga.Identifier}.json`, this.URI);
         const request = new Request(uri);
-        const { pageProps: { data: { manga: { episodes } } } } = await FetchJSON<NEXT_Manga>(request);
+        const { pageProps: { data: { manga: { episodes } } } } = await FetchJSON<NextManga>(request);
         return episodes.map(chapter => new Chapter(this, manga, chapter.slug, chapter.name.trim()));
     }
 

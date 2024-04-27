@@ -47,9 +47,11 @@ const pageScript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://fetch.mangazure.com';
+
     public constructor() {
         super('mangazure', 'Mangazure', 'https://www.mangazure.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
+
     public override get Icon() {
         return icon;
     }
@@ -60,7 +62,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const title = await FetchWindowScript<string>(new Request(url), '$bookTitle', 500);
-        return new Manga(this, provider, this.convertToSlug(title), title);
+        return new Manga(this, provider, this.ConvertToSlug(title), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -78,7 +80,7 @@ export default class extends DecoratableMangaScraper {
                     }
                 });
                 const results = await FetchJSON<APIitem[]>(request);
-                results.forEach(manga => mangaList.push(new Manga(this, provider, this.convertToSlug(manga.title), this.cleanMangaTitle(manga.title))));
+                results.forEach(manga => mangaList.push(new Manga(this, provider, this.ConvertToSlug(manga.title), this.CleanMangaTitle(manga.title))));
                 run = results.length > 0;
             }
         }
@@ -97,11 +99,11 @@ export default class extends DecoratableMangaScraper {
         return chapters.map(chapter => new Chapter(this, manga, new URL(chapter.url).pathname, chapter.title.replace(manga.Title + ' -', '').trim()));
     }
 
-    cleanMangaTitle(title: string): string {
+    private CleanMangaTitle(title: string): string {
         return title.replace('- TANITIM', '').trim();
     }
 
-    convertToSlug(title: string): string {
-        return this.cleanMangaTitle(title).trim().toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
+    private ConvertToSlug(title: string): string {
+        return this.CleanMangaTitle(title).trim().toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
     }
 }

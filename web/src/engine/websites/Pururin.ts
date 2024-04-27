@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers
 import * as Common from './decorators/Common';
 import {FetchCSS } from '../platform/FetchProvider';
 
-type jsonImg = {
+type JsonImg = {
     directory: string,
         images: {
             page: number,
@@ -42,7 +42,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(chapter.Identifier, this.URI);
         const request = new Request(uri.href);
         const data = await FetchCSS(request, '.img-viewer');
-        const imgdata: jsonImg = JSON.parse(data[0].dataset['img']);
+        const imgdata: JsonImg = JSON.parse(data[0].dataset['img']);
         const server = data[0].dataset['svr'];
         const directory = imgdata.directory;
         return imgdata.images.map(page => new Page(this, chapter, new URL(`${directory}/${page.filename}`, server)));
