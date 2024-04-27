@@ -42,6 +42,7 @@ export default class extends DecoratableMangaScraper {
     private readonly partsWidth = 240;
     private readonly partsHeight = 240;
     private readonly decodeKey = 'wwwave-bago';
+
     public constructor() {
         super('mangadon', 'Mangadon', 'https://mangadon.me', Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official);
     }
@@ -90,7 +91,6 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await this.imageTaskPool.Add(async () => {
 
-            //Compute cookie data for image request, otherwise we got a 403
             const cookiesData = page.Parameters as CookieSigner;
             const cookies: string[] = [];
             Object.keys(cookiesData).forEach(name => {
@@ -117,8 +117,12 @@ export default class extends DecoratableMangaScraper {
             const numPieces = numCols * numLines;
             const m: string[] = [];
 
+            async function sha256(text: string): Promise<string> {
+                return Buffer.from(await crypto.subtle.digest('SHA-256', Buffer.from(text))).toString('hex');
+            }
+
             for (let i = 0; i <= numPieces - 1; i++) {
-                m.push(await this.sha256(''.concat(i.toString(), '_').concat(this.decodeKey)));
+                m.push(await sha256(''.concat(i.toString(), '_').concat(this.decodeKey)));
             }
             const v = Array.from(m).sort();
             const f: number[] = [];
@@ -135,10 +139,5 @@ export default class extends DecoratableMangaScraper {
                 ctx.drawImage(image, r, l, this.partsWidth, this.partsHeight, d, m, this.partsWidth, this.partsHeight);
             }
         });
-
-    }
-
-    async sha256(str: string): Promise<string> {
-        return Buffer.from(await crypto.subtle.digest('SHA-256', Buffer.from(str))).toString('hex');
     }
 }
