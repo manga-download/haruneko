@@ -6,7 +6,7 @@ import { FetchHTML } from '../platform/FetchProvider';
 
 type JSONImages = {
     [id: number]: {
-        image :string
+        image: string
     }
 }
 function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
@@ -20,7 +20,7 @@ function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.infox h1.entry-title')
 @Common.MangasMultiPageCSS('/manga-list/page/{page}/', 'div.animepost div.animposx a', 1, 1, 0, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS('div#chapter_list ul li a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div#chapter_list ul li a[title]', ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -34,7 +34,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(chapter.Identifier, this.URI);
-        chapterUrl.searchParams.set('t',Math.floor(Date.now() / 1000).toString());
+        chapterUrl.searchParams.set('t', Math.floor(Date.now() / 1000).toString());
         const dom = await FetchHTML(new Request(chapterUrl));
         const files: JSONImages = JSON.parse(dom.documentElement.innerHTML.match(/var\s*chapter\s*=\s({.*}});/m)[1]);
         return Object.values(files).map(file => new Page(this, chapter, new URL(file.image, this.URI)));
