@@ -29,13 +29,13 @@ export default class extends DecoratableMangaScraper {
         const nonce = await FetchWindowScript<string>(new Request(this.URI), 'misha_loadmore_params.nonce', 500);
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider, nonce);
+            const mangas = await this.GetMangasFromPage(page, provider, nonce);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin, nonce: string) {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin, nonce: string) {
         const uri = new URL('/wp-admin/admin-ajax.php', this.URI);
         const body = new URLSearchParams({
             action: 'loadmore',
