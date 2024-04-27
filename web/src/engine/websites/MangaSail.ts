@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 function IsImage(page: string) {
-    return ['png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp'].includes(page.toLowerCase().split('.').pop());
+    return [ 'png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp' ].includes(page.toLowerCase().split('.').pop());
 }
 
 @Common.MangaCSS(/^{origin}\/content\/[^/]+$/, 'div.main-content-inner h1.page-header')
@@ -24,14 +24,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterslist = [];
         for (let page = 0, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(page, manga);
+            const chapters = await this.GetChaptersFromPage(page, manga);
             chapters.length > 0 && !this.EndsWith(chapterslist, chapters) ? chapterslist.push(...chapters) : run = false;
         }
         return chapterslist;
-
     }
 
-    private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
+    private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier + '?page=' + page, this.URI).href;
         const request = new Request(url);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'table.chlist tr td:first-of-type a');
@@ -40,7 +39,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
         const data: Page[] = await Common.FetchPagesSinglePageJS.call(this, chapter, 'Drupal.settings.showmanga.paths');
-        return data.filter(page => IsImage(page.Link.href)); //there may be junk element, like <div> or <script>
+        return data.filter(page => IsImage(page.Link.href));
     }
 
     private EndsWith(target: Chapter[], source: Chapter[]) {
@@ -49,5 +48,4 @@ export default class extends DecoratableMangaScraper {
         }
         return target[target.length - 1].Identifier === source[source.length - 1].Identifier;
     }
-
 }
