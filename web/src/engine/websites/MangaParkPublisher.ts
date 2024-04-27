@@ -61,11 +61,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
         const encrypted = await data.arrayBuffer();
-        const decrypted = this.xor(new Uint8Array(encrypted), page.Parameters.key as string);
+        const decrypted = this.Xor(new Uint8Array(encrypted), page.Parameters.key as string);
         return Common.GetTypedData(decrypted);
     }
 
-    private xor(t: Uint8Array, key: string) {
+    private Xor(t: Uint8Array, key: string) {
         const e = window.atob(key).split('').map(s => s.charCodeAt(0));
         const r = t.length;
         const i = e.length;
@@ -75,5 +75,4 @@ export default class extends DecoratableMangaScraper {
             o[a] = t[a] ^ e[a % i];
         return o;
     }
-
 }

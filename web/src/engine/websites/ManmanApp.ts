@@ -21,7 +21,6 @@ function ChapterExtractor(element: HTMLLIElement) {
 
 @Common.MangaCSS(/^{origin}\/comic-[\d]+\.html$/, 'div.cartoon li.title', Common.ElementLabelExtractor('span'))
 @Common.MangasMultiPageCSS('/comic/category_{page}.html', 'div.classification li.title a')
-
 @Common.PagesSinglePageCSS('img.man_img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -35,16 +34,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        //The Ajax call doesnt work with page 1, so we have to fetch page 1 manually
+        // The Ajax call doesnt work with page 1, so we have to fetch page 1 manually
         const chapterslist = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'ul.comic_list li', ChapterExtractor);
         for (let page = 2, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(page, manga);
+            const chapters = await this.GetChaptersFromPage(page, manga);
             chapters.length > 0 ? chapterslist.push(...chapters) : run = false;
         }
         return chapterslist;
     }
 
-    async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
+    private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const mangaId = manga.Identifier.match(/(\d+).html/)[1];
         const request = new Request(new URL('/works/comic-list-ajax.html', this.URI).href, {
             method: 'POST',
