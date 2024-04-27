@@ -9,7 +9,6 @@ import * as Mojo from './decorators/MojoPortalComic';
 @Common.ChaptersSinglePageCSS(Mojo.queryChapter)
 @Mojo.PagesSinglePageCSS([], Mojo.queryPages)
 @Common.ImageAjax(true)
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

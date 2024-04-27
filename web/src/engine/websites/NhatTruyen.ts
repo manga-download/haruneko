@@ -13,7 +13,6 @@ import * as Mojo from './decorators/MojoPortalComic';
 @Common.ImageAjax(true)
 
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('nhattruyen', `NhatTruyen`, 'https://nhattruyento.com', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
         //this.Settings.url = new Text('urloverride', R.Plugin_Settings_UrlOverride, R.Plugin_Settings_UrlOverrideInfo, this.URI.origin);
