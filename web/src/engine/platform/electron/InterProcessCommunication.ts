@@ -1,5 +1,5 @@
 import type { SettingsManager } from '../../SettingsManager';
-import type { PlatformIPC, TypeFromInterface } from '../InterProcessCommunication';
+import type { PlatformIPC, TypeFromInterface } from '../InterProcessCommunicationTypes';
 
 /**
  * Inter Process Communication for Electron (main process)

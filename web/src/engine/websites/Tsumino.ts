@@ -34,13 +34,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(provider, page);
+            const mangas = await this.GetMangasFromPage(provider, page);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async getMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
+    private async GetMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
         const uri = new URL('/Search/Operate/', this.URI);
         const params = new URLSearchParams({
             type: 'Book',
@@ -108,6 +108,5 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(link);
         const pages = await FetchWindowScript<string[]>(request, script, 500);
         return pages.map(page => new Page(this, chapter, new URL(page), { Referer: referer.url }));
-
     }
 }

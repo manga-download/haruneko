@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import type { VariantResource } from '../ILocale';
 import base from "./en_US";
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -24,11 +23,11 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Media_Select: "Wählen Sie ein Medium",
   Frontend_Media_Selection: "Medienauswahl",
   Frontend_Media_PasteLink_NotFoundError: "Der übergebene Link wird nicht unterstützt (es wurde keine passende Webseite gefunden): {0}",
-  Frontend_Item: 'Item',
-  Frontend_Items: 'items',
-  Frontend_Item_List: 'Item list',
-  Frontend_Item_Select: 'Select an item',
-  Frontend_Item_Selection: 'Item selection',
+  Frontend_Item: "Eintrag",
+  Frontend_Items: "Einträge",
+  Frontend_Item_List: "Liste",
+  Frontend_Item_Select: "Bitte wählen",
+  Frontend_Item_Selection: "Auswahl",
   // [SECTION]: Frontend Classic
   Frontend_Classic_Label: "Klassisch",
   Frontend_Classic_Description: "Die Standard Benutzeroberfläche basiert größtenteils auf der alten Version",
@@ -86,8 +85,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: "Schaltet die Sichtbarkeit der Liste mit den Downloads ein/aus",
   Frontend_FluentCore_Settings_ShowSplashScreen_Label: "Startbild anzeigen",
   Frontend_FluentCore_Settings_ShowSplashScreen_Description: "Schaltet das Startbild Fensters an/aus",
-  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label: 'Show FetchBrowser Windows',
-  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description: 'This developer focused option toggles the visibility of the browser windows for fetching data in the background on/off',
+  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label: "Zeige das versteckte Browser-Fenster",
+  Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description: "Diese Entwickler-fokussierte Option schaltet die Sichtbarkeit des Browserfensters für das Abrufen von Daten im Hintergrund ein oder aus",
   //
   Frontend_FluentCore_SettingsDialog_Title: "Einstellungen",
   Frontend_FluentCore_SettingsDialog_CloseButton_Label: "Fertig",
@@ -155,7 +154,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_NewContent_Check: "Prüfung auf neue Inhalte",
   Settings_NewContent_CheckInfo: "Prüft automatisch, ob neue Inhalte für die Titel aus den Lesezeichen verfügbar sind",
   Settings_NewContent_CheckPeriod: "Zeitspanne (Minuten)",
-  Settings_NewContent_CheckPeriodInfo: 'How many minutes before checking again for new content',
+  Settings_NewContent_CheckPeriodInfo: "Das Intervall in dem nach neuen Inhalten gesucht wird (Minuten)",
   Settings_NewContent_Notify: "Benachrichtigung",
   Settings_NewContent_NotifyInfo: "Aktiviert die Desktop-Benachrichtigung für neue Inhalte",
   Settings_Global_RPCEnabled: "RPC aktivieren",
@@ -221,14 +220,14 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Language_Vietnamese: "🇻🇳Vietnamesisch",
   Tags_Others: "Sonstige",
   // [SECTION]: Annotations
-  Annotations_ViewProgress: 'Progress',
+  Annotations_ViewProgress: "Fortschritt",
   Annotations_ViewProgressDescription: 'A custom status indicating the reading/viewing progression',
   Annotations_ViewProgress_None: '-',
-  Annotations_ViewProgress_NoneDescription: 'Not yet read/viewed',
+  Annotations_ViewProgress_NoneDescription: "Noch nicht gelesen/angesehen",
   Annotations_ViewProgress_Viewed: 'x',
-  Annotations_ViewProgress_ViewedDescription: 'Already read/viewed',
+  Annotations_ViewProgress_ViewedDescription: "Bereits gelesen/angesehen",
   Annotations_ViewProgress_Current: 'o',
-  Annotations_ViewProgress_CurrentDescription: 'Currently reading/viewing',
+  Annotations_ViewProgress_CurrentDescription: "Aktuell am lesen/ansehen",
   // [SECTION]: Trackers
   Tracker_Kitsu_Settings_Username: "Benutzername",
   Tracker_Kitsu_Settings_UsernameInfo: "Benutzername für die automatische Anmeldung bei Kitsu",
@@ -241,21 +240,21 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Settings_ThrottlingInteractionInfo: "Einschränkung der Anzahl von Abfragen an die Webseite zur Prävention einer temporären oder dauerhaften Sperrung",
   Plugin_Settings_UrlOverride: 'Url Override',
   Plugin_Settings_UrlOverrideInfo: 'Use this URL as current domain for this website',
-  Plugin_Settings_ImageFormat: 'Preferred Image Format',
-  Plugin_Settings_ImageFormatInfo: 'Download pictures using this file format if possible',
+  Plugin_Settings_ImageFormat: "Bevorzugtes Bild-Format",
+  Plugin_Settings_ImageFormatInfo: "Wenn möglich Bilder mit diesem Dateiformat herunterladen",
   Plugin_Common_MangaIndex_NotSupported: "Ein Inhaltsverzeichnis kann für diese Webseite nicht erstellt werden. Benutze die Kopieren & Einfügen Funktionalität um direkt auf den Inhalt einer URL zuzugreifen!",
   Plugin_Common_Chapter_UnavailableError: "Das Kapitel ist nicht verfügbar (gekauft/freigeschaltet/öffentlich)!",
   Plugin_Common_Chapter_InvalidError: "Fehler beim extrahieren der einzelnen Seiten aus dem Kapitel!",
   Plugin_Common_Preferred_Language: 'Preferred Language for the website',
   Plugin_Common_Preferred_LanguageInfo: 'Preferred language for website content.',
-  Plugin_MissingManga_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
+  Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
   Plugin_MissingWebsite_UpdateError: "Fehler bei der Aktualisierung des Inhaltsverzeichnis für eine nicht-existierende Webseite!",
   Plugin_MissingWebsiteEntry_UpdateError: "Fehler bei der Aktualisierung des Medienverzeichnis für eine nicht-existierende Webseite!",
   Plugin_SheepScanlations_Settings_Username: "Benutzername",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Benutzername für die automatische Anmeldung bei der Webseite",
   Plugin_SheepScanlations_Settings_Password: "Passwort",
   Plugin_SheepScanlations_Settings_PasswordInfo: "Passwort für die automatische Anmeldung bei der Webseite",
-  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
-  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN'
+  Plugin_CopyManga_Settings_GlobalCDN: "Globalen Server verwenden",
+  Plugin_CopyManga_Settings_GlobalCDNInfo: "Für die Anfragen wird der globale Server anstelle des regionalen Servers verwendet"
 };
 export default translations;

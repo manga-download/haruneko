@@ -1,4 +1,4 @@
-import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunication';
+import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
 import type { RPCServer } from '../rpc/Server';
 import * as fs from 'node:fs/promises';
 
@@ -30,7 +30,7 @@ export class IPC implements PlatformIPC {
     private Listen(payload: IPCPayload<AppIPC>, sender: chrome.runtime.MessageSender, callback: (response: IPCResponse) => void): boolean | void {
         //console.log('App::IPC.Received', payload, sender, callback);
         if(payload.method in this) {
-            this[payload.method].call<WebIPC, IPCParameters, Promise<IPCResponse>>(this, ...payload.parameters).then(callback);
+            this[payload.method].call(this, ...payload.parameters).then(callback);
             return true;
         } else {
             console.error('No IPC callback handler found for:', payload.method);
@@ -60,7 +60,8 @@ export class IPC implements PlatformIPC {
                 //storeId: cookie.storeId,
             });
         }
-
+        // FIXME: navigator.userAgent in Background Script is Node.js/21 => https://github.com/nwjs/nw.js/issues/8162
+        //console.log(`User-Agent Change (${userAgent !== navigator.userAgent})`, navigator.userAgent, '=>', userAgent);
         if(userAgent !== navigator.userAgent) {
             // TODO: Is it safe to assume this is always correct manifest path?
             const file = 'package.json';

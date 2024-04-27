@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import type { VariantResource } from '../ILocale';
 import base from "./en_US";
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -248,7 +247,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
   Plugin_Common_Preferred_Language: 'Preferred Language for the website',
   Plugin_Common_Preferred_LanguageInfo: 'Preferred language for website content.',
-  Plugin_MissingManga_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
+  Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
   Plugin_MissingWebsite_UpdateError: 'Failed to update the content index for a non-existing website!',
   Plugin_MissingWebsiteEntry_UpdateError: 'Failed to update the media index for a non-existing website!',
   Plugin_SheepScanlations_Settings_Username: "Nama Pengguna",
