@@ -15,7 +15,6 @@ import * as ReadM from './decorators/ReadMangaLive';
 @ReadM.PagesSinglePageJS()
 @ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('allhentai', `AllHentai`, 'https://20.allhen.online', Tags.Language.Russian, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
         //this.Settings.url = new Text('UrlOverride', R.Plugin_Settings_UrlOverride, R.Plugin_Settings_UrlOverrideInfo, this.URI.href);

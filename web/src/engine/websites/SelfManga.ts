@@ -10,7 +10,6 @@ import * as ReadM from './decorators/ReadMangaLive';
 @ReadM.PagesSinglePageJS()
 @ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('selfmanga', `SelfManga`, 'https://selfmanga.live', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
