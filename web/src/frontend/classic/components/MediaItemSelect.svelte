@@ -368,10 +368,6 @@
         display: grid;
         grid-template-columns: auto 1fr;
     }
-    #LanguageFilter :global(.bx--list-box__menu-item__option)::first-letter,
-    #LanguageFilter :global(.bx--list-box__label)::first-letter {
-        font-family: BabelStoneFlags;
-    }
     #ItemFilter {
         grid-area: ItemFilter;
     }

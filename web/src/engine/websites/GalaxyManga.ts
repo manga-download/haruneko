@@ -61,13 +61,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const request = new Request(`${this.apiurl}/api/v1/webtoon/homepage/latest/home?page=${page}`);
         const { data } = await FetchJSON<APIMangas>(request);
         return data.map(manga => new Manga(this, provider, String(manga.id), manga.title));
@@ -84,5 +84,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchJSON<APIPages>(request);
         return data.chapter.chapterData.webtoon.map(image => new Page(this, chapter, new URL(`/storage/${image}`, this.apiurl)));
     }
-
 }

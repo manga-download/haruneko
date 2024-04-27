@@ -26,15 +26,15 @@ export class AnimePlugin extends MediaContainer<Anime> {
     }
 
     public get Entries(): Anime[] {
-        if(this._entries.length === 0) {
+        if(super.Entries.length === 0) {
             // TODO: load entries from cache ...
             const content = localStorage.getItem(this.EntriesKey) || '[]';
             // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
             //                  chrome.storage.local.get(this.EntriesKey, data => data[this.EntriesKey]);
             const animes = JSON.parse(content) as { id: string, title: string }[];
-            this._entries = animes.map(anime => this.CreateEntry(anime.id, anime.title));
+            super.Entries = animes.map(anime => this.CreateEntry(anime.id, anime.title));
         }
-        return this._entries;
+        return this.Entries;
     }
 
     public async Initialize(): Promise<void> {
@@ -53,9 +53,9 @@ export class AnimePlugin extends MediaContainer<Anime> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        this._entries = await this._scraper.FetchAnimes(this);
+        super.Entries = await this._scraper.FetchAnimes(this);
         // TODO: store entries in cache ...
-        const animes = this._entries.map(entry => {
+        const animes = super.Entries.map(entry => {
             return {
                 id: entry.Identifier,
                 title: entry.Title
@@ -83,7 +83,7 @@ export class Anime extends MediaContainer<Episode> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        this._entries = await this._scraper.FetchEpisodes(this);
+        super.Entries = await this._scraper.FetchEpisodes(this);
     }
 }
 
@@ -98,7 +98,7 @@ export class Episode extends MediaContainer<Video> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        this._entries = await this._scraper.FetchVideos(this);
+        super.Entries = await this._scraper.FetchVideos(this);
     }
 }
 

@@ -22,12 +22,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pagesList: Page[] = [];
         for (let page = 1, run = true; run; page++) {
-            const pages = await this.getPagesFromChapterPage(page, chapter);
+            const pages = await this.GetPagesFromChapterPage(page, chapter);
             pages.length > 0 ? pagesList.push(...pages) : run = false;
         }
         return pagesList;
     }
-    async getPagesFromChapterPage(page: number, chapter: Chapter): Promise<Page[]> {
+
+    private async GetPagesFromChapterPage(page: number, chapter: Chapter): Promise<Page[]> {
         const url = new URL(chapter.Identifier, this.URI);
         url.searchParams.set('page', page.toString());
         const data = await FetchCSS<HTMLImageElement>(new Request(url), MH.queryPages);

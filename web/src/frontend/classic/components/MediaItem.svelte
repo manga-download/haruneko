@@ -181,7 +181,6 @@
         --cds-icon-01: var(--cds-hover-secondary);
     }
     .multilang {
-        font-family: BabelStoneFlags;
         opacity: 0.7;
         margin-right: 0.4em;
     }

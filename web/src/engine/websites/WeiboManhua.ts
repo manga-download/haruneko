@@ -37,16 +37,11 @@ type JSONComic = {
     comic_id: string,
     comic_name: string,
     name: string,
-  //  chapter_num: number,
 };
 
 type JSONChapter = {
     chapter_id: string,
     chapter_name: string,
-    /*image_num: number,
-    chapter_pay_price: string,
-    chapter_pay_vcoin: number,
-    charge_end_time: number,*/
 };
 
 type JSONContent = {
@@ -56,8 +51,6 @@ type JSONContent = {
 };
 
 type JSONPage = {
-    /*image_id: string,
-    image_origin_id: string,*/
     mobileWebpImgUrl: string,
     mobileImgUrl: string,
     newImgUrl : string,
@@ -91,13 +84,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangalist.push(...mangas) : run = false;
         }
         return mangalist;
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL(`/wbcomic/comic/filter_result?page_num=${page}&rows_num=250&cate_id=0&end_status=0&comic_pay_status=0&_request_from=pc`, apiURL);
         const request = new Request(uri.href);
         const data = await FetchJSON<APIMangas>(request);

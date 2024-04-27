@@ -40,11 +40,11 @@ export default class extends DecoratableMangaScraper {
         const genres = ['전체', 'BL', '로맨스', '성인', 'GL', '드라마', '코믹'];
         const days = ['월', '화', '수', '목', '금', '토', '일', '열흘', '기타'];
         const mangaList: Manga[] = [];
-        mangaList.push(... await this.fetchMangasByDays(provider, days));
-        mangaList.push(... await this.fetchMangasByGenres(provider, genres));
+        mangaList.push(... await this.FetchMangasByDays(provider, days));
+        mangaList.push(... await this.FetchMangasByGenres(provider, genres));
         return mangaList.distinct();
     }
-    async fetchMangasByDays(provider: MangaPlugin, tabs: string[]) {
+    private async FetchMangasByDays(provider: MangaPlugin, tabs: string[]) {
         const mangaList = [];
         for (const menuName of tabs) {
             const url = new URL(`/api/comic/tab?which=days&locale=ko&menuName=${menuName}&start=&count=`, this.URI);
@@ -61,7 +61,7 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
 
-    async fetchMangasByGenres(provider: MangaPlugin, genres: string[]): Promise<Manga[]> {
+    private async FetchMangasByGenres(provider: MangaPlugin, genres: string[]): Promise<Manga[]> {
         const mangaList = [];
         const mangasPerPage = 200;
         for (const genre of genres) {

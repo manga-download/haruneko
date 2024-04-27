@@ -48,7 +48,7 @@ describe('Localization', () => {
             expect(locale.Locale_deDE()).toBe('🇩🇪 Deutsch (DE)');
             expect(locale.Locale_enUS()).toBe('🇺🇸 English (US)');
             expect(locale.Locale_esES()).toBe('🇪🇸 Español (ES)');
-            expect(locale.Locale_filPH()).toBe('🇵🇭 Pilipino (PH)');
+            expect(locale.Locale_filPH()).toBe('🇵🇭 Filipino (PH)');
             expect(locale.Locale_frFR()).toBe('🇫🇷 Français (FR)');
             expect(locale.Locale_hiIN()).toBe('🇮🇳 हिंदी (IN)');
             expect(locale.Locale_idID()).toBe('🇮🇩 Indonesia (ID)');
