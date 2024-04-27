@@ -35,7 +35,7 @@
                         <span title={bookmark.Title}>{bookmark.Title}</span>
                     </Tag>
 
-                    {#await bookmark.getUnflaggedContent() then value}
+                    {#await bookmark.GetUnflaggedContent() then value}
                         {#if value.length > 0}
                             <Tag
                                 class="suggestcount"

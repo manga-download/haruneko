@@ -29,8 +29,8 @@ export class LazyScroll extends FASTElement {
     private scrolling = false;
     @observable template: ViewTemplate;
     @observable visibles: unknown[] = [];
-    @observable items: unknown[];
-    itemsChanged() {
+    @observable Items: unknown[];
+    ItemsChanged() {
         this.visibles = [];
         this.LoadNext();
     }
@@ -40,7 +40,7 @@ export class LazyScroll extends FASTElement {
             this.scrolling = true;
             window.requestAnimationFrame(() => {
                 if(this.scrollTop + this.clientHeight === this.scrollHeight) {
-                    this.visibles = this.items?.slice(0, this.visibles.length + 100) ?? [];
+                    this.visibles = this.Items?.slice(0, this.visibles.length + 100) ?? [];
                 }
                 this.scrolling = false;
             });

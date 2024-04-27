@@ -32,13 +32,13 @@ export default class extends DecoratableMangaScraper {
         const token = (await FetchCSS<HTMLMetaElement>(new Request(new URL('/liste-mangas', this.URI)), 'meta[name="csrf-token"]'))[0].content;
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider, token);
+            const mangas = await this.GetMangasFromPage(page, provider, token);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList.distinct();
     }
 
-    async getMangasFromPage(page: number, provider: MangaPlugin, token: string): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin, token: string): Promise<Manga[]> {
         const endpoint = new URL('/liste-mangas', this.URI);
         const request = new Request(endpoint, {
             method: 'POST',
@@ -56,5 +56,4 @@ export default class extends DecoratableMangaScraper {
         const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('a[class= ""]')];
         return nodes.map(manga => new Manga(this, provider, manga.pathname, manga.text.trim()));
     }
-
 }
