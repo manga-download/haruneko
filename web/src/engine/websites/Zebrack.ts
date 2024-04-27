@@ -119,21 +119,22 @@ export default class extends DecoratableMangaScraper {
         if (/^\/magazine\//.test(uri.pathname)) {
             const magazineId = uri.pathname.match(/\/magazine\/(\d+)/)[1];
             const magazineIssueId = uri.pathname.match(/\/issue\/(\d+)/)[1];
-            const data = await this.fetchMagazineDetail(magazineId, magazineIssueId);
+            const data = await this.FetchMagazineDetail(magazineId, magazineIssueId);
             return new Manga(this, provider, uri.pathname, `${data.magazine.magazineName} ${data.magazine.issueName}`);
 
         } else if (/^\/gravure\//.test(uri.pathname)) {
             const gravureId = uri.pathname.match(/\/gravure\/(\d+)$/)[1];
-            const data = await this.fetchGravureDetail(gravureId);
+            const data = await this.FetchGravureDetail(gravureId);
             return new Manga(this, provider, uri.pathname, data.gravure.name.trim());
         }
 
         const titleId = uri.pathname.match(/\/title\/(\d+)/)[1];
-        const data = await this.fetchTitleDetail(titleId);
+        const data = await this.FetchTitleDetail(titleId);
         return new Manga(this, provider, uri.pathname, data.titleDetailView.titleName.trim());
 
     }
-    async fetchMagazineDetail(magazineId: string, magazineIssueId: string): Promise<MagazineDetailViewV3> {
+
+    private async FetchMagazineDetail(magazineId: string, magazineIssueId: string): Promise<MagazineDetailViewV3> {
         const uri = new URL('/api/v3/magazine_issue_detail', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('magazine_id', magazineId);
@@ -142,7 +143,7 @@ export default class extends DecoratableMangaScraper {
         return FetchProto<MagazineDetailViewV3>(request, protoTypes, 'Zebrack.MagazineDetailViewV3');
     }
 
-    async fetchGravureDetail(gravureId: string): Promise<GravureDetailViewV3> {
+    private async FetchGravureDetail(gravureId: string): Promise<GravureDetailViewV3> {
         const uri = new URL('/api/v3/gravure_detail', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('gravure_id', gravureId);
@@ -150,7 +151,7 @@ export default class extends DecoratableMangaScraper {
         return FetchProto<GravureDetailViewV3>(request, protoTypes, 'Zebrack.GravureDetailViewV3');
     }
 
-    async fetchTitleDetail(titleId: string): Promise<ZebrackResponse> {
+    private async FetchTitleDetail(titleId: string): Promise<ZebrackResponse> {
         const uri = new URL('/api/browser/title_detail', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('title_id', titleId);
@@ -166,7 +167,7 @@ export default class extends DecoratableMangaScraper {
         }
         if (type === 'chapter') {
             const id = parts[2];
-            const data = await this.fetchChapterList(id);
+            const data = await this.FetchChapterList(id);
             const chapters: ChapterV3[] = [];
             data.groups.forEach(group => {
                 chapters.push(...group.chapters);
@@ -186,14 +187,14 @@ export default class extends DecoratableMangaScraper {
 
         if (type === 'volume_list' || type === 'volume') {
             const id = parts[2];
-            const data = await this.fetchVolumeList(id);
+            const data = await this.FetchVolumeList(id);
             const volumes = data.volumeListView.volumes;
             return volumes.map(volume => new Chapter(this, manga, `volume/${volume.titleId}/${volume.volumeId}`, volume.volumeName));
         }
         return [];
     }
 
-    async fetchVolumeList(id: string): Promise<ZebrackResponse> {
+    private async FetchVolumeList(id: string): Promise<ZebrackResponse> {
         const uri = new URL('/api/browser/title_volume_list', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('title_id', id);
@@ -201,7 +202,7 @@ export default class extends DecoratableMangaScraper {
         return FetchProto<ZebrackResponse>(request, protoTypes, this.responseRootType);
     }
 
-    async fetchChapterList(id: string): Promise<TitleChapterListViewV3> {
+    private async FetchChapterList(id: string): Promise<TitleChapterListViewV3> {
         const uri = new URL('/api/v3/title_chapter_list', this.apiURL);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('title_id', id);
@@ -215,7 +216,7 @@ export default class extends DecoratableMangaScraper {
         const secretKey = await FetchWindowScript<string>(request, `localStorage.getItem('device_secret_key') || ''`);
 
         if (type === 'chapter') {
-            const data = await this.fetchChapterViewer(titleId, chapterId, secretKey);
+            const data = await this.FetchChapterViewer(titleId, chapterId, secretKey);
             if (data.pages) {
                 return data.pages
                     .filter(page => page.image && page.image.imageUrl)
@@ -224,14 +225,14 @@ export default class extends DecoratableMangaScraper {
         }
 
         if (type === 'gravure') {
-            const data = await this.fetchGravureViewer(titleId, secretKey);
+            const data = await this.FetchGravureViewer(titleId, secretKey);
             if (data.images) {
                 return data.images.map(image => new Page(this, chapter, new URL(image.imageUrl), { encryptionKey: image.encryptionKey }));
             }
         }
 
         if (type === 'magazine') {
-            const data = await this.fetchMagazineViewer(titleId, chapterId, secretKey);
+            const data = await this.FetchMagazineViewer(titleId, chapterId, secretKey);
             if (data.magazineViewerView) {
                 return data.magazineViewerView.images
                     .filter(image => image && image.imageUrl)
@@ -240,7 +241,7 @@ export default class extends DecoratableMangaScraper {
         }
 
         if (type === 'volume') {
-            const data = await this.fetchVolumeViewer(titleId, chapterId, secretKey);
+            const data = await this.FetchVolumeViewer(titleId, chapterId, secretKey);
             if (data.pages) {
                 return data.pages
                     .filter(page => page.image && page.image.imageUrl)
@@ -251,7 +252,7 @@ export default class extends DecoratableMangaScraper {
         throw new Exception(R.Plugin_Common_Chapter_InvalidError);
     }
 
-    async fetchVolumeViewer(titleId: string, volumeId: string, secretKey : string) {
+    private async FetchVolumeViewer(titleId: string, volumeId: string, secretKey : string) {
         const uri = new URL('/api/v3/manga_volume_viewer', this.apiURL);
         uri.searchParams.set('secret', secretKey);
         uri.searchParams.set('is_trial', '0');
@@ -268,7 +269,7 @@ export default class extends DecoratableMangaScraper {
         return data;
     }
 
-    async fetchMagazineViewer(magazineId: string, magazineIssueId: string, secretKey: string): Promise<ZebrackResponse> {
+    private async FetchMagazineViewer(magazineId: string, magazineIssueId: string, secretKey: string): Promise<ZebrackResponse> {
         const uri = new URL('/api/browser/magazine_viewer', this.apiURL);
         uri.searchParams.set('secret', secretKey);
         uri.searchParams.set('is_trial', '0');
@@ -285,7 +286,7 @@ export default class extends DecoratableMangaScraper {
         return data;
     }
 
-    async fetchGravureViewer(gravureId: string, secretKey: string): Promise<GravureViewerViewV3> {
+    private async FetchGravureViewer(gravureId: string, secretKey: string): Promise<GravureViewerViewV3> {
         const uri = new URL('/api/v3/gravure_viewer', this.apiURL);
         uri.searchParams.set('secret', secretKey);
         uri.searchParams.set('is_trial', '0');
@@ -301,7 +302,7 @@ export default class extends DecoratableMangaScraper {
         return data;
     }
 
-    async fetchChapterViewer(titleId: string, chapterId: string, secretKey: string): Promise<ChapterViewerViewV3> {
+    private async FetchChapterViewer(titleId: string, chapterId: string, secretKey: string): Promise<ChapterViewerViewV3> {
         const uri = new URL('/api/v3/chapter_viewer', this.apiURL);
         const params = new URLSearchParams();
         params.set('secret', secretKey);

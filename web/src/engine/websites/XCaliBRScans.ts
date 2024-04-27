@@ -9,7 +9,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import DeProxify from '../transformers/ImageLinkDeProxifier';
 import DeScramble from '../transformers/ImageDescrambler';
 
-type pageScriptResult = {
+type PageScriptResult = {
     imagz: string[],
     scrambled: number
 }
@@ -76,7 +76,7 @@ export default class extends DecoratableMangaScraper {
 
         const uri = new URL(chapter.Identifier, this.URI);
         const request = new Request(uri.href);
-        const data = await FetchWindowScript<pageScriptResult>(request, pagescript, 2500);
+        const data = await FetchWindowScript<PageScriptResult>(request, pagescript, 2500);
         const piclist = data.imagz.map(link => DeProxify(new URL(link)).href);
         switch (data.scrambled) {
 
