@@ -15,7 +15,7 @@ export const contentscreen = writable<string>('/');
 
 export const bookmarksToContinue = readable<Bookmark[]>([], (set) => {
     async function refreshSuggestions() {
-        set(await HakuNeko.BookmarkPlugin.getEntriesWithUnflaggedContent());
+        set(await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent());
     }
     refreshSuggestions();
     const unsubcribe = checkNewContent.subscribe(shouldCheck => {

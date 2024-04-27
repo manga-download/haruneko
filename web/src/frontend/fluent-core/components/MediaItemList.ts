@@ -154,55 +154,55 @@ const template: ViewTemplate<MediaItemList> = html`
     <div id="header">
         <div id="title">${() => S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
         <div id="controls">
-            <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
+            <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
             <fluent-button
                 id="button-update-entries"
                 appearance="stealth"
-                class="${model => model.updating.includes(model.container?.Identifier) ? 'updating' : ''}"
+                class="${model => model.updating.includes(model.Container?.Identifier) ? 'updating' : ''}"
                 title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}"
-                ?disabled=${model => !model.container || model.updating.includes(model.container?.Identifier)}
+                ?disabled=${model => !model.Container || model.updating.includes(model.Container?.Identifier)}
                 :innerHTML=${() => IconSynchronize}
                 @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>
             </fluent-button>
         </div>
     </div>
     <div id="searchcontrol">
-        <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+        <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
-    <fluent-lazy-scroll id="entries" :items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
+    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
 `;
 
 @customElement({ name: 'fluent-media-item-list', template, styles })
 export class MediaItemList extends FASTElement {
 
-    @observable container?: MediaContainer<StoreableMediaContainer<MediaItem>>;
-    containerChanged() {
-        this.entries = this.container?.Entries ?? [];
+    @observable Container?: MediaContainer<StoreableMediaContainer<MediaItem>>;
+    ContainerChanged() {
+        this.Entries = this.Container?.Entries ?? [];
     }
 
-    @observable entries: StoreableMediaContainer<MediaItem>[] = [];
-    entriesChanged() {
+    @observable Entries: StoreableMediaContainer<MediaItem>[] = [];
+    EntriesChanged() {
         this.FilterEntries();
     }
-    @observable match: (text: string) => boolean = () => true;
-    matchChanged() {
+    @observable Match: (text: string) => boolean = () => true;
+    MatchChanged() {
         this.FilterEntries();
     }
     @observable filtered: StoreableMediaContainer<MediaItem>[] = [];
     @observable updating: Array<string> = [];
 
     public async FilterEntries() {
-        this.filtered = this.entries?.filter(entry => this.match(entry.Title)) ?? [];
+        this.filtered = this.Entries?.filter(entry => this.Match(entry.Title)) ?? [];
     }
 
     public async UpdateEntries(event: Event): Promise<void> {
         event.stopPropagation();
-        const container = this.container;
+        const container = this.Container;
         try {
             if(!this.updating.includes(container.Identifier)) {
                 this.updating = [ ...this.updating, container.Identifier ];
                 await container?.Update();
-                this.containerChanged();
+                this.ContainerChanged();
             }
         } catch(error) {
             console.warn(error);

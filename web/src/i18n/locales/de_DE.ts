@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-// Must keep this eslint rule for inclusion in auto-generated translations!
 import type { VariantResource } from '../ILocale';
 import base from "./en_US";
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -249,7 +247,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "Fehler beim extrahieren der einzelnen Seiten aus dem Kapitel!",
   Plugin_Common_Preferred_Language: 'Preferred Language for the website',
   Plugin_Common_Preferred_LanguageInfo: 'Preferred language for website content.',
-  Plugin_MissingManga_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
+  Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
   Plugin_MissingWebsite_UpdateError: "Fehler bei der Aktualisierung des Inhaltsverzeichnis für eine nicht-existierende Webseite!",
   Plugin_MissingWebsiteEntry_UpdateError: "Fehler bei der Aktualisierung des Medienverzeichnis für eine nicht-existierende Webseite!",
   Plugin_SheepScanlations_Settings_Username: "Benutzername",
