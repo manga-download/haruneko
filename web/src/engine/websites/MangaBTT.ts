@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-function MangaInfoExtractor(element: HTMLElement) {
+function MangaInfoExtractor(element: HTMLImageElement) {
     return {
         id: element.closest('a').pathname,
         title: element.getAttribute('alt').trim()

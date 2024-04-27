@@ -16,8 +16,8 @@ const config = {
     },
     entry: {
         index: 1,
-        size: 731_140,
-        type: 'image/webp'
+        size: 978_172,
+        type: 'image/jpeg'
     }
 };
 

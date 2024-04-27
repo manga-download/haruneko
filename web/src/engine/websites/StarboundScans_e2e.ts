@@ -15,7 +15,7 @@ const config = {
         title: 'Chapitre 45'
     },
     entry: {
-        index: 0,
+        index: 2,
         size: 1_653_851,
         type: 'image/jpeg'
     }
