@@ -9,9 +9,7 @@ import Delitoon, { type APIManga, type APIPages, type APIResult } from './Delito
 type APIMangas = {
     content: APIManga[]
 }
-
 export default class extends Delitoon {
-
     public constructor() {
         super('bomtoon', `Bomtoon`, 'https://www.bomtoon.com', 'BOMTOON_COM', [Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official]);
     }
@@ -29,15 +27,15 @@ export default class extends Delitoon {
             contentsThumbnailType: 'MAIN',
             size: '99999'
         }).toString();
-        const { data } = await FetchJSON<APIResult<APIMangas>>(this.createRequest(url));
+        const { data } = await FetchJSON<APIResult<APIMangas>>(this.CreateRequest(url));
         return data.content.map(element => new Manga(this, provider, element.alias, element.title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await this.getToken();
+        await this.GetToken();
         const url = new URL(`/api/balcony-api-v2/contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const apiresult = await FetchJSON<APIResult<APIPages>>(this.createRequest(url));
+        const apiresult = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
         if (apiresult.result == 'ERROR') {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }

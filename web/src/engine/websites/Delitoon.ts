@@ -59,9 +59,9 @@ export default class extends DecoratableMangaScraper {
     protected Platform: string = 'WEB';
     protected Token: APIToken = undefined;
 
-    public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', BalconyID = 'DELITOON_COM', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
+    public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', balconyID = 'DELITOON_COM', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
         super(id, label, url, ...tags);
-        this.BalconyID = BalconyID;
+        this.BalconyID = balconyID;
     }
 
     public override get Icon() {
@@ -76,7 +76,7 @@ export default class extends DecoratableMangaScraper {
         const mangaid = new URL(url).href.match(/\/detail\/([^/]+)/)[1];
         const req = new URL(`/api/balcony-api-v2/contents/${mangaid}`, this.URI);
         req.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await FetchJSON<APIResult<APIManga>>(this.createRequest(req));
+        const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(req));
         return new Manga(this, provider, mangaid, data.title.trim());
     }
 
@@ -88,15 +88,15 @@ export default class extends DecoratableMangaScraper {
             isIncludeAdult: 'true',
             contentsThumbnailType: 'MAIN'
         }).toString();
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(this.createRequest(url));
+        const { data } = await FetchJSON<APIResult<APIManga[]>>(this.CreateRequest(url));
         return data.map(element => new Manga(this, provider, element.alias, element.title.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        await this.getToken();
+        await this.GetToken();
         const url = new URL(`/api/balcony-api-v2/contents/${manga.Identifier}`, this.URI);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await FetchJSON<APIResult<APIManga>>(this.createRequest(url));
+        const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(url));
         return data.episodes.map(element => {
             let title = element.title.trim();
             title += element.subTitle ? ' : ' + element.subTitle.trim() : '';
@@ -105,10 +105,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await this.getToken();
+        await this.GetToken();
         const url = new URL(`/api/balcony-api-v2/contents/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const apiresult = await FetchJSON<APIResult<APIPages>>(this.createRequest(url));
+        const apiresult = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
         if (apiresult.result == 'ERROR') {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
@@ -116,7 +116,7 @@ export default class extends DecoratableMangaScraper {
 
     }
 
-    createRequest(url: URL): Request {
+    protected CreateRequest(url: URL): Request {
         const headers: HeadersInit = {
             Referer: this.URI.origin,
             'x-balcony-id': this.BalconyID,
@@ -130,7 +130,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    createPostRequest(url: URL, body: string, contentType: string = 'application/json'): Request {
+    private CreatePostRequest(url: URL, body: string, contentType: string = 'application/json'): Request {
         const headers: HeadersInit = {
             Referer: this.URI.origin,
             'x-balcony-id': this.BalconyID,
@@ -146,13 +146,13 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    async getToken() {
+    protected async GetToken() {
 
         try {
             //if token is undefined => try to fetch one
             if (!this.Token) {
                 const url = new URL('/api/auth/session', this.URI);
-                const { user } = await FetchJSON<APIUser>(this.createRequest(url));
+                const { user } = await FetchJSON<APIUser>(this.CreateRequest(url));
                 this.Token = user;
                 return;
             }
@@ -164,7 +164,7 @@ export default class extends DecoratableMangaScraper {
                     accessToken: this.Token.accessToken.token,
                     refreshToken: this.Token.refreshToken.token
                 });
-                const { result } = await FetchJSON<APIRefreshToken>(this.createPostRequest(url, body));
+                const { result } = await FetchJSON<APIRefreshToken>(this.CreatePostRequest(url, body));
                 this.Token = result;
             }
         } catch (error) {
