@@ -37,7 +37,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     public get Entries(): Bookmark[] {
-        return this._entries.sort((self, other) => self.Title.localeCompare(other.Title));
+        return super.Entries.sort((self, other) => self.Title.localeCompare(other.Title));
     }
 
     private OnBookmarkChangedCallback(sender: Bookmark): void {
@@ -63,12 +63,12 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     private async Load() {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
-        this._entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
+        super.Entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
         this.EntriesUpdated.Dispatch(this, this.Entries);
     }
 
     public async RefreshAllFlags() {
-        for (const media of this._entries) {
+        for (const media of super.Entries) {
             await media.Update();
             HakuNeko.ItemflagManager.LoadContainerFlags(media);
         }
@@ -108,7 +108,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     public async Export(): Promise<BookmarkExportResult> {
-        const bookmarks = this._entries.map(bookmark => this.Serialize(bookmark));
+        const bookmarks = super.Entries.map(bookmark => this.Serialize(bookmark));
         const result: BookmarkExportResult = {
             cancelled: false,
             exported: 0
@@ -149,19 +149,19 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     public async Add(entry: MediaContainer<MediaContainer<MediaChild>>) {
-        if(this.isBookmarked(entry)) {
+        if(this.IsBookmarked(entry)) {
             // TODO: Keep duplicate bookmark, or replace with new one?
             return;
         }
         const bookmark = new Bookmark(new Date(), new Date(), entry.Parent, entry.Identifier, entry.Title);
         bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
-        this._entries.unshift(bookmark);
+        super.Entries.unshift(bookmark);
         this.EntriesUpdated.Dispatch(this, this.Entries);
         await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
     }
 
     public async Remove(bookmark: Bookmark) {
-        this._entries = this._entries.filter(entry => entry !== bookmark);
+        super.Entries = super.Entries.filter(entry => entry !== bookmark);
         this.EntriesUpdated.Dispatch(this, this.Entries);
         await this.storage.RemovePersistent(Store.Bookmarks, bookmark.StorageKey);
     }
@@ -176,7 +176,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         return this.Entries.find(bookmark => bookmark.Identifier === entry.Identifier && bookmark.Parent.Identifier === entry.Parent.Identifier);
     }
 
-    public isBookmarked(entry: MediaContainer<MediaChild>): boolean {
+    public IsBookmarked(entry: MediaContainer<MediaChild>): boolean {
         return !!this.Find(entry);
     }
 
@@ -191,9 +191,9 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         await this.Load();
     }
 
-    public async getEntriesWithUnflaggedContent(): Promise<Bookmark[]> {
+    public async GetEntriesWithUnflaggedContent(): Promise<Bookmark[]> {
         const results = await Promise.all(this.Entries.map(
-            async (bookmark) => (await bookmark.getUnflaggedContent()).length > 0
+            async (bookmark) => (await bookmark.GetUnflaggedContent()).length > 0
         ));
         return this.Entries.filter((_, index) => results[index]);
     }
