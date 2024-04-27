@@ -38,10 +38,12 @@ type APIMangas = {
         }
     }
 }
+
 export default class extends DecoratableMangaScraper {
 
     private nextBuild = '';
     private readonly CDN = ['https://soft1.softdevices.my.id', 'https://soft2.b-cdn.net'];
+
     public constructor() {
         super('softkomik', `Softkomik`, 'https://softkomik.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
@@ -70,13 +72,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList.distinct();
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL(`/_next/data/${this.nextBuild}/komik/list.json?page=${page}`, this.URI).href;
         const request = new Request(url);
         const { pageProps: { data: { data } } } = await FetchJSON<APIMangas>(request);
@@ -105,5 +107,4 @@ export default class extends DecoratableMangaScraper {
         }
         return blob;
     }
-
 }

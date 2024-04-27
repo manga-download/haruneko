@@ -5,9 +5,9 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
 
-type TSReader = source[];
+type TSReader = Source[];
 
-type source = {
+type Source = {
     images: string[];
 }
 

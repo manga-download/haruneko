@@ -7,6 +7,7 @@ import { FetchCSS } from '../platform/FetchProvider';
 function MangaLabelExtractor(element: HTMLImageElement): string {
     return element.alt.trim();
 }
+
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -31,16 +32,15 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(manga, page);
+            const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList.distinct();
     }
 
-    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const uri = new URL(`${manga.Identifier}?page=${page}`, this.URI);
         const data = await FetchCSS<HTMLAnchorElement>(new Request(uri), 'div#chapters-list a');
         return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('span').textContent.trim()));
     }
-
 }

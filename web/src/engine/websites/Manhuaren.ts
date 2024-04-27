@@ -31,13 +31,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(provider, page);
+            const mangas = await this.GetMangasFromPage(provider, page);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList.distinct();
     }
 
-    private async getMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
+    private async GetMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
         const url = new URL('/manhua-list/dm5.ashx', this.URI);
         url.searchParams.set('d', new Date().toString());
         const request = new Request(url, {
@@ -65,5 +65,4 @@ export default class extends DecoratableMangaScraper {
         const { UpdateComicItems } = await FetchJSON<APIMangasResults>(request);
         return UpdateComicItems ? UpdateComicItems.map(manga => new Manga(this, provider, `/${manga.UrlKey}/`, manga.Title.trim())): [];
     }
-
 }
