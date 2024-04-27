@@ -10,8 +10,8 @@ export default class extends DecoratableMangaScraper {
     constructor(id?: string, label?: string, url?: string, tags?: Tag[]);
     get Icon(): string;
     FetchPages(chapter: Chapter): Promise<Page[]>;
-    convertWordArrayToUint8Array(wordArray: WordArray): ArrayBuffer;
+    ConvertWordArrayToUint8Array(wordArray: WordArray): ArrayBuffer;
     FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
-    decryptPicture(encrypted: Uint8Array, key: ArrayBuffer): Promise<ArrayBuffer>;
+    DecryptPicture(encrypted: Uint8Array, key: ArrayBuffer): Promise<ArrayBuffer>;
 }
 export {};
