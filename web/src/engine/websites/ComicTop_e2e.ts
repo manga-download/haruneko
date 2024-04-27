@@ -11,7 +11,7 @@ const config = {
         title: '賢者の孫SP'
     },
     child: {
-        id: '/viewer/?cid=30990&ct=kenja-no-mago-sp-chapter-1&t=1713792328',
+        id: '/viewer/?cid=30990&ct=kenja-no-mago-sp-chapter-1',
         title: '第1話'
     },
     entry: {
