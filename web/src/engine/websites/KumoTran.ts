@@ -20,21 +20,21 @@ type PuzzleData = {
 
 const pagejs = `
     new Promise((resolve) => {
-      const nodes = [...document.querySelectorAll('div.reading-content img, div.reading-content canvas')];
-      const data = nodes.map(element => {
-          if (element instanceof HTMLCanvasElement) {
-              const script = eval(element.nextElementSibling.text.replace('eval(', '('));
-              const result = {
-                  url : element.dataset.url,
-                  script: script,
-              };
-              return result;
-          } else {
-              return { url : element.getAttribute('src') };
-          }
-      });
-      resolve(data);
-  });
+        const nodes = [...document.querySelectorAll('div.reading-content img, div.reading-content canvas')];
+        const data = nodes.map(element => {
+            if (element instanceof HTMLCanvasElement) {
+                const script = eval(element.nextElementSibling.text.replace('eval(', '('));
+                const result = {
+                    url : element.dataset.url,
+                    script: script,
+                };
+                return result;
+            } else {
+                return { url : element.getAttribute('src') };
+            }
+        });
+        resolve(data);
+    });
 `;
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title-custom h1')
@@ -55,13 +55,13 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchWindowScript<ImageData[]>(request, pagejs, 500);
         return data.map(element => {
             if (element.script) {
-                return new Page(this, chapter, new URL(element.url), { params: JSON.stringify(this.extractDescramblePattern(element.script)) });
+                return new Page(this, chapter, new URL(element.url), { params: JSON.stringify(this.ExtractDescramblePattern(element.script)) });
             }
             return new Page(this, chapter, new URL(element.url));
         });
     }
 
-    extractDescramblePattern(script : string): PuzzleData {
+    private ExtractDescramblePattern(script : string): PuzzleData {
 
         const x = parseInt(script.match(/imagePuzzle\[i\]\[3\],(\d+),(\d+)/)[1]);
         const y = parseInt(script.match(/imagePuzzle\[i\]\[3\],(\d+),(\d+)/)[2]);

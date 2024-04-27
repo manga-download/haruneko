@@ -26,7 +26,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        //if not done letter by letter it stops at page 99, at letter C.
         const mangaList: Manga[] = [];
         for (const letter of '0abcdefghijklmnopqrstuvwxyz'.split('')) {
             const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/comic-list?c=${letter}&page={page}`, 'div.chapter a');
@@ -38,13 +37,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(manga, page);
+            const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
 
-    async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier + '?page=' + page, this.URI);
         const request = new Request(uri.href);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'div.chapter > a');
