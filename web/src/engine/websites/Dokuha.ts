@@ -52,11 +52,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         const data = new Uint8Array(await blob.arrayBuffer());
-        const decrypted = await this.decryptPicture(data, page.Parameters['scrambleJSONUrl'] as string);
+        const decrypted = await this.DecryptPicture(data, page.Parameters['scrambleJSONUrl'] as string);
         return Common.GetTypedData(decrypted);
     }
 
-    async decryptPicture(data: Uint8Array, jsonUrl: string): Promise<ArrayBuffer> {
+    private async DecryptPicture(data: Uint8Array, jsonUrl: string): Promise<ArrayBuffer> {
         const BYTE_BLOCK = 2000;
         const loadBins = [];
         let run = true;
