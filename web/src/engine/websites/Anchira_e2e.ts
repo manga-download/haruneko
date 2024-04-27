@@ -7,11 +7,11 @@ const config: Config = {
     },
     container: {
         url: 'https://anchira.to/g/13408/f2089e2060a0',
-        id: JSON.stringify({ id: '13408', key: 'f2089e2060a0'}),
+        id: '13408/f2089e2060a0',
         title: 'Time to Part'
     },
     child: {
-        id: JSON.stringify({ id: '13408', key: 'f2089e2060a0' }),
+        id: '13408/f2089e2060a0',
         title: 'Time to Part'
     },
     entry: {
