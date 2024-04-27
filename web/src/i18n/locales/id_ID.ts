@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-// Must keep this eslint rule for inclusion in auto-generated translations!
 import type { VariantResource } from '../ILocale';
 import base from "./en_US";
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -235,7 +233,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tracker_Kitsu_Settings_UsernameInfo: "Nama pengguna untuk login akun otomatis ke Kitsu",
   Tracker_Kitsu_Settings_Password: "Kata Sandi",
   Tracker_Kitsu_Settings_PasswordInfo: "Kata sandi untuk login akun otomatis ke Kitsu",
-  // [SECTION]: Plugins
+  // [SECTION]: Plugins (common)
   Plugin_Settings_ThrottlingDownloads: 'Throttle Downloads [ms]',
   Plugin_Settings_ThrottlingDownloadsInfo: '...',
   Plugin_Settings_ThrottlingInteraction: 'Interaction Rate Limit [requests/minute]',
@@ -249,14 +247,15 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
   Plugin_Common_Preferred_Language: 'Preferred Language for the website',
   Plugin_Common_Preferred_LanguageInfo: 'Preferred language for website content.',
-  Plugin_MissingManga_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
   Plugin_MissingWebsite_UpdateError: 'Failed to update the content index for a non-existing website!',
   Plugin_MissingWebsiteEntry_UpdateError: 'Failed to update the media index for a non-existing website!',
+  // [SECTION]: Plugins (specific)
+  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
+  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
+  Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
   Plugin_SheepScanlations_Settings_Username: "Nama Pengguna",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Nama Pengguna untuk login akun otomatis ke Sheep-Scanlations 😉",
   Plugin_SheepScanlations_Settings_Password: "Kata Sandi",
-  Plugin_SheepScanlations_Settings_PasswordInfo: "Kata sandi untuk login akun otomatis ke Sheep-Scanlations 😉",
-  Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
-  Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN'
+  Plugin_SheepScanlations_Settings_PasswordInfo: "Kata sandi untuk login akun otomatis ke Sheep-Scanlations 😉"
 };
 export default translations;
