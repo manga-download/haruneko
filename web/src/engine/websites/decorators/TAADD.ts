@@ -102,20 +102,20 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
  * Use this when the chapter is made from multiples pages and each "sub pages" get a single or more images
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param queryPages_arg - A CSS selector to the element containing all subpages : Typically a <select> element
- * @param querySubPages_arg - A CSS query to match all elements from {@link queryPages_arg}. Ie. '<option>
- * @param queryImages_arg - A CSS query to locate the images in each subpage
- * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link querySubPages_arg})
+ * @param queryPagesArg - A CSS selector to the element containing all subpages : Typically a <select> element
+ * @param querySubPagesArg - A CSS query to match all elements from {@link queryPagesArg}. Ie. '<option>
+ * @param queryImagesArg - A CSS query to locate the images in each subpage
+ * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link querySubPagesArg})
   * */
-export async function FetchPagesMultiPagesCSS(this: MangaScraper, chapter: Chapter, queryPages_arg: string, querySubPages_arg: string, queryImages_arg: string, extractSubPages: LinkExtractor): Promise<Page[]> {
-    const data = await FetchCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), queryPages_arg); //Here we got the sub pages list NODES
+export async function FetchPagesMultiPagesCSS(this: MangaScraper, chapter: Chapter, queryPagesArg: string, querySubPagesArg: string, queryImagesArg: string, extractSubPages: LinkExtractor): Promise<Page[]> {
+    const data = await FetchCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), queryPagesArg); //Here we got the sub pages list NODES
     //There may be MORE than one page list element on the page, we need only one !
-    const subpages = [...data[0].querySelectorAll(querySubPages_arg)].map(element => extractSubPages.call(this, element));
+    const subpages = [...data[0].querySelectorAll(querySubPagesArg)].map(element => extractSubPages.call(this, element));
 
     const pagelist: Page[] = [];
     for (const subpage of subpages) {
         const request = new Request(subpage);
-        const imgdata = await FetchCSS<HTMLImageElement>(request, queryImages_arg);
+        const imgdata = await FetchCSS<HTMLImageElement>(request, queryImagesArg);
         imgdata.map(element => {
             const picUrl = element.getAttribute('src');
             pagelist.push(new Page(this, chapter, new URL(picUrl, this.URI), { Referer: subpage }));
@@ -127,18 +127,18 @@ export async function FetchPagesMultiPagesCSS(this: MangaScraper, chapter: Chapt
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter using the given CSS
  * Use this when the chapter is made from multiples pages and each "sub pages" get a single or more images
- * @param queryPages_arg - A CSS selector to the element containing all subpages : Typically a <select> element
- * @param querySubPages_arg - A CSS query to match all elements from {@link queryPages_arg}. Ie. 'option'
- * @param queryImages_arg - A CSS query to locate the images in each subpage
- * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link querySubPages_arg})
+ * @param queryPagesArg - A CSS selector to the element containing all subpages : Typically a <select> element
+ * @param querySubPagesArg - A CSS query to match all elements from {@link queryPages_arg}. Ie. 'option'
+ * @param queryImagesArg - A CSS query to locate the images in each subpage
+ * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link querySubPagesArg})
  */
-export function PagesMultiPageCSS(queryPages_arg: string = queryPages, querySubPages_arg: string = querySubPages, queryImages_arg: string = queryImages, extractSubPages: LinkExtractor = PageLinkExtractor) {
+export function PagesMultiPageCSS(queryPagesArg: string = queryPages, querySubPagesArg: string = querySubPages, queryImagesArg: string = queryImages, extractSubPages: LinkExtractor = PageLinkExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesMultiPagesCSS.call(this, chapter, queryPages_arg, querySubPages_arg, queryImages_arg, extractSubPages );
+                return FetchPagesMultiPagesCSS.call(this, chapter, queryPagesArg, querySubPagesArg, queryImagesArg, extractSubPages );
             }
         };
     };
