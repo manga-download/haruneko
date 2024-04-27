@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
-        const request = this.prepareRequest(new URL('works/v5/' + uri.pathname.match(/\d+$/)[0], this.apiURL).href);
+        const request = this.PrepareRequest(new URL('works/v5/' + uri.pathname.match(/\d+$/)[0], this.apiURL).href);
         const { data } = await FetchJSON<APIManga>(request);
         const id = data.official_work.id;
         const title = data.official_work.name.trim();
@@ -85,19 +85,19 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         const uri = new URL('magazines', this.apiURL);
-        const request = this.prepareRequest(uri.href);
+        const request = this.PrepareRequest(uri.href);
         const { data } = await FetchJSON<APIMangaPage>(request);
         const pages = data.magazines.map(item => item.id);
         for (const page of pages) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangaList.push(...mangas);
         }
         return mangaList;
     }
 
-    async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL(`magazines/v2/${page}/works`, this.apiURL);
-        const request = this.prepareRequest(uri.href);
+        const request = this.PrepareRequest(uri.href);
         const { data } = await FetchJSON<APIMangas>(request);
         return data.official_works.map(item => new Manga(this, provider, item.id.toString(), item.title.trim()));
     }
@@ -105,15 +105,15 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(manga, page);
+            const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
 
-    async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const uri = new URL(`works/${manga.Identifier}/episodes?page=${page}`, this.apiURL);
-        const request = this.prepareRequest(uri.href);
+        const request = this.PrepareRequest(uri.href);
         const { data } = await FetchJSON<APIChapters>(request);
         return data.episodes
             .filter(item => item.readable)
@@ -158,12 +158,12 @@ export default class extends DecoratableMangaScraper {
         return DeScramble(data, async (image, ctx) => {
             ctx.drawImage(image, 0, 0);
             const scrambled = ctx.getImageData(0, 0, payload.width, payload.height).data;
-            const descrambled = await this.descrambleData(scrambled, 4, payload.width, payload.height, payload.gridsize, payload.gridsize, '4wXCKprMMoxnyJ3PocJFs4CYbfnbazNe', payload.key, true);
+            const descrambled = await this.DescrambleData(scrambled, 4, payload.width, payload.height, payload.gridsize, payload.gridsize, '4wXCKprMMoxnyJ3PocJFs4CYbfnbazNe', payload.key, true);
             ctx.putImageData(new ImageData(descrambled, payload.width, payload.height), 0, 0);
         });
     }
 
-    private async descrambleData(e, t, i, r, n, s, a, l, o): Promise<Uint8ClampedArray> {
+    private async DescrambleData(e, t, i, r, n, s, a, l, o): Promise<Uint8ClampedArray> {
         const d = Math.ceil(r / s),
             c = Math.floor(i / n),
             u = Array(d).fill(null).map(() => Array.from(Array(c).keys()));
@@ -173,11 +173,11 @@ export default class extends DecoratableMangaScraper {
             const i = new Uint32Array(t, 0, 4);
             const r = new PixivShuffler(i);
 
-            for (let e = 0; e < 100; e++) r.next();
+            for (let e = 0; e < 100; e++) r.Next();
             for (let e = 0; e < d; e++) {
                 const t = u[e];
                 for (let e = c - 1; e >= 1; e--) {
-                    const i = r.next() % (e + 1),
+                    const i = r.Next() % (e + 1),
                         n = t[e];
                     t[e] = t[i],
                     t[i] = n;
@@ -213,7 +213,7 @@ export default class extends DecoratableMangaScraper {
         return h;
     }
 
-    prepareRequest(url: string): Request {
+    private PrepareRequest(url: string): Request {
         return new Request(url, {
             headers: {
                 'X-Requested-With': 'pixivcomic',
@@ -223,21 +223,24 @@ export default class extends DecoratableMangaScraper {
     }
 
 }
+
 class PixivShuffler {
-    s = new Uint32Array(4);
-    next() {
-        const e = 9 * this.tj(5 * this.s[1] >>> 0, 7) >>> 0,
+    private readonly s = new Uint32Array(4);
+
+    public Next() {
+        const e = 9 * this.Tj(5 * this.s[1] >>> 0, 7) >>> 0,
             t = this.s[1] << 9 >>> 0;
         return this.s[2] = (this.s[2] ^ this.s[0]) >>> 0,
         this.s[3] = (this.s[3] ^ this.s[1]) >>> 0,
         this.s[1] = (this.s[1] ^ this.s[2]) >>> 0,
         this.s[0] = (this.s[0] ^ this.s[3]) >>> 0,
         this.s[2] = (this.s[2] ^ t) >>> 0,
-        this.s[3] = this.tj(this.s[3], 11),
+        this.s[3] = this.Tj(this.s[3], 11),
         e;
     }
-    constructor(e) {
-        if (4 !== e.length) throw Error('seed.length !== 4 (seed.length: '.concat(e.length, ')'));
+
+    constructor(e: Uint32Array) {
+        //if (4 !== e.length) throw Error('seed.length !== 4 (seed.length: '.concat(e.length, ')'));
         this.s = new Uint32Array(e),
         0 === this.s[0] &&
             0 === this.s[1] &&
@@ -245,7 +248,8 @@ class PixivShuffler {
             0 === this.s[3] &&
             (this.s[0] = 1);
     }
-    tj(e, t) {
+
+    private Tj(e: number, t: number) {
         return (e << (t %= 32) >>> 0 | e >>> 32 - t) >>> 0;
     }
 }
