@@ -1,7 +1,7 @@
 @font-face {
     font-family: NotoColorEmoji-Flags;
-    unicode-range: U+1F1E6-1F1FF;                            /* Only use the flag emojis from this font by limiting the unicode range */
-    src: url('/NotoColorEmoji-Flags.woff2') format('woff2'); /* Created With: https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&text=🇦🇫🇦🇱🇩🇿🇦🇩🇦🇴🇦🇬🇦🇷🇦🇲🇦🇺🇦🇹🇦🇿🇧🇸🇧🇭🇧🇩🇧🇧🇧🇾🇧🇪🇧🇿🇧🇯🇧🇹🇧🇴🇧🇦🇧🇼🇧🇷🇧🇳🇧🇬🇧🇫🇧🇮🇨🇻🇰🇭🇨🇲🇨🇦🇨🇫🇹🇩🇨🇱🇨🇴🇰🇲🇨🇩🇨🇷🇨🇮🇭🇷🇨🇺🇨🇾🇨🇿🇰🇵🇨🇬🇩🇰🇩🇯🇩🇲🇩🇴🇪🇨🇪🇬🇸🇻🇬🇶🇪🇷🇪🇪🇸🇿🇪🇹🇫🇯🇫🇮🇫🇷🇬🇦🇬🇲🇬🇪🇩🇪🇬🇭🇬🇷🇬🇩🇬🇹🇬🇳🇬🇼🇬🇾🇭🇹🇭🇳🇭🇺🇮🇸🇮🇳🇮🇩🇮🇷🇮🇶🇮🇪🇮🇱🇮🇹🇯🇲🇯🇵🇯🇴🇰🇿🇰🇪🇰🇮🇰🇼🇰🇬🇱🇦🇱🇻🇱🇧🇱🇸🇱🇷🇱🇾🇱🇮🇱🇹🇱🇺🇲🇬🇲🇼🇲🇾🇲🇻🇲🇱🇲🇹🇲🇭🇲🇷🇲🇺🇲🇽🇫🇲🇲🇨🇲🇳🇲🇪🇲🇦🇲🇿🇲🇲🇳🇦🇳🇷🇳🇵🇳🇱🇳🇿🇳🇮🇳🇪🇳🇬🇲🇰🇳🇴🇴🇲🇵🇰🇵🇼🇵🇦🇵🇬🇵🇾🇵🇪🇵🇭🇵🇱🇵🇹🇶🇦🇰🇷🇲🇩🇷🇴🇷🇺🇷🇼🇰🇳🇱🇨🇻🇨🇼🇸🇸🇲🇸🇹🇸🇦🇸🇳🇷🇸🇸🇨🇸🇱🇸🇬🇸🇰🇸🇮🇸🇧🇸🇴🇿🇦🇸🇸🇪🇸🇱🇰🇸🇩🇸🇷🇸🇪🇨🇭🇸🇾🇹🇯🇹🇭🇹🇱🇹🇬🇹🇴🇹🇹🇹🇳🇹🇷🇹🇲🇹🇻🇺🇬🇺🇦🇦🇪🇬🇧🇹🇿🇺🇸🇺🇾🇺🇿🇻🇺🇻🇪🇻🇳🇾🇪🇿🇲🇿🇼🇪🇺🏴‍☠️🏳️‍🌈🏳️ */
+    unicode-range: U+1F1E6-1F1FF, U+1F3F4;                   /* Only use the flag emojis from this font by limiting the unicode range */
+    src: url('/NotoColorEmoji-Flags.woff2') format('woff2'); /* Created With: https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&text=🇦🇫🇦🇱🇩🇿🇦🇩🇦🇴🇦🇬🇦🇷🇦🇲🇦🇺🇦🇹🇦🇿🇧🇸🇧🇭🇧🇩🇧🇧🇧🇾🇧🇪🇧🇿🇧🇯🇧🇹🇧🇴🇧🇦🇧🇼🇧🇷🇧🇳🇧🇬🇧🇫🇧🇮🇨🇻🇰🇭🇨🇲🇨🇦🇨🇫🇹🇩🇨🇱🇨🇴🇰🇲🇨🇩🇨🇷🇨🇮🇭🇷🇨🇺🇨🇾🇨🇿🇰🇵🇨🇬🇩🇰🇩🇯🇩🇲🇩🇴🇪🇨🇪🇬🇸🇻🇬🇶🇪🇷🇪🇪🇸🇿🇪🇹🇫🇯🇫🇮🇫🇷🇬🇦🇬🇲🇬🇪🇩🇪🇬🇭🇬🇷🇬🇩🇬🇹🇬🇳🇬🇼🇬🇾🇭🇹🇭🇳🇭🇺🇮🇸🇮🇳🇮🇩🇮🇷🇮🇶🇮🇪🇮🇱🇮🇹🇯🇲🇯🇵🇯🇴🇰🇿🇰🇪🇰🇮🇰🇼🇰🇬🇱🇦🇱🇻🇱🇧🇱🇸🇱🇷🇱🇾🇱🇮🇱🇹🇱🇺🇲🇬🇲🇼🇲🇾🇲🇻🇲🇱🇲🇹🇲🇭🇲🇷🇲🇺🇲🇽🇫🇲🇲🇨🇲🇳🇲🇪🇲🇦🇲🇿🇲🇲🇳🇦🇳🇷🇳🇵🇳🇱🇳🇿🇳🇮🇳🇪🇳🇬🇲🇰🇳🇴🇴🇲🇵🇰🇵🇼🇵🇦🇵🇬🇵🇾🇵🇪🇵🇭🇵🇱🇵🇹🇶🇦🇰🇷🇲🇩🇷🇴🇷🇺🇷🇼🇰🇳🇱🇨🇻🇨🇼🇸🇸🇲🇸🇹🇸🇦🇸🇳🇷🇸🇸🇨🇸🇱🇸🇬🇸🇰🇸🇮🇸🇧🇸🇴🇿🇦🇸🇸🇪🇸🇱🇰🇸🇩🇸🇷🇸🇪🇨🇭🇸🇾🇹🇯🇹🇭🇹🇱🇹🇬🇹🇴🇹🇹🇹🇳🇹🇷🇹🇲🇹🇻🇺🇬🇺🇦🇦🇪🇬🇧🇹🇿🇺🇸🇺🇾🇺🇿🇻🇺🇻🇪🇻🇳🇾🇪🇿🇲🇿🇼🇪🇺🏴‍☠️🏳️‍🌈🏳️🏴 */
 }
 
 html, body, #app, #hakuneko-notice {

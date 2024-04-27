@@ -17,7 +17,14 @@
         VolumeFileStorage,
     } from 'carbon-icons-svelte';
 
-    import { filterByCategory, Tags } from '../../../engine/Tags';
+    import { Tags, type Tag } from '../../../engine/Tags';
+    const availableLanguageTags = Tags.Language.toArray();
+
+    // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
+    function extractUnicodeFlagFromTags(tags : Tag[]): string {
+        const languageTagTitleResourceKey = tags.find(tag => availableLanguageTags.includes(tag))?.Title;
+        return $Locale[languageTagTitleResourceKey]?.call(undefined)?.slice(0, 4) ?? '🏴';
+    }
 
     import type {
         StoreableMediaContainer,
@@ -126,11 +133,7 @@
     <ClickableTile class="title" on:click={(event) => dispatch('view', event)}>
         {#if multilang}
             <span class="multilang">
-                {multilang
-                    ? $Locale[
-                          filterByCategory(item.Tags, Tags.Language)[0].Title
-                      ]().substring(0, 4)
-                    : ''}
+                {extractUnicodeFlagFromTags(item.Tags)}
             </span>
         {/if}
         <span title={item.Title}>{item.Title}</span>
