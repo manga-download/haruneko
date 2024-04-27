@@ -36,36 +36,24 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //1st : first fetch zip files urls
         let request = new Request(new URL(chapter.Identifier, this.URI).href);
         const files: string[] = await FetchWindowScript(request, pagescript);
-        if (files.length == 0) return [];
-
-        //if files are zip
-        if (files[0].endsWith('.zip')) {
-            //handle zip files
+        if (files.length > 0 && files[0].endsWith('.zip')) {
             const pages : Page[]= [];
             for (const zipurl of files) {
                 request = new Request(new URL(zipurl, this.URI).href);
                 const response = await Fetch(request);
                 const zipdata = await response.arrayBuffer();
                 const zipfile = await JSZip.loadAsync(zipdata);
-                const fileNames = Object.keys(zipfile.files).sort((a, b) => this.extractNumber(a) - this.extractNumber(b));
-                for (const fileName of fileNames) {
-                    if (!fileName.match(/\.(s)$/i)) { //if extension is not .s (for svg), its a picture
-                        pages.push(new Page(this, chapter, new URL(zipurl, this.URI), { filename: fileName }));
-                    }
-                }
+                Object.keys(zipfile.files)
+                    .filter(file => !file.endsWith('.svg'))
+                    .sort((self, other) => parseInt(self) - parseInt(other))
+                    .forEach(file => pages.push(new Page(this, chapter, new URL(zipurl, this.URI), { filename: file })));
             }
             return pages;
-
-        } else { //we have normal pictures links
+        } else {
             return files.map(file => new Page(this, chapter, new URL(file)));
         }
-
-    }
-    extractNumber(fileName) : number {
-        return parseInt(fileName.split(".")[0]);
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -79,5 +67,4 @@ export default class extends DecoratableMangaScraper {
             return Common.GetTypedData(imagebuffer);
         } else return Common.FetchImageAjax.call(this, page, priority, signal);
     }
-
 }
