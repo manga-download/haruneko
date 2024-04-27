@@ -61,7 +61,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await this.getEmbeddedJSON<APIManga>(new URL(url));
+        const data = await this.GetEmbeddedJSON<APIManga>(new URL(url));
         return new Manga(this, provider, String(data.default.titleId), data.default.titleName);
     }
 
@@ -69,15 +69,15 @@ export default class extends DecoratableMangaScraper {
         const mangaList = [];
         const slugs = ['/finish', '/rensai'];
         for (const slug of slugs) {
-            const mangas = await this.getMangasFromPage(slug, provider);
+            const mangas = await this.GetMangasFromPage(slug, provider);
             mangaList.push(...mangas);
         }
         return mangaList;
     }
 
-    private async getMangasFromPage(slug: string, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(slug: string, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL(slug, this.URI);
-        const data = await this.getEmbeddedJSON<APIMangas>(uri);
+        const data = await this.GetEmbeddedJSON<APIMangas>(uri);
         return data.titleSections.reduce((accumulator, section) => {
             const mangas = section.titles.map(title => {
                 return new Manga(this, provider, String(title.titleId), title.header);
@@ -88,7 +88,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`/title/${manga.Identifier}`, this.URI);
-        const data = await this.getEmbeddedJSON<APIManga>(uri);
+        const data = await this.GetEmbeddedJSON<APIManga>(uri);
         return data.default.chapters
             .filter(chapter => {
                 if (!chapter.id) {
@@ -100,16 +100,15 @@ export default class extends DecoratableMangaScraper {
                 return true;
             })
             .map(chapter => new Chapter(this, manga, String(chapter.id), chapter.mainText + (chapter.subText ? ' - ' + chapter.subText : '')));
-
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const uri = new URL(`/title/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI);
-        const data = await this.getEmbeddedJSON<APIPages>(uri);
+        const data = await this.GetEmbeddedJSON<APIPages>(uri);
         return data.pages.map(page => new Page(this, chapter, new URL((page.image || page.linkImage).imageUrl, uri.href)));
     }
 
-    async getEmbeddedJSON<T>(uri: URL) : Promise<T>{
+    private async GetEmbeddedJSON<T>(uri: URL) : Promise<T> {
         const request = new Request(uri.href);
         const scripts = await FetchCSS<HTMLScriptElement>(request, 'script#__NEXT_DATA__');
         const data: NEXTDATA<T> = JSON.parse(scripts[0].text);

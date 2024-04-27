@@ -6,7 +6,7 @@ const config = {
         title: 'Manjanoon'
     },
     container: {
-        url: 'https://manjanoon.net/manga/nn-holding-you-captive/',
+        url: 'https://manjanoon.org/manga/nn-holding-you-captive/',
         id: '/manga/nn-holding-you-captive/',
         title: 'Holding You Captive'
     },
