@@ -9,6 +9,7 @@ export { default as AllPornComic } from './AllPornComic';
 export { default as Alphapolis } from './Alphapolis';
 export { default as AmuyScan } from './AmuyScan';
 export { default as AnataNoMotokare } from './AnataNoMotokare';
+export { default as Anchira } from './Anchira';
 export { default as AniGliScans } from './AniGliScans';
 export { default as Anikiga } from './Anikiga';
 export { default as AnimeSama } from './AnimeSama';
