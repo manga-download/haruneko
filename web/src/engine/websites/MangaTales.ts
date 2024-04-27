@@ -46,13 +46,13 @@ type APIData = {
     [id: string]: number | string | Array<number>[]
 }
 
-type packedData = {
+type PackedData = {
     cols: string[],
     isCompact: boolean,
     isObject: boolean,
     isArray: boolean,
     maxLevel: number,
-    rows: packedData[] | APIData[]
+    rows: PackedData[] | APIData[]
 
 }
 
@@ -105,7 +105,6 @@ type APIPages = {
         }
     }
 }
-
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://mangatales.com/api/mangas/';
     public constructor() {
@@ -143,13 +142,13 @@ export default class extends DecoratableMangaScraper {
         const mangaList : Manga[]= [];
         for (let page = 1, run = true; run; page++) {
             searchBody.page = page;
-            const mangas = await this.getMangasFromPage(provider, searchBody, this.apiUrl);
+            const mangas = await this.GetMangasFromPage(provider, searchBody, this.apiUrl);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList.distinct();
     }
 
-    async getMangasFromPage(provider: MangaPlugin, searchBody: TMangaSearch, apiUrl: string): Promise<Manga[]> {
+    async GetMangasFromPage(provider: MangaPlugin, searchBody: TMangaSearch, apiUrl: string): Promise<Manga[]> {
         const request = new Request(new URL('search', apiUrl), {
             method: 'POST',
             headers: {
@@ -159,7 +158,7 @@ export default class extends DecoratableMangaScraper {
         });
 
         const response = await FetchJSON<APIResult>(request);
-        const data = response.iv ? await this.decrypt(response.data) : response.data;
+        const data = response.iv ? await this.Decrypt(response.data) : response.data;
         const mangas: APIMangas = JSON.parse(data);
         return !mangas.mangas ? [] : mangas.mangas.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
     }
@@ -167,9 +166,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(manga.Identifier, this.apiUrl));
         const response = await FetchJSON<APIResult>(request);
-        const strdata = response.iv ? await this.decrypt(response.data) : JSON.stringify(response);
-        const tmpdata: packedData | APIChapters = JSON.parse(strdata);
-        const chapters: APIChapters = (tmpdata as packedData).isCompact ? this._unpack(tmpdata as packedData) as APIChapters : tmpdata as APIChapters;
+        const strdata = response.iv ? await this.Decrypt(response.data) : JSON.stringify(response);
+        const tmpdata: PackedData | APIChapters = JSON.parse(strdata);
+        const chapters: APIChapters = (tmpdata as PackedData).isCompact ? this.Unpack(tmpdata as PackedData) as APIChapters : tmpdata as APIChapters;
         return chapters.mangaReleases.map(chapter => {
             const team = chapter.teams.find(t => t.id === chapter.team_id);
             let title = 'Vol.' + chapter.volume + ' Ch.' + chapter.chapter;
@@ -212,7 +211,7 @@ export default class extends DecoratableMangaScraper {
         return data;
     }
 
-    async decrypt(t: string): Promise<string> {
+    private async Decrypt(t: string): Promise<string> {
         const e = t.split("|");
         const n = e[0];
         const r = e[2];
@@ -240,14 +239,14 @@ export default class extends DecoratableMangaScraper {
         return new TextDecoder('utf-8').decode(decrypted);
     }
 
-    _unpack(t: packedData | APIData, ...args) {
+    private Unpack(t: PackedData | APIData, ...args) {
         const e = arguments.length > 1 && void 0 !== args[1] ? args[1] : 1;
         if (!t || e > t.maxLevel)
             return t;
         if (typeof t != 'object' || !t.isCompact)
             return t;
-        const n = (t as packedData).cols;
-        const r = (t as packedData).rows;
+        const n = (t as PackedData).cols;
+        const r = (t as PackedData).rows;
         if (t.isObject) {
             const o = {};
             let i = 0;
