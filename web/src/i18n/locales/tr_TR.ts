@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-// Must keep this eslint rule for inclusion in auto-generated translations!
 import type { VariantResource } from '../ILocale';
 import base from "./en_US";
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -235,7 +233,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tracker_Kitsu_Settings_UsernameInfo: "Kitsu'da otomatik hesap girişi için kullanıcı adı",
   Tracker_Kitsu_Settings_Password: "Şifre",
   Tracker_Kitsu_Settings_PasswordInfo: "Kitsu'da otomatik hesap girişi için şifre",
-  // [SECTION]: Plugins
+  // [SECTION]: Plugins (common)
   Plugin_Settings_ThrottlingDownloads: "Hız Düşürmeler [ms]",
   Plugin_Settings_ThrottlingDownloadsInfo: '...',
   Plugin_Settings_ThrottlingInteraction: "Etkileşim Oranı Sınırı [istek/dakika]",
@@ -249,14 +247,15 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "Sayfalar bölüm içeriğinden ayıklanamadı!",
   Plugin_Common_Preferred_Language: "Web Sitesi için Tercih Edilen Dil",
   Plugin_Common_Preferred_LanguageInfo: "Web site içeriği için tercih edilen dil.",
-  Plugin_MissingManga_LanguageMismatchError: "Seçili dil {1} için {0} mangası bulunamadı",
   Plugin_MissingWebsite_UpdateError: "Var olmayan bir web sitesi için içerik dizini güncellenemedi!",
   Plugin_MissingWebsiteEntry_UpdateError: "Var olmayan bir web sitesi için medya dizini güncellenemedi!",
+  // [SECTION]: Plugins (specific)
+  Plugin_CopyManga_Settings_GlobalCDN: "Global CDN Kullan",
+  Plugin_CopyManga_Settings_GlobalCDNInfo: "Global CDN'den talepte bulunma",
+  Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
   Plugin_SheepScanlations_Settings_Username: "Kullanıcı Adı",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Sheep-Scanlations'a otomatik hesap girişi için kullanıcı adı 😉",
   Plugin_SheepScanlations_Settings_Password: "Şifre",
-  Plugin_SheepScanlations_Settings_PasswordInfo: "Sheep-Scanlations'a otomatik hesap girişi için şifre 😉",
-  Plugin_CopyManga_Settings_GlobalCDN: "Global CDN Kullan",
-  Plugin_CopyManga_Settings_GlobalCDNInfo: "Global CDN'den talepte bulunma"
+  Plugin_SheepScanlations_Settings_PasswordInfo: "Sheep-Scanlations'a otomatik hesap girişi için şifre 😉"
 };
 export default translations;
