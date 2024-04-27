@@ -10,6 +10,7 @@ type APIMangas = {
         slug : string
     }[]
 }
+
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -37,16 +38,16 @@ export default class extends DecoratableMangaScraper {
         const mangaList = [];
 
         for (let start = 1, run = true; run; start += this.mangasPerPages + 1) {
-            const mangas = await this.getMangasFromRange(provider, start);
+            const mangas = await this.GetMangasFromRange(provider, start);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
-    async getMangasFromRange(provider: MangaPlugin, start: number): Promise<Manga[]>{
+
+    private async GetMangasFromRange(provider: MangaPlugin, start: number): Promise<Manga[]>{
         const url = new URL(`/misc/comic/search/query?status=&order=&genreNames=&type=&start=${start}&end=${start + this.mangasPerPages}`, this.apiUrl);
         const request = new Request(url.href);
         const mangas = await FetchJSON<APIMangas>(request);
         return mangas.comics.map(manga => new Manga(this, provider, `/comics/${manga.slug}`, manga.title.trim()));
     }
-
 }

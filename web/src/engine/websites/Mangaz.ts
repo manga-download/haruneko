@@ -29,13 +29,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 0, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const request = new Request(new URL(`/title/addpage_renewal?query=&page=${page}`, this.URI).href, {
             method: 'GET',
             headers: {
@@ -49,10 +49,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(manga.Identifier, this.URI).href);
         const data = await FetchCSS(request, 'body');
-        return data[0].querySelector("li.item") ?
-            [...data[0].querySelectorAll("li.item")].map(ele => new Chapter(this, manga, ele.querySelector('button').dataset['url'].replace('navi', 'virgo/view'), ele.querySelector('span.title').textContent.trim()))
-            :
-            [new Chapter(this, manga, data[0].querySelector('button').dataset['url'].replace('navi', 'virgo/view'), manga.Title)];
+        if(data[0].querySelector('li.item')) {
+            return [ ...data[0].querySelectorAll('li.item') ]
+                .map(ele => new Chapter(this, manga, ele.querySelector('button').dataset['url'].replace('navi', 'virgo/view'), ele.querySelector('span.title').textContent.trim()));
+        } else {
+            return [ new Chapter(this, manga, data[0].querySelector('button').dataset['url'].replace('navi', 'virgo/view'), manga.Title) ];
+        }
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -91,6 +93,5 @@ export default class extends DecoratableMangaScraper {
         const sdecrypted = new TextDecoder('utf-8').decode(decrypted);
         decrypted = Uint8Array.from(window.atob(sdecrypted), char => char.charCodeAt(0));
         return await Common.GetTypedData(decrypted);
-
     }
 }

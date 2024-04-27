@@ -49,12 +49,12 @@ export class Bookmark extends MediaContainer<MediaChild> {
         public readonly Created: Date,
         public Updated: Date,
         parent: MediaContainer<MediaContainer<MediaChild>>,
-        MediaID: string,
+        mediaID: string,
         title: string,
         private tracker?: MediaInfoTracker,
         private infoID?: string
     ) {
-        super(MediaID, title, parent);
+        super(mediaID, title, parent);
     }
 
     private Hash(text: string): string {
@@ -137,7 +137,7 @@ export class Bookmark extends MediaContainer<MediaChild> {
     /**
      * determine which entries have unflagged items
      */
-    public async getUnflaggedContent() {
+    public async GetUnflaggedContent() {
         return await HakuNeko.ItemflagManager.GetUnFlaggedItems(this as MediaContainer<MediaContainer<MediaChild>>);
     }
 }

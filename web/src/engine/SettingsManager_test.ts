@@ -142,7 +142,7 @@ describe('Settings', () => {
 
             const stored = {};
             for(const setting of settings) {
-                stored[setting.ID] = setting.toRaw();
+                stored[setting.ID] = setting.ToRaw();
             }
             storage.LoadPersistent.mockReturnValue(Promise.resolve(stored));
 
