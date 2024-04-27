@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    private getLanguage(language): string {
+    private GetLanguage(language): string {
         const languages = {
             0: ['en'], 1: '[es]', 2: '[fr]', 3: '[id]', 4: '[pt-br]', 5: '[ru]', 6: '[th]', 7: '[de]', 8: '[unk]', 9: '[vi]'
         };
@@ -83,7 +83,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/api/title_detailV3', this.apiURL);
         uri.searchParams.set('title_id', titleId);
         const data = await FetchProto<MangaPlusResponse>(new Request(uri.href), protoTypes, 'MangaPlus.Response');
-        const title = `${data.success.titleDetailView.title.name} ${this.getLanguage(data.success.titleDetailView.title.language)}`;
+        const title = `${data.success.titleDetailView.title.name} ${this.GetLanguage(data.success.titleDetailView.title.language)}`;
         return new Manga(this, provider, titleId, title);
     }
 
@@ -92,7 +92,7 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(new URL('/api/title_list/allV2', this.apiURL).href);
         const data = await FetchProto<MangaPlusResponse>(request, protoTypes, 'MangaPlus.Response');
         for (const group of data.success.allTitlesViewV2.alltitlegroups) {
-            mangalist.push(...group.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), `${manga.name} ${this.getLanguage(manga.language)}`)));
+            mangalist.push(...group.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), `${manga.name} ${this.GetLanguage(manga.language)}`)));
         }
         return mangalist;
 

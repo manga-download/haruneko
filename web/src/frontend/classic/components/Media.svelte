@@ -24,7 +24,7 @@
     $: selected = $selectedMedia?.IsSameAs(media);
 
     //Bookmarks
-    $: isBookmarked = HakuNeko.BookmarkPlugin.isBookmarked(media);
+    $: isBookmarked = HakuNeko.BookmarkPlugin.IsBookmarked(media);
     async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
     }
