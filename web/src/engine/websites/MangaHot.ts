@@ -95,7 +95,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const scrambletype = this.getScrambleType(page.Link.href);
+        const scrambletype = this.GetScrambleType(page.Link.href);
         return DeScramble(blob, async (image, ctx) => {
 
             const CELL_SIZE = 50;
@@ -105,8 +105,8 @@ export default class extends DecoratableMangaScraper {
             const x_rem = Math.floor(iWidth % CELL_SIZE);
             const y_num = Math.floor(iHeight / CELL_SIZE);
             const y_rem = Math.floor(iHeight % CELL_SIZE);
-            let puzzleData = initPotList();
-            puzzleData = scrambletype == 1 ? getPuzzleColData(getPuzzleRowData(puzzleData)) : getPuzzleRowData(getPuzzleColData(puzzleData));
+            let puzzleData = InitPotList();
+            puzzleData = scrambletype == 1 ? GetPuzzleColData(GetPuzzleRowData(puzzleData)) : GetPuzzleRowData(GetPuzzleColData(puzzleData));
 
             //***********************************************/
             //DRAW
@@ -125,7 +125,7 @@ export default class extends DecoratableMangaScraper {
 
             0 < y_rem && 0 < x_rem && ctx.drawImage(image, x_num * CELL_SIZE, y_num * CELL_SIZE, x_rem, y_rem, x_num * CELL_SIZE, y_num * CELL_SIZE, x_rem, y_rem);
 
-            function initPotList(): Array<Array<number>> {
+            function InitPotList(): Array<Array<number>> {
                 let t = 0, i = 0;
                 const r = [];
                 for (let e = 0; e < y_num; e++) {
@@ -141,7 +141,7 @@ export default class extends DecoratableMangaScraper {
                 return r;
             }
 
-            function getPuzzleRowData(t: Array<Array<number>>, useYnum: boolean = false): Array<Array<number>> {
+            function GetPuzzleRowData(t: Array<Array<number>>, useYnum: boolean = false): Array<Array<number>> {
                 const r = useYnum ? y_num : x_num;
                 const e: Array<Array<number>> = [];
                 let a = - 1;
@@ -161,14 +161,14 @@ export default class extends DecoratableMangaScraper {
                 return e;
             }
 
-            function getPuzzleColData(t: Array<Array<number>>): Array<Array<number>> {
+            function GetPuzzleColData(t: Array<Array<number>>): Array<Array<number>> {
                 const i = new Array(x_num);
                 for (let r = 0; r < y_num; r++) {
                     for (let e = 0; e < x_num; e++) {
                         Array.isArray(i[e]) || (i[e] = new Array(y_num)), i[e][r] = t[r][e];
                     }
                 }
-                const puzzle_col_data = getPuzzleRowData(i, true);
+                const puzzle_col_data = GetPuzzleRowData(i, true);
                 const restored_images: Array<Array<number>> = new Array(y_num);
 
                 for (let r = 0; r < x_num; r++) {
@@ -181,7 +181,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    getScrambleType(href: string): number {
+    GetScrambleType(href: string): number {
         let t = 0;
         href = href.split('/').pop();
         const ptn: RegExp = /^[0-9]$/;
