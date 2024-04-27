@@ -32,7 +32,7 @@ export class ItemflagManager {
         return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
     }
 
-    private isContainerSameItem(flag: ItemFlag, container: MediaContainer<MediaChild>): boolean {
+    private IsContainerSameItem(flag: ItemFlag, container: MediaContainer<MediaChild>): boolean {
         const doesIdentifierMatch = flag.IdentifierHash === this.Hash(container.Identifier);
         const doesTitleMatch = flag.TitleHash === this.Hash(container.Title);
         return doesIdentifierMatch || doesTitleMatch;
@@ -83,7 +83,7 @@ export class ItemflagManager {
         let flags = await this.GetContainerItemsFlags(itemToRemove.Parent);
         if (!flags) return;
         flags = flags.filter(flag => {
-            return ! this.isContainerSameItem(flag, itemToRemove);
+            return ! this.IsContainerSameItem(flag, itemToRemove);
         });
         this.items.set(this.StorageKey(itemToRemove.Parent), flags);
         await this.SaveContainerFlags(itemToRemove.Parent, flags);
@@ -96,7 +96,7 @@ export class ItemflagManager {
         const marks = await this.GetContainerItemsFlags(item.Parent);
         if (!marks) return undefined;
         const mark = marks.find(mark => {
-            return this.isContainerSameItem(mark, item);
+            return this.IsContainerSameItem(mark, item);
         });
         return mark?.kind;
     }
@@ -105,7 +105,7 @@ export class ItemflagManager {
         const marks = await this.GetContainerItemsFlags(media);
         return media.Entries.filter(item => {
             const mark = marks?.find(mark => {
-                return this.isContainerSameItem(mark, item);
+                return this.IsContainerSameItem(mark, item);
             });
             return mark === undefined;
         });

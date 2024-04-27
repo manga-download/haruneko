@@ -25,68 +25,115 @@ export default tseslint.config({
         '@typescript-eslint/ban-ts-comment': 'warn',
         'comma-spacing': 'warn',
         'comma-style': 'warn',
-        'indent': [ 'error', 4, { 'SwitchCase': 1 }],
+        'indent': [ 'error', 4, { 'SwitchCase': 1 } ],
         'key-spacing': 'warn',
         'no-trailing-spaces': 'error',
         'no-multiple-empty-lines': [ 'error', { 'max': 1, 'maxBOF': 0, 'maxEOF': 0 } ],
         'no-multi-spaces': 'error',
         'no-throw-literal': 'error',
         //'tsdoc/syntax': 'warn',
-    },
-});
-
-// Original: .eslintrc.json
-/*
-{
-    "env": {
-        "es6": true,
-        "node": true,
-        "browser": true,
-        "jest": true
-    },
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint",
-      "eslint-plugin-tsdoc"
-    ],
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
-    "globals": {
-        "protobuf":"readonly",
-        "CryptoJS":"readonly",
-        "JSZip":"readonly",
-        "OAuth":"readonly",
-        "jsPDF":"readonly",
-        "HakuNeko": "readonly",
-        "Engine": "readonly",
-        "EventListener": "readonly",
-        "Connector": "readonly",
-        "ClipboardConnector": "readonly",
-        "EXIF": "readonly"
-    },
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
-    "rules": {
-        "semi": ["error", "always"],
-        "no-extra-parens": "off",
-        "@typescript-eslint/no-extra-parens": "error",
-        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-        "@typescript-eslint/consistent-type-imports": "error",
-        "@typescript-eslint/ban-ts-comment": "warn",
-        "comma-spacing": "warn",
-        "comma-style": "warn",
-        "indent": ["error", 4, { "SwitchCase": 1 }],
-        "key-spacing": "warn",
-        "no-trailing-spaces": "error",
-        "no-multiple-empty-lines": ["error", {"max": 1, "maxBOF": 0, "maxEOF": 0}],
-        "no-multi-spaces": "error",
-        "no-throw-literal": "error",
-        "tsdoc/syntax": "warn"
+        '@typescript-eslint/naming-convention': [ 'error', // See: https://typescript-eslint.io/rules/naming-convention/#options
+            /*
+            {
+                selector: 'default',
+                format: [ 'PascalCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'variable',
+                format: [ 'camelCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'variableLike',
+                format: [ 'camelCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            */
+            {
+                selector: 'classProperty',
+                modifiers: [ 'private', 'protected' ],
+                format: [ 'camelCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'classProperty',
+                modifiers: [ 'public' ],
+                format: [ 'camelCase', 'PascalCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'classicAccessor',
+                format: [ 'PascalCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'classicAccessor',
+                modifiers: [ 'override' ],
+                format: [ 'camelCase', 'PascalCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'autoAccessor',
+                format: [ 'PascalCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'classMethod',
+                format: [ 'PascalCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'classMethod',
+                modifiers: [ 'override' ],
+                format: [ 'camelCase', 'PascalCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'parameter',
+                format: [ 'camelCase' ],
+                leadingUnderscore: 'allow',
+                trailingUnderscore: 'forbid'
+            },
+            {
+                selector: 'typeLike',
+                format: [ 'PascalCase' ],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid'
+            },
+            {
+                selector: 'typeParameter',
+                format: [ 'PascalCase' ],
+                //prefix: ['T'],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+            {
+                selector: 'interface',
+                format: [ 'PascalCase' ],
+                //prefix: ['I'],
+                leadingUnderscore: 'forbid',
+                trailingUnderscore: 'forbid',
+            },
+        ],
     }
-}
-*/
+},
+// Overrides for auto-generated translations by Crowdin
+{
+    files: [
+        'src/i18n/locales/*.ts'
+    ],
+    rules: {
+        'indent': [ 'warn', 2 ]
+    }
+});

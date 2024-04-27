@@ -1,6 +1,6 @@
 import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
 import { Key as GlobalKey } from '../../SettingsGlobal';
-import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../InterProcessCommunication';
+import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../InterProcessCommunicationTypes';
 
 /**
  * Inter Process Communication for NodeWebkit (content page)
