@@ -58,7 +58,7 @@ export default class extends DecoratableMangaScraper {
         const site = url.match(/\/([a-z]{2})\/comic\//)[1].toUpperCase();
         const slug = url.match(/\/comic\/(\S+)/)[1];
         const request = new Request(new URL(`title/comic/${slug}/${site}`, this.apiUrl), {
-            headers: this.getRequestHeaders(site)
+            headers: this.CreateRequestHeaders(site)
         });
         const { data } = await FetchJSON<APIResult<APIManga>>(request);
         return new Manga(this, provider, data.title_id.toString(), data.title_name.trim());
@@ -69,7 +69,7 @@ export default class extends DecoratableMangaScraper {
         const languages = ['EN', 'ES', 'FR', 'DE'];
         for (const language of languages) {
             for (let page = 1, run = true; run; page++) {
-                const mangas = await this.getMangasFromPage(page, provider, language);
+                const mangas = await this.GetMangasFromPage(page, provider, language);
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             }
         }
@@ -77,9 +77,9 @@ export default class extends DecoratableMangaScraper {
         return mangaList.distinct();
     }
 
-    async getMangasFromPage(page: number, provider: MangaPlugin, language: string) {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin, language: string) {
         const request = new Request(new URL(`title/genre?no=${page}&size=18&genre=`, this.apiUrl), {
-            headers: this.getRequestHeaders(language)
+            headers: this.CreateRequestHeaders(language)
         });
         const { data } = await FetchJSON<APIResult<APIManga[]>>(request);
         return data.map(manga => new Manga(this, provider, manga.title_id.toString(), manga.title_name.trim()));
@@ -102,7 +102,7 @@ export default class extends DecoratableMangaScraper {
 
     }
 
-    getRequestHeaders(site: string): HeadersInit {
+    private CreateRequestHeaders(site: string): HeadersInit {
         return {
             Referer: this.URI.origin,
             Origin: this.URI.origin,
@@ -112,5 +112,4 @@ export default class extends DecoratableMangaScraper {
             did: Date.now().toString()
         };
     }
-
 }
