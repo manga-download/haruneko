@@ -137,14 +137,14 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
 
     for (const adult of [true, false]) { //there is no "dont care if adult or not flag"" on "new" api, and old dont care about the flag
         for (let page = 1, run = true; run; page++) {
-            const mangas = await getMangaFromPage.call(this, provider, page, apiUrl, adult);
+            const mangas = await GetMangaFromPage.call(this, provider, page, apiUrl, adult);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             await new Promise(resolve => setTimeout(resolve, throttle));
         }
     }
     return mangaList.distinct();//filter in case of old api
 }
-async function getMangaFromPage(this: MangaScraper, provider: MangaPlugin, page: number, apiUrl: string, adult: boolean): Promise<Manga[]> {
+async function GetMangaFromPage(this: MangaScraper, provider: MangaPlugin, page: number, apiUrl: string, adult: boolean): Promise<Manga[]> {
     const request = new Request(new URL(`${apiUrl}/query?perPage=100&page=${page}&adult=${adult}`));
     const { data } = await FetchJSON<APIResult<APIMangaV1[]>>(request);
     if (data.length) {
@@ -271,22 +271,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     }
 
     const listImages = data.data as string[] || data.chapter.chapter_data.images;
-    return listImages.map(image => new Page(this, chapter, computePageUrl(image, data.chapter.storage, apiUrl), { type: data.chapter.chapter_type }));
-
-    /*
-    if (paywall) {
-        throw new Error(`${chapter.Title} is paywalled. Please login.`); //localize this
-    }
-
-    //in case of novel data is the html string, in case of comic its an array of strings (pictures urls or pathnames)
-    if (!data || data.length < 1) return [];
-
-    // check if novel
-    if (chapter_type.toLowerCase() === 'novel') {
-        return [new Page(this, chapter, new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI), { type: chapter_type })];
-    }
-
-    return (data as string[]).map(image => new Page(this, chapter, computePageUrl(image, storage, apiUrl), { type: chapter_type }));*/
+    return listImages.map(image => new Page(this, chapter, ComputePageUrl(image, data.chapter.storage, apiUrl), { type: data.chapter.chapter_type }));
 }
 
 /**
@@ -349,7 +334,7 @@ export function ImageAjax(detectMimeType = false, deProxifyLink = true, novelScr
  * @param storage - As string representing the type of storage used : "s3" or "local"
  * @param apiUrl - The url of the HeanCMS api for the website *
  */
-function computePageUrl(image: string, storage: string, apiUrl: string): URL {
+function ComputePageUrl(image: string, storage: string, apiUrl: string): URL {
     switch (storage) {
         case "s3": return new URL(image);
         case "local": return new URL(`${apiUrl}/${image}`);
