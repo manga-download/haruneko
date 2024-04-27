@@ -99,7 +99,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { data } = await this.fetchTwirp<APIResult<APIChapters>>('ComicDetail', {
+        const { data } = await this.FetchTwirp<APIResult<APIChapters>>('ComicDetail', {
             comic_id: parseInt(url.match(/\/mc(\d+)/)[1])
         });
         return new Manga(this, provider, data.id.toString(), data.title);
@@ -108,14 +108,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async getMangasFromPage(page, provider): Promise<Manga[]> {
-        const { data } = await this.fetchTwirp<APIResult<APIManga[]>>('ClassPage', {
+    async GetMangasFromPage(page, provider): Promise<Manga[]> {
+        const { data } = await this.FetchTwirp<APIResult<APIManga[]>>('ClassPage', {
             style_id: -1,
             area_id: -1,
             is_free: -1,
@@ -128,8 +128,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        await this.getToken();
-        const { data } = await this.fetchTwirp<APIResult<APIChapters>>('ComicDetail', {
+        await this.GetToken();
+        const { data } = await this.FetchTwirp<APIResult<APIChapters>>('ComicDetail', {
             comic_id: manga.Identifier
         });
         return data.ep_list
@@ -138,13 +138,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await this.getToken();
+        await this.GetToken();
         let credentials: APIResult<APICredential> = null;
         let data: APIResult<APIPages> = null;
 
         //Using access_token from cookies, try to get token for unlocked chapters
         if (this.auth.accessToken) {
-            credentials = await this.fetchWithAccessToken<APIResult<APICredential>>('GetCredential', {
+            credentials = await this.FetchWithAccessToken<APIResult<APICredential>>('GetCredential', {
                 ep_id: chapter.Identifier,
                 comic_id: chapter.Parent.Identifier,
                 type: 1
@@ -153,32 +153,32 @@ export default class extends DecoratableMangaScraper {
 
         //if we got chapter credentials, fetch full chapter using them
         if (credentials && credentials.data && credentials.data.credential) {
-            data = await this.fetchTwirp<APIResult<APIPages>>('GetImageIndex', {
+            data = await this.FetchTwirp<APIResult<APIPages>>('GetImageIndex', {
                 ep_id: chapter.Identifier,
                 credential: credentials.data.credential
             });
         } else {
             //get only 2 picture for locked chapter or full pictures if free chapter
-            data = await this.fetchTwirp<APIResult<APIPages>>('GetImageIndex', {
+            data = await this.FetchTwirp<APIResult<APIPages>>('GetImageIndex', {
                 ep_id: chapter.Identifier,
             });
         }
 
         const images = data.data.images.map(image => {
-            const quality = this.getImageSizeByQuality(image.x);
+            const quality = this.GetImageSizeByQuality(image.x);
             const suffix = quality + 'w';
             //suffix += qualdata.quality ? '_' + qualdata.quality + 'q' : '';
             return image.path + '@' + suffix + (this.Settings.format.Value as string);
         });
 
-        const finalImages = await this.fetchTwirp<APIResult<APIImageToken[]>>('ImageToken', {
+        const finalImages = await this.FetchTwirp<APIResult<APIImageToken[]>>('ImageToken', {
             urls: JSON.stringify(images)
         });
         return finalImages.data.map(image => new Page(this, chapter, new URL(image.url + '?token=' + image.token)));
 
     }
 
-    getImageSizeByQuality(imgWidth: number): number {
+    private GetImageSizeByQuality(imgWidth: number): number {
         const ratioArray = { "verypoor": 0.4, "poor": 0.5, "normal": 0.7, "good": 0.85, "veryhigh": 1 };
         const widthArray = { verypoor: 350, poor: 450, normal: 800, good: 1100, veryhigh: 1600 };
         /*
@@ -219,7 +219,7 @@ export default class extends DecoratableMangaScraper {
         return imgWidth;
     }
 
-    async fetchTwirp<T>(path: string, body: JSONObject): Promise<T> {
+    private async FetchTwirp<T>(path: string, body: JSONObject): Promise<T> {
         const uri = new URL(`/twirp/comic.v1.Comic/${path}`, this.URI);
         uri.search = new URLSearchParams({
             device: 'pc',
@@ -241,7 +241,7 @@ export default class extends DecoratableMangaScraper {
         return FetchJSON<T>(request);
     }
 
-    async fetchWithAccessToken<T>(path: string, body: JSONObject): Promise<T> {
+    private async FetchWithAccessToken<T>(path: string, body: JSONObject): Promise<T> {
         const server = this.credentialsServer.replace('%AREA%', this.areacode[this.auth.area]);
         const uri = new URL('/twirp/global.v1.User' + path, server);
         uri.search = new URLSearchParams({
@@ -264,7 +264,7 @@ export default class extends DecoratableMangaScraper {
         return FetchJSON<T>(request);
     }
 
-    async getToken() {
+    private async GetToken() {
         try {
             const now = Math.floor(Date.now() / 1000);
             const result = await FetchWindowScript<string>(new Request(this.URI), auhTokenScript, 500);
@@ -285,7 +285,7 @@ export default class extends DecoratableMangaScraper {
 
             //if token exists check if expired and refresh it if needed
             if (this.auth.accessToken && this.token_expires_at < now) {
-                await this.refreshToken();
+                await this.RefreshToken();
                 return;
             }
 
@@ -299,10 +299,10 @@ export default class extends DecoratableMangaScraper {
 
     }
 
-    async refreshToken() {
+    private async RefreshToken() {
         try {
             const now = Math.floor(Date.now() / 1000);
-            const { data } = await this.fetchWithAccessToken<APIResult<APIGetAccessToken>>('RefreshToken', { refresh_token: this.auth.refreshToken });
+            const { data } = await this.FetchWithAccessToken<APIResult<APIGetAccessToken>>('RefreshToken', { refresh_token: this.auth.refreshToken });
             this.auth.accessToken = data.access_token;
             this.auth.refreshToken = data.refresh_token;
             this.token_expires_at = now + 60 * 10;//expires in 10 minutes
