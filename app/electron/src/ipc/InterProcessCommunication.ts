@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { RPCServer } from '../../../nw/src/rpc/Server';
 import { Contract } from '../../../nw/src/rpc/Contract';
-import type { PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunication';
+import type { PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
 
 /**
  * Inter Process Communication for NodeWebkit (background page)

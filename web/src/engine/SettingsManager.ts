@@ -60,11 +60,11 @@ class Setting<T extends IValue> {
         return this.initial;
     }
 
-    public fromRaw(value: T) {
+    public FromRaw(value: T) {
         this.value = value;
     }
 
-    public toRaw(): T {
+    public ToRaw(): T {
         return this.value;
     }
 }
@@ -175,7 +175,7 @@ class Settings implements Iterable<ISetting> {
         this.ValueChanged.Dispatch(sender, args);
         const data: Record<string, IValue> = {};
         for(const key in this.settings) {
-            data[key] = this.settings[key].toRaw();
+            data[key] = this.settings[key].ToRaw();
         }
         await this.storage.SavePersistent(data, Store.Settings, this.scope);
     }
@@ -188,7 +188,7 @@ class Settings implements Iterable<ISetting> {
         const data = await this.storage.LoadPersistent<Record<string, IValue>>(Store.Settings, this.scope);
         for(const setting of settings) {
             if(!this.settings[setting.ID]) {
-                setting.fromRaw(data && data[setting.ID] ? data[setting.ID] : setting.Value);
+                setting.FromRaw(data && data[setting.ID] ? data[setting.ID] : setting.Value);
                 setting.ValueChanged.Subscribe(this.OnValueChangedCallback.bind(this));
                 this.settings[setting.ID] = setting;
             }

@@ -52,6 +52,7 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('manganexus', `MangaNexus`, 'https://manganexus.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
+
     public override get Icon() {
         return icon;
     }
@@ -77,13 +78,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin) : Promise<Manga[]> {
         const mangalist = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangalist.push(...mangas) : run = false;
         }
         return mangalist;
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
             const url = new URL(`/_next/data/${this.nextBuild}/lista-de-mangas.json?p=${page}`, this.URI).href;
             const request = new Request(url);
