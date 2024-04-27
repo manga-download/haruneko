@@ -4,11 +4,11 @@ import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
 import DeScramble from '../../transformers/ImageDescrambler';
 
-type JSONPageData_v016452 = {
-    items: Configuration_v016452[]
+type JSONPageDatav016452 = {
+    items: Configurationv016452[]
 }
 
-type Configuration_v016452 = {
+type Configurationv016452 = {
     ContentID: string,
     ctbl: string | string[],
     ptbl: string | string[],
@@ -19,28 +19,28 @@ type Configuration_v016452 = {
     ContentDate: string
 }
 
-type Params_v016452 = {
+type Paramsv016452 = {
     cid: string,
     u0: string,
     u1: string,
     sharingKey: string
 }
 
-type JSONImageData_v016061 = {
+type JSONImageDatav016061 = {
     resources: {
         i: {
             src: string
         }
     }
-    views: PageView_v016061[]
+    views: PageViewv016061[]
 }
-type PageView_v016061 = {
+type PageViewv016061 = {
     coords: string[],
     width: number,
     height: number
 }
 
-type PageView_v016130 = {
+type PageViewv016130 = {
     transfers: {
         index: number,
         coords: DrawImageCoords[]
@@ -179,7 +179,7 @@ const pageScript = `
     });
 `;
 
-type pageScriptResult = {
+type PageScriptResult = {
     location: string,
     pages: HTMLElement
 }
@@ -190,9 +190,9 @@ type pageScriptResult = {
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param useScript - use FetchWindowScript and not Fetch for first request
- * @param SBVersionOverride - Override SpeedBinb version detection
+ * @param sbVersionOverride - Override SpeedBinb version detection
  */
-export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, useScript = false, SBVersionOverride: SpeedBinbVersion = undefined): Promise<Page[]> {
+export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, useScript = false, sbVersionOverride: SpeedBinbVersion = undefined): Promise<Page[]> {
     let viewerUrl = new URL(chapter.Identifier, this.URI);
     const request = new Request(viewerUrl.href, {
         headers: {
@@ -216,13 +216,13 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         SBpagesElement = data;
     } else {
         //Use this if chapter is redirected using javascript, or if it must be opened in a window to gather access Cookies (MangaPlaza)
-        const data = await FetchWindowScript<pageScriptResult>(request, pageScript, 2500);
+        const data = await FetchWindowScript<PageScriptResult>(request, pageScript, 2500);
         if (!data.pages) return []; //chapter may be paywalled, no need to throw an error, so quit gracefully
         viewerUrl = new URL(data.location);
         SBpagesElement = data.pages;
     }
 
-    const SBVersion = SBVersionOverride || getSpeedBinbVersion(SBpagesElement, viewerUrl);
+    const SBVersion = sbVersionOverride || getSpeedBinbVersion(SBpagesElement, viewerUrl);
 
     if (SBVersion == SpeedBinbVersion.v016113) {
         viewerUrl.searchParams.set('cid', SBpagesElement.dataset['ptbinbCid']);
@@ -248,7 +248,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         case SpeedBinbVersion.v016113: //BookHodai,  Futabanet, Getsuaku (v016700), MangaPlaza, Ohtabooks
         case SpeedBinbVersion.v016130: { // Booklive, MangaPlanet, S-Manga, Yanmaga
             //Doing it like that because of cookies needed for Mangaplanet using viewerUrl on purpose because of CORS issues
-            const data = await FetchWindowScript<JSONPageData_v016452>(new Request(viewerUrl.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+            const data = await FetchWindowScript<JSONPageDatav016452>(new Request(viewerUrl.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016130(this, data.items[0], sharingKey, chapter);
         }
         //YoungJump
@@ -256,7 +256,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             const u = viewerUrl.searchParams.get('u1');
             uri.searchParams.set('u1', u);
             //Doing it like that because of cookies needed for YoungJump using viewerUrl on purpose because of CORS issues
-            const data = await FetchWindowScript<JSONPageData_v016452>(new Request(viewerUrl.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+            const data = await FetchWindowScript<JSONPageDatav016452>(new Request(viewerUrl.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016201(this, data.items[0], sharingKey, u, chapter);
         }
         //Cmoa
@@ -265,8 +265,8 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             const u1 = viewerUrl.searchParams.get('u1');
             uri.searchParams.set('u0', u0);
             uri.searchParams.set('u1', u1);
-            const data = await FetchJSON<JSONPageData_v016452>(new Request(uri.href));
-            const params: Params_v016452 = { cid, sharingKey, u0, u1 };
+            const data = await FetchJSON<JSONPageDatav016452>(new Request(uri.href));
+            const params: Paramsv016452 = { cid, sharingKey, u0, u1 };
             return await getPageLinks_v016452(this, data.items[0], params, chapter);
         }
     }
@@ -277,21 +277,21 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
  * @param useScript - use FetchWindowScript and not Fetch for first request
- * @param SBVersionOverride - Override SpeedBinb version detection
+ * @param sbVersionOverride - Override SpeedBinb version detection
  */
-export function PagesSinglePageAjax(useScript = false, SBVersionOverride: SpeedBinbVersion = undefined) {
+export function PagesSinglePageAjax(useScript = false, sbVersionOverride: SpeedBinbVersion = undefined) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageAjax.call(this, chapter, useScript, SBVersionOverride);
+                return FetchPagesSinglePageAjax.call(this, chapter, useScript, sbVersionOverride);
             }
         };
     };
 }
 
-async function getPageLinks_v016452(scraper: MangaScraper, configuration: Configuration_v016452, params: Params_v016452, chapter: Chapter): Promise<Page[]> {
+async function getPageLinks_v016452(scraper: MangaScraper, configuration: Configurationv016452, params: Paramsv016452, chapter: Chapter): Promise<Page[]> {
     configuration.ctbl = _pt(params.cid, params.sharingKey, configuration.ctbl as string);
     configuration.ptbl = _pt(params.cid, params.sharingKey, configuration.ptbl as string);
     try {
@@ -313,7 +313,7 @@ async function getPageLinks_v016452(scraper: MangaScraper, configuration: Config
     return Promise.reject(new Error('Content server type not supported!'));
 }
 
-async function getPageLinks_v016201(scraper: MangaScraper, configuration: Configuration_v016452, sharingKey: string, u: string, chapter: Chapter): Promise<Page[]> {
+async function getPageLinks_v016201(scraper: MangaScraper, configuration: Configurationv016452, sharingKey: string, u: string, chapter: Chapter): Promise<Page[]> {
     const cid = configuration.ContentID;
     configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl as string);
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
@@ -339,7 +339,7 @@ async function getPageLinks_v016201(scraper: MangaScraper, configuration: Config
     return Promise.reject(new Error('Content server type not supported!'));
 }
 
-async function getPageLinks_v016130(scraper: MangaScraper, configuration: Configuration_v016452, sharingKey: string, chapter: Chapter): Promise<Page[]> {
+async function getPageLinks_v016130(scraper: MangaScraper, configuration: Configurationv016452, sharingKey: string, chapter: Chapter): Promise<Page[]> {
     const cid = configuration.ContentID;
     configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl as string);
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
@@ -389,7 +389,7 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
     return Promise.reject(new Error('Content server type not supported!'));
 }
 
-async function fetchSBC(scraper: MangaScraper, uri: URL, configuration: Configuration_v016452, chapter: Chapter) {
+async function fetchSBC(scraper: MangaScraper, uri: URL, configuration: Configurationv016452, chapter: Chapter) {
     const data = await FetchJSON<SBCDATA>(new Request(uri.href));
     const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
     const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
@@ -427,7 +427,7 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
 }
 
 async function descramble_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    const data = await FetchJSON<JSONImageData_v016061>(new Request(page.Link.href));
+    const data = await FetchJSON<JSONImageDatav016061>(new Request(page.Link.href));
     const fakepage = new Page(scraper, page.Parent as Chapter, new URL(data.resources.i.src, page.Link.href));
     const imagedata: Blob = await Common.FetchImageAjax.call(scraper, fakepage, priority, signal, detectMimeType);
 
@@ -544,7 +544,7 @@ function lt_001(t: string, ctbl: string[], ptbl: string[]): DescrambleKP {
  * i  width of descrambled image
  * n height of descrambled image
  */
-function getImageDescrambleCoords(/*t*/s: string, u: string, i: number, n: number): PageView_v016130 {
+function getImageDescrambleCoords(/*t*/s: string, u: string, i: number, n: number): PageViewv016130 {
     const r = _lt_002(s, u); // var r = this.lt(t.src);
     if (!r || !r.vt())
         return null;
@@ -808,7 +808,6 @@ const _speedbinb_a = function () {
  * define prototype for h
  */
 const _speedbinb_h = function () {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     function t() { }
     return t.prototype.vt = function (): boolean {
         return !0;
