@@ -38,14 +38,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterslist = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(page, manga);
+            const chapters = await this.GetChaptersFromPage(page, manga);
             chapters.length > 0 ? chapterslist.push(...chapters) : run = false;
         }
         return chapterslist;
 
     }
 
-    private async getChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
+    private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const mangaid = manga.Identifier.match(/-(\d+)\/$/)[1];
         const uri = new URL(`?act=ajax&code=load_list_chapter&manga_id=${mangaid}&page_num=${page}`, this.URI);
         const request = new Request(uri.href);
@@ -54,5 +54,4 @@ export default class extends DecoratableMangaScraper {
         const nodes = [...data.querySelectorAll<HTMLAnchorElement>('li.wp-manga-chapter a')];
         return nodes.map(element => new Chapter(this, manga, new URL(element.href, request.url).pathname, element.text.trim()));
     }
-
 }

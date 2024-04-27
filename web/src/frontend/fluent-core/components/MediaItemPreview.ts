@@ -35,31 +35,31 @@ const styles: ElementStyles = css`
     }
 `;
 
-const templatePage: ViewTemplate<MediaItem> = html`<fluent-media-item-page :item=${model => model}></fluent-media-item-page>`;
+const templatePage: ViewTemplate<MediaItem> = html`<fluent-media-item-page :Item=${model => model}></fluent-media-item-page>`;
 const templateChapter: ViewTemplate<MediaItemPreview> = html`${repeat(model => model.items, templatePage, { recycle: false })}`;
 
 const template: ViewTemplate<MediaItemPreview> = html`
     <div id="heading">
-        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.entry = undefined}></fluent-button>
-        <div id="caption">${model => model.entry?.Title ?? ''}</div>
+        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.Entry = undefined}></fluent-button>
+        <div id="caption">${model => model.Entry?.Title ?? ''}</div>
         <div></div>
     </div>
     <div id="content">
-        ${when(model => model.entry instanceof Chapter, templateChapter)}
+        ${when(model => model.Entry instanceof Chapter, templateChapter)}
     </div>
 `;
 
 @customElement({ name: 'fluent-media-item-preview', template, styles })
 export class MediaItemPreview extends FASTElement {
 
-    @observable entry: MediaContainer<MediaItem>;
-    async entryChanged() {
-        if(this.entry?.Entries?.length === 0) {
+    @observable Entry: MediaContainer<MediaItem>;
+    async EntryChanged() {
+        if(this.Entry?.Entries?.length === 0) {
             this.items = [];
-            await this.entry?.Update();
+            await this.Entry?.Update();
         }
-        this.items = this.entry?.Entries ?? [];
-        this.$emit('entryChanged', this.entry);
+        this.items = this.Entry?.Entries ?? [];
+        this.$emit('entryChanged', this.Entry);
     }
     @observable items: MediaItem[];
 }
