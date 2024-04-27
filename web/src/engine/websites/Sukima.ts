@@ -21,7 +21,6 @@ const pageScript = `
                 }
             }));
      });
-
 `;
 
 type APIManga = {
@@ -40,7 +39,7 @@ type APIChapter = {
     }
 }
 
-type PAGE_INFO = {
+type PageInfo = {
     page_url: string,
     shuffle_map: string,
     blocklen: number
@@ -61,8 +60,6 @@ type APICategories = {
         }
     }[]
 }
-
-type SHUFFLE_MAP = Array<Array<number>>;
 
 export default class extends DecoratableMangaScraper {
 
@@ -88,15 +85,15 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(provider, page);
+            const mangas = await this.GetMangasFromPage(provider, page);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
-        const categories = await this.fetchPOST<APICategories>('/api/book/v1/free/', {store: false, genre: '0'});
+        const categories = await this.FetchPOST<APICategories>('/api/book/v1/free/', {store: false, genre: '0'});
         for (const category of categories.rows) {
             const uri = new URL(category.more_btn.link, this.URI);
             if (uri.searchParams.get('tag') != null) {
                 for (let page = 1, run = true; run; page++) {
-                    const mangas = await this.getMangasFromPage(provider, page, [uri.searchParams.get('tag')]);
+                    const mangas = await this.GetMangasFromPage(provider, page, [uri.searchParams.get('tag')]);
                     mangas.length > 0 ? mangaList.push(...mangas) : run = false;
                 }
             }
@@ -104,13 +101,13 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
 
-    async getMangasFromPage(provider: MangaPlugin, page: number, tag :string[]= []): Promise<Manga[]>{
+    private async GetMangasFromPage(provider: MangaPlugin, page: number, tag :string[]= []): Promise<Manga[]>{
         const body = {
             'page': page,
             'sort_by': 0,
             'tag': tag
         };
-        const pageContent = await this.fetchPOST<APIMangas>('/api/v1/search/', body);
+        const pageContent = await this.FetchPOST<APIMangas>('/api/v1/search/', body);
         const mangas = pageContent.items.map(element => new Manga(this, provider, element.title_code, element.title_name));
         return page > pageContent.max_page ? [] : mangas;
     }
@@ -132,15 +129,15 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new Request(new URL(chapter.Identifier, this.URI).href);
-        const pages = await FetchWindowScript<PAGE_INFO[]>(request, pageScript, 1500);
+        const pages = await FetchWindowScript<PageInfo[]>(request, pageScript, 1500);
         return pages.map(page => new Page(this, chapter, new URL(page.page_url), { Referer: request.url, ...page }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return DeScramble(blob, async (bitmap, ctx) => {
-            const payload = page.Parameters as PAGE_INFO;
-            const shuffle_map: SHUFFLE_MAP = JSON.parse(payload.shuffle_map);
+            const payload = page.Parameters as PageInfo;
+            const shuffle_map: number[][] = JSON.parse(payload.shuffle_map);
             const xSplitCount = Math.floor(bitmap.width / payload.blocklen);
             const ySplitCount = Math.floor(bitmap.height / payload.blocklen);
             let count = 0;
@@ -159,7 +156,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    async fetchPOST<T>(uri: string, body: unknown) {
+    private async FetchPOST<T>(uri: string, body: unknown) {
         const request = new Request(new URL(uri, this.URI).href, {
             method: 'POST',
             body: JSON.stringify(body),
