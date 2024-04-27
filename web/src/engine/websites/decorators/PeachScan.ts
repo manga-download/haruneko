@@ -39,7 +39,7 @@ const pagescript = `
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param script - script used to extract pages url
  */
-async function FetchPagesPagesFromZips(this: MangaScraper, chapter: Chapter, script = pagescript): Promise<Page[]> {
+async function FetchPagesPagesFromZips(this: MangaScraper, chapter: Chapter, script : string = pagescript): Promise<Page[]> {
     //1st : first fetch zip files urls
     let request = new Request(new URL(chapter.Identifier, this.URI));
     const files: string[] = await FetchWindowScript(request, script, 2500);
@@ -117,7 +117,7 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-export function ImageFromZip(detectMimeType = false) {
+export function ImageFromZip(detectMimeType: boolean = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
