@@ -61,7 +61,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaSlug = this.computeMangaSlug(manga);
+        const mangaSlug = manga.Identifier + '-' + manga.Title.toLowerCase().split(' ').join('-');
         const url = new URL('/_next/data/' + this.nextBuild + '/comics/' + mangaSlug + '.json?slug=' + mangaSlug, this.URI).href;
         const request = new Request(url);
         const data = await FetchJSON<JSONManga>(request);
@@ -70,9 +70,4 @@ export default class extends DecoratableMangaScraper {
             return new Chapter(this, manga, `/comics/${mangaSlug}/${chap.chapterID}-chapter-${chap.chapterNumber}`, title);
         });
     }
-
-    computeMangaSlug(manga: Manga) {
-        return manga.Identifier + '-' + manga.Title.toLowerCase().split(' ').join('-');
-    }
-
 }

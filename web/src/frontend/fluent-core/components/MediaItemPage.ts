@@ -43,9 +43,9 @@ const styles: ElementStyles = css`
 
 const template: ViewTemplate<MediaItemPage> = html`
     <div class="preview">
-        <div class="info"><fluent-anchor appearance="hypertext" target="_blank" href="${model => model.item?.['Link']}" title="${model => model.item?.['Link']}">${model => model.info ?? '┄'}</fluent-anchor></div>
-        ${when(model => model.img, html`<fluent-anchor appearance="hypertext" target="_blank" href="${model => model.img}" title="${model => model.img}"><img src="${model => model.img}" /></fluent-anchor>`)}
-        ${when(model => !model.img, html`<fluent-progress-ring></fluent-progress-ring>`)}
+        <div class="info"><fluent-anchor appearance="hypertext" target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">${model => model.info ?? '┄'}</fluent-anchor></div>
+        ${when(model => model.Image, html`<fluent-anchor appearance="hypertext" target="_blank" href="${model => model.Image}" title="${model => model.Image}"><img src="${model => model.Image}" /></fluent-anchor>`)}
+        ${when(model => !model.Image, html`<fluent-progress-ring></fluent-progress-ring>`)}
     </div>
 `;
 
@@ -54,26 +54,26 @@ export class MediaItemPage extends FASTElement {
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        this.item = undefined;
+        this.Item = undefined;
     }
 
     private abort = noop;
     private timerLoadPage: number;
-    @observable item: MediaItem;
-    itemChanged() {
+    @observable Item: MediaItem;
+    ItemChanged() {
         this.abort();
-        this.img = undefined;
+        this.Image = undefined;
         // NOTE: Prevent too frequent changes, e.g. caused by recycling existing instances...
         window.clearTimeout(this.timerLoadPage);
         this.timerLoadPage = window.setTimeout(() => {
-            if(this.item) {
+            if(this.Item) {
                 window.clearTimeout(this.timerLoadPage);
                 this.LoadPage();
             }
         }, 500);
     }
-    @observable img: string = undefined;
-    imgChanged(oldValue: string, newValue: string) {
+    @observable Image: string = undefined;
+    ImageChanged(oldValue: string, newValue: string) {
         if(oldValue?.startsWith('blob:')) {
             URL.revokeObjectURL(oldValue);
         }
@@ -90,12 +90,12 @@ export class MediaItemPage extends FASTElement {
                 this.abort = noop;
                 cancellator.abort();
             };
-            const data = await this.item.Fetch(Priority.High, cancellator.signal);
+            const data = await this.Item.Fetch(Priority.High, cancellator.signal);
             this.abort = noop;
             if(!data || cancellator.signal.aborted) {
                 return;
             }
-            this.img = URL.createObjectURL(data);
+            this.Image = URL.createObjectURL(data);
             this.info = `${data.type} @ ${data.size.toLocaleString('en-US', { useGrouping: true })}`;
         } catch(error) {
             console.warn(error);

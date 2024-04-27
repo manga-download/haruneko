@@ -322,7 +322,17 @@ export enum WebsiteResourceKey {
     Plugin_Common_Preferred_LanguageInfo = 'Plugin_Common_Preferred_LanguageInfo',
     Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
     Plugin_MissingWebsiteEntry_UpdateError = 'Plugin_MissingWebsiteEntry_UpdateError',
-    Plugin_MissingManga_LanguageMismatchError = 'Plugin_MissingManga_LanguageMismatchError',
+}
+
+// [SECTION]: Website CopyManga
+export enum WebsiteResourceKey {
+    Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
+    Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
+}
+
+// [SECTION]: Website PocketComics
+export enum WebsiteResourceKey {
+    Plugin_PocketComics_LanguageMismatchError = 'Plugin_PocketComics_LanguageMismatchError',
 }
 
 // [SECTION]: Website SheepScanlations
@@ -331,9 +341,6 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
-    Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
-    Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
-
 }
 
 export const VariantResourceKey = {
