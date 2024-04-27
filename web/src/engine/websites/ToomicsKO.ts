@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         //if we have IDX, we must ask to the API the real manga ID
         if (this.mangaRegex2.test(url)) {
-            const id = await this.fetchRealMangaId(url.match(/cut_list_idx\/(\d+)$/)[1]);
+            const id = await this.FetchRealMangaId(url.match(/cut_list_idx\/(\d+)$/)[1]);
             url = new URL(id, this.URI).href;
         }
         return Common.FetchMangaCSS.call(this, provider, url.replace(/bridge\/type\/\d+/, 'episode'), 'div.episode__header h2.episode__title');
@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
         const mangaList: Manga[] = [];
         for (const path of ['/webtoon/weekly', '/webtoon/finish/ord/latest', '/popular/popular_list/cut_type/P/ord/update']) {
             for (let page = 1, run = true; run; page++) {
-                const mangas: Manga[] = await this.getMangasFromPage(path, page, provider);
+                const mangas: Manga[] = await this.GetMangasFromPage(path, page, provider);
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             }
         }
@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
         return mangaList.filter((manga, index) => index === mangaList.findIndex(m => m.Title === manga.Title));
     }
 
-    async getMangasFromPage(path: string, page: number, provider: MangaPlugin): Promise<Manga[]> {
+    async GetMangasFromPage(path: string, page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL(path, this.URI);
         const request = new Request(uri, {
             method: 'POST',
@@ -73,7 +73,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         if (/#\d+$/.test(manga.Identifier)) {
-            const realMangaId = await this.fetchRealMangaId(manga.Identifier.split('#')[1]);
+            const realMangaId = await this.FetchRealMangaId(manga.Identifier.split('#')[1]);
             const fakemanga = new Manga(this, manga.Parent as MangaPlugin, realMangaId, manga.Title);
             const chapters = await Toomics.FetchChaptersSinglePageCSS.call(this, fakemanga, 'div.episode__body ul.eps li.eps__li:not(.chk_ep) a');
             return chapters.map(chapter => new Chapter(this, manga, chapter.Identifier, chapter.Title));
@@ -82,9 +82,9 @@ export default class extends DecoratableMangaScraper {
 
     }
 
-    async fetchRealMangaId(idx: string): Promise<string> {
+    async FetchRealMangaId(idx: string): Promise<string> {
         //get real toon id
-        let result = await this.fetchPOST('/popular/getCutPaging', new URLSearchParams({
+        let result = await this.FetchPOST('/popular/getCutPaging', new URLSearchParams({
             cut_idx: idx,
             cut_gender: '',
             cut_type: 'P',
@@ -92,7 +92,7 @@ export default class extends DecoratableMangaScraper {
         }));
         const pagingData: TPagingData = JSON.parse(result);
 
-        result = await this.fetchPOST('/popular/getCutItem', new URLSearchParams({
+        result = await this.FetchPOST('/popular/getCutItem', new URLSearchParams({
             cut_idx: idx,
             history_idx: pagingData.iInsertIdx,
             ord: 'update'
@@ -100,7 +100,7 @@ export default class extends DecoratableMangaScraper {
         return '/webtoon/episode/toon/' + result.match(/toon_idx\/(\d+)/)[1];
     }
 
-    async fetchPOST(path: string, data: URLSearchParams): Promise<string> {
+    async FetchPOST(path: string, data: URLSearchParams): Promise<string> {
         const uri = new URL(path, this.URI);
         const request = new Request(uri, {
             method: 'POST',

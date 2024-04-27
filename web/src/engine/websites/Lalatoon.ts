@@ -11,7 +11,6 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Common.PagesSinglePageCSS(Toomics.queryPages, Toomics.PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('lalatoon', `Lalatoon`, 'https://www.lalatoon.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
     }

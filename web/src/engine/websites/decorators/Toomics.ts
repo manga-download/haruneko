@@ -32,7 +32,7 @@ export const queryChapterNum = [
 
 export const queryChapterTitle = [
     'div.cell-title', //Toomics
-    'div.ep__name',//Lalatoon
+    'div.ep__name', //Lalatoon
     'strong.ep__title'//ToomicsKO
 ].join(',');
 

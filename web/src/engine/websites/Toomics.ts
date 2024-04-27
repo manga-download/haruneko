@@ -11,7 +11,6 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Common.PagesSinglePageCSS(Toomics.queryPages, Toomics.PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('toomics', `Toomics (Global)`, 'https://global.toomics.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
     }
@@ -23,5 +22,4 @@ export default class extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         await FetchWindowScript(new Request(new URL('/en/index/set_display/?display=A', this.URI)), '');//allow +18 content (for all languages)
     }
-
 }
