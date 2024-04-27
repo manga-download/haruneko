@@ -1,12 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './ManhuaTai.webp';
-import MHKX, { type MHXK_infos } from './decorators/MHKX';
+import MHKX, { type MhkxInfos } from './decorators/MHKX';
 import * as Common from './decorators/Common';
 
 @Common.ImageAjax(true)
 export default class extends MHKX {
     public constructor() {
-        const product: MHXK_infos = {
+        const product: MhkxInfos = {
             id: '2',
             name: 'mht',
             platform: 'pc'

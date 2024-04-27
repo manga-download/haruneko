@@ -4,7 +4,7 @@ import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../../i18n/I
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
 
-export type MHXK_infos = {
+export type MhkxInfos = {
     id: string,
     name: string,
     platform: string
@@ -30,9 +30,9 @@ type APIChapter = {
 }
 
 export default class extends DecoratableMangaScraper {
-    protected product: MHXK_infos;
+    protected product: MhkxInfos;
 
-    public constructor(id: string, title: string, url: string, product: MHXK_infos, ...tags: Tag[]) {
+    public constructor(id: string, title: string, url: string, product: MhkxInfos, ...tags: Tag[]) {
         super(id, title, url, ...tags);
         this.product = product;
 
@@ -66,20 +66,20 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const uri = this.createCustomerURI('/getComicList/');
+        const uri = this.CreateCustomerURI('/getComicList/');
         const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(uri.href));
         return data.map(manga => new Manga(this, provider, manga.comic_id.toString(), manga.comic_name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = this.createCustomerURI('/getComicInfoBody/');
+        const uri = this.CreateCustomerURI('/getComicInfoBody/');
         uri.searchParams.set('comic_id', manga.Identifier);
         const { data } = await FetchJSON<APIResult<APIManga>>(new Request(uri.href));
         return data.comic_chapter.map(chapter => new Chapter(this, manga, chapter.chapter_newid, chapter.chapter_name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = this.createCustomerURI('/getchapterinfov2');
+        const uri = this.CreateCustomerURI('/getchapterinfov2');
         uri.search = new URLSearchParams({
             product_id: this.product.id,
             productname: this.product.name,
@@ -93,7 +93,7 @@ export default class extends DecoratableMangaScraper {
         return data.current_chapter.chapter_img_list.map(page => new Page(this, chapter, new URL(page)));
     }
 
-    createCustomerURI(endpoint: string) {
+    private CreateCustomerURI(endpoint: string) {
         return new URL('/api' + endpoint, this.URI);
     }
 

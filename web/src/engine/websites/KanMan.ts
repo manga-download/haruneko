@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './KanMan.webp';
-import MHKX, { type MHXK_infos } from './decorators/MHKX';
+import MHKX, { type MhkxInfos } from './decorators/MHKX';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 import { Manga, type MangaPlugin } from '../providers/MangaPlugin';
@@ -8,7 +8,7 @@ import { Manga, type MangaPlugin } from '../providers/MangaPlugin';
 @Common.ImageAjax(true)
 export default class extends MHKX {
     public constructor() {
-        const product: MHXK_infos = {
+        const product: MhkxInfos = {
             id: '1',
             name: 'kmh',
             platform: 'pc'
