@@ -208,13 +208,13 @@ export function MangaCSS(pattern: RegExp, query = queryMangaTitleURI, languageRe
 export async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
     const chapterList = [];
     for (let page = 1, run = true; run; page++) {
-        const chapters = await getChaptersFromPage(this, manga, query, extractor, page);
+        const chapters = await GetChaptersFromPage(this, manga, query, extractor, page);
         chapters.length > 0 && !ChapterEndsWith(chapterList, chapters) ? chapterList.push(...chapters) : run = false;
     }
     return chapterList;
 }
 
-async function getChaptersFromPage(scrapper: MangaScraper, manga: Manga, query: string, extractor, page: number): Promise<Chapter[]> {
+async function GetChaptersFromPage(scrapper: MangaScraper, manga: Manga, query: string, extractor, page: number): Promise<Chapter[]> {
     const url = new URL(manga.Identifier, scrapper.URI);
     url.searchParams.set('page', String(page));
     const request = new Request(url.href);
@@ -263,11 +263,11 @@ function ChapterEndsWith(target: Chapter[], source: Chapter[]) {
 async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string): Promise<Page[]> {
     const data = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), script, 1500);
     if (!Array.isArray(data)) return [];
-    return typeof data[0] === 'string' ? (data as Array<string>).map(page => new Page(this, chapter, new URL(page))) : createPagesfromData(this, chapter, data as PageData[]);
+    return typeof data[0] === 'string' ? (data as Array<string>).map(page => new Page(this, chapter, new URL(page))) : CreatePagesfromData(this, chapter, data as PageData[]);
 }
 
 //sample for descrambling : //https://www.webtoons.com/id/horror/guidao/list?title_no=874
-async function createPagesfromData(scraper: MangaScraper, chapter: Chapter, data: PageData[]): Promise<Page[]> {
+async function CreatePagesfromData(scraper: MangaScraper, chapter: Chapter, data: PageData[]): Promise<Page[]> {
     return data.map(page => {
         const parameters = { Referer: scraper.URI.origin, page: JSON.stringify(page) };
         return new Page(scraper, chapter, new URL(scraper.URI), parameters);
@@ -313,7 +313,7 @@ async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority
         ctx.canvas.height = payload.height;
 
         if (payload.background.image) {
-            const image = await loadImage(payload.background.image);
+            const image = await LoadImage(payload.background.image);
             ctx.canvas.width = image.width;
             ctx.canvas.height = image.height;
             ctx.drawImage(image, 0, 0);
@@ -325,9 +325,9 @@ async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority
         for (const layer of payload.layers) {
             const type = layer.type.split('|');
             if (type[0] === 'image') {
-                const image = await loadImage(layer.asset);
+                const image = await LoadImage(layer.asset);
                 if (type[1] === 'text') {
-                    adjustTextLayerVisibility(layer, image, ctx.canvas);
+                    AdjustTextLayerVisibility(layer, image, ctx.canvas);
                 }
                 // TODO: process layer.keyframes in case top/left/width/height is animated?
                 ctx.drawImage(image, layer.left, layer.top, layer.width || image.width, layer.height || image.height);
@@ -337,7 +337,7 @@ async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority
     });
 }
 
-function adjustTextLayerVisibility(layer: ImageLayer, textLayer: HTMLImageElement, canvas: OffscreenCanvas) {
+function AdjustTextLayerVisibility(layer: ImageLayer, textLayer: HTMLImageElement, canvas: OffscreenCanvas) {
     if (textLayer.height > canvas.height) {
         layer.top = 0;
         layer.height = canvas.height;
@@ -364,7 +364,7 @@ function adjustTextLayerVisibility(layer: ImageLayer, textLayer: HTMLImageElemen
     }
 }
 
-async function loadImage(url: string): Promise<HTMLImageElement> {
+async function LoadImage(url: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const uri = new URL(url);
         uri.searchParams.delete('type');

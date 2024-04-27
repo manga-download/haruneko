@@ -16,7 +16,6 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @LineW.PagesSinglePageJS()
 @LineW.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('dongmanmanhua', `咚漫 (DongMan Manhua)`, 'https://www.dongmanmanhua.cn', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Official);
     }

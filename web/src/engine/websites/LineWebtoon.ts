@@ -9,9 +9,7 @@ import * as LineW from './decorators/LineWebtoon';
 @LineW.ChaptersMultiPageCSS()
 @LineW.PagesSinglePageJS()
 @LineW.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('linewebtoon', `Line Webtoon`, 'https://www.webtoons.com/', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
     }
