@@ -112,7 +112,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     const [viewer] = await FetchCSS(request, '#comici-viewer');
     if (!viewer) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
-    const coord = await fetchCoordInfo(this, viewer);
+    const coord = await FetchCoordInfo(this, viewer);
     return coord.result.map(image => new Page(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.origin }));
 }
 
@@ -131,7 +131,7 @@ export function PagesSinglePageAJAX() {
     };
 }
 
-async function fetchCoordInfo(scraper: MangaScraper, viewer: HTMLElement): Promise<APIResult<APIPage[]>> {
+async function FetchCoordInfo(scraper: MangaScraper, viewer: HTMLElement): Promise<APIResult<APIPage[]>> {
     //first request get page count
     let uri = new URL('/book/contentsInfo', scraper.URI);
     let params = new URLSearchParams({
@@ -186,7 +186,7 @@ async function FetchImage(this: MangaScraper, page: Page, priority: Priority, si
     const data = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
     return !page.Parameters?.scramble ? data : DeScramble(data, async (image, ctx) => {
 
-        const decodedArray = decodeScrambleArray(page.Parameters.scramble as string);
+        const decodedArray = DecodeScrambleArray(page.Parameters.scramble as string);
         const tileWidth = Math.floor(image.width / 4);
         const tileHeight = Math.floor(image.height / 4);
         for (let k = 0, i = 0; i < 4; i++) {
@@ -215,7 +215,7 @@ export function ImageAjax(detectMimeType = false) {
     };
 }
 
-function decodeScrambleArray(scramble: string): number[][] {
+function DecodeScrambleArray(scramble: string): number[][] {
     const decoded : number[][]= [];
     const encoded = scramble.replace(/\s+/g, '').slice(1).slice(0, -1).split(',');
     for (let i = 0; i < defaultOrder.length; i++) {
