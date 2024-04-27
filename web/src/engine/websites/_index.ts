@@ -163,6 +163,7 @@ export { default as HarmonyScan } from './HarmonyScan';
 export { default as HastaTeam } from './HastaTeam';
 export { default as HastaTeamDDT } from './HastaTeamDDT';
 export { default as Hayalistic } from './Hayalistic';
+export { default as HDPornComics } from './HDPornComics';
 export { default as HeavenManga2 } from './HeavenManga2';
 export { default as HenChan } from './HenChan';
 export { default as Hentai2Read } from './Hentai2Read';
