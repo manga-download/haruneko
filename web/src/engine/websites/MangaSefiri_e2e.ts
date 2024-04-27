@@ -2,8 +2,8 @@
 
 const config = {
     plugin: {
-        id: 'adonisfansub',
-        title: 'Adonis Fansub'
+        id: 'mangasefiri',
+        title: 'Manga Sefiri'
     },
     container: {
         url: 'https://mangasefiri.com/manga/evolution-begins-with-a-big-tree',
@@ -11,12 +11,12 @@ const config = {
         title: 'Evolution Begins with a Big Tree'
     },
     child: {
-        id: '/chapter/1278/evolution-begins-with-a-big-tree-bolum-148/',
+        id: '/chapter/1278/evolution-begins-with-a-big-tree-bolum-148',
         title: 'Bölüm 148'
     },
     entry: {
-        index: 0,
-        size: 2_981_545,
+        index: 8,
+        size: 1_448_543,
         type: 'image/png'
     }
 };
