@@ -19,7 +19,7 @@ export abstract class MediaItem {
 export abstract class MediaContainer<T extends MediaChild> {
 
     #tags: Tag[] = [];
-    protected _entries: T[] = [];
+    #entries: T[] = [];
 
     constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: MediaContainer<MediaContainer<T>>) {
     }
@@ -41,7 +41,11 @@ export abstract class MediaContainer<T extends MediaChild> {
     }
 
     public get Entries(): T[] {
-        return this._entries;
+        return this.#entries;
+    }
+
+    protected set Entries(value: T[]) {
+        this.#entries = value;
     }
 
     public *[Symbol.iterator](): Iterator<T> {

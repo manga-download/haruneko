@@ -45,16 +45,16 @@ const styles: ElementStyles = css`
 `;
 
 const listitem: ViewTemplate<DownloadTask> = html`
-    <fluent-download-manager-task :entry=${model => model}></fluent-download-manager-task>
+    <fluent-download-manager-task :Entry=${model => model}></fluent-download-manager-task>
 `;
 
 const template: ViewTemplate<DownloadManager> = html`
     <div id="header">
         <div id="title">${() => S.Locale.Frontend_FluentCore_DownloadManager_Heading()}</div>
-        <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
+        <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
     </div>
     <div id="searchcontrol">
-        <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+        <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <div id="entries">
         ${repeat(model => model.filtered, listitem)}
@@ -77,21 +77,21 @@ export class DownloadManager extends FASTElement {
         HakuNeko.DownloadManager.TasksRemoved.Unsubscribe(this.DownloadsChanged);
     }
 
-    @observable entries: DownloadTask[] = [];
-    entriesChanged() {
+    @observable Entries: DownloadTask[] = [];
+    EntriesChanged() {
         this.FilterEntries();
     }
-    @observable match: (text: string) => boolean = () => true;
-    matchChanged() {
+    @observable Match: (text: string) => boolean = () => true;
+    MatchChanged() {
         this.FilterEntries();
     }
     @observable filtered: DownloadTask[] = [];
 
     public FilterEntries() {
-        this.filtered = this.entries.filter(task => this.match(task.Media.Title)).slice(0, 250); /* TODO: virtual scrolling */
+        this.filtered = this.Entries.filter(task => this.Match(task.Media.Title)).slice(0, 250); /* TODO: virtual scrolling */
     }
 
-    private DownloadsChanged = async function() {
-        this.entries = (await HakuNeko.DownloadManager.GetTasks()).slice();
+    private DownloadsChanged = async function(this: DownloadManager) {
+        this.Entries = (await HakuNeko.DownloadManager.GetTasks()).slice();
     }.bind(this);
 }
