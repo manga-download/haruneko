@@ -1,21 +1,8 @@
-import { InternalError } from '../Error';
 import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import type { FetchProvider } from './FetchProviderCommon';
 import NodeWebkitFetchProvider from './nw/FetchProvider';
 import ElectronFetchProvider from './electron/FetchProvider';
-
-class HttpResponseError extends InternalError {
-    constructor(public readonly response: Response) {
-        super(response.statusText);
-    }
-
-    public get status() {
-        return this.response.status;
-    }
-}
-
-export type { HttpResponseError };
 
 export function CreateFetchProvider(): FetchProvider {
     return new PlatformInstanceActivator<FetchProvider>()
