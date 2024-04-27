@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import type { VariantResource } from '../ILocale';
 import base from "./en_US";
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -248,7 +247,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "Sayfalar bölüm içeriğinden ayıklanamadı!",
   Plugin_Common_Preferred_Language: "Web Sitesi için Tercih Edilen Dil",
   Plugin_Common_Preferred_LanguageInfo: "Web site içeriği için tercih edilen dil.",
-  Plugin_MissingManga_LanguageMismatchError: "Seçili dil {1} için {0} mangası bulunamadı",
+  Plugin_PocketComics_LanguageMismatchError: "Seçili dil {1} için {0} mangası bulunamadı",
   Plugin_MissingWebsite_UpdateError: "Var olmayan bir web sitesi için içerik dizini güncellenemedi!",
   Plugin_MissingWebsiteEntry_UpdateError: "Var olmayan bir web sitesi için medya dizini güncellenemedi!",
   Plugin_SheepScanlations_Settings_Username: "Kullanıcı Adı",

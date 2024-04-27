@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import type { VariantResource } from '../ILocale';
 import base from './xx_XX';
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
@@ -248,7 +247,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "crwdns1610:0crwdne1610:0",
   Plugin_Common_Preferred_Language: "crwdns2102:0crwdne2102:0",
   Plugin_Common_Preferred_LanguageInfo: "crwdns2104:0crwdne2104:0",
-  Plugin_MissingManga_LanguageMismatchError: "crwdns2106:0{0}crwdnd2106:0{1}crwdne2106:0",
+  Plugin_PocketComics_LanguageMismatchError: "crwdns2106:0{0}crwdnd2106:0{1}crwdne2106:0",
   Plugin_MissingWebsite_UpdateError: "crwdns1612:0crwdne1612:0",
   Plugin_MissingWebsiteEntry_UpdateError: "crwdns1614:0crwdne1614:0",
   Plugin_SheepScanlations_Settings_Username: "crwdns1553:0crwdne1553:0",

@@ -173,6 +173,7 @@ export { default as HentaiFox } from './HentaiFox';
 export { default as HentaiHand } from './HentaiHand';
 export { default as HentaiHere } from './HentaiHere';
 export { default as HentaiRead } from './HentaiRead';
+export { default as HentaiVN } from './HentaiVN';
 export { default as HentaiWebtoon } from './HentaiWebtoon';
 export { default as HentaiZone } from './HentaiZone';
 export { default as HerosWeb } from './HerosWeb';

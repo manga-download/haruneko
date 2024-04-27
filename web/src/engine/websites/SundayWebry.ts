@@ -10,7 +10,7 @@ type APIChapters = {
     nextUrl: string;
 }
 
-type extractChaptersResult = {
+type ChaptersResult = {
     chapters: Chapter[],
     nextUrl: string,
 }
@@ -48,25 +48,25 @@ export default class extends DecoratableMangaScraper {
 
         //fetch first chapters
         request = new Request(endPointlinks[0]);
-        let result = await this.extractChapters(manga, request);
+        let result = await this.ExtractChapters(manga, request);
         chapters.push(...result.chapters);
 
         //fetch MORE (paginated)
         request = new Request(endPointlinks[1]);
         let run = true;
         while (run) {
-            result = await this.extractChapters(manga, request);
+            result = await this.ExtractChapters(manga, request);
             result.chapters.length > 0 ? chapters.push(...result.chapters): run = false;
             request = new Request(result.nextUrl);
         }
         //fetch last chapters
         request = new Request(endPointlinks[2]);
-        result = await this.extractChapters(manga, request);
+        result = await this.ExtractChapters(manga, request);
         chapters.push(...result.chapters);
         return chapters;
     }
 
-    async extractChapters(manga: Manga, request: Request): Promise<extractChaptersResult> {
+    private async ExtractChapters(manga: Manga, request: Request): Promise<ChaptersResult> {
         try {
             const data = await FetchJSON<APIChapters>(request);
             const dom = new DOMParser().parseFromString(data.html, 'text/html');
@@ -78,6 +78,5 @@ export default class extends DecoratableMangaScraper {
         } catch (error) {
             return { chapters: [], nextUrl: '' };
         }
-
     }
 }

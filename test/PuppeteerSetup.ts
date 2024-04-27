@@ -1,7 +1,8 @@
-import os from 'os';
-import path from 'path';
-import fs from 'fs-extra';
-import { spawn } from 'child_process';
+import os from 'node:os';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
 //import type { Config } from '@jest/types';
 
@@ -24,19 +25,27 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 
 async function LaunchNW() {
     const nwApp = path.resolve('app', 'nw', 'build');
-    const nwExe = [
+    let nwExe = [
         path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw'),
         path.resolve('app', 'nw', 'node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw'),
-    ].filter(file => fs.existsSync(file)).shift();
+    ].filter(file => existsSync(file)).shift();
     if(!nwExe) {
         throw new Error('Failed to detect location of nw executable!');
     }
+
+    let args: string[] = [nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + appURL];
+
+    if (process.platform == 'win32') {
+        args = ['/c', nwExe].concat(args);
+        nwExe = path.resolve(process.env['SystemRoot'], 'System32', 'cmd.exe');
+    }
+
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: nwExe,
-        args: [ nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + appURL ],
+        args: args,
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
@@ -65,7 +74,7 @@ export default async function(/*config: Config.ConfigGlobals*/) {
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
-    const server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { cwd: path.resolve('web'), stdio: [ 'pipe', process.stdout, process.stderr ] });
+    const server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { cwd: path.resolve('web'), stdio: [ 'pipe', process.stdout, process.stderr ] , shell : true});
     global.SERVER = server;
     try {
         global.BROWSER = await LaunchNW();
