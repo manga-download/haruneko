@@ -170,7 +170,6 @@ export enum FrontendResourceKey {
     Frontend_Classic_Sidenav_Settings_Interface = 'Frontend_Classic_Sidenav_Settings_Interface',
     Frontend_Classic_Sidenav_Settings_Trackers = 'Frontend_Classic_Sidenav_Settings_Trackers',
     Frontend_Classic_Sidenav_Settings_Network = 'Frontend_Classic_Sidenav_Settings_Network',
-
 }
 
 // [SECTION]: Frontend: FluentCore
@@ -197,14 +196,6 @@ export enum FrontendResourceKey {
     Frontend_FluentCore_Settings_ShowBookmarksPanel_Description = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Description',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Label = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Label',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Description = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Description',
-    Frontend_FluentCore_Settings_FeatureFlags_Label = 'Frontend_FluentCore_Settings_FeatureFlags_Label',
-    Frontend_FluentCore_Settings_FeatureFlags_Description = 'Frontend_FluentCore_Settings_FeatureFlags_Description',
-    Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Label = 'Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Label',
-    Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Description = 'Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Description',
-    Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Label = 'Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Label',
-    Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Description = 'Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Description',
-    Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Label = 'Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Label',
-    Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Description = 'Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Description',
 
     Frontend_FluentCore_SettingsDialog_Title = 'Frontend_FluentCore_SettingsDialog_Title',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label = 'Frontend_FluentCore_SettingsDialog_CloseButton_Label',
@@ -284,6 +275,15 @@ export enum EngineResourceKey {
     Settings_Global_RPCPortInfo = 'Settings_Global_RPCPortInfo',
     Settings_Global_RPCSecret = 'Settings_Global_RPCSecret',
     Settings_Global_RPCSecretInfo = 'Settings_Global_RPCSecretInfo',
+
+    Settings_FeatureFlags_Label = 'Settings_FeatureFlags_Label',
+    Settings_FeatureFlags_Description = 'Settings_FeatureFlags_Description',
+    Settings_FeatureFlags_ShowSplashScreen_Label = 'Settings_FeatureFlags_ShowSplashScreen_Label',
+    Settings_FeatureFlags_ShowSplashScreen_Description = 'Settings_FeatureFlags_ShowSplashScreen_Description',
+    Settings_FeatureFlags_ShowFetchBrowserWindows_Label = 'Settings_FeatureFlags_ShowFetchBrowserWindows_Label',
+    Settings_FeatureFlags_ShowFetchBrowserWindows_Description = 'Settings_FeatureFlags_ShowFetchBrowserWindows_Description',
+    Settings_FeatureFlags_CrowdinTranslationMode_Label = 'Settings_FeatureFlags_CrowdinTranslationMode_Label',
+    Settings_FeatureFlags_CrowdinTranslationMode_Description = 'Settings_FeatureFlags_CrowdinTranslationMode_Description',
 
     SettingsManager_Settings_AlreadyInitializedError = 'SettingsManager_Settings_AlreadyInitializedError',
 

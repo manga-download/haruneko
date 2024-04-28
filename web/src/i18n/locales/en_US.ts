@@ -92,14 +92,6 @@ const translations: VariantResource = {
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list on/off',
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: 'Download Manager',
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Description: 'Toggle the visibility of the download manager on/off',
-  Frontend_FluentCore_Settings_FeatureFlags_Label: 'Feature Flags',
-  Frontend_FluentCore_Settings_FeatureFlags_Description: 'Advanced/Experimental options especially for HakuNeko developers, contributors and power users',
-  Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Label: 'Show Splash Screen',
-  Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Description: 'Toggle the splash screen during application start on/off',
-  Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Label: 'Show FetchBrowser Windows',
-  Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Description: 'This developer focused option toggles the visibility of the browser windows for fetching data in the background on/off',
-  Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Label: 'Enable In-Context Translation',
-  Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Description: 'This contributor focused option toggles the localization mode for Crowdin In-Context translation on/off (Crowdin account + restart required)',
   //
   Frontend_FluentCore_SettingsDialog_Title: 'Settings',
   Frontend_FluentCore_SettingsDialog_CloseButton_Label: 'Done',
@@ -178,15 +170,24 @@ const translations: VariantResource = {
   Settings_Global_RPCPortInfo: 'The communication port to be used by compatible 3rd-party applications to interact with this HakuNeko instance (e.g., HakuNeko Assistant)',
   Settings_Global_RPCSecret: 'RPC Secret',
   Settings_Global_RPCSecretInfo: 'The passphrase required by compatible 3rd-party applications to interact with this HakuNeko instance (e.g., HakuNeko Assistant)',
-
+  //
+  Settings_FeatureFlags_Label: 'Feature Flags',
+  Settings_FeatureFlags_Description: 'Advanced/Experimental options especially for HakuNeko developers, contributors and power users',
+  Settings_FeatureFlags_ShowSplashScreen_Label: 'Show Splash Screen',
+  Settings_FeatureFlags_ShowSplashScreen_Description: 'Toggle the splash screen during application start on/off',
+  Settings_FeatureFlags_ShowFetchBrowserWindows_Label: 'Show FetchBrowser Windows',
+  Settings_FeatureFlags_ShowFetchBrowserWindows_Description: 'This developer focused option toggles the visibility of the browser windows for fetching data in the background on/off',
+  Settings_FeatureFlags_CrowdinTranslationMode_Label: 'Enable In-Context Translation',
+  Settings_FeatureFlags_CrowdinTranslationMode_Description: 'This contributor focused option toggles the localization mode for Crowdin In-Context translation on/off (Crowdin account + restart required)',
+  //
   SettingsManager_Settings_AlreadyInitializedError: 'An internal application error occured: The settings scope <{0}> must only be initialized once!',
-
+  //
   FetchProvider_FetchGraphQL_AggregateError: 'The request failed due to the following GraphQL error(s):\n{0}',
   FetchProvider_FetchGraphQL_MissingDataError: 'The request failed due to missing GraphQL response data!',
   FetchProvider_FetchWindow_TimeoutError: 'The request could not be fulfilled within the given timeout!',
   FetchProvider_FetchWindow_CloudFlareError: 'The request failed due to the following CloudFlare Error: "{0}"',
   FetchProvider_FetchWindow_AlertCaptcha: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
-
+  //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
 
   // [SECTION]: Tags

@@ -115,21 +115,21 @@ const template: ViewTemplate<TitleBar> = html`
                 ${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
-            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Settings_FeatureFlags_Description()}">
+            <fluent-menu-item title="${() => S.Locale.Settings_FeatureFlags_Description()}">
                 <div slot="start" :innerHTML=${() => IconFeatureFlags}></div>
-                ${() => S.Locale.Frontend_FluentCore_Settings_FeatureFlags_Label()}
+                ${() => S.Locale.Settings_FeatureFlags_Label()}
                 <fluent-menu>
-                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Description()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.event.currentTarget['checked']}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Description]()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.event.currentTarget['checked']}>
                         <div slot="start" :innerHTML=${() => IconWindowAd}></div>
-                        ${() => S.Locale.Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Label()}
+                        ${() => S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Label]()}
                     </fluent-menu-item>
-                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Description()}" :checked=${() => HakuNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.event.currentTarget['checked']}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale[HakuNeko.FeatureFlags.VerboseFetchWindow.Description]()}" :checked=${() => HakuNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.event.currentTarget['checked']}>
                         <div slot="start" :innerHTML=${() => IconDebugConsole}></div>
-                        ${() => S.Locale.Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Label()}
+                        ${() => S.Locale[HakuNeko.FeatureFlags.VerboseFetchWindow.Label]()}
                     </fluent-menu-item>
-                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Description()}" :checked=${() => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value = ctx.event.currentTarget['checked']}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale[HakuNeko.FeatureFlags.CrowdinTranslationMode.Description]()}" :checked=${() => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value = ctx.event.currentTarget['checked']}>
                         <div slot="start" :innerHTML=${() => IconCrowdinContextTranslation}></div>
-                        ${() => S.Locale.Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Label()}
+                        ${() => S.Locale[HakuNeko.FeatureFlags.CrowdinTranslationMode.Label]()}
                     </fluent-menu-item>
                 </fluent-menu>
             </fluent-menu-item>
