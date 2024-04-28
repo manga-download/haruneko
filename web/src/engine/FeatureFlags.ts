@@ -15,10 +15,11 @@ const enum Key {
  */
 export class FeatureFlags {
 
+    #initialized = false;
     readonly #settings: ISettings;
 
     /**
-     * This a performance optimized getter accessing the stored value directly that should only be used during boot.
+     * This a performance optimized getter with direct access to the stored value that may be used during boot.
      */
     public static get ShowSplashScreen() {
         return window.localStorage.getItem(Key.HideSplashScreen) !== 'true';
@@ -32,9 +33,12 @@ export class FeatureFlags {
     }
 
     public async Initialize(): Promise<void> {
+        if(this.#initialized) {
+            return;
+        }
+        this.#initialized = true;
         await this.#settings.Initialize(this.HideSplashScreen, this.VerboseFetchWindow, this.CrowdinTranslationMode);
         this.HideSplashScreen.Subscribe(value => window.localStorage.setItem(Key.HideSplashScreen, `${value}`));
         this.CrowdinTranslationMode.Subscribe(FrontendController.RequestReload);
-        // TODO: Prevent multiple call to initialize
     }
 }
