@@ -17,10 +17,10 @@ class StateService {
     private readonly settings = HakuNeko.SettingsManager.OpenScope(SettingKeys.Scope);
 
     constructor() {
-        HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).ValueChanged.Subscribe(() => this.Locale = GetLocale());
-        this.settingThemeLuminanceNumeric.ValueChanged.Subscribe((_, args) => this.SettingThemeLuminance = args);
-        this.settingPanelBookmarksCheck.ValueChanged.Subscribe((_, args) => this.SettingPanelBookmarks = args);
-        this.settingPanelDownloadsCheck.ValueChanged.Subscribe((_, args) => this.SettingPanelDownloads = args);
+        HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => this.Locale = GetLocale());
+        this.settingThemeLuminanceNumeric.Subscribe(value => this.SettingThemeLuminance = value);
+        this.settingPanelBookmarksCheck.Subscribe(value => this.SettingPanelBookmarks = value);
+        this.settingPanelDownloadsCheck.Subscribe(value => this.SettingPanelDownloads = value);
         this.Initialize();
     }
 

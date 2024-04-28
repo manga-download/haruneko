@@ -9,7 +9,7 @@ export class Observable<TValue, TOwner = null> {
      * @param value - The initial value of the observer
      * @param owner - An optional owner associated with the {@link value}
      */
-    constructor(private value: TValue, private readonly owner?: TOwner) {}
+    constructor(protected value: TValue, private readonly owner?: TOwner) {}
 
     /**
      * Receive the current value of the observer.
@@ -19,7 +19,7 @@ export class Observable<TValue, TOwner = null> {
     }
 
     /**
-     * Update the current value of the observer and notify all subscribers if value was changed.
+     * Update the current value of the observer and notify all subscribers in case the new value differs from the previous value.
      * @description
      * Subscribers will only be notified for assignments of the value itself.
      * Mutations within the value (e.g., object or array content) are not detected.

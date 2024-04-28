@@ -28,7 +28,7 @@ export class FrontendController {
         } else {
             this.Load(root);
         }
-        this.settings.Get<Choice>(Key.Frontend).ValueChanged.Subscribe((_, value) => {
+        this.settings.Get<Choice>(Key.Frontend).Subscribe(value => {
             if(this.activeFrontendID !== value) {
                 FrontendController.RequestReload();
             }
