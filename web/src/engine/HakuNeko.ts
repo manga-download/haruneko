@@ -5,11 +5,12 @@ import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
 import { InteractiveFileContentProvider } from './InteractiveFileContentProvider';
+import type { FeatureFlags } from './FeatureFlags';
 import { SettingsManager } from './SettingsManager';
 import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
-import { CreateBloadGuard } from './platform/BloatGuard';
+import { CreateBloatGuard } from './platform/BloatGuard';
 import { CreateFetchProvider, SetupFetchProviderExports } from './platform/FetchProvider';
 import { CreatePlatformIPC } from './platform/InterProcessCommunication';
 import type { IFrontendInfo } from '../frontend/IFrontend';
@@ -23,9 +24,9 @@ export class HakuNeko {
     readonly #itemflagManager: ItemflagManager;
     readonly #downloadManager: DownloadManager;
 
-    constructor() {
-        CreateBloadGuard().Initialize();
-        SetupFetchProviderExports(CreateFetchProvider());
+    constructor(private readonly featureFlags: FeatureFlags) {
+        CreateBloatGuard().Initialize();
+        SetupFetchProviderExports(CreateFetchProvider(featureFlags));
         this.#storageController = CreateStorageController();
         this.#settingsManager = new SettingsManager(this.#storageController);
         this.#pluginController = new PluginController(this.#storageController, this.#settingsManager);
@@ -49,6 +50,10 @@ export class HakuNeko {
 
     public get PluginController(): PluginController {
         return this.#pluginController;
+    }
+
+    public get FeatureFlags(): FeatureFlags {
+        return this.featureFlags;
     }
 
     public get SettingsManager(): SettingsManager {

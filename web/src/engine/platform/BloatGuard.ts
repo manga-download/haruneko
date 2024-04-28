@@ -46,7 +46,7 @@ export interface IBloatGuard {
     Initialize(): void;
 }
 
-export function CreateBloadGuard(): IBloatGuard {
+export function CreateBloatGuard(): IBloatGuard {
     return new PlatformInstanceActivator<IBloatGuard>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitBloatGuard(patterns))
         .Configure(Runtime.Electron, () => new ElectronBloatGuard(patterns))

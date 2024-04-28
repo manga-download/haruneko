@@ -112,11 +112,11 @@ const template: ViewTemplate<TitleBar> = html`
                 ${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
-            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Description()}" :checked=${() => window.localStorage.getItem('hakuneko-nosplash') !== 'true'} @change=${(_, ctx) => window.localStorage.setItem('hakuneko-nosplash', (!ctx.event.currentTarget['checked']).toString())}>
+            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Description()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.event.currentTarget['checked']}>
                 <div slot="start" :innerHTML=${() => IconWindowAd}></div>
                 ${() => S.Locale.Frontend_FluentCore_Settings_ShowSplashScreen_Label()}
             </fluent-menu-item>
-            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description()}" :checked=${() => window.localStorage.getItem('hakuneko-fetchwindow-verbose') === 'true'} @change=${(_, ctx) => window.localStorage.setItem('hakuneko-fetchwindow-verbose', ctx.event.currentTarget['checked'].toString())}>
+            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description()}" :checked=${() => HakuNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.event.currentTarget['checked']}>
                 <div slot="start" :innerHTML=${() => IconDebugConsole}></div>
                 ${() => S.Locale.Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label()}
             </fluent-menu-item>
