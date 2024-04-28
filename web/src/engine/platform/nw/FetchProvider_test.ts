@@ -1,10 +1,10 @@
 import { mock, mockFn } from 'jest-mock-extended';
-import { FeatureFlags } from '../../FeatureFlags';
+import type { FeatureFlags } from '../../FeatureFlags';
 import FetchProvider from './FetchProvider';
 
 class TestFixture {
 
-    public readonly mockFeatureFlags = new FeatureFlags();
+    public readonly mockFeatureFlags = mock<FeatureFlags>();
     public readonly mockFetch = mockFn<typeof globalThis.fetch>();
     public readonly chromeFake = {
         cookies: {

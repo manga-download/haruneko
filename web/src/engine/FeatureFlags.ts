@@ -1,30 +1,44 @@
-import { Observable } from './Observable';
+import { VariantResourceKey as R } from '../i18n/ILocale';
+import { Check, type ISettings, type SettingsManager } from './SettingsManager';
+import { ReloadAppWindow } from './platform/AppWindow';
 
-const category = 'hakuneko:flags';
-const keyHideSplashScreen = `${category}:no-splash`;
-const keyVerboseBackgroundFetchWindow = `${category}:verbose-fetchwindow`;
-//const keyCrowdinTranslationMode = `${category}:crowdin-translation`;
+const scope = 'feature-flags';
+
+const enum Key {
+    HideSplashScreen = 'HideSplashScreen',
+    VerboseFetchWindow = 'VerboseFetchWindow',
+    CrowdinTranslationMode = 'CrowdinTranslationMode',
+}
 
 /**
  * Provide flags for switching functionality that is not meant to be controlled by the end-user.
  */
 export class FeatureFlags {
 
-    public readonly HideSplashScreen = new Observable(false);
-    public readonly VerboseFetchWindow = new Observable(false);
-    //public readonly CrowdinTranslationMode = new Observable(false);
+    #initialized = false;
+    readonly #settings: ISettings;
 
-    public Initialize(): FeatureFlags {
+    /**
+     * This a performance optimized getter with direct access to the stored value that may be used during boot.
+     */
+    public static get ShowSplashScreen() {
+        return window.localStorage.getItem(Key.HideSplashScreen) !== 'true';
+    }
+    public readonly HideSplashScreen = new Check(Key.HideSplashScreen, R.Settings_FeatureFlags_ShowSplashScreen_Label, R.Settings_FeatureFlags_ShowSplashScreen_Description, false);
+    public readonly VerboseFetchWindow = new Check(Key.VerboseFetchWindow, R.Settings_FeatureFlags_ShowFetchBrowserWindows_Label, R.Settings_FeatureFlags_ShowFetchBrowserWindows_Description, false);
+    public readonly CrowdinTranslationMode = new Check(Key.CrowdinTranslationMode, R.Settings_FeatureFlags_CrowdinTranslationMode_Label, R.Settings_FeatureFlags_CrowdinTranslationMode_Description, false);
 
-        this.HideSplashScreen.Value = window.localStorage.getItem(keyHideSplashScreen) === 'true';
-        this.HideSplashScreen.Subscribe(value => window.localStorage.setItem(keyHideSplashScreen, value ? 'true' : 'false'));
+    constructor(private readonly settingsManager: SettingsManager) {
+        this.#settings = this.settingsManager.OpenScope(scope);
+    }
 
-        this.VerboseFetchWindow.Value = window.localStorage.getItem(keyVerboseBackgroundFetchWindow) === 'true';
-        this.VerboseFetchWindow.Subscribe(value => window.localStorage.setItem(keyVerboseBackgroundFetchWindow, value ? 'true' : 'false'));
-
-        //this.CrowdinTranslationMode.Value = window.localStorage.getItem(keyCrowdinTranslationMode) === 'true';
-        //this.CrowdinTranslationMode.Subscribe(value => window.localStorage.setItem(keyCrowdinTranslationMode, value ? 'true' : 'false'));
-
-        return this;
+    public async Initialize(): Promise<void> {
+        if(this.#initialized) {
+            return;
+        }
+        this.#initialized = true;
+        await this.#settings.Initialize(this.HideSplashScreen, this.VerboseFetchWindow, this.CrowdinTranslationMode);
+        this.HideSplashScreen.Subscribe(value => window.localStorage.setItem(Key.HideSplashScreen, `${value}`));
+        this.CrowdinTranslationMode.Subscribe(() => ReloadAppWindow());
     }
 }

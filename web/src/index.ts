@@ -1,3 +1,4 @@
+import { CreateAppWindow } from './engine/platform/AppWindow';
 import { FeatureFlags } from './engine/FeatureFlags';
 
 const appHook = '#app';
@@ -33,27 +34,29 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
 
 (async function() {
     try {
-        const featureFlags = new FeatureFlags().Initialize();
-        const { CreateAppWindow } = await import('./engine/platform/AppWindow');
         const appWindow = CreateAppWindow(window.location.origin + splashPath);
-        if(featureFlags.HideSplashScreen.Value) {
-            appWindow.HideSplash();
-        } else {
+        if(FeatureFlags.ShowSplashScreen) {
             appWindow.ShowSplash();
+        } else {
+            appWindow.HideSplash();
         }
 
-        // Use lazy loading for these large modules to improve start-up performance
+        // Use dynamic instead of static import for these large modules to improve start-up performance
         const { HakuNeko } = await import('./engine/HakuNeko');
         const { FrontendController, FrontendList } = await import('./frontend/FrontendController');
 
-        window.HakuNeko = new HakuNeko(featureFlags);
+        window.HakuNeko = new HakuNeko();
         await window.HakuNeko.Initialze(FrontendList);
+        if(window.HakuNeko.FeatureFlags.CrowdinTranslationMode.Value) {
+            document.head.querySelector<HTMLScriptElement>('#crowdin').src = 'https://cdn.crowdin.com/jipt/jipt.js';
+        }
+
         const frontend = new FrontendController(document.querySelector(appHook), window.HakuNeko.SettingsManager.OpenScope(), appWindow);
 
-        if(!featureFlags.HideSplashScreen.Value) {
+        if(FeatureFlags.ShowSplashScreen) {
             await Promise.race([
-                new Promise<void>(resolve => setTimeout(resolve, 7500)),
                 new Promise<void>(resolve => frontend.FrontendLoaded.Subscribe(() => resolve())),
+                new Promise<void>(resolve => setTimeout(resolve, 7500)),
             ]);
             appWindow.HideSplash();
         }

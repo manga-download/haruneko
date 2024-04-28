@@ -4,10 +4,14 @@ import { Key } from '../engine/SettingsGlobal';
 import type { Choice, ISettings, SettingsManager } from '../engine/SettingsManager';
 import { LocaleID, type IResource } from './ILocale';
 import { CreateLocale, GetLocale } from './Localization';
+import type { FeatureFlags } from '../engine/FeatureFlags';
 
 // Mocking globals
 {
-    const mockChoice = mock<Choice>({ Value: LocaleID.Locale_enUS });
+    const mockFeatureFlags = mock<FeatureFlags>();
+    //mockFeatureFlags.CrowdinTranslationMode = ...
+
+    const mockChoice = mock<Choice>({ Value: LocaleID.Locale_arSA });
 
     const mockSettigns = mock<ISettings>();
     mockSettigns.Get.calledWith(Key.Language).mockReturnValue(mockChoice);
@@ -15,7 +19,10 @@ import { CreateLocale, GetLocale } from './Localization';
     const mockSettingsManager = mock<SettingsManager>();
     mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
 
-    window.HakuNeko = mock<HakuNeko>({ SettingsManager: mockSettingsManager });
+    window.HakuNeko = mock<HakuNeko>({
+        SettingsManager: mockSettingsManager,
+        FeatureFlags: mockFeatureFlags,
+    });
 }
 
 describe('Localization', () => {
@@ -79,8 +86,8 @@ describe('Localization', () => {
 
     describe('GetLocale()', () => {
 
-        it('Should mock en_US as current', async () => {
-            expect(GetLocale()).toBe(GetLocale(LocaleID.Locale_enUS));
+        it('Should mock ar_SA as current', async () => {
+            expect(GetLocale()).toBe(GetLocale(LocaleID.Locale_arSA));
         });
 
         it('Should provide current resource', async () => {

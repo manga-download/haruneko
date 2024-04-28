@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { Toggle } from 'carbon-components-svelte';
     import type { Check } from '../../../../engine/SettingsManager';
     import { Locale } from '../../stores/Settings';
@@ -8,28 +9,25 @@
     let current: Check;
     let value: boolean;
 
+    onMount(() => {
+        return () => {
+            current?.Unsubscribe(OnValueChangedCallback);
+        };
+    });
+
     $: Update(setting);
 
     function Update(setting: Check) {
-        if (current === setting) {
-            return;
+        if (current !== setting) {
+            current?.Unsubscribe(OnValueChangedCallback);
+            setting?.Subscribe(OnValueChangedCallback);
+            value = setting.Value;
+            current = setting;
         }
-        if (current) {
-            current.ValueChanged.Unsubscribe(OnValueChangedCallback);
-        }
-        if (setting) {
-            setting.ValueChanged.Subscribe(OnValueChangedCallback);
-        }
-        value = setting.Value;
-        current = setting;
     }
 
-    function OnValueChangedCallback(sender: Check, args: boolean) {
-        if (sender && sender !== current) {
-            sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
-        } else {
-            value = args;
-        }
+    function OnValueChangedCallback(val: boolean) {
+        value = val;
     }
 </script>
 
