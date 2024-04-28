@@ -1,6 +1,6 @@
 import { VariantResourceKey as R } from '../i18n/ILocale';
 import { Check, type ISettings, type SettingsManager } from './SettingsManager';
-import { FrontendController } from '../frontend/FrontendController';
+import { ReloadAppWindow } from './platform/AppWindow';
 
 const scope = 'feature-flags';
 
@@ -39,6 +39,6 @@ export class FeatureFlags {
         this.#initialized = true;
         await this.#settings.Initialize(this.HideSplashScreen, this.VerboseFetchWindow, this.CrowdinTranslationMode);
         this.HideSplashScreen.Subscribe(value => window.localStorage.setItem(Key.HideSplashScreen, `${value}`));
-        this.CrowdinTranslationMode.Subscribe(FrontendController.RequestReload);
+        this.CrowdinTranslationMode.Subscribe(() => ReloadAppWindow());
     }
 }

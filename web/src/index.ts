@@ -1,3 +1,4 @@
+import { CreateAppWindow } from './engine/platform/AppWindow';
 import { FeatureFlags } from './engine/FeatureFlags';
 
 const appHook = '#app';
@@ -33,7 +34,6 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
 
 (async function() {
     try {
-        const { CreateAppWindow } = await import('./engine/platform/AppWindow');
         const appWindow = CreateAppWindow(window.location.origin + splashPath);
         if(FeatureFlags.ShowSplashScreen) {
             appWindow.ShowSplash();
@@ -41,7 +41,7 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
             appWindow.HideSplash();
         }
 
-        // Use lazy loading for these large modules to improve start-up performance
+        // Use dynamic instead of static import for these large modules to improve start-up performance
         const { HakuNeko } = await import('./engine/HakuNeko');
         const { FrontendController, FrontendList } = await import('./frontend/FrontendController');
 
