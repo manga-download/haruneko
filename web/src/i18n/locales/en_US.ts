@@ -8,7 +8,7 @@ const translations: VariantResource = {
 
   // [SECTION]: FrontendController
 
-  FrontendController_Reload_ConfirmNotice: 'The frontend was changed. Restart now to switch to the new frontend?',
+  FrontendController_Reload_ConfirmNotice: 'A restart is required in order to apply the requested changes.\nAny unsaved changes will be lost and active operations (e.g., downloads) will be aborted!\n\nDo you want to perform a restart now?',
 
   // [SECTION]: Frontend (Common/Shared)
   Frontend_Product_Title: 'HakuNeko',

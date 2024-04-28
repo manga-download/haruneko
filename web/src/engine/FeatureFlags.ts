@@ -1,4 +1,5 @@
 import { Observable } from './Observable';
+import { FrontendController } from '../frontend/FrontendController';
 
 const category = 'hakuneko:flags';
 
@@ -21,6 +22,7 @@ export class FeatureFlags {
         this.Register(this.HideSplashScreen, Key.HideSplashScreen);
         this.Register(this.VerboseFetchWindow, Key.VerboseFetchWindow);
         this.Register(this.CrowdinTranslationMode, Key.CrowdinTranslationMode);
+        this.CrowdinTranslationMode.Subscribe(FrontendController.RequestReload);
         return this;
     }
 

@@ -28,7 +28,11 @@ export class FrontendController {
         } else {
             this.Load(root);
         }
-        this.settings.Get<Choice>(Key.Frontend).ValueChanged.Subscribe((_, value) => this.Reload(value));
+        this.settings.Get<Choice>(Key.Frontend).ValueChanged.Subscribe((_, value) => {
+            if(this.activeFrontendID !== value) {
+                FrontendController.RequestReload();
+            }
+        });
     }
 
     private GetSettingsFrontendID(): string | null {
@@ -67,8 +71,8 @@ export class FrontendController {
         }
     }
 
-    private Reload(frontendID: string): void {
-        if(frontendID !== this.activeFrontendID && confirm(GetLocale().FrontendController_Reload_ConfirmNotice())) {
+    public static RequestReload(): void {
+        if(confirm(GetLocale().FrontendController_Reload_ConfirmNotice())) {
             window.location.reload();
         }
     }
