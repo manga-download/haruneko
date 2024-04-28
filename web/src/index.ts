@@ -34,6 +34,9 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
 (async function() {
     try {
         const featureFlags = new FeatureFlags().Initialize();
+        if(featureFlags.CrowdinTranslationMode.Value) {
+            document.head.querySelector<HTMLScriptElement>('#crowdin').src = 'https://cdn.crowdin.com/jipt/jipt.js';
+        }
         const { CreateAppWindow } = await import('./engine/platform/AppWindow');
         const appWindow = CreateAppWindow(window.location.origin + splashPath);
         if(featureFlags.HideSplashScreen.Value) {
