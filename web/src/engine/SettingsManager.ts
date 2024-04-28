@@ -1,7 +1,6 @@
 import { type IResource, EngineResourceKey as R } from '../i18n/ILocale';
 import { type StorageController, Store } from './StorageController';
 import { Observable } from './Observable';
-import { Event } from './Event';
 import { Scope } from './SettingsGlobal';
 import { Exception } from './Error';
 
@@ -162,13 +161,10 @@ class Settings implements Iterable<ISetting> {
     constructor(private readonly scope: string, private readonly storage: StorageController) {
     }
 
-    public readonly ValueChanged: Event<ISetting, IValue> = new Event<ISetting, IValue>();
-
     /**
      * Notify subscribers and store the current values of all settings to the persistent storage.
      */
-    private async OnValueChangedCallback(sender: ISetting, args: IValue) {
-        this.ValueChanged.Dispatch(sender, args);
+    private async SaveAllSettings() {
         const data: Record<string, IValue> = {};
         for(const key in this.settings) {
             data[key] = this.settings[key].Serialize();
@@ -187,7 +183,7 @@ class Settings implements Iterable<ISetting> {
                 if(data && data[setting.ID]) {
                     setting.Deserialize(data[setting.ID]);
                 }
-                setting.Subscribe(value => this.OnValueChangedCallback(setting, value));
+                setting.Subscribe(this.SaveAllSettings.bind(this));
                 this.settings[setting.ID] = setting;
             }
         }
