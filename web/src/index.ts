@@ -1,5 +1,3 @@
-import { FeatureFlags } from './engine/FeatureFlags';
-
 const appHook = '#app';
 const noticeHook = '#hakuneko-notice';
 const splashPath = '/splash.html';
@@ -33,27 +31,26 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
 
 (async function() {
     try {
-        const featureFlags = new FeatureFlags().Initialize();
-        if(featureFlags.CrowdinTranslationMode.Value) {
+        // Use lazy loading for these large modules to improve start-up performance
+        const { HakuNeko } = await import('./engine/HakuNeko');
+        const { FrontendController, FrontendList } = await import('./frontend/FrontendController');
+
+        window.HakuNeko = new HakuNeko();
+        await window.HakuNeko.Initialze(FrontendList);
+        if(window.HakuNeko.FeatureFlags.CrowdinTranslationMode.Value) {
             document.head.querySelector<HTMLScriptElement>('#crowdin').src = 'https://cdn.crowdin.com/jipt/jipt.js';
         }
         const { CreateAppWindow } = await import('./engine/platform/AppWindow');
         const appWindow = CreateAppWindow(window.location.origin + splashPath);
-        if(featureFlags.HideSplashScreen.Value) {
+        if(window.HakuNeko.FeatureFlags.HideSplashScreen.Value) {
             appWindow.HideSplash();
         } else {
             appWindow.ShowSplash();
         }
 
-        // Use lazy loading for these large modules to improve start-up performance
-        const { HakuNeko } = await import('./engine/HakuNeko');
-        const { FrontendController, FrontendList } = await import('./frontend/FrontendController');
-
-        window.HakuNeko = new HakuNeko(featureFlags);
-        await window.HakuNeko.Initialze(FrontendList);
         const frontend = new FrontendController(document.querySelector(appHook), window.HakuNeko.SettingsManager.OpenScope(), appWindow);
 
-        if(!featureFlags.HideSplashScreen.Value) {
+        if(!window.HakuNeko.FeatureFlags.HideSplashScreen.Value) {
             await Promise.race([
                 new Promise<void>(resolve => setTimeout(resolve, 7500)),
                 new Promise<void>(resolve => frontend.FrontendLoaded.Subscribe(() => resolve())),

@@ -1,33 +1,23 @@
-import { Observable } from './Observable';
+import { VariantResourceKey as R } from '../i18n/ILocale';
+import { Check, type ISettings, type SettingsManager } from './SettingsManager';
 import { FrontendController } from '../frontend/FrontendController';
-
-const category = 'hakuneko:flags';
-
-enum Key {
-    HideSplashScreen = `${category}:no-splash`,
-    VerboseFetchWindow = `${category}:verbose-fetchwindow`,
-    CrowdinTranslationMode = `${category}:crowdin-translation`,
-}
 
 /**
  * Provide flags for switching functionality that is not meant to be controlled by the end-user.
  */
 export class FeatureFlags {
 
-    public readonly HideSplashScreen = new Observable(false);
-    public readonly VerboseFetchWindow = new Observable(false);
-    public readonly CrowdinTranslationMode = new Observable(false);
+    readonly #settings: ISettings;
+    public readonly HideSplashScreen = new Check('no-splash', R.Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Label, R.Frontend_FluentCore_Settings_FeatureFlags_ShowSplashScreen_Description, false);
+    public readonly VerboseFetchWindow = new Check('verbose-fetchwindow', R.Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Label, R.Frontend_FluentCore_Settings_FeatureFlags_ShowFetchBrowserWindows_Description, false);
+    public readonly CrowdinTranslationMode = new Check('crowdin-translation', R.Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Label, R.Frontend_FluentCore_Settings_FeatureFlags_CrowdinTranslationMode_Description, false);
 
-    public Initialize(): FeatureFlags {
-        this.Register(this.HideSplashScreen, Key.HideSplashScreen);
-        this.Register(this.VerboseFetchWindow, Key.VerboseFetchWindow);
-        this.Register(this.CrowdinTranslationMode, Key.CrowdinTranslationMode);
-        this.CrowdinTranslationMode.Subscribe(FrontendController.RequestReload);
-        return this;
+    constructor(private readonly settingsManager: SettingsManager) {
+        this.#settings = this.settingsManager.OpenScope('feature-flags');
     }
 
-    private Register(observable: Observable<boolean, null>, key: Key) {
-        observable.Value = window.localStorage.getItem(key) === 'true';
-        observable.Subscribe(value => window.localStorage.setItem(key, value ? 'true' : 'false'));
+    public async Initialize(): Promise<void> {
+        await this.#settings.Initialize(this.HideSplashScreen, this.VerboseFetchWindow, this.CrowdinTranslationMode);
+        this.CrowdinTranslationMode.Subscribe(FrontendController.RequestReload);
     }
 }
