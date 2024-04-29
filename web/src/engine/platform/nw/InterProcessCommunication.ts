@@ -1,5 +1,5 @@
-import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
 import { Key as GlobalKey } from '../../SettingsGlobal';
+import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
 import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../InterProcessCommunicationTypes';
 
 /**
@@ -7,12 +7,23 @@ import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIP
  */
 export default class implements PlatformIPC {
 
-    constructor(private readonly settingsManager: SettingsManager) {
+    private readonly rpcEnabled: Check;
+    private readonly rpcPort: Numeric;
+    private readonly rpcSecret: Text;
+
+    constructor(settingsManager: SettingsManager) {
         chrome.runtime.onMessage.addListener(this.Listen.bind(this));
+
         const settings = settingsManager.OpenScope();
-        settings.Get<Check>(GlobalKey.RPCEnabled).Subscribe(this.UpdateRPC.bind(this));
-        settings.Get<Numeric>(GlobalKey.RPCPort).Subscribe(this.UpdateRPC.bind(this));
-        settings.Get<Text>(GlobalKey.RPCSecret).Subscribe(this.UpdateRPC.bind(this));
+        this.rpcEnabled = settings.Get<Check>(GlobalKey.RPCEnabled);
+        this.rpcPort = settings.Get<Numeric>(GlobalKey.RPCPort);
+        this.rpcSecret = settings.Get<Text>(GlobalKey.RPCSecret);
+
+        const callback = this.UpdateRPC.bind(this);
+        this.rpcEnabled.Subscribe(callback);
+        this.rpcPort.Subscribe(callback);
+        this.rpcSecret.Subscribe(callback);
+
         this.UpdateRPC();
     }
 
@@ -31,15 +42,8 @@ export default class implements PlatformIPC {
         }
     }
 
-    private async UpdateRPC() {
-        const settings = this.settingsManager.OpenScope();
-        if(settings.Get<Check>(GlobalKey.RPCEnabled).Value) {
-            const port = settings.Get<Numeric>(GlobalKey.RPCPort).Value;
-            const secret = settings.Get<Text>(GlobalKey.RPCSecret).Value;
-            await this.RestartRPC(port, secret);
-        } else {
-            this.StopRPC();
-        }
+    private async UpdateRPC(): Promise<void> {
+        return this.rpcEnabled.Value ? this.RestartRPC(this.rpcPort.Value, this.rpcSecret.Value) : this.StopRPC();
     }
 
     public async StopRPC() {
@@ -55,7 +59,7 @@ export default class implements PlatformIPC {
     }
 
     public async LoadMediaContainerFromURL(url: string) {
-        for(const website of HakuNeko.PluginController.WebsitePlugins) {
+        for(const website of globalThis.HakuNeko.PluginController.WebsitePlugins) {
             const media = await website.TryGetEntry(url);
             if(media) {
                 //console.log('LoadMediaContainerFromURL() => Found:', media);
