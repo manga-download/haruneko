@@ -1,6 +1,11 @@
-import type { IPCParameters, IPCPayload, IPCResponse, AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
+import type { AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
 import type { RPCServer } from '../rpc/Server';
 import * as fs from 'node:fs/promises';
+
+type IPCPayload<T> = {
+    method: keyof T,
+    parameters: JSONArray,
+}
 
 /**
  * Inter Process Communication for NodeWebkit (background page)
@@ -13,21 +18,21 @@ export class IPC implements PlatformIPC {
         chrome.runtime.onMessage.addListener(this.Listen.bind(this));
     }
 
-    private async Send<R extends IPCResponse>(method: keyof WebIPC, ...parameters: IPCParameters): Promise<R> {
+    private async Send(method: keyof WebIPC, ...parameters: JSONArray): Promise<void> {
         // TODO: improve query filter e.g., windowID or tabID
         const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
         const tab = tabs.length > 0 ? tabs.shift() : undefined;
-        return new Promise<R>(resolve => {
+        return new Promise<void>(resolve => {
             if(tab?.id) {
                 //console.log(`App::IPC.Send::${method}`, parameters);
-                chrome.tabs.sendMessage<IPCPayload<WebIPC>, R>(tab.id, { method, parameters }, resolve);
+                chrome.tabs.sendMessage<IPCPayload<WebIPC>, void>(tab.id, { method, parameters }, resolve);
             } else {
                 throw new Error(/* TODO: Message */);
             }
         });
     }
 
-    private Listen(payload: IPCPayload<AppIPC>, sender: chrome.runtime.MessageSender, callback: (response: IPCResponse) => void): boolean | void {
+    private Listen(payload: IPCPayload<AppIPC>, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean | void {
         //console.log('App::IPC.Received', payload, sender, callback);
         if(payload.method in this) {
             this[payload.method].call(this, ...payload.parameters).then(callback);
@@ -75,6 +80,6 @@ export class IPC implements PlatformIPC {
     }
 
     public async LoadMediaContainerFromURL(url: string) {
-        return this.Send<void>('LoadMediaContainerFromURL', url);
+        return this.Send('LoadMediaContainerFromURL', url);
     }
 }

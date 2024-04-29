@@ -2,17 +2,8 @@ export type TypeFromInterface<T> = {
     [key in keyof T]: T[key];
 };
 
-export type IPCParameters = JSONArray;
-
-export type IPCPayload<T> = {
-    method: keyof T,
-    parameters: IPCParameters,
-}
-
-export type IPCResponse = JSONElement | void;
-
 type Contract<T> = {
-    [K in keyof T]: (...params: IPCParameters) => Promise<IPCResponse>;
+    [K in keyof T]: (...params: JSONArray) => Promise<void>;
 }
 
 /**

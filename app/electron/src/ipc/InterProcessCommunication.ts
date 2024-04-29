@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { RPCServer } from '../../../nw/src/rpc/Server';
 import { Contract } from '../../../nw/src/rpc/Contract';
-import type { PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
+import type { WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
 
 /**
  * Inter Process Communication for NodeWebkit (background page)
@@ -10,41 +10,29 @@ export class IPC implements PlatformIPC {
 
     public RPC?: RPCServer;
 
-    constructor() {
+    constructor(private readonly renderer: Electron.WebContents) {
         this.RPC = new RPCServer('/hakuneko', new Contract(this));
         ipcMain.handle('StopRPC', () => this.StopRPC());
         ipcMain.handle('RestartRPC', (_, port: number, secret: string) => this.RestartRPC(port, secret));
         ipcMain.handle('SetCloudFlareBypass', (_, userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]) => this.SetCloudFlareBypass(userAgent, cookies));
     }
 
-    /*
-    private async Send<R extends IPCResponse>(method: keyof WebIPC, ...parameters: IPCParameters): Promise<R> {
-        // TODO: improve query filter e.g., windowID or tabID
-        const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active : true }, resolve));
-        const tab = tabs.length > 0 ? tabs.shift() : undefined;
-        return new Promise<R>(resolve => {
-            if(tab?.id) {
-                //console.log(`App::IPC.Send::${method}`, parameters);
-                chrome.tabs.sendMessage<IPCPayload<WebIPC>, R>(tab.id, { method, parameters }, resolve);
-            } else {
-                throw new Error();
-            }
-        });
+    private async Send(method: keyof WebIPC, ...parameters: JSONArray): Promise<void> {
+        this.renderer.send(method, ...parameters);
     }
-    */
 
     public async StopRPC() {
-        console.log('IPC::StopRPC()');
-        //return this.RPC?.Stop();
+        console.log('App::IPC::StopRPC()');
+        return this.RPC?.Stop();
     }
 
     public async RestartRPC(port: number, secret: string) {
-        console.log('IPC::RestartRPC()', port, secret);
-        //return this.RPC?.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
+        console.log('App::IPC::RestartRPC()', port, secret);
+        return this.RPC?.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
     }
 
     public async SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void> {
-        console.log('IPC::SetCloudFlareBypass()', userAgent, cookies);
+        console.log('App::IPC::SetCloudFlareBypass()', userAgent, cookies);
         /*
         for(const cookie of cookies) {
             await chrome.cookies.set({
@@ -75,7 +63,7 @@ export class IPC implements PlatformIPC {
     }
 
     public async LoadMediaContainerFromURL(url: string) {
-        console.log('IPC::LoadMediaContainerFromURL()', url);
-        //this.win.webContents.send('LoadMediaContainerFromURL', url);
+        console.log('App::IPC::LoadMediaContainerFromURL()', url);
+        this.Send('LoadMediaContainerFromURL', url);
     }
 }
