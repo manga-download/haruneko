@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Luminous Scans'
     },
     container: {
-        url: 'https://lumitoon.com/series/1706860801-sword-king-survival-story/',
+        url: 'https://luminouscomics.org/series/1706860801-sword-king-survival-story/',
         id: '/series/1706860801-sword-king-survival-story/',
         title: 'Survival Story of a Sword King in a Fantasy World'
     },
