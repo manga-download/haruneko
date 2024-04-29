@@ -9,7 +9,7 @@ declare global {
         [member: symbol]: never;
     };
 
-    const HakuNeko: HakuNeko;
+    var HakuNeko: HakuNeko;
     interface Window {
         HakuNeko: HakuNeko;
     }
