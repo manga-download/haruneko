@@ -570,7 +570,6 @@ export { default as ScantradUnion } from './ScantradUnion';
 export { default as ScanVF } from './ScanVF';
 export { default as ScarManga } from './ScarManga';
 export { default as ScyllaScans } from './ScyllaScans';
-export { default as SDLScans } from './SDLScans';
 export { default as SectScans } from './SectScans';
 export { default as SeinagiAdultoFansub } from './SeinagiAdultoFansub';
 export { default as SeinagiFansubEN } from './SeinagiFansubEN';
