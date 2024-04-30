@@ -32,7 +32,6 @@ export default class implements PlatformIPC {
     }
 
     private Listen(method: keyof WebIPC) {
-        console.log('DEBUG:', globalThis.ipcRenderer.on);
         globalThis.ipcRenderer.on(method, (_, ...args: JSONArray) => this[method]?.call(this, ...args));
     }
 
@@ -53,14 +52,13 @@ export default class implements PlatformIPC {
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        console.log('Web::IPC::LoadMediaContainerFromURL()', '=>', url);
         for(const website of globalThis.HakuNeko.PluginController.WebsitePlugins) {
             const media = await website.TryGetEntry(url);
             if(media) {
-                console.log('LoadMediaContainerFromURL() => Found:', media);
+                console.log('LoadMediaContainerFromURL() => Match Found:', media);
                 return;
             }
         }
-        console.log('LoadMediaContainerFromURL() => Found:', undefined);
+        console.log('LoadMediaContainerFromURL() => No Match Found:', url);
     }
 }
