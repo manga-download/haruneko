@@ -24,7 +24,6 @@ export class IPC implements PlatformIPC {
         const tab = tabs.length > 0 ? tabs.shift() : undefined;
         return new Promise<void>(resolve => {
             if(tab?.id) {
-                //console.log(`App::IPC.Send::${method}`, parameters);
                 chrome.tabs.sendMessage<IPCPayload<WebIPC>, void>(tab.id, { method, parameters }, resolve);
             } else {
                 throw new Error(/* TODO: Message */);
@@ -32,21 +31,20 @@ export class IPC implements PlatformIPC {
         });
     }
 
-    private Listen(payload: IPCPayload<AppIPC>, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean | void {
-        //console.log('App::IPC.Received', payload, sender, callback);
+    private Listen(payload: IPCPayload<AppIPC>, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean {
         if(payload.method in this) {
             this[payload.method].call(this, ...payload.parameters).then(callback);
             return true;
         } else {
-            console.error('No IPC callback handler found for:', payload.method);
+            return false;;
         }
     }
 
-    public async StopRPC() {
+    public async StopRPC(): Promise<void> {
         return this.RPC?.Stop();
     }
 
-    public async RestartRPC(port: number, secret: string) {
+    public async RestartRPC(port: number, secret: string): Promise<void> {
         return this.RPC?.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
     }
 
@@ -79,7 +77,7 @@ export class IPC implements PlatformIPC {
         }
     }
 
-    public async LoadMediaContainerFromURL(url: string) {
+    public async LoadMediaContainerFromURL(url: string): Promise<void> {
         return this.Send('LoadMediaContainerFromURL', url);
     }
 }

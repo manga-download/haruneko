@@ -33,17 +33,15 @@ export default class implements PlatformIPC {
     }
 
     private async Send(method: keyof AppIPC, ...parameters: JSONArray): Promise<void> {
-        //console.log(`Web::IPC.Send::${method}`, parameters);
         return new Promise<void>(resolve => chrome.runtime.sendMessage<IPCPayload<AppIPC>, void>({ method, parameters }, resolve));
     }
 
-    private Listen(payload: IPCPayload<WebIPC>, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean | void {
-        //console.log('Web::IPC.Received', payload, sender, callback);
+    private Listen(payload: IPCPayload<WebIPC>, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean {
         if(payload.method in this) {
             this[payload.method].call(this, ...payload.parameters).then(callback);
             return true;
         } else {
-            //console.error('No IPC callback handler found for:', payload.method);
+            return false;
         }
     }
 
@@ -51,11 +49,11 @@ export default class implements PlatformIPC {
         return this.rpcEnabled.Value ? this.RestartRPC(this.rpcPort.Value, this.rpcSecret.Value) : this.StopRPC();
     }
 
-    public async StopRPC() {
+    public async StopRPC(): Promise<void> {
         return this.Send('StopRPC');
     }
 
-    public async RestartRPC(port: number, secret: string) {
+    public async RestartRPC(port: number, secret: string): Promise<void> {
         return this.Send('RestartRPC', port, secret);
     }
 
