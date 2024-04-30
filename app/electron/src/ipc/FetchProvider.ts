@@ -15,7 +15,7 @@ export class FetchProvider {
         ipcMain.handle('FetchProvider::Initialize', (_, fetchApiSupportedPrefix: string) => this.Initialize(fetchApiSupportedPrefix));
     }
 
-    public async Initialize(fetchApiSupportedPrefix: string) {
+    public async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
         this.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => callback(this.ModifyRequestHeaders(details)));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));

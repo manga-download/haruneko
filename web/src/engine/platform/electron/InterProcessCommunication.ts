@@ -32,7 +32,8 @@ export default class implements PlatformIPC {
     }
 
     private Listen(method: keyof WebIPC) {
-        globalThis.ipcRenderer.on(method, (_, ...args: JSONArray) => this[method].call(this, ...args));
+        console.log('DEBUG:', globalThis.ipcRenderer.on);
+        globalThis.ipcRenderer.on(method, (_, ...args: JSONArray) => this[method]?.call(this, ...args));
     }
 
     private async UpdateRPC(): Promise<void> {
@@ -40,17 +41,14 @@ export default class implements PlatformIPC {
     }
 
     public async StopRPC(): Promise<void> {
-        console.log('Web::IPC::StopRPC()');
         return this.Send('StopRPC');
     }
 
     public async RestartRPC(port: number, secret: string): Promise<void> {
-        console.log('Web::IPC::RestartRPC()', '=>', port, secret);
         return this.Send('RestartRPC', port, secret);
     }
 
     public async SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void> {
-        console.log('Web::IPC::SetCloudFlareBypass()', '=>', userAgent, cookies);
         return this.Send('SetCloudFlareBypass', userAgent, cookies);
     }
 

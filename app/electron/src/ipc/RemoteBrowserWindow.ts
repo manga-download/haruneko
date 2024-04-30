@@ -35,7 +35,7 @@ export class RemoteBrowserWindowController {
         return win.id;
     }
 
-    private async CloseWindow(windowID: number) {
+    private async CloseWindow(windowID: number): Promise<void> {
         this.FindWindow(windowID).destroy();
     }
 
