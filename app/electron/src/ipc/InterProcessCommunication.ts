@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { RPCServer } from '../../../nw/src/rpc/Server';
 import { Contract } from '../../../nw/src/rpc/Contract';
-import type { WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
+import type { AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
 
 /**
  * Inter Process Communication for NodeWebkit (background page)
@@ -10,24 +10,26 @@ export class IPC implements PlatformIPC {
 
     public RPC?: RPCServer;
 
-    constructor(private readonly renderer: Electron.WebContents) {
+    constructor(private readonly webContents: Electron.WebContents) {
         this.RPC = new RPCServer('/hakuneko', new Contract(this));
-        ipcMain.handle('StopRPC', () => this.StopRPC());
-        ipcMain.handle('RestartRPC', (_, port: number, secret: string) => this.RestartRPC(port, secret));
-        ipcMain.handle('SetCloudFlareBypass', (_, userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]) => this.SetCloudFlareBypass(userAgent, cookies));
+        this.Listen('StopRPC');
+        this.Listen('RestartRPC');
+        this.Listen('SetCloudFlareBypass');
     }
 
     private async Send(method: keyof WebIPC, ...parameters: JSONArray): Promise<void> {
-        this.renderer.send(method, ...parameters);
+        this.webContents.send(method, ...parameters);
+    }
+
+    private Listen(method: keyof AppIPC) {
+        ipcMain.handle(method, (_, ...args: JSONArray) => this[method]?.call(this, ...args));
     }
 
     public async StopRPC() {
-        console.log('App::IPC::StopRPC()');
         return this.RPC?.Stop();
     }
 
     public async RestartRPC(port: number, secret: string) {
-        console.log('App::IPC::RestartRPC()', port, secret);
         return this.RPC?.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
     }
 
@@ -63,7 +65,6 @@ export class IPC implements PlatformIPC {
     }
 
     public async LoadMediaContainerFromURL(url: string) {
-        console.log('App::IPC::LoadMediaContainerFromURL()', url);
         this.Send('LoadMediaContainerFromURL', url);
     }
 }
