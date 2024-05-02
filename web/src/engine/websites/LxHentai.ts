@@ -3,7 +3,6 @@ import icon from './LxHentai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Mojo from './decorators/MojoPortalComic';
-
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -19,7 +18,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('lxhentai', `LxHentai (Hentai LXX)`, 'https://lxmanga.cc', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+        super('lxhentai', `LxHentai (Hentai LXX)`, 'https://lxmanga.club', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
