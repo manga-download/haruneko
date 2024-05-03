@@ -6,6 +6,7 @@ import ElectronBloatGuard from './electron/BloatGuard';
 // Sort: https://www.online-utility.org/text/sort.jsp
 const patterns = [
     '*://*.adskeeper.co.uk/*',
+    '*://*.adskeeper.com/*',
     '*://*.arc.io/*',
     '*://*.bidgear.com/*',
     '*://*.chatango.com/*',
@@ -23,6 +24,7 @@ const patterns = [
     '*://*.purpleads.io/*',
     '*://*.sentry.io/*',
     '*://*.sharethis.com/*',
+    '*://*.topcreativeformat.com/*',
     '*://*.twitch.tv/*', // prevent test timeout on seinagi & pzykosis666hfansub
     '*://*.yandex.ru/*.js',
     '*://*/**/devtools-detect*',
@@ -39,6 +41,7 @@ const patterns = [
     '*://goomaphy.com/*',
     '*://owewary.com/*',
     '*://pickupfaxmultitude.com/*',
+    '*://t7cp4fldl.com/*',
     '*://tumultmarten.com/*',
 ];
 
