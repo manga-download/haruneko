@@ -30,6 +30,12 @@ type APIVolume = {
     chapters?: APIChapter[]
 };
 
+type APIChapters = {
+    data: APIChapter[],
+    nextCursor?: number,
+    resultCode: number,
+};
+
 type APIChapter = {
     id: number,
     name: string,
@@ -73,8 +79,8 @@ export default class extends DecoratableMangaScraper {
         const mangaList: Manga[] = [];
         for (let page = 0, run = true; run; page++) {
             const request = new Request(`${this.apiURL}/home/paginatedList?limit=${50}&page=${page}`);
-            const { data } = await FetchJSON<APIResult<APIMangas[]>>(request);
-            const mangas = data.reduce((accumulator: Manga[], entry) => {
+            const { data, resultCode } = await FetchJSON<APIResult<APIMangas[]>>(request);
+            const mangas = resultCode !== 1 || !data ? [] : data.reduce((accumulator: Manga[], entry) => {
                 if (entry) {
                     const titles = entry.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), manga.titleName));
                     accumulator.push(...titles);
@@ -96,12 +102,20 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchMangaChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(`${this.apiURL}/chapter/paginatedList?titleId=${manga.Identifier}&sort=1`);
-        const { data, resultCode } = await FetchJSON<APIResult<APIChapter[]>>(request);
-        return resultCode !== 1 || !data ? [] : data.map(chapter => {
-            const title = [chapter.name, chapter.subName].filter(item => item).join(' - ');
-            return new Chapter(this, manga, `/chapter/page/list?titleId=${manga.Identifier}&chapterId=${chapter.id}`, title);
-        });
+        const uri = new URL(`${this.apiURL}/chapter/paginatedList?sort=1&limit=100&titleId=${manga.Identifier}`);
+        const chapterList = [];
+        let cursor: number = null;
+        do {
+            cursor ? uri.searchParams.set('cursor', `${cursor}`) : uri.searchParams.delete('cursor');
+            const { data, resultCode, nextCursor: next } = await FetchJSON<APIChapters>(new Request(uri));
+            const chapters = resultCode === 1 && data?.length > 0 ? data.map(chapter => {
+                const title = [chapter.name, chapter.subName].filter(item => item).join(' - ');
+                return new Chapter(this, manga, `/chapter/page/list?titleId=${manga.Identifier}&chapterId=${chapter.id}`, title);
+            }) : [];
+            chapterList.push(...chapters);
+            cursor = next;
+        } while (cursor);
+        return chapterList;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
