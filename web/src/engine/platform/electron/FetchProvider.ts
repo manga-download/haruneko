@@ -105,13 +105,14 @@ export default class extends FetchProvider {
             await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::LoadURL', windowID, request.url, JSON.stringify(loadOptions));
             // 2. Check Anti-Scraping and show/redirect window
             if (windowID) {
+                let cancellation = setTimeout(() => destroy(windowID), timeout);
                 const redirect = await CheckAntiScrapingDetection(windowID);
                 console.log('Fetch Redirect:', redirect);
                 switch (redirect) {
                     case FetchRedirection.Interactive:
                         // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
-                        //clearTimeout(cancellation);
-                        //cancellation = setTimeout(destroy, 150_000);
+                        clearTimeout(cancellation);
+                        cancellation = setTimeout(() => destroy(windowID), 150_000);
                         //win.show();
                         await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::SetVisibility', windowID, true);
                         // TODO: Wait for Load event or timeout
@@ -127,6 +128,7 @@ export default class extends FetchProvider {
                 }
             }
             // 3. Wait for window to load expected location
+            await super.Wait(delay);
             const result = await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::ExecuteScript', windowID, script instanceof Function ? `(${script})()` : script);
             console.log('FetchWindowPreloadScript()', 'Result =>', result);
             return result;
