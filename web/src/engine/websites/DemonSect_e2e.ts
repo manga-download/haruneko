@@ -7,20 +7,20 @@ const config = {
         //timeout: 25000
     },
     container: {
-        url: 'https://demonsect.com.br/comics/antigo-soberano-da-eternidade/',
-        id: JSON.stringify({ post: '118', slug: '/comics/antigo-soberano-da-eternidade/' }),
-        title: 'Antigo Soberano da Eternidade',
+        url: 'https://dsectcomics.org/comics/reencarnacao-maldita/',
+        id: JSON.stringify({ post: '684', slug: '/comics/reencarnacao-maldita/' }),
+        title: 'Reencarnação Maldita',
         //timeout: 30000
     },
     child: {
-        id: '/comics/antigo-soberano-da-eternidade/cap-242/',
-        title: 'CAP. 242',
+        id: '/comics/reencarnacao-maldita/cap-81/',
+        title: 'CAP. 81',
         //timeout: 25000
     },
     entry: {
         index: 1,
-        size: 1_494_289,
-        type: 'image/jpeg',
+        size: 523_180,
+        type: 'image/webp',
     }
 };
 
