@@ -8,8 +8,6 @@ import { FetchProvider } from './ipc/FetchProvider';
 import { InitializeMenu } from './Menu';
 import { RemoteBrowserWindowController } from './ipc/RemoteBrowserWindow';
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
-// Need to use a dynamic import (only at build-time), so vite will correctly include the preload script in the build as code-splitted file
-if(!process) import('./ipc/Preload');
 
 type Manifest = {
     url: string;
