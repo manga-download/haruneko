@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { app, ipcMain } from 'electron';
+import { app, ipcMain, session } from 'electron';
 import { RPCServer } from '../../../nw/src/rpc/Server';
 import { Contract } from '../../../nw/src/rpc/Contract';
 import type { AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
@@ -36,8 +36,6 @@ export class IPC implements PlatformIPC {
     }
 
     public async SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void> {
-        console.log('App::IPC::SetCloudFlareBypass()', userAgent, cookies);
-
         if(userAgent !== this.webContents.getUserAgent()) {
             const file = path.resolve(app.getAppPath(), 'package.json');
             const manifest = JSON.parse(await fs.readFile(file, 'utf-8'));
@@ -46,9 +44,8 @@ export class IPC implements PlatformIPC {
             this.webContents.setUserAgent(userAgent);
         }
 
-        /*
         for(const cookie of cookies) {
-            await chrome.cookies.set({
+            await session.defaultSession.cookies.set({
                 domain: cookie.domain,
                 path: cookie.path,
                 url: `https://${ cookie.domain.replace(/^\./, '') }${ cookie.path }`,
@@ -61,7 +58,6 @@ export class IPC implements PlatformIPC {
                 //storeId: cookie.storeId,
             });
         }
-        */
     }
 
     public async LoadMediaContainerFromURL(url: string) {
