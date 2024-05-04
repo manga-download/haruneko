@@ -16,6 +16,13 @@ type APIManga = {
 }
 
 type APIMangas = {
+    data: APIMangasOrNull[],
+    resultCode: number
+}
+
+type APIMangasOrNull = null | APIMangasEntry
+
+type APIMangasEntry = {
     titles: APIManga[]
 }
 
@@ -55,7 +62,6 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://web.cycomi.com/api';
-
     public constructor() {
         super('cycomi', `CyComi`, 'https://cycomi.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga, Tags.Media.Manhwa);
     }
@@ -79,7 +85,7 @@ export default class extends DecoratableMangaScraper {
         const mangaList: Manga[] = [];
         for (let page = 0, run = true; run; page++) {
             const request = new Request(`${this.apiURL}/home/paginatedList?limit=${50}&page=${page}`);
-            const { data, resultCode } = await FetchJSON<APIResult<APIMangas[]>>(request);
+            const { data, resultCode } = await FetchJSON<APIMangas>(request);
             const mangas = resultCode !== 1 || !data ? [] : data.reduce((accumulator: Manga[], entry) => {
                 if (entry) {
                     const titles = entry.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), manga.titleName));
