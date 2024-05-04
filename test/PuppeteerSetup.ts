@@ -23,8 +23,10 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 
 async function DetectNW(): Promise<string> {
     const executables = [
+        path.resolve('node_modules', 'nw', 'nwjs', 'nw'),
         path.resolve('node_modules', 'nw', 'nwjs', 'nwjc'),
         path.resolve('node_modules', 'nw', 'nwjs', 'nw.exe'),
+        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw'),
         path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nwjc'),
         path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw.exe'),
     ];
