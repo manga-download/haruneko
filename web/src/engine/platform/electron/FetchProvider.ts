@@ -87,7 +87,7 @@ export default class extends FetchProvider {
             width: 1280,
             height: 720,
             webPreferences: {
-                //preload: '',
+                preload: preload instanceof Function ? `(${preload})()` : preload,
                 webSecurity: true,
                 contextIsolation: true,
                 nodeIntegration: false,

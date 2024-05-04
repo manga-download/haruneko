@@ -1,4 +1,6 @@
-import { ipcMain, BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
+import path from 'node:path';
+import { app, ipcMain, BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
+import { argvPreloadScript } from './RemoteBrowserWindowPreload';
 
 export class RemoteBrowserWindowController {
 
@@ -21,11 +23,10 @@ export class RemoteBrowserWindowController {
     private async OpenWindow(options: string): Promise<number> {
         const windowOptions: BrowserWindowConstructorOptions = JSON.parse(options);
         if (windowOptions.webPreferences?.preload) {
-            // TODO: Prepare preload script
-            delete windowOptions.webPreferences?.preload;
+            windowOptions.webPreferences.additionalArguments = [ `${argvPreloadScript}${btoa(windowOptions.webPreferences.preload)}` ];
+            windowOptions.webPreferences.preload = path.resolve(app.getAppPath(), 'remotebrowserwindowpreload.js');
         }
         const win = new BrowserWindow(windowOptions);
-        // TODO: Inherit cookies from main window?
         win.removeMenu();
         win.setMenu(null);
         win.setMenuBarVisibility(false);
