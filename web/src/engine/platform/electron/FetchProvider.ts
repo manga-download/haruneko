@@ -68,7 +68,6 @@ export default class extends FetchProvider {
     }
 
     public async FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay: number = 0, timeout: number = 60_000): Promise<T> {
-        console.warn('Platform::Electron::FetchProvider::FetchWindowPreloadScript()', '=>', request, preload, script, delay, timeout);
 
         const destroy = async (id: number) => {
             try {
