@@ -6,7 +6,7 @@ const config = {
         title: 'NhatTruyen'
     },
     container: {
-        url: 'https://nhattruyento.com/truyen-tranh/initial-d-2658',
+        url: 'https://nhattruyenss.com/truyen-tranh/initial-d-2658',
         id: '/truyen-tranh/initial-d-2658',
         title: 'Initial D'
     },
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 316_031,
+        size: 263_806,
         type: 'image/jpeg'
     }
 };
