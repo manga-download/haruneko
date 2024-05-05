@@ -27,8 +27,6 @@ export class TestFixture extends PuppeteerFixture {
 
 describe('CloudFlare Bypass', () => {
 
-    //jest.setTimeout(20_000);
-
     it('Should bypass JavaScript Challenge', async () => {
 
         const fixture = await new TestFixture().SetupLocation('https://test.cloudscraper.ovh/challenge');
