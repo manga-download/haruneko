@@ -24,7 +24,7 @@
         "check": "npm run check:ts && eslint",
         "build": "node ./scripts/build-app.mjs && vite build",
         "bundle": "npm run build && node ./scripts/deploy-app.mjs",
-        "test": "jest --passWithNoTests --config=test/jest.config.js",
+        "test": "vitest run",
         "launch:dev": "npm run build && nw ./build --origin=http://localhost:3000",
         "launch:prod": "npm run build && nw ./build --origin=http://localhost:5000"
     }

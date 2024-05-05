@@ -1,4 +1,6 @@
-import { mock, mockClear, mockFn } from 'jest-mock-extended';
+// @vitest-environment jsdom
+import { mock, mockClear } from 'vitest-mock-extended';
+import { vi, describe, it, expect } from 'vitest';
 import type { HakuNeko } from './HakuNeko';
 import { LocaleID, type EngineResourceKey } from '../i18n/ILocale';
 import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type ISettings } from './SettingsManager';
@@ -195,7 +197,7 @@ describe('Check', () => {
         it('Should not notify on value unchanged when subscribed', async () => {
             const testee = new Check('[ID]:Check', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, true);
 
-            const callback = mockFn<(value: boolean) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = true;
 
@@ -205,7 +207,7 @@ describe('Check', () => {
         it('Should not notify on value changed when unsubscribed', async () => {
             const testee = new Check('[ID]:Check', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, false);
 
-            const callback = mockFn<(value: boolean) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Unsubscribe(callback);
             testee.Value = true;
@@ -216,7 +218,7 @@ describe('Check', () => {
         it('Should notify on value changed when subscribed', async () => {
             const testee = new Check('[ID]:Check', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, false);
 
-            const callback = mockFn<(value: boolean) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Subscribe(callback);
             testee.Value = true;
@@ -255,7 +257,7 @@ describe('Text', () => {
         it('Should not notify on value unchanged when subscribed', async () => {
             const testee = new Text('[ID]:Text', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = 'alice';
 
@@ -265,7 +267,7 @@ describe('Text', () => {
         it('Should not notify on value changed when unsubscribed', async () => {
             const testee = new Text('[ID]:Text', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Unsubscribe(callback);
             testee.Value = 'bob';
@@ -276,7 +278,7 @@ describe('Text', () => {
         it('Should notify on value changed when subscribed', async () => {
             const testee = new Text('[ID]:Text', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Subscribe(callback);
             testee.Value = 'bob';
@@ -315,7 +317,7 @@ describe('Secret', () => {
         it('Should not notify on value unchanged when subscribed', async () => {
             const testee = new Secret('[ID]:Secret', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = 'alice';
 
@@ -325,7 +327,7 @@ describe('Secret', () => {
         it('Should not notify on value changed when unsubscribed', async () => {
             const testee = new Secret('[ID]:Secret', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Unsubscribe(callback);
             testee.Value = 'bob';
@@ -336,7 +338,7 @@ describe('Secret', () => {
         it('Should notify on value changed when subscribed', async () => {
             const testee = new Secret('[ID]:Secret', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Subscribe(callback);
             testee.Value = 'bob';
@@ -424,7 +426,7 @@ describe('Numeric', () => {
         it.each([-5, -1, 0, 1, 5])('Should not notify on value unchanged when subscribed', async (value) => {
             const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, value, -5, 5);
 
-            const callback = mockFn<(value: number) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = value;
 
@@ -434,7 +436,7 @@ describe('Numeric', () => {
         it.each([-5, -1, 0, 1, 5])('Should not notify on value changed when unsubscribed', async (value) => {
             const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -5, 5);
 
-            const callback = mockFn<(value: number) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Unsubscribe(callback);
             testee.Value = value;
@@ -445,7 +447,7 @@ describe('Numeric', () => {
         it.each([-5, -1, 1, 5])('Should notify on value changed when subscribed', async (value) => {
             const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -5, 5);
 
-            const callback = mockFn<(value: number) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Subscribe(callback);
             testee.Value = value;
@@ -457,7 +459,7 @@ describe('Numeric', () => {
         it.each([-1, -5])('Should notify on value changed when exceeding minimum', async (value) => {
             const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -1, 1);
 
-            const callback = mockFn<(value: number) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = value;
 
@@ -468,7 +470,7 @@ describe('Numeric', () => {
         it.each([1, 5])('Should notify on value changed when exceeding maximum', async (value) => {
             const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -1, 1);
 
-            const callback = mockFn<(value: number) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = value;
 
@@ -518,7 +520,7 @@ describe('Choice', () => {
         it('Should not notify on same value assigned when subscribed', async () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = 'alice';
 
@@ -528,7 +530,7 @@ describe('Choice', () => {
         it('Should not notify on valid value assigned when unsubscribed', async () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Unsubscribe(callback);
             testee.Value = 'bob';
@@ -539,7 +541,7 @@ describe('Choice', () => {
         it('Should notify on valid value assigned when subscribed', async () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Subscribe(callback);
             testee.Value = 'bob';
@@ -551,7 +553,7 @@ describe('Choice', () => {
         it('Should not notify on invalid value assigned to default when subscribed', async () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = 'cc';
 
@@ -562,7 +564,7 @@ describe('Choice', () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
             testee.Value = 'bob';
 
-            const callback = mockFn<(value: string) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = 'cc';
 
@@ -601,7 +603,7 @@ describe('Directory', () => {
             const directory = { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle;
             const testee = new Directory('[ID]:Path', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, directory);
 
-            const callback = mockFn<(value: FileSystemDirectoryHandle) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Value = directory;
 
@@ -611,7 +613,7 @@ describe('Directory', () => {
         it('Should not notify on value changed when unsubscribed', async () => {
             const testee = new Directory('[ID]:Path', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
-            const callback = mockFn<(value: FileSystemDirectoryHandle) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Unsubscribe(callback);
             testee.Value = { name: '/path/directory', kind: 'directory' } as FileSystemDirectoryHandle;
@@ -622,7 +624,7 @@ describe('Directory', () => {
         it('Should notify on value changed when subscribed', async () => {
             const testee = new Directory('[ID]:Path', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
-            const callback = mockFn<(args: FileSystemDirectoryHandle) => void>();
+            const callback = vi.fn();
             testee.Subscribe(callback);
             testee.Subscribe(callback);
             testee.Value = { name: '/path/directory', kind: 'directory' } as FileSystemDirectoryHandle;
