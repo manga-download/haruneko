@@ -4,7 +4,7 @@ import { PuppeteerFixture } from '../../../test/PuppeteerFixture';
 import type { PluginController } from './PluginController';
 import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
 
-export class TestFixture extends PuppeteerFixture  {
+export class TestFixture extends PuppeteerFixture {
 
     public async GetRemotePluginController(): Promise<JSHandle<PluginController>> {
         return super.Page.evaluateHandle(async () => {

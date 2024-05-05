@@ -4,7 +4,7 @@ import { PuppeteerFixture } from '../../../test/PuppeteerFixture';
 import type { ISettings } from './SettingsManager';
 import { Key } from './SettingsGlobal';
 
-export class TestFixture extends PuppeteerFixture  {
+export class TestFixture extends PuppeteerFixture {
 
     public async GetRemoteGlobalSettings(): Promise<JSHandle<ISettings>> {
         return super.Page.evaluateHandle(async () => {
