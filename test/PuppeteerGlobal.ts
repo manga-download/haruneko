@@ -89,7 +89,6 @@ export async function setup() {
     try {
         browser = await LaunchNW();
         process.env.browserWS = browser.wsEndpoint();
-        console.log(new Date().toISOString(), '=>', 'Browser Running:', process.env.browserWS);
     } catch(error) {
         server.kill('SIGINT') || server.kill('SIGTERM') || server.kill('SIGKILL');
         throw error;
