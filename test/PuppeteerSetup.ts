@@ -23,15 +23,20 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 
 async function DetectNW(): Promise<string> {
     const executables = [
-        path.resolve('node_modules', 'nw', 'nwjs', 'nwjc'),
+        path.resolve('node_modules', 'nw', 'nwjs', 'nw'),
         path.resolve('node_modules', 'nw', 'nwjs', 'nw.exe'),
-        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nwjc'),
+        path.resolve('node_modules', 'nw', 'nwjs', 'nwjs.app', 'Contents', 'MacOS', 'nwjs'),
+        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw'),
         path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw.exe'),
+        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nwjs.app', 'Contents', 'MacOS', 'nwjs'),
     ];
 
     for(const nw of executables) {
         try {
-            return (await fs.stat(nw)).isFile() ? nw : (() => { throw 0; })();
+            if((await fs.stat(nw)).isFile()) {
+                console.log(new Date().toISOString(), '=>', 'Detected NW:', nw);
+                return nw;
+            }
         } catch {}
     }
 

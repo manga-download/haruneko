@@ -1,14 +1,16 @@
-import { mock, mockFn } from 'jest-mock-extended';
+// @vitest-environment jsdom
+import { mock } from 'vitest-mock-extended';
+import { vi, describe, it, expect } from 'vitest';
 import type { FeatureFlags } from '../../FeatureFlags';
 import FetchProvider from './FetchProvider';
 
 class TestFixture {
 
     public readonly mockFeatureFlags = mock<FeatureFlags>();
-    public readonly mockFetch = mockFn<typeof globalThis.fetch>();
+    public readonly mockFetch = vi.fn();
     public readonly chromeFake = {
         cookies: {
-            getAll: mockFn<typeof chrome.cookies.getAll>(),
+            getAll: vi.fn(),
         },
         webRequest: {
             onBeforeSendHeaders: mock<chrome.webRequest.WebRequestHeadersEvent>(),

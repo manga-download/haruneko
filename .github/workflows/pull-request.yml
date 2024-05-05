@@ -35,4 +35,6 @@ jobs:
       - name: End-To-End Tests
         env:
           DISPLAY: ':99'
-        run: npm run test:e2e
+        run: |
+          npm run test:e2e
+          npm run test:websites -- MangaDex
