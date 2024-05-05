@@ -1,4 +1,5 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
@@ -22,4 +23,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
