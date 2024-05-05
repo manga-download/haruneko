@@ -33,6 +33,8 @@
         "svelte": "^4.2.15",
         "svelte-check": "^3.7.1",
         "svelte-preprocess": "^5.1.4",
+        "vitest": "^1.6.0",
+        "vitest-mock-extended": "^1.3.1",
         "vue": "^3.4.26",
         "vue-tsc": "^2.0.16"
     },
@@ -45,7 +47,7 @@
         "check:vue": "vue-tsc --skipLibCheck --noEmit",
         "check": "npm run check:ts && npm run check:lint && npm run check:svelte && npm run check:vue && npm run check:rules",
         "build": "vite build",
-        "test": "jest --detectOpenHandles --config=test/jest.config.js",
+        "test": "vitest run --config=test/vitest.config.ts && jest --detectOpenHandles --config=test/jest.config.js",
         "serve:dev": "vite --port=3000 --strictPort",
         "serve:prod": "npm run build && vite preview --port=5000 --strictPort"
     }

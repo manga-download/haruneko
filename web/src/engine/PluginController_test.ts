@@ -1,7 +1,8 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
+import { describe, it, expect } from 'vitest';
 import type { ISettings, SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
-//import { PluginController } from './PluginController';
+import { PluginController } from './PluginController'; // TODO: Fix '*.proto' file import in typescript and re-enable test
 import type { MediaChild, MediaContainer } from './providers/MediaPlugin';
 import { Tags } from './Tags';
 
@@ -15,9 +16,7 @@ class TestFixture {
     }
 
     public CreateTestee() {
-        // TODO: Fix '*.proto' file import in typescript and re-enable test
-        return null;
-        //return new PluginController(this.MockStorageController, this.MockSettingsManager);
+        return new PluginController(this.MockStorageController, this.MockSettingsManager);
     }
 }
 
@@ -25,8 +24,7 @@ describe('PluginController', () => {
 
     describe('Constructor', () => {
 
-        // TODO: Fix '*.proto' file import in typescript and re-enable test
-        it.skip('Should initialize all settings', async () => {
+        it('Should initialize all settings', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
@@ -36,14 +34,13 @@ describe('PluginController', () => {
             ].reduce((count, entries) => count + entries.length, 0);
 
             expect(total).toBeGreaterThan(0);
-            expect(fixture.MockSettingsManager.OpenScope).toBeCalledTimes(total);
+            expect(fixture.MockSettingsManager.OpenScope).toHaveBeenCalledTimes(total);
         });
     });
 
     describe('WebsitePlugins', () => {
 
-        // TODO: Fix '*.proto' file import in typescript and re-enable test
-        it.skip('Should have unique website identifiers', async () => {
+        it('Should have unique website identifiers', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
@@ -54,8 +51,7 @@ describe('PluginController', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        // TODO: Fix '*.proto' file import in typescript and re-enable test
-        it.skip('Should have unique website titles', async () => {
+        it('Should have unique website titles', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
@@ -66,7 +62,7 @@ describe('PluginController', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        it.skip('Should have mandatory tags', async () => {
+        it('Should have mandatory tags', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
@@ -87,8 +83,7 @@ describe('PluginController', () => {
 
     describe('InfoTrackers', () => {
 
-        // TODO: Fix '*.proto' file import in typescript and re-enable test
-        it.skip('Should have unique info tracker identifiers', async () => {
+        it('Should have unique info tracker identifiers', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
