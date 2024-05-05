@@ -65,7 +65,6 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
         const page = pages.find(p => p.url() === AppURL);
         if(page) {
             console.log(new Date().toISOString(), '=>', 'Using Page:', [ page.url() ]);
-            //global.PAGE = page;
             return browser;
         } else {
             console.log(new Date().toISOString(), '=>', 'Waiting for Page(s):', pages.map(p => p.url()));
@@ -77,7 +76,6 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
 
 export async function setup() {
     console.log(/* line break */);
-    console.log('GLOBAL::SETUP');
     if(!AppURL.includes('localhost:5000')) {
         throw new Error(`Invalid startup URL '${AppURL}', make sure the application was build for production mode!`);
     }
@@ -91,7 +89,7 @@ export async function setup() {
     try {
         browser = await LaunchNW();
         process.env.browserWS = browser.wsEndpoint();
-        console.log(new Date().toISOString(), '=>', 'Browser Running:', browser.wsEndpoint());
+        console.log(new Date().toISOString(), '=>', 'Browser Running:', process.env.browserWS);
     } catch(error) {
         server.kill('SIGINT') || server.kill('SIGTERM') || server.kill('SIGKILL');
         throw error;
@@ -99,8 +97,6 @@ export async function setup() {
 }
 
 export async function teardown() {
-    //dbg.searchParams.set('teardown', 'true');
-    console.log('GLOBAL::TEARDOWN');
     const pages = await browser.pages();
     for(const page of pages) await page.close();
     await browser.close();
