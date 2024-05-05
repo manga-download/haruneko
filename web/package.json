@@ -47,7 +47,7 @@
         "check:vue": "vue-tsc --skipLibCheck --noEmit",
         "check": "npm run check:ts && npm run check:lint && npm run check:svelte && npm run check:vue && npm run check:rules",
         "build": "vite build",
-        "test": "vitest run --config=test/vitest.config.ts && jest --detectOpenHandles --config=test/jest.config.js",
+        "test": "vitest run",
         "serve:dev": "vite --port=3000 --strictPort",
         "serve:prod": "npm run build && vite preview --port=5000 --strictPort"
     }

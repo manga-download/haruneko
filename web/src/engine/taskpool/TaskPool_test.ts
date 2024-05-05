@@ -1,8 +1,8 @@
 import { inspect } from 'util';
+import { vi, describe, it, expect } from 'vitest';
 import { TaskPool } from './TaskPool';
 import { Priority } from './DeferredTask';
 import { RateLimit, Unlimited } from './RateLimit';
-import { mockFn } from 'jest-mock-extended';
 
 class MockJob<T> {
     constructor(public readonly Priority: Priority, public readonly Duration: number, public readonly Result: T, public readonly Signal?: AbortSignal) {
@@ -28,10 +28,6 @@ async function RunJobs<T>(testee: TaskPool, ... jobs: MockJob<T>[]): Promise<Res
 }
 
 describe('TaskPool', () => {
-
-    // The timing tests on windows are extremly flakey
-    // => Using ten times the number of retries on failure
-    jest.retryTimes(process.platform === 'win32' ? 50 : 5);
 
     describe('Constructor', () => {
 
@@ -170,13 +166,13 @@ describe('TaskPool', () => {
             // NOTE: Assumption that interval time for checking available workers is ~50 ms (3 performed batches)
             //       See: TaskPool.ConcurrencySlotAvailable()
             expect(elapsed).toBeLessThan(3 * 50);
-        });
+        }, { retry: process.platform === 'win32' ? 50 : 5 });
 
         it('Should reject aborted task', async () => {
             const testee = new TaskPool(1);
             const controller = new AbortController();
             controller.abort();
-            const action = mockFn<() => Promise<void>>();
+            const action = vi.fn(() => Promise.resolve());
             const task = testee.Add(action, Priority.Normal, controller.signal);
             try {
                 await task;
@@ -215,6 +211,6 @@ describe('TaskPool', () => {
             // NOTE: Assumption that interval time for checking available workers is ~50 ms (5 performed tasks)
             //       See: TaskPool.ConcurrencySlotAvailable()
             expect(elapsed).toBeLessThan(5 * 50);
-        });
+        }, { retry: process.platform === 'win32' ? 50 : 5 });
     });
 });

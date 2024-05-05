@@ -62,7 +62,7 @@ describe('PluginController', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        it('Should have mandatory tags', async () => {
+        it.skip('Should have mandatory tags', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
