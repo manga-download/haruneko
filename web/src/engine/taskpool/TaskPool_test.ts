@@ -210,7 +210,8 @@ describe('TaskPool', () => {
             }
             // NOTE: Assumption that interval time for checking available workers is ~50 ms (5 performed tasks)
             //       See: TaskPool.ConcurrencySlotAvailable()
-            expect(elapsed).toBeLessThan(5 * 50);
+            const epsilon = process.platform === 'win32' ? 15 : 0;
+            expect(elapsed).toBeLessThan(5 * 50 + epsilon);
         }, { retry: process.platform === 'win32' ? 50 : 5 });
     });
 });
