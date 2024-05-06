@@ -6,7 +6,7 @@ const config = {
         title: 'Tecno Scan'
     },
     container: {
-        url: 'https://tecnoscann.com/manga/su-bao-tiene-tres-anos-y-medio-y-esta-siendo-mimada-por-sus-ocho-tios/',
+        url: 'https://visortecno.com/manga/su-bao-tiene-tres-anos-y-medio-y-esta-siendo-mimada-por-sus-ocho-tios/',
         id: '/manga/su-bao-tiene-tres-anos-y-medio-y-esta-siendo-mimada-por-sus-ocho-tios/',
         title: 'Su Bao tiene tres años y medio, y está siendo mimada por sus ocho tíos'
     },

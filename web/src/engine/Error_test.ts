@@ -1,4 +1,6 @@
-import { mock } from 'jest-mock-extended';
+// @vitest-environment jsdom
+import { mock } from 'vitest-mock-extended';
+import { describe, it, expect } from 'vitest';
 import type { HakuNeko } from '../engine/HakuNeko';
 import { Exception, InternalError, NotImplementedError } from './Error';
 import type { Choice, ISettings, SettingsManager } from './SettingsManager';
@@ -22,14 +24,14 @@ describe('Error', () => {
 
     describe('InternalError', () => {
 
-        test('Should create a new instance with expected properties', () => {
+        it('Should create a new instance with expected properties', () => {
             const testee = new InternalError('😈');
             expect(testee).toBeInstanceOf(Error);
             expect(testee.name).toBe('InternalError');
             expect(testee.message).toBe('😈');
         });
 
-        test('Should create a new derived instance with expected properties', () => {
+        it('Should create a new derived instance with expected properties', () => {
             class DerivedInternalError extends InternalError {}
             const testee = new DerivedInternalError('😈');
             expect(testee).toBeInstanceOf(Error);
@@ -40,7 +42,7 @@ describe('Error', () => {
 
     describe('NotImplementedError', () => {
 
-        test('Should create a new instance with expected properties', () => {
+        it('Should create a new instance with expected properties', () => {
             const testee = new NotImplementedError('😈');
             expect(testee).toBeInstanceOf(Error);
             expect(testee.name).toBe('NotImplementedError');
@@ -50,14 +52,14 @@ describe('Error', () => {
 
     describe('Exception', () => {
 
-        test('Should create a new instance with expected properties', () => {
+        it('Should create a new instance with expected properties', () => {
             const testee = new Exception(EngineResourceKey.FetchProvider_FetchWindow_CloudFlareError, '😈');
             expect(testee).toBeInstanceOf(Error);
             expect(testee.name).toBe('Exception<FetchProvider_FetchWindow_CloudFlareError>');
             expect(testee.message).toBe('The request failed due to the following CloudFlare Error: "😈"');
         });
 
-        test('Should create a new derived instance with expected properties', () => {
+        it('Should create a new derived instance with expected properties', () => {
             class DerivedException extends Exception {}
             const testee = new DerivedException(EngineResourceKey.FetchProvider_FetchWindow_CloudFlareError, '😈');
             expect(testee).toBeInstanceOf(Error);

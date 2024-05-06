@@ -8,7 +8,6 @@ export default {
     testEnvironment: '../../test/PuppeteerEnvironment.ts',
     reporters: [
         'default',
-        'jest-junit',
         '../../test/github-test-reporter'
     ],
     testTimeout: 5000,

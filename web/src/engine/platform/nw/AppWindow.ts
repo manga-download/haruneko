@@ -14,6 +14,7 @@ export default class implements IAppWindow {
     };
 
     constructor(private readonly nwWindow: NWJS_Helpers.win, private readonly splashURL: string) {
+        // TODO: Confirm really want to close => nwWindow.on('beforunload', ...)
         this.RegisterKeyboardShortcuts();
     }
 
@@ -72,6 +73,6 @@ export default class implements IAppWindow {
     }
 
     public Close(): void {
-        this.nwWindow.close();
+        nw.Window.getAll(windows => windows.forEach(win => win.close()));
     }
 }

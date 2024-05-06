@@ -1,4 +1,5 @@
 //import { Exception } from '../../Error';
+import type { FeatureFlags } from '../../FeatureFlags';
 //import { EngineResourceKey as R } from '../../../i18n/ILocale';
 import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
 //import { FetchRedirection } from '../AntiScrapingDetection';
@@ -39,7 +40,11 @@ class FetchRequest extends Request {
 
 export default class extends FetchProvider {
 
-    Initialize(): void {
+    constructor(private readonly featureFlags: FeatureFlags) {
+        super();
+    }
+
+    public Initialize(): void {
 
         // Abuse the global Request type to check if system is already initialized
         if(globalThis.Request === FetchRequest) {
@@ -67,7 +72,7 @@ export default class extends FetchProvider {
 
         const destroy = async (id: number) => {
             try {
-                if(this.IsVerboseModeEnabled) {
+                if(this.featureFlags.VerboseFetchWindow.Value) {
                     //
                 } else {
                     await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::CloseWindow', id);
@@ -78,7 +83,7 @@ export default class extends FetchProvider {
         };
 
         const openOptions: BrowserWindowConstructorOptions = {
-            show: this.IsVerboseModeEnabled,
+            show: this.featureFlags.VerboseFetchWindow.Value,
             width: 1280,
             height: 720,
             webPreferences: {

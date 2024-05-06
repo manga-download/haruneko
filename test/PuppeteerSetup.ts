@@ -1,10 +1,8 @@
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
-//import type { Config } from '@jest/types';
 
 const appURL = 'http://localhost:5000/';
 const viteExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
@@ -23,29 +21,37 @@ async function CloseSplashScreen(target: puppeteer.Target) {
     }
 }
 
+async function DetectNW(): Promise<string> {
+    const executables = [
+        path.resolve('node_modules', 'nw', 'nwjs', 'nw'),
+        path.resolve('node_modules', 'nw', 'nwjs', 'nw.exe'),
+        path.resolve('node_modules', 'nw', 'nwjs', 'nwjs.app', 'Contents', 'MacOS', 'nwjs'),
+        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw'),
+        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw.exe'),
+        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nwjs.app', 'Contents', 'MacOS', 'nwjs'),
+    ];
+
+    for(const nw of executables) {
+        try {
+            if((await fs.stat(nw)).isFile()) {
+                console.log(new Date().toISOString(), '=>', 'Detected NW:', nw);
+                return nw;
+            }
+        } catch {}
+    }
+
+    throw new Error('Failed to detect location of nw executable!');
+}
+
 async function LaunchNW() {
     const nwApp = path.resolve('app', 'nw', 'build');
-    let nwExe = [
-        path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw'),
-        path.resolve('app', 'nw', 'node_modules', '.bin', process.platform === 'win32' ? 'nw.cmd' : 'nw'),
-    ].filter(file => existsSync(file)).shift();
-    if(!nwExe) {
-        throw new Error('Failed to detect location of nw executable!');
-    }
-
-    let args: string[] = [nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + appURL];
-
-    if (process.platform == 'win32') {
-        args = ['/c', nwExe].concat(args);
-        nwExe = path.resolve(process.env['SystemRoot'], 'System32', 'cmd.exe');
-    }
 
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
         ignoreDefaultArgs: true,
-        executablePath: nwExe,
-        args: args,
+        executablePath: await DetectNW(),
+        args: [ nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + appURL ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
@@ -74,7 +80,11 @@ export default async function(/*config: Config.ConfigGlobals*/) {
     global.TEMPDIR = tempDir;
     await fs.mkdir(global.TEMPDIR, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
-    const server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], { cwd: path.resolve('web'), stdio: [ 'pipe', process.stdout, process.stderr ] , shell : true});
+    const server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], {
+        cwd: path.resolve('web'),
+        stdio: [ 'pipe', process.stdout, process.stderr ],
+        shell : true
+    });
     global.SERVER = server;
     try {
         global.BROWSER = await LaunchNW();

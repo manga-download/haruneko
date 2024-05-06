@@ -6,7 +6,7 @@ const config = {
         title: 'ManhwaFreak'
     },
     container: {
-        url: 'https://freakcomic.com/manga/i-am-reborn-as-the-sword-master/',
+        url: 'https://manhwa-freak.org/manga/i-am-reborn-as-the-sword-master/',
         id: '/manga/i-am-reborn-as-the-sword-master/',
         title: 'I Am Reborn as the Sword Master'
     },

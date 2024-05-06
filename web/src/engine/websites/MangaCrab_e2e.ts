@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'mangacrab',
         title: 'Manga Crab'
-    }/*,
+    },
     container: {
-        url: 'https://mangacrab.com/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://visorcrab.com/series/mi-sistema-es-muy-serio/',
+        id: JSON.stringify({ post: '30840', slug: '/series/mi-sistema-es-muy-serio/' }),
+        title: 'El Sistema Sabroso'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/series/mi-sistema-es-muy-serio/capitulo-19/',
+        title: 'Capitulo 19'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 769_088,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

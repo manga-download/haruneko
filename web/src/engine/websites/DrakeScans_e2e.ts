@@ -6,7 +6,7 @@ const config: Config = {
         title: 'DrakeScans'
     },
     container: {
-        url: 'https://drakescans.com/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
+        url: 'https://drake-scans.com/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
         id: '/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
         title: 'I’m Stuck On The Same Day For A Thousand Years'
     },
