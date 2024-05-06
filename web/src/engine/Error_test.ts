@@ -46,7 +46,7 @@ describe('Error', () => {
             const testee = new NotImplementedError('😈');
             expect(testee).toBeInstanceOf(Error);
             expect(testee.name).toBe('NotImplementedError');
-            expect(testee.message).toBe('😈');
+            expect(testee.message).toBe('-😈-');
         });
     });
 
