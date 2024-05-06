@@ -84,7 +84,7 @@ export async function setup() {
     server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], {
         cwd: path.resolve('web'),
         stdio: [ 'pipe', process.stdout, process.stderr ],
-        shell : true
+        shell : process.platform === 'win32',
     });
     try {
         browser = await LaunchNW();
@@ -104,14 +104,14 @@ export async function teardown() {
             await new Promise(resolve => exec(`taskkill /pid ${server.pid} /T /F`, resolve));
             break;
         default:
-            const signals = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
+            const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
             for(let index = 0; index < signals.length && server.exitCode === null; index++) {
-                server.kill(signals[index] as NodeJS.Signals);
+                console.log(new Date().toISOString(), '=>', signals[index], server.kill(signals[index]));
             }
             break;
     }
     if(server.exitCode === null) {
-        console.warn('Failed to stop process:', server.spawnfile);
+        console.warn(new Date().toISOString(), '=>', `Failed to stop server (pid: ${server.pid}):`, path.relative(process.cwd(), server.spawnfile));
     }
     await fs.rm(tempDir, { recursive: true });
     process.exit();

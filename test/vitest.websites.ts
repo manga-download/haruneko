@@ -8,6 +8,6 @@ export default defineConfig({
         globalSetup: './test/PuppeteerGlobal.ts',
         dir: './web/src/engine/websites',
         include: [ '**/*[_.]e2e.[jt]s' ],
-        reporters: process.env.GITHUB_ACTIONS ? ['basic', 'github-actions'] : [ 'default' ],
+        reporters: process.env.GITHUB_ACTIONS ? ['basic', 'github-actions'] : [ 'default', 'hanging-process' ],
     },
 });
