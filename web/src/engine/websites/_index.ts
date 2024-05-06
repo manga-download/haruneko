@@ -120,6 +120,7 @@ export { default as EuphoriaScan } from './EuphoriaScan';
 export { default as EvilFlowers } from './EvilFlowers';
 export { default as FayScans } from './FayScans';
 export { default as FbSquads } from './FbSquads';
+export { default as FeelWeb } from './FeelWeb';
 export { default as FenixScan } from './FenixScan';
 export { default as FinalScans } from './FinalScans';
 export { default as FireScans } from './FireScans';
