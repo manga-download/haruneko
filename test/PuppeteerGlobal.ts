@@ -12,11 +12,15 @@ const userDir = path.resolve(tempDir, 'user-data');
 let server: ReturnType<typeof spawn>;
 let browser: puppeteer.Browser;
 
+async function delay(milliseconds: number) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
 async function CloseSplashScreen(target: puppeteer.Target) {
     const page = await target.page();
     let url = page?.url();
     while(!url?.startsWith('http')) {
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await delay(250);
         url = page?.url();
     }
     if(url && /splash.html/i.test(url)) {
@@ -69,7 +73,7 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
         } else {
             console.log(new Date().toISOString(), '=>', 'Waiting for Page(s):', pages.map(p => p.url()));
         }
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await delay(1000);
     }
     throw new Error(`Could not find the web-application '${AppURL}' within the given timeout!`);
 }
@@ -110,6 +114,7 @@ export async function teardown() {
             }
             break;
     }
+    await delay(1000);
     if(server.exitCode === null) {
         console.warn(new Date().toISOString(), '=>', `Failed to stop server (pid: ${server.pid}):`, path.relative(process.cwd(), server.spawnfile));
     }
