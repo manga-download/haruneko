@@ -1,4 +1,4 @@
-import { mockFn } from 'jest-mock-extended';
+import { vi, describe, it, expect } from 'vitest';
 import { inspect } from 'util';
 import { DeferredTask, Priority } from './DeferredTask';
 
@@ -51,7 +51,7 @@ describe('DeferredTask', () => {
 
         it('Should reject promise when abort signal was received', async () => {
             const cancellator = new AbortController();
-            const action = mockFn<() => Promise<void>>();
+            const action = vi.fn(() => Promise.resolve());
             const testee = new DeferredTask<void>(action, Priority.Normal, cancellator.signal);
             cancellator.abort();
             await testee.Run();
@@ -70,7 +70,7 @@ describe('DeferredTask', () => {
     describe('RejectWhenAborted', () => {
 
         it('Should not reject promise when abort signal is not present', async () => {
-            const action = mockFn<() => Promise<void>>();
+            const action = vi.fn(() => Promise.resolve());
             const testee = new DeferredTask<void>(action, Priority.Normal);
             expect(testee.RejectWhenAborted()).toBe(false);
             expect(action).not.toBeCalled();
@@ -78,7 +78,7 @@ describe('DeferredTask', () => {
         });
 
         it('Should not reject promise when abort signal was not received', async () => {
-            const action = mockFn<() => Promise<void>>();
+            const action = vi.fn(() => Promise.resolve());
             const testee = new DeferredTask<void>(action, Priority.Normal, new AbortController().signal);
             expect(testee.RejectWhenAborted()).toBe(false);
             expect(action).not.toBeCalled();
@@ -88,7 +88,7 @@ describe('DeferredTask', () => {
 
         it('Should reject promise when abort signal was received', async () => {
             const cancellator = new AbortController();
-            const action = mockFn<() => Promise<void>>();
+            const action = vi.fn(() => Promise.resolve());
             const testee = new DeferredTask<void>(action, Priority.Normal, cancellator.signal);
             cancellator.abort();
             expect(testee.RejectWhenAborted()).toBe(true);

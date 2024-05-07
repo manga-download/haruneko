@@ -23,11 +23,11 @@
         MediaItem,
     } from '../../../engine/providers/MediaPlugin';
 
-    const settings = HakuNeko.SettingsManager.OpenScope();
-    let checkNewContent = settings.Get<Check>(GlobalKey.CheckNewContent).Value;
-    settings.ValueChanged.Subscribe((_, shouldCheck: boolean) => {
-        if (shouldCheck) refreshSuggestions();
-        checkNewContent = shouldCheck;
+    const setting = HakuNeko.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent);
+    let checkNewContent = setting.Value;
+    setting.Subscribe(value => {
+        if(value) refreshSuggestions();
+        checkNewContent = value;
     });
 
     let suggestions: Bookmark[] = [];
