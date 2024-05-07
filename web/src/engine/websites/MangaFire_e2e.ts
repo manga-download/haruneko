@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const configVolume = {
     plugin: {
@@ -22,7 +23,7 @@ const configVolume = {
 };
 
 const fixtureVolume = new TestFixture(configVolume);
-describe(fixtureVolume.Name, () => fixtureVolume.AssertWebsite());
+describe(fixtureVolume.Name, async () => (await fixtureVolume.Connect()).AssertWebsite());
 
 const configChapter = {
     plugin: {
@@ -46,4 +47,4 @@ const configChapter = {
 };
 
 const fixtureChapter = new TestFixture(configChapter);
-describe(fixtureChapter.Name, () => fixtureChapter.AssertWebsite());
+describe(fixtureChapter.Name, async () => (await fixtureChapter.Connect()).AssertWebsite());

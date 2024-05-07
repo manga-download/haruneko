@@ -1,6 +1,7 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixtureWithoutLanguage = new TestFixture({
+const fixture = new TestFixture({
     plugin: {
         id: 'mangapanda',
         title: 'MangaPanda'
@@ -20,4 +21,4 @@ const fixtureWithoutLanguage = new TestFixture({
         type: 'image/jpeg'
     }
 });
-describe(fixtureWithoutLanguage.Name, () => fixtureWithoutLanguage.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

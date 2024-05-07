@@ -19,7 +19,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manhwafreak', 'ManhwaFreak', 'https://freakcomic.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('manhwafreak', 'ManhwaFreak', 'https://manhwa-freak.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

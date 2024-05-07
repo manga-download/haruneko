@@ -1,13 +1,14 @@
 import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
+import type { FeatureFlags } from '../FeatureFlags';
 import type { FetchProvider } from './FetchProviderCommon';
 import NodeWebkitFetchProvider from './nw/FetchProvider';
 import ElectronFetchProvider from './electron/FetchProvider';
 
-export function CreateFetchProvider(): FetchProvider {
+export function CreateFetchProvider(featureFlags: FeatureFlags): FetchProvider {
     return new PlatformInstanceActivator<FetchProvider>()
-        .Configure(Runtime.NodeWebkit, () => new NodeWebkitFetchProvider())
-        .Configure(Runtime.Electron, () => new ElectronFetchProvider())
+        .Configure(Runtime.NodeWebkit, () => new NodeWebkitFetchProvider(featureFlags))
+        .Configure(Runtime.Electron, () => new ElectronFetchProvider(featureFlags))
         .Create();
 }
 
