@@ -68,11 +68,6 @@
 </Theme>
 
 <style>
-    @font-face {
-        font-family: 'BabelStoneFlags';
-        src: url('/BabelStoneFlags.woff2') format('woff');
-        font-style: normal;
-    }
     :global(::-webkit-scrollbar) {
         width: 1em; /* Necessary so scrollbar changes from default*/
     }

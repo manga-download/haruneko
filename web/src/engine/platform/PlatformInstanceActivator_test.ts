@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+import { describe, it, expect } from 'vitest';
 import { InternalError } from '../Error';
 import { Runtime, type PlatformInfo } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';

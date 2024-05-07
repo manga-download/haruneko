@@ -1,3 +1,4 @@
+﻿import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -6,20 +7,20 @@ const config = {
         title: 'Knight no Fansub'
     },
     container: {
-        url: 'https://knightnoscanlation.com/sr/infinite-level-up-in-murim/',
-        id: JSON.stringify({ post: '3954', slug: '/sr/infinite-level-up-in-murim/' }),
-        title: 'Infinite Level up in Murim'
+        url: 'https://lectorkns.com/sr/solo-subo-de-nivel/',
+        id: JSON.stringify({ post: '1876', slug: '/sr/solo-subo-de-nivel/' }),
+        title: 'Solo Level'
     },
     child: {
-        id: '/sr/infinite-level-up-in-murim/capitulo-01/',
-        title: 'Capitulo 01'
+        id: '/sr/solo-subo-de-nivel/side-story-capitulo-21/',
+        title: 'Side Story Capítulo 21 - Fin'
     },
     entry: {
-        index: 0,
-        size: 2_780_024,
+        index: 1,
+        size: 1_238_366,
         type: 'image/jpeg'
     }
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
