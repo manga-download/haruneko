@@ -112,7 +112,7 @@ export default class extends MangaScraper {
     public constructor() {
         super('mangadex', 'MangaDex', 'https://mangadex.org', Tags.Language.Multilingual);
         this.Settings.throttle = new Numeric('throttle.mangas', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 60, 6, 240);
-        this.Settings.throttle.ValueChanged.Subscribe((_, value: number) => this.mangasTaskPool.RateLimit = new RateLimit(value, 60));
+        (this.Settings.throttle as Numeric).Subscribe(value => this.mangasTaskPool.RateLimit = new RateLimit(value, 60));
     }
 
     public override get Icon() {
