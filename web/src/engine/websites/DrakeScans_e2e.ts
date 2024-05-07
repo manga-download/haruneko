@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -6,7 +7,7 @@ const config: Config = {
         title: 'DrakeScans'
     },
     container: {
-        url: 'https://drakescans.com/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
+        url: 'https://drake-scans.com/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
         id: '/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
         title: 'I’m Stuck On The Same Day For A Thousand Years'
     },
@@ -22,4 +23,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

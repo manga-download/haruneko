@@ -1,4 +1,5 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
+import { describe, it, expect } from 'vitest';
 import { MediaContainer, type MediaChild } from './MediaPlugin';
 import { MissingInfoTracker, type MediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import { Store, type StorageController } from '../StorageController';
@@ -105,7 +106,7 @@ describe('BookmarkPlugin', () => {
 
     describe('Constructor', () => {
 
-        test('Should load bookmarks from persistent storage', async () => {
+        it('Should load bookmarks from persistent storage', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks(TestFixture.DefaultStoredEntries, 25)
                 .SetupWebsitePlugins()
@@ -152,7 +153,7 @@ describe('BookmarkPlugin', () => {
 
     describe('Import', () => {
 
-        test('Should successfully import bookmarks', async () => {
+        it('Should successfully import bookmarks', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
@@ -205,7 +206,7 @@ describe('BookmarkPlugin', () => {
             }, Store.Bookmarks, 'website-02 :: website-02/anime');
         });
 
-        test('Should successfully import legacy bookmarks', async () => {
+        it('Should successfully import legacy bookmarks', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
@@ -270,7 +271,7 @@ describe('BookmarkPlugin', () => {
             }, Store.Bookmarks, 'website-02 :: website-02/anime');
         });
 
-        test('Should do nothing when import is cancelled by user', async () => {
+        it('Should do nothing when import is cancelled by user', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
@@ -288,7 +289,7 @@ describe('BookmarkPlugin', () => {
             expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
         });
 
-        test('Should throw on unexpected error', async () => {
+        it('Should throw on unexpected error', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
@@ -305,7 +306,7 @@ describe('BookmarkPlugin', () => {
 
     describe('Export', () => {
 
-        test('Should successfully export bookmarks', async () => {
+        it('Should successfully export bookmarks', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
@@ -328,7 +329,7 @@ describe('BookmarkPlugin', () => {
                 ]});
         });
 
-        test('Should do nothing when export is cancelled by user', async () => {
+        it('Should do nothing when export is cancelled by user', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
@@ -343,7 +344,7 @@ describe('BookmarkPlugin', () => {
             expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalled();
         });
 
-        test('Should throw on unexpected error', async () => {
+        it('Should throw on unexpected error', async () => {
             const fixture = new TestFixture()
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()

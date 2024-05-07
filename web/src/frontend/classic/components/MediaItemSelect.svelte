@@ -21,13 +21,12 @@
         selectedItemPrevious,
         selectedItemNext,
     } from '../stores/Stores';
-    import { filterByCategory, Tags, type Tag } from '../../../engine/Tags';
+    import { Tags, type Tag } from '../../../engine/Tags';
+    const availableLanguageTags = Tags.Language.toArray();
     import { Locale } from '../stores/Settings';
 
     import type {
         StoreableMediaContainer,
-        MediaContainer,
-        MediaChild,
         MediaItem,
     } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
@@ -75,16 +74,10 @@
     let itemsdiv: HTMLElement;
 
     let MediaLanguages: Tag[] = [];
-    $: getMediaLanguages(items);
-    async function getMediaLanguages(items: MediaContainer<MediaChild>[]) {
-        const Languages = new Set<Tag>();
-        items.forEach((item) => {
-            filterByCategory(item.Tags, Tags.Language).forEach((tag) =>
-                Languages.add(tag),
-            );
-        });
-        MediaLanguages = [...Languages];
-    }
+    $: MediaLanguages = items.reduce((detectedLangaugeTags: Tag[], item) => {
+        const undetectedLangaugeTags = item.Tags.filter(tag => !detectedLangaugeTags.includes(tag) && availableLanguageTags.includes(tag));
+        return [ ...detectedLangaugeTags, ...undetectedLangaugeTags ];
+    }, []);
     $: langComboboxItems =
         MediaLanguages.length > 0
             ? [
@@ -367,10 +360,6 @@
         grid-area: LanguageFilter;
         display: grid;
         grid-template-columns: auto 1fr;
-    }
-    #LanguageFilter :global(.bx--list-box__menu-item__option)::first-letter,
-    #LanguageFilter :global(.bx--list-box__label)::first-letter {
-        font-family: BabelStoneFlags;
     }
     #ItemFilter {
         grid-area: ItemFilter;
