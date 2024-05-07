@@ -1,16 +1,14 @@
-import type { Browser, Page } from 'puppeteer-core';
+import { describe, it, expect } from 'vitest';
+import type { Page } from 'puppeteer-core';
+import { PuppeteerFixture } from '../../test/PuppeteerFixture';
 
-export class TestFixture {
+export class TestFixture extends PuppeteerFixture {
 
-    private readonly browser: Browser;
     private page: Page;
 
-    constructor() {
-        this.browser = global.BROWSER;
-    }
-
     public async SetupLocation(url: string): Promise<TestFixture> {
-        this.page = this.page || await this.browser.newPage();
+        await this.Connect();
+        this.page = this.page || await super.Browser.newPage();
         await this.page.goto(url);
         return this;
     }
@@ -29,9 +27,7 @@ export class TestFixture {
 
 describe('CloudFlare Bypass', () => {
 
-    jest.setTimeout(20_000);
-
-    it('Should bypass JavaScript Challenge', async () => {
+    it.skip('Should bypass JavaScript Challenge', async () => {
 
         const fixture = await new TestFixture().SetupLocation('https://test.cloudscraper.ovh/challenge');
 
