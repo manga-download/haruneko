@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const ComicConfig = {
     plugin: {
@@ -22,7 +23,7 @@ const ComicConfig = {
 };
 
 const ComicFixture = new TestFixture(ComicConfig);
-describe(ComicFixture.Name, () => ComicFixture.AssertWebsite());
+describe(ComicFixture.Name, async () => (await ComicFixture.Connect()).AssertWebsite());
 
 const NovelConfig = {
     plugin: {
@@ -46,4 +47,4 @@ const NovelConfig = {
 };
 
 const NovelFixture = new TestFixture(NovelConfig);
-describe(NovelFixture.Name, () => NovelFixture.AssertWebsite());
+describe(NovelFixture.Name, async () => (await NovelFixture.Connect()).AssertWebsite());

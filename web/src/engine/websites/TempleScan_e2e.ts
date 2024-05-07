@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const ComicConfig = {
     plugin: {
@@ -22,4 +23,4 @@ const ComicConfig = {
 };
 
 const ComicFixture = new TestFixture(ComicConfig);
-describe(ComicFixture.Name, () => ComicFixture.AssertWebsite());
+describe(ComicFixture.Name, async () => (await ComicFixture.Connect()).AssertWebsite());
