@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -9,7 +10,7 @@ const config = {
     container: {
         url: 'https://dsectcomics.org/comics/reencarnacao-maldita/',
         id: JSON.stringify({ post: '684', slug: '/comics/reencarnacao-maldita/' }),
-        title: 'Reencarnação Maldita',
+        title: 'Reencarnaï¿½ï¿½o Maldita',
         //timeout: 30000
     },
     child: {
@@ -25,4 +26,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
