@@ -60,6 +60,7 @@ export { default as ComicBorder } from './ComicBorder';
 export { default as ComicDays } from './ComicDays';
 export { default as ComicEarthStar } from './ComicEarthStar';
 export { default as ComicExtra } from './ComicExtra';
+export { default as ComicFans } from './ComicFans';
 export { default as ComicFuz } from './ComicFuz';
 export { default as ComicFX } from './ComicFX';
 export { default as ComicGardo } from './ComicGardo';
