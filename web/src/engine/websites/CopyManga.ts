@@ -49,7 +49,7 @@ export default class extends DecoratableMangaScraper {
         super('copymanga', 'CopyManga', 'https://www.copymanga.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
 
         //this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
-        //this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
+        //(this.Settings.url as Text).Subscribe(value => this.URI.href = value);
         //this.URI.href = this.Settings.url.Value as string;
 
         this.Settings.format = new Choice('image.format',

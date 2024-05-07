@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +7,7 @@ const config = {
         title: 'ManhwaFreak'
     },
     container: {
-        url: 'https://freakcomic.com/manga/i-am-reborn-as-the-sword-master/',
+        url: 'https://manhwa-freak.org/manga/i-am-reborn-as-the-sword-master/',
         id: '/manga/i-am-reborn-as-the-sword-master/',
         title: 'I Am Reborn as the Sword Master'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

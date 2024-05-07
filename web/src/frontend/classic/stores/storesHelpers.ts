@@ -18,7 +18,7 @@ interface SettingStore<V extends IValue, S extends ISetting<V>> extends Writable
 export function CreateSettingStore<V extends IValue, S extends ISetting<V>>(setting: S) : SettingStore<V, S> {
     const { subscribe, set, update } = writable(setting.Default);
 
-    setting.ValueChanged.Subscribe((_, value: V) => set(value));
+    setting.Subscribe(value => set(value));
 
     return {
         subscribe,

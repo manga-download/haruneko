@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -6,12 +7,12 @@ const config: Config = {
         title: 'Rizz Comics'
     },
     container: {
-        url: 'https://rizzcomic.com/series/r3513102-demonic-master-of-mount-kunlun',
-        id: '/series/r3513102-demonic-master-of-mount-kunlun',
+        url: 'https://rizzfables.com/series/r2311170-demonic-master-of-mount-kunlun',
+        id: '/series/r2311170-demonic-master-of-mount-kunlun',
         title: 'Demonic Master of Mount Kunlun'
     },
     child: {
-        id: '/chapter/r3513102-demonic-master-of-mount-kunlun-chapter-49',
+        id: '/chapter/r2311170-demonic-master-of-mount-kunlun-chapter-49',
         title: 'Chapter 49'
     },
     entry: {
@@ -22,4 +23,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
