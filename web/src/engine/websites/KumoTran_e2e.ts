@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const scrambledChapterConfig = {
@@ -20,8 +21,9 @@ const scrambledChapterConfig = {
         type: 'image/jpeg'
     }
 };
+
 const scrambledFixture = new TestFixture(scrambledChapterConfig);
-describe(scrambledFixture.Name, () => scrambledFixture.AssertWebsite());
+describe(scrambledFixture.Name, async () => (await scrambledFixture.Connect()).AssertWebsite());
 
 const normalChapterConfig = {
     plugin: {
@@ -43,6 +45,6 @@ const normalChapterConfig = {
         type: 'image/jpeg'
     }
 };
-const normalFixture = new TestFixture(normalChapterConfig);
 
-describe(normalFixture.Name, () => normalFixture.AssertWebsite());
+const normalFixture = new TestFixture(normalChapterConfig);
+describe(normalFixture.Name, async () => (await normalFixture.Connect()).AssertWebsite());

@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -13,7 +14,7 @@ const config: Config = {
     },
     child: {
         id: '/news/la-magia-de-un-retornado-debe-ser-especial-243.00',
-        title: 'Capítulo 243.00'
+        title: 'Capï¿½tulo 243.00'
     },
     entry: {
         index: 0,
@@ -24,4 +25,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

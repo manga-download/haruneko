@@ -83,20 +83,15 @@ for(const setting of settings) {
 //       const quality = settings.Get(Key.DescramblingQuality);
 const quality = settings.Get('descrambling-quality');
 
-// Interested in changes? Lets subscribe with a callback when any of the settings is changed
-const onAnySettingChanged = (sender, arg) => console.log('Setting Changed:', sender, arg);
-settings.ValueChanged.Subscribe(onAnySettingChanged);
-
-// And also a callback when only a specific setting is changed
-const onImageQualityChanged = (sender, arg) => console.log('Quality Changed:', sender, arg);
-quality.ValueChanged.Subscribe(onImageQualityChanged);
+// May also add a callback to get notified when a new value was assigned
+const onImageQualityChanged = (value) => console.log('Quality Changed:', value);
+quality.Subscribe(onImageQualityChanged);
 
 // Our subscribers will be notified as soon as a new `Value` is assigned
 quality.Value -= 1;
 
 // Unsbscribing works as well ...
-settings.ValueChanged.Unsubscribe(onAnySettingChanged);
-quality.ValueChanged.Unsubscribe(onImageQualityChanged);
+quality.Unsubscribe(onImageQualityChanged);
 
 // Our subscribers will no longer be notified when resetting to the default value
 quality.Value = quality.Default;

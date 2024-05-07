@@ -1,4 +1,3 @@
-import { GetLocale } from '../i18n/Localization';
 import { Event } from '../engine/Event';
 import type { IFrontendInfo, IFrontendModule } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
@@ -6,7 +5,7 @@ import { Info as InfoFluentCore } from './fluent-core/FrontendInfo';
 import type { Choice, ISettings } from '../engine/SettingsManager';
 import { Key } from '../engine/SettingsGlobal';
 import { InternalError } from '../engine/Error';
-import type { IAppWindow } from '../engine/platform/AppWindow';
+import { ReloadAppWindow, type IAppWindow } from '../engine/platform/AppWindow';
 
 export const FrontendList: IFrontendInfo[] = [
     InfoClassic,
@@ -28,7 +27,11 @@ export class FrontendController {
         } else {
             this.Load(root);
         }
-        this.settings.Get<Choice>(Key.Frontend).ValueChanged.Subscribe((_, value) => this.Reload(value));
+        this.settings.Get<Choice>(Key.Frontend).Subscribe(value => {
+            if(this.activeFrontendID !== value) {
+                ReloadAppWindow();
+            }
+        });
     }
 
     private GetSettingsFrontendID(): string | null {
@@ -64,12 +67,6 @@ export class FrontendController {
             this.FrontendLoaded.Dispatch(frontend, this.GetFrontendInfoByID(frontendID));
         } catch(error) {
             console.error(`Failed to load frontend!`, error);
-        }
-    }
-
-    private Reload(frontendID: string): void {
-        if(frontendID !== this.activeFrontendID && confirm(GetLocale().FrontendController_Reload_ConfirmNotice())) {
-            window.location.reload();
         }
     }
 }
