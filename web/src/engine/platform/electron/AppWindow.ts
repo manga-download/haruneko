@@ -2,7 +2,9 @@ import type { IAppWindow } from '../AppWindow';
 
 export default class implements IAppWindow {
 
-    constructor(private readonly splashURL: string) {}
+    constructor(private readonly splashURL: string) {
+        // TODO: Confirm really want to close => window.on('beforunload', ...)
+    }
 
     public async ShowSplash(): Promise<void> {
         await globalThis.ipcRenderer.invoke('IAppWindow::HideWindow');
@@ -31,6 +33,7 @@ export default class implements IAppWindow {
     }
 
     public Close(): void {
+        // TODO: Close all open windows ...
         globalThis.ipcRenderer.invoke('IAppWindow::Close');
     }
 }

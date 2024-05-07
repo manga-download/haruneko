@@ -1,11 +1,12 @@
-import { mock, mockFn } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
+import { vi, describe, it, expect } from 'vitest';
 import { Event } from './Event';
 
 function AssertSubscribeOnce<TSender, TArgs>(testee: Event<TSender, TArgs>): void {
     it('Should only subscribe once', async () => {
         const sender = mock<TSender>();
         const args = mock<TArgs>();
-        const callback = mockFn<(sender: TSender, args: TArgs) => void>();
+        const callback = vi.fn();
 
         testee.Subscribe(callback);
         testee.Subscribe(callback);
@@ -20,13 +21,13 @@ function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: Event<TSender, TAr
     it('Should invoke all subscribed callbacks', async () => {
         const sender = mock<TSender>();
         const args = mock<TArgs>();
-        const mockError = mockFn<(sender: TSender, args: TArgs) => void>();
+        const mockError = vi.fn();
         mockError.mockImplementation(() => { throw new Error(); });
         const callbacks = [
             mockError,
-            mockFn<(sender: TSender, args: TArgs) => void>(),
-            mockFn<(sender: TSender, args: TArgs) => void>(),
-            mockFn<(sender: TSender, args: TArgs) => void>()
+            vi.fn(),
+            vi.fn(),
+            vi.fn(),
         ];
 
         callbacks.forEach(callback => testee.Subscribe(callback));
@@ -44,8 +45,8 @@ function AssertUnsubscribe<TSender, TArgs>(testee: Event<TSender, TArgs>): void 
         const sender = mock<TSender>();
         const args = mock<TArgs>();
         const callbacks = [
-            mockFn<(sender: TSender, args: TArgs) => void>(),
-            mockFn<(sender: TSender, args: TArgs) => void>()
+            vi.fn(),
+            vi.fn(),
         ];
 
         testee.Subscribe(callbacks[0]);

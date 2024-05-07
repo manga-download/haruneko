@@ -22,7 +22,7 @@ type APIManga = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly mangasTaskPool = new TaskPool(4, new RateLimit(8, 1));
+    private readonly mangasTaskPool = new TaskPool(1, new RateLimit(2, 1));
     private readonly apiUrl = new URL('/api/v1/', this.URI).href;
     private readonly imageCDN = 'https://kisakisexo.xyz';
     private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/g/([\\d]+/[^/]+)$`);
