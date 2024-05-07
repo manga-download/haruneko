@@ -1,4 +1,5 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const configOndisk: Config = {
     plugin: {
@@ -27,8 +28,8 @@ const configOndisk: Config = {
     }
 };
 
-const fixtureOndisk = new TestFixture(configOndisk);
-describe(fixtureOndisk.Name, () => fixtureOndisk.AssertWebsite());
+const fixtureOnDisk = new TestFixture(configOndisk);
+describe(fixtureOnDisk.Name, async () => (await fixtureOnDisk.Connect()).AssertWebsite());
 
 const configNOTOndisk: Config = {
     plugin: {
@@ -57,5 +58,5 @@ const configNOTOndisk: Config = {
     }
 };
 
-const fixtureNOTOndisk = new TestFixture(configNOTOndisk);
-describe(fixtureNOTOndisk.Name, () => fixtureNOTOndisk.AssertWebsite());
+const fixtureNotOnDisk = new TestFixture(configNOTOndisk);
+describe(fixtureNotOnDisk.Name, async () => (await fixtureNotOnDisk.Connect()).AssertWebsite());
