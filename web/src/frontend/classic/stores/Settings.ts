@@ -40,7 +40,7 @@ export const enum Key {
 export async function Initialize(): Promise<void> {
     const settings = HakuNeko.SettingsManager.OpenScope(scope);
     await settings.Initialize(Theme.setting, ContentPanel.setting, ViewerMode.setting, ViewerReverseDirection.setting, ViewerDoublePage.setting);
-    HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).ValueChanged.Subscribe(() => Locale.set(GetLocale()));
+    HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => Locale.set(GetLocale()));
 }
 
 // Available Settings

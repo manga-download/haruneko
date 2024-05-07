@@ -10,7 +10,7 @@
         "npm": ">=10.2.4"
     },
     "dependencies": {
-        "websocket-rpc": "1.2.0",
+        "websocket-rpc": "1.2.4",
         "yargs": "17.7.2"
     },
     "devDependencies": {
@@ -20,11 +20,11 @@
         "plist": "3.1.0"
     },
     "scripts": {
-        "check:ts": "tsc src/**.ts --noEmit --pretty --target esnext --module esnext --moduleResolution bundler",
+        "check:ts": "tsc  --noEmit --pretty",
         "check": "npm run check:ts && eslint",
         "build": "node ./scripts/build-app.mjs && vite build",
         "bundle": "npm run build && node ./scripts/deploy-app.mjs",
-        "test": "jest --passWithNoTests --config=test/jest.config.js",
+        "test": "vitest run",
         "launch:dev": "npm run build && nw ./build --origin=http://localhost:3000",
         "launch:prod": "npm run build && nw ./build --origin=http://localhost:5000"
     }

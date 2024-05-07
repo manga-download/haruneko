@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('luminousscans', 'Luminous Scans', 'https://lumitoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('luminousscans', 'Luminous Scans', 'https://luminouscomics.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
