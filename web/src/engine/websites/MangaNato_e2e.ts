@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const fixtureSameSite = new TestFixture({
@@ -20,7 +21,7 @@ const fixtureSameSite = new TestFixture({
         type: 'image/jpeg'
     }
 });
-describe(fixtureSameSite.Name, () => fixtureSameSite.AssertWebsite());
+describe(fixtureSameSite.Name, async () => (await fixtureSameSite.Connect()).AssertWebsite());
 
 const fixtureCrossSite = new TestFixture({
     plugin: {
@@ -42,4 +43,4 @@ const fixtureCrossSite = new TestFixture({
         type: 'image/jpeg'
     }
 });
-describe(fixtureCrossSite.Name, () => fixtureCrossSite.AssertWebsite());
+describe(fixtureCrossSite.Name, async () => (await fixtureCrossSite.Connect()).AssertWebsite());
