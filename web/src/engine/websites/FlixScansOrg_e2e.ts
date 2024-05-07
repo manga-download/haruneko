@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
