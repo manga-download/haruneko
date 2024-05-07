@@ -7,7 +7,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
 type APIResult<T> = {
-    result: T
+    result: null | T
 }
 
 type PageResult = {
