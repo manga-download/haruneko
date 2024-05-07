@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { MediaContainer, type MediaItem } from './MediaPlugin';
 
 class MediaContainerMock extends MediaContainer<MediaItem> {
@@ -8,7 +9,7 @@ describe('Array<MediaContainer<MediaItem>>', () => {
 
     describe('distinct()', () => {
 
-        test('Should remove duplicate entries', async () => {
+        it('Should remove duplicate entries', async () => {
             const actual = [
                 new MediaContainerMock('001', 'A'),
                 new MediaContainerMock('002', 'B'),

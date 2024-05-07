@@ -10,14 +10,6 @@ export abstract class FetchProvider {
         return new Promise(resolve => setTimeout(resolve, delay));
     }
 
-    public get IsVerboseModeEnabled() {
-        return window.localStorage.getItem('hakuneko-fetchwindow-verbose') === 'true';
-    }
-
-    public set IsVerboseModeEnabled(value: boolean) {
-        window.localStorage.setItem('hakuneko-fetchwindow-verbose', value.toString());
-    }
-
     /**
      * ...
      */

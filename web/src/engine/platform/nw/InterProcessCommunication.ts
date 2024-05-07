@@ -10,9 +10,9 @@ export default class implements PlatformIPC {
     constructor(private readonly settingsManager: SettingsManager) {
         chrome.runtime.onMessage.addListener(this.Listen.bind(this));
         const settings = settingsManager.OpenScope();
-        settings.Get<Check>(GlobalKey.RPCEnabled).ValueChanged.Subscribe(this.UpdateRPC.bind(this));
-        settings.Get<Numeric>(GlobalKey.RPCPort).ValueChanged.Subscribe(this.UpdateRPC.bind(this));
-        settings.Get<Text>(GlobalKey.RPCSecret).ValueChanged.Subscribe(this.UpdateRPC.bind(this));
+        settings.Get<Check>(GlobalKey.RPCEnabled).Subscribe(this.UpdateRPC.bind(this));
+        settings.Get<Numeric>(GlobalKey.RPCPort).Subscribe(this.UpdateRPC.bind(this));
+        settings.Get<Text>(GlobalKey.RPCSecret).Subscribe(this.UpdateRPC.bind(this));
         this.UpdateRPC();
     }
 
