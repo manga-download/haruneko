@@ -1,4 +1,5 @@
-import { mock, mockFn } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
+import { vi, describe, it, expect } from 'vitest';
 import { DownloadTask, Status } from './DownloadTask';
 import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
@@ -25,10 +26,10 @@ function MockItem(resolve: boolean, delay: number = undefined) {
 class TestFixture {
 
     public readonly StorageControllerMock = mock<StorageController>();
-    private readonly MediaContainerEntriesMock = mockFn<() => MediaItem[]>();
+    private readonly MediaContainerEntriesMock = vi.fn();
     public readonly MediaContainerMock = mock<StoreableMediaContainer<MediaItem>>();
-    public readonly StatusChangedCallbackMock = mockFn<(sender: DownloadTask, args: Status) => void>();
-    public readonly ProgressChangedCallbackMock = mockFn<(sender: DownloadTask, args: number) => void>();
+    public readonly StatusChangedCallbackMock = vi.fn();
+    public readonly ProgressChangedCallbackMock = vi.fn();
 
     constructor() {
         const base = {};
