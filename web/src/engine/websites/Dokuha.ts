@@ -25,12 +25,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-const pageScript = `
-    new Promise( resolve => {
-        resolve(images);
-    });
-`;
-
 @Common.MangaCSS(/^{origin}\/comicweb\/contents\/comic\/[^/]+$/, 'div.comic-navigation h1.comic-name', Common.ElementLabelExtractor('span'))
 @Common.MangasMultiPageCSS('/comicweb/category/general/list?page={page}', 'div#list-row div.list-comic-info dt.title a')
 @Common.ChaptersSinglePageCSS('section.comic-list ul a', ChapterExtractor)
@@ -45,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const images: JSONImage[] = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), pageScript, 2500);
+        const images: JSONImage[] = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), 'images', 2500);
         return images.map(image => new Page(this, chapter, new URL(image.img), { scrambleJSONUrl: image.rectSrc }));
     }
 
