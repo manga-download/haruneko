@@ -24,11 +24,13 @@ export const pageScript = `
         try { 
             preloadImage(1, numberOfPages * 2); //preloadImage only prepare half of pictures, so here is a little trick
             resolve(images.map(image => image.getAttribute('src')).filter(image => image));
+            return;
         } catch(error) {}
 
          //Nhentai
          try {
              resolve(reader.gallery.images.pages.map(page => page.url()) );
+             return;
          } catch(error) {}
 
          //3Hentai
@@ -38,6 +40,7 @@ export const pageScript = `
                  pages.push(readerPages.baseUriImg.replace('%s', readerPages.pages[pageObj].f ));
              }
              resolve(pages);
+             return;
          } catch(error) {}
 
          //8Muses, 9hentai.uk, 9hentai.us, Doujin.uk
@@ -46,6 +49,7 @@ export const pageScript = `
                  return reader.get_image_url(index+1);
              });
              resolve(pages);
+             return;
          } catch(error) {}
 
          reject();
