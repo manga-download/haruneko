@@ -169,7 +169,6 @@ export { default as HenChan } from './HenChan';
 export { default as Hentai2Read } from './Hentai2Read';
 export { default as Hentai3z } from './Hentai3z';
 export { default as Hentai20 } from './Hentai20';
-export { default as HentaiCafe } from './HentaiCafe';
 export { default as Hentaidexy } from './Hentaidexy';
 export { default as HentaiForce } from './HentaiForce';
 export { default as HentaiFox } from './HentaiFox';
