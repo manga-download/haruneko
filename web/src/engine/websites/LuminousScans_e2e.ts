@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -6,7 +7,7 @@ const config: Config = {
         title: 'Luminous Scans'
     },
     container: {
-        url: 'https://lumitoon.com/series/1706860801-sword-king-survival-story/',
+        url: 'https://luminouscomics.org/series/1706860801-sword-king-survival-story/',
         id: '/series/1706860801-sword-king-survival-story/',
         title: 'Survival Story of a Sword King in a Fantasy World'
     },
@@ -22,4 +23,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

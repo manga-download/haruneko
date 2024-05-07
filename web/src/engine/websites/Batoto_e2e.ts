@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const fixtureWithoutLanguage = new TestFixture({
@@ -20,7 +21,7 @@ const fixtureWithoutLanguage = new TestFixture({
         type: 'image/webp'
     }
 });
-describe(fixtureWithoutLanguage.Name, () => fixtureWithoutLanguage.AssertWebsite());
+describe(fixtureWithoutLanguage.Name, async () => (await fixtureWithoutLanguage.Connect()).AssertWebsite());
 
 const fixtureWithLanguage = new TestFixture({
     plugin: {
@@ -42,4 +43,4 @@ const fixtureWithLanguage = new TestFixture({
         type: 'image/webp'
     }
 });
-describe(fixtureWithLanguage.Name, () => fixtureWithLanguage.AssertWebsite());
+describe(fixtureWithLanguage.Name, async () => (await fixtureWithLanguage.Connect()).AssertWebsite());

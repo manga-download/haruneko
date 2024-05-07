@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { InteractiveFileContentProvider } from './InteractiveFileContentProvider';
 
 describe('InteractiveFileContentProvider', () => {
@@ -17,7 +18,7 @@ describe('InteractiveFileContentProvider', () => {
             }
         }
 
-        test.each([
+        it.each([
             new DOMException('AbortError', 'Abort'),
             new AbortError('AbortError'),
         ])('Should detect other errors', async (error) => {
