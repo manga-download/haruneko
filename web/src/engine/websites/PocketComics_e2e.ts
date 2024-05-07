@@ -1,4 +1,5 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const configEnglish: Config = {
     plugin: {

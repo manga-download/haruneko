@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { TextInput } from 'carbon-components-svelte';
     import type { Directory } from '../../../../engine/SettingsManager';
     import { Locale } from '../../stores/Settings';
@@ -8,31 +9,25 @@
     let current: Directory;
     let value: FileSystemDirectoryHandle;
 
+	onMount(() => {
+		return () => {
+			current?.Unsubscribe(OnValueChangedCallback);
+		};
+	});
+
     $: Update(setting);
 
     function Update(setting: Directory) {
-        if (current === setting) {
-            return;
+        if (current !== setting) {
+            current?.Unsubscribe(OnValueChangedCallback);
+            setting?.Subscribe(OnValueChangedCallback);
+            value = setting.Value;
+            current = setting;
         }
-        if (current) {
-            current.ValueChanged.Unsubscribe(OnValueChangedCallback);
-        }
-        if (setting) {
-            setting.ValueChanged.Subscribe(OnValueChangedCallback);
-        }
-        value = setting.Value;
-        current = setting;
     }
 
-    function OnValueChangedCallback(
-        sender: Directory,
-        args: FileSystemDirectoryHandle
-    ) {
-        if (sender && sender !== current) {
-            sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
-        } else {
-            value = args;
-        }
+    function OnValueChangedCallback(val: FileSystemDirectoryHandle) {
+        value = val;
     }
 
     async function SelectFolder() {

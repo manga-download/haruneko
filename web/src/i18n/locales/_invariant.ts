@@ -5,7 +5,7 @@ export const invariant: InvariantResource = {
   Locale_deDE: '🇩🇪 Deutsch (DE)',
   Locale_enUS: '🇺🇸 English (US)',
   Locale_esES: '🇪🇸 Español (ES)',
-  Locale_filPH: '🇵🇭 Pilipino (PH)',
+  Locale_filPH: '🇵🇭 Filipino (PH)',
   Locale_frFR: '🇫🇷 Français (FR)',
   Locale_hiIN: '🇮🇳 हिंदी (IN)',
   Locale_idID: '🇮🇩 Indonesia (ID)',
