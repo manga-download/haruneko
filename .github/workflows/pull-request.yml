@@ -36,3 +36,7 @@ jobs:
         env:
           DISPLAY: ':99'
         run: npm run test:e2e
+      - name: Website Tests (Selection)
+        env:
+          DISPLAY: ':99'
+        run: npm run test:websites -- MangaDex

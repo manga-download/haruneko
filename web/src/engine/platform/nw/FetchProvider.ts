@@ -1,4 +1,5 @@
 import { Exception } from '../../Error';
+import type { FeatureFlags } from '../../FeatureFlags';
 import { EngineResourceKey as R } from '../../../i18n/ILocale';
 import { FetchProvider, type ScriptInjection } from '../FetchProviderCommon';
 import { FetchRedirection } from '../AntiScrapingDetection';
@@ -86,6 +87,10 @@ class FetchRequest extends Request {
 
 export default class extends FetchProvider {
 
+    constructor(private readonly featureFlags: FeatureFlags) {
+        super();
+    }
+
     /**
      * Configure various system globals to bypass FetchAPI limitations.
      * This method can only be run once for all instances.
@@ -143,7 +148,7 @@ export default class extends FetchProvider {
         const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
             new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
             mixed_context: false,
-            show: this.IsVerboseModeEnabled,
+            show: this.featureFlags.VerboseFetchWindow.Value,
             position: 'center',
             width: 1280,
             height: 720,
@@ -249,7 +254,7 @@ export default class extends FetchProvider {
                 win.removeAllListeners();
                 if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
                     console.warn('FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
-                } else if(this.IsVerboseModeEnabled) {
+                } else if(this.featureFlags.VerboseFetchWindow.Value) {
                     console.log('FetchWindow()::invocations', invocations);
                 }
             };
@@ -280,7 +285,7 @@ export default class extends FetchProvider {
                 new Promise<T>((_, reject) => setTimeout(reject, timeout - elapsed, new Exception(R.FetchProvider_FetchWindow_TimeoutError)))
             ]);
         } finally {
-            if(!this.IsVerboseModeEnabled) {
+            if(!this.featureFlags.VerboseFetchWindow.Value) {
                 win.close(true);
             }
         }

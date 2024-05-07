@@ -1,13 +1,19 @@
-import { mock } from 'jest-mock-extended';
+// @vitest-environment jsdom
+import { mock } from 'vitest-mock-extended';
+import { describe, it, expect } from 'vitest';
 import type { HakuNeko } from '../engine/HakuNeko';
 import { Key } from '../engine/SettingsGlobal';
 import type { Choice, ISettings, SettingsManager } from '../engine/SettingsManager';
 import { LocaleID, type IResource } from './ILocale';
 import { CreateLocale, GetLocale } from './Localization';
+import type { FeatureFlags } from '../engine/FeatureFlags';
 
 // Mocking globals
 {
-    const mockChoice = mock<Choice>({ Value: LocaleID.Locale_enUS });
+    const mockFeatureFlags = mock<FeatureFlags>();
+    //mockFeatureFlags.CrowdinTranslationMode = ...
+
+    const mockChoice = mock<Choice>({ Value: LocaleID.Locale_arSA });
 
     const mockSettigns = mock<ISettings>();
     mockSettigns.Get.calledWith(Key.Language).mockReturnValue(mockChoice);
@@ -15,7 +21,10 @@ import { CreateLocale, GetLocale } from './Localization';
     const mockSettingsManager = mock<SettingsManager>();
     mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
 
-    window.HakuNeko = mock<HakuNeko>({ SettingsManager: mockSettingsManager });
+    window.HakuNeko = mock<HakuNeko>({
+        SettingsManager: mockSettingsManager,
+        FeatureFlags: mockFeatureFlags,
+    });
 }
 
 describe('Localization', () => {
@@ -48,7 +57,7 @@ describe('Localization', () => {
             expect(locale.Locale_deDE()).toBe('🇩🇪 Deutsch (DE)');
             expect(locale.Locale_enUS()).toBe('🇺🇸 English (US)');
             expect(locale.Locale_esES()).toBe('🇪🇸 Español (ES)');
-            expect(locale.Locale_filPH()).toBe('🇵🇭 Pilipino (PH)');
+            expect(locale.Locale_filPH()).toBe('🇵🇭 Filipino (PH)');
             expect(locale.Locale_frFR()).toBe('🇫🇷 Français (FR)');
             expect(locale.Locale_hiIN()).toBe('🇮🇳 हिंदी (IN)');
             expect(locale.Locale_idID()).toBe('🇮🇩 Indonesia (ID)');
@@ -79,8 +88,8 @@ describe('Localization', () => {
 
     describe('GetLocale()', () => {
 
-        it('Should mock en_US as current', async () => {
-            expect(GetLocale()).toBe(GetLocale(LocaleID.Locale_enUS));
+        it('Should mock ar_SA as current', async () => {
+            expect(GetLocale()).toBe(GetLocale(LocaleID.Locale_arSA));
         });
 
         it('Should provide current resource', async () => {

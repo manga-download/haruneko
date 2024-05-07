@@ -4,6 +4,9 @@ import S from './services/StateService';
 
 const styles: ElementStyles = css`
     :host {
+        /* Extend/Override the default value of '--body-font' to support colored emoji flags */
+        --body-font: NotoColorEmoji-Flags, 'Segoe UI Variable', 'Segoe UI', sans-serif;
+
         font-family: var(--body-font);
         font-size: var(--type-ramp-base-font-size);
         gap: 0;
