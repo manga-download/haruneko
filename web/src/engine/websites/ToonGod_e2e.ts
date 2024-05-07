@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -9,7 +10,7 @@ const config = {
     container: {
         url: 'https://www.toongod.org/webtoon/i-stole-the-number-one-rankers-soul/',
         id: JSON.stringify({ post: '9019', slug: '/webtoon/i-stole-the-number-one-rankers-soul/' }),
-        title: 'I Stole the Number One Ranker’s Soul'
+        title: 'I Stole the Number One Rankerï¿½s Soul'
     },
     child: {
         id: '/webtoon/i-stole-the-number-one-rankers-soul/chapter-64/',
@@ -24,4 +25,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

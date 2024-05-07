@@ -41,7 +41,7 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('reaperscans', 'Reaper Scans', 'https://reaperscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
         this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 15, 1, 60);
-        this.Settings.throttle.ValueChanged.Subscribe((_, value: number) => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
+        (this.Settings.throttle as Numeric).Subscribe(value => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
     }
 
     public override get Icon() {

@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -6,8 +7,8 @@ const config: Config = {
         title: 'ReadKomik'
     },
     container: {
-        url: 'https://readkomik.com/manga/superhuman-battlefield/',
-        id: '/manga/superhuman-battlefield/',
+        url: 'https://rkreader.org/archives/manga/superhuman-battlefield/',
+        id: '/archives/manga/superhuman-battlefield/',
         title: 'Superhuman Battlefield'
     },
     child: {
@@ -22,4 +23,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
