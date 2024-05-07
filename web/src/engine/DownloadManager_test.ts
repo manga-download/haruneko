@@ -1,6 +1,6 @@
-import { mock, mockFn } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
+import { vi, describe, it, expect } from 'vitest';
 import { DownloadManager } from './DownloadManager';
-import type { DownloadTask } from './DownloadTask';
 import { type MediaContainer, StoreableMediaContainer, type MediaChild, type MediaItem } from './providers/MediaPlugin';
 import type { SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
@@ -170,7 +170,7 @@ describe('DownloadManager', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
-            const callback = mockFn<(sender: DownloadManager, args: DownloadTask[]) => void>();
+            const callback = vi.fn();
             const containers = [ '①', '②', '③' ].map(id => MockContainer(id));
             testee.TasksAdded.Subscribe(callback);
             await testee.Enqueue(...containers);
@@ -184,7 +184,7 @@ describe('DownloadManager', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
-            const callback = mockFn<(sender: DownloadManager, args: DownloadTask[]) => void>();
+            const callback = vi.fn();
             const containers = [ '①', '②', '③' ].map(id => MockContainer(id));
             await testee.Enqueue(MockContainer('②'), MockContainer('x'), MockContainer('o'));
             testee.TasksAdded.Subscribe(callback);
@@ -203,7 +203,7 @@ describe('DownloadManager', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
-            const callback = mockFn<(sender: DownloadManager, args: DownloadTask[]) => void>();
+            const callback = vi.fn();
             const containers = [ '①', '②', '③', '④' ].map(id => MockContainer(id));
             testee.TasksRemoved.Subscribe(callback);
             await testee.Enqueue(...containers);
@@ -218,7 +218,7 @@ describe('DownloadManager', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
-            const callback = mockFn<(sender: DownloadManager, args: DownloadTask[]) => void>();
+            const callback = vi.fn();
             const containers = [ '①', '②', '③', '④' ].map(id => MockContainer(id));
             await testee.Enqueue(...containers);
             const tasks = await testee.GetTasks();
