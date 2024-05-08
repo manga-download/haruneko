@@ -409,6 +409,7 @@ export { default as ManHatic } from './ManHatic';
 export { default as ManhuaAZ } from './ManhuaAZ';
 export { default as ManHuaDex } from './ManHuaDex';
 export { default as ManhuaFast } from './ManhuaFast';
+export { default as ManhuaFastNet } from './ManhuaFastNet';
 export { default as Manhuaga } from './Manhuaga';
 export { default as ManhuaGold } from './ManhuaGold';
 export { default as ManHuaGui } from './ManHuaGui';
