@@ -16,28 +16,15 @@ function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
     };
 }
 
-const findNextStageScript = `
-    new Promise(resolve =>  {
-        const interval = setInterval(function () {
-            if(jQuery('{BUTTONID}').attr('href') != '#'){
-                clearInterval(interval);
-                resolve(jQuery('{BUTTONID}').attr('href'));
-            }
-        }, 500);
-    })
-`;
-
 type APIResult = {
-    mes: string
-    url?: string;
+    mes: string;
+    going: 'yes' | 'no'
 }
 
 @Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', MangaLabelExtractor)
 @Common.ChaptersSinglePageCSS('div.chapters-list a', ChapterExtractor)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
-    private nonce: string = undefined;
-
     public constructor() {
         super('rawlazy', 'RawLazy', 'https://rawlazy.si', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
@@ -48,16 +35,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const nonce = await FetchWindowScript<string>(new Request(this.URI), 'zing.nonce');
-        const mangaList = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider, nonce);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
+        const mangaList: Manga[] = [];
+        let reducer = Promise.resolve();
+        const url = new URL('/wp-admin/admin-ajax.php', this.URI);
 
-    private async GetMangasFromPage(page: number, provider: MangaPlugin, nonce: string): Promise<Manga[]> {
-        try {
+        for (let page = 1, run = true; run; page++) {
+            await reducer;
+            reducer = new Promise(resolve => setTimeout(resolve, 750));
 
             const body = new URLSearchParams({
                 action: 'z_do_ajax',
@@ -67,7 +51,6 @@ export default class extends DecoratableMangaScraper {
                 category_id: '0'
             }).toString();
 
-            const url = new URL('/wp-admin/admin-ajax.php', this.URI);
             const request = new Request(url, {
                 credentials: 'include',
                 method: 'POST',
@@ -80,22 +63,39 @@ export default class extends DecoratableMangaScraper {
                 }
             });
 
-            const { mes } = await FetchJSON<APIResult>(request);
+            const { mes, going } = await FetchJSON<APIResult>(request);
             const dom = new DOMParser().parseFromString(mes, 'text/html');
-            const mangas = [...dom.querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
-            return mangas.map(manga => new Manga(this, provider, manga.pathname, MangaLabelExtractor.call(this, manga)));
-
-        } catch (error) {
-            return [];
+            const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
+            const mangas = nodes.map(manga => new Manga(this, provider, manga.pathname, MangaLabelExtractor.call(this, manga)));
+            mangaList.push(...mangas);
+            run = going === 'yes';
         }
+        return mangaList.distinct();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const chapterUrl = new URL(chapter.Identifier, this.URI);
-        const stage2Url = await FetchWindowScript<string>(new Request(chapterUrl), findNextStageScript.replaceAll('{BUTTONID}', '.go-to-B'), 500);
-        const stage3Url = await FetchWindowScript<string>(new Request(stage2Url), findNextStageScript.replaceAll('{BUTTONID}', '.go-to-C'), 500);
-        const pages = await FetchCSS<HTMLImageElement>(new Request(stage3Url), 'div.z_content img');
+        const chapterUrl = new URL(chapter.Identifier, this.URI).href;
+        let currentUrl = await this.FindNextStageUrl(chapterUrl, '.go-to-B');
+        currentUrl = await this.FindNextStageUrl(currentUrl, '.go-to-C');
+        const pages = await FetchCSS<HTMLImageElement>(new Request(currentUrl), 'div.z_content img');
         return pages.map(image => new Page(this, chapter, new URL(image.src)));
+    }
+
+    private async FindNextStageUrl(currentUrl: string, selector: string): Promise<string> {
+        return FetchWindowScript<string>(new Request(currentUrl), this.Script(selector), 500);
+    }
+
+    private Script(selector: string): string {
+        return `
+            new Promise(resolve => {
+                const interval = setInterval(function () {
+                    if (document.querySelector('${selector}').getAttribute('href') != '#') {
+                        clearInterval(interval);
+                        resolve(document.querySelector('${selector}').getAttribute('href'));
+                    }
+                }, 500);
+            })
+        `;
     }
 
 }
