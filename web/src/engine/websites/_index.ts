@@ -405,6 +405,7 @@ export { default as MangaWT } from './MangaWT';
 export { default as Mangayaro } from './Mangayaro';
 export { default as Mangaz } from './Mangaz';
 export { default as Mangazure } from './Mangazure';
+export { default as ManHastro } from './ManHastro';
 export { default as ManHatic } from './ManHatic';
 export { default as ManhuaAZ } from './ManhuaAZ';
 export { default as ManHuaDex } from './ManHuaDex';
