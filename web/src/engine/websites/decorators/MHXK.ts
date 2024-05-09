@@ -4,7 +4,7 @@ import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../../i18n/I
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
 
-export type MhkxInfos = {
+export type MhxkInfos = {
     id: string,
     name: string,
     platform: string
@@ -30,9 +30,9 @@ type APIChapter = {
 }
 
 export default class extends DecoratableMangaScraper {
-    protected product: MhkxInfos;
+    protected product: MhxkInfos;
 
-    public constructor(id: string, title: string, url: string, product: MhkxInfos, ...tags: Tag[]) {
+    public constructor(id: string, title: string, url: string, product: MhxkInfos, ...tags: Tag[]) {
         super(id, title, url, ...tags);
         this.product = product;
 
