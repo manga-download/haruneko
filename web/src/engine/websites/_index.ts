@@ -600,6 +600,7 @@ export { default as ShonenMagazine } from './ShonenMagazine';
 export { default as ShootingStarScans } from './ShootingStarScans';
 export { default as Shqqaa } from './Shqqaa';
 export { default as ShueishaMangaPlus } from './ShueishaMangaPlus';
+export { default as SiiManga } from './SiiManga';
 export { default as SilenceScan } from './SilenceScan';
 export { default as SilentSkyScans } from './SilentSkyScans';
 export { default as SinensisScan } from './SinensisScan';
