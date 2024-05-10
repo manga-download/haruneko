@@ -19,6 +19,7 @@ export { default as AnzManga } from './AnzManga';
 export { default as APKomik } from './APKomik';
 export { default as ApollComics } from './ApollComics';
 export { default as AquaManga } from './AquaManga';
+export { default as ArabsHentai } from './ArabsHentai';
 export { default as ArabToons } from './ArabToons';
 export { default as ArcaneScans } from './ArcaneScans';
 export { default as ArcRelight } from './ArcRelight';
