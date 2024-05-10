@@ -295,7 +295,6 @@ export { default as Mangacim } from './Mangacim';
 export { default as MangaClash } from './MangaClash';
 export { default as MangaCrab } from './MangaCrab';
 export { default as MangaCross } from './MangaCross';
-export { default as MangaCultivator } from './MangaCultivator';
 export { default as MangaDemon } from './MangaDemon';
 export { default as MangaDenizi } from './MangaDenizi';
 export { default as MangaDex } from './MangaDex';
