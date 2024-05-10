@@ -229,6 +229,7 @@ export { default as KomikIndoId } from './KomikIndoId';
 export { default as KomikindoInfo } from './KomikindoInfo';
 export { default as KomikIndoMe } from './KomikIndoMe';
 export { default as KomikLab } from './KomikLab';
+export { default as KomikLovers } from './KomikLovers';
 export { default as KomikNesia } from './KomikNesia';
 export { default as KomikStation } from './KomikStation';
 export { default as KomikTap } from './KomikTap';
