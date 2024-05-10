@@ -648,6 +648,7 @@ export { default as TraduccionesAmistosas } from './TraduccionesAmistosas';
 export { default as TraduccionesMoonlight } from './TraduccionesMoonlight';
 export { default as TritiniaScans } from './TritiniaScans';
 export { default as TrueManga } from './TrueManga';
+export { default as TruyenQQ } from './TruyenQQ';
 export { default as TruyenTranhDammy } from './TruyenTranhDammy';
 export { default as TruyenTranhOnline } from './TruyenTranhOnline';
 export { default as TruyenTranhtuan } from './TruyenTranhtuan';

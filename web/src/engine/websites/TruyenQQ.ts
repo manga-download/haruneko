@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './ReaperScans.webp';
+import icon from './TruyenQQ.webp';
 import type { Chapter} from '../providers/MangaPlugin';
 import { type MangaPlugin, DecoratableMangaScraper, type Manga, type Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -15,11 +15,11 @@ function PageExtractor(element: HTMLElement): string {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly interactionTaskPool = new TaskPool(1, new RateLimit(15, 60));
+    private readonly interactionTaskPool = new TaskPool(1, new RateLimit(30, 60));
 
     public constructor() {
         super('truyenqq', 'TruyenQQ', 'https://truyenqqviet.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
-        this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 100, 100, 60);
+        this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 30, 1, 60);
         (this.Settings.throttle as Numeric).Subscribe(value => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
     }
 
@@ -28,7 +28,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/comics/[^/]+$`).test(url);
+        return new RegExp(`^${this.URI.origin}/truyen-tranh/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -49,6 +49,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        return this.interactionTaskPool.Add(async () => Common.FetchPagesSinglePageCSS.call(this, chapter, 'div.page-chapter source.lazy', PageExtractor), Priority.Normal);
+        return this.interactionTaskPool.Add(async () => Common.FetchPagesSinglePageCSS.call(this, chapter, 'div.page-chapter img.lazy', PageExtractor), Priority.Normal);
     }
 }
