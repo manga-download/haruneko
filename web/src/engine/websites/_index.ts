@@ -724,6 +724,7 @@ export { default as ZenithScans } from './ZenithScans';
 export { default as ZeroScans } from './ZeroScans';
 export { default as ZeurelScan } from './ZeurelScan';
 export { default as ZinManga } from './ZinManga';
+export { default as ZinMangaNet } from './ZinMangaNet';
 export { default as ZuiMH } from './ZuiMH';
 // Legacy Websites
 export { default as AllHentai } from './legacy/AllHentai';
