@@ -31,7 +31,7 @@ const pageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rawotaku', 'RawOtaku', 'https://rawotaku.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
+        super('rawotaku', 'RawOtaku', 'https://rawotaku.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
     public override get Icon() {
         return icon;
