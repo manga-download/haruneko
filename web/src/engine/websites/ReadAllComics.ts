@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/category\/[^/]+\/$/, 'div.description-archive h1')
-@Common.MangasNotSupported()
+@Common.MangasSinglePageCSS('/?story=&s=&type=comic', 'ul.categories li a')
 @Common.ChaptersSinglePageCSS('ul.list-story li a')
 @Common.PagesSinglePageCSS('center div:not([id]) img')
 @Common.ImageAjax()
