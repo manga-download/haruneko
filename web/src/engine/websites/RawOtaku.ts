@@ -4,10 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Liliana from './decorators/Liliana';
 
-const pageScript = `
+export const pageScript = `
     new Promise(resolve => {
         const elementid = '#' + manga.lang + '-chapters li[data-number="'+ manga.name +'"]';
-        const chapterid = $(elementid).data("id");
+        const chapterid = document.querySelector(elementid).dataset.id;
         $.get(
             "/json/chapter", {
                 id: chapterid
