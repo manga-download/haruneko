@@ -124,7 +124,6 @@ npm run check
 ### Testing
 
 To ensure the application behaves as expected, tests need to be added.
-The popular `jest` framework is used as test runner and for mocking.
 All tests are written side by side to their (logical) corresponding implementation directly in the source code directory.
 Overall, there are two test categories.
 

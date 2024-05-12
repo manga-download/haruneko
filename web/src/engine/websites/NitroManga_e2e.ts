@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +7,7 @@ const config = {
         title: 'Nitro Manga'
     },
     container: {
-        url: 'https://nitromanga.com/mangas/the-all-knowing-cultivator/',
+        url: 'https://nitroscans.net/mangas/the-all-knowing-cultivator/',
         id: JSON.stringify({ post: '9062', slug: '/mangas/the-all-knowing-cultivator/' }),
         title: 'The All-Knowing Cultivator'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

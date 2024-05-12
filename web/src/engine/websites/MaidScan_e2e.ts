@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -6,7 +7,7 @@ const config: Config = {
         title: 'Maid Scan'
     },
     container: {
-        url: 'https://maidscan.com.br/manga/avatar-o-ultimo-mestre-do-ar/',
+        url: 'https://maidscans.com/manga/avatar-o-ultimo-mestre-do-ar/',
         id: JSON.stringify({ post: '3965', slug: '/manga/avatar-o-ultimo-mestre-do-ar/'}),
         title: 'Avatar: O Último Mestre do Ar'
     },
@@ -16,10 +17,10 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 977_493,
+        size: 660_000,
         type: 'image/jpeg'
     }
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

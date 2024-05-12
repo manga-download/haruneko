@@ -1,4 +1,5 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
@@ -6,7 +7,7 @@ const config: Config = {
         title: 'RavenSeries'
     },
     container: {
-        url: 'https://ravenseries.lat/sr2/la-personaje-de-webtoon',
+        url: 'https://ravensword.lat/sr2/la-personaje-de-webtoon',
         id: '/sr2/la-personaje-de-webtoon',
         title: 'La personaje de webtoon',
     },
@@ -22,4 +23,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { TextInput } from 'carbon-components-svelte';
     import type { Text } from '../../../../engine/SettingsManager';
     import { Locale } from '../../stores/Settings';
@@ -8,28 +9,25 @@
     let current: Text;
     let value: string;
 
+    onMount(() => {
+        return () => {
+            current?.Unsubscribe(OnValueChangedCallback);
+        };
+    });
+
     $: Update(setting);
 
     function Update(setting: Text) {
-        if (current === setting) {
-            return;
+        if (current !== setting) {
+            current?.Unsubscribe(OnValueChangedCallback);
+            setting?.Subscribe(OnValueChangedCallback);
+            value = setting.Value;
+            current = setting;
         }
-        if (current) {
-            current.ValueChanged.Unsubscribe(OnValueChangedCallback);
-        }
-        if (setting) {
-            setting.ValueChanged.Subscribe(OnValueChangedCallback);
-        }
-        value = setting.Value;
-        current = setting;
     }
 
-    function OnValueChangedCallback(sender: Text, args: string) {
-        if (sender && sender !== current) {
-            sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
-        } else {
-            value = args;
-        }
+    function OnValueChangedCallback(val: string) {
+        value = val;
     }
 </script>
 
