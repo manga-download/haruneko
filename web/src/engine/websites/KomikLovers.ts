@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './KomikIndo.webp';
+import icon from './KomikLovers.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/manga-list/?list')
+@MangaStream.MangaCSS(/^{origin}\/komik\/[^/]+\/$/)
+@Common.MangasMultiPageCSS('/projects/page/{page}/', 'div.bs div.bsx a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('komikindo', 'KomikIndo', 'https://komikindo.co', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('komiklovers', 'KomiLovers', 'https://komiklovers.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './KomikIndo.webp';
+import icon from './CulturedWorks.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/manga-list/?list')
+@MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('komikindo', 'KomikIndo', 'https://komikindo.co', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('culturedworks', 'Cultured Works', 'https://culturedworks.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

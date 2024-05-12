@@ -3,22 +3,22 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'manhwaland',
-        title: 'Manhwaland'
+        id: 'komikindome',
+        title: 'KomikIndoMe'
     },
     container: {
-        url: 'https://www.manhwaland.to/manga/got-a-room-uncensored/',
-        id: '/manga/got-a-room-uncensored/',
-        title: 'Got a Room? UNCENSORED'
+        url: 'https://komikindo.link/manga/secret-class/',
+        id: '/manga/secret-class/',
+        title: 'Secret Class'
     },
     child: {
-        id: '/got-a-room-uncensored-chapter-1-1/',
-        title: 'Chapter 1.1'
+        id: '/secret-class-chapter-217/',
+        title: 'Chapter 217'
     },
     entry: {
         index: 0,
-        size: 143_057,
-        type: 'image/jpeg'
+        size: 12_130,
+        type: 'image/webp'
     }
 };
 
