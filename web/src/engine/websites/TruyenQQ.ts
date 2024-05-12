@@ -19,8 +19,9 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('truyenqq', 'TruyenQQ', 'https://truyenqqviet.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
-        this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 30, 1, 60);
-        (this.Settings.throttle as Numeric).Subscribe(value => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
+        const throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 30, 1, 60);
+        throttle.Subscribe(value => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
+        this.Settings.throttle = throttle;
     }
 
     public override get Icon() {
@@ -38,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 1, run = true; run; page += 1) {
-            const mangas = await this.interactionTaskPool.Add(async () => Common.FetchMangasSinglePageCSS.call(this, provider, `/truyen-moi-cap-nhat/trang-${page}.html`, 'ul.list_grid li h3 a'), Priority.Normal);
+            const mangas = await this.interactionTaskPool.Add(async () => Common.FetchMangasSinglePageCSS.call(this, provider, `/truyen-moi-cap-nhat/trang-${page}.html`, 'ul.list_grid li h3 a'), Priority.Low);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
