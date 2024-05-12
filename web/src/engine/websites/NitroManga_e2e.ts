@@ -7,7 +7,7 @@ const config = {
         title: 'Nitro Manga'
     },
     container: {
-        url: 'https://nitromanga.com/mangas/the-all-knowing-cultivator/',
+        url: 'https://nitroscans.net/mangas/the-all-knowing-cultivator/',
         id: JSON.stringify({ post: '9062', slug: '/mangas/the-all-knowing-cultivator/' }),
         title: 'The All-Knowing Cultivator'
     },
