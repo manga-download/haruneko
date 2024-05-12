@@ -19,12 +19,7 @@ export const queryChapters = 'ul.capitulos__lista a.link__capitulos';
 
 const pagescript = `
     new Promise( resolve => {
-        try {
-            resolve(urls);
-        } catch (error) {
-            const pages = [...document.querySelectorAll('div#imageContainer img')].map(image=> new URL(image.src, window.location.origin).href);
-            resolve(pages);
-        }
+        resolve ( urls | [...document.querySelectorAll('div#imageContainer img')].map(image=> new URL(image.src, window.location.origin).href));
     });
 `;
 
@@ -39,27 +34,20 @@ const pagescript = `
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param script - script used to extract pages url
  */
-async function FetchPagesPagesFromZips(this: MangaScraper, chapter: Chapter, script : string = pagescript): Promise<Page[]> {
-    //1st : first fetch zip files urls
+async function FetchPagesPagesFromZips(this: MangaScraper, chapter: Chapter, script: string = pagescript): Promise<Page[]> {
     let request = new Request(new URL(chapter.Identifier, this.URI));
     const files: string[] = await FetchWindowScript(request, script, 2500);
     if (files.length == 0) return [];
 
-    //if files are zip
     if (files[0].endsWith('.zip')) {
-        //handle zip files
         const pages: Page[] = [];
         for (const zipurl of files) {
             request = new Request(new URL(zipurl, this.URI));
             const response = await Fetch(request);
             const zipdata = await response.arrayBuffer();
             const zipfile = await JSZip.loadAsync(zipdata);
-            const fileNames = Object.keys(zipfile.files).sort((a, b) => extractNumber(a) - extractNumber(b));
-            for (const fileName of fileNames) {
-                if (!fileName.match(/\.(s)$/i)) { //if extension is not .s (for svg), its a picture
-                    pages.push(new Page(this, chapter, new URL(zipurl, this.URI), { filename: fileName }));
-                }
-            }
+            const fileNames = Object.keys(zipfile.files).sort((a, b) => extractNumber(a) - extractNumber(b)).filter(fileName => !fileName.match(/\.(s)$/i));
+            pages.push(...fileNames.map(fileName => new Page(this, chapter, new URL(zipurl, this.URI), { filename: fileName })));
         }
         return pages;
 
@@ -68,7 +56,7 @@ async function FetchPagesPagesFromZips(this: MangaScraper, chapter: Chapter, scr
     }
 }
 
-function extractNumber(fileName) : number {
+function extractNumber(fileName): number {
     return parseInt(fileName.split(".")[0]);
 }
 

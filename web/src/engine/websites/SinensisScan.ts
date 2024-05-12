@@ -9,7 +9,6 @@ import * as PeachScan from './decorators/PeachScan';
 @Common.ChaptersSinglePageCSS(PeachScan.queryChapters, PeachScan.ChapterExtractor)
 @PeachScan.PagesFromZips()
 @PeachScan.ImageFromZip()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
