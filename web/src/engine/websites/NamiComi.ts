@@ -59,7 +59,7 @@ export default class extends DecoratableMangaScraper {
         const id = url.match(this.mangaRegexp)[1];
         const request = new Request(new URL(`/title/${id}`, this.apiUrl));
         const { data } = await FetchJSON<APIResult<APIManga>>(request);
-        const title = data.attributes.title[data.attributes.originalLanguage] || data.attributes.title.en.trim();
+        const title = (data.attributes.title[data.attributes.originalLanguage] || data.attributes.title.en).trim();
         return new Manga(this, provider, data.id, title);
     }
 
@@ -76,7 +76,7 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(new URL(`/title/search?limit=100&offset=${page * 100}`, this.apiUrl));
         const { data } = await FetchJSON<APIResult<APIManga[]>>(request);
         return data.map(item => {
-            const title = item.attributes.title[item.attributes.originalLanguage] || item.attributes.title.en.trim();
+            const title = (data.attributes.title[data.attributes.originalLanguage] || data.attributes.title.en).trim();
             return new Manga(this, provider, item.id, title);
         });
     }
