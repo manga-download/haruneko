@@ -91,16 +91,12 @@ export default class extends DecoratableMangaScraper {
         }));
 
         //get page list
-        const data = await FetchJSON<APIManga>(new Request(`${this.apiUrl}library/${chapter.Identifier}`, {
+        const { data, id } = await FetchJSON<APIManga>(new Request(`${this.apiUrl}library/${chapter.Identifier}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Referer': `${this.URI}/g/${chapter.Identifier}`
             }
         }));
-        return data.data.map(image => {
-            const pageUrl = new URL(`/${data.id}/${key}/${hash}/a/${image.n}`, this.imageCDN);
-            return new Page(this, chapter, pageUrl);
-        });
-
+        return data.map(image => new Page(this, chapter, new URL(`/${id}/${key}/${hash}/a/${image.n}`, this.imageCDN)));
     }
 }
