@@ -15,7 +15,9 @@ type APIManga = {
     key: string,
     title: string
     hash?: string,
-    names?: string[]
+    data?: {
+       n: string
+    }[]
 }
 
 @Common.ChaptersUniqueFromManga()
@@ -80,16 +82,21 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchJSON<APIManga>(new Request(`${this.apiUrl}library/${chapter.Identifier}/data`, {
+        //get hash & key
+        const { hash, key } = await FetchJSON<APIManga>(new Request(`${this.apiUrl}library/${chapter.Identifier}/data`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Referer': `${this.URI}/g/${chapter.Identifier}`
             }
         }));
-        return data.names.map(image => {
-            const pageUrl = new URL(`/${data.id}/${data.key}/${data.hash}/a/${image}`, this.imageCDN);
-            return new Page(this, chapter, pageUrl);
-        });
 
+        //get page list
+        const { data, id } = await FetchJSON<APIManga>(new Request(`${this.apiUrl}library/${chapter.Identifier}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Referer': `${this.URI}/g/${chapter.Identifier}`
+            }
+        }));
+        return data.map(image => new Page(this, chapter, new URL(`/${id}/${key}/${hash}/a/${image.n}`, this.imageCDN)));
     }
 }
