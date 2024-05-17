@@ -1,11 +1,10 @@
-//import { Exception } from '../../Error';
-import type { FeatureFlags } from '../../FeatureFlags';
-//import { EngineResourceKey as R } from '../../../i18n/ILocale';
 import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
-//import { FetchRedirection } from '../AntiScrapingDetection';
-import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
+import { Exception } from '../../Error';
+import type { FeatureFlags } from '../../FeatureFlags';
+import { EngineResourceKey as R } from '../../../i18n/ILocale';
 import { FetchProvider, type ScriptInjection } from '../FetchProviderCommon';
 import { FetchRedirection } from '../AntiScrapingDetection';
+import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -40,6 +39,8 @@ class FetchRequest extends Request {
 
 export default class extends FetchProvider {
 
+    private readonly dbg: Record<number, (id: number) => Promise<void>> = {};
+
     constructor(private readonly featureFlags: FeatureFlags) {
         super();
     }
@@ -55,6 +56,7 @@ export default class extends FetchProvider {
         globalThis.Request = FetchRequest;
 
         globalThis.ipcRenderer.invoke('FetchProvider::Initialize', fetchApiSupportedPrefix);
+        globalThis.ipcRenderer.on('RemoteBrowserWindowController::OnDomReady', (_, windowID) => this.dbg[windowID]?.call(this, windowID));
     }
 
     async Fetch(request: Request): Promise<Response> {
@@ -68,18 +70,6 @@ export default class extends FetchProvider {
     }
 
     public async FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay: number = 0, timeout: number = 60_000): Promise<T> {
-
-        const destroy = async (id: number) => {
-            try {
-                if(this.featureFlags.VerboseFetchWindow.Value) {
-                    //
-                } else {
-                    await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::CloseWindow', id);
-                }
-            } catch(error) {
-                console.warn(error);
-            }
-        };
 
         const openOptions: BrowserWindowConstructorOptions = {
             show: this.featureFlags.VerboseFetchWindow.Value,
@@ -95,53 +85,62 @@ export default class extends FetchProvider {
                 disableBlinkFeatures: 'AutomationControlled',
             }
         };
-        // 1. Open hidden window
+
         const windowID = await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::OpenWindow', JSON.stringify(openOptions)) as number;
-        try {
-            const loadOptions: LoadURLOptions = {
-                userAgent: request.headers.get('User-Agent') ?? navigator.userAgent,
-                httpReferrer: request.headers.get('Referer') ?? request.referrer ?? request.url,
+        const loadOptions: LoadURLOptions = {
+            userAgent: request.headers.get('User-Agent') ?? navigator.userAgent,
+            httpReferrer: request.headers.get('Referer') ?? request.referrer ?? request.url,
+        };
+
+        if (!windowID) {
+            throw new Error('[I18N] - Failed to open Browser Window!');
+        }
+
+        const promise = new Promise<void>(async (resolve, reject) => {
+
+            const destroy = async (id: number) => {
+                try {
+                    if(this.featureFlags.VerboseFetchWindow.Value) {
+                        //
+                    } else {
+                        await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::CloseWindow', id);
+                    }
+                } catch(error) {
+                    console.warn(error);
+                } finally {
+                    reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+                }
             };
-            await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::LoadURL', windowID, request.url, JSON.stringify(loadOptions));
-            // 2. Check Anti-Scraping and show/redirect window
-            if (windowID) {
+
+            // TODO: Find more appropriate way to register callback
+            this.dbg[windowID] = async function(id) {
+                if(id !== windowID) {
+                    return;
+                }
                 let cancellation = setTimeout(() => destroy(windowID), timeout);
                 const redirect = await CheckAntiScrapingDetection(windowID);
-                console.log('Fetch Redirect:', redirect);
                 switch (redirect) {
                     case FetchRedirection.Interactive:
                         // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
                         clearTimeout(cancellation);
                         cancellation = setTimeout(() => destroy(windowID), 150_000);
-                        //win.show();
                         await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::SetVisibility', windowID, true);
-                        // TODO: Wait for Load event or timeout
-                        //win.requestAttention(3);
+                        
                         break;
                     case FetchRedirection.Automatic:
-                        // TODO: Wait for Load event
                         break;
                     default:
-                        //teardownOpenedWindow();
-                        //resolve(win);
+                        resolve();
                         break;
                 }
-            }
-            // 3. Wait for window to load expected location
-            await super.Wait(delay);
-            const result = await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::ExecuteScript', windowID, script instanceof Function ? `(${script})()` : script);
-            console.log('FetchWindowPreloadScript()', 'Result =>', result);
-            return result;
-        } finally {
-            await destroy(windowID);
-        }
+            };
+            await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::LoadURL', windowID, request.url, JSON.stringify(loadOptions));
+        });
 
-        /*
-        ipcMain.handle('RemoteBrowserWindowController::OpenWindow', (_, options: string) => this.OpenWindow(options));
-        ipcMain.handle('RemoteBrowserWindowController::CloseWindow', (_, windowID: number) => this.CloseWindow(windowID));
-        ipcMain.handle('RemoteBrowserWindowController::SetVisibility', (_, windowID: number, show: true) => this.SetVisibility(windowID, show));
-        ipcMain.handle('RemoteBrowserWindowController::ExecuteScript', (_, windowID: number, script: string) => this.ExecuteScript(windowID, script));
-        ipcMain.handle('RemoteBrowserWindowController::LoadURL', (_, windowID: number, url: string, options: string) => this.LoadURL(windowID, url, options));
-        */
+        await promise;
+        await super.Wait(delay);
+        const result = await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::ExecuteScript', windowID, script instanceof Function ? `(${script})()` : script);
+        console.log('FetchWindowPreloadScript()', 'Result =>', result);
+        return result;
     }
 }
