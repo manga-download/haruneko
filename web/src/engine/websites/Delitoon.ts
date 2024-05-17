@@ -54,10 +54,10 @@ type APIToken = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    protected BalconyID: string = undefined;
-    protected Timezone: string = 'Europe/Paris';
-    protected Platform: string = 'WEB';
-    protected Token: APIToken = undefined;
+    private readonly BalconyID: string = undefined;
+    private readonly Timezone: string = 'Europe/Paris';
+    private readonly Platform: string = 'WEB';
+    private Token: APIToken = undefined;
 
     public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', balconyID = 'DELITOON_COM', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
         super(id, label, url, ...tags);
@@ -74,9 +74,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = new URL(url).href.match(/\/detail\/([^/]+)/)[1];
-        const req = new URL(`/api/balcony-api-v2/contents/${mangaid}`, this.URI);
-        req.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(req));
+        const endpointUrl = new URL(`/api/balcony-api-v2/contents/${mangaid}`, this.URI);
+        endpointUrl.searchParams.set('isNotLoginAdult', 'true');
+        const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(endpointUrl));
         return new Manga(this, provider, mangaid, data.title.trim());
     }
 
@@ -93,7 +93,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        await this.GetToken();
+        await this.UpdateToken();
         const url = new URL(`/api/balcony-api-v2/contents/${manga.Identifier}`, this.URI);
         url.searchParams.set('isNotLoginAdult', 'true');
         const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(url));
@@ -105,11 +105,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await this.GetToken();
-        const url = new URL(`/api/balcony-api-v2/contents/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+        await this.UpdateToken();
+        const url = new URL(`/api/balcony-api-v2/contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
         url.searchParams.set('isNotLoginAdult', 'true');
         const apiresult = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
-        if (apiresult.result == 'ERROR') {
+        if (apiresult.result === 'ERROR') {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return apiresult.data.images.map(element => new Page(this, chapter, new URL(element.imagePath)));
@@ -146,29 +146,25 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    protected async GetToken() {
-
-        try {
-            //if token is undefined => try to fetch one
-            if (!this.Token) {
-                const url = new URL('/api/auth/session', this.URI);
-                const { user } = await FetchJSON<APIUser>(this.CreateRequest(url));
-                this.Token = user;
-                return;
-            }
-
-            //if token is defined, check for expiration  and refresh if needed
-            if (this.Token && Date.now() > this.Token.accessToken.expiredAt) { //24h expiration
-                const url = new URL('/api/balcony/auth/refresh', this.URI);
-                const body = JSON.stringify({
-                    accessToken: this.Token.accessToken.token,
-                    refreshToken: this.Token.refreshToken.token
-                });
-                const { result } = await FetchJSON<APIRefreshToken>(this.CreatePostRequest(url, body));
-                this.Token = result;
-            }
-        } catch (error) {
-            this.Token = undefined;
+    protected async UpdateToken() {
+        //if token is undefined => try to fetch one
+        if (!this.Token) {
+            const url = new URL('/api/auth/session', this.URI);
+            const { user } = await FetchJSON<APIUser>(this.CreateRequest(url));
+            this.Token = user;
+            return;
         }
+
+        //if token is defined, check for expiration  and refresh if needed
+        if (Date.now() > this.Token.accessToken.expiredAt) { //24h expiration
+            const url = new URL('/api/balcony/auth/refresh', this.URI);
+            const body = JSON.stringify({
+                accessToken: this.Token.accessToken.token,
+                refreshToken: this.Token.refreshToken.token
+            });
+            const { result } = await FetchJSON<APIRefreshToken>(this.CreatePostRequest(url, body));
+            this.Token = result;
+        }
+
     }
 }
