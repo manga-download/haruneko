@@ -1,17 +1,11 @@
 import { type Tag } from '../Tags';
-import type { Page } from '../providers/MangaPlugin';
-import { type Chapter, DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import type { Priority } from '../taskpool/DeferredTask';
-declare type WordArray = {
-    words: number[];
-    sigBytes: number;
-};
 export default class extends DecoratableMangaScraper {
     constructor(id?: string, label?: string, url?: string, tags?: Tag[]);
     get Icon(): string;
     FetchPages(chapter: Chapter): Promise<Page[]>;
-    ConvertWordArrayToUint8Array(wordArray: WordArray): ArrayBuffer;
+    private ConvertWordArrayToUint8Array;
     FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
-    DecryptPicture(encrypted: Uint8Array, key: ArrayBuffer): Promise<ArrayBuffer>;
+    private DecryptPicture;
 }
-export {};
