@@ -11,12 +11,12 @@ const pageScript = `
     });
 `;
 
-const mangaScript = `
-    new Promise(resolve => {
-        const jsonData = JSON.parse(postDataJSON);
-        resolve( jsonData.title ); 
+function MangaScript(): Promise<string> {
+    return new Promise(resolve => {
+        const jsonData = JSON.parse(window['postDataJSON']);
+        resolve(jsonData.title);
     });
-`;
+}
 
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname;
-        const title = await FetchWindowScript<string>(new Request(url), mangaScript);
+        const title = await FetchWindowScript<string>(new Request(url), MangaScript);
         return new Manga(this, provider, id, title.trim());
     }
 }
