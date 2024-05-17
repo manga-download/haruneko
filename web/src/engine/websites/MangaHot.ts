@@ -35,7 +35,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/works/detail.php\\?work_code=[^/]+`).test(url);
+        const uri = new URL(url);
+        return uri.origin === this.URI.origin && uri.pathname === '/works/detail.php' && uri.searchParams.has('work_code');
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -56,7 +57,11 @@ export default class extends DecoratableMangaScraper {
                 'X-Requested-With': 'XMLHttpRequest',
             }
         }));
-        const dom = new DOMParser().parseFromString(result, 'text/html');
+
+        const dom = document.createDocumentFragment();
+        const placeholder = document.createElement("div");
+        placeholder.innerHTML = result;
+        dom.appendChild(placeholder);
         const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('a[id].parent')];
         return nodes.map(node => {
             const chapterid = new URL(node.href).searchParams.get('story_id') ?? node.href.match(/dialog\('(\d+)'\)/)[1];
@@ -78,7 +83,7 @@ export default class extends DecoratableMangaScraper {
             });
 
             const { result } = await FetchJSON<APIResult<string[] | PageResult>>(request); //result can be an array or a json object list
-            if (!result || Array.isArray(result) && result.length == 0) {
+            if(!result || Object.keys(result).length === 0) {
                 run = false;
                 continue;
             }
