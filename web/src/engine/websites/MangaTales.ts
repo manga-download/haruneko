@@ -145,7 +145,7 @@ export default class extends DecoratableMangaScraper {
             const mangas = await this.GetMangasFromPage(provider, searchBody, this.apiUrl);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
-        return mangaList.distinct();
+        return mangaList;
     }
 
     async GetMangasFromPage(provider: MangaPlugin, searchBody: TMangaSearch, apiUrl: string): Promise<Manga[]> {
@@ -158,17 +158,17 @@ export default class extends DecoratableMangaScraper {
         });
 
         const response = await FetchJSON<APIResult>(request);
-        const data = response.iv ? await this.Decrypt(response.data) : response.data;
-        const mangas: APIMangas = JSON.parse(data);
-        return !mangas.mangas ? [] : mangas.mangas.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
+        const data = response.iv ? await Decrypt(response.data) : response.data;
+        const { mangas }: APIMangas = JSON.parse(data);
+        return !mangas ? [] : mangas.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(manga.Identifier, this.apiUrl));
         const response = await FetchJSON<APIResult>(request);
-        const strdata = response.iv ? await this.Decrypt(response.data) : JSON.stringify(response);
+        const strdata = response.iv ? await Decrypt(response.data) : JSON.stringify(response);
         const tmpdata: PackedData | APIChapters = JSON.parse(strdata);
-        const chapters: APIChapters = (tmpdata as PackedData).isCompact ? this.Unpack(tmpdata as PackedData) as APIChapters : tmpdata as APIChapters;
+        const chapters: APIChapters = (tmpdata as PackedData).isCompact ? Unpack(tmpdata as PackedData) as APIChapters : tmpdata as APIChapters;
         return chapters.mangaReleases.map(chapter => {
             const team = chapter.teams.find(t => t.id === chapter.team_id);
             let title = 'Vol.' + chapter.volume + ' Ch.' + chapter.chapter;
@@ -189,11 +189,11 @@ export default class extends DecoratableMangaScraper {
         const url = (data.globals.wla.configs.http_media_server || data.globals.wla.configs.media_server) + '/uploads/releases/';
         let images: string[] = [];
 
-        if (data.readerDataAction.readerData.release.hq_pages && data.readerDataAction.readerData.release.hq_pages.length > 0) {
+        if (data.readerDataAction.readerData.release.hq_pages?.length > 0) {
             images = data.readerDataAction.readerData.release.hq_pages.split('\r\n');
-        } else if (data.readerDataAction.readerData.release.mq_pages && data.readerDataAction.readerData.release.mq_pages.length > 0) {
+        } else if (data.readerDataAction.readerData.release.mq_pages?.length > 0) {
             images = data.readerDataAction.readerData.release.mq_pages.split('\r\n');
-        } else if (data.readerDataAction.readerData.release.lq_pages && data.readerDataAction.readerData.release.lq_pages.length > 0) {
+        } else if (data.readerDataAction.readerData.release.lq_pages?.length > 0) {
             images = data.readerDataAction.readerData.release.lq_pages.split('\r\n');
         }
 
@@ -211,64 +211,64 @@ export default class extends DecoratableMangaScraper {
         return data;
     }
 
-    private async Decrypt(t: string): Promise<string> {
-        const e = t.split("|");
-        const n = e[0];
-        const r = e[2];
-        const o = e[3];
-        const hash = await crypto.subtle.digest('SHA-256', Buffer.from(o));
-        const i = Buffer.from(hash).toString('hex');//c.default.SHA256(o).toString();
+}
 
-        const plaintext = Buffer.from(n, 'base64');
-        const key = Buffer.from(i, 'hex');
-        const iv = Buffer.from(r, 'base64');
-
-        const secretKey = await crypto.subtle.importKey(
-            'raw',
-            key,
-            {
-                name: 'AES-CBC',
-                length: 128
-            }, true, ['decrypt']);
-
-        const decrypted = await crypto.subtle.decrypt({
-            name: 'AES-CBC',
-            iv: iv
-        }, secretKey, plaintext);
-
-        return new TextDecoder('utf-8').decode(decrypted);
+function Unpack(t: PackedData | APIData, ...args) {
+    const e = arguments.length > 1 && void 0 !== args[1] ? args[1] : 1;
+    if (!t || e > t.maxLevel)
+        return t;
+    if (typeof t != 'object' || !t.isCompact)
+        return t;
+    const n = (t as PackedData).cols;
+    const r = (t as PackedData).rows;
+    if (t.isObject) {
+        const o = {};
+        let i = 0;
+        return n.forEach(function (t) {
+            o[t] = Unpack(r[i], e + 1);
+            i += 1;
+        }.bind(this)),
+        o;
     }
-
-    private Unpack(t: PackedData | APIData, ...args) {
-        const e = arguments.length > 1 && void 0 !== args[1] ? args[1] : 1;
-        if (!t || e > t.maxLevel)
-            return t;
-        if (typeof t != 'object' || !t.isCompact)
-            return t;
-        const n = (t as PackedData).cols;
-        const r = (t as PackedData).rows;
-        if (t.isObject) {
-            const o = {};
-            let i = 0;
-            return n.forEach(function (t) {
-                o[t] = this._unpack(r[i], e + 1);
-                i += 1;
-            }.bind(this)),
-            o;
-        }
-        if (t.isArray) {
-            const o = [];
-            return r.forEach(function (t) {
-                const e = {};
-                let r = 0;
-                n.forEach(function (n) {
-                    e[n] = t[r];
-                    r += 1;
-                }),
-                o.push(e);
+    if (t.isArray) {
+        const o = [];
+        return r.forEach(function (t) {
+            const e = {};
+            let r = 0;
+            n.forEach(function (n) {
+                e[n] = t[r];
+                r += 1;
             }),
-            o;
-        }
+            o.push(e);
+        }),
+        o;
     }
+}
 
+async function Decrypt(t: string): Promise<string> {
+    const e = t.split("|");
+    const n = e[0];
+    const r = e[2];
+    const o = e[3];
+    const hash = await crypto.subtle.digest('SHA-256', Buffer.from(o));
+    const i = Buffer.from(hash).toString('hex');//c.default.SHA256(o).toString();
+
+    const plaintext = Buffer.from(n, 'base64');
+    const key = Buffer.from(i, 'hex');
+    const iv = Buffer.from(r, 'base64');
+
+    const secretKey = await crypto.subtle.importKey(
+        'raw',
+        key,
+        {
+            name: 'AES-CBC',
+            length: 128
+        }, true, ['decrypt']);
+
+    const decrypted = await crypto.subtle.decrypt({
+        name: 'AES-CBC',
+        iv: iv
+    }, secretKey, plaintext);
+
+    return new TextDecoder('utf-8').decode(decrypted);
 }
