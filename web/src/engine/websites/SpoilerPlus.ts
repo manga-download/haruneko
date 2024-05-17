@@ -37,7 +37,7 @@ const pageScript = `
         const images = [...document.querySelectorAll('div#post-comic div[data-z]')].map(image => new URL(image.dataset.z, cdn).href);
 
         if (!s) {
-            resolve({images : images, scrambleArray : undefined });
+            resolve({images, scrambleArray : undefined });
         } else {
             const scrambleSeed = XOR(magicString, i);
             let difference = 0;
@@ -52,7 +52,7 @@ const pageScript = `
             const scrambleArray = scrambleSeed.match(/.{1,2}/g).map(a => {
                 return parseInt(a) - difference;
             });
-            resolve({images : images, scrambleArray : scrambleArray });
+            resolve({images , scrambleArray });
         }
     });
 
@@ -115,29 +115,26 @@ export default class extends DecoratableMangaScraper {
         const scrambleArray = JSON.parse(page.Parameters.scrambleArray as string) as number[];
         return DeScramble(blob, async (image, ctx) => {
             function COMPUTEPIECES(skey: number[], image: ImageBitmap): TPuzzleData[] {
-                let obj1: TDimension = {
+                const numColAndRow = 4;
+                const dimensions: TDimension = {
                     width: image.width,
                     height: image.height,
                 };
-                let obj2: TDimension = {
-                    width: image.width,
-                    height: image.height,
-                };
-                return skey.map((a, b) => {
+                return skey.map((pieceindex, index) => {
                     return {
-                        from: COMPUTEPIECE(obj1, 4, b),
-                        to: COMPUTEPIECE(obj2, 4, a),
+                        from: COMPUTEPIECE(dimensions, numColAndRow, index),
+                        to: COMPUTEPIECE(dimensions, numColAndRow, pieceindex),
                     };
                 });
             }
 
-            function COMPUTEPIECE(obj: TDimension, a: number, b: number): TPiece {
-                var c, d, e, f, g, h, i, k, l, m, n, o, p, q, r, s, t, u;
-                u = a * a;
-                return b < u
-                    ? (o = a,
-                    p = b,
-                    q = (n = obj).width,
+            function COMPUTEPIECE(dimensions: TDimension, numColAndRow: number, pieceindex: number): TPiece {
+                var c, d, e, f, g, h, i, k, l, m, n, o, p, q, r, s, t, numpieces;
+                numpieces = numColAndRow * numColAndRow;
+                return pieceindex < numpieces
+                    ? (o = numColAndRow,
+                    p = pieceindex,
+                    q = (n = dimensions).width,
                     r = n.height,
                     s = Math.floor(q / o),
                     t = Math.floor(r / o),
@@ -147,9 +144,9 @@ export default class extends DecoratableMangaScraper {
                         width: s,
                         height: t,
                     })
-                    : b === u
-                        ? (i = a,
-                        k = (h = obj).width,
+                    : pieceindex === numpieces
+                        ? (i = numColAndRow,
+                        k = (h = dimensions).width,
                         l = h.height,
                         0 == (m = k % i)
                             ? null
@@ -159,8 +156,8 @@ export default class extends DecoratableMangaScraper {
                                 width: m,
                                 height: l,
                             })
-                        : (d = a,
-                        e = (c = obj).width,
+                        : (d = numColAndRow,
+                        e = (c = dimensions).width,
                         0 == (g = (f = c.height) % d)
                             ? null
                             : {
