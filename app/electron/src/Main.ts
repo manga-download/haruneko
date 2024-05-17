@@ -60,7 +60,7 @@ async function LaunchRenderer(manifest: Manifest): Promise<BrowserWindow> {
 async function RegisterRendererCallbacks(win: BrowserWindow) {
     new IPC(win.webContents);
     new FetchProvider(win.webContents);
-    new RemoteBrowserWindowController();
+    new RemoteBrowserWindowController(win.webContents);
 }
 
 app.on('window-all-closed', () => app.quit());

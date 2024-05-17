@@ -4,7 +4,7 @@ import { argvPreloadScript } from './RemoteBrowserWindowPreload';
 
 export class RemoteBrowserWindowController {
 
-    constructor () {
+    constructor (private readonly webContents: Electron.WebContents) {
         ipcMain.handle('RemoteBrowserWindowController::OpenWindow', (_, options: string) => this.OpenWindow(options));
         ipcMain.handle('RemoteBrowserWindowController::CloseWindow', (_, windowID: number) => this.CloseWindow(windowID));
         ipcMain.handle('RemoteBrowserWindowController::SetVisibility', (_, windowID: number, show: true) => this.SetVisibility(windowID, show));
@@ -33,6 +33,7 @@ export class RemoteBrowserWindowController {
         win.webContents.setWindowOpenHandler(() => {
             return { action: 'deny' };
         });
+        win.webContents.on('dom-ready', () => this.webContents.send('RemoteBrowserWindowController::OnDomReady', win.id));
         return win.id;
     }
 
