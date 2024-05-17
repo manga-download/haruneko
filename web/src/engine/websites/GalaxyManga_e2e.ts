@@ -8,7 +8,7 @@ const config = {
     },
     container: {
         url: 'https://flixscans.com/series/14001-101-betrayal-of-dignity',
-        id: JSON.stringify({ id: '101', prefix: '14001'}),
+        id: JSON.stringify({ id: 101, prefix: 14001}),
         title: 'Betrayal of Dignity'
     },
     child: {

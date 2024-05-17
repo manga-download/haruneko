@@ -5,9 +5,7 @@ import GalaxyManga from './GalaxyManga';
 export default class extends GalaxyManga {
 
     public constructor() {
-        super('flixscansorg', 'FlixScans (.org)', 'https://flixscans.org', [Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator]);
-        this.apiurl = 'https://flixscans.site/api/v1/webtoon/';
-        this.cdnUrl = 'https://media.flixscans.org';
+        super('flixscansorg', 'FlixScans (.org)', 'https://flixscans.org', [Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator], 'https://flixscans.site/api/v1/', 'https://media.flixscans.org' );
     }
 
     public override get Icon() {

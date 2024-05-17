@@ -8,7 +8,7 @@ const config = {
     },
     container: {
         url: 'https://flixscans.org/series/9755-37-the-greatest-estate-developer',
-        id: JSON.stringify({ id: '37', prefix: '9755'}),
+        id: JSON.stringify({ id: 37, prefix: 9755}),
         title: 'The Greatest Estate Developer'
     },
     child: {
