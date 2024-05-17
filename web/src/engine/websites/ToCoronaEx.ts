@@ -7,7 +7,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
 type APIResults<T> = {
-    next_cursor: string,
+    next_cursor: null | string,
     resources: T
 }
 
@@ -30,11 +30,13 @@ type APIPages = {
 }
 export default class extends DecoratableMangaScraper {
 
-    protected apiurl = 'https://api.to-corona-ex.com';
-    protected apikey = 'K4FWy7Iqott9mrw37hDKfZ2gcLOwO-kiLHTwXT8ad1E=';
+    private readonly apiurl;
+    private readonly apikey;
 
-    public constructor(public readonly Identifier: string = 'to-corona-ex', public readonly Title: string = 'コロナ (to-corona-ex)', url: string = 'https://to-corona-ex.com', tags: Tag[] = [Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official]) {
+    public constructor(public readonly Identifier: string = 'to-corona-ex', public readonly Title: string = 'コロナ (to-corona-ex)', url: string = 'https://to-corona-ex.com', tags: Tag[] = [Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official], apiurl: string = 'https://api.to-corona-ex.com', apikey: string = 'K4FWy7Iqott9mrw37hDKfZ2gcLOwO-kiLHTwXT8ad1E=') {
         super(Identifier, Title, url, ...tags);
+        this.apiurl = apiurl;
+        this.apikey = apikey;
     }
     public override get Icon() {
         return icon;
@@ -52,27 +54,32 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
-        for (let url: URL | null = new URL('/comics?order=asc&sort=title_yomigana', this.apiurl); url != null;) {
+        const url = new URL('/comics?order=asc&sort=title_yomigana', this.apiurl);
+
+        for (let run = true; run; ) {
             const { resources, next_cursor } = await FetchJSON<APIResults<APIManga[]>>(this.CreateRequest(url));
             resources.forEach(manga => mangaList.push(
                 new Manga(this, provider, manga.id, manga.title.replace('@COMIC', '').trim())
             ));
-            url = next_cursor ? new URL(`/comics?order=asc&sort=title_yomigana&after_than=${next_cursor}`, this.apiurl) : null;
+            run = !!next_cursor;
+            url.searchParams.set('after_than', next_cursor);
         }
-        return mangaList.distinct();
+        return mangaList;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList: Chapter[] = [];
+        const url = new URL(`/episodes?comic_id=${manga.Identifier}&episode_status=free_viewing%2Conly_for_subscription&order=asc&sort=episode_order`, this.apiurl);
 
-        for (let url: URL | null = new URL(`/episodes?comic_id=${manga.Identifier}&episode_status=free_viewing%2Conly_for_subscription&order=asc&sort=episode_order`, this.apiurl); url != null;) {
+        for (let run = true; run;) {
             const { resources, next_cursor } = await FetchJSON<APIResults<APIChapter[]>>(this.CreateRequest(url));
             resources.forEach(chapter => chapterList.push(
                 new Chapter(this, manga, chapter.id, chapter.title.trim())
             ));
-            url = next_cursor ? new URL(`/episodes?comic_id=${manga.Identifier}&episode_status=free_viewing%2Conly_for_subscription&order=asc&sort=episode_order&after_than=${next_cursor}`, this.apiurl) : null;
+            run = !!next_cursor;
+            url.searchParams.set('after_than', next_cursor);
         }
-        return chapterList.distinct();
+        return chapterList;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
