@@ -14,10 +14,15 @@ type APIManga = {
     id: number,
     key: string,
     title: string
-    hash?: string,
     data?: {
-       n: string
+        n: string
     }[]
+}
+
+type APIMangaData = {
+    key: string,
+    hash: string,
+
 }
 
 @Common.ChaptersUniqueFromManga()
@@ -83,7 +88,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         //get hash & key
-        const { hash, key } = await FetchJSON<APIManga>(new Request(`${this.apiUrl}library/${chapter.Identifier}/data`, {
+        const { hash, key } = await FetchJSON<APIMangaData>(new Request(`${this.apiUrl}library/${chapter.Identifier}/data`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Referer': `${this.URI}/g/${chapter.Identifier}`
