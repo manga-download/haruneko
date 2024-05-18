@@ -61,7 +61,10 @@ export default class extends DecoratableMangaScraper {
             resources.forEach(manga => mangaList.push(
                 new Manga(this, provider, manga.id, manga.title.replace('@COMIC', '').trim())
             ));
-            run = !!next_cursor;
+            if (!!next_cursor) {
+                run = false;
+                continue;
+            }
             url.searchParams.set('after_than', next_cursor);
         }
         return mangaList;
@@ -76,7 +79,10 @@ export default class extends DecoratableMangaScraper {
             resources.forEach(chapter => chapterList.push(
                 new Chapter(this, manga, chapter.id, chapter.title.trim())
             ));
-            run = !!next_cursor;
+            if (!!next_cursor) {
+                run = false;
+                continue;
+            }
             url.searchParams.set('after_than', next_cursor);
         }
         return chapterList;
