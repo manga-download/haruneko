@@ -191,6 +191,7 @@ export { default as HiperCool } from './HiperCool';
 export { default as Hiperdex } from './Hiperdex';
 export { default as HniScanTrad } from './HniScanTrad';
 export { default as HoiFansub } from './HoiFansub';
+export { default as HotComics } from './HotComics';
 export { default as HouseMangas } from './HouseMangas';
 export { default as HqNow } from './HqNow';
 export { default as HunterScan } from './HunterScan';
