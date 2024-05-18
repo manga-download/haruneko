@@ -9,7 +9,7 @@ const config: Config = {
     container: {
         url: 'https://www.lalatoon.com/en/webtoon/episode/toon/7574',
         id: '/en/webtoon/episode/toon/7574',
-        title: 'Cooking Sorcerer'
+        title: 'Cooking Sorcerer [en]'
     },
     child: {
         id: '/en/webtoon/detail/code/207305/ep/1/toon/7574',
