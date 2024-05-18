@@ -74,6 +74,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'evascans', targetID: 'manwe' },
             { sourceID: 'firstkiss', targetID: 'likemanga' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
+            { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
@@ -90,6 +91,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'mangaproz', targetID: 'mangapro' },
             { sourceID: 'mangaraw', targetID: 'mangagecko' },
             { sourceID: 'manhuaes', targetID: 'manhuaaz' },
+            { sourceID: 'manhuascan', targetID: 'kaliscan' },
             { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'nitroscans', targetID: 'nitromanga' },

@@ -20,7 +20,7 @@
         "plist": "3.1.0"
     },
     "scripts": {
-        "check:ts": "tsc  --noEmit --pretty",
+        "check:ts": "tsc --noEmit --pretty",
         "check": "npm run check:ts && eslint",
         "build": "node ./scripts/build-app.mjs && vite build",
         "bundle": "npm run build && node ./scripts/deploy-app.mjs",
