@@ -77,7 +77,7 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
 
-    async GetMangasFromCategoryPage(page: number, provider: MangaPlugin, category: string): Promise<Manga[]> {
+    private async GetMangasFromCategoryPage(page: number, provider: MangaPlugin, category: string): Promise<Manga[]> {
         const request = new Request(`${this.apiUrl}webtoon/pages/latest/${category}?page=${page}`);
         const { data } = await FetchJSON<APIMangas>(request);
         return data.map(manga => new Manga(this, provider, JSON.stringify(<APIManga>{
