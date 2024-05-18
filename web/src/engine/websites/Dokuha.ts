@@ -40,7 +40,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const images: JSONImage[] = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), 'images', 2500);
-        return images.map(image => new Page(this, chapter, new URL(image.img), { scrambleJSONUrl: image.rectSrc }));
+        return images.filter(image => image).map(image => new Page(this, chapter, new URL(image.img), { scrambleJSONUrl: image.rectSrc }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -53,20 +53,12 @@ export default class extends DecoratableMangaScraper {
     private async DecryptPicture(data: Uint8Array, jsonUrl: string): Promise<ArrayBuffer> {
         const BYTE_BLOCK = 2000;
         const loadBins = [];
-        let run = true;
-        for (let k = 0; run == true; k++) {
-            if (data[k * BYTE_BLOCK] == undefined) {
-                run = false;
-                break;
-            }
-            const m = new Uint8Array(BYTE_BLOCK);
-            for (let h = 0; h < BYTE_BLOCK; h++) {
-                m[h] = data[h + k * BYTE_BLOCK];
-            }
-            loadBins[k] = m;
+
+        for (let i = 0; i < data.length; i += BYTE_BLOCK) {
+            const chunk = data.slice(i, i + BYTE_BLOCK);
+            loadBins.push(chunk);
         }
 
-        //get descrambling data
         const { decodeRecipes, size } = await FetchJSON<DecryptingData>(new Request(jsonUrl));
         const result = [];
         for (const recipe of decodeRecipes) {
