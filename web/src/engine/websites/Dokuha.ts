@@ -1,5 +1,5 @@
 ﻿import { Tags } from '../Tags';
-import icon from './SinensisScan.webp';
+import icon from './Dokuha.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
@@ -52,17 +52,16 @@ export default class extends DecoratableMangaScraper {
 
     private async DecryptPicture(data: Uint8Array, jsonUrl: string): Promise<ArrayBuffer> {
         const BYTE_BLOCK = 2000;
-        const loadBins = [];
+        const chunks = [];
 
         for (let i = 0; i < data.length; i += BYTE_BLOCK) {
-            const chunk = data.slice(i, i + BYTE_BLOCK);
-            loadBins.push(chunk);
+            chunks.push(data.slice(i, i + BYTE_BLOCK));
         }
 
         const { decodeRecipes, size } = await FetchJSON<DecryptingData>(new Request(jsonUrl));
         const result = [];
         for (const recipe of decodeRecipes) {
-            result[recipe.before] = loadBins[recipe.after];
+            result[recipe.before] = chunks[recipe.after];
         }
 
         return await new Blob(result).slice(0, size).arrayBuffer();
