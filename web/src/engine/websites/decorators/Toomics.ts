@@ -31,15 +31,17 @@ export const queryChapterNum = [
 ].join(',');
 
 export const queryChapterTitle = [
-    'div.cell-title', //Toomics
+    'div.cell-title strong', //Toomics, HotComics
     'div.ep__name', //Lalatoon
     'strong.ep__title'//ToomicsKO
 ].join(',');
 
 export const queryPages = '#viewer-img img';
 
-function MangaExtractor(element: HTMLAnchorElement) {
-    const language = element.pathname.match(/([a-z]+)\/webtoon/)[1];
+const defaultMangaPath = '/webtoon/ranking';
+
+function MangaInfoExtractor(element: HTMLAnchorElement) {
+    const language = element.pathname.match(/\/([a-z]+)\//)[1];
     return {
         id: element.pathname,
         title: [element.querySelector(queryMangaTitle).textContent.trim(), `[${language}]`].join(' ').trim()
@@ -48,13 +50,17 @@ function MangaExtractor(element: HTMLAnchorElement) {
 
 function ChapterExtractor(element: HTMLAnchorElement) {
     const action = element.getAttribute('onclick');
+
     if (action) {
         if (action.includes('location.href=')) {
             element.href = action.match(/href='([^']+)'/)[1];
+        } else if (action.includes('showMandatoryShare')) {
+            element.href = action.match(/showMandatoryShare\s*\(\s*'([^']+)'/)[1];
         } else {
             element.href = action.match(/popup\s*\(\s*'[^']+'\s*,\s*'[^']*'\s*,\s*'([^']+)'/)[1];
         }
     }
+
     const chapterNumber = element.querySelector(queryChapterNum)?.textContent.trim();
     const subtitle = element.querySelector(queryChapterTitle)?.textContent.trim();
     return {
@@ -81,7 +87,7 @@ export function PageExtractor(element: HTMLImageElement) {
  * @param query - the CSS selector to get manga title
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitleUri): Promise<Manga> {
-    const lang = url.match(/([a-z]+)\/webtoon/)[1];
+    const lang = new URL(url).pathname.match(/\/([a-z]+)\//)[1];
     const [mangatitle] = await FetchCSS(new Request(url), query);
     return new Manga(this, provider, new URL(url).pathname, [mangatitle.textContent.trim(), `[${lang}]`].join(' ').trim());
 }
@@ -117,11 +123,13 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitleUri) {
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
  * @param languages - A array of langage code used by the website :['fr', 'de'....]
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param defaultMangaPath - path to append to language string
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, languages: string[], query = queryMangas): Promise<Manga[]> {
+export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, languages: string[], query = queryMangas, subpath = defaultMangaPath, extract = MangaInfoExtractor): Promise<Manga[]> {
     const mangalist: Manga[] = [];
     for (const language of languages) {
-        const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, `/${language}/webtoon/ranking`, query, MangaExtractor);
+        const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, `/${language}${subpath}`, query, extract);
         mangalist.push(...mangas);
     }
     return mangalist.distinct();
@@ -133,13 +141,14 @@ export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: Man
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param languages - A array of langage code used by the website :['fr', 'de'....]
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
+ * @param defaultMangaPath - path to append to language string
  */
-export function MangasSinglePageCSS(languages: string[], query = queryMangas) {
+export function MangasSinglePageCSS(languages: string[], query = queryMangas, subpath = defaultMangaPath, extract = MangaInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasSinglePageCSS.call(this, provider, languages, query);
+                return FetchMangasSinglePageCSS.call(this, provider, languages, query, subpath, extract);
             }
         };
     };
@@ -157,7 +166,8 @@ export function MangasSinglePageCSS(languages: string[], query = queryMangas) {
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapter): Promise<Chapter[]> {
-    const chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, query, ChapterExtractor);
+    let chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, query, ChapterExtractor);
+    if (chapters.length === 0) chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, query, ChapterExtractor); //yes, Toomics redirect first request to FIRST CHAPTER..
     const mangatitle = manga.Title.replace(/\[.+\]$/, '').trim();
     return chapters.map(chapter => new Chapter(this, manga, chapter.Identifier, chapter.Title.replace(mangatitle, '').trim()));
 }
