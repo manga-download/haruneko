@@ -7,8 +7,8 @@ const config = {
         title: 'Galaxy Manga'
     },
     container: {
-        url: 'https://flixscans.com/series/55601-101-betrayal-of-dignity',
-        id: '101',
+        url: 'https://flixscans.com/series/98504-101-betrayal-of-dignity',
+        id: JSON.stringify({ id: 101, prefix: 98504 }),
         title: 'Betrayal of Dignity'
     },
     child: {
