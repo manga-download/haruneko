@@ -52,6 +52,7 @@ const legacyWebsiteIdentifierMap = {
     'siyahmelek': 'grimelek',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
+    'truemanga': 'mangamonk',
     'vermanhwas': 'vermanhwa',
     'webtoontrcom': 'webtoontrnet',
     'yugenmangas': 'yugenmangas-es'
