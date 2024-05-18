@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 //As we coded the handling
 const configShortened = {
@@ -23,7 +24,7 @@ const configShortened = {
 };
 
 const fixtureShortened = new TestFixture(configShortened);
-describe(fixtureShortened.Name, () => fixtureShortened.AssertWebsite());
+describe(fixtureShortened.Name, async () => (await fixtureShortened.Connect()).AssertWebsite());
 
 //the special way, when manga id is not in url
 const configIDX = {
@@ -48,7 +49,7 @@ const configIDX = {
 };
 
 const fixtureIDX = new TestFixture(configIDX);
-describe(fixtureIDX.Name, () => fixtureIDX.AssertWebsite());
+describe(fixtureIDX.Name, async () => (await fixtureIDX.Connect()).AssertWebsite());
 
 //The link that the users will most likely paste
 const configExpected = {
@@ -73,4 +74,4 @@ const configExpected = {
 };
 
 const fixtureExpected = new TestFixture(configExpected);
-describe(fixtureExpected.Name, () => fixtureExpected.AssertWebsite());
+describe(fixtureExpected.Name, async () => (await fixtureExpected.Connect()).AssertWebsite());
