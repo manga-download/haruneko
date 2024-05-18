@@ -17,6 +17,7 @@ const legacyWebsiteIdentifierMap = {
     'evascans': 'manwe',
     'firstkiss': 'likemanga',
     'flamescans-org': 'flamecomics',
+    'galaxyaction': 'galaxymanga',
     'gateanimemanga': 'gatemanga',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
