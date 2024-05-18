@@ -329,6 +329,7 @@ export { default as MangaHack } from './MangaHack';
 export { default as MangaHasu } from './MangaHasu';
 export { default as MangaHentai } from './MangaHentai';
 export { default as MangaHere } from './MangaHere';
+export { default as MangaHot } from './MangaHot';
 export { default as MangaHubFR } from './MangaHubFR';
 export { default as MangaHubRU } from './MangaHubRU';
 export { default as MangaID } from './MangaID';
