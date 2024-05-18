@@ -7,19 +7,18 @@ const config = {
         title: 'Tecno Scan'
     },
     container: {
-        url: 'https://visortecno.com/manga/su-bao-tiene-tres-anos-y-medio-y-esta-siendo-mimada-por-sus-ocho-tios/',
-        id: '/manga/su-bao-tiene-tres-anos-y-medio-y-esta-siendo-mimada-por-sus-ocho-tios/',
-        title: 'Su Bao tiene tres años y medio, y está siendo mimada por sus ocho tíos'
+        url: 'https://visortecno.com/manga/fuego-en-la-oscuridad/',
+        id: JSON.stringify({ post: '2191', slug: '/manga/fuego-en-la-oscuridad/' }),
+        title: 'Fuego en la oscuridad'
     },
     child: {
-        id: '/su-bao-tiene-tres-anos-y-medio-y-esta-siendo-mimada-por-sus-ocho-tios-capitulo-2/',
-        title: 'Capítulo 2',
-        timeout: 25000
+        id: '/manga/fuego-en-la-oscuridad/capitulo-1/',
+        title: 'Capítulo 1',
     },
     entry: {
-        index: 2,
-        size: 763_436,
-        type: 'image/jpeg'
+        index: 0,
+        size: 843_966,
+        type: 'image/webp'
     }
 };
 

@@ -7,7 +7,7 @@ const config: Config = {
         title: 'RavenSeries'
     },
     container: {
-        url: 'https://ravenseries.lat/sr2/la-personaje-de-webtoon',
+        url: 'https://ravensword.lat/sr2/la-personaje-de-webtoon',
         id: '/sr2/la-personaje-de-webtoon',
         title: 'La personaje de webtoon',
     },

@@ -22,7 +22,7 @@ function ChapterExtractor(element: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ravenseries', `RavenSeries`, 'https://ravenseries.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('ravenseries', `RavenSeries`, 'https://ravensword.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
