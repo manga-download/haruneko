@@ -7,7 +7,7 @@ const config = {
         title: 'MHScans'
     },
     container: {
-        url: 'https://mhscans.com/manga/de-un-simple-soldado-a-monarca/',
+        url: 'https://lectormh.com/manga/de-un-simple-soldado-a-monarca/',
         id: JSON.stringify({ post: '1942', slug: '/manga/de-un-simple-soldado-a-monarca/' }),
         title: `De un Simple Soldado a Monarca`
     },

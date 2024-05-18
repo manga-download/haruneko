@@ -11,13 +11,13 @@
         "app/electron"
     ],
     "devDependencies": {
-        "@types/chrome": "^0.0.267",
+        "@types/chrome": "^0.0.268",
         "@types/jsdom": "^21.1.6",
         "@types/nw.js": "^0.13.21",
         "eslint": "^9.2.0",
         "eslint-plugin-tsdoc": "^0.2.17",
         "jsdom": "^24.0.0",
-        "puppeteer-core": "^22.7.1",
+        "puppeteer-core": "^22.8.0",
         "tslib": "^2.6.2",
         "typescript": "^5.4.5",
         "typescript-eslint": "^7.8.0",
