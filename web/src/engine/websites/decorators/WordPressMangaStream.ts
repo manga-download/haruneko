@@ -26,7 +26,7 @@ const scriptPageListLinks = `ts_reader_control.getImages();`;
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
 
-function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
+export function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
     return [
         /^Comic\s+/i,
         /^Komik\s+/i,

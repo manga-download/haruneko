@@ -17,6 +17,7 @@ const legacyWebsiteIdentifierMap = {
     'evascans': 'manwe',
     'firstkiss': 'likemanga',
     'flamescans-org': 'flamecomics',
+    'galaxyaction': 'galaxymanga',
     'gateanimemanga': 'gatemanga',
     'heavenmanga': 'beetoon', // (future zbulu PR)
     'heavenmanga2': 'heavenmanga', // (future zbulu PR)
@@ -32,6 +33,7 @@ const legacyWebsiteIdentifierMap = {
     'mangaproz': 'mangapro',
     'mangaraw': 'mangagecko',
     'manhuaes': 'manhuaaz',
+    'manhuascan': 'kaliscan',
     'manhwaclub': 'manhwahentai',
     'muctau': 'bibimanga',
     'nitroscans': 'nitromanga',
@@ -50,6 +52,7 @@ const legacyWebsiteIdentifierMap = {
     'siyahmelek': 'grimelek',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
+    'truemanga': 'mangamonk',
     'vermanhwas': 'vermanhwa',
     'webtoontrcom': 'webtoontrnet',
     'yugenmangas': 'yugenmangas-es'

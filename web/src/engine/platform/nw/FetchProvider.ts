@@ -171,7 +171,21 @@ export default class extends FetchProvider {
             }
 
             let cancellation = setTimeout(destroy, timeout);
-            let teardownOpenedWindow = () => {};
+            let teardownOpenedWindow = () => {
+                clearTimeout(cancellation);
+                performRedirectionOrFinalize = () => Promise.resolve();
+                // NOTE: removing listeners seems to have no effect, probably a bug in NW.js
+                win.removeAllListeners('document-start');
+                win.removeAllListeners('new-win-policy');
+                win.removeAllListeners('navigation');
+                win.removeAllListeners('loaded');
+                win.removeAllListeners();
+                if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
+                    console.warn('FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
+                } else if(this.featureFlags.VerboseFetchWindow.Value) {
+                    console.log('FetchWindow()::invocations', invocations);
+                }
+            };
 
             let performRedirectionOrFinalize = async () => {
                 try {
@@ -199,8 +213,9 @@ export default class extends FetchProvider {
             };
 
             if(!win.window || nw.Window.get().window === win.window) {
-                invocations.push({ name: 'win.reload()', info: `DOM Window: ${win.window}`});
-                win.reload();
+                invocations.push({ name: 'win.window', info: `Invalid DOM Window: ${win.window}`});
+                teardownOpenedWindow();
+                return reject(new Error('Failed to open window (invalid content)!'));
             } else {
                 win.eval(null, preload instanceof Function ? `(${preload})()` : preload);
                 //preload(win.window.window, win.window.window);
@@ -242,22 +257,6 @@ export default class extends FetchProvider {
                     performRedirectionOrFinalize();
                 }
             });
-
-            teardownOpenedWindow = () => {
-                clearTimeout(cancellation);
-                performRedirectionOrFinalize = () => Promise.resolve();
-                // NOTE: removing listeners seems to have no effect, probably a bug in NW.js
-                win.removeAllListeners('document-start');
-                win.removeAllListeners('new-win-policy');
-                win.removeAllListeners('navigation');
-                win.removeAllListeners('loaded');
-                win.removeAllListeners();
-                if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
-                    console.warn('FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
-                } else if(this.featureFlags.VerboseFetchWindow.Value) {
-                    console.log('FetchWindow()::invocations', invocations);
-                }
-            };
         }));
     }
 

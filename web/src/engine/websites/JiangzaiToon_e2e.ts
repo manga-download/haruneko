@@ -7,7 +7,7 @@ const config = {
         title: 'JiangzaiToon'
     },
     container: {
-        url: 'https://jiangzaitoon.cc/manga/ani/',
+        url: 'https://jiangzaitoon.dev/manga/ani/',
         id: JSON.stringify({ post: '7208', slug: '/manga/ani/' }),
         title: 'Beyond the Memories'
     },
