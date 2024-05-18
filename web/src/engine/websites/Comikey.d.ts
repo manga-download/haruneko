@@ -7,7 +7,6 @@ export default class extends DecoratableMangaScraper {
     private GetAppCheckToken;
     FetchChapters(manga: Manga): Promise<Chapter[]>;
     FetchPages(chapter: Chapter): Promise<Page[]>;
-    private FetchPagesMirror;
     private FetchPagesPlain;
     private FetchPagesDirectDRM;
     private FetchPagesBrowserDRM;
