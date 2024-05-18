@@ -119,6 +119,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'toomics-pt', targetID: 'toomics' },
             { sourceID: 'toomics-sc', targetID: 'toomics' },
             { sourceID: 'toomics-tc', targetID: 'toomics' },
+            { sourceID: 'truemanga', targetID: 'mangamonk' },
             { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
             { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
             { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },

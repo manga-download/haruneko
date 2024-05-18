@@ -62,6 +62,7 @@ const legacyWebsiteIdentifierMap = {
     'toomics-pt': 'toomics',
     'toomics-sc': 'toomics',
     'toomics-tc': 'toomics',
+    'truemanga': 'mangamonk',
     'vermanhwas': 'vermanhwa',
     'webtoontrcom': 'webtoontrnet',
     'yugenmangas': 'yugenmangas-es'
