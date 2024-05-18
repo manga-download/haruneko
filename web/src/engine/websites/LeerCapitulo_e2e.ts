@@ -7,7 +7,7 @@ const fixture = new TestFixture({
         title: 'LeerCapitulo'
     },
     container: {
-        url: 'https://www.leercapitulo.com/manga/xvziyp/yuan-zun/',
+        url: 'https://www.leercapitulo.co/manga/xvziyp/yuan-zun/',
         id: '/manga/xvziyp/yuan-zun/',
         title: 'Yuan Zun'
     },

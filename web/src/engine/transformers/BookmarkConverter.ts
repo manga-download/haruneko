@@ -32,6 +32,7 @@ const legacyWebsiteIdentifierMap = {
     'mangaproz': 'mangapro',
     'mangaraw': 'mangagecko',
     'manhuaes': 'manhuaaz',
+    'manhuascan': 'kaliscan',
     'manhwaclub': 'manhwahentai',
     'muctau': 'bibimanga',
     'nitroscans': 'nitromanga',
