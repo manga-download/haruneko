@@ -1,23 +1,23 @@
-﻿import { describe } from 'vitest';
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'galaxymanga',
-        title: 'Galaxy Manga'
+        id: 'delitoonde',
+        title: 'Delitoon (German)'
     },
     container: {
-        url: 'https://flixscans.com/series/98504-101-betrayal-of-dignity',
-        id: JSON.stringify({ id: 101, prefix: 98504 }),
-        title: 'Betrayal of Dignity'
+        url: 'https://www.delitoon.de/detail/dad_4100016',
+        id: 'dad_4100016',
+        title: 'Wie werde ich meinen Verlobten los?'
     },
     child: {
-        id: '13351',
-        title: '40'
+        id: '1',
+        title: '1'
     },
     entry: {
         index: 0,
-        size: 341_024,
+        size: 796_370,
         type: 'image/webp'
     }
 };

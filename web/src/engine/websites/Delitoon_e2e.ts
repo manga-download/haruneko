@@ -1,23 +1,23 @@
-﻿import { describe } from 'vitest';
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'galaxymanga',
-        title: 'Galaxy Manga'
+        id: 'delitoon',
+        title: 'Delitoon'
     },
     container: {
-        url: 'https://flixscans.com/series/98504-101-betrayal-of-dignity',
-        id: JSON.stringify({ id: 101, prefix: 98504 }),
-        title: 'Betrayal of Dignity'
+        url: 'https://www.delitoon.com/detail/daf_4100032',
+        id: 'daf_4100032',
+        title: 'À mon premier amour'
     },
     child: {
-        id: '13351',
-        title: '40'
+        id: '1',
+        title: '1'
     },
     entry: {
         index: 0,
-        size: 341_024,
+        size: 47_192,
         type: 'image/webp'
     }
 };

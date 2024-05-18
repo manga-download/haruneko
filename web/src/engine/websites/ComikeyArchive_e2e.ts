@@ -3,22 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'galaxymanga',
-        title: 'Galaxy Manga'
+        id: 'comikey-archive',
+        title: 'Comikey (Archive)'
     },
     container: {
-        url: 'https://flixscans.com/series/98504-101-betrayal-of-dignity',
-        id: JSON.stringify({ id: 101, prefix: 98504 }),
-        title: 'Betrayal of Dignity'
+        url: 'https://comikey.ovh/read/kengan-ashura-manga/',
+        id: 'kengan-ashura-manga',
+        title: 'Kengan Ashura'
     },
     child: {
-        id: '13351',
-        title: '40'
+        id: 'onlKWD/chapter-1',
+        title: 'Chapter 1 - Asura'
     },
     entry: {
         index: 0,
-        size: 341_024,
-        type: 'image/webp'
+        size: 1_219_237,
+        type: 'image/jpeg'
     }
 };
 

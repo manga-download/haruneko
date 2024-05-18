@@ -3,11 +3,11 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'manhuascan',
-        title: 'ManhuaScan'
+        id: 'kaliscan',
+        title: 'KaliScan'
     },
     container: {
-        url: 'https://manhuascan.io/manga/35647-taoist-master-hoguk',
+        url: 'https://kaliscan.io/manga/35647-taoist-master-hoguk',
         id: '/manga/35647-taoist-master-hoguk',
         title: 'Taoist Master Hoguk'
     },
