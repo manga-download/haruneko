@@ -3,6 +3,12 @@ import { RPCServer } from './rpc/Server';
 import { Contract } from './rpc/Contract';
 import { IPC } from './ipc/InterProcessCommunication';
 
+type Manifest = {
+    url: string;
+    //'user-agent': undefined | string;
+    //'chromium-args': undefined | string;
+};
+
 async function GetArgumentURL(): Promise<string|undefined> {
     try {
         /*
@@ -19,9 +25,6 @@ async function GetArgumentURL(): Promise<string|undefined> {
 
 async function GetDefaultURL(): Promise<string|undefined> {
     try {
-        type Manifest = {
-            url?: string;
-        }
         return (nw.App.manifest as Manifest).url;
     } catch {
         return undefined;

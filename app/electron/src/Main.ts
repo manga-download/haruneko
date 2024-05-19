@@ -13,7 +13,8 @@ if(!process) import('./ipc/Preload');
 
 type Manifest = {
     url: string;
-    'user-agent': string;
+    'user-agent': undefined | string;
+    //'chromium-args': undefined | string;
 };
 
 async function LoadManifest(): Promise<Manifest> {
