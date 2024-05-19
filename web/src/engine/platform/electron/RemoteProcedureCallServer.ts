@@ -1,23 +1,17 @@
 import { Key as GlobalKey } from '../../SettingsGlobal';
 import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
-import type { AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from './InterProcessCommunicationTypes';
-
-type IPCPayload<T> = {
-    method: keyof T,
-    parameters: JSONArray,
-}
 
 /**
- * Inter Process Communication for NodeWebkit (content page)
+ * Inter Process Communication for Electron (main process)
  */
-export default class implements PlatformIPC {
+export default class RemoteProcedureCallServer {
 
     private readonly rpcEnabled: Check;
     private readonly rpcPort: Numeric;
     private readonly rpcSecret: Text;
 
     constructor(settingsManager: SettingsManager) {
-        chrome.runtime.onMessage.addListener(this.Listen.bind(this));
+        this.Listen('LoadMediaContainerFromURL');
 
         const settings = settingsManager.OpenScope();
         this.rpcEnabled = settings.Get<Check>(GlobalKey.RPCEnabled);
@@ -33,18 +27,14 @@ export default class implements PlatformIPC {
     }
 
     private async Send(method: keyof AppIPC, ...parameters: JSONArray): Promise<void> {
-        return new Promise<void>(resolve => chrome.runtime.sendMessage<IPCPayload<AppIPC>, void>({ method, parameters }, resolve));
+        return globalThis.ipcRenderer.invoke(method, ...parameters);
     }
 
-    private Listen(payload: IPCPayload<WebIPC>, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean {
-        if(payload.method in this) {
-            this[payload.method].call(this, ...payload.parameters).then(callback);
-            return true;
-        } else {
-            return false;
-        }
+    private Listen(method: keyof WebIPC) {
+        globalThis.ipcRenderer.on(method, (_, ...args: JSONArray) => this[method]?.call(this, ...args));
     }
 
+    /*
     private async UpdateRPC(): Promise<void> {
         return this.rpcEnabled.Value ? this.RestartRPC(this.rpcPort.Value, this.rpcSecret.Value) : this.StopRPC();
     }
@@ -62,14 +52,14 @@ export default class implements PlatformIPC {
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        console.log('Web::IPC::LoadMediaContainerFromURL()', '=>', url);
         for(const website of globalThis.HakuNeko.PluginController.WebsitePlugins) {
             const media = await website.TryGetEntry(url);
             if(media) {
-                console.log('LoadMediaContainerFromURL() => Found:', media);
+                console.log('LoadMediaContainerFromURL() => Match Found:', media);
                 return;
             }
         }
-        console.log('LoadMediaContainerFromURL() => Found:', undefined);
+        console.log('LoadMediaContainerFromURL() => No Match Found:', url);
     }
+    */
 }

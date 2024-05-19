@@ -1,5 +1,5 @@
 import type { RemoteContract } from 'websocket-rpc';
-import type { PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/InterProcessCommunicationTypes';
+import type { PlatformIPC, TypeFromInterface } from '../../../../web/src/engine/platform/nw/InterProcessCommunicationTypes';
 
 // TODO: Maybe make Contract an interface and implement it in IPC,
 //       because Contract just relays all calls anyway ...

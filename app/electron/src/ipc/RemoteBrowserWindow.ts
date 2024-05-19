@@ -1,15 +1,29 @@
 import path from 'node:path';
-import { app, ipcMain, BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
+import { app, BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
 import { argvPreloadScript } from './RemoteBrowserWindowPreload';
+import type { IPC } from './InterProcessCommunication';
+
+type SendMain =
+    'RemoteBrowserWindowController::OnDomReady' |
+    'RemoteBrowserWindowController::OnBeforeNavigate';
+export type ListenRender = SendMain;
+
+type ListenMain = 
+    'RemoteBrowserWindowController::OpenWindow' |
+    'RemoteBrowserWindowController::CloseWindow' |
+    'RemoteBrowserWindowController::SetVisibility' |
+    'RemoteBrowserWindowController::ExecuteScript' |
+    'RemoteBrowserWindowController::LoadURL';
+export type SendRender = ListenMain;
 
 export class RemoteBrowserWindowController {
 
-    constructor (private readonly webContents: Electron.WebContents) {
-        ipcMain.handle('RemoteBrowserWindowController::OpenWindow', (_, options: string) => this.OpenWindow(options));
-        ipcMain.handle('RemoteBrowserWindowController::CloseWindow', (_, windowID: number) => this.CloseWindow(windowID));
-        ipcMain.handle('RemoteBrowserWindowController::SetVisibility', (_, windowID: number, show: true) => this.SetVisibility(windowID, show));
-        ipcMain.handle('RemoteBrowserWindowController::ExecuteScript', (_, windowID: number, script: string) => this.ExecuteScript(windowID, script));
-        ipcMain.handle('RemoteBrowserWindowController::LoadURL', (_, windowID: number, url: string, options: string) => this.LoadURL(windowID, url, options));
+    constructor (private readonly ipc: IPC<SendMain, ListenMain>) {
+        this.ipc.Listen('RemoteBrowserWindowController::OpenWindow', this.OpenWindow.bind(this));
+        this.ipc.Listen('RemoteBrowserWindowController::CloseWindow', this.CloseWindow.bind(this));
+        this.ipc.Listen('RemoteBrowserWindowController::SetVisibility', this.SetVisibility.bind(this));
+        this.ipc.Listen('RemoteBrowserWindowController::ExecuteScript', this.ExecuteScript.bind(this));
+        this.ipc.Listen('RemoteBrowserWindowController::LoadURL', this.LoadURL.bind(this));
     }
 
     private Throw<T>(message: string): T {
@@ -33,7 +47,8 @@ export class RemoteBrowserWindowController {
         win.webContents.setWindowOpenHandler(() => {
             return { action: 'deny' };
         });
-        win.webContents.on('dom-ready', () => this.webContents.send('RemoteBrowserWindowController::OnDomReady', win.id));
+        win.webContents.on('dom-ready', (event: unknown) => this.ipc.Send('RemoteBrowserWindowController::OnDomReady', win.id, JSON.stringify(event)));
+        win.webContents.on('did-start-navigation', (event: unknown) => this.ipc.Send('RemoteBrowserWindowController::OnBeforeNavigate', win.id, JSON.stringify(event)));
         return win.id;
     }
 

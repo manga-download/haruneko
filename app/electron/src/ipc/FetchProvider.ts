@@ -6,15 +6,23 @@ import {
     type OnBeforeSendHeadersListenerDetails,
     type OnHeadersReceivedListenerDetails,
 } from 'electron';
+import { IPC } from './InterProcessCommunication';
+
+type SendMain = never;
+export type ListenRender = SendMain;
+
+type ListenMain = 
+    'FetchProvider::Initialize';
+export type SendRender = ListenMain;
 
 export class FetchProvider {
 
     private readonly location: URL;
     private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
 
-    constructor(private readonly webContents: WebContents) {
+    constructor(private readonly ipc: IPC<SendMain, ListenMain>, private readonly webContents: WebContents) {
         this.location = new URL(this.webContents.getURL());
-        ipcMain.handle('FetchProvider::Initialize', (_, fetchApiSupportedPrefix: string) => this.Initialize(fetchApiSupportedPrefix));
+        this.ipc.Listen('FetchProvider::Initialize', this.Initialize.bind(this));
     }
 
     public async Initialize(fetchApiSupportedPrefix: string): Promise<void> {

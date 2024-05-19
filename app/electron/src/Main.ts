@@ -7,6 +7,7 @@ import { ApplicationWindow } from './ipc/ApplicationWindow';
 import { FetchProvider } from './ipc/FetchProvider';
 import { InitializeMenu } from './Menu';
 import { RemoteBrowserWindowController } from './ipc/RemoteBrowserWindow';
+import { RemoteProcedureCallServer } from './ipc/RemoteProcedureCallServer';
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 type Manifest = {
@@ -58,9 +59,10 @@ async function LaunchRenderer(manifest: Manifest): Promise<BrowserWindow> {
 }
 
 async function RegisterRendererCallbacks(win: BrowserWindow) {
-    new IPC(win.webContents);
-    new FetchProvider(win.webContents);
-    new RemoteBrowserWindowController(win.webContents);
+    const ipc = new IPC(win.webContents);
+    new RemoteProcedureCallServer(ipc, win.webContents);
+    new FetchProvider(ipc, win.webContents);
+    new RemoteBrowserWindowController(ipc);
 }
 
 app.on('window-all-closed', () => app.quit());

@@ -1,40 +1,18 @@
 import { Key as GlobalKey } from '../../SettingsGlobal';
 import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
-import type { AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../InterProcessCommunicationTypes';
+import type { AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from '../nw/InterProcessCommunicationTypes';
 
-/**
- * Inter Process Communication for Electron (main process)
- */
-export default class implements PlatformIPC {
+export class IPC<TSend extends string, TListen extends string> {
 
-    private readonly rpcEnabled: Check;
-    private readonly rpcPort: Numeric;
-    private readonly rpcSecret: Text;
-
-    constructor(settingsManager: SettingsManager) {
-        this.Listen('LoadMediaContainerFromURL');
-
-        const settings = settingsManager.OpenScope();
-        this.rpcEnabled = settings.Get<Check>(GlobalKey.RPCEnabled);
-        this.rpcPort = settings.Get<Numeric>(GlobalKey.RPCPort);
-        this.rpcSecret = settings.Get<Text>(GlobalKey.RPCSecret);
-
-        const callback = this.UpdateRPC.bind(this);
-        this.rpcEnabled.Subscribe(callback);
-        this.rpcPort.Subscribe(callback);
-        this.rpcSecret.Subscribe(callback);
-
-        this.UpdateRPC();
-    }
-
-    private async Send(method: keyof AppIPC, ...parameters: JSONArray): Promise<void> {
+    public async Send(method: TSend, ...parameters: JSONArray): Promise<void> {
         return globalThis.ipcRenderer.invoke(method, ...parameters);
     }
 
-    private Listen(method: keyof WebIPC) {
-        globalThis.ipcRenderer.on(method, (_, ...args: JSONArray) => this[method]?.call(this, ...args));
+    public Listen(method: TListen, callback: (...args: JSONArray) => Promise<void>) {
+        globalThis.ipcRenderer.on(method, (_, ...args: JSONArray) => callback.call(callback, ...args));
     }
 
+    /*
     private async UpdateRPC(): Promise<void> {
         return this.rpcEnabled.Value ? this.RestartRPC(this.rpcPort.Value, this.rpcSecret.Value) : this.StopRPC();
     }
@@ -61,4 +39,5 @@ export default class implements PlatformIPC {
         }
         console.log('LoadMediaContainerFromURL() => No Match Found:', url);
     }
+    */
 }
