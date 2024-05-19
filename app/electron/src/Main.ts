@@ -12,7 +12,8 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 type Manifest = {
     url: string;
-    'user-agent': string;
+    'user-agent': undefined | string;
+    'chromium-args': undefined | string;
 };
 
 async function LoadManifest(): Promise<Manifest> {
@@ -27,6 +28,13 @@ async function GetArgumentURL(): Promise<string | undefined> {
         return argv.origin as string;
     } catch {
         return undefined;
+    }
+}
+
+async function SetupUserDataDirectory(manifest: Manifest): Promise<void> {
+    // TODO: This detection is more like a hack and does not use the provided path
+    if(manifest['chromium-args']?.includes('--user-data-dir=userdata')) {
+        app.setPath('userData', path.resolve(path.dirname(app.getPath('exe')), 'userdata'));
     }
 }
 
@@ -50,6 +58,7 @@ async function LaunchRenderer(manifest: Manifest): Promise<BrowserWindow> {
     win.removeMenu();
     win.setMenu(null);
     win.setMenuBarVisibility(false);
+    win.on('closed', () => app.quit());
 
     await win.loadURL(await GetArgumentURL() ?? manifest.url, {
         userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),
@@ -65,9 +74,13 @@ async function RegisterRendererCallbacks(win: BrowserWindow) {
     new RemoteBrowserWindowController(ipc);
 }
 
-app.on('window-all-closed', () => app.quit());
-InitializeMenu();
-app.whenReady()
-    .then(LoadManifest)
-    .then(LaunchRenderer)
-    .then(RegisterRendererCallbacks);
+async function OpenWindow() {
+    InitializeMenu();
+    const manifest = await LoadManifest();
+    await SetupUserDataDirectory(manifest);
+    await app.whenReady();
+    const win = await LaunchRenderer(manifest);
+    await RegisterRendererCallbacks(win);
+}
+
+OpenWindow();
