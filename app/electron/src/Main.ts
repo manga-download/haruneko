@@ -77,7 +77,7 @@ async function RegisterRendererCallbacks(win: BrowserWindow) {
 async function OpenWindow() {
     InitializeMenu();
     const manifest = await LoadManifest();
-    await SetupUserDataDirectory(manifest)
+    await SetupUserDataDirectory(manifest);
     await app.whenReady();
     const win = await LaunchRenderer(manifest);
     await RegisterRendererCallbacks(win);
