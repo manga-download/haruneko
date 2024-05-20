@@ -3,24 +3,11 @@ import fs from 'node:fs/promises';
 import { app, session, type WebContents } from 'electron';
 import type { Contract } from '../../../src/rpc/Contract';
 import type { IPC } from './InterProcessCommunication';
-
-/**
- * Supported IPC Channels for interacting with the RPC contract callbacks.
- * @description Send from the Main process and received in the Render process.
- */
-export enum RendererChannels {
-    LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL(url: string)',
-};
-
-/**
- * Supported IPC Channels for interacting with the RPC contract callbacks.
- * @description Send from the Render process and received in the Main process.
- */
-export type MainChannels = never;
+import { RemoteProcedureCallContract as Channels } from '../../../src/ipc/Channels';
 
 export class RemoteProcedureCallContract implements Contract {
 
-    constructor(private readonly ipc: IPC<RendererChannels, MainChannels>, private readonly webContents: WebContents) {}
+    constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {}
 
     public async SetCloudFlareBypass(userAgent: string, cookies: chrome.cookies.Cookie[]): Promise<void> {
         for(const cookie of cookies) {
@@ -48,6 +35,6 @@ export class RemoteProcedureCallContract implements Contract {
     }
 
     public async LoadMediaContainerFromURL(url: string) {
-        return this.ipc.Send(RendererChannels.LoadMediaContainerFromURL, url);
+        return this.ipc.Send(Channels.Web.LoadMediaContainerFromURL, url);
     }
 }

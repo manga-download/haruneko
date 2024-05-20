@@ -1,24 +1,11 @@
 import * as fs from 'node:fs/promises';
 import type { Contract } from '../../../src/rpc/Contract';
 import type { IPC } from './InterProcessCommunication';
-
-/**
- * Supported IPC Channels for interacting with the RPC contract callbacks.
- * @description Send from the Background script and received in the Content script.
- */
-export enum ContentChannels {
-    LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL(url: string)',
-};
-
-/**
- * Supported IPC Channels for interacting with the RPC contract callbacks.
- * @description Send from the Content script and received in the Background script.
- */
-export type BackgroundChannels = never;
+import { RemoteProcedureCallContract as Channels } from '../../../src/ipc/Channels';
 
 export class RemoteProcedureCallContract implements Contract {
 
-    constructor(private readonly ipc: IPC<ContentChannels, BackgroundChannels>) {}
+    constructor(private readonly ipc: IPC<Channels.Web, Channels.App>) {}
 
     public async SetCloudFlareBypass(userAgent: string, cookies: chrome.cookies.Cookie[]): Promise<void> {
         for(const cookie of cookies) {
@@ -47,6 +34,6 @@ export class RemoteProcedureCallContract implements Contract {
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        return this.ipc.Send(ContentChannels.LoadMediaContainerFromURL, url);
+        return this.ipc.Send(Channels.Web.LoadMediaContainerFromURL, url);
     }
 }

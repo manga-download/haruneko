@@ -1,29 +1,15 @@
 import type { RPCServer } from '../../../src/rpc/Server';
 import type { IPC } from './InterProcessCommunication';
-
-/**
- * Supported IPC Channels for interacting with the RPC manager.
- * @description Send from the Main process and received in the Render process.
- */
-export type RendererChannels = never;
-
-/**
- * Supported IPC Channels for interacting with the RPC manager.
- * @description Send from the Render process and received in the Main process.
- */
-export enum MainChannels {
-    Stop = 'RemoteProcedureCallManager::Stop()',
-    Restart = 'RemoteProcedureCallManager::Restart(port: number, secret: string)',
-};
+import { RemoteProcedureCallManager as Channels } from '../../../src/ipc/Channels';
 
 /**
  * Administration of the underlying RPC server via Electron specific IPC channels.
  */
 export class RemoteProcedureCallManager {
 
-    constructor(private readonly rpc: RPCServer, private readonly ipc: IPC<RendererChannels, MainChannels>) {
-        this.ipc.Listen(MainChannels.Stop, this.Stop.bind(this));
-        this.ipc.Listen(MainChannels.Restart, this.Restart.bind(this));
+    constructor(private readonly rpc: RPCServer, private readonly ipc: IPC<Channels.Web, Channels.App>) {
+        this.ipc.Listen(Channels.App.Stop, this.Stop.bind(this));
+        this.ipc.Listen(Channels.App.Restart, this.Restart.bind(this));
     }
 
     private async Stop(): Promise<void> {

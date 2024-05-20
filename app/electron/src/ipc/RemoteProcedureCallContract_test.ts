@@ -1,6 +1,7 @@
 import { vi, describe, it, expect } from 'vitest';
 import type { IPC } from './InterProcessCommunication';
-import { RendererChannels, RemoteProcedureCallContract } from './RemoteProcedureCallContract';
+import { RemoteProcedureCallContract } from './RemoteProcedureCallContract';
+import { RemoteProcedureCallContract as Channels } from '../../../src/ipc/Channels';
 
 class TestFixture {
 
@@ -31,7 +32,7 @@ describe('RemoteProcedureCallContract', () => {
             const testee = fixture.CreatTestee();
             testee.LoadMediaContainerFromURL('😎');
             expect(fixture.mockIPC.Send).toHaveBeenCalledTimes(1);
-            expect(fixture.mockIPC.Send).toHaveBeenCalledWith(RendererChannels.LoadMediaContainerFromURL, '😎');
+            expect(fixture.mockIPC.Send).toHaveBeenCalledWith(Channels.Web.LoadMediaContainerFromURL, '😎');
         });
     });
 });
