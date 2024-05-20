@@ -1,17 +1,17 @@
 import { vi, describe, it, expect } from 'vitest';
 import type { WebContents } from 'electron';
-import { FetchProvider, MainChannels } from './FetchProvider';
 import type { IPC } from './InterProcessCommunication';
+import { FetchProvider, MainChannels } from './FetchProvider';
 
 class TestFixture {
 
-    public readonly mockIPC = <IPC<never, never>>{
-        Listen: vi.fn<[], string>() as IPC<never, never>['Listen'],
-    };
+    public readonly mockIPC = {
+        Listen: vi.fn(),
+    } as unknown as IPC<never, never>;
 
-    private readonly mockWebContents = <WebContents>{
-        getURL: vi.fn<[], string>() as WebContents['getURL'],
-    };
+    private readonly mockWebContents = {
+        getURL: vi.fn(),
+    } as unknown as WebContents;
 
     public CreatTestee(url: string): FetchProvider {
         vi.mocked(this.mockWebContents.getURL).mockReturnValue(url);
@@ -23,7 +23,7 @@ describe('FetchProvider', () => {
 
     describe('Constructor', () => {
 
-        it('Should create instance', () => {
+        it('Should subscribe to IPC events', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreatTestee('http://localhost');
             expect(testee).toBeDefined();
