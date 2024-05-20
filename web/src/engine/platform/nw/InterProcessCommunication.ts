@@ -1,75 +1,45 @@
-import { Key as GlobalKey } from '../../SettingsGlobal';
-import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
-import type { AppIPC, WebIPC, PlatformIPC, TypeFromInterface } from './InterProcessCommunicationTypes';
-
-type IPCPayload<T> = {
-    method: keyof T,
+type Message = {
+    channel: string,
     parameters: JSONArray,
 }
 
-/**
- * Inter Process Communication for NodeWebkit (content page)
- */
-export default class implements PlatformIPC {
+type Callback = (...parameters: JSONArray) => Promise<void>;
 
-    private readonly rpcEnabled: Check;
-    private readonly rpcPort: Numeric;
-    private readonly rpcSecret: Text;
+export interface IPC<TChannelsOut extends string, TChannelsIn extends string> {
+    Listen(method: TChannelsIn, callback: (...parameters: JSONArray) => Promise<void>): void;
+    Send(method: TChannelsOut, ...parameters: JSONArray): Promise<void>;
+}
 
-    constructor(settingsManager: SettingsManager) {
-        chrome.runtime.onMessage.addListener(this.Listen.bind(this));
+class InterProcessCommunication implements IPC<string, string> {
 
-        const settings = settingsManager.OpenScope();
-        this.rpcEnabled = settings.Get<Check>(GlobalKey.RPCEnabled);
-        this.rpcPort = settings.Get<Numeric>(GlobalKey.RPCPort);
-        this.rpcSecret = settings.Get<Text>(GlobalKey.RPCSecret);
+    private readonly subscriptions = new Map<string, Callback[]>;
 
-        const callback = this.UpdateRPC.bind(this);
-        this.rpcEnabled.Subscribe(callback);
-        this.rpcPort.Subscribe(callback);
-        this.rpcSecret.Subscribe(callback);
-
-        this.UpdateRPC();
+    constructor() {
+        chrome.runtime.onMessage.addListener(this.OnMessage.bind(this));
     }
 
-    private async Send(method: keyof AppIPC, ...parameters: JSONArray): Promise<void> {
-        return new Promise<void>(resolve => chrome.runtime.sendMessage<IPCPayload<AppIPC>, void>({ method, parameters }, resolve));
-    }
-
-    private Listen(payload: IPCPayload<WebIPC>, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean {
-        if(payload.method in this) {
-            this[payload.method].call(this, ...payload.parameters).then(callback);
+    private OnMessage(message: Message, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean {
+        if(this.subscriptions.has(message.channel)) {
+            for(const method of this.subscriptions.get(message.channel)) {
+                method(...message.parameters).then(callback);
+            }
             return true;
         } else {
-            return false;
+            return false;;
         }
     }
 
-    private async UpdateRPC(): Promise<void> {
-        return this.rpcEnabled.Value ? this.RestartRPC(this.rpcPort.Value, this.rpcSecret.Value) : this.StopRPC();
-    }
-
-    public async StopRPC(): Promise<void> {
-        return this.Send('StopRPC');
-    }
-
-    public async RestartRPC(port: number, secret: string): Promise<void> {
-        return this.Send('RestartRPC', port, secret);
-    }
-
-    public async SetCloudFlareBypass(userAgent: string, cookies: TypeFromInterface<chrome.cookies.Cookie>[]): Promise<void> {
-        return this.Send('SetCloudFlareBypass', userAgent, cookies);
-    }
-
-    public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        console.log('Web::IPC::LoadMediaContainerFromURL()', '=>', url);
-        for(const website of globalThis.HakuNeko.PluginController.WebsitePlugins) {
-            const media = await website.TryGetEntry(url);
-            if(media) {
-                console.log('LoadMediaContainerFromURL() => Found:', media);
-                return;
-            }
+    public Listen(channel: string, callback: Callback): void {
+        if(!this.subscriptions.has(channel)) {
+            this.subscriptions.set(channel, []);
         }
-        console.log('LoadMediaContainerFromURL() => Found:', undefined);
+        // TODO: Prevent duplicate callbacks
+        this.subscriptions.get(channel).push(callback);
+    }
+
+    public async Send(channel: string, ...parameters: JSONArray): Promise<void> {
+        return new Promise<void>(resolve => chrome.runtime.sendMessage<Message, void>({ channel, parameters }, resolve));
     }
 }
+
+export const NodeWebkitIPC: IPC<string, string> = new InterProcessCommunication();
