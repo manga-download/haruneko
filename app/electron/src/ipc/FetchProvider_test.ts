@@ -1,6 +1,6 @@
 import { vi, describe, it, expect } from 'vitest';
 import type { WebContents } from 'electron';
-import { FetchProvider } from './FetchProvider';
+import { FetchProvider, MainChannels } from './FetchProvider';
 import type { IPC } from './InterProcessCommunication';
 
 class TestFixture {
@@ -28,7 +28,7 @@ describe('FetchProvider', () => {
             const testee = fixture.CreatTestee('http://localhost');
             expect(testee).toBeDefined();
             expect(fixture.mockIPC.Listen).toHaveBeenCalledTimes(1);
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith('FetchProvider::Initialize', expect.anything());
+            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(MainChannels.Initialize, expect.anything());
         });
     });
 });

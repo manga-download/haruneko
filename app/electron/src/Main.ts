@@ -74,10 +74,10 @@ async function OpenWindow() {
     const win = await CreateApplicationWindow();
     const ipc = new IPC(win.webContents);
     const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
-    win.RegisterChannels(ipc);
     new RemoteProcedureCallManager(rpc, ipc);
     new FetchProvider(ipc, win.webContents);
     new RemoteBrowserWindowController(ipc);
+    win.RegisterChannels(ipc);
     await win.loadURL(await GetArgumentURL() ?? manifest.url, {
         userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),
     });

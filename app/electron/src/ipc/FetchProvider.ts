@@ -31,7 +31,7 @@ export class FetchProvider {
         this.ipc.Listen(MainChannels.Initialize, this.Initialize.bind(this));
     }
 
-    public async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
+    private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
         this.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => callback(this.ModifyRequestHeaders(details)));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
