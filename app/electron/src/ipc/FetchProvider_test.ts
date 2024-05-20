@@ -1,16 +1,13 @@
 import { vi, describe, it, expect } from 'vitest';
-import { ipcMain, type WebContents } from 'electron';
+import type { WebContents } from 'electron';
 import { FetchProvider } from './FetchProvider';
-
-vi.mock('electron', () => {
-    return {
-        ipcMain: <Electron.IpcMain>{
-            handle: vi.fn() as Electron.IpcMain['handle']
-        }
-    };
-});
+import type { IPC } from './InterProcessCommunication';
 
 class TestFixture {
+
+    public readonly mockIPC = <IPC<never, never>>{
+        Listen: vi.fn<[], string>() as IPC<never, never>['Listen'],
+    };
 
     private readonly mockWebContents = <WebContents>{
         getURL: vi.fn<[], string>() as WebContents['getURL'],
@@ -18,7 +15,7 @@ class TestFixture {
 
     public CreatTestee(url: string): FetchProvider {
         vi.mocked(this.mockWebContents.getURL).mockReturnValue(url);
-        return new FetchProvider(this.mockWebContents);
+        return new FetchProvider(this.mockIPC, this.mockWebContents);
     }
 }
 
@@ -30,8 +27,8 @@ describe('FetchProvider', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreatTestee('http://localhost');
             expect(testee).toBeDefined();
-            expect(ipcMain.handle).toHaveBeenCalledTimes(1);
-            expect(ipcMain.handle).toHaveBeenCalledWith('FetchProvider::Initialize', expect.anything());
+            expect(fixture.mockIPC.Listen).toHaveBeenCalledTimes(1);
+            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith('FetchProvider::Initialize', expect.anything());
         });
     });
 });

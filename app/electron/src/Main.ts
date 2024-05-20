@@ -1,13 +1,15 @@
 import path from 'path';
 import yargs from 'yargs';
 import fs from 'fs/promises';
-import { type BrowserWindow, app } from 'electron';
+import { app } from 'electron';
 import { IPC } from './ipc/InterProcessCommunication';
 import { ApplicationWindow } from './ipc/ApplicationWindow';
 import { FetchProvider } from './ipc/FetchProvider';
 import { InitializeMenu } from './Menu';
 import { RemoteBrowserWindowController } from './ipc/RemoteBrowserWindow';
-import { RemoteProcedureCallServer } from './ipc/RemoteProcedureCallServer';
+import { RPCServer } from '../../src/rpc/Server';
+import { RemoteProcedureCallManager } from './ipc/RemoteProcedureCallManager';
+import { RemoteProcedureCallContract } from './ipc/RemoteProcedureCallContract';
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 type Manifest = {
@@ -38,7 +40,7 @@ async function SetupUserDataDirectory(manifest: Manifest): Promise<void> {
     }
 }
 
-async function LaunchRenderer(manifest: Manifest): Promise<BrowserWindow> {
+async function CreateApplicationWindow(): Promise<ApplicationWindow> {
     const win = new ApplicationWindow({
         show: false,
         width: 1280,
@@ -55,23 +57,13 @@ async function LaunchRenderer(manifest: Manifest): Promise<BrowserWindow> {
             disableBlinkFeatures: 'AutomationControlled',
         },
     });
+
     win.removeMenu();
     win.setMenu(null);
     win.setMenuBarVisibility(false);
     win.on('closed', () => app.quit());
 
-    await win.loadURL(await GetArgumentURL() ?? manifest.url, {
-        userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),
-    });
-
     return win;
-}
-
-async function RegisterRendererCallbacks(win: BrowserWindow) {
-    const ipc = new IPC(win.webContents);
-    new RemoteProcedureCallServer(ipc, win.webContents);
-    new FetchProvider(ipc, win.webContents);
-    new RemoteBrowserWindowController(ipc);
 }
 
 async function OpenWindow() {
@@ -79,8 +71,16 @@ async function OpenWindow() {
     const manifest = await LoadManifest();
     await SetupUserDataDirectory(manifest);
     await app.whenReady();
-    const win = await LaunchRenderer(manifest);
-    await RegisterRendererCallbacks(win);
+    const win = await CreateApplicationWindow();
+    const ipc = new IPC(win.webContents);
+    const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
+    win.RegisterChannels(ipc);
+    new RemoteProcedureCallManager(rpc, ipc);
+    new FetchProvider(ipc, win.webContents);
+    new RemoteBrowserWindowController(ipc);
+    await win.loadURL(await GetArgumentURL() ?? manifest.url, {
+        userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),
+    });
 }
 
 OpenWindow();
