@@ -12,8 +12,8 @@ export type RendererChannels = never;
  * @description Send from the Render process and received in the Main process.
  */
 export enum MainChannels {
-    Stop = 'RPC-Manager::Stop',
-    Restart = 'RPC-Manager::Restart',
+    Stop = 'RemoteProcedureCallManager::Stop()',
+    Restart = 'RemoteProcedureCallManager::Restart(port: number, secret: string)',
 };
 
 /**
@@ -21,16 +21,16 @@ export enum MainChannels {
  */
 export class RemoteProcedureCallManager {
 
-    constructor(public readonly RPC: RPCServer, private readonly ipc: IPC<RendererChannels, MainChannels>) {
+    constructor(private readonly rpc: RPCServer, private readonly ipc: IPC<RendererChannels, MainChannels>) {
         this.ipc.Listen(MainChannels.Stop, this.Stop.bind(this));
         this.ipc.Listen(MainChannels.Restart, this.Restart.bind(this));
     }
 
-    public async Stop() {
-        return this.RPC.Stop();
+    private async Stop(): Promise<void> {
+        return this.rpc.Stop();
     }
 
-    public async Restart(port: number, secret: string) {
-        return this.RPC.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
+    private async Restart(port: number, secret: string): Promise<void> {
+        return this.rpc.Listen(port, secret, [ /^(chrome-)?extension:/i ]);
     }
 }

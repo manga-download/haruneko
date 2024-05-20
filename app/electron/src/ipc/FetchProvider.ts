@@ -18,7 +18,7 @@ export type RendererChannels = never;
  * @description Send from the Render process and received in the Main process.
  */
 export enum MainChannels {
-    Initialize = 'FetchProvider::Initialize',
+    Initialize = 'FetchProvider::Initialize(fetchApiSupportedPrefix: string)',
 };
 
 export class FetchProvider {

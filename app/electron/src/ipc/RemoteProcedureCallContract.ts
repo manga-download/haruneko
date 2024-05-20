@@ -9,7 +9,7 @@ import type { IPC } from './InterProcessCommunication';
  * @description Send from the Main process and received in the Render process.
  */
 export enum RendererChannels {
-    LoadMediaContainerFromURL = 'RPC-Contract::LoadMediaContainerFromURL',
+    LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL(url: string)',
 };
 
 /**
@@ -23,14 +23,6 @@ export class RemoteProcedureCallContract implements Contract {
     constructor(private readonly ipc: IPC<RendererChannels, MainChannels>, private readonly webContents: WebContents) {}
 
     public async SetCloudFlareBypass(userAgent: string, cookies: chrome.cookies.Cookie[]): Promise<void> {
-        if(userAgent !== this.webContents.getUserAgent()) {
-            const file = path.resolve(app.getAppPath(), 'package.json');
-            const manifest = JSON.parse(await fs.readFile(file, 'utf-8'));
-            manifest['user-agent'] = userAgent;
-            await fs.writeFile(file, JSON.stringify(manifest, null, 2), 'utf-8');
-            this.webContents.setUserAgent(userAgent);
-        }
-
         for(const cookie of cookies) {
             await session.defaultSession.cookies.set({
                 domain: cookie.domain,
@@ -44,6 +36,14 @@ export class RemoteProcedureCallContract implements Contract {
                 sameSite: cookie.sameSite,
                 //storeId: cookie.storeId,
             });
+        }
+
+        if(userAgent !== this.webContents.getUserAgent()) {
+            const file = path.resolve(app.getAppPath(), 'package.json');
+            const manifest = JSON.parse(await fs.readFile(file, 'utf-8'));
+            manifest['user-agent'] = userAgent;
+            await fs.writeFile(file, JSON.stringify(manifest, null, 2), 'utf-8');
+            this.webContents.setUserAgent(userAgent);
         }
     }
 

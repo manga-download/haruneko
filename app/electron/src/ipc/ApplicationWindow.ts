@@ -12,14 +12,14 @@ export type RendererChannels = never;
  * @description Send from the Render process and received in the Main process.
  */
 export enum MainChannels {
-    ShowWindow = 'ApplicationWindow::ShowWindow',
-    HideWindow = 'ApplicationWindow::HideWindow',
-    Minimize = 'ApplicationWindow::Minimize',
-    Maximize = 'ApplicationWindow::Maximize',
-    Restore = 'ApplicationWindow::Restore',
-    Close = 'ApplicationWindow::Close',
-    OpenSplash = 'ApplicationWindow::OpenSplash',
-    CloseSplash = 'ApplicationWindow::CloseSplash',
+    ShowWindow = 'ApplicationWindow::ShowWindow()',
+    HideWindow = 'ApplicationWindow::HideWindow()',
+    Minimize = 'ApplicationWindow::Minimize()',
+    Maximize = 'ApplicationWindow::Maximize()',
+    Restore = 'ApplicationWindow::Restore()',
+    Close = 'ApplicationWindow::Close()',
+    OpenSplash = 'ApplicationWindow::OpenSplash(url: string)',
+    CloseSplash = 'ApplicationWindow::CloseSplash()',
 };
 
 export class ApplicationWindow extends BrowserWindow {

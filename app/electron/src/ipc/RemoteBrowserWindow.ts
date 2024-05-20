@@ -17,11 +17,11 @@ export enum RendererChannels {
  * @description Send from the Render process and received in the Main process.
  */
 export enum MainChannels {
-    OpenWindow = 'Browser::OpenWindow',
-    CloseWindow = 'Browser::CloseWindow',
-    SetVisibility = 'Browser::SetVisibility',
-    ExecuteScript = 'Browser::ExecuteScript',
-    LoadURL = 'Browser::LoadURL',
+    OpenWindow = 'Browser::OpenWindow(options: string)',
+    CloseWindow = 'Browser::CloseWindow(windowID: number)',
+    SetVisibility = 'Browser::SetVisibility(windowID: number, show: boolean)',
+    ExecuteScript = 'Browser::ExecuteScript(windowID: number, script: string)',
+    LoadURL = 'Browser::LoadURL(windowID: number, url: string, options: string)',
 };
 
 export class RemoteBrowserWindowController {
