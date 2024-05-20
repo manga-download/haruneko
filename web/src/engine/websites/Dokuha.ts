@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
-type JSONImage = {
+type JSONImage = undefined | {
     img: string,
     rectSrc: string
 }
@@ -39,18 +39,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const images: JSONImage[] = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), 'images', 2500);
+        const images = await FetchWindowScript<JSONImage[]>(new Request(new URL(chapter.Identifier, this.URI)), 'images', 2500);
         return images.filter(image => image).map(image => new Page(this, chapter, new URL(image.img), { scrambleJSONUrl: image.rectSrc }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         const data = new Uint8Array(await blob.arrayBuffer());
-        const decrypted = await this.DecryptPicture(data, page.Parameters['scrambleJSONUrl'] as string);
-        return Common.GetTypedData(decrypted);
+        return this.DecryptPicture(data, page.Parameters['scrambleJSONUrl'] as string);
     }
 
-    private async DecryptPicture(data: Uint8Array, jsonUrl: string): Promise<ArrayBuffer> {
+    private async DecryptPicture(data: Uint8Array, jsonUrl: string): Promise<Blob> {
         const BYTE_BLOCK = 2000;
         const chunks = [];
 
@@ -64,7 +63,7 @@ export default class extends DecoratableMangaScraper {
             result[recipe.before] = chunks[recipe.after];
         }
 
-        return await new Blob(result).slice(0, size).arrayBuffer();
+        return Common.GetTypedData(await new Blob(result).slice(0, size).arrayBuffer());
     }
 
 }
