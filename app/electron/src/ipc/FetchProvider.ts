@@ -10,11 +10,9 @@ import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 export class FetchProvider {
 
-    private readonly location: URL;
     private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
 
     constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
-        this.location = new URL(this.webContents.getURL());
         this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
@@ -26,7 +24,8 @@ export class FetchProvider {
 
     private IsMatchingAppHost(url: string) {
         try {
-            return new URL(url).hostname === this.location.hostname;
+            const uri = new URL(this.webContents.getURL());
+            return new URL(url).hostname === uri.hostname;
         } catch {
             return false;
         }
