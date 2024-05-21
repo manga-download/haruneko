@@ -46,23 +46,23 @@ export namespace RemoteBrowserWindowController {
     /** Send from the Main process and received in the Render process. */
     export enum Web {
         /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
-        OnDomReady = 'Browser::OnDomReady',
+        OnDomReady = 'RemoteBrowserWindowController::OnDomReady',
         /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
-        OnBeforeNavigate = 'Browser::OnBeforeNavigate',
+        OnBeforeNavigate = 'RemoteBrowserWindowController::OnBeforeNavigate',
     };
 
     /** Send from the Render process and received in the Main process. */
     export enum App {
         /** Channel for IPC callback with signature: `(options: string) => Promise<number>` */
-        OpenWindow = 'Browser::OpenWindow',
+        OpenWindow = 'RemoteBrowserWindowController::OpenWindow',
         /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
-        CloseWindow = 'Browser::CloseWindow',
+        CloseWindow = 'RemoteBrowserWindowController::CloseWindow',
         /** Channel for IPC callback with signature: `(windowID: number, show: boolean) => Promise<void>` */
-        SetVisibility = 'Browser::SetVisibility',
+        SetVisibility = 'RemoteBrowserWindowController::SetVisibility',
         /** Channel for IPC callback with signature: `(windowID: number, script: string) => Promise<T>` */
-        ExecuteScript = 'Browser::ExecuteScript',
+        ExecuteScript = 'RemoteBrowserWindowController::ExecuteScript',
         /** Channel for IPC callback with signature: `(windowID: number, url: string, options: string) => Promise<void>` */
-        LoadURL = 'Browser::LoadURL',
+        LoadURL = 'RemoteBrowserWindowController::LoadURL',
     };
 }
 
