@@ -1,4 +1,72 @@
-// This file contans all channel definitions used by app(s) and web
+// This file contains all channel definitions used by app(s) and web
+
+/**
+ * Supported IPC Channels for interacting with the main application window.
+ */
+export namespace ApplicationWindow {
+
+    /**
+     * Send from the Main process and received in the Render process.
+     */
+    export type Web = never;
+
+    /**
+     * Send from the Render process and received in the Main process.
+     */
+    export enum App {
+        ShowWindow = 'ApplicationWindow::ShowWindow()',
+        HideWindow = 'ApplicationWindow::HideWindow()',
+        Minimize = 'ApplicationWindow::Minimize()',
+        Maximize = 'ApplicationWindow::Maximize()',
+        Restore = 'ApplicationWindow::Restore()',
+        Close = 'ApplicationWindow::Close()',
+        OpenSplash = 'ApplicationWindow::OpenSplash(url: string)',
+        CloseSplash = 'ApplicationWindow::CloseSplash()',
+    };
+}
+
+/**
+ * ...
+ */
+export namespace FetchProvider {
+
+    /**
+     * Send from the Main process and received/processsed in the Render process.
+     */
+    export type Web = never;
+
+    /**
+     * Send from the Render process and received/processsed in the Main process.
+     */
+    export enum App {
+        Initialize = 'FetchProvider::Initialize(fetchApiSupportedPrefix: string)',
+    };
+}
+
+/**
+ * Supported IPC Channels for interacting with browser windows.
+ */
+export namespace RemoteBrowserWindowController {
+
+    /**
+     * Send from the Main process and received in the Render process.
+     */
+    export enum Web {
+        OnDomReady = 'Browser::OnDomReady',
+        OnBeforeNavigate = 'Browser::OnBeforeNavigate',
+    };
+
+    /**
+     * Send from the Render process and received in the Main process.
+     */
+    export enum App {
+        OpenWindow = 'Browser::OpenWindow(options: string)',
+        CloseWindow = 'Browser::CloseWindow(windowID: number)',
+        SetVisibility = 'Browser::SetVisibility(windowID: number, show: boolean)',
+        ExecuteScript = 'Browser::ExecuteScript(windowID: number, script: string)',
+        LoadURL = 'Browser::LoadURL(windowID: number, url: string, options: string)',
+    };
+}
 
 /**
  * Supported IPC Channels for interacting with the RPC manager.

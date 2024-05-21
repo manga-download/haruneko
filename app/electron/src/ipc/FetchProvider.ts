@@ -6,29 +6,16 @@ import {
     type OnHeadersReceivedListenerDetails,
 } from 'electron';
 import type { IPC } from './InterProcessCommunication';
-
-/**
- * Supported IPC Channels for interacting with browser windows.
- * @description Send from the Main process and received in the Render process.
- */
-export type RendererChannels = never;
-
-/**
- * Supported IPC Channels for interacting with browser windows.
- * @description Send from the Render process and received in the Main process.
- */
-export enum MainChannels {
-    Initialize = 'FetchProvider::Initialize(fetchApiSupportedPrefix: string)',
-};
+import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 export class FetchProvider {
 
     private readonly location: URL;
     private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
 
-    constructor(private readonly ipc: IPC<RendererChannels, MainChannels>, private readonly webContents: WebContents) {
+    constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
         this.location = new URL(this.webContents.getURL());
-        this.ipc.Listen(MainChannels.Initialize, this.Initialize.bind(this));
+        this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
     private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {

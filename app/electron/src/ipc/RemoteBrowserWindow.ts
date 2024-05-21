@@ -2,36 +2,16 @@ import path from 'node:path';
 import { app, BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
 import { argvPreloadScript } from './RemoteBrowserWindowPreload';
 import type { IPC } from './InterProcessCommunication';
-
-/**
- * Supported IPC Channels for interacting with browser windows.
- * @description Send from the Main process and received in the Render process.
- */
-export enum RendererChannels {
-    OnDomReady = 'Browser::OnDomReady',
-    OnBeforeNavigate = 'Browser::OnBeforeNavigate',
-};
-
-/**
- * Supported IPC Channels for interacting with browser windows.
- * @description Send from the Render process and received in the Main process.
- */
-export enum MainChannels {
-    OpenWindow = 'Browser::OpenWindow(options: string)',
-    CloseWindow = 'Browser::CloseWindow(windowID: number)',
-    SetVisibility = 'Browser::SetVisibility(windowID: number, show: boolean)',
-    ExecuteScript = 'Browser::ExecuteScript(windowID: number, script: string)',
-    LoadURL = 'Browser::LoadURL(windowID: number, url: string, options: string)',
-};
+import { RemoteBrowserWindowController as Channels } from '../../../src/ipc/Channels';
 
 export class RemoteBrowserWindowController {
 
-    constructor (private readonly ipc: IPC<RendererChannels, MainChannels>) {
-        this.ipc.Listen(MainChannels.OpenWindow, this.OpenWindow.bind(this));
-        this.ipc.Listen(MainChannels.CloseWindow, this.CloseWindow.bind(this));
-        this.ipc.Listen(MainChannels.SetVisibility, this.SetVisibility.bind(this));
-        this.ipc.Listen(MainChannels.ExecuteScript, this.ExecuteScript.bind(this));
-        this.ipc.Listen(MainChannels.LoadURL, this.LoadURL.bind(this));
+    constructor (private readonly ipc: IPC<Channels.Web, Channels.App>) {
+        this.ipc.Listen(Channels.App.OpenWindow, this.OpenWindow.bind(this));
+        this.ipc.Listen(Channels.App.CloseWindow, this.CloseWindow.bind(this));
+        this.ipc.Listen(Channels.App.SetVisibility, this.SetVisibility.bind(this));
+        this.ipc.Listen(Channels.App.ExecuteScript, this.ExecuteScript.bind(this));
+        this.ipc.Listen(Channels.App.LoadURL, this.LoadURL.bind(this));
     }
 
     private Throw<T>(message: string): T {
@@ -55,8 +35,8 @@ export class RemoteBrowserWindowController {
         win.webContents.setWindowOpenHandler(() => {
             return { action: 'deny' };
         });
-        win.webContents.on('dom-ready', (event: unknown) => this.ipc.Send(RendererChannels.OnDomReady, win.id, JSON.stringify(event)));
-        win.webContents.on('did-start-navigation', (event: unknown) => this.ipc.Send(RendererChannels.OnBeforeNavigate, win.id, JSON.stringify(event)));
+        win.webContents.on('dom-ready', (event: unknown) => this.ipc.Send(Channels.Web.OnDomReady, win.id, JSON.stringify(event)));
+        win.webContents.on('did-start-navigation', (event: unknown) => this.ipc.Send(Channels.Web.OnBeforeNavigate, win.id, JSON.stringify(event)));
         return win.id;
     }
 
