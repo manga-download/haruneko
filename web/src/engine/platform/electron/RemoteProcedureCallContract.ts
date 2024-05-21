@@ -1,14 +1,15 @@
-import type { IPC } from './InterProcessCommunication';
-import { RendererChannels } from '../../../../../app/electron/src/ipc/RemoteProcedureCallContract';
+import type { IPC } from '../InterProcessCommunication';
+import type { IRemoteProcedureCallContract } from '../RemoteProcedureCallContract';
+import { RemoteProcedureCallContract as Channels } from '../../../../../app/src/ipc/Channels';
 
-export default class RemoteProcedureCallContract {
+export default class RemoteProcedureCallContract implements IRemoteProcedureCallContract {
 
-    constructor(private readonly ipc: IPC<never, RendererChannels>) {
-        this.ipc.Listen(RendererChannels.LoadMediaContainerFromURL, this.LoadMediaContainerFromURL.bind(this))
+    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
+        this.ipc.Listen(Channels.Web.LoadMediaContainerFromURL, this.LoadMediaContainerFromURL.bind(this))
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        console.log(RendererChannels.LoadMediaContainerFromURL, '=>', url);
+        console.log(Channels.Web.LoadMediaContainerFromURL, '=>', url);
         for(const website of globalThis.HakuNeko.PluginController.WebsitePlugins) {
             const media = await website.TryGetEntry(url);
             if(media) {

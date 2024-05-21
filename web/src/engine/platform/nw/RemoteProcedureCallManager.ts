@@ -1,15 +1,16 @@
-import type { IPC } from './InterProcessCommunication';
+import type { IPC } from '../InterProcessCommunication';
 import { Key as GlobalKey } from '../../SettingsGlobal';
 import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
-import { BackgroundChannels } from '../../../../../app/nw/src/ipc/RemoteProcedureCallManager';
+import type { IRemoteProcedureCallManager } from '../RemoteProcedureCallManager';
+import { RemoteProcedureCallManager as Channels } from '../../../../../app/src/ipc/Channels';
 
-export default class RemoteProcedureCallManager {
+export default class RemoteProcedureCallManager implements IRemoteProcedureCallManager {
 
     private readonly rpcEnabled: Check;
     private readonly rpcPort: Numeric;
     private readonly rpcSecret: Text;
 
-    constructor(private readonly ipc: IPC<BackgroundChannels, never>, settingsManager: SettingsManager) {
+    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>, settingsManager: SettingsManager) {
         const settings = settingsManager.OpenScope();
         this.rpcEnabled = settings.Get<Check>(GlobalKey.RPCEnabled);
         this.rpcPort = settings.Get<Numeric>(GlobalKey.RPCPort);
@@ -28,10 +29,10 @@ export default class RemoteProcedureCallManager {
     }
 
     public async Stop(): Promise<void> {
-        return this.ipc.Send(BackgroundChannels.Stop);
+        return this.ipc.Send(Channels.App.Stop);
     }
 
     public async Restart(port: number, secret: string): Promise<void> {
-        return this.ipc.Send(BackgroundChannels.Restart, port, secret);
+        return this.ipc.Send(Channels.App.Restart, port, secret);
     }
 }

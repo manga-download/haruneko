@@ -1,16 +1,11 @@
+import type { IPC, Callback } from '../InterProcessCommunication';
+
 type Message = {
     channel: string,
     parameters: JSONArray,
 }
 
-type Callback = (...parameters: JSONArray) => Promise<void>;
-
-export interface IPC<TChannelsOut extends string, TChannelsIn extends string> {
-    Listen(method: TChannelsIn, callback: (...parameters: JSONArray) => Promise<void>): void;
-    Send(method: TChannelsOut, ...parameters: JSONArray): Promise<void>;
-}
-
-class InterProcessCommunication implements IPC<string, string> {
+export default class implements IPC<string, string> {
 
     private readonly subscriptions = new Map<string, Callback[]>;
 
@@ -41,5 +36,3 @@ class InterProcessCommunication implements IPC<string, string> {
         return new Promise<void>(resolve => chrome.runtime.sendMessage<Message, void>({ channel, parameters }, resolve));
     }
 }
-
-export const NodeWebkitIPC: IPC<string, string> = new InterProcessCommunication();
