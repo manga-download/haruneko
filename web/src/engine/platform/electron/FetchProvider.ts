@@ -100,10 +100,13 @@ export default class extends FetchProvider {
                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
             }, timeout);
 
-            win.DOMReady.Subscribe(async dom => {
+            win.DOMReady.Subscribe(async () => {
                 invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
                 try {
-                    const redirect = await CheckAntiScrapingDetection(dom);
+                    const redirect = await CheckAntiScrapingDetection(async () => {
+                        const html = await win.ExecuteScript<string>(`document.querySelector('html').innerHTML`);
+                        return new DOMParser().parseFromString(html, 'text/html');
+                    });
                     invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[redirect]}`});
                     switch (redirect) {
                         case FetchRedirection.Interactive:
