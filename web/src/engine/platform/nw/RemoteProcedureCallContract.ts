@@ -9,13 +9,10 @@ export default class RemoteProcedureCallContract implements IRemoteProcedureCall
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        for(const website of globalThis.HakuNeko.PluginController.WebsitePlugins) {
-            const media = await website.TryGetEntry(url);
-            if(media) {
-                console.log('LoadMediaContainerFromURL() => Match Found:', media);
-                return;
-            }
+        try {
+            globalThis.HakuNeko.PastedClipboardURL.Value = new URL(url);
+        } catch(error) {
+            console.warn(error);
         }
-        console.log('LoadMediaContainerFromURL() => No Match Found:', url);
     }
 }
