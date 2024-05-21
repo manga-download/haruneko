@@ -9,7 +9,6 @@ export default class RemoteProcedureCallContract implements IRemoteProcedureCall
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        console.log(Channels.Web.LoadMediaContainerFromURL, '=>', url);
         for(const website of globalThis.HakuNeko.PluginController.WebsitePlugins) {
             const media = await website.TryGetEntry(url);
             if(media) {

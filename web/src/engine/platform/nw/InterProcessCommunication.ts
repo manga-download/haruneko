@@ -15,12 +15,11 @@ export default class implements IPC<string, string> {
 
     private OnMessage(message: Message, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean {
         if(this.subscriptions.has(message.channel)) {
-            for(const method of this.subscriptions.get(message.channel)) {
-                method(...message.parameters).then(callback);
-            }
+            const promises = this.subscriptions.get(message.channel).map(method => method(...message.parameters));
+            Promise.allSettled(promises).then(() => callback());
             return true;
         } else {
-            return false;;
+            return false;
         }
     }
 
@@ -28,8 +27,10 @@ export default class implements IPC<string, string> {
         if(!this.subscriptions.has(channel)) {
             this.subscriptions.set(channel, []);
         }
-        // TODO: Prevent duplicate callbacks
-        this.subscriptions.get(channel).push(callback);
+        const methods = this.subscriptions.get(channel);
+        if(!methods.includes(callback)) {
+            methods.push(callback);
+        }
     }
 
     public async Send(channel: string, ...parameters: JSONArray): Promise<void> {
