@@ -35,8 +35,8 @@ export class RemoteBrowserWindowController {
         win.webContents.setWindowOpenHandler(() => {
             return { action: 'deny' };
         });
-        win.webContents.on('dom-ready', (event: unknown) => this.ipc.Send(Channels.Web.OnDomReady, win.id, JSON.stringify(event)));
-        win.webContents.on('did-start-navigation', (event: unknown) => this.ipc.Send(Channels.Web.OnBeforeNavigate, win.id, JSON.stringify(event)));
+        win.webContents.on('dom-ready', () => this.ipc.Send(Channels.Web.OnDomReady, win.id));
+        win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.Web.OnBeforeNavigate, win.id, event.url));
         return win.id;
     }
 
