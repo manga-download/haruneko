@@ -7,7 +7,7 @@ export type Callback = (...parameters: JSONArray) => Promise<void>;
 
 export interface IPC<TChannelsOut extends string, TChannelsIn extends string> {
     Listen(channel: TChannelsIn, callback: Callback): void;
-    Send(channel: TChannelsOut, ...parameters: JSONArray): Promise<void>;
+    Send<T extends void | JSONElement>(channel: TChannelsOut, ...parameters: JSONArray): Promise<T>;
 }
 
 export default new PlatformInstanceActivator<IPC<string, string>>()

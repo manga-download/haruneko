@@ -33,7 +33,7 @@ export default class implements IPC<string, string> {
         }
     }
 
-    public async Send(channel: string, ...parameters: JSONArray): Promise<void> {
-        return new Promise<void>(resolve => chrome.runtime.sendMessage<Message, void>({ channel, parameters }, resolve));
+    public async Send<T extends void | JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
+        return new Promise<T>(resolve => chrome.runtime.sendMessage<Message, T>({ channel, parameters }, resolve));
     }
 }

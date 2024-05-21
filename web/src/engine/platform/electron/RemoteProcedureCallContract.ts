@@ -5,7 +5,7 @@ import { RemoteProcedureCallContract as Channels } from '../../../../../app/src/
 export default class RemoteProcedureCallContract implements IRemoteProcedureCallContract {
 
     constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
-        this.ipc.Listen(Channels.Web.LoadMediaContainerFromURL, this.LoadMediaContainerFromURL.bind(this))
+        this.ipc.Listen(Channels.Web.LoadMediaContainerFromURL, this.LoadMediaContainerFromURL.bind(this));
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {

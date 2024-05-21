@@ -49,7 +49,7 @@ export class RemoteBrowserWindowController {
         return show ? win.show() : win.hide();
     }
 
-    private async ExecuteScript<T>(windowID: number, script: string): Promise<T> {
+    private async ExecuteScript<T extends JSONElement>(windowID: number, script: string): Promise<T> {
         return this.FindWindow(windowID).webContents.executeJavaScript(script, true);
     }
 

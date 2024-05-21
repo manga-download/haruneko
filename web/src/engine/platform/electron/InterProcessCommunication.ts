@@ -6,7 +6,7 @@ export default class implements IPC<string, string> {
         globalThis.ipcRenderer.on(channel, (_, ...parameters: JSONArray) => callback(...parameters));
     }
 
-    public async Send(channel: string, ...parameters: JSONArray): Promise<void> {
+    public async Send<T extends void | JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
         return globalThis.ipcRenderer.invoke(channel, ...parameters);
     }
 }
