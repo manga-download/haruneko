@@ -52,6 +52,12 @@ async function OpenWindow() {
     if(!url) {
         win.showDevTools();
     }
+
+    win.on('close', () => {
+        rpc.Stop();
+        nw.App.closeAllWindows();
+        nw.App.quit();
+    });
 }
 
 OpenWindow();
