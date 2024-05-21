@@ -301,11 +301,11 @@ export class MediaTitleSelect extends FASTElement {
         }
     }
 
-    private BookmarksChanged = (function(this: MediaTitleSelect, sender: BookmarkPlugin) {
+    private BookmarksChanged = function(this: MediaTitleSelect, sender: BookmarkPlugin) {
         this.bookmark = this.Selected && sender.IsBookmarked(this.Selected);
-    }).bind(this);
+    }.bind(this);
 
-    private PastedClipboardUrlChanged = (async function(this: MediaTitleSelect, uri: URL) {
+    private PastedClipboardUrlChanged = async function(this: MediaTitleSelect, uri: URL) {
         try {
             this.pasting = true;
             for(const website of HakuNeko.PluginController.WebsitePlugins) {
@@ -326,7 +326,7 @@ export class MediaTitleSelect extends FASTElement {
         finally {
             this.pasting = false;
         }
-    }).bind(this);
+    }.bind(this);
 
     public async PasteClipboard(event: Event) {
         event.stopPropagation();

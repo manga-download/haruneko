@@ -260,11 +260,11 @@ export default class extends FetchProvider {
         }));
     }
 
-    public async FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
+    public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
         return this.FetchWindowPreloadScript(request, () => undefined, script, delay, timeout);
     }
 
-    public async FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
+    public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
         const start = Date.now();
         const win = await this.FetchWindow(request, timeout, preload);
         const elapsed = Date.now() - start;

@@ -1,6 +1,6 @@
 import { createServer, type Server, type IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
-import { CreateServer} from 'websocket-rpc/server';
+import { CreateServer } from 'websocket-rpc/server';
 import type { Contract } from './Contract';
 
 class AccessDeniedError extends Error {
@@ -32,9 +32,7 @@ export class RPCServer {
 
     private QueuePendingUpdateRPC(callback: () => Promise<void>) {
         clearTimeout(this.pendingUdpdateRPC);
-        console.log('Timer Cleared:', this.pendingUdpdateRPC);
         this.pendingUdpdateRPC = setTimeout(callback.bind(this), 2500);
-        console.log('Timer Queued:', this.pendingUdpdateRPC);
     }
 
     private Close(): Promise<void> {
@@ -43,12 +41,10 @@ export class RPCServer {
     }
 
     public Stop(): void {
-        console.log('Queue: Stop');
         this.QueuePendingUpdateRPC(this.Close.bind(this));
     }
 
     public async Listen(port: number, secret: string, allowedOrigins: RegExp[]) {
-        console.log('Queue: Listen');
         this.QueuePendingUpdateRPC(async () => {
             this.token = createHash('SHA256').update(secret).digest('hex').toUpperCase();
             this.allowedOrigins = allowedOrigins;
@@ -77,9 +73,7 @@ export class RPCServer {
                 //request.end(403);
                 throw new AccessDeniedError('Requests with missing or invalid token are not allowed!');
             }
-            console.log(`RPC Accepted <${request.method}>:`, request.url, request.headers);
         } catch(error) {
-            console.warn(`RPC Rejected <${request.method}>:`, request.url, error);
             this.DestroyConnection(request);
         }
     }
