@@ -23,11 +23,11 @@ export default class RemoteBrowserWindow {
         }
     }
 
-    private async OnBeforeNavigate(windowID: number): Promise<void> {
+    private async OnBeforeNavigate(windowID: number, url: string): Promise<void> {
         if(windowID === this.windowID) {
-            console.log('OnBeforeNavigate()', windowID);
+            console.log('OnBeforeNavigate()', windowID, url);
             // TODO: Get new url ...
-            this.BeforeNavigate.Value = new URL('about:blank');
+            this.BeforeNavigate.Value = new URL(url);
         }
     }
 
