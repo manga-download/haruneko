@@ -52,8 +52,8 @@ export namespace RemoteBrowserWindowController {
      * Send from the Main process and received in the Render process.
      */
     export enum Web {
-        OnDomReady = 'Browser::OnDomReady',
-        OnBeforeNavigate = 'Browser::OnBeforeNavigate',
+        OnDomReady = 'Browser::OnDomReady(windowID: number)',
+        OnBeforeNavigate = 'Browser::OnBeforeNavigate(windowID: number)',
     };
 
     /**
