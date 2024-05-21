@@ -10,7 +10,14 @@ export interface IPC<TChannelsOut extends string, TChannelsIn extends string> {
     Send<T extends void | JSONElement>(channel: TChannelsOut, ...parameters: JSONArray): Promise<T>;
 }
 
-export default new PlatformInstanceActivator<IPC<string, string>>()
-    .Configure(Runtime.NodeWebkit, () => new NodeWebkitIPC())
-    .Configure(Runtime.Electron, () => new ElectronIPC())
-    .Create();
+let instance: IPC<string, string>;
+
+export default function GetIPC() {
+    if(!instance) {
+        instance = new PlatformInstanceActivator<IPC<string, string>>()
+            .Configure(Runtime.NodeWebkit, () => new NodeWebkitIPC())
+            .Configure(Runtime.Electron, () => new ElectronIPC())
+            .Create();
+    }
+    return instance;
+}
