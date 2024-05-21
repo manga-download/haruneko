@@ -47,7 +47,7 @@ export namespace RemoteBrowserWindowController {
     export enum Web {
         /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
         OnDomReady = 'RemoteBrowserWindowController::OnDomReady',
-        /** Channel for IPC callback with signature: `(windowID: number, url: string) => Promise<void>` */
+        /** Channel for IPC callback with signature: `(windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean) => Promise<void>` */
         OnBeforeNavigate = 'RemoteBrowserWindowController::OnBeforeNavigate',
     };
 

@@ -17,16 +17,13 @@ export default class RemoteBrowserWindow {
 
     private async OnDomReady(windowID: number): Promise<void> {
         if(windowID === this.windowID) {
-            console.log('OnDomReady()', windowID);
             const html = await this.ExecuteScript<string>(`document.querySelector('html').innerHTML`);
             this.DOMReady.Value = new DOMParser().parseFromString(html, 'text/html');
         }
     }
 
-    private async OnBeforeNavigate(windowID: number, url: string): Promise<void> {
-        if(windowID === this.windowID) {
-            console.log('OnBeforeNavigate()', windowID, url);
-            // TODO: Get new url ...
+    private async OnBeforeNavigate(windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean): Promise<void> {
+        if(windowID === this.windowID && url.startsWith('http') && !isSameDocument) {
             this.BeforeNavigate.Value = new URL(url);
         }
     }
