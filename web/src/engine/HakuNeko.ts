@@ -15,6 +15,7 @@ import { CreateFetchProvider, SetupFetchProviderExports } from './platform/Fetch
 import { CreateRemoteProcedureCallManager } from './platform/RemoteProcedureCallManager';
 import { CreateRemoteProcedureCallContract } from './platform/RemoteProcedureCallContract';
 import type { IFrontendInfo } from '../frontend/IFrontend';
+import { Observable } from './Observable';
 
 export class HakuNeko {
 
@@ -25,6 +26,7 @@ export class HakuNeko {
     readonly #bookmarkPlugin: BookmarkPlugin;
     readonly #itemflagManager: ItemflagManager;
     readonly #downloadManager: DownloadManager;
+    readonly #pastedClipboardURL = new Observable<URL>(null);
 
     constructor() {
         this.#storageController = CreateStorageController();
@@ -75,5 +77,9 @@ export class HakuNeko {
 
     public get DownloadManager(): DownloadManager {
         return this.#downloadManager;
+    }
+
+    public get PastedClipboardURL(): Observable<URL> {
+        return this.#pastedClipboardURL;
     }
 }
