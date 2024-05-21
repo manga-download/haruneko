@@ -1,76 +1,72 @@
 // This file contains all channel definitions used by app(s) and web
 
-/**
- * Supported IPC Channels for interacting with the main application window.
- */
+/** Supported IPC Channels for interacting with the main application window. */
 export namespace ApplicationWindow {
 
-    /**
-     * Send from the Main process and received in the Render process.
-     */
+    /** Send from the Main process and received in the Render process. */
     export type Web = never;
 
-    /**
-     * Send from the Render process and received in the Main process.
-     */
+    /** Send from the Render process and received in the Main process. */
     export enum App {
-        ShowWindow = 'ApplicationWindow::ShowWindow()',
-        HideWindow = 'ApplicationWindow::HideWindow()',
-        Minimize = 'ApplicationWindow::Minimize()',
-        Maximize = 'ApplicationWindow::Maximize()',
-        Restore = 'ApplicationWindow::Restore()',
-        Close = 'ApplicationWindow::Close()',
-        OpenSplash = 'ApplicationWindow::OpenSplash(url: string)',
-        CloseSplash = 'ApplicationWindow::CloseSplash()',
+        /** Channel for IPC callback with signature: `() => Promise<void>` */
+        ShowWindow = 'ApplicationWindow::ShowWindow',
+        /** Channel for IPC callback with signature: `() => Promise<void>` */
+        HideWindow = 'ApplicationWindow::HideWindow',
+        /** Channel for IPC callback with signature: `() => Promise<void>` */
+        Minimize = 'ApplicationWindow::Minimize',
+        /** Channel for IPC callback with signature: `() => Promise<void>` */
+        Maximize = 'ApplicationWindow::Maximize',
+        /** Channel for IPC callback with signature: `() => Promise<void>` */
+        Restore = 'ApplicationWindow::Restore',
+        /** Channel for IPC callback with signature: `() => Promise<void>` */
+        Close = 'ApplicationWindow::Close',
+        /** Channel for IPC callback with signature: `(url: string) => Promise<void>` */
+        OpenSplash = 'ApplicationWindow::OpenSplash',
+        /** Channel for IPC callback with signature: `() => Promise<void>` */
+        CloseSplash = 'ApplicationWindow::CloseSplash',
     };
 }
 
-/**
- * ...
- */
+/** Supported IPC Channels for interacting with the fetch provider. */
 export namespace FetchProvider {
 
-    /**
-     * Send from the Main process and received/processsed in the Render process.
-     */
+    /** Send from the Main process and received/processsed in the Render process. */
     export type Web = never;
 
-    /**
-     * Send from the Render process and received/processsed in the Main process.
-     */
+    /** Send from the Render process and received/processsed in the Main process. */
     export enum App {
-        Initialize = 'FetchProvider::Initialize(fetchApiSupportedPrefix: string)',
+        /** Channel for IPC callback with signature: `(fetchApiSupportedPrefix: string) => Promise<void>` */
+        Initialize = 'FetchProvider::Initialize',
     };
 }
 
-/**
- * Supported IPC Channels for interacting with browser windows.
- */
+/** Supported IPC Channels for interacting with browser windows. */
 export namespace RemoteBrowserWindowController {
 
-    /**
-     * Send from the Main process and received in the Render process.
-     */
+    /** Send from the Main process and received in the Render process. */
     export enum Web {
-        OnDomReady = 'Browser::OnDomReady(windowID: number)',
-        OnBeforeNavigate = 'Browser::OnBeforeNavigate(windowID: number)',
+        /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
+        OnDomReady = 'Browser::OnDomReady',
+        /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
+        OnBeforeNavigate = 'Browser::OnBeforeNavigate',
     };
 
-    /**
-     * Send from the Render process and received in the Main process.
-     */
+    /** Send from the Render process and received in the Main process. */
     export enum App {
-        OpenWindow = 'Browser::OpenWindow(options: string)',
-        CloseWindow = 'Browser::CloseWindow(windowID: number)',
-        SetVisibility = 'Browser::SetVisibility(windowID: number, show: boolean)',
-        ExecuteScript = 'Browser::ExecuteScript(windowID: number, script: string)',
-        LoadURL = 'Browser::LoadURL(windowID: number, url: string, options: string)',
+        /** Channel for IPC callback with signature: `(options: string) => Promise<number>` */
+        OpenWindow = 'Browser::OpenWindow',
+        /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
+        CloseWindow = 'Browser::CloseWindow',
+        /** Channel for IPC callback with signature: `(windowID: number, show: boolean) => Promise<void>` */
+        SetVisibility = 'Browser::SetVisibility',
+        /** Channel for IPC callback with signature: `(windowID: number, script: string) => Promise<T>` */
+        ExecuteScript = 'Browser::ExecuteScript',
+        /** Channel for IPC callback with signature: `(windowID: number, url: string, options: string) => Promise<void>` */
+        LoadURL = 'Browser::LoadURL',
     };
 }
 
-/**
- * Supported IPC Channels for interacting with the RPC manager.
- */
+/** Supported IPC Channels for interacting with the RPC manager. */
 export namespace RemoteProcedureCallManager {
 
     /**
@@ -84,14 +80,14 @@ export namespace RemoteProcedureCallManager {
      * Send from the Content script and received/processed in the Background script.
      */
     export const enum App {
-        Stop = 'RemoteProcedureCallManager::Stop()',
-        Restart = 'RemoteProcedureCallManager::Restart(port: number, secret: string)',
+        /** Channel for IPC callback with signature: `() => Promise<void>` */
+        Stop = 'RemoteProcedureCallManager::Stop',
+        /** Channel for IPC callback with signature: `(port: number, secret: string) => Promise<void>` */
+        Restart = 'RemoteProcedureCallManager::Restart',
     };
 }
 
-/**
- * Supported IPC Channels for interacting with the RPC contract callbacks.
- */
+/** Supported IPC Channels for interacting with the RPC contract callbacks. */
 export namespace RemoteProcedureCallContract {
 
     /**
@@ -99,7 +95,8 @@ export namespace RemoteProcedureCallContract {
      * Send from the Background script and received/processed in the Content script.
      */
     export const enum Web {
-        LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL(url: string)',
+        /** Channel for IPC callback with signature: `(url: string) => Promise<void>` */
+        LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL',
     };
 
     /**
