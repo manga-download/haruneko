@@ -7,12 +7,12 @@ const config = {
         title: 'Samurai Scan'
     },
     container: {
-        url: 'https://samuraiscan.com/leer/star-martial-god-technique/',
-        id: JSON.stringify({ post: '126', slug: '/leer/star-martial-god-technique/' }),
-        title: 'Star Martial God Technique'
+        url: 'https://spanish.visorsmr.com/l/camino-celestial-del-maestro-marcial-estelar/',
+        id: JSON.stringify({ post: '39', slug: '/l/camino-celestial-del-maestro-marcial-estelar/' }),
+        title: 'Camino Celestial del Maestro Marcial Estelar'
     },
     child: {
-        id: '/leer/star-martial-god-technique/capitulo-1/',
+        id: '/l/camino-celestial-del-maestro-marcial-estelar/capitulo-1/',
         title: 'Capitulo 1',
     },
     entry: {
