@@ -1,14 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './Futabanet.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 @Common.MangaCSS(/^https:\/\/gaugau\.futabane(t|x)\.jp\/list\/work\/[^/]+$/, 'div.works__grid div.list__text div.mbOff h1')
 @Common.MangasMultiPageCSS('/list/works?page={page}', 'div.works__grid div.list__box h4 a')
-@SpeedBinb.PagesSinglePageAjax()
-@SpeedBinb.ImageAjax()
+
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -27,7 +27,15 @@ export default class extends DecoratableMangaScraper {
                 const title = chapter.querySelector('.episode__title').textContent.trim();
                 return new Chapter(this, manga, chapter.pathname, title ? [epnum, title].join(' - ') : epnum);
             });
-
     }
 
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        let pages: Page[] = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div.works_tateyomi__img img');
+        pages = pages?.map(page => new Page(this, chapter, page.Link, { useCommon: true }));
+        return pages?.length > 0 ? pages : await SpeedBinb.FetchPagesSinglePageAjax.call(this, chapter);
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        return page.Parameters?.useCommon ? Common.FetchImageAjax.call(this, page, priority, signal) : SpeedBinb.FetchImageAjax.call(this, page, priority, signal);
+    }
 }
