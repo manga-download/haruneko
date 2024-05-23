@@ -12,7 +12,7 @@ const config = {
         title: `换位关系`
     },
     child: {
-        id: '/manga-bm41941/1/88.html',
+        id: '/manga-bm41941/1/10.html',
         title: '10.傻瓜'
     },
     entry: {
