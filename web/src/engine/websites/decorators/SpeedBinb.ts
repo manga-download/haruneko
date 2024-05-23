@@ -413,7 +413,7 @@ async function fetchSBC(scraper: MangaScraper, uri: URL, configuration: Configur
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     switch (true) {
         case page.Link.href.endsWith('ptimg.json'):
             return await descramble_v016061(this, page, priority, signal, detectMimeType);
@@ -469,7 +469,7 @@ export function ImageAjax(detectMimeType = false) {
 
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal, detectMimeType);
+                return FetchImageAjax.call(this, page, priority, signal, detectMimeType);
             }
         };
     };
