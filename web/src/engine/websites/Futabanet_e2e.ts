@@ -13,11 +13,12 @@ const config: Config = {
     },
     child: {
         id: '/list/work/62591706776561c83f010000/episodes/1',
-        title: '第1話(1)'
+        title: '第1話',
+        timeout: 10000
     },
     entry: {
         index: 0,
-        size: 1_869_624,
+        size: 1_872_190,
         type: 'image/png'
     }
 };
