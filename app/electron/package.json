@@ -1,7 +1,7 @@
 {
-    "name": "hakuneko-app-electron",
-    "title": "HaruNeko",
-    "description": "Manga, Anime & Novel Downloader",
+    "name": "hakuneko-electron",
+    "title": "HakuNeko",
+    "description": "Manga, Anime & Novel Downloader (Electron based desktop client)",
     "type": "module",
     "main": "main.js",
     "url": "https://haruneko.pages.dev",

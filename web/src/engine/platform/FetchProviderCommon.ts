@@ -2,7 +2,7 @@ import protobuf from 'protobufjs';
 import { Exception, InternalError } from '../Error';
 import { EngineResourceKey as R } from '../../i18n/ILocale';
 
-export type ScriptInjection<T> = string | ((this: Window) => Promise<T>);
+export type ScriptInjection<T extends void | JSONElement> = string | ((this: Window) => Promise<T>);
 
 export abstract class FetchProvider {
 
@@ -163,7 +163,7 @@ export abstract class FetchProvider {
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    public abstract FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T>;
+    public abstract FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T>;
 
     /**
      * Open the given {@link request} in a new browser window and inject the given {@link script}.
@@ -173,5 +173,5 @@ export abstract class FetchProvider {
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    public abstract FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: string, delay?: number, timeout?: number): Promise<T>
+    public abstract FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: string, delay?: number, timeout?: number): Promise<T>
 }
