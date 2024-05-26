@@ -473,7 +473,6 @@ export { default as Nekomik } from './Nekomik';
 export { default as NeoxScan } from './NeoxScan';
 export { default as Neroxus } from './Neroxus';
 export { default as NetComics } from './NetComics';
-export { default as NetTruyen } from './NetTruyen';
 export { default as NeuManga } from './NeuManga';
 export { default as NewManhua } from './NewManhua';
 export { default as NewType } from './NewType';
