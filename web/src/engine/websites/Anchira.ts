@@ -72,7 +72,7 @@ export default class extends DecoratableMangaScraper {
         }
     }
 
-    private async GetMangasFromPage(page: number, provider: MangaPlugin, signal: AbortSignal) {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin, signal: AbortSignal) : Promise<Manga[]> {
         return this.mangasTaskPool.Add(async () => {
             const uri = new URL(`${this.apiUrl}library?page=${page}`);
             if (page == 1) uri.searchParams.delete('page');
