@@ -6,7 +6,10 @@ import * as FlatManga from './decorators/FlatManga';
 
 const chapterScript = `
     new Promise(async resolve => {
-        const uri = new URL('app/manga/controllers/cont.listChapter.php', window.location.origin);
+        const r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let randomEndpoint = '';
+        for (let o = 0; o < 25; o++) randomEndpoint += r.charAt(Math.floor(Math.random() * r.length));
+        const uri = new URL(randomEndpoint + '.lstc', window.location.origin);
         uri.searchParams.set('slug', dataL);
         const response = await fetch(uri);
         data = await response.text();
@@ -25,7 +28,10 @@ const chapterScript = `
 const pageScript = `
     new Promise(async resolve => {
         const chapId = document.querySelector('input#chapter').value;
-        const uri = new URL('app/manga/controllers/cont.listImg.php', window.location.origin);
+        const r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let randomEndpoint = '';
+        for (let o = 0; o < 30; o++) randomEndpoint += r.charAt(Math.floor(Math.random() * r.length));
+        const uri = new URL(randomEndpoint + '.iog', window.location.origin);
         uri.searchParams.set('cid', chapId);
         const response = await fetch(uri);
         const data = await response.text();
