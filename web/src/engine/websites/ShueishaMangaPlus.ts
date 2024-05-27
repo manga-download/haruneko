@@ -31,7 +31,7 @@ type Title = {
 
 type TitleDetailView = {
     title: Title
-    chapterListGroup: ChapterGroup
+    chapterListGroup: ChapterGroup[]
 }
 
 type ChapterGroup = {
@@ -82,7 +82,7 @@ export default class extends DecoratableMangaScraper {
         const titleId = url.match(/\/titles\/(\d+)/)[1];
         const uri = new URL('/api/title_detailV3', this.apiURL);
         uri.searchParams.set('title_id', titleId);
-        const data = await FetchProto<MangaPlusResponse>(new Request(uri.href), protoTypes, 'MangaPlus.Response');
+        const data = await FetchProto<MangaPlusResponse>(new Request(uri), protoTypes, 'MangaPlus.Response');
         const title = `${data.success.titleDetailView.title.name} ${this.GetLanguage(data.success.titleDetailView.title.language)}`;
         return new Manga(this, provider, titleId, title);
     }
@@ -101,12 +101,17 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL('/api/title_detailV3', this.apiURL);
         uri.searchParams.set('title_id', manga.Identifier);
-        const data = await FetchProto<MangaPlusResponse>(new Request(uri.href), protoTypes, 'MangaPlus.Response');
-        return [
-            ...data.success.titleDetailView.chapterListGroup.firstChapterList || [],
-            ...data.success.titleDetailView.chapterListGroup.midChapterList || [],
-            ...data.success.titleDetailView.chapterListGroup.lastChapterList || [],
-        ].map(chapter => new Chapter(this, manga, chapter.chapterId.toString(), chapter.subTitle || chapter.name));
+        const data = await FetchProto<MangaPlusResponse>(new Request(uri), protoTypes, 'MangaPlus.Response');
+        const chapters: Chapter[] = [];
+
+        for (const chapterListGroup of data.success.titleDetailView.chapterListGroup) {
+            chapters.push(...
+            [...chapterListGroup.firstChapterList || [],
+                ...chapterListGroup.midChapterList || [],
+                ...chapterListGroup.lastChapterList || [],
+            ].map(chapter => new Chapter(this, manga, chapter.chapterId.toString(), chapter.subTitle || chapter.name)));
+        }
+        return chapters;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -114,10 +119,10 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('chapter_id', chapter.Identifier);
         uri.searchParams.set('img_quality', 'super_high');
         uri.searchParams.set('split', 'yes');
-        const data = await FetchProto<MangaPlusResponse>(new Request(uri.href), protoTypes, 'MangaPlus.Response');
-        return data.success.mangaViewer.pages
+        const data = await FetchProto<MangaPlusResponse>(new Request(uri), protoTypes, 'MangaPlus.Response');
+        return data?.success.mangaViewer ? data.success.mangaViewer.pages
             .filter(page => page.mangaPage)
-            .map(image => new Page(this, chapter, new URL(image.mangaPage.imageUrl), { encryptionKey: image.mangaPage.encryptionKey }));
+            .map(image => new Page(this, chapter, new URL(image.mangaPage.imageUrl), { encryptionKey: image.mangaPage.encryptionKey })) : [];
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
