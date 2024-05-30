@@ -597,6 +597,7 @@ export { default as ScanVF } from './ScanVF';
 export { default as ScarManga } from './ScarManga';
 export { default as ScyllaScans } from './ScyllaScans';
 export { default as SectScans } from './SectScans';
+export { default as SeiManga } from './SeiManga';
 export { default as SeinagiAdultoFansub } from './SeinagiAdultoFansub';
 export { default as SeinagiFansubEN } from './SeinagiFansubEN';
 export { default as SeinagiFansubES } from './SeinagiFansubES';
