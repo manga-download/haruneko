@@ -1,7 +1,7 @@
 {
-    "name": "hakuneko-app-electron",
-    "title": "HaruNeko",
-    "description": "Manga, Anime & Novel Downloader",
+    "name": "hakuneko-electron",
+    "title": "HakuNeko",
+    "description": "Manga, Anime & Novel Downloader (Electron based desktop client)",
     "type": "module",
     "main": "main.js",
     "url": "https://haruneko.pages.dev",
@@ -16,11 +16,11 @@
     "devDependencies": {
         "@types/ws": "8.5.10",
         "extract-zip": "2.0.1",
-        "electron": "30.0.2",
+        "electron": "30.0.3",
         "plist": "3.1.0"
     },
     "scripts": {
-        "check:ts": "tsc  --noEmit --pretty",
+        "check:ts": "tsc --noEmit --pretty",
         "check": "npm run check:ts && eslint",
         "build": "node ./scripts/build-app.mjs && vite build",
         "bundle": "npm run build && node ./scripts/deploy-app.mjs",

@@ -66,7 +66,8 @@ describe('BookmarkConverter', () => {
             { sourceID: 'azoramanga', targetID: 'azoraworld' },
             { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
             { sourceID: 'bananascan', targetID: 'harmonyscan' },
-            { sourceID: 'blogtruyen', targetID: 'blogtruyenmoi'},
+            { sourceID: 'blogtruyen', targetID: 'blogtruyenmoi' },
+            { sourceID: 'cocomanhua', targetID: 'colamanga' },
             { sourceID: 'comicbushi', targetID: 'comicgrowl' },
             { sourceID: 'comicwalker', targetID: 'kadocomi' },
             { sourceID: 'crazyscans', targetID: 'mangacultivator' },
@@ -74,6 +75,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'evascans', targetID: 'manwe' },
             { sourceID: 'firstkiss', targetID: 'likemanga' },
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
+            { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
             { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
             { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
@@ -89,6 +91,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'mangaproz', targetID: 'mangapro' },
             { sourceID: 'mangaraw', targetID: 'mangagecko' },
             { sourceID: 'manhuaes', targetID: 'manhuaaz' },
+            { sourceID: 'manhuascan', targetID: 'kaliscan' },
             { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
             { sourceID: 'muctau', targetID: 'bibimanga' },
             { sourceID: 'nitroscans', targetID: 'nitromanga' },
@@ -107,6 +110,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'siyahmelek', targetID: 'grimelek' },
             { sourceID: 'smangavfws', targetID: 'smangavf' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
+            { sourceID: 'truemanga', targetID: 'mangamonk' },
             { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
             { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
             { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },

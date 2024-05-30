@@ -12,8 +12,10 @@ import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
 import { CreateBloatGuard } from './platform/BloatGuard';
 import { CreateFetchProvider, SetupFetchProviderExports } from './platform/FetchProvider';
-import { CreatePlatformIPC } from './platform/InterProcessCommunication';
+import { CreateRemoteProcedureCallManager } from './platform/RemoteProcedureCallManager';
+import { CreateRemoteProcedureCallContract } from './platform/RemoteProcedureCallContract';
 import type { IFrontendInfo } from '../frontend/IFrontend';
+import { Observable } from './Observable';
 
 export class HakuNeko {
 
@@ -24,6 +26,7 @@ export class HakuNeko {
     readonly #bookmarkPlugin: BookmarkPlugin;
     readonly #itemflagManager: ItemflagManager;
     readonly #downloadManager: DownloadManager;
+    readonly #pastedClipboardURL = new Observable<URL>(null);
 
     constructor() {
         this.#storageController = CreateStorageController();
@@ -40,7 +43,8 @@ export class HakuNeko {
         CreateBloatGuard().Initialize();
         await this.FeatureFlags.Initialize();
         await InitGlobalSettings(this.SettingsManager, frontends);
-        /*const ipc = */CreatePlatformIPC(this.#settingsManager);
+        CreateRemoteProcedureCallManager(this.#settingsManager);
+        CreateRemoteProcedureCallContract();
         // Preload bookmarks flags to show content to view
         const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;
         if (checkNewContent) this.BookmarkPlugin.RefreshAllFlags();
@@ -73,5 +77,9 @@ export class HakuNeko {
 
     public get DownloadManager(): DownloadManager {
         return this.#downloadManager;
+    }
+
+    public get PastedClipboardURL(): Observable<URL> {
+        return this.#pastedClipboardURL;
     }
 }
