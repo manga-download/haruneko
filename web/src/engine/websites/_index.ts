@@ -592,6 +592,7 @@ export { default as ScanFR } from './ScanFR';
 export { default as ScansMangasme } from './ScansMangasme';
 export { default as ScantradUnion } from './ScantradUnion';
 export { default as ScanVF } from './ScanVF';
+export { default as ScanVFOrg } from './ScanVFOrg';
 export { default as ScarManga } from './ScarManga';
 export { default as ScyllaScans } from './ScyllaScans';
 export { default as SectScans } from './SectScans';
