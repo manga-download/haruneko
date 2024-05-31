@@ -21,7 +21,13 @@ type JSONMangas = {
     }
 }
 
-@Common.PagesSinglePageCSS('main > div.maxWidth.container img')
+const pageScript = `
+    new Promise( resolve => {
+        resolve(JSON.parse(__NEXT_DATA__.props.pageProps.chapter.pages).map( page => 'https://f005.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId='+page));
+    });
+`;
+
+@Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
