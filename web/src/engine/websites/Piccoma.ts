@@ -215,7 +215,7 @@ export function script(this: Window) {
 
         const pdata = (globalThis._pdata_ ?? globalThis.__NEXT_DATA__.props.pageProps.initialState.viewer.pData) as PData;
 
-        const images: ImageLinks = (pdata.img || pdata.contents)
+        const images: ImageLinks = (pdata.img ?? pdata.contents)
             .filter(img => img.path)
             .map(img => {
                 const uri = new URL(img.path, window.location.origin);
