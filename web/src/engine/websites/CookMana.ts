@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './AdonisFansub.webp';
+import icon from './CookMana.webp';
 import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
@@ -26,8 +26,8 @@ type APIPage = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly dnsSrc = 'https://www.11angle.net/';
-    private readonly dnsSrc2 = 'https://www.pl3040.com/';
+    private readonly cdn1 = 'https://www.11angle.net/';
+    private readonly cdn2 = 'https://www.pl3040.com/';
 
     public constructor() {
         super('cookmana', 'CookMana', 'https://cookmana.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Aggregator);
@@ -81,12 +81,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     private ComputeImageUrl(folder: string, url: string, parentId: string, id: string, folder2: string = ""): URL {
-        let ret = folder ? `${this.dnsSrc}/image_pst-123/${folder}/${parentId}/${url}` : `${this.dnsSrc}/toon_pst-123/${url}`;
         if (folder2 != '') {
             url = url.split('/').pop();
             folder2 = folder2.split('/').shift();
-            ret = `${this.dnsSrc2}/kr/${folder2}/${parentId}/${id}/${url}`;
+            return new URL(`${this.cdn2}/kr/${folder2}/${parentId}/${id}/${url}`);
+        } else {
+            return folder ? new URL(`${this.cdn1}/image_pst-123/${folder}/${parentId}/${url}`) : new URL(`${this.cdn1}/toon_pst-123/${url}`);
         }
-        return new URL(ret);
     }
 }
