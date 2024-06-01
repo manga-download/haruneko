@@ -5,7 +5,9 @@
     "vitepress": "^1.2.2"
   },
   "scripts": {
-    "serve": "vitepress dev",
-    "build": "vitepress build"
+    "check": "",
+    "build": "vitepress build",
+    "test": "",
+    "serve": "vitepress dev"
   }
 }
