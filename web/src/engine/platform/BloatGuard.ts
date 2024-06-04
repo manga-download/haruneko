@@ -2,6 +2,7 @@ import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitBloatGuard from './nw/BloatGuard';
 import ElectronBloatGuard from './electron/BloatGuard';
+import GetIPC from './InterProcessCommunication';
 
 // Sort: https://www.online-utility.org/text/sort.jsp
 const patterns = [
@@ -48,12 +49,12 @@ const patterns = [
 ];
 
 export interface IBloatGuard {
-    Initialize(): void;
+    Initialize(): Promise<void>;
 }
 
 export function CreateBloatGuard(): IBloatGuard {
     return new PlatformInstanceActivator<IBloatGuard>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitBloatGuard(patterns))
-        .Configure(Runtime.Electron, () => new ElectronBloatGuard(patterns))
+        .Configure(Runtime.Electron, () => new ElectronBloatGuard(GetIPC(), patterns))
         .Create();
 }

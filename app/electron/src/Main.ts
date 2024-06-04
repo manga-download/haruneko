@@ -77,6 +77,7 @@ async function OpenWindow() {
     new RemoteProcedureCallManager(rpc, ipc);
     new FetchProvider(ipc, win.webContents);
     new RemoteBrowserWindowController(ipc);
+    new BloatGuard(ipc);
     win.RegisterChannels(ipc);
     await win.loadURL(await GetArgumentURL() ?? manifest.url, {
         userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),

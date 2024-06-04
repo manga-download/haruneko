@@ -10,7 +10,7 @@ export default class implements IBloatGuard {
         };
     }
 
-    public Initialize() {
+    public async Initialize(): Promise<void> {
         // NOTE: parameter extraInfoSpec:
         //       'blocking'       => sync request required for header modification
         //       'requestHeaders' => allow change request headers?
