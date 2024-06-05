@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaGecko.webp';
+import icon from './MangaGeko.webp';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
@@ -10,7 +10,7 @@ import { FetchCSS } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangagecko', `MangaGecko`, 'https://www.mgeko.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
+        super('mangageko', `MangaGeko`, 'https://www.mgeko.cc', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`${manga.Identifier}all-chapters/`, this.URI).href);
+        const request = new Request(new URL(`${manga.Identifier}all-chapters/`, this.URI));
         const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.chapter-list li a');
         return data.map(element => {
             const title = element.querySelector('strong.chapter-title').textContent;
