@@ -11,7 +11,6 @@ class TestFixture {
     } as unknown as IPC<never, never>;
 
     private readonly mockWebContents = {
-        getURL: vi.fn(),
     } as unknown as WebContents;
 
     public CreatTestee(): BloatGuard {
