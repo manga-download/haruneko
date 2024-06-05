@@ -106,7 +106,7 @@ export namespace RemoteProcedureCallContract {
     export type App = never;
 }
 
-export namespace BloadGuard {
+export namespace BloatGuard {
 
     /**
      * Send from the Main process and received/processed in the Render process.

@@ -1,6 +1,6 @@
 import type { IBloatGuard } from '../BloatGuard';
 import type { IPC } from '../InterProcessCommunication';
-import { BloadGuard as Channels } from '../../../../../app/src/ipc/Channels';
+import { BloatGuard as Channels } from '../../../../../app/src/ipc/Channels';
 
 export default class implements IBloatGuard {
 
