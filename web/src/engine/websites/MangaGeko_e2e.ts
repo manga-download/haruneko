@@ -3,13 +3,13 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangagecko',
-        title: 'MangaGecko'
+        id: 'mangageko',
+        title: 'MangaGeko'
     },
     container: {
-        url: 'https://www.mgeko.com/manga/martial-peak-mg1/',
+        url: 'https://www.mgeko.cc/manga/martial-peak-mg1/',
         id: '/manga/martial-peak-mg1/',
-        title: 'Martial Peak [All Chapters]'
+        title: 'Martial Peak'
     },
     child: {
         id: '/reader/en/martial-peak-chapter-3616-eng-li/',
