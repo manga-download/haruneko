@@ -119,7 +119,7 @@ export namespace BloadGuard {
      * Send from the Content script and received/procesed in the Background script.
      */
     export const enum App {
-        /** Channel for ...: `(patterns: string[]) => Promise<void>` */
+        /** Channel for IPC callback with signature: `(patterns: string[]) => Promise<void>` */
         Initialize = 'BloadGuard::Initialize',
     }
 }
