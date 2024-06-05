@@ -16,7 +16,7 @@ type APIChapter = {
 
 type APIPage = {
     folder: string,
-    folder2: string,
+    folder2: string | null,
     folder3: string,
     id: string,
     parentId: string,
@@ -54,9 +54,10 @@ export default class extends DecoratableMangaScraper {
         }
         return mangaList;
     }
+
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const data = await FetchWindowScript<APIManga[]>(new Request(new URL(`/lastest/${page}/0`, this.URI)), 'lastestList');
-        return data ? data.map(item => new Manga(this, provider, item.id, item.title.trim())) : [];
+        return data?.map(item => new Manga(this, provider, item.id, item.title.trim())) ?? [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -71,22 +72,27 @@ export default class extends DecoratableMangaScraper {
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const url = new URL(`/episode/${manga.Identifier}/${page}/1`, this.URI);
         const data = await FetchWindowScript<APIChapter[]>(new Request(url), 'episodeList');
-        return data ? data.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim())) : [];
+        return data?.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim())) ?? [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const url = new URL(`/detail/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
-        const { urls, folder, parentId, folder2, id } = await FetchWindowScript<APIPage>(new Request(url), 'toonsDetail');
-        return urls ? urls.split(",").map(item => new Page(this, chapter, this.ComputeImageUrl(folder, item, parentId, id, folder2))) : [];
+        const data = await FetchWindowScript<APIPage>(new Request(url), 'toonsDetail');
+        return this.ComputeImagesUrl(data)?.map(page => new Page(this, chapter, page)) ?? [];
     }
 
-    private ComputeImageUrl(folder: string, url: string, parentId: string, id: string, folder2: string = ""): URL {
-        if (folder2 != '') {
-            url = url.split('/').pop();
-            folder2 = folder2.split('/').shift();
-            return new URL(`${this.cdn2}/kr/${folder2}/${parentId}/${id}/${url}`);
-        } else {
-            return folder ? new URL(`${this.cdn1}/image_pst-123/${folder}/${parentId}/${url}`) : new URL(`${this.cdn1}/toon_pst-123/${url}`);
+    private ComputeImagesUrl(data: APIPage): URL[] {
+        const urls = data.urls?.split(',');
+        if (data.folder2 != '') {
+            data.folder2 = data.folder2.split('/').shift();
         }
+        return urls?.map(page => {
+            if (data.folder2 != '') {
+                page = page.split('/').pop();
+                return new URL(`${this.cdn2}/kr/${data.folder2}/${data.parentId}/${data.id}/${page}`);
+            } else {
+                return data.folder ? new URL(`${this.cdn1}/image_pst-123/${data.folder}/${data.parentId}/${page}`) : new URL(`${this.cdn1}/toon_pst-123/${page}`);
+            }
+        }) ?? [];
     }
 }
