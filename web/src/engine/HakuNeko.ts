@@ -40,7 +40,7 @@ export class HakuNeko {
     }
 
     public async Initialze(frontends: IFrontendInfo[]): Promise<void> {
-        CreateBloatGuard().Initialize();
+        await CreateBloatGuard().Initialize();
         await this.FeatureFlags.Initialize();
         await InitGlobalSettings(this.SettingsManager, frontends);
         CreateRemoteProcedureCallManager(this.#settingsManager);
