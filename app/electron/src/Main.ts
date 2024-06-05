@@ -6,6 +6,7 @@ import { IPC } from './ipc/InterProcessCommunication';
 import { ApplicationWindow } from './ipc/ApplicationWindow';
 import { FetchProvider } from './ipc/FetchProvider';
 import { InitializeMenu } from './Menu';
+import { BloatGuard } from './ipc/BloatGuard';
 import { RemoteBrowserWindowController } from './ipc/RemoteBrowserWindow';
 import { RPCServer } from '../../src/rpc/Server';
 import { RemoteProcedureCallManager } from './ipc/RemoteProcedureCallManager';
@@ -77,7 +78,7 @@ async function OpenWindow() {
     new RemoteProcedureCallManager(rpc, ipc);
     new FetchProvider(ipc, win.webContents);
     new RemoteBrowserWindowController(ipc);
-    new BloatGuard(ipc);
+    new BloatGuard(ipc, win.webContents);
     win.RegisterChannels(ipc);
     await win.loadURL(await GetArgumentURL() ?? manifest.url, {
         userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),
