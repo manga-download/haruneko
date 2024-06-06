@@ -102,16 +102,18 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL('/api/title_detailV3', this.apiURL);
         uri.searchParams.set('title_id', manga.Identifier);
         const data = await FetchProto<MangaPlusResponse>(new Request(uri), protoTypes, 'MangaPlus.Response');
-        const chapters: Chapter[] = [];
 
-        for (const chapterListGroup of data.success.titleDetailView.chapterListGroup) {
-            chapters.push(...
-            [...chapterListGroup.firstChapterList || [],
-                ...chapterListGroup.midChapterList || [],
-                ...chapterListGroup.lastChapterList || [],
-            ].map(chapter => new Chapter(this, manga, chapter.chapterId.toString(), chapter.subTitle || chapter.name)));
-        }
-        return chapters;
+        const chaptersList : Chapter[] = data.success.titleDetailView.chapterListGroup.reduce((accumulator: Chapter[], entry) => {
+            const chapters = [...entry.firstChapterList || [],
+                ...entry.midChapterList || [],
+                ...entry.lastChapterList || [],
+            ].map(chapter => new Chapter(this, manga, chapter.chapterId.toString(), chapter.subTitle || chapter.name));
+            accumulator.push(...chapters);
+            return accumulator;
+        }, []);
+
+        return chaptersList;
+
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
