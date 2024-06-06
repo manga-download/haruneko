@@ -62,10 +62,10 @@ export default class extends DecoratableMangaScraper {
             const genres = [ 1, 2, 3, 4, 5, 6, 7, 9, 10 ];
             const mangaList: Manga[] = [];
             for(const genre of genres) {
-                const result = await this.getMangasFromPage(genre, 1, provider, cancellator.signal);
+                const result = await this.GetMangasFromPage(genre, 1, provider, cancellator.signal);
                 mangaList.push(...result.mangas);
                 const promises = Array(result.pages - 1).fill(0).map(async (_, index) => {
-                    const { mangas } = await this.getMangasFromPage(genre, index + 2, provider, cancellator.signal);
+                    const { mangas } = await this.GetMangasFromPage(genre, index + 2, provider, cancellator.signal);
                     mangaList.push(...mangas);
                 });
                 await Promise.all(promises);
@@ -77,7 +77,7 @@ export default class extends DecoratableMangaScraper {
         }
     }
 
-    private async getMangasFromPage(genre: number, page: number, provider: MangaPlugin, signal: AbortSignal) {
+    private async GetMangasFromPage(genre: number, page: number, provider: MangaPlugin, signal: AbortSignal) {
         return this.mangasTaskPool.Add(async () => {
             const uri = new URL('/web/next_page/list', this.URI);
             uri.searchParams.set('list_type', 'G');
@@ -93,18 +93,18 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         return [
-            ... await this.fetchEpisodes(manga),
-            ... await this.fetchVolumes(manga),
+            ... await this.FetchEpisodes(manga),
+            ... await this.FetchVolumes(manga),
         ].sort((self, other) => self.Title.localeCompare(other.Title));
     }
 
-    private async fetchEpisodes(manga: Manga): Promise<Chapter[]> {
+    private async FetchEpisodes(manga: Manga): Promise<Chapter[]> {
         const request = new Request(`${this.URI.origin}/web/product/${manga.Identifier}/episodes?etype=E`);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.PCM-epList li a[data-episode_id]');
         return data.map(element => new Chapter(this, manga, element.dataset.episode_id, element.querySelector('div.PCM-epList_title h2').textContent.trim()));
     }
 
-    private async fetchVolumes(manga: Manga): Promise<Chapter[]> {
+    private async FetchVolumes(manga: Manga): Promise<Chapter[]> {
         const request = new Request(`${this.URI.origin}/web/product/${manga.Identifier}/episodes?etype=V`);
         const data = await FetchCSS<HTMLUListElement>(request, 'ul.PCM-volList li');
         return data.map(element => {
@@ -145,7 +145,8 @@ export default class extends DecoratableMangaScraper {
 
 type PData = {
     isScrambled: boolean,
-    img: PDataImage[],
+    img?: PDataImage[],
+    contents?: PDataImage[]
 };
 
 type PDataImage = {
@@ -214,7 +215,7 @@ export function script(this: Window) {
 
         const pdata = (globalThis._pdata_ ?? globalThis.__NEXT_DATA__.props.pageProps.initialState.viewer.pData) as PData;
 
-        const images: ImageLinks = pdata.img
+        const images: ImageLinks = (pdata.img ?? pdata.contents)
             .filter(img => img.path)
             .map(img => {
                 const uri = new URL(img.path, window.location.origin);

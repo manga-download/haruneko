@@ -1,3 +1,4 @@
+﻿import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -15,11 +16,11 @@ const config: Config = {
         title: 'chap 1'
     },
     entry: {
-        index: 5,
+        index: 6,
         size: 267_787,
         type: 'image/jpeg'
     }
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

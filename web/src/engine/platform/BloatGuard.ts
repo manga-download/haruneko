@@ -2,11 +2,25 @@ import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitBloatGuard from './nw/BloatGuard';
 import ElectronBloatGuard from './electron/BloatGuard';
+import GetIPC from './InterProcessCommunication';
+
+export interface IBloatGuard {
+    Initialize(): Promise<void>;
+}
+
+export function CreateBloatGuard(): IBloatGuard {
+    return new PlatformInstanceActivator<IBloatGuard>()
+        .Configure(Runtime.NodeWebkit, () => new NodeWebkitBloatGuard(patterns))
+        .Configure(Runtime.Electron, () => new ElectronBloatGuard(GetIPC(), patterns))
+        .Create();
+}
 
 // Sort: https://www.online-utility.org/text/sort.jsp
 const patterns = [
     '*://*.adskeeper.co.uk/*',
+    '*://*.adskeeper.com/*',
     '*://*.arc.io/*',
+    '*://*.a-ads.com/*',
     '*://*.bidgear.com/*',
     '*://*.chatango.com/*',
     '*://*.clokemidriff.com/*',
@@ -20,10 +34,12 @@ const patterns = [
     '*://*.outbrainimg.com/*',
     '*://*.papayads.net/*',
     '*://*.prplads.com/*',
+    '*://*.pubfuture-ad.com/*',
     '*://*.purpleads.io/*',
     '*://*.sentry.io/*',
     '*://*.sharethis.com/*',
-    '*://*.twitch.tv/*', // prevent test timeout on seinagi & pzykosis666hfansub
+    '*://*.topcreativeformat.com/*',
+    '*://*.twitch.tv/*',
     '*://*.yandex.ru/*.js',
     '*://*/**/devtools-detect*',
     '*://*/**/devtools-detector*',
@@ -39,16 +55,6 @@ const patterns = [
     '*://goomaphy.com/*',
     '*://owewary.com/*',
     '*://pickupfaxmultitude.com/*',
+    '*://t7cp4fldl.com/*',
     '*://tumultmarten.com/*',
 ];
-
-export interface IBloatGuard {
-    Initialize(): void;
-}
-
-export function CreateBloadGuard(): IBloatGuard {
-    return new PlatformInstanceActivator<IBloatGuard>()
-        .Configure(Runtime.NodeWebkit, () => new NodeWebkitBloatGuard(patterns))
-        .Configure(Runtime.Electron, () => new ElectronBloatGuard(patterns))
-        .Create();
-}

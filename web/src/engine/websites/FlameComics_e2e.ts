@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -7,7 +8,7 @@ const config: Config = {
         timeout: 30000
     },
     container: {
-        url: 'https://flamecomics.com/series/solo-necromancy/',
+        url: 'https://flamecomics.me/series/solo-necromancy/',
         id: '/series/solo-necromancy/',
         title: 'Solo Necromancy'
     },
@@ -23,4 +24,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

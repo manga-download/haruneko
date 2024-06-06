@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +7,7 @@ const config = {
         title: 'Monarcamanga'
     },
     container: {
-        url: 'https://monarcamanga.com/manga/trabajo-de-nueve-a-cinco-en-el-mundo-del-cultivo-inmortal/',
+        url: 'https://visormonarca.com/manga/trabajo-de-nueve-a-cinco-en-el-mundo-del-cultivo-inmortal/',
         id: JSON.stringify({ post: '2758', slug: '/manga/trabajo-de-nueve-a-cinco-en-el-mundo-del-cultivo-inmortal/' }),
         title: 'Trabajo de nueve a cinco en el mundo del cultivo inmortal'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

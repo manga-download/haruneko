@@ -1,6 +1,6 @@
 import { type IResource, EngineResourceKey as R } from '../i18n/ILocale';
 import { type StorageController, Store } from './StorageController';
-import { Event } from './Event';
+import { Observable } from './Observable';
 import { Scope } from './SettingsGlobal';
 import { Exception } from './Error';
 
@@ -18,17 +18,14 @@ function Decrypt(encrypted: string) {
 
 export type IValue = string | boolean | number | FileSystemDirectoryHandle;
 
-class Setting<T extends IValue> {
+class Setting<T extends IValue> extends Observable<T> {
 
-    private value: T;
     private readonly initial: T;
 
     constructor(private readonly id: string, private readonly label: keyof IResource, private readonly description: keyof IResource, initial: T) {
-        this.value = initial;
+        super(initial);
         this.initial = initial;
     }
-
-    public readonly ValueChanged: Event<typeof this, T> = new Event<typeof this, T>();
 
     public get ID(): string {
         return this.id;
@@ -42,30 +39,22 @@ class Setting<T extends IValue> {
         return this.description;
     }
 
-    public get Value(): T {
-        return this.value;
-    }
-
-    /**
-     * Assign a new value and also dispatch the {@link ValueChanged} event to notify all subscribers.
-     */
-    public set Value(value: T) {
-        if(this.value !== value) {
-            this.value = value;
-            this.ValueChanged.Dispatch(this, this.Value);
-        }
-    }
-
     public get Default(): T {
         return this.initial;
     }
 
-    public fromRaw(value: T) {
-        this.value = value;
+    /**
+     * Decode and assign the {@link Value} from a raw/encoded format.
+     */
+    public Deserialize(serialized: IValue) {
+        this.Value = serialized as T;
     }
 
-    public toRaw(): T {
-        return this.value;
+    /**
+     * Get the {@link Value} in a raw/encoded format suitable for storage.
+     */
+    public Serialize(): IValue {
+        return this.Value;
     }
 }
 
@@ -81,15 +70,15 @@ export class Text extends Setting<string> {
 export class Secret extends Setting<string> {
 
     constructor(id: string, label: keyof IResource, description: keyof IResource, initial: string) {
-        super(id, label, description, Encrypt(initial));
+        super(id, label, description, initial);
     }
 
-    public get Value(): string {
-        return Decrypt(super.Value);
+    public override Deserialize(serialized: string): void {
+        super.Value = Decrypt(serialized);
     }
 
-    public set Value(value: string) {
-        super.Value = Encrypt(value);
+    public override Serialize(): string {
+        return Encrypt(super.Value);
     }
 }
 
@@ -109,12 +98,16 @@ export class Choice extends Setting<string> {
         this.options = options;
     }
 
+    private NormalizeValue(value: string) {
+        return this.options.some(option => option.key === value) ? value : super.Default;
+    }
+
     public get Value(): string {
-        return this.options.some(option => option.key === super.Value) ? super.Value : super.Default;
+        return this.NormalizeValue(super.Value);
     }
 
     public set Value(value: string) {
-        super.Value = value;
+        super.Value = this.NormalizeValue(value);
     }
 
     private readonly options: IOption[];
@@ -131,14 +124,16 @@ export class Numeric extends Setting<number> {
         this.max = max;
     }
 
+    private NormalizeValue(value: number) {
+        return Math.min(this.Max, Math.max(value, this.Min));
+    }
+
     public get Value(): number {
-        // NOTE: Get the capped value considering min/max range
-        return Math.min(this.Max, Math.max(super.Value, this.Min));
+        return this.NormalizeValue(super.Value);
     }
 
     public set Value(value: number) {
-        // NOTE: Set the 'raw' value that may be outside the range of min/max
-        super.Value = value;
+        super.Value = this.NormalizeValue(value);
     }
 
     private min: number;
@@ -166,16 +161,13 @@ class Settings implements Iterable<ISetting> {
     constructor(private readonly scope: string, private readonly storage: StorageController) {
     }
 
-    public readonly ValueChanged: Event<ISetting, IValue> = new Event<ISetting, IValue>();
-
     /**
      * Notify subscribers and store the current values of all settings to the persistent storage.
      */
-    private async OnValueChangedCallback(sender: ISetting, args: IValue) {
-        this.ValueChanged.Dispatch(sender, args);
+    private async SaveAllSettings() {
         const data: Record<string, IValue> = {};
         for(const key in this.settings) {
-            data[key] = this.settings[key].toRaw();
+            data[key] = this.settings[key].Serialize();
         }
         await this.storage.SavePersistent(data, Store.Settings, this.scope);
     }
@@ -188,8 +180,10 @@ class Settings implements Iterable<ISetting> {
         const data = await this.storage.LoadPersistent<Record<string, IValue>>(Store.Settings, this.scope);
         for(const setting of settings) {
             if(!this.settings[setting.ID]) {
-                setting.fromRaw(data && data[setting.ID] ? data[setting.ID] : setting.Value);
-                setting.ValueChanged.Subscribe(this.OnValueChangedCallback.bind(this));
+                if(data && data[setting.ID]) {
+                    setting.Deserialize(data[setting.ID]);
+                }
+                setting.Subscribe(this.SaveAllSettings.bind(this));
                 this.settings[setting.ID] = setting;
             }
         }

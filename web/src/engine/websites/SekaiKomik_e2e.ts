@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -6,7 +7,7 @@ const config: Config = {
         title: 'SekaiKomik'
     },
     container: {
-        url: 'https://sekaikomik.bio/manga/circles/',
+        url: 'https://sekaikomik.guru/manga/circles/',
         id: '/manga/circles/',
         title: 'Circles'
     },
@@ -23,4 +24,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

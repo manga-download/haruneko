@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,12 +7,12 @@ const config = {
         title: 'NightScans'
     },
     container: {
-        url: 'https://nightscans.net/series/all-football-talents-are-mine/',
-        id: '/series/all-football-talents-are-mine/',
+        url: 'https://night-scans.net/series/2825750948-all-football-talents-are-mine/',
+        id: '/series/2825750948-all-football-talents-are-mine/',
         title: 'All Football Talents Are Mine'
     },
     child: {
-        id: '/all-football-talents-are-mine-chapter-20/',
+        id: '/5002592384-all-football-talents-are-mine-chapter-20/',
         title: 'Chapter 20'
     },
     entry: {
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

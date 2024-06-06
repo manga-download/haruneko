@@ -1,9 +1,12 @@
-import protobuf from 'protobufjs';
-import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
+import { Exception } from '../../Error';
+import type { FeatureFlags } from '../../FeatureFlags';
 import { EngineResourceKey as R } from '../../../i18n/ILocale';
-import type { IFetchProvider, ScriptInjection } from '../FetchProvider';
-import type { JSONObject } from '../../../../../node_modules/websocket-rpc/dist/types';
-import { Exception, InternalError } from '../../Error';
+import type { IPC } from '../InterProcessCommunication';
+import RemoteBrowserWindow from './RemoteBrowserWindow';
+import { FetchProvider, type ScriptInjection } from '../FetchProviderCommon';
+import { FetchRedirection } from '../AntiScrapingDetection';
+import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
+import { FetchProvider as Channels } from '../../../../../app/src/ipc/Channels';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -36,21 +39,13 @@ class FetchRequest extends Request {
     }
 }
 
-export default class implements IFetchProvider {
+export default class extends FetchProvider {
 
-    public get IsVerboseModeEnabled() {
-        return window.localStorage.getItem('hakuneko-fetchwindow-verbose') === 'true';
+    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>, private readonly featureFlags: FeatureFlags) {
+        super();
     }
 
-    public set IsVerboseModeEnabled(value: boolean) {
-        window.localStorage.setItem('hakuneko-fetchwindow-verbose', value.toString());
-    }
-
-    private async Wait(delay: number) {
-        return new Promise(resolve => setTimeout(resolve, delay));
-    }
-
-    Initialize(): void {
+    public Initialize(): void {
 
         // Abuse the global Request type to check if system is already initialized
         if(globalThis.Request === FetchRequest) {
@@ -60,160 +55,86 @@ export default class implements IFetchProvider {
         // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
         globalThis.Request = FetchRequest;
 
-        globalThis.ipcRenderer.invoke('FetchProvider::Initialize', fetchApiSupportedPrefix);
+        this.ipc.Send(Channels.App.Initialize, fetchApiSupportedPrefix);
     }
 
-    Fetch(request: Request): Promise<Response> {
+    async Fetch(request: Request): Promise<Response> {
         console.log('Platform::Electron::FetchProvider::Fetch()', '=>', request);
         return fetch(request);
     }
 
-    public async FetchHTML(request: Request): Promise<Document> {
-        const mime = 'text/html';
-        const charsetPattern = /charset=([\w-]+)/;
-
-        const response = await this.Fetch(request);
-        const data = await response.arrayBuffer();
-        const dom = new DOMParser().parseFromString(new TextDecoder().decode(data), mime);
-
-        const charset = dom.head?.querySelector<HTMLMetaElement>('meta[charset]')?.getAttribute('charset')
-            ?? dom.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
-            ?? response.headers?.get('Content-Type')?.match(charsetPattern)?.at(1)
-            ?? 'UTF-8';
-
-        return /UTF-?8/i.test(charset) ? dom : new DOMParser().parseFromString(new TextDecoder(charset).decode(data), mime);
-    }
-
-    public async FetchJSON<TResult>(request: Request): Promise<TResult> {
-        const response = await this.Fetch(request);
-        return response.json();
-    }
-
-    public async FetchCSS<T extends HTMLElement>(request: Request, query: string): Promise<T[]> {
-        const dom = await this.FetchHTML(request);
-        return [...dom.querySelectorAll(query)] as T[];
-    }
-
-    public async FetchGraphQL<TResult>(request: Request, operationName: string, query: string, variables: JSONObject): Promise<TResult> {
-
-        const graphQLRequest = new Request(request.url, {
-            body: JSON.stringify({ operationName, query, variables }),
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-                'accept': '*/*'
-            },
-        });
-
-        //copy custom headers from parent request
-        for (const header of request.headers) {
-            graphQLRequest.headers.set(header[0], header[1]);
-        }
-
-        type GraphQLResult = {
-            errors: {
-                code: number;
-                message: string;
-            }[];
-            data: TResult;
-        };
-
-        const data = await this.FetchJSON<GraphQLResult>(graphQLRequest);
-        if (data.errors && data.errors.length > 0) {
-            throw new Exception(R.FetchProvider_FetchGraphQL_AggregateError, data.errors.map(error => error.message).join('\n'));
-        }
-        if (!data.data) {
-            throw new Exception(R.FetchProvider_FetchGraphQL_MissingDataError);
-        }
-        return data.data;
-    }
-
-    public async FetchRegex(request: Request, regex: RegExp): Promise<string[]> {
-        if (regex.flags.indexOf('g') == -1) {
-            throw new InternalError(`The provided RegExp must contain the global 'g' modifier!`);
-        }
-        const response = await fetch(request);
-        const data = await response.text();
-        const result : string[] = [];
-        let match = undefined;
-        // eslint-disable-next-line no-cond-assign
-        while (match = regex.exec(data)) {
-            result.push(match[1]);
-        }
-        return result;
-    }
-
-    public async FetchProto<TResult>(request: Request, schema: string, messageTypePath: string) : Promise<TResult> {
-        const response = await fetch(request);
-        const serialized = new Uint8Array(await response.arrayBuffer());
-        const prototype = protobuf.parse(schema, { keepCase: true }).root.lookupType(messageTypePath);
-        return prototype.decode(serialized).toJSON() as TResult;
-    }
-
-    public async FetchWindowCSS<T extends HTMLElement>(request: Request, query: string, delay?: number, timeout?: number): Promise<T[]> {
-        console.warn('Platform::Electron::FetchProvider::FetchWindowCSS()', '=>', request, query, delay, timeout);
-        throw new Error('Method not implemented.');
-    }
-
-    public async FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
+    public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
         console.warn('Platform::Electron::FetchProvider::FetchWindowScript()', '=>', request, script, delay, timeout);
         return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout);
     }
 
-    public async FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay: number = 0, timeout: number = 60_000): Promise<T> {
-        console.warn('Platform::Electron::FetchProvider::FetchWindowPreloadScript()', '=>', request, preload, script, delay, timeout);
+    public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay: number = 0, timeout: number = 60_000): Promise<T> {
 
-        const destroy = async (id: number) => {
+        const invocations: {
+            name: string;
+            info: string
+        }[] = [];
+
+        const win = new RemoteBrowserWindow(this.ipc as IPC<string, string>);
+
+        win.BeforeNavigate.Subscribe(async uri => {
+            invocations.push({ name: 'BeforeNavigate', info: `URL: ${uri.href}` });
+            return this.featureFlags.VerboseFetchWindow.Value ? null : win.Hide();
+        });
+
+        const destroy = async () => {
             try {
-                if(this.IsVerboseModeEnabled) {
-                    //
+                if(this.featureFlags.VerboseFetchWindow.Value) {
+                    console.log('FetchWindow()::invocations', invocations);
                 } else {
-                    await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::CloseWindow', id);
+                    win.Close();
                 }
             } catch(error) {
                 console.warn(error);
             }
         };
 
-        const openOptions: BrowserWindowConstructorOptions = {
-            show: this.IsVerboseModeEnabled,
-            width: 1280,
-            height: 720,
-            webPreferences: {
-                //preload: '',
-                webSecurity: true,
-                contextIsolation: true,
-                nodeIntegration: false,
-                nodeIntegrationInWorker: false,
-                nodeIntegrationInSubFrames: false,
-                disableBlinkFeatures: 'AutomationControlled',
-            }
-        };
-        // 1. Open hidden window
-        const windowID = await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::OpenWindow', JSON.stringify(openOptions)) as number;
-        try {
-            const loadOptions: LoadURLOptions = {
-                userAgent: request.headers.get('User-Agent') ?? navigator.userAgent,
-                httpReferrer: request.headers.get('Referer') ?? request.referrer ?? request.url,
-            };
-            await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::LoadURL', windowID, request.url, JSON.stringify(loadOptions));
-            // 2. Check Anti-Scraping and show/redirect window
-            if (!windowID) {
-                await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::SetVisibility', windowID, true);
-            }
-            // 3. Wait for window to load expected location
-            const result = await globalThis.ipcRenderer.invoke('RemoteBrowserWindowController::ExecuteScript', windowID, script instanceof Function ? `(${script})()` : script);
-            return result;
-        } finally {
-            await destroy(windowID);
-        }
+        return new Promise<T>(async (resolve, reject) => {
+            let cancellation = setTimeout(() => {
+                destroy();
+                reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+            }, timeout);
 
-        /*
-        ipcMain.handle('RemoteBrowserWindowController::OpenWindow', (_, options: string) => this.OpenWindow(options));
-        ipcMain.handle('RemoteBrowserWindowController::CloseWindow', (_, windowID: number) => this.CloseWindow(windowID));
-        ipcMain.handle('RemoteBrowserWindowController::SetVisibility', (_, windowID: number, show: true) => this.SetVisibility(windowID, show));
-        ipcMain.handle('RemoteBrowserWindowController::ExecuteScript', (_, windowID: number, script: string) => this.ExecuteScript(windowID, script));
-        ipcMain.handle('RemoteBrowserWindowController::LoadURL', (_, windowID: number, url: string, options: string) => this.LoadURL(windowID, url, options));
-        */
+            win.DOMReady.Subscribe(async () => {
+                invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
+                try {
+                    const redirect = await CheckAntiScrapingDetection(async () => {
+                        const html = await win.ExecuteScript<string>(`document.querySelector('html').innerHTML`);
+                        return new DOMParser().parseFromString(html, 'text/html');
+                    });
+                    invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[redirect]}`});
+                    switch (redirect) {
+                        case FetchRedirection.Interactive:
+                            // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
+                            clearTimeout(cancellation);
+                            cancellation = setTimeout(() => {
+                                destroy();
+                                reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+                            }, 150_000);
+                            await win.Show();
+                            break;
+                        case FetchRedirection.Automatic:
+                            break;
+                        default:
+                            clearTimeout(cancellation);
+                            await super.Wait(delay);
+                            const result = await win.ExecuteScript<T>(script);
+                            console.log('FetchWindowPreloadScript()', 'Result =>', result);
+                            await destroy();
+                            resolve(result);
+                    }
+                } catch(error) {
+                    await destroy();
+                }
+            });
+
+            invocations.push({ name: 'Open', info: `Request URL: ${request.url}`});
+            await win.Open(request, this.featureFlags.VerboseFetchWindow.Value, preload);
+        });
     }
 }

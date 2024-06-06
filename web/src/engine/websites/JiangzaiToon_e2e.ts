@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +7,7 @@ const config = {
         title: 'JiangzaiToon'
     },
     container: {
-        url: 'https://jiangzaitoon.cc/manga/ani/',
+        url: 'https://jiangzaitoon.dev/manga/ani/',
         id: JSON.stringify({ post: '7208', slug: '/manga/ani/' }),
         title: 'Beyond the Memories'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

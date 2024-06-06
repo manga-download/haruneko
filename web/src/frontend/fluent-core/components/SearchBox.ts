@@ -36,20 +36,20 @@ const styles: ElementStyles = css`
 `;
 
 const templateCaseSensivity: ViewTemplate<SearchBox> = html`
-    <fluent-button appearance="${model => model.caseenabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${() => IconCase} @click=${model => model.caseenabled = !model.caseenabled}></fluent-button>
+    <fluent-button appearance="${model => model.CaseEnabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${() => IconCase} @click=${model => model.CaseEnabled = !model.CaseEnabled}></fluent-button>
 `;
 
 const templateRegularExpression: ViewTemplate<SearchBox> = html`
-    <fluent-button appearance="${model => model.regexenabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${() => IconRegex} @click=${model => model.regexenabled = !model.regexenabled}></fluent-button>
+    <fluent-button appearance="${model => model.RegexEnabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${() => IconRegex} @click=${model => model.RegexEnabled = !model.RegexEnabled}></fluent-button>
 `;
 
 const template: ViewTemplate<SearchBox> = html`
-    <fluent-text-field id="searchpattern" ${ref('control')} appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.needle} @input=${(model, ctx) => model.needle = ctx.event.currentTarget['value']}>
+    <fluent-text-field id="searchpattern" ${ref('control')} appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.Needle} @input=${(model, ctx) => model.Needle = ctx.event.currentTarget['value']}>
         <div slot="start" :innerHTML=${() => IconSearch}></div>
         <div slot="end">
-            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.needle = ''}></fluent-button>
-            ${when(model => model.allowcase, templateCaseSensivity)}
-            ${when(model => model.allowregex, templateRegularExpression)}
+            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.Needle = ''}></fluent-button>
+            ${when(model => model.AllowCase, templateCaseSensivity)}
+            ${when(model => model.AllowRegex, templateRegularExpression)}
         </div>
     </fluent-text-field>
 `;
@@ -62,43 +62,43 @@ export class SearchBox extends FASTElement {
 
     @attr placeholder = '';
 
-    @observable needle = '';
-    needleChanged() {
+    @observable Needle = '';
+    NeedleChanged() {
         this.UpdatePredicate();
     }
 
-    @attr({ mode: 'boolean' }) allowcase = false;
-    allowcaseChanged() {
+    @attr({ mode: 'boolean' }) AllowCase = false;
+    AllowCaseChanged() {
         this.UpdatePredicate();
     }
-    @observable caseenabled = false;
-    caseenabledChanged() {
+    @observable CaseEnabled = false;
+    CaseEnabledChanged() {
         this.UpdatePredicate();
     }
 
-    @attr({ mode: 'boolean' }) allowregex = false;
-    allowregexChanged() {
+    @attr({ mode: 'boolean' }) AllowRegex = false;
+    AllowRegexChanged() {
         this.UpdatePredicate();
     }
-    @observable regexenabled = false;
-    regexenabledChanged() {
+    @observable RegexEnabled = false;
+    RegexEnabledChanged() {
         this.UpdatePredicate();
     }
 
     private UpdatePredicate() {
         try {
-            if(!this.needle) {
+            if(!this.Needle) {
                 this.$emit(this.event, () => true);
             } else {
-                if(this.allowregex && this.regexenabled) {
-                    const regex = new RegExp(this.needle, this.allowcase && this.caseenabled ? undefined : 'i');
+                if(this.AllowRegex && this.RegexEnabled) {
+                    const regex = new RegExp(this.Needle, this.AllowCase && this.CaseEnabled ? undefined : 'i');
                     this.$emit(this.event, (text: string) => regex.test(text));
                 } else {
-                    if(this.allowcase && this.caseenabled ) {
-                        this.$emit(this.event, (text: string) => text.includes(this.needle));
+                    if(this.AllowCase && this.CaseEnabled ) {
+                        this.$emit(this.event, (text: string) => text.includes(this.Needle));
                     } else {
-                        const lcneedle = this.needle.toLocaleLowerCase();
-                        this.$emit(this.event, (text: string) => text.toLowerCase().includes(lcneedle));
+                        const lcNeedle = this.Needle.toLocaleLowerCase();
+                        this.$emit(this.event, (text: string) => text.toLowerCase().includes(lcNeedle));
                     }
                 }
             }

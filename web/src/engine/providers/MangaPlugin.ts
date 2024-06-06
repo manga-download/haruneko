@@ -86,7 +86,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
     private async Prepare() {
         this._settings.Initialize(...this.scraper.Settings);
         const mangas = await this.storageController.LoadPersistent<{ id: string, title: string }[]>(Store.MediaLists, this.Identifier) || [];
-        this._entries = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
+        super.Entries = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
     }
 
     public override get Settings(): ISettings {
@@ -124,8 +124,8 @@ export class MangaPlugin extends MediaContainer<Manga> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        this._entries = await this.scraper.FetchMangas(this);
-        const mangas = this._entries.map(entry => {
+        super.Entries = await this.scraper.FetchMangas(this);
+        const mangas = super.Entries.map(entry => {
             return { id: entry.Identifier, title: entry.Title };
         });
         await this.storageController.SavePersistent(mangas, Store.MediaLists, this.Identifier);
@@ -148,7 +148,7 @@ export class Manga extends MediaContainer<Chapter> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        this._entries = await this.scraper.FetchChapters(this);
+        super.Entries = await this.scraper.FetchChapters(this);
     }
 }
 
@@ -160,7 +160,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        this._entries = await this.scraper.FetchPages(this);
+        super.Entries = await this.scraper.FetchPages(this);
     }
 
     public get IsStored() {
@@ -211,9 +211,9 @@ export class Chapter extends StoreableMediaContainer<Page> {
     }
 }
 
-type Parameters = {
+type Parameters = JSONObject & {
     readonly Referer?: string;
-    readonly [key: string]: string | number | ArrayBuffer | boolean;
+    //readonly [member: string]: JSONElement | ArrayBuffer;
 }
 
 export class Page extends MediaItem {

@@ -12,7 +12,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nightscans', 'NightScans', 'https://nightscans.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
+        super('nightscans', 'NightScans', 'https://night-scans.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

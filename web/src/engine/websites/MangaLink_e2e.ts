@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -6,7 +7,7 @@ const config = {
         title: 'MangaLink'
     },
     container: {
-        url: 'https://manga-link.org/readcomics/i-was-the-final-boss/',
+        url: 'https://link-manga.com/readcomics/i-was-the-final-boss/',
         id: JSON.stringify({ post: '86560', slug: '/readcomics/i-was-the-final-boss/' }),
         title: 'I Was the Final Boss'
     },
@@ -23,4 +24,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

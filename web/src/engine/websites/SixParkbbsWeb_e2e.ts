@@ -1,9 +1,10 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
         id: 'sixparkbbsweb',
-        title: '6parkbbs Web(新❀华漫)'
+        title: '6parkbbs Web (新❀华漫)'
     },
     container: {
         url: 'https://web.6parkbbs.com/index.php?app=forum&act=view&tid=3746177',
@@ -22,4 +23,4 @@ const config: Config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

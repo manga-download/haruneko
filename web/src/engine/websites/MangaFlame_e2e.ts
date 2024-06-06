@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +7,7 @@ const config = {
         title: 'MangaFlame'
     },
     container: {
-        url: 'https://arisescans.com/manga/apocalyptic-super-farm/',
+        url: 'https://mangaflame.org/manga/apocalyptic-super-farm/',
         id: '/manga/apocalyptic-super-farm/',
         title: 'Apocalyptic super farm'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

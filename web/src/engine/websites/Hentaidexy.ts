@@ -60,12 +60,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin) : Promise<Manga[]>{
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(provider, page);
+            const mangas = await this.GetMangasFromPage(provider, page);
             mangas.length > 0 && !Common.EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
-    private async _getMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
+    private async GetMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
         const uri = new URL('/api/v1/mangas?page=' + page + '&sort=createdAt', this.apiUrl);
         const request = new Request(uri.href);
         const data = await FetchJSON<APIMangas>(request);
@@ -75,13 +75,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this._getChaptersFromPage(manga, page);
+            const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
 
-    private async _getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const uri = new URL('/api/v1/mangas/' + manga.Identifier + '/chapters?sort=-serialNumber&limit=9999&page=' + page, this.apiUrl);
         const request = new Request(uri.href);
         const data = await FetchJSON<ApiChapters>(request);

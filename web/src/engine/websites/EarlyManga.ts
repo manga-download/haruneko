@@ -14,8 +14,6 @@ type APIManga = {
     slug: string
 }
 
-type APIChaptersResult = APIChapter[];
-
 type APIChapter = {
     id: number
     slug: string
@@ -31,7 +29,7 @@ type APISingleManga = {
     }
 }
 
-type APIChapterForPages = {
+type APIPages = {
     chapter: {
         images: string[]
         manga_id: number
@@ -66,13 +64,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async _getMangasFromPage(page: number, provider: MangaPlugin) {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/api/search/advanced/post?page=' + page, this.URI);
         const body = {
             'list_order': 'desc'
@@ -93,7 +91,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaid: APIManga = JSON.parse(manga.Identifier);
         const uri = new URL(`/api/manga/${mangaid.id}/${mangaid.slug}/chapterlist`, this.URI);
-        const data = await FetchJSON<APIChaptersResult>(new Request(uri));
+        const data = await FetchJSON<APIChapter[]>(new Request(uri));
         return data.map(item => {
             const id = { id: item.id, slug: item.slug };
             return new Chapter(this, manga, JSON.stringify(id), 'Chapter ' + item.chapter_number);
@@ -104,7 +102,7 @@ export default class extends DecoratableMangaScraper {
         const mangaid: APIManga = JSON.parse(chapter.Parent.Identifier);
         const chapterid: APIChapter = JSON.parse(chapter.Identifier);
         const uri = new URL(`/api/manga/${mangaid.id}/${mangaid.slug}/${chapterid.id}/chapter-${chapterid.slug}`, this.URI);
-        const data = await FetchJSON<APIChapterForPages>(new Request(uri));
+        const data = await FetchJSON<APIPages>(new Request(uri));
         return data.chapter.images.map(page => {
             const path = !data.chapter.on_disk ? 'https://images.earlym.org/manga' : '/storage/uploads/manga';
             return new Page(this, chapter, new URL(`${path}/manga_${data.chapter.manga_id}/chapter_${data.chapter.slug}/${page}`, this.URI));

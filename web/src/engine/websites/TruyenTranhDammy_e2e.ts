@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +7,7 @@ const config = {
         title: 'TruyenTranhDammy'
     },
     container: {
-        url: 'https://truyentranhdammyy.net/manga/du-dich-tham-nhap/',
+        url: 'https://meomeoteam.org/manga/du-dich-tham-nhap/',
         id: JSON.stringify({ post: '10506', slug: '/manga/du-dich-tham-nhap/' }),
         title: 'Dụ Địch Thâm Nhập'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

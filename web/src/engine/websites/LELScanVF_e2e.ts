@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -6,20 +7,20 @@ const config: Config = {
         title: 'LELSCAN-VF'
     },
     container: {
-        url: 'https://www.lelscanvf.cc/manga/10-years-in-friend-zone',
-        id: '/manga/10-years-in-friend-zone',
-        title: '10 Years in Friend Zone'
+        url: 'https://lelscanfr.com/manga/four-knights-of-the-apocalypse',
+        id: '/manga/four-knights-of-the-apocalypse',
+        title: 'Four Knights Of The Apocalypse'
     },
     child: {
-        id: '/manga/10-years-in-friend-zone/13',
-        title: '13'
+        id: '/manga/four-knights-of-the-apocalypse/144',
+        title: 'Chapitre 144'
     },
     entry: {
         index: 0,
-        size: 1_044_171,
-        type: 'image/jpeg'
+        size: 126_472,
+        type: 'image/webp'
     }
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

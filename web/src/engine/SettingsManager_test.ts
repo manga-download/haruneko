@@ -1,9 +1,10 @@
-import { mock, mockClear, mockFn } from 'jest-mock-extended';
+// @vitest-environment jsdom
+import { mock, mockClear } from 'vitest-mock-extended';
+import { vi, describe, it, expect } from 'vitest';
 import type { HakuNeko } from './HakuNeko';
 import { LocaleID, type EngineResourceKey } from '../i18n/ILocale';
-import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type ISetting, type IValue, type ISettings } from './SettingsManager';
+import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type ISettings } from './SettingsManager';
 import { type StorageController, Store } from './StorageController';
-import type { Event } from './Event';
 import { Key } from './SettingsGlobal';
 
 window.atob = function(encoded: string): string {
@@ -118,15 +119,21 @@ describe('Settings', () => {
             const testee = new SettingsManager(storage).OpenScope('test-scope');
 
             const settings = CreateSettings();
-            const expected = {};
-            settings.forEach(setting => expected[setting.ID] = setting.Value);
+            const expected = {
+                '[ID]:Check': false,
+                '[ID]:Text': '{TEXT}',
+                '[ID]:Secret': 'e1NFQ1JFVH0=',
+                '[ID]:Numeric': 50,
+                '[ID]:Choice': '{CHOICE}',
+                '[ID]:Path': null,
+            };
 
             await testee.Initialize(...settings);
 
             for(const setting of settings) {
-                setting.ValueChanged.Dispatch(setting as never, setting.Value as never);
-                expect(storage.SavePersistent).toBeCalledTimes(1);
-                expect(storage.SavePersistent).toBeCalledWith(expected, Store.Settings, 'test-scope');
+                setting.Dispatch();
+                expect(storage.SavePersistent).toHaveBeenCalledTimes(1);
+                expect(storage.SavePersistent).toHaveBeenCalledWith(expected, Store.Settings, 'test-scope');
                 mockClear(storage);
             }
         });
@@ -142,7 +149,7 @@ describe('Settings', () => {
 
             const stored = {};
             for(const setting of settings) {
-                stored[setting.ID] = setting.toRaw();
+                stored[setting.ID] = setting.Value;
             }
             storage.LoadPersistent.mockReturnValue(Promise.resolve(stored));
 
@@ -158,44 +165,6 @@ describe('Settings', () => {
             await testee.Initialize(...settings);
 
             expect(testee.Get('-')).toBeUndefined();
-        });
-    });
-
-    describe('ValueChanged', () => {
-
-        it('Should pass through notification for value changed when subscribed', async () => {
-            const storage = mock<StorageController>();
-            const testee = new SettingsManager(storage).OpenScope('test-scope');
-
-            const callback = mockFn<(sender: ISetting<IValue>, args: IValue) => void>();
-            const settings = CreateSettings();
-            await testee.Initialize(...settings);
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Subscribe(callback);
-
-            for(const setting of settings) {
-                (setting.ValueChanged as Event<ISetting<IValue>, IValue>).Dispatch(setting, setting.Value);
-                expect(callback).toBeCalledTimes(1);
-                expect(callback).toBeCalledWith(setting, setting.Value);
-                mockClear(callback);
-            }
-        });
-
-        it('Should not pass through notification for value changed when unsubscribed', async () => {
-            const storage = mock<StorageController>();
-            const testee = new SettingsManager(storage).OpenScope('test-scope');
-
-            const callback = mockFn<(sender: ISetting<IValue>, args: IValue) => void>();
-            const settings = CreateSettings();
-            await testee.Initialize(...settings);
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Unsubscribe(callback);
-
-            for(const setting of settings) {
-                (setting.ValueChanged as Event<ISetting<IValue>, IValue>).Dispatch(setting, setting.Value);
-                expect(callback).toBeCalledTimes(0);
-                mockClear(callback);
-            }
         });
     });
 });
@@ -228,34 +197,34 @@ describe('Check', () => {
         it('Should not notify on value unchanged when subscribed', async () => {
             const testee = new Check('[ID]:Check', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, true);
 
-            const callback = mockFn<(sender: Check, args: boolean) => void>();
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
             testee.Value = true;
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
             const testee = new Check('[ID]:Check', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, false);
 
-            const callback = mockFn<(sender: Check, args: boolean) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Unsubscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Unsubscribe(callback);
             testee.Value = true;
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it('Should notify on value changed when subscribed', async () => {
             const testee = new Check('[ID]:Check', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, false);
 
-            const callback = mockFn<(sender: Check, args: boolean) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Subscribe(callback);
             testee.Value = true;
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, true);
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith(true, undefined);
         });
     });
 });
@@ -288,34 +257,34 @@ describe('Text', () => {
         it('Should not notify on value unchanged when subscribed', async () => {
             const testee = new Text('[ID]:Text', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(sender: Text, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
             testee.Value = 'alice';
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
             const testee = new Text('[ID]:Text', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(sender: Text, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Unsubscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Unsubscribe(callback);
             testee.Value = 'bob';
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it('Should notify on value changed when subscribed', async () => {
             const testee = new Text('[ID]:Text', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(sender: Text, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Subscribe(callback);
             testee.Value = 'bob';
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, 'bob');
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith('bob', undefined);
         });
     });
 });
@@ -348,34 +317,34 @@ describe('Secret', () => {
         it('Should not notify on value unchanged when subscribed', async () => {
             const testee = new Secret('[ID]:Secret', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(sender: Secret, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
             testee.Value = 'alice';
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
             const testee = new Secret('[ID]:Secret', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(sender: Secret, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Unsubscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Unsubscribe(callback);
             testee.Value = 'bob';
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it('Should notify on value changed when subscribed', async () => {
             const testee = new Secret('[ID]:Secret', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice');
 
-            const callback = mockFn<(sender: Secret, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Subscribe(callback);
             testee.Value = 'bob';
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, 'bob');
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith('bob', undefined);
         });
     });
 });
@@ -439,59 +408,74 @@ describe('Numeric', () => {
 
     describe('ValueChanged', () => {
 
-        it.each([-5, -1, 0, 1, 5])('Should not notify on value unchanged when subscribed', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, value, -1, 1);
+        it.each([-5, -1, 0, 1, 5])('Should assign valid default value', async (value) => {
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, value, -5, 5);
+            expect(testee.Value).toBe(value);
+        });
 
-            const callback = mockFn<(sender: Numeric, args: number) => void>();
-            testee.ValueChanged.Subscribe(callback);
+        it('Should truncate default value when exceeding minimum', async () => {
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, -5, -1, 1);
+            expect(testee.Value).toBe(-1);
+        });
+
+        it('Should truncate default value when exceeding maximum', async () => {
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 5, -1, 1);
+            expect(testee.Value).toBe(1);
+        });
+
+        it.each([-5, -1, 0, 1, 5])('Should not notify on value unchanged when subscribed', async (value) => {
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, value, -5, 5);
+
+            const callback = vi.fn();
+            testee.Subscribe(callback);
             testee.Value = value;
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it.each([-5, -1, 0, 1, 5])('Should not notify on value changed when unsubscribed', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -1, 1);
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -5, 5);
 
-            const callback = mockFn<(sender: Numeric, args: number) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Unsubscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Unsubscribe(callback);
             testee.Value = value;
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it.each([-5, -1, 1, 5])('Should notify on value changed when subscribed', async (value) => {
             const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -5, 5);
 
-            const callback = mockFn<(sender: Numeric, args: number) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Subscribe(callback);
             testee.Value = value;
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, value);
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith(value, undefined);
         });
 
-        it.each([0, -1, -5])('Should notify on value changed when exceeding minimum', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, value, -1, 1);
+        it.each([-1, -5])('Should notify on value changed when exceeding minimum', async (value) => {
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -1, 1);
 
-            const callback = mockFn<(sender: Numeric, args: number) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.Value = -10;
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Value = value;
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, -1);
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith(-1, undefined);
         });
 
-        it.each([0, 1, 5])('Should notify on value changed when exceeding maximum', async (value) => {
-            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, value, -1, 1);
+        it.each([1, 5])('Should notify on value changed when exceeding maximum', async (value) => {
+            const testee = new Numeric('[ID]:Numeric', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 0, -1, 1);
 
-            const callback = mockFn<(sender: Numeric, args: number) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.Value = 10;
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Value = value;
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, 1);
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith(1, undefined);
         });
     });
 });
@@ -533,48 +517,59 @@ describe('Choice', () => {
 
     describe('ValueChanged', () => {
 
-        it('Should not notify on value unchanged when subscribed', async () => {
+        it('Should not notify on same value assigned when subscribed', async () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
 
-            const callback = mockFn<(sender: Choice, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
             testee.Value = 'alice';
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
-        it('Should not notify on value changed when unsubscribed', async () => {
+        it('Should not notify on valid value assigned when unsubscribed', async () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
 
-            const callback = mockFn<(sender: Choice, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Unsubscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Unsubscribe(callback);
             testee.Value = 'bob';
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
-        it('Should notify on valid value changed when subscribed', async () => {
+        it('Should notify on valid value assigned when subscribed', async () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
 
-            const callback = mockFn<(sender: Choice, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Subscribe(callback);
             testee.Value = 'bob';
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, 'bob');
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith('bob', undefined);
         });
 
-        it('Should notify on invalid value changed when subscribed', async () => {
+        it('Should not notify on invalid value assigned to default when subscribed', async () => {
             const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
 
-            const callback = mockFn<(sender: Choice, args: string) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.Value = 'chi';
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Value = 'cc';
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, 'alice');
+            expect(callback).toHaveBeenCalledTimes(0);
+        });
+
+        it('Should notify on invalid value assigned to non-default when subscribed', async () => {
+            const testee = new Choice('[ID]:Choice', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, 'alice', ...options);
+            testee.Value = 'bob';
+
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Value = 'cc';
+
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith('alice', undefined);
         });
     });
 });
@@ -608,34 +603,34 @@ describe('Directory', () => {
             const directory = { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle;
             const testee = new Directory('[ID]:Path', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, directory);
 
-            const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
             testee.Value = directory;
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it('Should not notify on value changed when unsubscribed', async () => {
             const testee = new Directory('[ID]:Path', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
-            const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Unsubscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Unsubscribe(callback);
             testee.Value = { name: '/path/directory', kind: 'directory' } as FileSystemDirectoryHandle;
 
-            expect(callback).toBeCalledTimes(0);
+            expect(callback).toHaveBeenCalledTimes(0);
         });
 
         it('Should notify on value changed when subscribed', async () => {
             const testee = new Directory('[ID]:Path', '[RES]:Label' as EngineResourceKey, '[RES]:Description' as EngineResourceKey, { name: '/path/file', kind: 'directory' } as FileSystemDirectoryHandle);
 
-            const callback = mockFn<(sender: Directory, args: FileSystemDirectoryHandle) => void>();
-            testee.ValueChanged.Subscribe(callback);
-            testee.ValueChanged.Subscribe(callback);
+            const callback = vi.fn();
+            testee.Subscribe(callback);
+            testee.Subscribe(callback);
             testee.Value = { name: '/path/directory', kind: 'directory' } as FileSystemDirectoryHandle;
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, testee.Value);
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith(testee.Value, undefined);
         });
     });
 });

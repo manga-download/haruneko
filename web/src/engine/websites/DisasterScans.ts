@@ -10,25 +10,41 @@ type NEXTDATA = {
 
 type JSONManga = {
     pageProps: {
-        comic: { id: string, ComicTitle: string }
-        chapters: { chapterID: number, ChapterName: string, chapterNumber: string }[]
+        comic: {
+            id: string,
+            ComicTitle: string
+        }
+        chapters: {
+            chapterID: number,
+            ChapterName: string,
+            chapterNumber: string
+        }[]
     }
 }
 
 type JSONMangas = {
     pageProps: {
-        comics: { id: string, ComicTitle: string }[]
+        comics: {
+            id: string,
+            ComicTitle: string
+        }[]
     }
 }
 
-@Common.PagesSinglePageCSS('main > div.maxWidth.container img')
+const pageScript = `
+    new Promise( resolve => {
+        resolve(JSON.parse(__NEXT_DATA__.props.pageProps.chapter.pages).map( page => 'https://f005.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId='+page));
+    });
+`;
+
+@Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private nextBuild = '';
 
     public constructor() {
-        super('disasterscans', 'Disaster Scans', 'https://disasterscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('disasterscans', 'Disaster Scans', 'https://disasterscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -36,8 +52,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new Request(this.URI.href);
-        const data = await FetchWindowScript<NEXTDATA>(request, `__NEXT_DATA__`);
+        const data = await FetchWindowScript<NEXTDATA>(new Request(this.URI), `__NEXT_DATA__`);
         this.nextBuild = data.buildId;
     }
 
@@ -47,32 +62,23 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, _url: string): Promise<Manga> {
         const slug = _url.split('/').pop();
-        const url = new URL('/_next/data/' + this.nextBuild + '/comics/' + slug + '.json?slug=' + slug, this.URI).href;
-        const request = new Request(url);
-        const data = await FetchJSON<JSONManga>(request);
+        const url = new URL(`/_next/data/${this.nextBuild}/comics/${slug}.json?slug=${slug}`, this.URI);
+        const data = await FetchJSON<JSONManga>(new Request(url));
         return new Manga(this, provider, data.pageProps.comic.id, data.pageProps.comic.ComicTitle.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL('/comics', this.URI).href;
-        const request = new Request(url);
-        const data = await FetchWindowScript<JSONMangas>(request, `__NEXT_DATA__.props`);
+        const data = await FetchWindowScript<JSONMangas>(new Request(new URL('/comics', this.URI)), `__NEXT_DATA__.props`);
         return data.pageProps.comics.map(element => new Manga(this, provider, element.id, element.ComicTitle.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaSlug = this.computeMangaSlug(manga);
-        const url = new URL('/_next/data/' + this.nextBuild + '/comics/' + mangaSlug + '.json?slug=' + mangaSlug, this.URI).href;
-        const request = new Request(url);
-        const data = await FetchJSON<JSONManga>(request);
+        const slug = `${manga.Identifier}-${manga.Title.toLowerCase().split(' ').join('-')}`;
+        const url = new URL(`/_next/data/${this.nextBuild}/comics/${slug}.json?slug=${slug}`, this.URI);
+        const data = await FetchJSON<JSONManga>(new Request(url));
         return data.pageProps.chapters.map(chap => {
             const title = `Chapter ${chap.chapterNumber}${chap.ChapterName.length != 0 ? ' - ' + chap.ChapterName : ''}`;
-            return new Chapter(this, manga, `/comics/${mangaSlug}/${chap.chapterID}-chapter-${chap.chapterNumber}`, title);
+            return new Chapter(this, manga, `/comics/${slug}/${chap.chapterID}-chapter-${chap.chapterNumber}`, title);
         });
     }
-
-    computeMangaSlug(manga: Manga) {
-        return manga.Identifier + '-' + manga.Title.toLowerCase().split(' ').join('-');
-    }
-
 }

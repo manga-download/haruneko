@@ -1,10 +1,6 @@
-// HACK: JSDOM requires access to Text Encoder/Decoder which are missing from jest-environment-jsdom
-import { TextEncoder, TextDecoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-
 import * as path from 'path';
 import { JSDOM } from 'jsdom';
+import { describe, it, expect } from 'vitest';
 import { CloudFlareMailDecryptor } from './CloudFlareMailDecryptor';
 const file = path.resolve('test', 'cloudflare-mail.html'); // <= https://test.cloudscraper.ovh/mail
 

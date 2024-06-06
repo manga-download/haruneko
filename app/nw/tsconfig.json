@@ -1,0 +1,14 @@
+// NOTE: This typescript configuration is used for code inspection (e.g. VS Code, eslint, ...), but not for building sources or tests
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "skipLibCheck": true,
+        "noEmit": true,
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.d.ts",
+    ]
+}

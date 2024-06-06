@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,13 +7,13 @@ const config = {
         title: 'InariManga'
     },
     container: {
-        url: 'https://inarimanga.net/manga/la-princesa-quiere-morir-en-paz',
+        url: 'https://rukavinari.org/manga/la-princesa-quiere-morir-en-paz',
         id: '/manga/la-princesa-quiere-morir-en-paz',
         title: '¡La Princesa Quiere Morir En Paz!'
     },
     child: {
         id: '/la-princesa-quiere-morir-en-paz-capitulo-1/',
-        title: 'Chapter 1'
+        title: 'Capítulo 1'
     },
     entry: {
         index: 5,
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

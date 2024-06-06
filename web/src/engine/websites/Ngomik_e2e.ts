@@ -1,25 +1,26 @@
+import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
         id: 'ngomik',
         title: 'Ngomik'
-    }/*,
+    },
     container: {
-        url: 'https://ngomik.net/manga/.../',
-        id: '/manga/.../',
-        title: 'Manga ?'
+        url: 'https://ngomik.net/manga/reborn-as-the-heavenly-demon/',
+        id: '/manga/reborn-as-the-heavenly-demon/',
+        title: 'Reborn as The Heavenly Demon'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/reborn-as-the-heavenly-demon-chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 0,
-        size: -1,
+        index: 1,
+        size: 168_025,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

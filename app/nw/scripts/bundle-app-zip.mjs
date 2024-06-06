@@ -1,42 +1,42 @@
-import path from 'path';
-import fs from 'fs-extra';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 import { run } from '../../tools.mjs';
 
 const pkgFile = 'package.json';
-const pkgConfig = await fs.readJSON(pkgFile);
+const pkgConfig = JSON.parse(await fs.readFile(pkgFile));
 
 /**
  * Bundle Portable Binary for Windows
  * See: https://docs.nwjs.io/en/latest/For%20Users/Package%20and%20Distribute/#platform-specific-steps
  */
-export async function bundle(dirApp, dirNW, dirRes, dirOut) {
-    await bundleApp(dirApp, dirNW);
-    await makePortable(dirNW);
-    await updateBinary(dirNW, dirRes);
+export async function bundle(blinkApplicationSourceDirectory, blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
+    await bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory);
+    await makePortable(blinkDeploymentTemporaryDirectory);
+    await updateBinary(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory);
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
-    await createZipArchive(dirNW, dirOut);
+    await createZipArchive(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
 }
 
-async function bundleApp(dirApp, dirNW) {
-    const target = path.join(dirNW, 'package.nw');
-    await fs.copy(dirApp, target);
+async function bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory) {
+    const target = path.join(blinkDeploymentTemporaryDirectory, 'package.nw');
+    await fs.cp(blinkApplicationSourceDirectory, target, { recursive: true });
 }
 
-async function makePortable(dirNW) {
-    const userdata = path.join(dirNW, 'userdata');
+async function makePortable(blinkDeploymentTemporaryDirectory) {
+    const userdata = path.join(blinkDeploymentTemporaryDirectory, 'userdata');
     await fs.mkdir(userdata, { recursive: true });
-    const pkgfile = path.join(dirNW, 'package.nw', 'package.json');
-    const pkg = await fs.readJSON(pkgfile);
-    pkg['chromium-args'] += ' --user-data-dir=userdata';
-    await fs.writeJSON(pkgfile, pkg, { spaces: 4 });
+    const pkgfile = path.join(blinkDeploymentTemporaryDirectory, 'package.nw', 'package.json');
+    const pkg = await JSON.parse(await fs.readFile(pkgfile));
+    pkg['chromium-args'] = pkg['chromium-args'] ? pkg['chromium-args'] + ' --user-data-dir=userdata' : '--user-data-dir=userdata';
+    await fs.writeFile(pkgfile, JSON.stringify(pkg, null, 4));
 }
 
-async function updateBinary(dirNW, dirRes) {
-    const binary = path.join(dirNW, 'nw.exe');
-    const icon = path.join(dirRes, process.platform, 'app.ico');
-    const rcedit = path.join(dirRes, process.platform, 'rcedit64.exe');
+async function updateBinary(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory) {
+    const binary = path.join(blinkDeploymentTemporaryDirectory, 'nw.exe');
+    const icon = path.join(blinkApplicationResourcesDirectory, process.platform, 'app.ico');
+    const rcedit = path.join(blinkApplicationResourcesDirectory, process.platform, 'rcedit64.exe');
     const command = [
         rcedit,
         `"${binary}"`,
@@ -51,14 +51,14 @@ async function updateBinary(dirNW, dirRes) {
         `--set-icon "${icon}"`
     ].join(' ');
     await run(command);
-    await fs.move(binary, binary.replace(/nw\.exe$/i, `${pkgConfig.name}.exe`));
+    await fs.rename(binary, binary.replace(/nw\.exe$/i, `${pkgConfig.name}.exe`));
 }
 
-async function createZipArchive(dirNW, dirOut) {
-    const artifact = path.join(dirOut, path.basename(dirNW).replace(/^nwjs(-sdk)?/i, pkgConfig.name) + '.zip');
+async function createZipArchive(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
+    const artifact = path.join(blinkDeploymentOutputDirectory, path.basename(blinkDeploymentTemporaryDirectory).replace(/^nwjs(-sdk)?/i, pkgConfig.name) + '.zip');
     try {
         await fs.unlink(artifact);
     } catch(error) {/**/}
-    const command = `powershell "Compress-Archive '${dirNW}' '${artifact}'"`;
+    const command = `powershell "Compress-Archive '${blinkDeploymentTemporaryDirectory}' '${artifact}'"`;
     await run(command);
 }

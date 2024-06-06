@@ -4,6 +4,9 @@ import S from './services/StateService';
 
 const styles: ElementStyles = css`
     :host {
+        /* Extend/Override the default value of '--body-font' to support colored emoji flags */
+        --body-font: NotoColorEmoji-Flags, 'Segoe UI Variable', 'Segoe UI', sans-serif;
+
         font-family: var(--body-font);
         font-size: var(--type-ramp-base-font-size);
         gap: 0;
@@ -80,17 +83,17 @@ const templateWidgets: ViewTemplate<App> = html`
         ${when(() => S.SettingPanelBookmarks || S.SettingPanelDownloads, templateSidePanel)}
         <div id="mainpanel">
             <fluent-card>
-                <fluent-website-select id="website-select" :entries=${() => HakuNeko.PluginController.WebsitePlugins} :selected=${model => model.selectedWebsite}
+                <fluent-website-select id="website-select" :Entries=${() => HakuNeko.PluginController.WebsitePlugins} :Selected=${model => model.selectedWebsite}
                     @selectedChanged=${(model, ctx) => model.SelectedWebsiteChanged(ctx.event as CustomEvent<MediaContainer<MediaChild>>)}>
                 </fluent-website-select>
             </fluent-card>
             <fluent-card>
-                <fluent-media-title-select id="media-title-select" :container=${model => model.selectedWebsite} :selected=${model => model.selectedTitle}
+                <fluent-media-title-select id="media-title-select" :Container=${model => model.selectedWebsite} :Selected=${model => model.selectedTitle}
                     @selectedChanged=${(model, ctx) => model.SelectedMediaTitleChanged(ctx.event as CustomEvent<MediaContainer<MediaChild>>)}>
                 </fluent-media-title-select>
             </fluent-card>
             <fluent-card>
-                <fluent-media-item-list id="media-item-list" :container=${model => model.selectedTitle}
+                <fluent-media-item-list id="media-item-list" :Container=${model => model.selectedTitle}
                     @previewClicked=${(model, ctx) => model.previewEntry = (ctx.event as CustomEvent<MediaContainer<MediaChild>>).detail}></fluent-media-item-list>
             </fluent-card>
         </div>
@@ -98,7 +101,7 @@ const templateWidgets: ViewTemplate<App> = html`
 `;
 
 const templatePreview: ViewTemplate<App> = html`
-    <fluent-media-item-preview id="preview" :entry=${model => model.previewEntry}
+    <fluent-media-item-preview id="preview" :Entry=${model => model.previewEntry}
         @entryChanged=${(model, ctx) => model.previewEntry = (ctx.event as CustomEvent<MediaContainer<MediaChild>>).detail}></fluent-media-item-preview>
 `;
 

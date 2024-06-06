@@ -49,7 +49,7 @@ export default class extends DecoratableMangaScraper {
         super('copymanga', 'CopyManga', 'https://www.copymanga.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
 
         //this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
-        //this.Settings.url.ValueChanged.Subscribe((_, value: string) => this.URI.href = value);
+        //(this.Settings.url as Text).Subscribe(value => this.URI.href = value);
         //this.URI.href = this.Settings.url.Value as string;
 
         this.Settings.format = new Choice('image.format',
@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').pop();
-        const request = this.createApiRequest(`comic2/${id}`);
+        const request = this.CreateApiRequest(`comic2/${id}`);
         const data = await FetchJSON<APIResponse<APISingleComic>>(request);
         return new Manga(this, provider, data.results.comic.path_word, data.results.comic.name.trim());
     }
@@ -87,15 +87,15 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList = [];
         for (let page = 0, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
-            const request = this.createApiRequest(`comics?ordering=-datetime_updated&limit=50&offset=${page * 50}`);
+            const request = this.CreateApiRequest(`comics?ordering=-datetime_updated&limit=50&offset=${page * 50}`);
             const data = await FetchJSON<APIResponse<APIResultList<APIComic>>>(request);
             return data.results.list.map(item => new Manga(this, provider, item.path_word, item.name.trim()));
         } catch (error) {
@@ -106,15 +106,15 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 0, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(manga, page);
+            const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
 
-    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         try {
-            const request = this.createApiRequest(`comic/${manga.Identifier}/group/default/chapters?limit=500&offset=${page * 500}`);
+            const request = this.CreateApiRequest(`comic/${manga.Identifier}/group/default/chapters?limit=500&offset=${page * 500}`);
             const data = await FetchJSON<APIResponse<APIResultList<APIChapter>>>(request);
             return data.results.list.map(item => new Chapter(this, manga, item.uuid, item.name.trim()));
         } catch (error) {
@@ -123,7 +123,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = this.createApiRequest(`comic/${chapter.Parent.Identifier}/chapter2/${chapter.Identifier}?platform=3`);
+        const request = this.CreateApiRequest(`comic/${chapter.Parent.Identifier}/chapter2/${chapter.Identifier}?platform=3`);
         const data = await FetchJSON<APIResponse<APIPages>>(request);
         const imageUrls = data.results.chapter.contents.map(item => item.url);
         const imageOrder = data.results.chapter.words;
@@ -134,19 +134,17 @@ export default class extends DecoratableMangaScraper {
         return orderedPages.map(page => new Page(this, chapter, new URL(page)));
     }
 
-    private createApiRequest(pathname: string): Request {
-        const request = new Request(new URL(`/api/v3/${pathname}`, this.apiurl).href,
-            {
-                headers: {
-                    Version: this.Apidate,
-                    Platform: '1',
-                    Referer: this.URI.href,
-                    Region: this.Settings.useGlobalCDN.Value ? '0' : '1',
-                    WebP: this.Settings.format.Value == 'webp' ? '1' : '0',
-                }
-            });
+    private CreateApiRequest(pathname: string): Request {
+        const request = new Request(new URL(`/api/v3/${pathname}`, this.apiurl).href, {
+            headers: {
+                Version: this.Apidate,
+                Platform: '1',
+                Referer: this.URI.href,
+                Region: this.Settings.useGlobalCDN.Value ? '0' : '1',
+                WebP: this.Settings.format.Value == 'webp' ? '1' : '0',
+            }
+        });
 
         return request;
     }
-
 }

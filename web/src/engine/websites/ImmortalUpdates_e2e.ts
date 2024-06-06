@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -6,7 +7,7 @@ const config = {
         title: 'Immortal Updates'
     },
     container: {
-        url: 'https://immortalupdates.com/manga/the-era-of-superhuman-manhwa/',
+        url: 'https://mortalsgroove.com/manga/the-era-of-superhuman-manhwa/',
         id: JSON.stringify({ post: '3229', slug: '/manga/the-era-of-superhuman-manhwa/' }),
         title: 'Superhuman Era'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

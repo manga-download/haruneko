@@ -1,45 +1,61 @@
 import {
-    ipcMain,
     type WebContents,
     type BeforeSendResponse,
     type HeadersReceivedResponse,
     type OnBeforeSendHeadersListenerDetails,
     type OnHeadersReceivedListenerDetails,
 } from 'electron';
+import type { IPC } from './InterProcessCommunication';
+import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 export class FetchProvider {
 
     private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
 
-    constructor(private readonly webContents: WebContents) {
-        ipcMain.handle('FetchProvider::Initialize', (_, fetchApiSupportedPrefix: string) => this.Initialize(fetchApiSupportedPrefix));
+    constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
+        this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
-    public async Initialize(fetchApiSupportedPrefix: string) {
+    private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
         this.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => callback(this.ModifyRequestHeaders(details)));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
     }
 
+    private IsMatchingAppHost(url: string) {
+        try {
+            const uri = new URL(this.webContents.getURL());
+            return new URL(url).hostname === uri.hostname;
+        } catch {
+            return false;
+        }
+    }
+
     private ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): BeforeSendResponse {
-        const requestHeaders: typeof details.requestHeaders = {
-            //referer: details.url,
+        const uri = new URL(details.url);
+        const updatedHeaders: typeof details.requestHeaders = {
+            //origin: uri.origin,
+            //referer: uri.href,
         };
-        for (const originalHeader in details.requestHeaders) {
-            const normalizedHeader = originalHeader.toLowerCase();
-            if (normalizedHeader === 'origin' || normalizedHeader === 'referer') {
-                continue;
+        for (const originalHeaderName in details.requestHeaders) {
+            const normalizedHeaderName = originalHeaderName.toLowerCase();
+            const originalHeaderValue = details.requestHeaders[originalHeaderName];
+            if(normalizedHeaderName === 'origin' && this.IsMatchingAppHost(originalHeaderValue)) {
+                updatedHeaders[normalizedHeaderName] = uri.origin;
             }
-            const revealedHeader = normalizedHeader.replace(this.fetchApiSupportedPrefix, '');
-            if (revealedHeader === normalizedHeader) {
-                requestHeaders[revealedHeader] = requestHeaders[revealedHeader] ?? details.requestHeaders[originalHeader];
+            if(normalizedHeaderName === 'referer' && this.IsMatchingAppHost(originalHeaderValue)) {
+                updatedHeaders[normalizedHeaderName] = uri.href;
+            }
+            if (normalizedHeaderName.startsWith(this.fetchApiSupportedPrefix)) {
+                const revealedHeaderName = normalizedHeaderName.replace(this.fetchApiSupportedPrefix, '');
+                updatedHeaders[revealedHeaderName] = originalHeaderValue;
             } else {
-                requestHeaders[revealedHeader] = details.requestHeaders[originalHeader];
+                updatedHeaders[normalizedHeaderName] = updatedHeaders[normalizedHeaderName] ?? originalHeaderValue;
             }
         }
         return {
             cancel: false,
-            requestHeaders,
+            requestHeaders: updatedHeaders,
         };
     }
 

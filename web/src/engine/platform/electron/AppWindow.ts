@@ -1,17 +1,21 @@
+import type { IPC } from '../InterProcessCommunication';
 import type { IAppWindow } from '../AppWindow';
+import { ApplicationWindow as Channels } from '../../../../../app/src/ipc/Channels';
 
 export default class implements IAppWindow {
 
-    constructor(private readonly splashURL: string) {}
+    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>, private readonly splashURL: string) {
+        // TODO: Confirm really want to close => window.on('beforunload', ...)
+    }
 
     public async ShowSplash(): Promise<void> {
-        await globalThis.ipcRenderer.invoke('IAppWindow::HideWindow');
-        await globalThis.ipcRenderer.invoke('IAppWindow::OpenSplash', this.splashURL);
+        await this.ipc.Send(Channels.App.HideWindow);
+        await this.ipc.Send(Channels.App.ShowWindow, this.splashURL);
     }
 
     public async HideSplash(): Promise<void> {
-        await globalThis.ipcRenderer.invoke('IAppWindow::CloseSplash', this.splashURL);
-        await globalThis.ipcRenderer.invoke('IAppWindow::ShowWindow');
+        await this.ipc.Send(Channels.App.CloseSplash, this.splashURL);
+        await this.ipc.Send(Channels.App.ShowWindow);
     }
 
     public get HasControls() {
@@ -19,18 +23,18 @@ export default class implements IAppWindow {
     }
 
     public Minimize(): void {
-        globalThis.ipcRenderer.invoke('IAppWindow::Minimize');
+        this.ipc.Send(Channels.App.Minimize);
     }
 
     public Maximize(): void {
-        globalThis.ipcRenderer.invoke('IAppWindow::Maximize');
+        this.ipc.Send(Channels.App.Maximize);
     }
 
     public Restore(): void {
-        globalThis.ipcRenderer.invoke('IAppWindow::Restore');
+        this.ipc.Send(Channels.App.Restore);
     }
 
     public Close(): void {
-        globalThis.ipcRenderer.invoke('IAppWindow::Close');
+        this.ipc.Send(Channels.App.Close);
     }
 }

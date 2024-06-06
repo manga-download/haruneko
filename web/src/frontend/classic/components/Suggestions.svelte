@@ -23,11 +23,11 @@
         MediaItem,
     } from '../../../engine/providers/MediaPlugin';
 
-    const settings = HakuNeko.SettingsManager.OpenScope();
-    let checkNewContent = settings.Get<Check>(GlobalKey.CheckNewContent).Value;
-    settings.ValueChanged.Subscribe((_, shouldCheck: boolean) => {
-        if (shouldCheck) refreshSuggestions();
-        checkNewContent = shouldCheck;
+    const setting = HakuNeko.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent);
+    let checkNewContent = setting.Value;
+    setting.Subscribe(value => {
+        if(value) refreshSuggestions();
+        checkNewContent = value;
     });
 
     let suggestions: Bookmark[] = [];
@@ -37,7 +37,7 @@
         isRefreshing = true;
         await new Promise((resolve) => setTimeout(resolve, 1000));
         suggestions =
-            await HakuNeko.BookmarkPlugin.getEntriesWithUnflaggedContent();
+            await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent();
         isRefreshing = false;
     }
     refreshSuggestions();
@@ -53,7 +53,7 @@
     );
 
     async function selectBookmark(bookmark: Bookmark) {
-        let unFlaggedContent = await bookmark.getUnflaggedContent();
+        let unFlaggedContent = await bookmark.GetUnflaggedContent();
         $selectedPlugin = HakuNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
         $selectedItem = unFlaggedContent[
@@ -87,7 +87,7 @@
                         <span title={bookmark.Title}>{bookmark.Title}</span>
                     </Tag>
 
-                    {#await bookmark.getUnflaggedContent() then value}
+                    {#await bookmark.GetUnflaggedContent() then value}
                         <Tag
                             class="suggestcount"
                             type="outline"

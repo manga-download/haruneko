@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +7,7 @@ const config = {
         title: 'Manjanoon'
     },
     container: {
-        url: 'https://manjanoon.net/manga/nn-holding-you-captive/',
+        url: 'https://manjanoon.org/manga/nn-holding-you-captive/',
         id: '/manga/nn-holding-you-captive/',
         title: 'Holding You Captive'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

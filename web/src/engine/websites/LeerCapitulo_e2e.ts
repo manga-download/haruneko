@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const fixture = new TestFixture({
@@ -6,7 +7,7 @@ const fixture = new TestFixture({
         title: 'LeerCapitulo'
     },
     container: {
-        url: 'https://www.leercapitulo.com/manga/xvziyp/yuan-zun/',
+        url: 'https://www.leercapitulo.co/manga/xvziyp/yuan-zun/',
         id: '/manga/xvziyp/yuan-zun/',
         title: 'Yuan Zun'
     },
@@ -21,4 +22,4 @@ const fixture = new TestFixture({
         type: 'image/jpeg'
     }*/
 });
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

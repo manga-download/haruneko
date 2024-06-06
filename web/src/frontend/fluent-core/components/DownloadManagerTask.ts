@@ -75,12 +75,12 @@ const styles: ElementStyles = css`
 `;
 
 const template: ViewTemplate<DownloadManagerTask> = html`
-    <div class="mediatitle">${model => model.entry?.Media.Parent.Title}</div>
-    <div class="mediaitem">${model => model.entry?.Media.Title}</div>
+    <div class="mediatitle">${model => model.Entry?.Media.Parent.Title}</div>
+    <div class="mediaitem">${model => model.Entry?.Media.Title}</div>
     <div class="controls">
         <fluent-progress min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress>
         <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]} @click=${model => model.ShowErrors()}></div>
-        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" :innerHTML=${() => IconRemove} @click=${model => HakuNeko.DownloadManager.Dequeue(model.entry)}></fluent-button>
+        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" :innerHTML=${() => IconRemove} @click=${model => HakuNeko.DownloadManager.Dequeue(model.Entry)}></fluent-button>
     </div>
 `;
 
@@ -93,35 +93,35 @@ export class DownloadManagerTask extends FASTElement {
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        this.entry?.StatusChanged.Unsubscribe(this.UpdateStatus);
-        this.entry?.ProgressChanged.Unsubscribe(this.UpdateProgress);
+        this.Entry?.StatusChanged.Unsubscribe(this.UpdateStatus);
+        this.Entry?.ProgressChanged.Unsubscribe(this.UpdateProgress);
     }
 
-    @observable entry: DownloadTask;
-    entryChanged(oldValue: DownloadTask, newValue: DownloadTask) {
+    @observable Entry: DownloadTask;
+    EntryChanged(oldValue: DownloadTask, newValue: DownloadTask) {
         oldValue?.StatusChanged.Unsubscribe(this.UpdateStatus);
         newValue?.StatusChanged.Subscribe(this.UpdateStatus);
         oldValue?.ProgressChanged.Unsubscribe(this.UpdateProgress);
         newValue?.ProgressChanged.Subscribe(this.UpdateProgress);
 
-        this.UpdateStatus(null, this.entry?.Status);
-        this.UpdateProgress(null, this.entry?.Progress);
+        this.UpdateStatus(null, this.Entry?.Status);
+        this.UpdateProgress(null, this.Entry?.Progress);
     }
     @observable status: Status;
     @observable progress = 0;
 
-    private UpdateStatus = function (_: DownloadTask, value?: Status) {
+    private UpdateStatus = function (this: DownloadManagerTask, _: DownloadTask, value?: Status) {
         this.status = value;
     }.bind(this);
 
-    private UpdateProgress = function (_: DownloadTask, value?: number) {
+    private UpdateProgress = function (this: DownloadManagerTask, _: DownloadTask, value?: number) {
         this.progress = value ?? 0;
     }.bind(this);
 
     public ShowErrors() {
-        if(this.entry.Errors.length > 0) {
+        if(this.Entry.Errors.length > 0) {
             // TODO: Show all errors in a fancy error dialog ...
-            const message = this.entry.Errors.map(error => {
+            const message = this.Entry.Errors.map(error => {
                 return `<div>${error.message}</div><pre>${error.stack}</pre>`;
             }).join('<hr>');
             window.open(null, '_blank', [

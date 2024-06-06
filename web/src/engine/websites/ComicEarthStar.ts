@@ -91,8 +91,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist: Manga[] = [];
-        const oneshots = await this.performGraphQL<APIOneshots>('Earthstar_Oneshot', queryOneshots);
-        const series = await this.performGraphQL<APISeries>('Earthstar_Series', querySeries);
+        const oneshots = await this.PerformGraphQL<APIOneshots>('Earthstar_Oneshot', queryOneshots);
+        const series = await this.PerformGraphQL<APISeries>('Earthstar_Series', querySeries);
 
         oneshots.seriesOneshot.seriesSlice.seriesList.forEach(serie => {
             mangalist.push(new Manga(this, provider, new URL(serie.firstEpisode.permalink).pathname, serie.title.trim()));
@@ -109,10 +109,9 @@ export default class extends DecoratableMangaScraper {
         return mangalist.distinct();
     }
 
-    async performGraphQL<T>(operationName: string, query: string): Promise<T> {
+    private async PerformGraphQL<T>(operationName: string, query: string): Promise<T> {
         const uri = new URL(this.apiUrl);
         uri.searchParams.set('opname', operationName);
         return FetchGraphQL<T>(new Request(uri.href), operationName, query, {});
     }
-
 }

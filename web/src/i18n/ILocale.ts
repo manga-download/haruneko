@@ -170,7 +170,6 @@ export enum FrontendResourceKey {
     Frontend_Classic_Sidenav_Settings_Interface = 'Frontend_Classic_Sidenav_Settings_Interface',
     Frontend_Classic_Sidenav_Settings_Trackers = 'Frontend_Classic_Sidenav_Settings_Trackers',
     Frontend_Classic_Sidenav_Settings_Network = 'Frontend_Classic_Sidenav_Settings_Network',
-
 }
 
 // [SECTION]: Frontend: FluentCore
@@ -197,10 +196,6 @@ export enum FrontendResourceKey {
     Frontend_FluentCore_Settings_ShowBookmarksPanel_Description = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Description',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Label = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Label',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Description = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Description',
-    Frontend_FluentCore_Settings_ShowSplashScreen_Label = 'Frontend_FluentCore_Settings_ShowSplashScreen_Label',
-    Frontend_FluentCore_Settings_ShowSplashScreen_Description = 'Frontend_FluentCore_Settings_ShowSplashScreen_Description',
-    Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label = 'Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label',
-    Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description = 'Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description',
 
     Frontend_FluentCore_SettingsDialog_Title = 'Frontend_FluentCore_SettingsDialog_Title',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label = 'Frontend_FluentCore_SettingsDialog_CloseButton_Label',
@@ -281,6 +276,15 @@ export enum EngineResourceKey {
     Settings_Global_RPCSecret = 'Settings_Global_RPCSecret',
     Settings_Global_RPCSecretInfo = 'Settings_Global_RPCSecretInfo',
 
+    Settings_FeatureFlags_Label = 'Settings_FeatureFlags_Label',
+    Settings_FeatureFlags_Description = 'Settings_FeatureFlags_Description',
+    Settings_FeatureFlags_ShowSplashScreen_Label = 'Settings_FeatureFlags_ShowSplashScreen_Label',
+    Settings_FeatureFlags_ShowSplashScreen_Description = 'Settings_FeatureFlags_ShowSplashScreen_Description',
+    Settings_FeatureFlags_ShowFetchBrowserWindows_Label = 'Settings_FeatureFlags_ShowFetchBrowserWindows_Label',
+    Settings_FeatureFlags_ShowFetchBrowserWindows_Description = 'Settings_FeatureFlags_ShowFetchBrowserWindows_Description',
+    Settings_FeatureFlags_CrowdinTranslationMode_Label = 'Settings_FeatureFlags_CrowdinTranslationMode_Label',
+    Settings_FeatureFlags_CrowdinTranslationMode_Description = 'Settings_FeatureFlags_CrowdinTranslationMode_Description',
+
     SettingsManager_Settings_AlreadyInitializedError = 'SettingsManager_Settings_AlreadyInitializedError',
 
     FetchProvider_FetchGraphQL_AggregateError = 'FetchProvider_FetchGraphQL_AggregateError',
@@ -317,7 +321,17 @@ export enum WebsiteResourceKey {
     Plugin_Common_Preferred_LanguageInfo = 'Plugin_Common_Preferred_LanguageInfo',
     Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
     Plugin_MissingWebsiteEntry_UpdateError = 'Plugin_MissingWebsiteEntry_UpdateError',
-    Plugin_MissingManga_LanguageMismatchError = 'Plugin_MissingManga_LanguageMismatchError',
+}
+
+// [SECTION]: Website CopyManga
+export enum WebsiteResourceKey {
+    Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
+    Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
+}
+
+// [SECTION]: Website PocketComics
+export enum WebsiteResourceKey {
+    Plugin_PocketComics_LanguageMismatchError = 'Plugin_PocketComics_LanguageMismatchError',
 }
 
 // [SECTION]: Website SheepScanlations
@@ -326,9 +340,6 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
-    Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
-    Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
-
 }
 
 export const VariantResourceKey = {

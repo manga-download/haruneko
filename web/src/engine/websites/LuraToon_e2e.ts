@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +7,7 @@ const config = {
         title: 'Lura Toon'
     },
     container: {
-        url: 'https://luratoon.com/manga/eu-caminho-na-noite1/',
+        url: 'https://luratoons.com/manga/eu-caminho-na-noite1/',
         id: JSON.stringify({ post: '73', slug: '/manga/eu-caminho-na-noite1/' }),
         title: 'Eu Caminho na Noite consumido Pelas Lâminas'
     },
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

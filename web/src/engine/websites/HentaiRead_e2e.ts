@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -16,10 +17,10 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 185_694,
-        type: 'image/jpeg'
+        size: 102_024,
+        type: 'image/webp'
     }
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

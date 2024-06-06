@@ -1,3 +1,4 @@
+import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -6,8 +7,8 @@ const config = {
         title: 'NIGHT COMIC'
     },
     container: {
-        url: 'https://www.nightcomic.com/manga/the-devil-butler/',
-        id: JSON.stringify({ post: '2032', slug: '/manga/the-devil-butler/' }),
+        url: 'https://nightcomic.com/manga/the-devil-butler/',
+        id: JSON.stringify({ post: '2057', slug: '/manga/the-devil-butler/' }),
         title: 'The Devil Butler'
     },
     child: {
@@ -22,4 +23,4 @@ const config = {
 };
 
 const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
