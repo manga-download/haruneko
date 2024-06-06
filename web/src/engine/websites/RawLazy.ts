@@ -89,9 +89,9 @@ export default class extends DecoratableMangaScraper {
         return `
             new Promise(resolve => {
                 const interval = setInterval(function () {
-                    if (document.querySelector('${selector}').getAttribute('href') != '#') {
+                    if (document.querySelector('${selector}').href) != '#') {
                         clearInterval(interval);
-                        resolve(document.querySelector('${selector}').getAttribute('href'));
+                        resolve(document.querySelector('${selector}').href));
                     }
                 }, 500);
             })
