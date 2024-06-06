@@ -215,12 +215,14 @@ export class MediaTitleSelect extends FASTElement {
     override connectedCallback(): void {
         super.connectedCallback();
         HakuNeko.BookmarkPlugin.EntriesUpdated.Subscribe(this.BookmarksChanged);
+        HakuNeko.PastedClipboardURL.Subscribe(this.PastedClipboardUrlChanged);
         this.FilterEntries();
     }
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
         HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
+        HakuNeko.PastedClipboardURL.Unsubscribe(this.PastedClipboardUrlChanged);
     }
 
     readonly dropdown: HTMLDivElement;
@@ -303,13 +305,11 @@ export class MediaTitleSelect extends FASTElement {
         this.bookmark = this.Selected && sender.IsBookmarked(this.Selected);
     }.bind(this);
 
-    public async PasteClipboard(event: Event) {
-        event.stopPropagation();
+    private PastedClipboardUrlChanged = async function(this: MediaTitleSelect, uri: URL) {
         try {
             this.pasting = true;
-            const link = new URL(await navigator.clipboard.readText()).href;
             for(const website of HakuNeko.PluginController.WebsitePlugins) {
-                let media = await website.TryGetEntry(link);
+                let media = await website.TryGetEntry(uri.href);
                 if(media) {
                     media = HakuNeko.BookmarkPlugin.Entries.find(entry => entry.IsSameAs(media)) ?? media;
                     await media.Update();
@@ -319,12 +319,22 @@ export class MediaTitleSelect extends FASTElement {
                     return;
                 }
             }
-            throw new Exception(R.Frontend_Media_PasteLink_NotFoundError, link);
+            throw new Exception(R.Frontend_Media_PasteLink_NotFoundError, uri.href);
         } catch(error) {
             console.warn(error);
         }
         finally {
             this.pasting = false;
+        }
+    }.bind(this);
+
+    public async PasteClipboard(event: Event) {
+        event.stopPropagation();
+        const content = await navigator.clipboard.readText();
+        try {
+            HakuNeko.PastedClipboardURL.Value = new URL(content);
+        } catch(error) {
+            console.warn(error);
         }
     }
 }

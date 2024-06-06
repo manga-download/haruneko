@@ -7,9 +7,9 @@ const config = {
         title: 'Manga Crab'
     },
     container: {
-        url: 'https://visorcrab.com/series/mi-sistema-es-muy-serio/',
+        url: 'https://wikicrab.xyz/series/mi-sistema-es-muy-serio/',
         id: JSON.stringify({ post: '30840', slug: '/series/mi-sistema-es-muy-serio/' }),
-        title: 'El Sistema Sabroso'
+        title: 'Mi Sistema Es Muy serio'
     },
     child: {
         id: '/series/mi-sistema-es-muy-serio/capitulo-19/',
