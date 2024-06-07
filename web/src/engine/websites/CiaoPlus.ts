@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './AdonisFansub.webp';
+import icon from './CiaoPlus.webp';
 import type { MangaPlugin } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -33,17 +33,9 @@ type TDimension = {
     height: number
 }
 
-/*
-@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
-@Common.ImageAjax()
-*/
-
 export default class extends DecoratableMangaScraper {
 
-    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/comics/title/(\\d+)/episode/(\\d+)$`);
+    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/comics/title/(\\d+)/episode/\\d+$`);
     private readonly apiUrl = 'https://api.ciao.shogakukan.co.jp/';
 
     public constructor() {
