@@ -1,5 +1,6 @@
-import Hls from 'hls.js';
-import videojs from 'video.js';
+//import Hls from 'hls.js';
+//import videojs from 'video.js';
+import { CreateAppWindow } from './engine/platform/AppWindow';
 
 function createPlayer() {
     const player = document.createElement('video');
@@ -13,11 +14,14 @@ function createPlayer() {
     return player;
 }
 
+/*
 async function playRAW() {
     const player = createPlayer();
     player.src = 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4';
 }
+*/
 
+/*
 async function playHLS() {
     try {
         const player = createPlayer();
@@ -33,7 +37,9 @@ async function playHLS() {
         console.warn(error);
     }
 }
+*/
 
+/*
 async function playVideoJS() {
     try {
         const player = createPlayer();
@@ -50,10 +56,11 @@ async function playVideoJS() {
         console.warn(error);
     }
 }
+*/
 
 interface MediaStream {
     //GetSource(): Promise<HTMLSourceElement>;
-    GetSource(): Promise<string>;
+    Play(): Promise<void>;
 }
 
 class MediaStreamHLS implements MediaStream {
@@ -71,19 +78,16 @@ class MediaStreamHLS implements MediaStream {
 class MediaStreamMP4 implements MediaStream {
 
     constructor(private readonly player: HTMLVideoElement, private readonly streamURL: string) {
-        this.GetSource();
+        //this.GetSource();
     }
 
     private async DetectMimeCodec(): Promise<string> {
         return 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'; // 'video/webm; codecs="vorbis,vp8"'
     }
 
-    public async GetSource(): Promise<string> {
+    public async Play(offset: number = 0): Promise<void> {
 
         const mediaSource = new MediaSource();
-        const uri = URL.createObjectURL(mediaSource);
-
-        this.player.src = uri;
 
         mediaSource.addEventListener('sourceclose', (event) => {
             console.log('sourceclose', event);
@@ -92,32 +96,34 @@ class MediaStreamMP4 implements MediaStream {
 
         mediaSource.addEventListener('sourceopen', async (event) => {
             console.log('sourceopen', event);
+            const head = await fetch(this.streamURL, { method: 'HEAD' });
+            const size = parseInt(head.headers.get('content-length'));
+            console.log('Length:', '=>', size);
+            console.log('Range:', '=>', head.headers.get('accept-ranges'));
+            console.log('Mime:', '=>', head.headers.get('content-type'));
             const mimeCodec = await this.DetectMimeCodec();
             console.log(mimeCodec, '=>', MediaSource.isTypeSupported(mimeCodec));
             //mediaSource.setLiveSeekableRange(0, 10);
             const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
-            const response = await fetch(this.streamURL); // await fetch(this.streamURL);
-            const data = await response.arrayBuffer();
-            console.log('Data:', data.byteLength);
+            /*
             sourceBuffer.addEventListener('updateend', () => {
                 mediaSource.endOfStream();
                 //video.play();
                 console.log(mediaSource.readyState); // ended
             });
-            sourceBuffer.appendBuffer(data);
+            */
+            for(let offset = 0; offset < size; offset += 1048576) {
+                const response = await fetch(this.streamURL, { headers: { 'Range': `bytes=${offset}-${offset + 1048576}` } });
+                const data = await response.arrayBuffer();
+                console.log('Data:', data.byteLength);
+                sourceBuffer.appendBuffer(data);
+                await new Promise(resolve => setTimeout(resolve, 2500));
+            }
         });
 
-        return uri;
-    }
-}
+        console.log('TODO: Release current object URL', '=>', this.player.src);
+        this.player.src = URL.createObjectURL(mediaSource);
 
-async function playMediaStream() {
-    try {
-        const player = createPlayer();
-        player.src = 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4';
-        //await new MediaStreamMP4(player, 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4').GetSource();
-    } catch(error) {
-        console.warn(error);
     }
 }
 
@@ -125,12 +131,15 @@ async function playMediaStream() {
 // https://github.com/nwjs-ffmpeg-prebuilt/nwjs-ffmpeg-prebuilt/releases
 
 (async function() {
-    document.body.innerHTML = null;
-    globalThis.nw?.Window.get().show();
-    await playRAW();
-    //await playHLS();
-    //await playVideoJS();
-    //await playMediaStream();
+    CreateAppWindow('').HideSplash();
+    document.body.innerHTML = null;    
+    try {
+        const player = createPlayer();
+        await new MediaStreamMP4(player, 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4').Play();
+        //await new MediaStreamMP4(player, 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4').GetSource();
+    } catch(error) {
+        console.warn(error);
+    }
 })();
 
 // http://docs.evostream.com/sample_content/assets/sintel1m720p.mp4
