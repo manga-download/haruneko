@@ -226,6 +226,7 @@ export { default as Kanjiku } from './Kanjiku';
 export { default as Kanzenin } from './Kanzenin';
 export { default as Katakomik } from './Katakomik';
 export { default as KingOfManga } from './KingOfManga';
+export { default as KingOfShojo } from './KingOfShojo';
 export { default as Kiryuu } from './Kiryuu';
 export { default as KissmangaIN } from './KissmangaIN';
 export { default as KissmangaORG } from './KissmangaORG';
