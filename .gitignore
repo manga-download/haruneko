@@ -1,8 +1,10 @@
 .DS_Store
 .cache
+cache
 build
 bundle
 deploy
+dist
 node_modules
 package-lock.json
 junit.xml

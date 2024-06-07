@@ -3,6 +3,7 @@ import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitAppWindow from './nw/AppWindow';
 import ElectronAppWindow from './electron/AppWindow';
 import { GetLocale } from '../../i18n/Localization';
+import GetIPC from './InterProcessCommunication';
 
 export interface IAppWindow {
     /**
@@ -23,7 +24,7 @@ export interface IAppWindow {
 export function CreateAppWindow(splashURL: string): IAppWindow {
     return new PlatformInstanceActivator<IAppWindow>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitAppWindow(nw.Window.get(), splashURL))
-        .Configure(Runtime.Electron, () => new ElectronAppWindow(splashURL))
+        .Configure(Runtime.Electron, () => new ElectronAppWindow(GetIPC(), splashURL))
         .Create();
 }
 
