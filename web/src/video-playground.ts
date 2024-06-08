@@ -58,11 +58,7 @@ async function playVideoJS() {
 }
 */
 
-interface MediaStream {
-    //GetSource(): Promise<HTMLSourceElement>;
-    Play(): Promise<void>;
-}
-
+/*
 class MediaStreamHLS implements MediaStream {
 
     constructor(private readonly playlistURL: string) {}
@@ -74,55 +70,143 @@ class MediaStreamHLS implements MediaStream {
         return '';
     }
 }
+*/
 
-class MediaStreamMP4 implements MediaStream {
+class Range {
+    constructor(
+        public readonly Start: number,
+        public readonly End: number,
+    ) {}
+}
 
-    constructor(private readonly player: HTMLVideoElement, private readonly streamURL: string) {
-        //this.GetSource();
+class Chunk {
+    constructor(
+        public readonly Size: number,
+        public readonly Bytes: Range,
+        public readonly Time: Range,
+    ) {}
+}
+
+class EpisodeInfo {
+    constructor(
+        public readonly Size: number,
+        public readonly Codec: string,
+        public readonly Duration: number,
+        public readonly Chunks: Chunk[],
+    ) {}
+}
+
+class Episode {
+
+    public readonly info: Promise<EpisodeInfo>;
+
+    constructor(private readonly stream: URL) {
+        this.info = this.Load();
+    }
+
+    private async Load(): Promise<EpisodeInfo> {
+        const head = await fetch(this.stream, { method: 'HEAD' });
+        const size = parseInt(head.headers.get('content-length'));
+        console.log('Length:', '=>', size);
+        console.log('Range:', '=>', head.headers.get('accept-ranges'));
+        console.log('Mime:', '=>', head.headers.get('content-type'));
+        return new EpisodeInfo(size, await this.DetectMimeCodec(), 60, [
+            new Chunk(size, new Range(      0, 1048576 - 1), new Range(0, 60)),
+            new Chunk(size, new Range(1048576, 2097152 - 1), new Range(0, 60)),
+            new Chunk(size, new Range(2097152, 3145728 - 1), new Range(0, 60)),
+            new Chunk(size, new Range(3145728, 4194304 - 1), new Range(0, 60)),
+            new Chunk(size, new Range(4194304, 5242880 - 1), new Range(0, 60)),
+            new Chunk(size, new Range(5242880, 5524488 - 1), new Range(0, 60)),
+        ]);
     }
 
     private async DetectMimeCodec(): Promise<string> {
-        return 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'; // 'video/webm; codecs="vorbis,vp8"'
+        // 'video/webm; codecs="vorbis,vp8"'
+        return 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+    }
+
+    public async GetInfo(): Promise<EpisodeInfo> {
+        return this.info;
+    }
+
+    public async GetChunk(index: number): Promise<ArrayBuffer> {
+        const info = await this.info;
+        const start = index * 1048576;
+        const end = Math.min(start + 1048576 - 1, info.Size - 1);
+        const response = await fetch(this.stream, { headers: { 'Range': `bytes=${start}-${end}/${info.Size}` } });
+        return await response.arrayBuffer();
+    }
+}
+
+interface MediaStream {
+    //GetSource(): Promise<HTMLSourceElement>;
+    Load(episode: Episode): Promise<void>;
+    Play(offset: number): Promise<void>;
+}
+
+class MediaStreamMP4 implements MediaStream {
+
+    private readonly mediaSource: MediaSource;
+    private readonly ready: Promise<Event>;
+    private episode: Episode;
+
+    constructor(private readonly player: HTMLVideoElement) {
+        this.mediaSource = new MediaSource();
+        this.ready = new Promise(resolve => {
+            //this.mediaSource.onsourceopen = resolve;
+            this.mediaSource.onsourceopen = event => {
+                console.log('mediaSource.onsourceopen', '=>', event);
+                resolve(event);
+            };
+        });
+        this.mediaSource.onsourceended = event => console.log('mediaSource.onsourceended', '=>', event);
+        this.mediaSource.onsourceclose = event => console.log('mediaSource.onsourceclose', '=>', event);
+        this.player.src = URL.createObjectURL(this.mediaSource);
+    }
+
+    public async Load(episode: Episode): Promise<void> {
+        this.episode = episode;
+        const info = await episode.GetInfo();
+        if(MediaSource.isTypeSupported(info.Codec)) {
+            console.log('Supported Mime Type:', info.Codec);
+            //console.log('TODO: Release current object URL', '=>', this.player.src);
+            //URL.revokeObjectURL(this.player.src);
+            //this.player.src = URL.createObjectURL(this.mediaSource);
+        } else {
+            console.warn('Unsupported Mime Type:', info.Codec);
+        }
     }
 
     public async Play(offset: number = 0): Promise<void> {
 
-        const mediaSource = new MediaSource();
+        await this.ready;
+        const info = await this.episode.GetInfo();
+        console.log('Info', '=>', info);
 
-        mediaSource.addEventListener('sourceclose', (event) => {
-            console.log('sourceclose', event);
-            //URL.revokeObjectURL(uri);
+        //mediaSource.setLiveSeekableRange(0, 10);
+        //this.mediaSource.removeSourceBuffer(this.mediaSource.sourceBuffers[0]);
+        const sourceBuffer = this.mediaSource.addSourceBuffer(info.Codec);
+        sourceBuffer.onupdate = event => console.log('sourceBuffer.onupdate', '=>', event);
+        sourceBuffer.onupdatestart = event => console.log('sourceBuffer.onupdatestart', '=>', event);
+        sourceBuffer.onupdateend = event => console.log('sourceBuffer.onupdateend', '=>', event);
+
+        for(let index = 0; index < info.Chunks.length; index++) {
+            await new Promise(resolve => setTimeout(resolve, 2500));
+            const data = await this.episode.GetChunk(index);
+            console.log('Bytes:', data.byteLength);
+            sourceBuffer.appendBuffer(data);
+        }
+
+        /*
+        sourceBuffer.addEventListener('updateend', () => {
+            mediaSource.endOfStream();
+            //video.play();
         });
+        */
 
-        mediaSource.addEventListener('sourceopen', async (event) => {
-            console.log('sourceopen', event);
-            const head = await fetch(this.streamURL, { method: 'HEAD' });
-            const size = parseInt(head.headers.get('content-length'));
-            console.log('Length:', '=>', size);
-            console.log('Range:', '=>', head.headers.get('accept-ranges'));
-            console.log('Mime:', '=>', head.headers.get('content-type'));
-            const mimeCodec = await this.DetectMimeCodec();
-            console.log(mimeCodec, '=>', MediaSource.isTypeSupported(mimeCodec));
-            //mediaSource.setLiveSeekableRange(0, 10);
-            const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
-            /*
-            sourceBuffer.addEventListener('updateend', () => {
-                mediaSource.endOfStream();
-                //video.play();
-                console.log(mediaSource.readyState); // ended
-            });
-            */
-            for(let offset = 0; offset < size; offset += 1048576) {
-                const response = await fetch(this.streamURL, { headers: { 'Range': `bytes=${offset}-${offset + 1048576}` } });
-                const data = await response.arrayBuffer();
-                console.log('Data:', data.byteLength);
-                sourceBuffer.appendBuffer(data);
-                await new Promise(resolve => setTimeout(resolve, 2500));
-            }
-        });
 
-        console.log('TODO: Release current object URL', '=>', this.player.src);
-        this.player.src = URL.createObjectURL(mediaSource);
+        //console.log('TODO: Release current object URL', '=>', this.player.src);
+        //this.player.src = URL.createObjectURL(this.mediaSource);
 
     }
 }
@@ -135,8 +219,11 @@ class MediaStreamMP4 implements MediaStream {
     document.body.innerHTML = null;    
     try {
         const player = createPlayer();
-        await new MediaStreamMP4(player, 'https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4').Play();
-        //await new MediaStreamMP4(player, 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4').GetSource();
+        const streamer = new MediaStreamMP4(player);
+        const episode = new Episode(new URL('https://mdn.github.io/dom-examples/sourcebuffer/frag_bunny.mp4'));
+        await streamer.Load(episode);
+        //await streamer.Load('http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4');
+        await streamer.Play(0);
     } catch(error) {
         console.warn(error);
     }
