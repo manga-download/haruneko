@@ -98,6 +98,7 @@ class EpisodeInfo {
 
 class Episode {
 
+    private readonly chunkSize = 1048576; // bytes
     public readonly info: Promise<EpisodeInfo>;
 
     constructor(private readonly stream: URL) {
@@ -110,14 +111,13 @@ class Episode {
         console.log('Length:', '=>', size);
         console.log('Range:', '=>', head.headers.get('accept-ranges'));
         console.log('Mime:', '=>', head.headers.get('content-type'));
-        return new EpisodeInfo(size, await this.DetectMimeCodec(), 60, [
-            new Chunk(size, new Range(      0, 1048576 - 1), new Range(0, 60)),
-            new Chunk(size, new Range(1048576, 2097152 - 1), new Range(0, 60)),
-            new Chunk(size, new Range(2097152, 3145728 - 1), new Range(0, 60)),
-            new Chunk(size, new Range(3145728, 4194304 - 1), new Range(0, 60)),
-            new Chunk(size, new Range(4194304, 5242880 - 1), new Range(0, 60)),
-            new Chunk(size, new Range(5242880, 5524488 - 1), new Range(0, 60)),
-        ]);
+        return new EpisodeInfo(size, await this.DetectMimeCodec(), 60.37, new Array(Math.ceil(size / this.chunkSize)).fill(0).map((_, index) => {
+            const byteStart = index * this.chunkSize;
+            const byteEnd = Math.min(byteStart + this.chunkSize - 1, size - 1)
+            const timeStart = 0;
+            const timeEnd = 0;
+            return new Chunk(this.chunkSize, new Range(byteStart, byteEnd), new Range(timeStart, timeEnd));
+        }));
     }
 
     private async DetectMimeCodec(): Promise<string> {
@@ -133,7 +133,7 @@ class Episode {
         const info = await this.info;
         const start = index * 1048576;
         const end = Math.min(start + 1048576 - 1, info.Size - 1);
-        const response = await fetch(this.stream, { headers: { 'Range': `bytes=${start}-${end}/${info.Size}` } });
+        const response = await fetch(this.stream, { headers: { 'Range': `bytes=${start}-${end}` } });
         return await response.arrayBuffer();
     }
 }
@@ -183,12 +183,15 @@ class MediaStreamMP4 implements MediaStream {
         const info = await this.episode.GetInfo();
         console.log('Info', '=>', info);
 
-        //mediaSource.setLiveSeekableRange(0, 10);
+        this.mediaSource.setLiveSeekableRange(0, info.Duration);
         //this.mediaSource.removeSourceBuffer(this.mediaSource.sourceBuffers[0]);
         const sourceBuffer = this.mediaSource.addSourceBuffer(info.Codec);
-        sourceBuffer.onupdate = event => console.log('sourceBuffer.onupdate', '=>', event);
         sourceBuffer.onupdatestart = event => console.log('sourceBuffer.onupdatestart', '=>', event);
-        sourceBuffer.onupdateend = event => console.log('sourceBuffer.onupdateend', '=>', event);
+        sourceBuffer.onupdate = event => console.log('sourceBuffer.onupdate', '=>', event);
+        sourceBuffer.onupdateend = event => {
+            console.log('sourceBuffer.onupdateend', '=>', event);
+            //this.mediaSource.endOfStream();
+        };
 
         for(let index = 0; index < info.Chunks.length; index++) {
             await new Promise(resolve => setTimeout(resolve, 2500));
@@ -197,17 +200,8 @@ class MediaStreamMP4 implements MediaStream {
             sourceBuffer.appendBuffer(data);
         }
 
-        /*
-        sourceBuffer.addEventListener('updateend', () => {
-            mediaSource.endOfStream();
-            //video.play();
-        });
-        */
-
-
         //console.log('TODO: Release current object URL', '=>', this.player.src);
         //this.player.src = URL.createObjectURL(this.mediaSource);
-
     }
 }
 
