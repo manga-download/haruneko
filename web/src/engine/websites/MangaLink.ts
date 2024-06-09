@@ -18,7 +18,7 @@ AddAntiScrapingDetection(async (render) => {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangalink', 'MangaLink', 'https://manga-link.org', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
+        super('mangalink', 'MangaLink', 'https://link-manga.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

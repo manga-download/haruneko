@@ -7,7 +7,7 @@ const config = {
         title: 'Dark Scan'
     },
     container: {
-        url: 'https://rightdark-scan.com/manga/okashi-na-tensei/',
+        url: 'https://dark-scan.com/manga/okashi-na-tensei/',
         id: JSON.stringify({ post: '256', slug: '/manga/okashi-na-tensei/' }),
         title: 'Okashi na tensei'
     },
@@ -16,7 +16,7 @@ const config = {
         title: 'Capitulo 51.2'
     },
     entry: {
-        index: 4,
+        index: 0,
         size: 1_145_527,
         type: 'image/jpeg'
     }
