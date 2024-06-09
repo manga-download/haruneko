@@ -10,7 +10,7 @@ export default class implements IBloatGuard {
         };
     }
 
-    public Initialize() {
+    public async Initialize(): Promise<void> {
         // NOTE: parameter extraInfoSpec:
         //       'blocking'       => sync request required for header modification
         //       'requestHeaders' => allow change request headers?
@@ -19,7 +19,7 @@ export default class implements IBloatGuard {
             chrome.webRequest.onBeforeSendHeaders.addListener(this.BlockRequests, { urls: this.patterns }, [ 'blocking' ]);
         }
 
-        // TODO: Swith to chrome.declarativeNetRequest
+        // TODO: Switch to chrome.declarativeNetRequest
         //       => https://developer.chrome.com/docs/extensions/reference/declarativeNetRequest/#evaluation
         //       chrome.declarativeWebRequest.onRequest.addRules(...);
         //       chrome.declarativeWebRequest.onRequest.addListener(...);

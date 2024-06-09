@@ -7,7 +7,7 @@ const config = {
         title: 'Immortal Updates'
     },
     container: {
-        url: 'https://immortalupdates.com/manga/the-era-of-superhuman-manhwa/',
+        url: 'https://mortalsgroove.com/manga/the-era-of-superhuman-manhwa/',
         id: JSON.stringify({ post: '3229', slug: '/manga/the-era-of-superhuman-manhwa/' }),
         title: 'Superhuman Era'
     },

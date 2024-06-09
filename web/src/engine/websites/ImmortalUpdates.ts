@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('immortalupdates', 'Immortal Updates', 'https://immortalupdates.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('immortalupdates', 'Immortal Updates', 'https://mortalsgroove.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
