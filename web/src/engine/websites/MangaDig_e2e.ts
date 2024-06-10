@@ -12,7 +12,7 @@ const config = {
         title: `The Duke's Teddy Bear`
     },
     child: {
-        id: '/manga-wa912941/1/106.html',
+        id: '/manga-wa912941/1/65.html',
         title: '(S2) Episode 65'
     },
     entry: {
