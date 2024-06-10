@@ -194,7 +194,7 @@ type PageScriptResult = {
  */
 export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, useScript = false, sbVersionOverride: SpeedBinbVersion = undefined): Promise<Page[]> {
     let viewerUrl = new URL(chapter.Identifier, this.URI);
-    const request = new Request(viewerUrl.href, {
+    const request = new Request(viewerUrl, {
         headers: {
             Referer: this.URI.origin
         }
@@ -248,7 +248,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         case SpeedBinbVersion.v016113: //BookHodai,  Futabanet, Getsuaku (v016700), MangaPlaza, Ohtabooks
         case SpeedBinbVersion.v016130: { // Booklive, MangaPlanet, S-Manga, Yanmaga
             //Doing it like that because of cookies needed for Mangaplanet using viewerUrl on purpose because of CORS issues
-            const data = await FetchWindowScript<JSONPageDatav016452>(new Request(viewerUrl.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+            const data = await FetchWindowScript<JSONPageDatav016452>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016130(this, data.items[0], sharingKey, chapter);
         }
         //YoungJump
@@ -256,7 +256,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             const u = viewerUrl.searchParams.get('u1');
             uri.searchParams.set('u1', u);
             //Doing it like that because of cookies needed for YoungJump using viewerUrl on purpose because of CORS issues
-            const data = await FetchWindowScript<JSONPageDatav016452>(new Request(viewerUrl.href), JsonFetchScript.replace('{URI}', uri.href), 2000);
+            const data = await FetchWindowScript<JSONPageDatav016452>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
             return await getPageLinks_v016201(this, data.items[0], sharingKey, u, chapter);
         }
         //Cmoa
@@ -265,7 +265,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             const u1 = viewerUrl.searchParams.get('u1');
             uri.searchParams.set('u0', u0);
             uri.searchParams.set('u1', u1);
-            const data = await FetchJSON<JSONPageDatav016452>(new Request(uri.href));
+            const data = await FetchJSON<JSONPageDatav016452>(new Request(uri));
             const params: Paramsv016452 = { cid, sharingKey, u0, u1 };
             return await getPageLinks_v016452(this, data.items[0], params, chapter);
         }
@@ -327,7 +327,7 @@ async function getPageLinks_v016201(scraper: MangaScraper, configuration: Config
         const uri = getSanitizedURL(configuration.ContentsServer, 'content');
         uri.searchParams.set('dmytime', configuration.ContentDate);
         uri.searchParams.set('u1', u);
-        const data: SBCDATA = await FetchJSON(new Request(uri.href));
+        const data: SBCDATA = await FetchJSON(new Request(uri));
         const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
         const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
             const src = img.getAttribute('src');
@@ -361,7 +361,7 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
         case 1: {//Futabanet, Getsuaku, BookHodai
             const uri = getSanitizedURL(configuration.ContentsServer, 'content.js');
             if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
-            const response = await Fetch(new Request(uri.href));
+            const response = await Fetch(new Request(uri));
             const data = await response.text();
             const jsonObj: SBCDATA = JSON.parse(data.slice(16, -1));
             const dom = new DOMParser().parseFromString(jsonObj.ttx, 'text/html');
@@ -376,7 +376,7 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
         case 2: {//MangaPlanet, MangaPlaza
             const uri = getSanitizedURL(configuration.ContentsServer, 'content');
             uri.searchParams.set('dmytime', configuration.ContentDate);
-            const data = await FetchJSON<SBCDATA>(new Request(uri.href, { headers: { Referer: scraper.URI.href } }));
+            const data = await FetchJSON<SBCDATA>(new Request(uri, { headers: { Referer: scraper.URI.href } }));
             const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
             const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
                 const src = img.getAttribute('src');
@@ -390,7 +390,7 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
 }
 
 async function fetchSBC(scraper: MangaScraper, uri: URL, configuration: Configurationv016452, chapter: Chapter) {
-    const data = await FetchJSON<SBCDATA>(new Request(uri.href));
+    const data = await FetchJSON<SBCDATA>(new Request(uri));
     const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
     const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
         const src = img.getAttribute('src');
@@ -427,7 +427,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 }
 
 async function descramble_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    const data = await FetchJSON<JSONImageDatav016061>(new Request(page.Link.href));
+    const data = await FetchJSON<JSONImageDatav016061>(new Request(page.Link));
     const fakepage = new Page(scraper, page.Parent as Chapter, new URL(data.resources.i.src, page.Link.href));
     const imagedata: Blob = await Common.FetchImageAjax.call(scraper, fakepage, priority, signal, detectMimeType);
 
