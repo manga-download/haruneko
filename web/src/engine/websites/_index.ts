@@ -488,6 +488,7 @@ export { default as Mexat } from './Mexat';
 export { default as Mgkomik } from './Mgkomik';
 export { default as MHScans } from './MHScans';
 export { default as Mi2mangaES } from './Mi2mangaES';
+export { default as MichiKusa } from './MichiKusa';
 export { default as Migudm } from './Migudm';
 export { default as MilfToon } from './MilfToon';
 export { default as MindaFanSub } from './MindaFanSub';
