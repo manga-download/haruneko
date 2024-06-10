@@ -3,7 +3,7 @@ import icon from './BookHodai.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchHTML } from '../platform/FetchProvider';
 function MangaLabelExtractor(element: HTMLElement): string {
     return element.textContent.split('＞').pop().trim() || element.textContent.trim();
 }
@@ -25,7 +25,7 @@ export default class extends DecoratableMangaScraper {
         const paths = ['magazine', 'magazine_pop', 'manga', 'manga_pop'];
         const mangaList: Manga[] = [];
         for (const path of paths) {
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/search/${path}?page={page}`, 'p.book-detail-pc__title a');
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/search/${path}?page={page}`, '.p-bookdetail-contents__title a');
             mangaList.push(...mangas);
         }
         return mangaList.distinct();
@@ -33,18 +33,18 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters: Chapter[] = [];
-        const [data] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'div.content');
+        const dom = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
 
-        //get current "chapter" (book) title
-        let title = data.querySelector('h2').textContent.trim();
+        //get first "chapter" (book) details
+        const bookdetails = dom.querySelector<HTMLDivElement>('section.p-book-overview');
+        let title = bookdetails.querySelector('.p-book-overview__detail-volnumber').textContent.trim();
         title = title.replace(manga.Title, '').trim() != '' ? title.replace(manga.Title, '').trim() : title;
+        const chapterlinkNode = bookdetails.querySelector<HTMLAnchorElement>('a[href*="viewer"');
+        chapters.push(new Chapter(this, manga, chapterlinkNode.pathname + chapterlinkNode.search, title));
 
-        const chaptersNodes = [...data.querySelectorAll<HTMLElement>('.bookdetail_box div.pc a[href*="viewer"], div.matome-text-box')];
-        const firstChapter = chaptersNodes.shift() as HTMLAnchorElement;
-        chapters.push(new Chapter(this, manga, firstChapter.pathname + firstChapter.search, title));
-
+        const chaptersNodes = [...dom.querySelectorAll<HTMLElement>('div.p-book-backnumber-series__item')];
         for (const chapter of chaptersNodes) {
-            const title = chapter.querySelector('.matome_book_nm').textContent.trim();
+            const title = chapter.querySelector('.p-book-backnumber-series__volnumber').textContent.trim();
             const link = chapter.querySelector<HTMLAnchorElement>('a[href*="viewer"]');
             chapters.push(new Chapter(this, manga, link.pathname + link.search, title.replace(manga.Title, '')));
         }
