@@ -292,6 +292,13 @@ const translations: VariantResource = {
   Plugin_SheepScanlations_Settings_UsernameInfo: 'Username for automatic account login to Sheep-Scanlations 😉',
   Plugin_SheepScanlations_Settings_Password: 'Password',
   Plugin_SheepScanlations_Settings_PasswordInfo: 'Password for automatic account login to Sheep-Scanlations 😉',
+
+  Plugin_Lezhin_Settings_Username: 'Username',
+  Plugin_Lezhin_Settings_UsernameInfo: 'Username for automatic account login to Lezhin',
+  Plugin_Lezhin_Settings_Password: 'Password',
+  Plugin_Lezhin_Settings_PasswordInfo: 'Password for automatic account login to Lezhin',
+  Plugin_Lezhin_Settings_Force_JPEG: 'Force JPEG',
+  Plugin_Lezhin_Settings_Force_JPEGInfo: 'Always use JPEG instead of WEBP images',
 };
 
 export default translations;

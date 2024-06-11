@@ -8,3 +8,5 @@ dist
 node_modules
 package-lock.json
 junit.xml
+/.vscode/
+/.Mangas/

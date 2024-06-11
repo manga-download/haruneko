@@ -342,6 +342,16 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
 }
 
+// [SECTION]: Website Lezhin
+export enum WebsiteResourceKey {
+    Plugin_Lezhin_Settings_Username = 'Plugin_Lezhin_Settings_Username',
+    Plugin_Lezhin_Settings_UsernameInfo = 'Plugin_Lezhin_Settings_UsernameInfo',
+    Plugin_Lezhin_Settings_Password = 'Plugin_Lezhin_Settings_Password',
+    Plugin_Lezhin_Settings_PasswordInfo = 'Plugin_Lezhin_Settings_PasswordInfo',
+    Plugin_Lezhin_Settings_Force_JPEG = 'Plugin_Lezhin_Settings_Force_JPEG',
+    Plugin_Lezhin_Settings_Force_JPEGInfo = 'Plugin_Lezhin_Settings_Force_JPEGInfo',
+}
+
 export const VariantResourceKey = {
     ...TagCategoryResourceKey,
     ...TagResourceKey,
