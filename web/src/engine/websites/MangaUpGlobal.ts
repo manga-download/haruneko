@@ -72,7 +72,7 @@ export default class extends DecoratableMangaScraper {
         return data.pages.map(image => new Page(this, chapter, new URL(image.imageUrl)));
     }
 
-    private async FetchNextData<T>(url: URL): Promise<T> {
+    private async FetchNextData<T extends JSONElement>(url: URL): Promise<T> {
         const data = await FetchWindowScript<NEXTDATA<T>>(new Request(url), '__NEXT_DATA__', 2000);
         return data.props.pageProps.data as T;
     }

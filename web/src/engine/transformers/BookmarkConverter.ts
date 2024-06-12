@@ -10,6 +10,7 @@ const legacyWebsiteIdentifierMap = {
     'bacamangaorg': 'bacamanga',
     'bananascan': 'harmonyscan',
     'blogtruyen': 'blogtruyenmoi', //there is also a blogtruyen now, same website template
+    'cocomanhua': 'colamanga',
     'comicbushi': 'comicgrowl',
     'comicwalker': 'kadocomi',
     'crazyscans': 'mangacultivator',
@@ -31,7 +32,7 @@ const legacyWebsiteIdentifierMap = {
     'manganel': 'manganato',
     'manganelos': 'mangapure',
     'mangaproz': 'mangapro',
-    'mangaraw': 'mangagecko',
+    'mangaraw': 'mangageko',
     'manhuaes': 'manhuaaz',
     'manhuascan': 'kaliscan',
     'manhwaclub': 'manhwahentai',
