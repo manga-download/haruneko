@@ -33,6 +33,7 @@ type TDimension = {
     height: number
 }
 
+@Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
     private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/comics/title/(\\d+)/episode/\\d+$`);
@@ -52,16 +53,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = parseInt(url.match(this.mangaRegexp)[1]);
-        const endpointUrl = new URL(`/title/list?version=6.0.0&platform=3&title_id_list=${mangaid}`, this.apiUrl);
-        const request = await this.CreateRequest(endpointUrl);
-        const { title_list } = await FetchJSON<APIMangas>(request);
-        return new Manga(this, provider, title_list[0].title_id.toString(), title_list[0].title_name.trim());
+        const request = await this.CreateRequest(`/title/list?platform=3&title_id_list=${mangaid}`);
+        const { title_list: [manga] } = await FetchJSON<APIMangas>(request);
+        return new Manga(this, provider, manga.title_id.toString(), manga.title_name.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        //get chapters id
-        let endpointUrl = new URL(`/title/list?version=6.0.0&platform=3&title_id_list=${manga.Identifier}`, this.apiUrl);
-        let request = await this.CreateRequest(endpointUrl);
+        let request = await this.CreateRequest(`/title/list?platform=3&title_id_list=${manga.Identifier}`);
         const { title_list } = await FetchJSON<APIMangas>(request);
         const chaptersIds = title_list[0].episode_id_list;
         const chapters: Chapter[] = [];
@@ -75,12 +73,10 @@ export default class extends DecoratableMangaScraper {
         }
 
         for (const chapterChunk of chaptersChunks) {
-            endpointUrl = new URL(`/episode/list`, this.apiUrl);
-            request = await this.CreateRequest(endpointUrl, [
-                ['version', '6.0.0'],
-                ['platform', '3'],
-                ['episode_id_list', chapterChunk.toString()]
-            ]);
+            request = await this.CreatePostRequest(`/episode/list`, new URLSearchParams({
+                platform: '3',
+                episode_id_list: chapterChunk.toString()
+            }));
 
             const { episode_list } = await FetchJSON<APIChapters>(request);
             chapters.push(...episode_list.map(chapter => new Chapter(this, manga, chapter.episode_id.toString(), chapter.episode_name.trim())));
@@ -89,9 +85,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //https://api.ciao.shogakukan.co.jp/web/episode/viewer?version=6.0.0&platform=3&episode_id=5477
-        const endpointUrl = new URL(`/web/episode/viewer?version=6.0.0&platform=3&episode_id=${chapter.Identifier}`, this.apiUrl);
-        const request = await this.CreateRequest(endpointUrl);
+        const request = await this.CreateRequest(`/web/episode/viewer?0&platform=3&episode_id=${chapter.Identifier}`);
         const { page_list, scramble_seed } = await FetchJSON<APIPages>(request);
         return page_list.map(page => new Page(this, chapter, new URL(page), { seed: scramble_seed }));
     }
@@ -134,7 +128,7 @@ export default class extends DecoratableMangaScraper {
                     })
                 );
             };
-            function Is(e: number[], seed: number) : number[] {
+            function Is(e: number[], seed: number): number[] {
                 const t = Ls(seed);
                 return e.map(o => [t.next().value, o]).sort((o, r) => + (o[0] > r[0]) - + (r[0] > o[0])).map(o => o[1]);
             }
@@ -167,11 +161,36 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private async CreateRequest(endpoint: URL | string, postData: string[][] = undefined): Promise<Request> {
-        const url = typeof endpoint === 'string' ? new URL(endpoint) : endpoint;
+    private async CreateRequest(endpoint: string): Promise<Request> {
+        const url = new URL(endpoint, this.apiUrl);
+        const bambihash = await this.ComputeBambiHash(url.searchParams);
+        return new Request(url, {
+            method: 'GET',
+            headers: {
+                'x-bambi-hash': bambihash,
+                Origin: this.URI.origin,
+                Referer: this.URI.href
+            }
+        });
+    }
 
-        //CALCULATE THE HASH for the request body OR request parameters
-        const params = postData ? Object.fromEntries(postData) : Object.fromEntries(url.searchParams);
+    private async CreatePostRequest(endpoint: string, variables: URLSearchParams): Promise<Request> {
+        const url = new URL(endpoint, this.apiUrl);
+        const bambihash = await this.ComputeBambiHash(variables);
+        return new Request(url, {
+            method: 'POST',
+            body: variables.toString(),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'x-bambi-hash': bambihash,
+                Origin: this.URI.origin,
+                Referer: this.URI.href
+            }
+        });
+    }
+
+    private async ComputeBambiHash(variables: URLSearchParams): Promise<string> {
+        const params = Object.fromEntries(variables);
         const keys = Object.keys(params).sort();
         const hashtable: string[] = [];
         for (const key of keys) {
@@ -179,34 +198,11 @@ export default class extends DecoratableMangaScraper {
             const valueHash = await this.SHA(params[key], 'SHA-512');
             hashtable.push([keyHash, valueHash].join('_'));
         }
-
-        //platform 3 = d294fcce0cc88587843099d85dd805aeef1b09a63b0db1dd3e4dc62a343c1db5_3bafbf08882a2d10133093a1b8433f50563b93c14acd05b79028eb1d12799027241450980651994501423a66c276ae26c43b739bc65c4e16b10c3af6c202aebb
-        //title_id_list 206 = ab64d73d61fd0aca64d927401adb3a267105307ee8de12dc2313443a2ce2cb5c_33d7bcca06466d44b59bcb0683b2542acf08e476e2a7faffb3800f6a01b0c13a9049999a42f3dd159db0d85c7208cfc67f933c927cf48878058f0931e97ee1a3
-        //version 6.0.0 = "5ca4f3850ccc331aaf8a257d6086e526a3b42a63e18cb11d020847985b31d188_6a2f355dc194a53a7d87513d236514b5e85bd3da886e37f93dcbda18f9d4204aa74b5c1eb2063547e6afa206d8bafe860896a271baa83a5e0a836fe44da2a7c3"
-
-        let bambihash = await this.SHA(hashtable.toString(), 'SHA-256'); //2cc9285228b63b58c6cc404082904170a7e4f89fb9c3cee00c53a7f67ad5ed6b
-        bambihash = await this.SHA(bambihash, 'SHA-512'); //ad63b1c89a6aa7bf0664adcc99d2fc212c77795f8c83b05c0b1ade00da16a1b375516d963de2e70aee53843ed8d0eeaf4c6ecc32732c3b7d9bda63f6d6a5916e
-
-        return postData ?
-            new Request(url, {
-                method: 'POST',
-                body: new URLSearchParams(postData).toString(),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'x-bambi-hash': bambihash,
-                    Origin: this.URI.origin,
-                    Referer: this.URI.href
-                }
-            }) : new Request(url, {
-                method: 'GET',
-                headers: {
-                    'x-bambi-hash': bambihash,
-                    Origin: this.URI.origin,
-                    Referer: this.URI.href
-                }
-            });
+        const bambihash = await this.SHA(hashtable.toString(), 'SHA-256');
+        return await this.SHA(bambihash, 'SHA-512');
 
     }
+
     private async SHA(text: string, cipher: string): Promise<string> {
         return Buffer.from(await crypto.subtle.digest(cipher, Buffer.from(text))).toString('hex');
     }
