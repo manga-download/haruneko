@@ -24,7 +24,10 @@ type APIManga = {
 
 type APIChapters = {
     data: {
-        body: string;
+        episodes: {
+            id: number,
+            title : string
+        }[]
     }
 }
 
@@ -75,11 +78,7 @@ export default class extends DecoratableMangaScraper {
 
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/series/${manga.Identifier}/episodes?max_limit=9999`, this.URI);
-        const { data: { body } } = await FetchJSON<APIChapters>(new Request(url));
-        const dom = new DOMParser().parseFromString(body, 'text/html');
-        return [...dom.querySelectorAll('li')].map(chapter => {
-            const title = chapter.querySelector('a.item__thumb img').getAttribute('alt').trim();
-            return new Chapter(this, manga, `/episode/${chapter.dataset.id}`, title);
-        });
+        const { data: { episodes } } = await FetchJSON<APIChapters>(new Request(url));
+        return episodes.map(chapter => new Chapter(this, manga, `/episode/${chapter.id.toString()}`, chapter.title.trim()));
     }
 }
