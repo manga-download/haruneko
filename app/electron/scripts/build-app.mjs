@@ -15,7 +15,7 @@ await purge(dirBuild);
 
 const manifest = {
     name: pkgConfig.name,
-    //type: pkgConfig.type,
+    //type: pkgConfig.type, // 'commonjs',
     main: pkgConfig.main,
     //'node-main': pkgConfig.main,
     url: pkgConfig.url,
@@ -23,6 +23,7 @@ const manifest = {
         'http://localhost/*',
         `${new URL(pkgConfig.url).origin}/*`
     ],
+    'chromium-args': null,
     'user-agent': targetConfig['user-agent'] ?? null,
     dependencies: pkgConfig.dependencies
 };

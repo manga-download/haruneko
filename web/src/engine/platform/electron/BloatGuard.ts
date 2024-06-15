@@ -1,11 +1,12 @@
 import type { IBloatGuard } from '../BloatGuard';
+import type { IPC } from '../InterProcessCommunication';
+import { BloatGuard as Channels } from '../../../../../app/src/ipc/Channels';
 
 export default class implements IBloatGuard {
 
-    constructor(private readonly patterns: Array<string>) {}
+    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>, private readonly patterns: Array<string>) {}
 
-    Initialize(): void {
-        console.log('Platform::Electron::BloatGuard::Initialize()');
-        //throw new Error('Method not implemented.');
+    async Initialize(): Promise<void> {
+        return this.ipc.Send(Channels.App.Initialize, this.patterns);
     }
 }

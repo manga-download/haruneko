@@ -23,7 +23,7 @@ export class PlatformInfo {
     constructor() {
         this.OS = System.Unknown;
         this.Runtime = Runtime.Unknown;
-        const ua = window?.navigator?.userAgent ?? '';
+        const ua = globalThis?.navigator?.userAgent ?? '';
 
         if(typeof globalThis?.Deno === 'object') {
             this.OS = this.DetectSystemDeno();

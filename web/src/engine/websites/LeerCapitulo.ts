@@ -9,10 +9,10 @@ const pageScript = `
         const data = document.querySelector('p#array_data').textContent.trim();
         resolve(atob(data.replace(
           /[A-Z0-9]/gi,
-          (_0xe528ce) =>
-            '13RjUMgYBObXQDatoWz8TIsmZN7Pq6vSFywnLA04iC9kdupEhfGxVec5Kl2JrH'[
-              'p1iXCxTFYQKEMyG0U5mwW29VsRSAecuok6zgnJNOq7bvtfBZPa3rHjDlIhL48d'.indexOf(
-                _0xe528ce
+          (a) =>
+            'gHjXYh8PzLNGEJ4cbCWrkuM7dDZBnKlqxU0AT9OSfaV3o5iw6I2esmF1vQpRty'[
+              'QxtrwfTIpl5cOyDgEH4zbZ3LK0e8GSsNq2AWJVm1ikoRa6C7jUYPFXuv9nBdMh'.indexOf(
+                a
               )
             ]
         )).split(','));
@@ -26,13 +26,11 @@ const pageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('leercapitulo', 'LeerCapitulo', 'https://www.leercapitulo.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('leercapitulo', 'LeerCapitulo', 'https://www.leercapitulo.co', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override async Initialize(): Promise<void> {
-        const uri = new URL(this.URI);
-        const request = new Request(uri.href);
-        await FetchWindowScript(request, `localStorage.setItem('display_mode', '1')`, 1500);
+        return FetchWindowScript(new Request(this.URI), `localStorage.setItem('display_mode', '1')`, 1500);
     }
 
     public override get Icon() {
@@ -41,16 +39,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const categories = ['completed', 'ongoing', 'paused', 'cancelled'];
-        const mangaList : Manga[] = [];
+        const mangaList: Manga[] = [];
         for (const category of categories) {
             const path = `/status/${category}/?page={page}`;
             const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, path, 'div.media div.media-body a');
             mangaList.push(...mangas);
         }
-        return mangaList.filter((value, index, mangaList) =>
-            index === mangaList.findIndex((t) => t.Identifier === value.Identifier)
-        );
-
+        return mangaList.distinct();
     }
-
 }
