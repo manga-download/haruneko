@@ -1,0 +1,13 @@
+{
+  "name": "hakuneko-docs",
+  "type": "module",
+  "devDependencies": {
+    "vitepress": "^1.2.3"
+  },
+  "scripts": {
+    "check": "",
+    "build": "vitepress build",
+    "test": "",
+    "serve": "vitepress dev"
+  }
+}

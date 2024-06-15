@@ -7,7 +7,7 @@ const config = {
         title: 'Manga Pro'
     },
     container: {
-        url: 'https://mangapro.club/manga/i-eat-soft-rice-in-another-world/',
+        url: 'https://promanga.pro/manga/i-eat-soft-rice-in-another-world/',
         id: '/manga/i-eat-soft-rice-in-another-world/',
         title: 'I Eat Soft Rice In Another World'
     },

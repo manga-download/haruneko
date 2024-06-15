@@ -211,9 +211,9 @@ export class Chapter extends StoreableMediaContainer<Page> {
     }
 }
 
-type Parameters = {
+type Parameters = JSONObject & {
     readonly Referer?: string;
-    readonly [key: string]: string | number | ArrayBuffer | boolean;
+    //readonly [member: string]: JSONElement | ArrayBuffer;
 }
 
 export class Page extends MediaItem {
