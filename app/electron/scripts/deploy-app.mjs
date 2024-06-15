@@ -38,40 +38,43 @@ async function redist(electronVersion, electronPlatform, electronArchitecture) {
     return electronDir;
 }
 
-let dirElectron;
+let dirTemp;
 await fs.mkdir(dirOut, { recursive: true });
 
 if (process.platform === 'darwin') {
-    dirElectron = await redist(electronVersion, process.platform, 'x64');
-    await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirElectron, dirRes, dirOut);
-    dirElectron = await redist(electronVersion, process.platform, 'arm64');
-    await (await import('./bundle-app-dmg.mjs')).bundle(dirApp, dirElectron, dirRes, dirOut);
+    const bundler = await import('./bundle-app-dmg.mjs');
+    dirTemp = await redist(electronVersion, process.platform, 'x64');
+    await bundler.bundle(dirApp, dirRes, dirTemp, dirOut);
+    dirTemp = await redist(electronVersion, process.platform, 'arm64');
+    await bundler.bundle(dirApp, dirRes, dirTemp, dirOut);
 }
 
 if (process.platform === 'win32') {
-    dirElectron = await redist(electronVersion, process.platform, 'ia32');
-    //await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirElectron, dirRes, dirOut);
-    //dirElectron = await redist(electronVersion, process.platform, 'ia32');
-    //await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirElectron);
-    dirElectron = await redist(electronVersion, process.platform, 'x64');
-    //await (await import('./bundle-app-zip.mjs')).bundle(dirApp, dirElectron, dirRes, dirOut);
-    //dirElectron = await redist(electronVersion, process.platform, 'x64');
-    //await (await import('./bundle-app-iss.mjs')).bundle(dirApp, dirElectron);
+    const portable = await import('./bundle-app-zip.mjs');
+    //const setup = await import('./bundle-app-iss.mjs');
+    dirTemp = await redist(electronVersion, process.platform, 'ia32');
+    await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
+    //dirTemp = await redist(electronVersion, process.platform, 'ia32');
+    //await setup.bundle(dirApp, dirTemp);
+    dirTemp = await redist(electronVersion, process.platform, 'x64');
+    await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
+    //dirTemp = await redist(electronVersion, process.platform, 'x64');
+    //await setup.bundle(dirApp, dirTemp);
 }
 
 if (process.platform === 'linux') {
     /*
-    dirElectron = await redist(electronVersion, 'linux', 'ia32');
-    await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirElectron);
-    dirElectron = await redist(electronVersion, 'linux', 'ia32');
-    await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirElectron);
-    dirElectron = await redist(electronVersion, 'linux', 'ia32');
-    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirElectron);
-    dirElectron = await redist(electronVersion, 'linux', 'x64');
-    await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirElectron);
-    dirElectron = await redist(electronVersion, 'linux', 'x64');
-    await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirElectron);
-    dirElectron = await redist(electronVersion, 'linux', 'x64');
-    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirElectron);
+    dirTemp = await redist(electronVersion, 'linux', 'ia32');
+    await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirTemp);
+    dirTemp = await redist(electronVersion, 'linux', 'ia32');
+    await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirTemp);
+    dirTemp = await redist(electronVersion, 'linux', 'ia32');
+    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirTemp);
+    dirTemp = await redist(electronVersion, 'linux', 'x64');
+    await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirTemp);
+    dirTemp = await redist(electronVersion, 'linux', 'x64');
+    await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirTemp);
+    dirTemp = await redist(electronVersion, 'linux', 'x64');
+    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirTemp);
     */
 }

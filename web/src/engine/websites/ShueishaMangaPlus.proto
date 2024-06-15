@@ -33,7 +33,7 @@ message Title {
 
 message TitleDetailView {
   optional Title title = 1;
-  optional ChapterGroup chapterListGroup = 28;
+  repeated ChapterGroup chapterListGroup = 28;
 }
 
 message ChapterGroup {
