@@ -6,6 +6,7 @@
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "bundler",
+        "skipLibCheck": true,
         "verbatimModuleSyntax": true,
         "forceConsistentCasingInFileNames": true,
         "jsx": "react",
