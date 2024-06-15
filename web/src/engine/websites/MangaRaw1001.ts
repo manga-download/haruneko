@@ -5,22 +5,10 @@ import * as Common from './decorators/Common';
 import * as MangaReader from './decorators/MangaReaderCMS';
 
 const pageScript = `
-    new Promise(resolve => {
-        function parseResults(data) {
-            const dom = new DOMParser().parseFromString(data, 'text/html');
-            let nodes = [...dom.querySelectorAll('div.imageChap img.image-chapter')];
-            resolve(nodes.map(element => element.src));
-        }
-
-        const ajaxendpoint = new URL('/ajax/image/list/chap/'+ CHAPTER_ID, window.location.origin);
-        fetch(ajaxendpoint, {
-            headers: {
-                'X-Requested-With' : 'XMLHttpRequest',
-            }})
-            .then(response => response.json())
-            .then(jsonData => {
-                  parseResults(jsonData.html);
-            });
+    new Promise((resolve, reject) => {
+        $.post('/ajax/image/list/chap/' + CHAPTER_ID)
+            .done(response => response.status ? resolve($('.imageChap img', '<div>' + response.html + '</div>').map((_, img) => img.src).get()) : reject([]))
+            .fail((_xhr, _status, _error) => reject([]));
     });
 `;
 

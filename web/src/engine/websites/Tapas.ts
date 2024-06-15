@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://story-api.tapas.io/cosmos/api/v1/landing/';
 
     public constructor() {
-        super('tapas', `Tapas`, 'https://tapas.io', Tags.Media.Manga, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
+        super('tapas', `Tapas`, 'https://tapas.io', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -79,6 +79,6 @@ export default class extends DecoratableMangaScraper {
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/series/${manga.Identifier}/episodes?max_limit=9999`, this.URI);
         const { data: { episodes } } = await FetchJSON<APIChapters>(new Request(url));
-        return episodes.map(chapter => new Chapter(this, manga, `/episode/${chapter.id.toString()}`, chapter.title.trim()));
+        return episodes.map(chapter => new Chapter(this, manga, `/episode/${chapter.id}`, chapter.title.trim()));
     }
 }
