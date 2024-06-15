@@ -45,7 +45,7 @@ export function ChaptersSinglePageAJAX(query = queryChapterListLinks, extract = 
 export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const id = manga.Identifier.split('/').pop();
     const uri = new URL(`/api/manga/${id}/chapters?source=detail`, this.URI);
-    const request = new Request(uri.href);
+    const request = new Request(uri);
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const { id, title } = extract.call(this, element);

@@ -7,7 +7,7 @@ const config = {
         title: 'Vortex Scans'
     },
     container: {
-        url: 'https://vortexscans.com/series/regenerate-top-players',
+        url: 'https://vortexscans.org/series/regenerate-top-players',
         id: JSON.stringify({ id: '8', slug: 'regenerate-top-players'}),
         title: 'Regenerate Top Players'
     },
