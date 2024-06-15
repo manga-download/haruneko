@@ -19,7 +19,7 @@ const pageScript = `
 @Common.MangasMultiPageCSS('/hentai/page/{page}/', 'div.post-title a')
 @Common.ChaptersSinglePageCSS('div.summary_image > a')
 @Common.PagesSinglePageJS(pageScript, 500)
-@Common.ImageAjax(false, true)
+@Common.ImageElement(false, false, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
