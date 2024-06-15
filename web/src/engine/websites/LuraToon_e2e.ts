@@ -7,7 +7,7 @@ const config = {
         title: 'Lura Toon'
     },
     container: {
-        url: 'https://lura-toons.com/manga/eu-caminho-na-noite1/',
+        url: 'https://luratoons.com/manga/eu-caminho-na-noite1/',
         id: JSON.stringify({ post: '73', slug: '/manga/eu-caminho-na-noite1/' }),
         title: 'Eu Caminho na Noite consumido Pelas Lâminas'
     },

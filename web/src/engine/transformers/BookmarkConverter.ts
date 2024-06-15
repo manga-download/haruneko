@@ -33,7 +33,7 @@ const legacyWebsiteIdentifierMap = {
     'manganel': 'manganato',
     'manganelos': 'mangapure',
     'mangaproz': 'mangapro',
-    'mangaraw': 'mangagecko',
+    'mangaraw': 'mangageko',
     'manhuaes': 'manhuaaz',
     'manhuascan': 'kaliscan',
     'manhwaclub': 'manhwahentai',
