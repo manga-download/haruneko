@@ -7,6 +7,12 @@ import { Priority, TaskPool } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import { Numeric } from '../SettingsManager';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+
+AddAntiScrapingDetection(async (render) => {
+    const dom = await render();
+    return [...dom.querySelectorAll('script')].find(script => /window\.captcha\s*=/.test(script.text) && /chaitin\.cn\/captcha\/api/.test(script.text)) ? FetchRedirection.Automatic : undefined;
+});
 
 function PageExtractor(element: HTMLElement): string {
     return element.dataset.original;

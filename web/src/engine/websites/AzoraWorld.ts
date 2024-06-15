@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('azoraworld', 'ازورا مانجا (AZORA MANGA / WORLD)', 'https://azoramoon.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
+        super('azoraworld', 'ازورا مانجا (AZORA MANGA / WORLD)', 'https://azoramoon.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
