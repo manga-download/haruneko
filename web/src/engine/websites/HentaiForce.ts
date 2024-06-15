@@ -2,12 +2,15 @@ import { Tags } from '../Tags';
 import icon from './HentaiForce.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as NHentai from './decorators/NHentai';
 
-@Common.MangaCSS(/^{origin}\/view\/\d+/, 'div#gallery-main-info h1')
+export function ExtractImageLink(element: HTMLImageElement) {
+    return element.dataset.src.replace(/\/(\d+-\d+)t\./, '/$1.');
+}
+
+@Common.MangaCSS(/^{origin}\/view\/\d+$/, 'div#gallery-main-info h1')
 @Common.MangasNotSupported()
-@NHentai.ChaptersUniqueFromManga()
-@Common.PagesSinglePageJS(NHentai.pageScript, 500)
+@Common.ChaptersUniqueFromManga()
+@Common.PagesSinglePageCSS('div.single-thumb img.lazy', ExtractImageLink)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

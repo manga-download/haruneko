@@ -2,12 +2,12 @@ import { Tags } from '../Tags';
 import icon from './ThreeHentai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as NHentai from './decorators/NHentai';
+import { ExtractImageLink } from './NHentai';
 
 @Common.MangaCSS(/^https:\/\/(es\.|fra\.|it\.|pt\.|ru\.)?3hentai\.net\/d\/\d+/, 'div#main-info span.middle-title')
 @Common.MangasNotSupported()
-@NHentai.ChaptersUniqueFromManga()
-@Common.PagesSinglePageJS(NHentai.pageScript, 500)
+@Common.ChaptersUniqueFromManga()
+@Common.PagesSinglePageCSS('div.single-thumb img.lazy', ExtractImageLink)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

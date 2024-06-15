@@ -3,7 +3,7 @@ import icon from './NHentai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function ExtractImageLink(element: HTMLImageElement) {
+export function ExtractImageLink(element: HTMLImageElement) {
     return element.dataset.src.replace(/\/t(\d+)\./, '/i$1.').replace(/\/(\d+)t\./, '/$1.');
 }
 

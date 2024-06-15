@@ -12,7 +12,7 @@ const config = {
         title: '(C94) [Jikansa-Kougeki (Tooya Daisuke)] Shishou to H Shimakuru Hon (Fate/Grand Order) [English] [SDTLs]'
     },
     child: {
-        id: '/view/78436/1',
+        id: '/view/78436',
         title: '(C94) [Jikansa-Kougeki (Tooya Daisuke)] Shishou to H Shimakuru Hon (Fate/Grand Order) [English] [SDTLs]'
     },
     entry: {
