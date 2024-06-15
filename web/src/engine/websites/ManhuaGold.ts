@@ -4,11 +4,11 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Liliana from './decorators/Liliana';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, Liliana.queryMangaTitleFromURI)
-@Common.MangasMultiPageCSS(Liliana.mangaPath, Liliana.queryMangas, 1, 1, 0, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS(Liliana.queryChapters, Common.AnchorInfoExtractor(true) )
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article header h1')
+@Common.MangasMultiPageCSS(Liliana.mangaPath, 'div.grid div.text-center a.clamp')
+@Common.ChaptersSinglePageCSS(Liliana.queryChapters)
 @Common.PagesSinglePageJS(Liliana.queryPagesScript, 500)
-@Common.ImageAjax(true, true)
+@Common.ImageElement(false, true, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
