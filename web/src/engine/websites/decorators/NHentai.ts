@@ -29,7 +29,7 @@ export const pageScript = `
 
          //Nhentai
          try {
-             resolve(reader.gallery.images.pages.map(page => page.url()) );
+             resolve(reader.gallery.images.pages.map(page => _n_app.get_cdn_url(page.url())) );
              return;
          } catch(error) {}
 
