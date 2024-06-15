@@ -393,7 +393,6 @@ export { default as MangaRose } from './MangaRose';
 export { default as MangAs } from './MangAs';
 export { default as MangaSail } from './MangaSail';
 export { default as MangaScantrad } from './MangaScantrad';
-export { default as MangasChan } from './MangasChan';
 export { default as MangaSect } from './MangaSect';
 export { default as MangaSee } from './MangaSee';
 export { default as MangaSefiri } from './MangaSefiri';
