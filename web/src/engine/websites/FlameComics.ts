@@ -7,13 +7,13 @@ import { Fetch, FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
-@MangaStream.MangaCSS(/^https?:\/\/flamecomics\.com\/series\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/series\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS('div.postbody div.soralist ul li a.series', '/series/list-mode/')
 @MangaStream.ChaptersSinglePageCSS('div#chapterlist ul li a')
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('flamecomics', 'Flame Comics', 'https://flamecomics.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('flamecomics', 'Flame Comics', 'https://flamecomics.me', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
@@ -21,7 +21,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchCSS<HTMLDivElement>(new Request(new URL(chapter.Identifier, this.URI).href), 'div.composed_figure');
+        const data = await FetchCSS<HTMLDivElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div.composed_figure');
         if (data.length == 0) return MangaStream.FetchPagesSinglePageCSS.call(this, chapter, [/readonflamescans\.png/]);
 
         return data.map(page => {

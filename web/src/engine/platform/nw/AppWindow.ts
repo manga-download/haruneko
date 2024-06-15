@@ -73,6 +73,6 @@ export default class implements IAppWindow {
     }
 
     public Close(): void {
-        nw.Window.getAll(windows => windows.forEach(win => win.close()));
+        this.nwWindow.close();
     }
 }

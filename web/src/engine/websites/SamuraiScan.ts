@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/leer\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/l\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('samuraiscan', 'Samurai Scan', 'https://samuraiscan.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish);
+        super('samuraiscan', 'Samurai Scan', 'https://spanish.visorsmr.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
