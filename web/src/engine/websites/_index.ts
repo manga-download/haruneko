@@ -381,6 +381,7 @@ export { default as MangaPill } from './MangaPill';
 export { default as MangaPro } from './MangaPro';
 export { default as MangaPure } from './MangaPure';
 export { default as MangaRaw1001 } from './MangaRaw1001';
+export { default as MangaRawAC } from './MangaRawAC';
 export { default as MangaRead } from './MangaRead';
 export { default as MangaReadCO } from './MangaReadCO';
 export { default as MangaReader } from './MangaReader';
