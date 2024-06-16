@@ -276,6 +276,7 @@ export { default as LireScan } from './LireScan';
 export { default as LittleGarden } from './LittleGarden';
 export { default as LowerWorld } from './LowerWorld';
 export { default as LSHiver } from './LSHiver';
+export { default as LuaScans } from './LuaScans';
 export { default as LuminousScans } from './LuminousScans';
 export { default as LunarScans } from './LunarScans';
 export { default as LunarScansFR } from './LunarScansFR';
