@@ -160,14 +160,14 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_RPCSecret: "RPC Şifresi",
   Settings_Global_RPCSecretInfo: "Uyumlu 3. taraf uygulamaların HakuNeko uygulamasıyla etkileşim kurması için gereken parola (örn. HakuNeko Assistant)",
   //
-  Settings_FeatureFlags_Label: 'Feature Flags',
+  Settings_FeatureFlags_Label: "Özellik Bayrakları",
   Settings_FeatureFlags_Description: "Özellikle HakuNeko geliştiricileri, katkıda bulunanlar ve uzman kullanıcılar için Gelişmiş/Deneysel seçenekler",
   Settings_FeatureFlags_ShowSplashScreen_Label: "Açılış Ekranını Göster",
   Settings_FeatureFlags_ShowSplashScreen_Description: "Uygulama başlangıcı sırasında açılış ekranını açma/kapama",
   Settings_FeatureFlags_ShowFetchBrowserWindows_Label: "FetchBrowser Pencerelerini Göster",
   Settings_FeatureFlags_ShowFetchBrowserWindows_Description: "Geliştiricilere özel bu seçenek, arka planda kullanılan verileri yakalamak için gereken tarayıcı pencerelerinin görünürlüğünü açar/kapatır",
   Settings_FeatureFlags_CrowdinTranslationMode_Label: "Bağlam İçi Çeviriyi Etkinleştir",
-  Settings_FeatureFlags_CrowdinTranslationMode_Description: 'This contributor focused option toggles the localization mode for Crowdin In-Context translation on/off (Crowdin account + restart required)',
+  Settings_FeatureFlags_CrowdinTranslationMode_Description: "Bu katkıda bulunan odaklı seçenek, Crowdin Bağlam İçi çeviri için yerelleştirme modunu açar/kapatır (Crowdin hesabı + yeniden başlatma gerekli)",
   //
   SettingsManager_Settings_AlreadyInitializedError: "Bir sistem hatası oluştu: <{0}> kapsamındaki ayarlar yalnızca bir kez başlatılmalıdır!",
   //
