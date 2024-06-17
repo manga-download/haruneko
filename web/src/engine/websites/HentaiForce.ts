@@ -3,7 +3,7 @@ import icon from './HentaiForce.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-export function ExtractImageLink(element: HTMLImageElement) {
+function ExtractImageLink(element: HTMLImageElement) {
     return element.dataset.src.replace(/\/(\d+-\d+)t\./, '/$1.');
 }
 
