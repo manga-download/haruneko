@@ -3,22 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'tecnoscan',
-        title: 'Tecno Scan'
+        id: 'tresdaos',
+        title: 'Tres Daos'
     },
     container: {
-        url: 'https://visortecno.com/manga/fuego-en-la-oscuridad/',
-        id: JSON.stringify({ post: '2191', slug: '/manga/fuego-en-la-oscuridad/' }),
-        title: 'Fuego en la oscuridad'
+        url: 'https://tresdaos.com/manga/vengeance-of-the-heavenly-demon/',
+        id: '/manga/vengeance-of-the-heavenly-demon/',
+        title: 'Vengeance of the Heavenly Demon'
     },
     child: {
-        id: '/manga/fuego-en-la-oscuridad/capitulo-1/',
+        id: '/vengeance-of-the-heavenly-demon-chapter-1/',
         title: 'Capítulo 1',
     },
     entry: {
         index: 0,
-        size: 843_966,
-        type: 'image/webp'
+        size: 532_427,
+        type: 'image/jpeg'
     }
 };
 
