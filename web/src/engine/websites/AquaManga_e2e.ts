@@ -7,7 +7,7 @@ const config = {
         title: 'AquaManga'
     },
     container: {
-        url: 'https://aquamanga.org/manga/another-beginning-with-the-guhuo-bird/',
+        url: 'https://aquareader.net/manga/another-beginning-with-the-guhuo-bird/',
         id: JSON.stringify({post: '2601', slug: '/manga/another-beginning-with-the-guhuo-bird/'}),
         title: 'Another beginning with the Guhuo bird'
     },

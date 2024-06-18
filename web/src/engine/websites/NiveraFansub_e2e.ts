@@ -7,17 +7,17 @@ const config = {
         title: 'Nivera Fansub'
     },
     container: {
-        url: 'https://niverafansub.co/manga/whispers-of-the-moon/',
-        id: JSON.stringify({ post: '199', slug: '/manga/whispers-of-the-moon/' }),
-        title: 'Whispers of the Moon'
+        url: 'https://niverafansub.net/manga/xian-chan-nu/',
+        id: JSON.stringify({ post: '183', slug: '/manga/xian-chan-nu/' }),
+        title: 'Xian Chan Nu'
     },
     child: {
-        id: '/manga/whispers-of-the-moon/1-bolum/',
-        title: '1. Bölüm'
+        id: '/manga/xian-chan-nu/101-bolum/',
+        title: '101. Bölüm'
     },
     entry: {
-        index: 0,
-        size: 4_693_578,
+        index: 1,
+        size: 1_536_881,
         type: 'image/jpeg'
     }
 };

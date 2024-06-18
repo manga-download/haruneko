@@ -1,19 +1,22 @@
 import path from 'path';
 import yargs from 'yargs';
 import fs from 'fs/promises';
-import { type BrowserWindow, app } from 'electron';
+import { app } from 'electron';
 import { IPC } from './ipc/InterProcessCommunication';
 import { ApplicationWindow } from './ipc/ApplicationWindow';
 import { FetchProvider } from './ipc/FetchProvider';
 import { InitializeMenu } from './Menu';
+import { BloatGuard } from './ipc/BloatGuard';
 import { RemoteBrowserWindowController } from './ipc/RemoteBrowserWindow';
+import { RPCServer } from '../../src/rpc/Server';
+import { RemoteProcedureCallManager } from './ipc/RemoteProcedureCallManager';
+import { RemoteProcedureCallContract } from './ipc/RemoteProcedureCallContract';
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
-// Need to use a dynamic import (only at build-time), so vite will correctly include the preload script in the build as code-splitted file
-if(!process) import('./ipc/Preload');
 
 type Manifest = {
     url: string;
-    'user-agent': string;
+    'user-agent': undefined | string;
+    'chromium-args': undefined | string;
 };
 
 async function LoadManifest(): Promise<Manifest> {
@@ -31,7 +34,14 @@ async function GetArgumentURL(): Promise<string | undefined> {
     }
 }
 
-async function LaunchRenderer(manifest: Manifest): Promise<BrowserWindow> {
+async function SetupUserDataDirectory(manifest: Manifest): Promise<void> {
+    // TODO: This detection is more like a hack and does not use the provided path
+    if(manifest['chromium-args']?.includes('--user-data-dir=userdata')) {
+        app.setPath('userData', path.resolve(path.dirname(app.getPath('exe')), 'userdata'));
+    }
+}
+
+async function CreateApplicationWindow(): Promise<ApplicationWindow> {
     const win = new ApplicationWindow({
         show: false,
         width: 1280,
@@ -48,26 +58,31 @@ async function LaunchRenderer(manifest: Manifest): Promise<BrowserWindow> {
             disableBlinkFeatures: 'AutomationControlled',
         },
     });
+
     win.removeMenu();
     win.setMenu(null);
     win.setMenuBarVisibility(false);
-
-    await win.loadURL(await GetArgumentURL() ?? manifest.url, {
-        userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),
-    });
+    win.on('closed', () => app.quit());
 
     return win;
 }
 
-async function RegisterRendererCallbacks(win: BrowserWindow) {
-    new IPC();
-    new FetchProvider(win.webContents);
-    new RemoteBrowserWindowController();
+async function OpenWindow() {
+    InitializeMenu();
+    const manifest = await LoadManifest();
+    await SetupUserDataDirectory(manifest);
+    await app.whenReady();
+    const win = await CreateApplicationWindow();
+    const ipc = new IPC(win.webContents);
+    const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
+    new RemoteProcedureCallManager(rpc, ipc);
+    new FetchProvider(ipc, win.webContents);
+    new RemoteBrowserWindowController(ipc);
+    new BloatGuard(ipc, win.webContents);
+    win.RegisterChannels(ipc);
+    await win.loadURL(await GetArgumentURL() ?? manifest.url, {
+        userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),
+    });
 }
 
-app.on('window-all-closed', () => app.quit());
-InitializeMenu();
-app.whenReady()
-    .then(LoadManifest)
-    .then(LaunchRenderer)
-    .then(RegisterRendererCallbacks);
+OpenWindow();
