@@ -1,14 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './LuraToon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import * as PeachScan from './decorators/PeachScan';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Lura"])')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
+@Common.MangaCSS(/^{origin}\/[^/]+\/$/, PeachScan.queryMangaTitleFromURI)
+@Common.MangasSinglePageCSS(PeachScan.mangaPath, PeachScan.queryMangas)
+@Common.ChaptersSinglePageCSS(PeachScan.queryChapters, PeachScan.ChapterExtractor)
+@PeachScan.PagesFromZips()
+@PeachScan.ImageFromZip()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
