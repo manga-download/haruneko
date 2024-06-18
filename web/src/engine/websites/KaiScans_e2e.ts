@@ -7,7 +7,7 @@ const config = {
         title: 'Kai Scans'
     },
     container: {
-        url: 'https://kaiscans.com/manga/4399247773-my-in-laws-are-obsessed-with-me/',
+        url: 'https://umiscans.org/manga/4399247773-my-in-laws-are-obsessed-with-me/',
         id: '/manga/4399247773-my-in-laws-are-obsessed-with-me/',
         title: 'My In-Laws Are Obsessed With Me'
     },
