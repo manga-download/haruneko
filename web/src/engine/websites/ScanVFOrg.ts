@@ -22,13 +22,28 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const urlList = [];
-        for (let page = 1, run = true; run; page++) {
-            const url = new URL(`${chapter.Identifier}/${page}`, this.URI);
-            const response = await Fetch(new Request(url, { method: 'HEAD' }));
-            response.redirected && response.url.indexOf('bypass=1') != -1 ? run = false : urlList.push(url);
+    /**
+     * Find all valid page links from the list of generated {@link links}.
+     * The generated {@link links} must consist consecutive page links.
+     * The length of the generated {@link links} must be a power of two (e.g., 1024).
+     */
+    private async FilterValidPageLinks(links: URL[], pivot: number = null, step: number = null): Promise<URL[]> {
+        step = step ?? links.length >> 2;
+        pivot = pivot ?? links.length >> 1;
+        const request = new Request(links[pivot - 1], { method: 'HEAD' });
+        const response = await Fetch(request);
+        if(new URL(response.url).searchParams.get('bypass')) {
+            return links.slice(0, pivot);
+        } else {
+            if(step < 1) return [];
+            const offset = response.redirected ? -step : +step;
+            return this.FilterValidPageLinks(links, pivot + offset, step >> 1);
         }
-        return urlList.map(url => new Page(this, chapter, url));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const possibleLinks = new Array(1024).fill(0).map((_, index) => new URL(`${chapter.Identifier}/${index + 1}`, this.URI));
+        const pageLinks = await this.FilterValidPageLinks(possibleLinks);
+        return pageLinks.map(link => new Page(this, chapter, link));
     }
 }
