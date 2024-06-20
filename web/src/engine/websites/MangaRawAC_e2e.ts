@@ -7,8 +7,8 @@ const config = {
         title: 'MangaRawAC'
     },
     container: {
-        url: 'https://mangaraw.ac/manga/%e5%9c%b0%e7%90%83%e9%98%b2%e8%a1%9b%e9%9a%8aX-raw-free/',
-        id: '/manga/%e5%9c%b0%e7%90%83%e9%98%b2%e8%a1%9b%e9%9a%8aX-raw-free/',
+        url: 'https://mangaraw.ac/manga/地球防衛隊X-raw-free/',
+        id: encodeURI('/manga/地球防衛隊X-raw-free/'),
         title: '地球防衛隊X'
     },
     child: {
