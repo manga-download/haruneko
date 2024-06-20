@@ -1,129 +1,284 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './MangaReaderTo.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import type { Chapter } from '../../providers/MangaPlugin';
+import { DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+import type { Priority } from '../../taskpool/DeferredTask';
+import DeScramble from '../../transformers/ImageDescrambler';
 
+type AJAXResponse = {
+    status: boolean,
+    html: string
+}
+
+type TSlice = {
+    x: number,
+    y: number,
+    width: number,
+    height: number
+}
+
+type TGroup = {
+    slices: number,
+    cols: number,
+    rows: number,
+    x: number,
+    y: number
+}
+
+function ChapterExtractor(element: HTMLElement) {
+    const link = element instanceof HTMLAnchorElement ? (element as HTMLAnchorElement).pathname : element.querySelector<HTMLAnchorElement>('a').pathname;
+    const title = element instanceof HTMLAnchorElement ? element.title.replace(/([^:]*):(.*)/, (match, g1, g2) => g1.trim().toLowerCase() === g2.trim().toLowerCase() ? g1 : match).trim() : element.textContent.trim();
+    const lang = link.match(/\/read\/[^/]+\/([^/]+)/)[1];
+    return {
+        id: link,
+        title: `${title} (${lang})`,
+    };
+
+}
+
+@Common.MangaCSS(/^{origin}\/[^-]+-\d+$/, 'div#ani_detail div.anisc-detail h2.manga-name')
+@Common.MangasMultiPageCSS('/az-list?page={page}', '#main-content div.manga-detail h3 a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS('div.chapters-list-ul ul li a, div.volume-list-ul div.manga-poster', ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangareaderto', `MangaReader.to`, 'https://mangareader.to' /*, Tags.Language.English, Tags ... */);
+        super('mangareaderto', `MangaReader.to`, 'https://mangareader.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Multilingual, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-}
 
-// Original Source
-/*
-class MangaReaderTo extends Connector {
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const chapterurl = new URL(chapter.Identifier, this.URI);
+        const [data] = await FetchCSS(new Request(chapterurl), 'div#wrapper');
+        const readingId = data.dataset.readingId;
 
-    constructor() {
-        super();
-        super.id = 'mangareaderto';
-        super.label = 'MangaReader.to';
-        this.tags = ['manga', 'webtoon', 'japanese', 'korean', 'english', 'chinese'];
-        this.url = 'https://mangareader.to';
-        this.path = '/az-list?page=';
+        const uri = new URL(`ajax/image/list/${chapterurl.href.includes('chapter') ? 'chap' : 'vol'}/${readingId}?quality=high`, this.URI);
+        const { status, html } = await FetchJSON<AJAXResponse>(new Request(uri));
+        if (!status) return [];
 
-        this.querMangaTitleFromURI = 'div#ani_detail div.anisc-detail h2.manga-name';
-        this.queryMangas = '#main-content div.manga-detail h3 a';
-        this.queryChapters = 'div.chapters-list-ul ul li a';
-        this.queryPages = 'div#wrapper';
+        const dom = new DOMParser().parseFromString(html, 'text/html');
+        const imagesArr = Array.from(dom.querySelectorAll<HTMLDivElement>('div.iv-card'));
+
+        return imagesArr.map(image => new Page(this, chapter, new URL(image.dataset.url, this.URI), { shuffled: [...image.classList].includes('shuffled') }));
     }
 
-    async _getMangaFromURI(uri) {
-        const request = new Request(new URL(uri), this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryMangaTitleFromURI);
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        let blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return !page.Parameters['shuffled'] ? blob : DeScramble(blob, async (image, ctx) => {
 
-        const id = uri.pathname;
-        const title = data[0].textContent.trim();
+            const A = 200;
+            const B = 'stay';
+            const numpieces = Math.ceil(image.width / A) * Math.ceil(image.height / A);
+            const numcol = Math.ceil(image.width / A);
+            const slicesMap = new Map<string, TSlice[]>();
+            for (let index = 0; index < numpieces; index++) {
+                const g = Math.trunc(index / numcol);
+                const h: TSlice = { x: (index - g * numcol) * A, y: g * A, width: undefined, height: undefined };
+                h.width = A - (h.x + A <= image.width ? 0 : h.x + A - image.width);
+                h.height = A - (h.y + A <= image.height ? 0 : h.y + A - image.height);
+                const currentkey = h.width.toString() + '-' + h.height.toString();
+                if (!slicesMap.has(currentkey)) slicesMap.set(currentkey, []);
+                slicesMap.get(currentkey).push(h);
 
-        return new Manga(this, id, title);
-    }
+            }
+            for (const slices of slicesMap.values()) {
+                const scrambleArray = unShuffle(createRange(0, slices.length), B);
+                const group = getGroup(slices);
 
-    async _getMangas() {
-        const mangaList = [];
-        for(let page = 1, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(page);
-            mangas.length ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
+                slices.forEach((slice, index) => {
+                    let n = scrambleArray[index];
+                    let o = Math.trunc(n / group.cols);
+                    n = (n - o * group.cols) * slice.width;
+                    o = o * slice.height;
+                    ctx.drawImage(image,
+                        group.x + n,
+                        group.y + o,
+                        slice.width,
+                        slice.height,
+                        slice.x,
+                        slice.y,
+                        slice.width,
+                        slice.height
+                    );
+                });
+            }
 
-    async _getMangasFromPage(page) {
-        const uri = new URL(this.path + page, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryMangas);
-        return data.map(element => {
-            return {
-                id: this.getRootRelativeOrAbsoluteLink(element, this.url),
-                title: element.title.trim()
-            };
-        });
-    }
-
-    async _getChapters(manga) {
-        let uri = new URL(manga.id, this.url);
-        let request = new Request(uri, this.requestOptions);
-        let data = await this.fetchDOM(request, this.queryChapters);
-        return data.map(element => {
-            const link = this.getRootRelativeOrAbsoluteLink(element, this.url);
-            const title = element.title.replace(/:(.*)/gi, '');
-            const lang = link.match(/(\/en\/)|(\/ja\/)|(\/ko\/)|(\/zh\/)/gi);
-            const language = lang ? lang[0].replace(/\//gm, '').toUpperCase() : '';
-            return {
-                id: link,
-                title: title.replace(manga.title, '').trim() + ` ${language}` || manga.title,
-                language
-            };
-        });
-    }
-
-    async _getPages(chapter) {
-        const uri = new URL(chapter.id, this.url);
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchDOM(request, this.queryPages);
-        const readingId = data[0].dataset.readingId;
-
-        return this._getImages(request, readingId);
-    }
-
-    async _getImages(requestChapter, readingId) {
-        // https://mangareader.to/ajax/image/list/chap/545260?mode=vertical&quality=high&hozPageSize=1
-        const uri = new URL(`ajax/image/list/chap/${readingId}`, this.url);
-        uri.searchParams.set('quality', 'high');
-        const request = new Request(uri, this.requestOptions);
-        const data = await this.fetchJSON(request, 3);
-
-        const dom = this.createDOM(data.html);
-        const imagesArr = Array.from(dom.querySelectorAll('.iv-card'));
-
-        // Example: https://c-1.mreadercdn.ru/_v2/1/0dcb8f9eaacfd940603bd75c7c152919c72e45517dcfb1087df215e3be94206cfdf45f64815888ea0749af4c0ae5636fabea0abab8c2e938ab3ad7367e9bfa52/9d/32/9d32bd84883afc41e54348e396c2f99a/9d32bd84883afc41e54348e396c2f99a_1200.jpeg?t=4b419e2c814268686ff05d2c25965be9&amp;ttl=1642926021
-        const imageData = JSON.stringify(imagesArr.map(image => image.dataset.url));
-
-        const type = Engine.Settings.recompressionFormat.value;
-        const quality = parseFloat(Engine.Settings.recompressionQuality.value)/100;
-        const script = `
-            new Promise(async (resolve, reject) => {
-                try {
-                    let images = [];
-                    const data = ${imageData};
-                    for(const d of data) {
-                        const canvas = await imgReverser(d);
-                        const uri = canvas.toDataURL('${type}', ${quality})
-                        images.push(uri);
-                    }
-                    resolve(images);
-                } catch(error) {
-                    reject(error);
+            function unShuffle(numArray: number[], seed: string) : number[]{
+                if (!Array.isArray(numArray)) {
+                    return null;
                 }
-            });
-        `;
+                const c = numArray.length,
+                    d = seedrandom(seed);
+                const arr : number[]= [],
+                    arr2 = [];
+                for (var index = 0; index < c; index++) {
+                    arr.push(null);
+                    arr2.push(index);
+                }
+                for (index = 0; index < c; index++) {
+                    var e = seedRand(d, 0, arr2.length - 1),
+                        f = arr2[e];
+                    arr2.splice(e, 1);
+                    arr[f] = numArray[index];
+                }
+                return arr;
+            }
 
-        return Engine.Request.fetchUI(requestChapter, script, 60000, true);
+            function seedRand(a, b: number, c: number) : number {
+                return Math.floor(a() * (c - b + 1)) + b;
+            }
+
+            function seedrandom(seed: string) {
+                const significance = Math.pow(2, 52);
+                const overflow = 2 * significance;
+                let key = [];
+                mixkey(seed, key);
+                const arc4 = new ARC4(key);
+                const prng = function () {
+                    let n = arc4.g(6),
+                        d = Math.pow(256, 6),
+                        x = 0;
+                    while (n < significance) {
+                        n = (n + x) * 256;
+                        d *= 256;
+                        x = arc4.g(1);
+                    }
+                    while (n >= overflow) {
+                        n /= 2;
+                        d /= 2;
+                        x >>>= 1;
+                    }
+                    return (n + x) / d;
+                };
+                return prng;
+            }
+
+            function mixkey(seed: string, key: number[]): string {
+                let stringseed = seed + '', smear, j = 0;
+                while (j < stringseed.length) {
+                    key[255 & j] =
+                        255 & (smear ^= key[255 & j] * 19) + stringseed.charCodeAt(j++);
+                }
+                return String.fromCharCode.apply(0, key);
+            }
+
+            function ARC4(key: number[]) {
+                let t, keylen = key.length,
+                    me = this, i = 0, j = me.i = me.j = 0, s = me.S = [];
+
+                if (!keylen) {
+                    key = [keylen++];
+                }
+
+                while (i < 256) {
+                    s[i] = i++;
+                }
+                for (i = 0; i < 256; i++) {
+                    s[i] = s[j = 255 & j + key[i % keylen] + (t = s[i])];
+                    s[j] = t;
+                }
+
+                (me.g = function (count) {
+                    let t, r = 0,
+                        i = me.i, j = me.j, s = me.S;
+                    while (count--) {
+                        t = s[i = 255 & i + 1];
+                        r = r * 256 + s[255 & (s[i] = s[j = 255 & j + t]) + (s[j] = t)];
+                    }
+                    me.i = i; me.j = j;
+                    return r;
+                })(256);
+            }
+
+            function getGroup(slices: TSlice[]): TGroup {
+                const cols = getColsInGroup(slices);
+                return {
+                    rows: slices.length / cols,
+                    x: slices[0].x,
+                    y: slices[0].y,
+                    slices: slices.length,
+                    cols: cols
+                };
+            }
+
+            function getColsInGroup(slices: TSlice[]): number {
+                if (slices.length == 1) {
+                    return 1;
+                }
+                let t: string | number = 'init';
+                for (let i = 0; i < slices.length; i++) {
+                    if (t == 'init') {
+                        t = slices[i].y;
+                    }
+                    if (t != slices[i].y) {
+                        return i;
+                    }
+                }
+                return slices.length;
+            }
+
+            function createRange(a: number, b : number, c : number = undefined) : number[]{
+                return (
+                    a = toFinite(a),
+                    void 0 === b ? (b = a, a = 0) : b = toFinite(b),
+                    baseRange(a, b, c = void 0 === c ? a < b ? 1 : -1 : toFinite(c), false)
+                );
+            }
+
+            function baseRange(a: number, b: number, c: number, d: boolean) : number[] {
+                let e = -1,
+                    arraysize = Math.max(
+                        Math.ceil((b - a) / (c || 1)),
+                        0
+                    );
+                const _array : number[]= new Array(arraysize);
+                for (; arraysize--;) {
+                    _array[d ? arraysize : ++e] = a;
+                    a += c;
+                }
+                return _array;
+            }
+
+            function toFinite(a) : number {
+                return a ? (a = toNumber(a)) !== 1e400 && a !== -1e400 ? a == a ? a : 0 : 1.7976931348623157e308 * (a < 0 ? -1 : 1) : 0 === a ? a : 0;
+            }
+
+            function toNumber(a): number {
+                let b;
+                if ('number' == typeof a) {
+                    return a;
+                }
+                if (isSymbol(a)) {
+                    return NaN;
+                }
+                if ('string' !=typeof (a = isObject(a)? isObject(b ='function' == typeof a.valueOf? a.valueOf(): a)? '' + b: b: a)) {
+                    return 0 === a ? a : +a;
+                }
+                a = a.replace(/^\s+|\s+$/g, '');
+                b = /^0b[01]+$/i.test(a);
+                return b || /^0o[0-7]+$/i.test(a)
+                    ? parseInt(a.slice(2), b ? 2 : 8)
+                    : /^[-+]0x[0-9a-f]+$/i.test(a)
+                        ? NaN
+                        : +a;
+            }
+
+            function isObject(a): boolean {
+                const vartype = typeof a;
+                return null != a && ('object' == vartype || 'function' == vartype);
+            }
+
+            function isSymbol(a) : boolean{
+                var vartype = typeof a;
+                return 'symbol' == vartype || 'object' == vartype && null != a;
+            }
+
+        });
+
     }
+
 }
-*/
