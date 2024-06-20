@@ -10,7 +10,7 @@ import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScra
 
 AddAntiScrapingDetection(async (render) => {
     const dom = await render();
-    return dom.documentElement.innerHTML.indexOf('window.awsWafCookieDomainList') != -1 ? FetchRedirection.Automatic : undefined;
+    return dom.documentElement.innerHTML.includes('window.awsWafCookieDomainList') ? FetchRedirection.Automatic : undefined;
 });
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
