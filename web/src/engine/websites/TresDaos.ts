@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangasChan.webp';
+import icon from './TresDaos.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -10,11 +10,9 @@ import * as Common from './decorators/Common';
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
-        super('mangaschan', 'Mangás Chan', 'https://mangaschan.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('tresdaos', 'Tres Daos', 'https://tresdaos.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
-
     public override get Icon() {
         return icon;
     }

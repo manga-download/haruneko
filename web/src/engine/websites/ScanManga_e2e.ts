@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangapro',
-        title: 'Manga Pro'
+        id: 'scanmanga',
+        title: 'ScanManga'
     },
     container: {
-        url: 'https://promanga.pro/manga/i-eat-soft-rice-in-another-world/',
-        id: '/manga/i-eat-soft-rice-in-another-world/',
-        title: 'I Eat Soft Rice In Another World'
+        url: 'https://www.scan-manga.com/12522/Desire-Realization-App.html',
+        id: '/12522/Desire-Realization-App.html',
+        title: 'Desire Realization App'
     },
     child: {
-        id: '/i-eat-soft-rice-in-another-world-0/',
-        title: 'الفصل 0',
+        id: '/lecture-en-ligne/Desire-Realization-App-Chapitre-34-FR_409765.html',
+        title: 'Chapitre 34'
     },
     entry: {
         index: 0,
-        size: 2_728_927,
+        size: 658_994,
         type: 'image/jpeg'
     }
 };

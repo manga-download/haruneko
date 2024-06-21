@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangapro',
-        title: 'Manga Pro'
+        id: '3hentai',
+        title: '3Hentai'
     },
     container: {
-        url: 'https://promanga.pro/manga/i-eat-soft-rice-in-another-world/',
-        id: '/manga/i-eat-soft-rice-in-another-world/',
-        title: 'I Eat Soft Rice In Another World'
+        url: 'https://ru.3hentai.net/d/529276',
+        id: '/d/529276',
+        title: 'Administrator Privileges | Привилегии администратора'
     },
     child: {
-        id: '/i-eat-soft-rice-in-another-world-0/',
-        title: 'الفصل 0',
+        id: '/d/529276',
+        title: 'Administrator Privileges | Привилегии администратора'
     },
     entry: {
         index: 0,
-        size: 2_728_927,
+        size: 46_776,
         type: 'image/jpeg'
     }
 };

@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangapro',
-        title: 'Manga Pro'
+        id: 'tresdaos',
+        title: 'Tres Daos'
     },
     container: {
-        url: 'https://promanga.pro/manga/i-eat-soft-rice-in-another-world/',
-        id: '/manga/i-eat-soft-rice-in-another-world/',
-        title: 'I Eat Soft Rice In Another World'
+        url: 'https://tresdaos.com/manga/vengeance-of-the-heavenly-demon/',
+        id: '/manga/vengeance-of-the-heavenly-demon/',
+        title: 'Vengeance of the Heavenly Demon'
     },
     child: {
-        id: '/i-eat-soft-rice-in-another-world-0/',
-        title: 'الفصل 0',
+        id: '/vengeance-of-the-heavenly-demon-chapter-1/',
+        title: 'Capítulo 1',
     },
     entry: {
         index: 0,
-        size: 2_728_927,
+        size: 532_427,
         type: 'image/jpeg'
     }
 };

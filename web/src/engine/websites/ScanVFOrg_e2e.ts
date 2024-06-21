@@ -3,21 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'lermanga',
-        title: 'LerManga'
+        id: 'scanvforg',
+        title: 'ScanVF.org'
     },
     container: {
-        url: 'https://lermanga.org/mangas/jujutsu-kaisen/',
-        id: '/mangas/jujutsu-kaisen/',
-        title: 'Jujutsu Kaisen'
+        url: 'https://scanvf.org/manga/arrete-de-me-chauffer-nagatoro',
+        id: '/manga/arrete-de-me-chauffer-nagatoro',
+        title: 'Arrête De Me Chauffer, Nagatoro'
     },
     child: {
-        id: '/capitulos/jujutsu-kaisen-capitulo-248/',
-        title: 'Capítulo 248'
+        id: '/scan/16827',
+        title: 'Volume 7',
+        timeout: 15000
     },
     entry: {
         index: 2,
-        size: 376_482,
+        size: 157_886,
         type: 'image/webp'
     }
 };
