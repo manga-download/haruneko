@@ -6,23 +6,23 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch } from '../platform/FetchProvider';
 
 const pagescript = `
-    new Promise( resolve => {
-        fetch("/api/lel/" + idc + '.json', {
-            method: 'POST',
-            credentials: 'omit',
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-                'source': window.location.href,
-                'Token': 'sm'
-            },
-            body: JSON.stringify({
-                a: sme,
-                b: sml
-            })
-        }).then(result => {
-            return result.text();
-        }).then(result => {
+    new Promise( async (resolve, reject) => {
+        try {
+            const response = await fetch("/api/lel/" + idc + '.json', {
+                method: 'POST',
+                credentials: 'omit',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                    'source': window.location.href,
+                    'Token': 'sm'
+                },
+                body: JSON.stringify({
+                    a: sme,
+                    b: sml
+                })
+            });
 
+            const result = await response.text();
             const _CHAPTERDATA = JSON.parse(atob(result.replace(new RegExp(idc.toString(16) + '$'), '').split('').reverse().join('')));
             const _HOST = _CHAPTERDATA.dN;
             const _FOLDER = "/" + _CHAPTERDATA.s + '/' + _CHAPTERDATA.v + '/' + _CHAPTERDATA.c + '';
@@ -35,11 +35,11 @@ const pagescript = `
                 _path_ += finalpath;
                 return _path_;
             });
-
             resolve(_IMGLIST);
-        });
+        } catch (error) {
+            reject(error);
+        }
     });
-
 `;
 
 @Common.MangaCSS(/^{origin}\/\d+\/[^.]+\.html$/, 'div.h2_titre h2')
