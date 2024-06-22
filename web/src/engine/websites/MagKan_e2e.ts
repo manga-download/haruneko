@@ -12,12 +12,12 @@ const config = {
         title: '推し変しやがれ!!'
     },
     child: {
-        id: '/episodes/90451498292e5',
-        title: '第七話【前】'
+        id: '/episodes/93e16b054f108/',
+        title: '第零話'
     },
     entry: {
         index: 1,
-        size: 1_235_068,
+        size: 3_166_820,
         type: 'image/png'
     }
 };

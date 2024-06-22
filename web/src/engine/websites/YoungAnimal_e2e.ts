@@ -12,7 +12,7 @@ const config = {
         title: '拷問バイトくんの日常'
     },
     child: {
-        id: '/episodes/c44e40bd07ed7',
+        id: '/episodes/c44e40bd07ed7/',
         title: '第1話'
     },
     entry: {

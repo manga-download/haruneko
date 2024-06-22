@@ -12,7 +12,7 @@ const config = {
         title: '惨家'
     },
     child: {
-        id: '/episodes/2aa2386bccbcd',
+        id: '/episodes/71edbfc76e327/',
         title: '第1話'
     },
     entry: {

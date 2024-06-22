@@ -12,7 +12,7 @@ const config = {
         title: 'ぱらのいあけ〜じ'
     },
     child: {
-        id: '/episodes/beaa305e9cf32',
+        id: '/episodes/beaa305e9cf32/',
         title: 'その(1)'
     },
     entry: {

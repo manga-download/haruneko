@@ -12,7 +12,7 @@ const config = {
         title: '呪われ侯爵様の訳ありメイド'
     },
     child: {
-        id: '/episodes/48d531d8140b5',
+        id: '/episodes/48d531d8140b5/',
         title: '第1話'
     },
     entry: {

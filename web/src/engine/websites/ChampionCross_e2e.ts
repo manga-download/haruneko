@@ -9,10 +9,10 @@ const config: Config = {
     container: {
         url: 'https://championcross.jp/series/50d8ea89cfc92/',
         id: '/series/50d8ea89cfc92/',
-        title: 'あの頃、私たちは魔法使いでした。 1'
+        title: 'あの頃、私たちは魔法使いでした。'
     },
     child: {
-        id: '/episodes/13d4bf3743424',
+        id: '/episodes/13d4bf3743424/',
         title: '第1話　「桜が舞った日のこと」'
     },
     entry: {

@@ -12,7 +12,7 @@ const config = {
         title: '藤崎くんちのお母さんには秘密がある'
     },
     child: {
-        id: '/episodes/fff51cc22815e',
+        id: '/episodes/fff51cc22815e/',
         title: '藤崎くんちのお母さん (1)'
     },
     entry: {
