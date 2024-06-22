@@ -112,7 +112,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     const [viewer] = await FetchCSS(request, '#comici-viewer');
     if (!viewer) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
-    const coord = await FetchCoordInfo(this, viewer);
+    const coord = await FetchCoordInfo.call(this, viewer);
     return coord.result.map(image => new Page(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.origin }));
 }
 
@@ -131,43 +131,24 @@ export function PagesSinglePageAJAX() {
     };
 }
 
-async function FetchCoordInfo(scraper: MangaScraper, viewer: HTMLElement): Promise<APIResult<APIPage[]>> {
-    //first request get page count
-    let uri = new URL('/book/contentsInfo', scraper.URI);
-    let params = new URLSearchParams({
-        'comici-viewer-id': viewer.getAttribute('comici-viewer-id'),
-        'user-id': viewer.dataset['memberJwt'],
-        'page-from': '0',
-        'page-to': '1',
-    });
+async function FetchCoordInfo(this: MangaScraper, viewer: HTMLElement): Promise<APIResult<APIPage[]>> {
 
-    uri.search = params.toString();
-    let request = new Request(uri, {
-        headers: {
-            Origin: scraper.URI.origin,
-            Referer: scraper.URI.origin
-        }
-    });
-    const data = await FetchJSON < APIResult<APIPage[]>>(request);
+    //first request get page count
+    const viewerId = viewer.getAttribute('comici-viewer-id');
+    const userId = viewer.dataset['memberJwt'];
+    const { totalPages } = await FetchJSON<APIResult<APIPage[]>>(CreateRequest.call(this, '1', viewerId, userId));
 
     //second request fetch actual pages data
-    const numbers = data.totalPages;
+    return FetchJSON<APIResult<APIPage[]>>(CreateRequest.call(this, totalPages.toString(), viewerId, userId));
+}
 
-    uri = new URL('/book/contentsInfo', scraper.URI);
-    params = new URLSearchParams({
-        'comici-viewer-id': viewer.getAttribute('comici-viewer-id'),
-        'user-id': viewer.dataset['memberJwt'],
-        'page-from': '0',
-        'page-to': numbers.toString()
-    });
-    uri.search = params.toString();
-    request = new Request(uri, {
+function CreateRequest(this: MangaScraper, pageTo: string, viewerId: string, userId: string): Request {
+    return new Request(new URL(`/book/contentsInfo?comici-viewer-id=${viewerId}&user-id=${userId}&page-from=0&page-to=${pageTo}`, this.URI), {
         headers: {
-            Origin: scraper.URI.origin,
-            Referer: scraper.URI.origin
+            Origin: this.URI.origin,
+            Referer: this.URI.origin
         }
     });
-    return FetchJSON<APIResult<APIPage[]>>(request);
 }
 
 /***********************************************
