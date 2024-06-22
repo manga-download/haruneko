@@ -1,11 +1,11 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaReaderTo.webp';
-import type { Chapter } from '../../providers/MangaPlugin';
-import { DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
-import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
-import type { Priority } from '../../taskpool/DeferredTask';
-import DeScramble from '../../transformers/ImageDescrambler';
+import type { Chapter } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
+import DeScramble from '../transformers/ImageDescrambler';
 
 type AJAXResponse = {
     status: boolean,
@@ -38,7 +38,7 @@ function ChapterExtractor(element: HTMLElement) {
 
 }
 
-@Common.MangaCSS(/^{origin}\/[^-]+-\d+$/, 'div#ani_detail div.anisc-detail h2.manga-name')
+@Common.MangaCSS(/^{origin}\/[^/]+-\d+$/, 'div#ani_detail div.anisc-detail h2.manga-name')
 @Common.MangasMultiPageCSS('/az-list?page={page}', '#main-content div.manga-detail h3 a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div.chapters-list-ul ul li a, div.volume-list-ul div.manga-poster', ChapterExtractor)
 export default class extends DecoratableMangaScraper {
@@ -62,7 +62,6 @@ export default class extends DecoratableMangaScraper {
 
         const dom = new DOMParser().parseFromString(html, 'text/html');
         const imagesArr = Array.from(dom.querySelectorAll<HTMLDivElement>('div.iv-card'));
-
         return imagesArr.map(image => new Page(this, chapter, new URL(image.dataset.url, this.URI), { shuffled: [...image.classList].includes('shuffled') }));
     }
 
@@ -70,23 +69,22 @@ export default class extends DecoratableMangaScraper {
         let blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return !page.Parameters['shuffled'] ? blob : DeScramble(blob, async (image, ctx) => {
 
-            const A = 200;
-            const B = 'stay';
-            const numpieces = Math.ceil(image.width / A) * Math.ceil(image.height / A);
-            const numcol = Math.ceil(image.width / A);
+            const pieceDimension = 200;
+            const defaultSeed = 'stay';
+            const numpieces = Math.ceil(image.width / pieceDimension) * Math.ceil(image.height / pieceDimension);
+            const numcol = Math.ceil(image.width / pieceDimension);
             const slicesMap = new Map<string, TSlice[]>();
             for (let index = 0; index < numpieces; index++) {
                 const g = Math.trunc(index / numcol);
-                const h: TSlice = { x: (index - g * numcol) * A, y: g * A, width: undefined, height: undefined };
-                h.width = A - (h.x + A <= image.width ? 0 : h.x + A - image.width);
-                h.height = A - (h.y + A <= image.height ? 0 : h.y + A - image.height);
-                const currentkey = h.width.toString() + '-' + h.height.toString();
+                const slice: TSlice = { x: (index - g * numcol) * pieceDimension, y: g * pieceDimension, width: undefined, height: undefined };
+                slice.width = pieceDimension - (slice.x + pieceDimension <= image.width ? 0 : slice.x + pieceDimension - image.width);
+                slice.height = pieceDimension - (slice.y + pieceDimension <= image.height ? 0 : slice.y + pieceDimension - image.height);
+                const currentkey = slice.width.toString() + '-' + slice.height.toString();
                 if (!slicesMap.has(currentkey)) slicesMap.set(currentkey, []);
-                slicesMap.get(currentkey).push(h);
-
+                slicesMap.get(currentkey).push(slice);
             }
             for (const slices of slicesMap.values()) {
-                const scrambleArray = unShuffle(createRange(0, slices.length), B);
+                const scrambleArray = unShuffle(createRange(0, slices.length), defaultSeed);
                 const group = getGroup(slices);
 
                 slices.forEach((slice, index) => {
@@ -115,12 +113,12 @@ export default class extends DecoratableMangaScraper {
                     d = seedrandom(seed);
                 const arr : number[]= [],
                     arr2 = [];
-                for (var index = 0; index < c; index++) {
+                for (let index = 0; index < c; index++) {
                     arr.push(null);
                     arr2.push(index);
                 }
-                for (index = 0; index < c; index++) {
-                    var e = seedRand(d, 0, arr2.length - 1),
+                for (let index = 0; index < c; index++) {
+                    let e = seedRand(d, 0, arr2.length - 1),
                         f = arr2[e];
                     arr2.splice(e, 1);
                     arr[f] = numArray[index];
@@ -221,24 +219,24 @@ export default class extends DecoratableMangaScraper {
                 return slices.length;
             }
 
-            function createRange(a: number, b : number, c : number = undefined) : number[]{
+            function createRange(base: number, size : number, c : number = undefined) : number[]{
                 return (
-                    a = toFinite(a),
-                    void 0 === b ? (b = a, a = 0) : b = toFinite(b),
-                    baseRange(a, b, c = void 0 === c ? a < b ? 1 : -1 : toFinite(c), false)
+                    base = toFinite(base),
+                    void 0 === size ? (size = base, base = 0) : size = toFinite(size),
+                    baseRange(base, size, c = void 0 === c ? base < size ? 1 : -1 : toFinite(c), false)
                 );
             }
 
-            function baseRange(a: number, b: number, c: number, d: boolean) : number[] {
+            function baseRange(base: number, size: number, c: number, d: boolean) : number[] {
                 let e = -1,
                     arraysize = Math.max(
-                        Math.ceil((b - a) / (c || 1)),
+                        Math.ceil((size - base) / (c || 1)),
                         0
                     );
                 const _array : number[]= new Array(arraysize);
                 for (; arraysize--;) {
-                    _array[d ? arraysize : ++e] = a;
-                    a += c;
+                    _array[d ? arraysize : ++e] = base;
+                    base += c;
                 }
                 return _array;
             }
