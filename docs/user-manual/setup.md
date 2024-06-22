@@ -21,7 +21,7 @@ TBD
 3. Copy the _HaruNeko.app_ application to your local Applications folder
 4. Open Launchpad and start _HaruNeko_
 
-**⚠️ Ignore MacOS hints about unknown developers and continue**
+**⚠️ Ignore MacOS hints about unknown developers and continue, eventually make sure to unblock HaruNeko in Settings » Privacy & Security**
 
 ## Linux
 
