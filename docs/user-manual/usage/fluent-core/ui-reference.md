@@ -62,13 +62,31 @@ A bookmark in the list can be clicked to select its corresponding website in the
 
 ## Download Panel
 
-This panel shows the _Download Manager_.
+This panel shows the _Download Manager_ and can be shown or hidden via the [Menu](#menu).
+This list contains all media items that are downloaded since the start of the application.
+The counter in the top right corner shows the number of downloads in this list and the number of downloads which are currently filtered by applying the search.
+The search field supports a simple text input that can be entered by the user.
+Furthermore a clear button in the search box can be used to quickly reset the text input.
+
+Each download features a progress bar and additional action.
+The first action represents the download status and may show any errors when clicked.
+The second action cancels and removes the download from the download manager.
 
 ![](./assets/panel-downloads.png)
 
 ## Website Selection Panel
 
+This is a collapsible panel that can be collapsed/expanded by clicking on the section with the label.
+
+In collapsed state it shows the currently selected websites, a counter and some actions.
+The counter in the top right corner shows the number of websites in this list and the number of websites which are currently filtered by applying the search.
+The actions ...
 ...
+
+In expanded state it shows an addtiional list of available websites and a search box.
+The search field supports a simple text input that can be entered by the user.
+Furthermore a clear button in the search box can be used to quickly reset the text input.
+Click one of the websites in the list to select it (the name of the website will appear in the header section).
 
 ![](./assets/panel-website.png)
 
