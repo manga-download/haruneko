@@ -1,0 +1,86 @@
+import { Tags } from '../Tags';
+import icon from './NicoNicoSeiga.webp';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
+
+type APIManga = {
+    id: number,
+    title: string
+}
+
+type APIChapter = {
+    id: number,
+    meta: {
+        title: string
+    }
+}
+
+type APIPage = {
+    meta: {
+        source_url: string,
+        drm_hash: string
+    }
+}
+
+type APIResult<T> = {
+    meta: {
+        status: number
+    },
+    data: {
+        result: T
+    }
+}
+
+export default class extends DecoratableMangaScraper {
+
+    private readonly apiUrl = 'https://api.nicomanga.jp/api/v1/app/manga/';
+
+    public constructor() {
+        super('niconicoseiga', `ニコニコ静画 (niconico seiga)`, 'https://sp.manga.nicovideo.jp/', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+    }
+
+    public override get Icon() {
+        return icon;
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList: Manga[] = [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this.GetMangasFromPage(page, provider);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
+    }
+
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const data = await FetchJSON<APIManga[]>(new Request(new URL(`/manga/ajax/ranking?span=hourly&category=all&page=${page}`, this.URI)));
+        return Array.isArray(data) ? data.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim())) : [];
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { meta, data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`contents/${manga.Identifier}/episodes`, this.apiUrl)));
+        return meta.status == 200 ? data.result.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.meta.title.trim())) : [];
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { meta, data } = await FetchJSON<APIResult<APIPage[]>>(new Request(new URL(`episodes/${chapter.Identifier}/frames`, this.apiUrl)));
+        return meta.status == 200 ? data.result.map(page => new Page(this, chapter, new URL(page.meta.source_url), { drm_hash: page.meta.drm_hash })) : [];
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const data = await Common.FetchImageAjax.call(this, page, priority, signal);
+        const encrypted = await new Response(data).arrayBuffer();
+        const key = page.Parameters['drm_hash'] as string;
+        const decrypted = this.Decrypt(new Uint8Array(encrypted), key);
+        return Common.GetTypedData(Buffer.from(decrypted));
+    }
+
+    private Decrypt(buffer: Uint8Array, key: string): Uint8Array {
+        const xorkey = new Uint8Array(key.slice(0, 16).match(/.{1,2}/g).map(e => parseInt(e, 16)));
+        for (let n = 0; n < buffer.length; n++)
+            buffer[n] = buffer[n] ^ xorkey[n % 8];
+        return buffer;
+    }
+}
