@@ -53,6 +53,16 @@ const legacyWebsiteIdentifierMap = {
     'siyahmelek': 'grimelek',
     'smangavfws': 'smangavf',
     'sushiscanfr': 'animesama',
+    'toomics-de': 'toomics', //old id contains manga language ie /en/webtoon/etc..... so they are unique and can be merged into global toomics
+    'toomics-en': 'toomics', // Toomics Korean works differently, no id change and special plugin
+    'toomics-es': 'toomics',
+    'toomics-fr': 'toomics',
+    'toomics-it': 'toomics',
+    'toomics-jp': 'toomics',
+    'toomics-mx': 'toomics',
+    'toomics-pt': 'toomics',
+    'toomics-sc': 'toomics',
+    'toomics-tc': 'toomics',
     'truemanga': 'mangamonk',
     'vermanhwas': 'vermanhwa',
     'webtoontrcom': 'webtoontrnet',
