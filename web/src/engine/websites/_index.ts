@@ -583,6 +583,7 @@ export { default as Remangas } from './Remangas';
 export { default as ResetScans } from './ResetScans';
 export { default as Retsu } from './Retsu';
 export { default as RidiBooks } from './RidiBooks';
+export { default as RimacomiPlus } from './RimacomiPlus';
 export { default as Rio2Manga } from './Rio2Manga';
 export { default as RizzComics } from './RizzComics';
 export { default as RobinManga } from './RobinManga';
