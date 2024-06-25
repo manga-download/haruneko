@@ -112,7 +112,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     const [viewer] = await FetchCSS(request, '#comici-viewer');
     if (!viewer) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
-    const coord = await FetchCoordInfo.call(this, viewer);
+    const coord = await FetchCoordInfo.call(this, viewer, chapter);
     return coord.result.map(image => new Page(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.origin }));
 }
 
@@ -131,22 +131,22 @@ export function PagesSinglePageAJAX() {
     };
 }
 
-async function FetchCoordInfo(this: MangaScraper, viewer: HTMLElement): Promise<APIResult<APIPage[]>> {
+async function FetchCoordInfo(this: MangaScraper, viewer: HTMLElement, chapter : Chapter): Promise<APIResult<APIPage[]>> {
 
     //first request get page count
     const viewerId = viewer.getAttribute('comici-viewer-id');
     const userId = viewer.dataset['memberJwt'];
-    const { totalPages } = await FetchJSON<APIResult<APIPage[]>>(CreateRequest.call(this, '1', viewerId, userId));
+    const { totalPages } = await FetchJSON<APIResult<APIPage[]>>(CreateRequest.call(this, '1', viewerId, userId, chapter));
 
     //second request fetch actual pages data
-    return FetchJSON<APIResult<APIPage[]>>(CreateRequest.call(this, totalPages.toString(), viewerId, userId));
+    return FetchJSON<APIResult<APIPage[]>>(CreateRequest.call(this, totalPages.toString(), viewerId, userId, chapter));
 }
 
-function CreateRequest(this: MangaScraper, pageTo: string, viewerId: string, userId: string): Request {
+function CreateRequest(this: MangaScraper, pageTo: string, viewerId: string, userId: string, chapter): Request {
     return new Request(new URL(`/book/contentsInfo?comici-viewer-id=${viewerId}&user-id=${userId}&page-from=0&page-to=${pageTo}`, this.URI), {
         headers: {
             Origin: this.URI.origin,
-            Referer: this.URI.origin
+            Referer: new URL(chapter.id, this.URI).href
         }
     });
 }
