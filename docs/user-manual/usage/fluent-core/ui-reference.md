@@ -3,7 +3,9 @@
 This front-end is focused on being used by developers.
 It provides a specialized experience and tailored functionalities but lacks in general usability.
 
-**ℹ️ Most UI elements will provide context help, so make sure to read the tooltip which will appear after a short delay when hovering the cursor over the corresponding UI element**
+::: tip
+Most UI elements will provide context help, so make sure to read the tooltip which will appear after a short delay when hovering the cursor over the corresponding UI element.
+:::
 
 ## Layout
 
@@ -37,16 +39,20 @@ The dialog can be confirmed with the _Done_ button at the bottom center of the d
 
 ![](./assets/settings-application.webp)
 
-| Label                 | Description |
-| :-------------------- | :---------- |
-| Frontend              | Shows a list of all available user interfaces. Select a user interface which delivers an appealing experience. A restart is required after changing the user interface. |
-| Language              | Shows a list of all available languages for the application. Select a language convenient for you. This does not affect languages of the accessed titles and media |
-| Media Directory       | The directory where all media shall be stored.<br>⚠️ **Make sure this is set correctly after the first launch of HakuNeko to prevent errors and confusion!** |
-| Use Sub-Directories   | ... |
-| De-Scrambling Format  | ... |
-| De-Scrambling Quality | ... |
-| ...                   | ... |
-| RPC | ... |
+| Label                         | Description |
+| :---------------------------- | :---------- |
+| Frontend                      | Shows a list of all available user interfaces. Select a user interface which delivers an appealing experience. A restart is required after changing the user interface. |
+| Language                      | Shows a list of all available languages for the application. Select a language convenient for you. This does not affect languages of the accessed titles and media. |
+| Media&nbsp;Directory&nbsp;⁽¹⁾ | The directory where all downloaded media shall be stored. |
+| Use&nbsp;Sub-Directories      | ... |
+| De‑Scrambling&nbsp;Format     | ... |
+| De‑Scrambling&nbsp;Quality    | ... |
+| ...                           | ... |
+| RPC                           | ... |
+
+::: tip FOOTNOTES
+[1] Make sure the _Media Directory_ is set correctly after the first launch of HakuNeko to prevent errors and confusion.
+:::
 
 ## Bookmark Panel
 
@@ -77,6 +83,7 @@ The second action cancels and removes the download from the download manager.
 ## Website Selection Panel
 
 The purpose of this panel is to select a website which is required for all further actions.
+Only websites which are shown in this list are supported by the software.
 This is a collapsible panel that can be collapsed/expanded by clicking on the header.
 
 In collapsed state it shows the currently selected websites, a counter and some actions.
@@ -105,7 +112,9 @@ Use the synchronize action to load the latest list of titles from the website.
 This needs to be done initially when the list of titles is still empty and regulary to update the list with added, removed or renamed titles.
 With the bookmark action the currently selected title can be added to or removed from the [bookmark list](#bookmark-panel).
 The last action is used to directly paste a website link to a specific title and select it.
-**⚠️ The link must be of a supported website and also point to a specific title such as manga or anime. Links to chapters or episodes cannot be used.**
+::: warning IMPORTANT
+The link must match a supported website and also point to a specific title such as manga or anime. Links to chapters or episodes cannot be used.
+:::
 
 In expanded state it shows an addtiional list of the last synchronized titles and a search box.
 The search field supports a simple text input that can be entered by the user.
@@ -134,7 +143,7 @@ By turning on regular expressions, the entered text is interpreted as regular ex
 Furthermore a clear button in the search box can be used to quickly reset the text input.
 
 Hover over one of the media items in the list to show the item actions.
-Use the preview action to open the [edia Preview](#media-preview) for this media item.
+Use the preview action to open the [Media Preview](#media-preview) for this media item.
 Use the download action to add this item at the end of the download queue in the [Download Manager](#download-panel).
 
 ![](./assets/panel-items.webp)

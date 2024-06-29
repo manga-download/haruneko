@@ -12,7 +12,9 @@ TBD
 2. Extract the files to a directory with read/write access for the current windows user account
 3. Open the extracted directory and start the _hakuneko-app.exe_ binary
 
-**⚠️ In case the binary file is missing, ensure it was not removed by your anti-virus programm such as Windows Defender**
+::: warning IMPORTANT
+In case the binary file is missing, ensure it was not removed by your anti-virus programm such as Windows Defender.
+:::
 
 ## MacOS
 
