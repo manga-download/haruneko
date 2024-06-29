@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './AdonisFansub.webp';
+import icon from './MultPorn.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
@@ -41,7 +41,9 @@ type DrupalResult = {
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     private readonly apiUrl = `${this.URI.origin}/views/ajax`;
+
     public constructor() {
         super('multporn', 'MultPorn', 'https://multporn.net', Tags.Media.Comic, Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
@@ -81,12 +83,10 @@ export default class extends DecoratableMangaScraper {
     private async GetChaptersFromAjaxPage(manga: Manga, page: number, settings: DrupalSettings): Promise<Chapter[]> {
 
         const view = Object.values(settings.views.ajaxViews).shift();
-
         const params = new URLSearchParams();
         for (const key of Object.keys(view)) {
             params.append(key, view[key]);
         };
-
         params.set('page', `0,${page}`);
 
         const results = await FetchJSON<DrupalResult[]>(new Request(this.apiUrl, {
@@ -101,11 +101,9 @@ export default class extends DecoratableMangaScraper {
             }
         }));
 
-        const goodcommand = results.find(entry => entry.command == 'insert');
-        const dom = new DOMParser().parseFromString(goodcommand.data, 'text/html');
-        const nodes = dom.querySelectorAll < HTMLAnchorElement>('div.view-content table tr td strong.field-content a');
+        const { data } = results.find(entry => entry.command == 'insert');
+        const dom = new DOMParser().parseFromString(data, 'text/html');
+        const nodes = dom.querySelectorAll<HTMLAnchorElement>('div.view-content table tr td strong.field-content a');
         return [...nodes]?.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.trim())) ?? [];
-
     }
-
 }
