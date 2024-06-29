@@ -135,7 +135,6 @@ export { default as FenixScan } from './FenixScan';
 export { default as FinalScans } from './FinalScans';
 export { default as FireScans } from './FireScans';
 export { default as FlameComics } from './FlameComics';
-export { default as FleksyScans } from './FleksyScans';
 export { default as FlixScansOrg } from './FlixScansOrg';
 export { default as FMTeam } from './FMTeam';
 export { default as FoxWhiteScan } from './FoxWhiteScan';
