@@ -76,41 +76,86 @@ The second action cancels and removes the download from the download manager.
 
 ## Website Selection Panel
 
-This is a collapsible panel that can be collapsed/expanded by clicking on the section with the label.
+The purpose of this panel is to select a website which is required for all further actions.
+This is a collapsible panel that can be collapsed/expanded by clicking on the header.
 
 In collapsed state it shows the currently selected websites, a counter and some actions.
 The counter in the top right corner shows the number of websites in this list and the number of websites which are currently filtered by applying the search.
-The actions ...
-...
+The first action opens the URL of the website in a new HakuNeko window.
+Use this to browse the website, to check its availability (e.g., domain moved, region locked, ...) or to log in with a valid account.
+The star action can be used to mark this website as favorite.
+Each website may have individual [settings](#website-settings) such as timeouts and more, which can be changed by using the corresponding settings action.
 
 In expanded state it shows an addtiional list of available websites and a search box.
 The search field supports a simple text input that can be entered by the user.
 Furthermore a clear button in the search box can be used to quickly reset the text input.
-Click one of the websites in the list to select it (the name of the website will appear in the header section).
+
+Click one of the websites in the list to select it (the name of the website will appear in the header section of this panel).
 
 ![](./assets/panel-website.png)
 
 ## Title Selection Panel
 
-...
+The purpose of this panel is to select a title (manga, anime) from a previously [selected website](#website-selection-panel).
+This is a collapsible panel that can be collapsed/expanded by clicking on the header.
+
+In collapsed state it shows the currently selected title, a counter and some actions.
+The counter in the top right corner shows the number of titles in this list and the number of titles which are currently filtered by applying the search.
+Use the synchronize action to load the latest list of titles from the website.
+This needs to be done initially when the list of titles is still empty and regulary to update the list with added, removed or renamed titles.
+With the bookmark action the currently selected title can be added to or removed from the [bookmark list](#bookmark-panel).
+The last action is used to directly paste a website link to a specific title and select it.
+**⚠️ The link must be of a supported website and also point to a specific title such as manga or anime. Links to chapters or episodes cannot be used.**
+
+In expanded state it shows an addtiional list of the last synchronized titles and a search box.
+The search field supports a simple text input that can be entered by the user.
+The search field has options which can be toggled on or off.
+By turning on case sensitivity, the list is filtered by exactly matching the case of the entered text.
+By turning on regular expressions, the entered text is interpreted as regular expression (JS flavor) which is used to filter the list.
+Furthermore a clear button in the search box can be used to quickly reset the text input.
+
+Click one of the titles in the list to select it (the name of the title will appear in the header section of this panel).
 
 ![](./assets/panel-titles.png)
 
 ## Media Selection Panel
 
-...
+The purpose of this panel is to select use the media (chapter, episode) from a previously [selected title](#title-selection-panel).
+
+The header of this panel shows a counter and an action.
+The counter in the top right corner shows the number of media in this list and the number of media which are currently filtered by applying the search.
+Use the synchronize action to load the latest list of media for the selected title from the website.
+This needs to be done initially when the list of media is still empty.
+
+The search field supports a simple text input that can be entered by the user.
+The search field has options which can be toggled on or off.
+By turning on case sensitivity, the list is filtered by exactly matching the case of the entered text.
+By turning on regular expressions, the entered text is interpreted as regular expression (JS flavor) which is used to filter the list.
+Furthermore a clear button in the search box can be used to quickly reset the text input.
+
+Hover over one of the media items in the list to show the item actions.
+Use the preview action to open the [edia Preview](#media-preview) for this media item.
+Use the download action to add this item at the end of the download queue in the [Download Manager](#download-panel).
 
 ![](./assets/panel-items.png)
 
 ## Media Preview
 
-...
+This overlay shows a preview of the corresponding media item.
+Depending on the media type the preview may differ.
+
+For a manga chapter it shows thumbnails of all chapter images.
+Each thumbnail contains the information of mime type and size and a small representation of the image.
+The information can be clicked to open the original image data in a separate window.
+The thumbnail image can be clicked to open the raw image data that was acquired by HakuNeko.
+
+The close button at the top left corner can be used to exit the preview.
 
 ![](./assets/preview.png)
 
 ## Website Settings
 
-...
+A dialog with website specific settings can be accessed after [selecting a website](#website-selection-panel) and using the settings action.
 
 ![](./assets/settings-website.png)
 
