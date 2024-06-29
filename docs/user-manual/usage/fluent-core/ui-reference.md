@@ -10,7 +10,7 @@ It provides a specialized experience and tailored functionalities but lacks in g
 The fundamental functionality is provided within a fixed set of panels.
 Additional functionalities or configurations can be found in the [Menu](#menu).
 
-![](./assets/overview.png)
+![](./assets/overview.webp)
 
 ## Menu
 
@@ -27,7 +27,7 @@ At the bottom is a slider for setting the brightness (dark/light mode) of this f
 There is also a sub-menu for toggle certain developer focused features on/off.
 These will not be further explained (check the corresponding tooltips).
 
-![](./assets/menu.png)
+![](./assets/menu.webp)
 
 ## Application Settings
 
@@ -35,7 +35,7 @@ These settings can be reached via the [Menu](#menu).
 This dialog contains all application specific options that can be configured by the user.
 The dialog can be confirmed with the _Done_ button at the bottom center of the dialog.
 
-![](./assets/settings-application.png)
+![](./assets/settings-application.webp)
 
 | Label                 | Description |
 | :-------------------- | :---------- |
@@ -58,7 +58,7 @@ Furthermore a clear button in the search box can be used to quickly reset the te
 
 A bookmark in the list can be clicked to select its corresponding website in the [Website Selection Panel](#website-selection-panel) and select its corresponding title in the [Title Selection Panel](#title-selection-panel).
 
-![](./assets/panel-bookmarks.png)
+![](./assets/panel-bookmarks.webp)
 
 ## Download Panel
 
@@ -72,7 +72,7 @@ Each download features a progress bar and additional action.
 The first action represents the download status and may show any errors when clicked.
 The second action cancels and removes the download from the download manager.
 
-![](./assets/panel-downloads.png)
+![](./assets/panel-downloads.webp)
 
 ## Website Selection Panel
 
@@ -92,7 +92,7 @@ Furthermore a clear button in the search box can be used to quickly reset the te
 
 Click one of the websites in the list to select it (the name of the website will appear in the header section of this panel).
 
-![](./assets/panel-website.png)
+![](./assets/panel-website.webp)
 
 ## Title Selection Panel
 
@@ -116,7 +116,7 @@ Furthermore a clear button in the search box can be used to quickly reset the te
 
 Click one of the titles in the list to select it (the name of the title will appear in the header section of this panel).
 
-![](./assets/panel-titles.png)
+![](./assets/panel-titles.webp)
 
 ## Media Selection Panel
 
@@ -137,7 +137,7 @@ Hover over one of the media items in the list to show the item actions.
 Use the preview action to open the [edia Preview](#media-preview) for this media item.
 Use the download action to add this item at the end of the download queue in the [Download Manager](#download-panel).
 
-![](./assets/panel-items.png)
+![](./assets/panel-items.webp)
 
 ## Media Preview
 
@@ -151,13 +151,13 @@ The thumbnail image can be clicked to open the raw image data that was acquired 
 
 The close button at the top left corner can be used to exit the preview.
 
-![](./assets/preview.png)
+![](./assets/preview.webp)
 
 ## Website Settings
 
 A dialog with website specific settings can be accessed after [selecting a website](#website-selection-panel) and using the settings action.
 
-![](./assets/settings-website.png)
+![](./assets/settings-website.webp)
 
 ## Developer Tools
 
