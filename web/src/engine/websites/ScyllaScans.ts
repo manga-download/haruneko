@@ -2,20 +2,18 @@ import { Tags } from '../Tags';
 import icon from './ScyllaScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as ReaderFront from './decorators/ReaderFront';
+import * as FuzzyDoodle from './decorators/FuzzyDoodle';
 
-const apiUrl = 'https://api.scyllascans.org';
-const cdnUrl = apiUrl;
-
-@ReaderFront.MangaAJAX(/^https?:\/\/scyllascans\.org\/work\/[a-z]{2}\/[^/]+/, apiUrl)
-@ReaderFront.MangasSinglePageAJAX(apiUrl)
-@ReaderFront.ChaptersSinglePageAJAX(apiUrl)
-@ReaderFront.PagesSinglePageAJAX(apiUrl, cdnUrl)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, FuzzyDoodle.queryMangatitle, FuzzyDoodle.MangaLabelExtractor)
+@Common.MangasMultiPageCSS(FuzzyDoodle.mangaPath, FuzzyDoodle.queryMangas, 1, 1, 0, FuzzyDoodle.MangaInfoExtractor)
+@FuzzyDoodle.ChaptersMultiPageCSS()
+@Common.PagesSinglePageCSS(FuzzyDoodle.queryPages)
 @Common.ImageAjax()
+
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('scyllascans', `Scylla Scans`, 'https://scyllascans.org', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('scyllascans', `Scylla Scans`, 'https://scyllacomics.xyz', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
