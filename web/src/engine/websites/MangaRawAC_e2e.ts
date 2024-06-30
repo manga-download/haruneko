@@ -1,23 +1,24 @@
 ﻿import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
+const mangaID = encodeURI('/manga/呪術廻戦-raw-free/').toLowerCase();
 const config = {
     plugin: {
-        id: 'mangademon',
-        title: 'MangaDemon'
+        id: 'mangarawac',
+        title: 'MangaRawAC'
     },
     container: {
-        url: 'https://mgdemon.org/manga/Martial-Peak-VA54',
-        id: '/manga/Martial-Peak-VA54',
-        title: 'Martial Peak'
+        url: 'https://mangaraw.ac' + mangaID,
+        id: mangaID,
+        title: '呪術廻戦'
     },
     child: {
-        id: '/manga/Martial-Peak/chapter/3670-VA54',
-        title: '3670'
+        id: mangaID + encodeURI('第1話/'),
+        title: '第1話'
     },
     entry: {
         index: 0,
-        size: 328_479,
+        size: 156_354,
         type: 'image/jpeg'
     }
 };

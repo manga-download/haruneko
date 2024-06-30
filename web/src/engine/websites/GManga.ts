@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './NiveraFansub.webp';
+import icon from './GManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('niverafansub', 'Nivera Fansub', 'https://niverafansub.org', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
+        super('gmanga', 'GManga', 'https://gmanga.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -3,23 +3,22 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'comicryu',
-        title: 'COMICリュウ'
+        id: 'ourfeel',
+        title: 'OurFeel'
     },
     container: {
-        url: 'https://www.comic-ryu.jp/series/zingnize/',
-        id: '/series/zingnize/',
-        title: 'ZINGNIZE'
+        url: 'https://ourfeel.jp/episode/2550689798581262969',
+        id: '/episode/2550689798581262969',
+        title: '私たちが恋する理由'
     },
     child: {
-        id: '/2167/',
-        title: '第一話「高坂甚内①」'
+        id: '/episode/2550689798581263037',
+        title: 'Reason.18'
     },
     entry: {
         index: 0,
-        size: 3_619_874,
-        type: 'image/jpeg',
-        timeout: 25000
+        size: 2_618_111,
+        type: 'image/png'
     }
 };
 

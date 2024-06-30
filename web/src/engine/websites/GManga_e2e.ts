@@ -3,21 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'komiktap',
-        title: 'KomikTap'
+        id: 'gmanga',
+        title: 'GManga'
     },
     container: {
-        url: 'https://komiktap.info/manga/a-sober-and-quiet-mother/',
-        id: '/manga/a-sober-and-quiet-mother/',
-        title: 'A Sober And Quiet Mother'
+        url: 'https://gmanga.site/manga/catastrophic-necromancer/',
+        id: JSON.stringify({ post: '2358', slug: '/manga/catastrophic-necromancer/'}),
+        title: 'Catastrophic Necromancer'
     },
     child: {
-        id: '/a-sober-and-quiet-mother-chapter-1/',
-        title: 'Chapter 1 End',
+        id: '/manga/catastrophic-necromancer/catastrophic-necromancer-20/',
+        title: '20'
     },
     entry: {
         index: 0,
-        size: 323_135,
+        size: 956_241,
         type: 'image/jpeg'
     }
 };
