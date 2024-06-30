@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Liliana from './decorators/Liliana';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/\d+$/, Liliana.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, Liliana.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS(Liliana.mangaPath, Liliana.queryMangas, 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS(Liliana.queryChapters, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageJS(Liliana.queryPagesScript, 500)
