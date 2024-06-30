@@ -4,8 +4,6 @@ import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } 
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
-//we do not use FetchGraphQL on purpose, since this website use GET and not POST and ofc pass parameters and query using the url
-
 type APIMangaPage = {
     data: {
         album: {
@@ -43,7 +41,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://apicdn.luscious.net/graphql/nobatch/';
 
     public constructor() {
-        super('luscious', `Luscious`, 'https://www.luscious.net', Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('luscious', `Luscious`, 'https://www.luscious.net', Tags.Media.Comic, Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
