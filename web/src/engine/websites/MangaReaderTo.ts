@@ -271,7 +271,7 @@ export default class extends DecoratableMangaScraper {
             }
 
             function isSymbol(a) : boolean{
-                var vartype = typeof a;
+                const vartype = typeof a;
                 return 'symbol' == vartype || 'object' == vartype && null != a;
             }
 
