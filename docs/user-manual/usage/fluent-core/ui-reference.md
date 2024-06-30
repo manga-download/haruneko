@@ -127,9 +127,9 @@ Click one of the titles in the list to select it (the name of the title will app
 
 ![](./assets/panel-titles.webp)
 
-## Media Selection Panel
+## Media Items Panel
 
-The purpose of this panel is to select use the media (chapter, episode) from a previously [selected title](#title-selection-panel).
+The purpose of this panel is to list the media (chapter, episode) from a previously [selected title](#title-selection-panel).
 
 The header of this panel shows a counter and an action.
 The counter in the top right corner shows the number of media in this list and the number of media which are currently filtered by applying the search.
