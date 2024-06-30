@@ -142,7 +142,7 @@ export default class extends DecoratableMangaScraper {
 
         const data = await FetchJSON<EncryptedData | PackedData | APIMangas>(request);
         const { mangas } = TryUnpack(await TryDecrypt(data));
-        return mangas ? mangas.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim())) : [];
+        return mangas?.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim())) ?? [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -154,7 +154,7 @@ export default class extends DecoratableMangaScraper {
                 'Vol.' + chapter.volume,
                 'Ch.' + chapter.chapter,
                 chapter.title || team?.name ? '-' : '',
-                chapter.title ? chapter.title : '',
+                chapter.title || '',
                 team?.name ? `[${team.name}]` : '',
             ].join(' ');
             const id = [ manga.Identifier, manga.Title, chapter.chapter ].join('/'); // slug
