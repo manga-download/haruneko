@@ -15,7 +15,7 @@ export const pageScript = `
             function(j) {
                 if (j.status == 1) {
                     const dom = new DOMParser().parseFromString(j.html, 'text/html');
-                    resolve([...dom.querySelectorAll('div.iv-card img')].map(image => JSON.parse(new URL(image.dataset.src).searchParams.get('src'))));
+                    resolve([...dom.querySelectorAll('div.iv-card img')].map(image => image.dataset.src));
                 } else reject();
             },
             "json"
