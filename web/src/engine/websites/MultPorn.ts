@@ -55,15 +55,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         for (let category of categories) {
-            category += '?page={page}';
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, category, 'div.view-content table tr td strong a', 0);
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, category + '?page={page}', 'div.view-content table tr td strong a', 0);
             mangaList.push(...mangas);
         }
         return mangaList;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        //get Drupal parameters
         const url = new URL(manga.Identifier, this.URI);
         const settings = await FetchWindowScript<DrupalSettings>(new Request(url), 'Drupal.settings');
         const chapterList = [];
