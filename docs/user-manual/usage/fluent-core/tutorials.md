@@ -44,3 +44,34 @@ Only links to titles are valid, links to chapters or episodes cannot be applied.
 3. Switch to HakuNeko
 4. Press the _Paste_ button in the [Title Selection Panel](./ui-reference#title-selection-panel)
 5. Wait until the link is processed and the [Media Items Panel](./ui-reference#media-items-panel) finished loading
+
+## Apply CloudFlare Bypass from Browser
+
+Various websites are protected by CloudFlare's Anti-Bot detection.
+Unfortunately HakuNeko is detected as malicious browser and therefore has trouble to bypass the protection.
+This workaround can be used to temporary access a website that is protected by CloudFlare.
+
+| HakuNeko RPC Settings | Assistant RPC Settings |
+| :-------------------: | :--------------------: |
+| ![](./assets/settings-application-rpc.webp) | ![](./assets/settings-assistant.webp) |
+
+1. Start HakuNeko and open the application settings
+   - Enable the option for _Remote Control_
+   - You may change the _Port_ on which HakuNeko can be accessed by 3rd party applications
+   - You must change the default _Secret_ to prevent unauthorized connections
+2. Install the HakuNeko Assistant browser extension for Chrome/Edge
+   - Download the latest extension from [GitHub](https://github.com/manga-download/haruneko-assistant/releases)
+   - Extract the content of the extension (zip archive)
+   - Open Chrome/Edge and switch to the extension manager
+   - Enable the developer mode and load the extracted extension folder
+3. Open the extension in your browser
+   - Make sure the _Connection_ uses the same _Port_ number as configured in HakuNeko
+   - Make sure the _Secret_ is the same as configured in HakuNeko
+4. Bypass a CloudFlare protected website
+   - Make sure HakuNeko is running and _Remote Control_ is enabled
+   - In your Chrome/Edge Browser navigate to the manga/chapter that is protected by CloudFlare
+   - Wait until the CloudFlare protection is bypassed automatically or manually after solving a captcha
+   - Open the HakuNeko assistant extension
+   - Click the _Bypass CloudFlare_ button
+   - Confirm a potential restart notification in HakuNeko
+   - The website can now be accessed by HakuNeko (until the CloudFlare session expires)
