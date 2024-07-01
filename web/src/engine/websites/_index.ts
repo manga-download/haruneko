@@ -701,6 +701,7 @@ export { default as TurkceMangaOku } from './TurkceMangaOku';
 export { default as TurkManga } from './TurkManga';
 export { default as Turktoon } from './Turktoon';
 export { default as Tuttoanimemanga } from './Tuttoanimemanga';
+export { default as TwoAnimx } from './TwoAnimx';
 export { default as UmeTruyen } from './UmeTruyen';
 export { default as UngTyComic } from './UngTyComic';
 export { default as UraSunday } from './UraSunday';
