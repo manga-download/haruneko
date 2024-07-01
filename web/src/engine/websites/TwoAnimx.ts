@@ -23,7 +23,7 @@ const pageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('2animx', '2Animx', 'https://www.2animx.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
+        super('2animx', '2Animx', 'https://www.2animx.com', Tags.Media.Comic, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
