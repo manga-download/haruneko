@@ -7,7 +7,7 @@ const config: Config = {
         title: 'MintManga'
     },
     container: {
-        url: 'https://23.mintmanga.one/blagoslovenie_nebojitelei__A5327',
+        url: 'https://24.mintmanga.one/blagoslovenie_nebojitelei__A5327',
         id: '/blagoslovenie_nebojitelei__A5327',
         title: 'Heaven Official’s Blessing',
     },

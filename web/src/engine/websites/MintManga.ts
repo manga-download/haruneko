@@ -11,7 +11,7 @@ import * as ReadM from './decorators/ReadMangaLive';
 @ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('mintmanga', `MintManga`, 'https://23.mintmanga.one', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mintmanga', `MintManga`, 'https://24.mintmanga.one', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
     public override get Icon() {
         return icon;
