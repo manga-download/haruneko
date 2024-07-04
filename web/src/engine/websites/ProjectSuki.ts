@@ -5,37 +5,23 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
-    new Promise ((resolve, reject) => {
+    new Promise (async (resolve, reject) => {
         try {
+            const [, , , , bookid, chapterid ] = window.location.href.split('/');
+            const body = JSON.stringify({ bookid, chapterid, first: true });
 
-            const element = document.querySelector('.strip-reader');
-            const bookid = window.location.href.split('/') [4];
-            const chapterid = window.location.href.split('/') [5];
-            const body = JSON.stringify({
-                bookid: bookid,
-                chapterid: chapterid,
-                first: true
+            const response = await fetch(window.location.origin + '/callpage', {
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8',
+                },
+                body: body,
+                method: 'POST',
             });
-
-            const xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    const jsondata =  JSON.parse(xhr.response);
-
-                    const images = [];
-                    images.push(...[...document.querySelectorAll('img.img-fluid')].map(image => image.src));
-
-                    const dom = new DOMParser().parseFromString(jsondata.src, 'text/html');
-                    images.push(...[...dom.querySelectorAll('img.img-fluid')].map(image => image.src));
-                    resolve(images);
-
-                } else {
-                    throw Error('Cant get images :/ !');
-                }
-            };
-            xhr.open('POST', '/callpage');
-            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-            xhr.send(body);
+            const data = await response.json();
+            let images = [...document.querySelectorAll('img.img-fluid')].map(image => image.src);
+            const dom = new DOMParser().parseFromString(data.src, 'text/html');
+            images = images.concat([...dom.querySelectorAll('img.img-fluid')].map(image => image.src));
+            resolve(images);
 
         } catch (error) {
             reject(error);
