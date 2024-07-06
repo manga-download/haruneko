@@ -77,6 +77,8 @@ describe('BookmarkConverter', () => {
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
             { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
+            { sourceID: 'heavenmanga', targetID: 'beetoon' },
+            { sourceID: 'heavenmanga2', targetID: 'heavenmanga' },
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
             { sourceID: 'komikav', targetID: 'apkomik' },
             { sourceID: 'kumascans', targetID: 'retsu' },

@@ -20,6 +20,8 @@ const legacyWebsiteIdentifierMap = {
     'flamescans-org': 'flamecomics',
     'galaxyaction': 'galaxymanga',
     'gateanimemanga': 'gatemanga',
+    'heavenmanga': 'beetoon',
+    'heavenmanga2': 'heavenmanga',
     'imperioscans': 'neroxus',
     'kisscomic': 'readcomiconline',
     'komikav': 'apkomik',
