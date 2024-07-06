@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './TecnoScan.webp';
+import icon from './GManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -10,9 +10,11 @@ import * as Common from './decorators/Common';
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     public constructor() {
-        super('tecnoscan', 'Tecno Scan', 'https://visortecno.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('gmanga', 'GManga', 'https://gmanga.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
+
     public override get Icon() {
         return icon;
     }
