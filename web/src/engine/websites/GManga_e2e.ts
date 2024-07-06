@@ -3,21 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'doujin69',
-        title: 'Doujin69'
+        id: 'gmanga',
+        title: 'GManga'
     },
     container: {
-        url: 'https://doujin69.com/doujin/boarding-diary/',
-        id: '/doujin/boarding-diary/',
-        title: 'Boarding Diary'
+        url: 'https://gmanga.site/manga/catastrophic-necromancer/',
+        id: JSON.stringify({ post: '2358', slug: '/manga/catastrophic-necromancer/'}),
+        title: 'Catastrophic Necromancer'
     },
     child: {
-        id: encodeURI('/boarding-diary-ตอนที่1/').toLocaleLowerCase(),
-        title: 'ตอนที่ 1'
+        id: '/manga/catastrophic-necromancer/catastrophic-necromancer-20/',
+        title: '20'
     },
     entry: {
         index: 0,
-        size: 268_843,
+        size: 956_241,
         type: 'image/jpeg'
     }
 };

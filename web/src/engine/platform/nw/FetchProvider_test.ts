@@ -7,7 +7,7 @@ import FetchProvider from './FetchProvider';
 class TestFixture {
 
     public readonly mockFeatureFlags = mock<FeatureFlags>();
-    public readonly mockFetch = vi.fn();
+    public readonly mockFetch = vi.fn().mockReturnValueOnce({ headers: { get: () => {} } });
     public readonly chromeFake = {
         cookies: {
             getAll: vi.fn(),

@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangademon',
-        title: 'MangaDemon'
+        id: 'scanmanga',
+        title: 'ScanManga'
     },
     container: {
-        url: 'https://mgdemon.org/manga/Martial-Peak-VA54',
-        id: '/manga/Martial-Peak-VA54',
-        title: 'Martial Peak'
+        url: 'https://www.scan-manga.com/12522/Desire-Realization-App.html',
+        id: '/12522/Desire-Realization-App.html',
+        title: 'Desire Realization App'
     },
     child: {
-        id: '/manga/Martial-Peak/chapter/3670-VA54',
-        title: '3670'
+        id: '/lecture-en-ligne/Desire-Realization-App-Chapitre-34-FR_409765.html',
+        title: 'Chapitre 34'
     },
     entry: {
         index: 0,
-        size: 328_479,
+        size: 658_994,
         type: 'image/jpeg'
     }
 };
