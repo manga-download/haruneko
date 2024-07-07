@@ -29,18 +29,28 @@ jobs:
         with:
           name: bundle-${{ matrix.os }}
           retention-days: 3
-          path: |
-            app/nw/bundle/
-            app/electron/bundle/
+          path: app/**/bundle/
+  release-notes:
+    needs: build
+    name: Prepare Release Notes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref }}
+          fetch-depth: 1
       - name: Upload Release Templates
         uses: actions/upload-artifact@v4
-        if: ${{ matrix.os == 'windows-latest' }}
         with:
           name: release-templates
           retention-days: 3
           path: .github/RELEASE_TEMPLATE/*.md
   publish:
-    needs: build
+    needs:
+      - build
+      - release-notes
     name: Publish Release
     runs-on: ubuntu-latest
     steps:
@@ -81,7 +91,7 @@ jobs:
           rm body.json response.json
       - name: Upload Release Assets
         run: |
-          for FILE in ./bundle-*/*.*; do \
+          for FILE in ./bundle-*/**/*.*; do \
             curl \
               -X POST \
               -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
