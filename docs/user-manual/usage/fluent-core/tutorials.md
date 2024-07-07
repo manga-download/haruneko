@@ -59,23 +59,49 @@ This extension can be used to control HakuNeko from within the browser.
 4. You must change the default _Secret_ to prevent unauthorized connections
 5. Install the HakuNeko Assistant browser extension for Chrome/Edge
 6. Download the latest extension from [GitHub](https://github.com/manga-download/haruneko-assistant/releases)
-7. Extract the content of the extension (zip archive)
-8. Open Chrome/Edge and switch to the extension manager
+7. Extract the content of the extension (zip archive) to a new arbitrary folder
+8. Open your Chrome/Edge browser and switch to the extension manager
 9. Enable the developer mode and load the extracted extension folder
 10. Open the extension in your browser
 11. Make sure the _Connection_ uses the same _Port_ number as configured in HakuNeko
 12. Make sure the _Secret_ is the same as configured in HakuNeko
 
-### Apply CloudFlare Bypass from Browser
+### Bypass CloudFlare
 
 Various websites are protected by CloudFlare's Anti-Bot detection.
 Unfortunately HakuNeko is detected as malicious browser and therefore has trouble to bypass the protection.
 This workaround can be used to temporary access a website that is protected by CloudFlare.
 
-1. Make sure HakuNeko is running and _Remote Control_ is enabled
-2. In your Chrome/Edge Browser navigate to the manga/chapter that is protected by CloudFlare
-3. Wait until the CloudFlare protection is bypassed automatically or manually after solving a captcha
-4. Stay on the same page and open the HakuNeko Assistant extension
-5. Click the _Bypass CloudFlare_ button to send the session data to HakuNeko
-6. Switch to HakuNeko and confirm a potential restart notification
-7. The website can now be accessed by HakuNeko (until the CloudFlare session expires)
+::: warning IMPORTANT
+Depending on the website the CloudFlare session may expire within 30 minutes ~ 30 days.
+Therefore this workaround needs to be repeated in case the content of the website can no longer be accessed with HakuNeko.
+:::
+
+<iframe src="https://www.youtube.com/embed/nfgW2KT2EcE" width="100%" height="360" frameBorder="0" allowFullScreen></iframe>
+
+1. Start HakuNeko and open the application settings
+2. Make sure _Remote Control_ is enabled
+3. Select the website that is protected by CloudFlare
+4. Use the URL action in the [Website Selection Panel](./ui-reference#website-selection-panel) to open the website within HakuNeko
+5. In case the website itself is not protected by CloudFlare, but the sub-pages are, then navigate to a page on the website that is protected by CloudFlare e.g., a manga or chapter
+6. Try to solve the challenge/captcha
+7. If the page loads correctly after solving the challenge/captcha
+   - HakuNeko should now be able to access the content of the website (browser window can be closed)
+   - All of the next steps are not necessary and can be skipped
+8. If the page does not load and the website is stuck in an infinite challenge/captcha loop, close the browser window
+9. Next open a web-browser with an installed [HakuNeko Assistant](#setup-hakuneko-assistant-browser-extension) extension
+10. Navigate to the website/page that is protected by CloudFlare
+11. Solve the challenge/captcha
+12. Wait for the page to correctly being loaded
+14. Open the _HauNeko Assistant Extension_ and press the button to bypass CloudFlare
+15. Switch back to HakuNeko
+16. In case a restart confiirmation appears, close and re-open HakuNeko
+17. HakuNeko should now be able to access the content of the website
+
+### Open Manga/Anime URL from Browser
+
+...
+
+<iframe src="https://www.youtube.com/embed/yqWX86uT5jM?mute=1" width="100%" height="360" frameBorder="0" allowFullScreen></iframe>
+
+1. ...
