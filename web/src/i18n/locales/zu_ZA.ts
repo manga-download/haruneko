@@ -1,6 +1,6 @@
 import type { VariantResource } from '../ILocale'; // HACK: Import a reference to the en-US tranlsation itself, so the auto-generated translation files are based on the en-US translation
 
-import enUS from "crwdns2162:0crwdne2162:0";
+import enUS from "./en_US";
 /**
  * Get the en-US translation map, or an empty map in case of a circular (self) reference
  */
