@@ -193,8 +193,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_TimeoutError: "Die Anfrage konnte nicht innerhalb der angegebenen Zeitspanne durchgeführt werden!",
   FetchProvider_FetchWindow_CloudFlareError: "Die Anfrage wurde aufgrund des folgenden Fehlers beim CloudFlare Server zurückgewiesen: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "Bitte lösen Sie das Captcha und warten Sie dann auf die Anwendung (schließen Sie die Website nicht nach dem Lösen des Captcha)!",
-  FetchProvider_Fetch_CloudFlareChallenge: 'The request to "{0}" was rejected by CloudFlare Anti-Bot detection.\nMake sure to bypass CloudFlare before accessing the content of this website (e.g., with the HakuNeko Assistant browser extension).',
-  FetchProvider_Fetch_Forbidden: 'The access to "{0}" was denied.\nMake sure the website is available and accessible (e.g., VPN to bypass region lock, manual login via website link).',
+  FetchProvider_Fetch_CloudFlareChallenge: "Die Anfrage an \"{0}\" wurde von der CloudFlare Anti-Bot Erkennung zurückgewiesen.\nStelle sicher, dass CloudFlare freigeschaltet wird bevor auf den Inhalt dieser Website zugegriffen wird (z.B. mit der HakuNeko Assistant Browser Erweiterung).",
+  FetchProvider_Fetch_Forbidden: "Der Zugriff auf \"{0}\" wurde verweigert.\nStelle sicher, dass die Website erreichbar und der Zugriff berechtigt ist (z.B. VPN um Regionalsperre zu umgehen, manuelle Anmeldung per Webseitenlink).",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "Die Daten scheinen fehlerhaft zu sein, es konnte kein Lesezeichen extrahiert werden!",
   // [SECTION]: Tags
