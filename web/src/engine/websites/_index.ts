@@ -154,7 +154,6 @@ export { default as GanGanOnline } from './GanGanOnline';
 export { default as Ganma } from './Ganma';
 export { default as GateManga } from './GateManga';
 export { default as GDScans } from './GDScans';
-export { default as GhostFansub } from './GhostFansub';
 export { default as GhostScan } from './GhostScan';
 export { default as GloryManga } from './GloryManga';
 export { default as GManga } from './GManga';
