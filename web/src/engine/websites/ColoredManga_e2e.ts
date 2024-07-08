@@ -12,12 +12,12 @@ const config = {
         title: 'The Beginning After the End (Colour)'
     },
     child: {
-        id: 'm5veS4DOx5ioojYuUZ4Lr0YEz7JzmX',
-        title: 'Chapter 185 - Side Story 10'
+        id: 'oVQ96zDSgqnRQxPhXYUr2MX33GnCg5',
+        title: 'Chapter 001'
     },
     entry: {
-        index: 0,
-        size: 1_524_998,
+        index: 1,
+        size: 288_810,
         type: 'image/jpeg'
     }
 };

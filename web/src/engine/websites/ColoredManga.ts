@@ -49,7 +49,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { chapters } = await this.GetMangaData(manga.Identifier);
-        return chapters.map(chapter => new Chapter(this, manga, chapter.id, [chapter.number, chapter.title].join(' - ').trim().replace(/-$/, '')));
+        return chapters.map(chapter => {
+            const title = [
+                chapter.number,
+                chapter.title ? '-' : '',
+                chapter.title,
+            ].join(' ').trim();
+            return new Chapter(this, manga, chapter.id, title);
+        });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -58,7 +65,7 @@ export default class extends DecoratableMangaScraper {
         const url = new URL(`/images/content/${name}/${chapter.Title}`, this.URI);
         const chapterItem = chapters.find(item => item.id === chapter.Identifier);
         for (let i = 1; i < chapterItem.totalImage; i++) {
-            const page = new Page(this, chapter, url, { number: i.toString().padStart(4, '0') });
+            const page = new Page(this, chapter, this.URI, { path: url.pathname, number: i.toString().padStart(4, '0') });
             pageList.push(page);
         }
         return pageList;
@@ -68,7 +75,7 @@ export default class extends DecoratableMangaScraper {
         return await this.imageTaskPool.Add(async () => {
 
             const formdata = new FormData();
-            formdata.append('path', decodeURI(page.Link.pathname));
+            formdata.append('path', decodeURI(page.Parameters['path'] as string));
             formdata.append('number', page.Parameters['number'] as string);
 
             const request = this.CreateRequest('dynamicImages', formdata);
