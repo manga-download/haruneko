@@ -1,20 +1,17 @@
 import { Tags } from '../Tags';
 import icon from './MultPorn.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchHTML, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
     new Promise( resolve => {
-        const pages = [];
-        for (i = 1; i <= jcgal.getImageCount(); i++) {
-            pages.push(jcgal.getImageInfo(i).largeImageURL);
-        }
+        const pages = Array(jcgal.getImageCount()).fill().map((_, index) => jcgal.getImageInfo(index + 1).largeImageURL);
         resolve(pages);
     });
 `;
 
-const categories = ['comics', 'pictures', 'hentai', 'hentai_manga', 'rule_63', 'humor', 'gay_porn_comics'];
+const categories = ['comics', 'pictures', 'hentai', 'hentai_manga', 'rule_63', 'humor', 'gay_porn_comics', 'games'];
 
 type DrupalSettings = {
     views?: {
@@ -37,7 +34,7 @@ type DrupalResult = {
     data :string
 }
 
-@Common.MangaCSS(new RegExp(`^{origin}/(${categories.join('|')})/[^/]+`), 'div.breadcrumb span.last')
+//@Common.MangaCSS(new RegExp(`^{origin}/(${categories.join('|')})/[^/]+`), 'div.breadcrumb span.last')
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -52,21 +49,43 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExp(`^${this.URI.origin}/(${categories.join('|')})/[^/]+`).test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+
+        //user may paste a "chapter" instead of a "manga" (subcategory) link.
+        const dom = await FetchHTML(new Request(url));
+        const oddNode = dom.querySelector<HTMLAnchorElement>('div.breadcrumb span.odd:not(.first) a[rel="v:url"]');
+        const lastNode = dom.querySelector('div.breadcrumb span.last');
+        const title = oddNode ? oddNode.textContent.trim() : lastNode.textContent.trim();
+        const id = oddNode ? oddNode.pathname : new URL(url).pathname;
+        return new Manga(this, provider, id, title);
+    }
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let category of categories) {
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, category + '?page={page}', 'div.view-content table tr td strong a', 0);
-            mangaList.push(...mangas);
+        const cancellator = new AbortController();
+        try {
+            const promises: Promise<Manga[]>[] = [];
+            for (const category of categories) {
+                const promise = Common.FetchMangasMultiPageCSS.call(this, provider, category + '?page={page}', 'div.view-content table tr td strong a', 0);
+                promises.push(promise);
+            }
+            const results = (await Promise.all(promises)).flat(1);
+            return results.distinct();
+        } catch (error) {
+            cancellator.abort();
+            throw error;
         }
-        return mangaList;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier, this.URI);
         const settings = await FetchWindowScript<DrupalSettings>(new Request(url), 'Drupal.settings');
-        const chapterList = [];
 
         if (settings.views?.ajaxViews) {
+            const chapterList = [];
             for (let page = 0, run = true; run; page++) {
                 const chapters = await this.GetChaptersFromAjaxPage(manga, page, settings);
                 chapters.length > 0 ? chapterList.push(...chapters) : run = false;
@@ -81,6 +100,7 @@ export default class extends DecoratableMangaScraper {
     private async GetChaptersFromAjaxPage(manga: Manga, page: number, settings: DrupalSettings): Promise<Chapter[]> {
 
         const view = Object.values(settings.views.ajaxViews).shift();
+        //const params = new URLSearchParams(view);
         const params = new URLSearchParams();
         for (const key of Object.keys(view)) {
             params.append(key, view[key]);
@@ -102,6 +122,6 @@ export default class extends DecoratableMangaScraper {
         const { data } = results.find(entry => entry.command == 'insert');
         const dom = new DOMParser().parseFromString(data, 'text/html');
         const nodes = dom.querySelectorAll<HTMLAnchorElement>('div.view-content table tr td strong.field-content a');
-        return [...nodes]?.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.trim())) ?? [];
+        return [...nodes].map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.trim()));
     }
 }
