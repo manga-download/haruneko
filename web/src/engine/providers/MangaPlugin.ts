@@ -7,6 +7,7 @@ import { type Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 import icon from '../../img/manga.webp';
 import { Exception, NotImplementedError } from '../Error';
+import JSZip from 'jszip';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -154,8 +155,12 @@ export class Manga extends MediaContainer<Chapter> {
 
 export class Chapter extends StoreableMediaContainer<Page> {
 
+    // TODO: inject storage controller
+    private readonly storageController: StorageController;
+
     constructor(private readonly scraper: MangaScraper, parent: Manga, identifier: string, title: string) {
         super(identifier, title, parent);
+        this.storageController = parent?.Parent['storageController'];
     }
 
     public async Update(): Promise<void> {
@@ -188,26 +193,63 @@ export class Chapter extends StoreableMediaContainer<Page> {
         //if(/* ouput format folder with images ... */) {
         await this.StoreImageFolder(directory, resources);
         //}
+        //if(/* ouput format CBZ ... */) {
+        await this.StoreComicBookArchive(directory, resources);
+        //}
+        //if(/* ouput format PDF ... */) {
+        await this.StorePortableDocumentFormat(directory, resources);
+        //}
+        //if(/* ouput format ePub ... */) {
+        await this.StoreElectronicPublication(directory, resources);
+        //}
+
+        // Perform post processing (e.g. pdf, ffmpeg, ...)
+    }
+
+    private async ReadTempImageData(file: string, index: number, digits: number): Promise<{ name: string, data: Blob }> {
+        const data = await this.storageController.LoadTemporary<Blob>(file);
+        const extension: string = mimeFileExtension[data.type] ?? mimeFileExtension.default;
+        const name = (index + 1).toString().padStart(digits, '0') + extension;
+        return { name, data };
     }
 
     private async StoreImageFolder(directory: FileSystemDirectoryHandle, resources: Map<number, string>): Promise<void> {
         const chapter = SanitizeFileName(this.Title);
         directory = await directory.getDirectoryHandle(chapter, { create: true });
-        // TODO: delete all existing entries?
         const digits = resources.size.toString().length;
-        for(const index of resources.keys()) {
-            // TODO: inject storage controller
-            const sc = this.Parent?.Parent['storageController'] as StorageController;
-            const data = await sc.LoadTemporary<Blob>(resources.get(index));
-            const extension = mimeFileExtension[data.type] ?? mimeFileExtension.default;
-            const name = (index + 1).toString().padStart(digits, '0') + extension;
+
+        // TODO: delete all existing entries?
+        // TODO: Maybe parallelization of storing files?
+        for(const [ index, tempfile ] of resources) {
+            const { name, data } = await this.ReadTempImageData(tempfile, index, digits);
             const file = await directory.getFileHandle(name, { create: true });
             const stream = await file.createWritable();
             await stream.write(data);
             await stream.close();
-        } // TODO: Maybe parallelization of storing files?
+        }
+    }
 
-        // Perform post processing (e.g. pdf, ffmpeg, ...)
+    private async StoreComicBookArchive(directory: FileSystemDirectoryHandle, resources: Map<number, string>): Promise<void> {
+        const zip = new JSZip();
+        const digits = resources.size.toString().length;
+
+        // TODO: delete all existing entries?
+        for(const [ index, tempfile ] of resources) {
+            const { name, data } = await this.ReadTempImageData(tempfile, index, digits);
+            zip.file(name, data);
+        }
+
+        const chapter = SanitizeFileName(this.Title) + '.cbz';
+        const file = await directory.getFileHandle(chapter, { create: true });
+        const stream = await file.createWritable();
+        await stream.write(await zip.generateAsync({ type: 'blob' }));
+        await stream.close();
+    }
+
+    private async StorePortableDocumentFormat(_directory: FileSystemDirectoryHandle, _resources: Map<number, string>): Promise<void> {
+    }
+
+    private async StoreElectronicPublication(_directory: FileSystemDirectoryHandle, _resources: Map<number, string>): Promise<void> {
     }
 }
 
