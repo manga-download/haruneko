@@ -16,8 +16,8 @@ const config = {
         title: 'Chapter 89'
     },
     entry: {
-        index: 1,
-        size: 2_493_672,
+        index: 13,
+        size: 527_088,
         type: 'image/webp'
     }
 };
