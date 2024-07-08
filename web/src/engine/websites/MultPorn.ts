@@ -34,7 +34,6 @@ type DrupalResult = {
     data :string
 }
 
-//@Common.MangaCSS(new RegExp(`^{origin}/(${categories.join('|')})/[^/]+`), 'div.breadcrumb span.last')
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -100,7 +99,6 @@ export default class extends DecoratableMangaScraper {
     private async GetChaptersFromAjaxPage(manga: Manga, page: number, settings: DrupalSettings): Promise<Chapter[]> {
 
         const view = Object.values(settings.views.ajaxViews).shift();
-        //const params = new URLSearchParams(view);
         const params = new URLSearchParams();
         for (const key of Object.keys(view)) {
             params.append(key, view[key]);
