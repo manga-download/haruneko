@@ -3,11 +3,11 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'suryatoon',
-        title: 'SuryaToon'
+        id: 'genztoon',
+        title: 'GenzToon'
     },
     container: {
-        url: 'https://suryatoon.com/manga/a-bad-person/',
+        url: 'https://genztoons.com/manga/a-bad-person/',
         id: '/manga/a-bad-person/',
         title: 'A Bad Person'
     },

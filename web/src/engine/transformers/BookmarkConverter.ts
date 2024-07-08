@@ -49,6 +49,7 @@ const legacyWebsiteIdentifierMap = {
     'shonenmagazine-pocket': 'shonenmagazine',
     'siyahmelek': 'grimelek',
     'smangavfws': 'smangavf',
+    'suryatoon': 'genztoon',
     'sushiscanfr': 'animesama',
     'truemanga': 'mangamonk',
     'vermanhwas': 'vermanhwa',
