@@ -68,7 +68,7 @@ jobs:
         uses: actions/download-artifact@v4
       - name: Create Release Description
         run: |
-          DESCRIPTION=$(cat ./release-templates/pre-release.md | tr -d '\r' | tr '\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)
+          DESCRIPTION=$(cat ./release-templates/pre-release.md | jq -sR | sed s/{TAG}/$RELEASE_TAG/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_64_ZIP}/$(ls ./bundle-nw-* | grep 'x64.zip')/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_32_ZIP}/$(ls ./bundle-nw-* | grep 'ia32.zip')/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_X64_DMG}/$(ls ./bundle-nw-* | grep 'x64.dmg')/g)
