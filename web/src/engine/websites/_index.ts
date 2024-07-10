@@ -283,6 +283,7 @@ export { default as LuaScans } from './LuaScans';
 export { default as LuminousScans } from './LuminousScans';
 export { default as LunarScans } from './LunarScans';
 export { default as LunarScansFR } from './LunarScansFR';
+export { default as LunaScans } from './LunaScans';
 export { default as LupiTeam } from './LupiTeam';
 export { default as LuraToon } from './LuraToon';
 export { default as Luscious } from './Luscious';
