@@ -54,7 +54,6 @@
         pageSizes: [5, 10, 20],
     };
 
-    let isSettingOpen = false;
     let pluginToConfigure: MediaContainer<MediaChild>;
 
     const langTags = Tags.Language.toArray();
@@ -234,7 +233,6 @@
                             iconDescription="Connector's settings"
                             on:click={(e) => {
                                 pluginToConfigure = cell.value;
-                                isSettingOpen = true;
                                 e.stopPropagation();
                             }}
                         />
@@ -267,12 +265,10 @@
         id="pluginSettingsModal"
         size="lg"
         hasScrollingContent
-        bind:open={isSettingOpen}
+        open
         passiveModal
         modalHeading="Settings"
-        on:click:button--secondary={() => (isSettingOpen = false)}
-        on:open
-        on:close
+        on:close={() => (pluginToConfigure = undefined)}
         hasForm
     >
         <SettingsViewer settings={[...pluginToConfigure.Settings]} />
