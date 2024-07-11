@@ -11,7 +11,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@MangaStream.MangaCSS(/^{origin}\/comics\/[^/]+\/$/, 'h1.entry-title')
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+\/$/, 'h1.entry-title')
 @MangaStream.MangasSinglePageCSS(undefined, '/comics/list-mode')
 @Common.ChaptersSinglePageCSS('div#chapterlist ul li a', ChapterExtractor)
 @MangaStream.PagesSinglePageJS()
