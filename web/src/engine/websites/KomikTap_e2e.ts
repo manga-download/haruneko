@@ -7,7 +7,7 @@ const config: Config = {
         title: 'KomikTap'
     },
     container: {
-        url: 'https://komiktap.me/manga/a-sober-and-quiet-mother/',
+        url: 'https://komiktap.info/manga/a-sober-and-quiet-mother/',
         id: '/manga/a-sober-and-quiet-mother/',
         title: 'A Sober And Quiet Mother'
     },

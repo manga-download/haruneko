@@ -1,5 +1,5 @@
 // Auto-Generated export from HakuNeko Legacy
-//import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Manga347.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -11,11 +11,11 @@ import * as Common from './decorators/Common';
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 
-//TODO : use mangareaderto Template
+//TODO : use mangareaderto Template, similar to MangaRaw1001
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manga347', 'Manga 347', 'https://manga347.com'/*, Tags.Media., Tags.Language.*/);
+        super('manga347', 'Manga 347', 'https://manga347.com', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

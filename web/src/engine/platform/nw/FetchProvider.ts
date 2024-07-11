@@ -136,7 +136,9 @@ export default class extends FetchProvider {
     public async Fetch(request: Request): Promise<Response> {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         await UpdateCookieHeader(request.url, request.headers);
-        return fetch(request);
+        const response = await fetch(request);
+        await super.ValidateResponse(response);
+        return response;
     }
 
     public async FetchWindow(request: Request, timeout: number, preload: ScriptInjection<void> = () => undefined): Promise<NWJS_Helpers.win> {
@@ -181,7 +183,7 @@ export default class extends FetchProvider {
                 win.removeAllListeners('loaded');
                 win.removeAllListeners();
                 if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
-                    console.warn('FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
+                    console.warn('FetchWindow() was terminated without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
                 } else if(this.featureFlags.VerboseFetchWindow.Value) {
                     console.log('FetchWindow()::invocations', invocations);
                 }

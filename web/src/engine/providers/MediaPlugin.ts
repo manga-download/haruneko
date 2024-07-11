@@ -97,12 +97,15 @@ declare global {
 }
 
 if (!Array.prototype.distinct) {
-    Array.prototype.distinct = function <T extends MediaContainer<MediaChild>>(this: Array<T>): Array<T> {
-        function isFirstOccurence(entry: T, index: number, array: Array<T>) {
-            return index === array.findIndex(item => item.Identifier === entry.Identifier);
-        }
-        return this.filter(isFirstOccurence);
-    };
+    Object.defineProperty(Array.prototype, 'distinct', {
+        value: function <T extends MediaContainer<MediaChild>>(this: Array<T>): Array<T> {
+            function isFirstOccurence(entry: T, index: number, array: Array<T>) {
+                return index === array.findIndex(item => item.Identifier === entry.Identifier);
+            }
+            return this.filter(isFirstOccurence);
+        },
+        enumerable: false,
+    });
 }
 
 export abstract class StoreableMediaContainer<T extends MediaItem> extends MediaContainer<T> {

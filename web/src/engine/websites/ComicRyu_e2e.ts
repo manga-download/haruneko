@@ -7,19 +7,19 @@ const config: Config = {
         title: 'COMICリュウ'
     },
     container: {
-        url: 'https://www.comic-ryu.jp/_zingnize/index.html',
-        id: '/_zingnize/index.html',
+        url: 'https://www.comic-ryu.jp/series/zingnize/',
+        id: '/series/zingnize/',
         title: 'ZINGNIZE'
     },
     child: {
-        id: '/_zingnize/comic/01.html',
-        title: '第1話'
+        id: '/2167/',
+        title: '第一話「高坂甚内①」'
     },
     entry: {
         index: 0,
-        size: 1_103_078,
+        size: 3_619_874,
         type: 'image/jpeg',
-        timeout: 15000
+        timeout: 25000
     }
 };
 

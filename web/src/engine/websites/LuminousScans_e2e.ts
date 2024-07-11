@@ -7,12 +7,12 @@ const config: Config = {
         title: 'Luminous Scans'
     },
     container: {
-        url: 'https://luminouscomics.org/series/1706860801-sword-king-survival-story/',
-        id: '/series/1706860801-sword-king-survival-story/',
+        url: 'https://luminous-scans.com/series/1718323201-sword-king-survival-story/',
+        id: '/series/1718323201-sword-king-survival-story/',
         title: 'Survival Story of a Sword King in a Fantasy World'
     },
     child: {
-        id: '/1706860801-survival-story-of-a-sword-king-in-a-fantasy-world-chapter-184/',
+        id: '/1718323201-survival-story-of-a-sword-king-in-a-fantasy-world-chapter-184/',
         title: 'Chapter 184'
     },
     entry: {

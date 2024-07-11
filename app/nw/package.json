@@ -16,7 +16,7 @@
     "devDependencies": {
         "@types/ws": "8.5.10",
         "extract-zip": "2.0.1",
-        "nw": "0.85.0-sdk",
+        "nw": "0.89.0-sdk",
         "plist": "3.1.0"
     },
     "scripts": {

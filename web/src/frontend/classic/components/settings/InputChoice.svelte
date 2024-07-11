@@ -1,33 +1,24 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { Select, SelectItem } from 'carbon-components-svelte';
     import type { Choice } from '../../../../engine/SettingsManager';
     import { Locale } from '../../stores/Settings';
     import SettingItem from './SettingItem.svelte';
 
     export let setting: Choice;
-    let current: Choice;
-    let value: string;
+    let value: string = setting.Value;
+
+    $: setting.Value = value;
 
     onMount(() => {
-        return () => {
-            current?.Unsubscribe(OnValueChangedCallback);
-        };
+        setting.Subscribe(OnValueChanged);
+    });
+    onDestroy(() => {
+        setting.Unsubscribe(OnValueChanged);
     });
 
-    $: Update(setting);
-
-    function Update(setting: Choice) {
-        if (current !== setting) {
-            current?.Unsubscribe(OnValueChangedCallback);
-            setting?.Subscribe(OnValueChangedCallback);
-            value = setting.Value;
-            current = setting;
-        }
-    }
-
-    function OnValueChangedCallback(val: string) {
-        value = val;
+    function OnValueChanged(newValue: string) {
+        value = newValue;
     }
 </script>
 
@@ -35,10 +26,7 @@
     labelText={$Locale[setting.Label]()}
     helperText={$Locale[setting.Description]()}
 >
-    <Select
-        selected={value}
-        on:update={(evt) => (setting.Value = evt.detail.toString())}
-    >
+    <Select bind:selected={value}>
         {#each setting.Options as option}
             <SelectItem value={option.key} text={$Locale[option.label]()} />
         {/each}

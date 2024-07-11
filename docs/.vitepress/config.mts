@@ -41,9 +41,10 @@ export default defineConfig({
                     items: [
                         {
                             text: 'Classic',
-                            collapsed: false,
+                            collapsed: true,
                             items: [
                                 { text: 'User Interface', link: `${classic}/ui-reference` },
+                                { text: 'Tutorials', link: `${classic}/tutorials` },
                             ],
                         },
                         {
@@ -51,14 +52,7 @@ export default defineConfig({
                             collapsed: true,
                             items: [
                                 { text: 'User Interface', link: `${fluentcore}/ui-reference` },
-                                {
-                                    text: 'How To',
-                                    items: [
-                                        { text: 'Preview Content', link: `${fluentcore}/tutorials/preview.md` },
-                                        { text: 'Download Content', link: `${fluentcore}/tutorials/downloads.md` },
-                                        { text: 'Manage Bookmarks', link: `${fluentcore}/tutorials/bookmarks.md` },
-                                    ],
-                                },
+                                { text: 'Tutorials', link: `${fluentcore}/tutorials` },
                             ],
                         },
                     ]

@@ -7,8 +7,8 @@ const config = {
         title: 'MangaWT'
     },
     container: {
-        url: 'https://mangawt.com/manga/it-starts-with-a-mountain/',
-        id: JSON.stringify({ post: '2044', slug: '/manga/it-starts-with-a-mountain/' }),
+        url: 'https://mangawt.net/manga/it-starts-with-a-mountain/',
+        id: JSON.stringify({ post: '1871', slug: '/manga/it-starts-with-a-mountain/' }),
         title: 'It Starts With A Mountain'
     },
     child: {
@@ -17,7 +17,7 @@ const config = {
     },
     entry: {
         index: 1,
-        size: 1_114_714,
+        size: 530_593,
         type: 'image/jpeg'
     }
 };

@@ -7,17 +7,17 @@ const config = {
         title: 'ScamberTraslator'
     },
     container: {
-        url: 'https://scambertraslator.com/manga/evolucion-del-esqueleto-de-otro-mundo/',
-        id: JSON.stringify({ post: '2256', slug: '/manga/evolucion-del-esqueleto-de-otro-mundo/' }),
-        title: 'Evolución del esqueleto de otro mundo'
+        url: 'https://visorscamber-scans.com/manga/boticario-misterioso/',
+        id: JSON.stringify({ post: '1905', slug: '/manga/boticario-misterioso/' }),
+        title: 'Boticario Misterioso'
     },
     child: {
-        id: '/manga/evolucion-del-esqueleto-de-otro-mundo/capitulo-00/',
-        title: 'capitulo 00'
+        id: '/manga/boticario-misterioso/capitulo-127/',
+        title: 'Capitulo 127'
     },
     entry: {
         index: 1,
-        size: 167_094,
+        size: 491_789,
         type: 'image/jpeg'
     }
 };

@@ -7,12 +7,12 @@ import * as Common from './decorators/Common';
 @MangaStream.MangaCSS(/{origin}\/series\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/series/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageCSS([/\/NovelBanner[^.]+\.(png|jpeg|jpg|gif)$/i])
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('luminousscans', 'Luminous Scans', 'https://luminouscomics.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('luminousscans', 'Luminous Scans', 'https://luminous-scans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
     }
 
     public override get Icon() {
