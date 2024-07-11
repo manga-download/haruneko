@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('apollcomics', 'Apoll Comics', 'https://apollcomics.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Rating.Erotica);
+        super('apollcomics', 'Apoll Comics', 'https://apollcomics.es', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Rating.Erotica);
     }
 
     public override get Icon() {

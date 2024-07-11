@@ -34,7 +34,7 @@ const pageScript = `
         const s = window.__M_CONFIG.s || false;
 
         const cdn = XOR(url, c);
-        const images = [...document.querySelectorAll('div#post-comic div[data-z]')].map(image => new URL(image.dataset.z, cdn).href);
+        const images = [...document.querySelectorAll('{queryPages}')].map(image => new URL(image.dataset.z, cdn).href);
 
         if (!s) {
             resolve({images, scrambleArray : undefined });
@@ -80,10 +80,10 @@ type TPuzzleData = {
     to: TPiece
 }
 
-function MangaLabelExtractor(element: HTMLElement): string {
+export function MangaLabelExtractor(element: HTMLElement): string {
     return StripCrap(element.textContent);
 }
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+export function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
         title: StripCrap(anchor.title)
@@ -95,9 +95,11 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div.list-chapter ul li a')
 
 export default class extends DecoratableMangaScraper {
+    private readonly queryPages: string = '';
 
-    public constructor() {
-        super('spoilerplus', 'SpoilerPlus', 'https://spoilerplus.tv', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+    public constructor(id = 'spoilerplus', label = 'SpoilerPlus', url = 'https://spoilerplus.tv', queryPages = 'div#post-comic div[data-z]', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked]) {
+        super(id, label, url, ...tags);
+        this.queryPages = queryPages;
     }
 
     public override get Icon() {
@@ -105,7 +107,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchWindowScript<PageData>(new Request(new URL(chapter.Identifier, this.URI)), pageScript, 500);
+        const data = await FetchWindowScript<PageData>(new Request(new URL(chapter.Identifier, this.URI)), pageScript.replaceAll('{queryPages}', this.queryPages), 500);
         return data.images.map(image => new Page(this, chapter, new URL(image), { Referer: this.URI.origin, scrambleArray: JSON.stringify(data.scrambleArray) }));
     }
 

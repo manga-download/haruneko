@@ -110,7 +110,7 @@ export default class extends MangaScraper {
     private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
 
     public constructor() {
-        super('mangadex', 'MangaDex', 'https://mangadex.org', Tags.Language.Multilingual);
+        super('mangadex', 'MangaDex', 'https://mangadex.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Source.Scanlator);
         this.Settings.throttle = new Numeric('throttle.mangas', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 60, 6, 240);
         (this.Settings.throttle as Numeric).Subscribe(value => this.mangasTaskPool.RateLimit = new RateLimit(value, 60));
     }

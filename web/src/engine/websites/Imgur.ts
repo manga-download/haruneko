@@ -22,11 +22,10 @@ function MangaScript(): Promise<string> {
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('imgur', `Imgur`, 'https://imgur.com', Tags.Language.English, Tags.Source.Aggregator);
+        super('imgur', `Imgur`, 'https://imgur.com', Tags.Media.Comic, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
