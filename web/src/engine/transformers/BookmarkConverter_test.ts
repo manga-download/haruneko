@@ -77,13 +77,10 @@ describe('BookmarkConverter', () => {
             { sourceID: 'flamescans-org', targetID: 'flamecomics' },
             { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
             { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
-            { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
-            { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
             { sourceID: 'kisscomic', targetID: 'readcomiconline' },
             { sourceID: 'komikav', targetID: 'apkomik' },
             { sourceID: 'kumascans', targetID: 'retsu' },
             { sourceID: 'imperioscans', targetID: 'neroxus' },
-            { sourceID: 'lovehug', targetID: 'welovemanga' },
             { sourceID: 'lyrascans', targetID: 'quantumscans' },
             { sourceID: 'mangamx', targetID: 'mangaoni' },
             { sourceID: 'manganel', targetID: 'manganato' },
@@ -109,6 +106,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
             { sourceID: 'siyahmelek', targetID: 'grimelek' },
             { sourceID: 'smangavfws', targetID: 'smangavf' },
+            { sourceID: 'suryatoon', targetID: 'genztoon' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
             { sourceID: 'toomics-de', targetID: 'toomics' },
             { sourceID: 'toomics-en', targetID: 'toomics' },

@@ -20,13 +20,10 @@ const legacyWebsiteIdentifierMap = {
     'flamescans-org': 'flamecomics',
     'galaxyaction': 'galaxymanga',
     'gateanimemanga': 'gatemanga',
-    'heavenmanga': 'beetoon', // (future zbulu PR)
-    'heavenmanga2': 'heavenmanga', // (future zbulu PR)
     'imperioscans': 'neroxus',
     'kisscomic': 'readcomiconline',
     'komikav': 'apkomik',
     'kumascans': 'retsu',
-    'lovehug': 'welovemanga',
     'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
     'mangamx': 'mangaoni',
     'manganel': 'manganato',
@@ -52,6 +49,7 @@ const legacyWebsiteIdentifierMap = {
     'shonenmagazine-pocket': 'shonenmagazine',
     'siyahmelek': 'grimelek',
     'smangavfws': 'smangavf',
+    'suryatoon': 'genztoon',
     'sushiscanfr': 'animesama',
     'toomics-de': 'toomics', //old id contains manga language ie /en/webtoon/etc..... so they are unique and can be merged into global toomics
     'toomics-en': 'toomics', // Toomics Korean works differently, no id change and special plugin
