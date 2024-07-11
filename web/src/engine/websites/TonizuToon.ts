@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tonizutoon', 'Tonizu Toon', 'https://tonizu.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
+        super('tonizutoon', 'Tonizu Toon', 'https://tonizu.xyz', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
