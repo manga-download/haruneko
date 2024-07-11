@@ -1,23 +1,24 @@
 ﻿import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
+const mangaID = encodeURI('/manga/呪術廻戦-raw-free/').toLowerCase();
 const config = {
     plugin: {
-        id: 'suryatoon',
-        title: 'SuryaToon'
+        id: 'mangarawac',
+        title: 'MangaRawAC'
     },
     container: {
-        url: 'https://suryatoon.com/manga/a-bad-person/',
-        id: '/manga/a-bad-person/',
-        title: 'A Bad Person'
+        url: 'https://mangaraw.ac' + mangaID,
+        id: mangaID,
+        title: '呪術廻戦'
     },
     child: {
-        id: '/a-bad-person-chapter-1/',
-        title: 'Chapter 1'
+        id: mangaID + encodeURI('第1話/'),
+        title: '第1話'
     },
     entry: {
-        index: 1,
-        size: 251_168,
+        index: 0,
+        size: 156_354,
         type: 'image/jpeg'
     }
 };
