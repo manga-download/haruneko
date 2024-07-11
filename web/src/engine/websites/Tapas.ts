@@ -70,15 +70,25 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
 
-    async GetMangasFromPage(page: number, provider: MangaPlugin) {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin) {
         const url = new URL(`${this.apiUrl}genre?category_type=COMIC&size=200&page=${page}`);
         const { data: { items } } = await FetchJSON<APIMangas>(new Request(url));
         return items.map(manga => new Manga(this, provider, manga.seriesId.toString(), manga.title.trim()));
     }
 
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL(`/series/${manga.Identifier}/episodes?max_limit=9999`, this.URI);
+        const chapterList = [];
+        for (let page = 1, run = true; run; page++) {
+            const chapters = await this.GetChaptersFromPage(manga, page);
+            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
+        }
+        return chapterList;
+    }
+
+    private async GetChaptersFromPage(manga : Manga, page: number) {
+        const url = new URL(`/series/${manga.Identifier}/episodes?page=${page}`, this.URI);
         const { data: { episodes } } = await FetchJSON<APIChapters>(new Request(url));
         return episodes.map(chapter => new Chapter(this, manga, `/episode/${chapter.id}`, chapter.title.trim()));
     }
+
 }
