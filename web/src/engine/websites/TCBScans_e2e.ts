@@ -7,12 +7,12 @@ const config = {
         title: 'TCB Scans'
     },
     container: {
-        url: 'https://onepiecechapters.com/mangas/1/ace-novel-manga-adaptation',
+        url: 'https://tcbscans.me/mangas/1/ace-novel-manga-adaptation',
         id: '/mangas/1/ace-novel-manga-adaptation',
         title: 'Ace Novel - Manga Adaptation'
     },
     child: {
-        id: '/chapters/276/ace-novel-manga-adaptation-chapter-4',
+        id: '/chapters/276/ace-novel-manga-adaptation-chapter-4-review-1687770263',
         title: 'Chapter 4 : Final Chapter: Ace\'s Adventure'
     },
     entry: {
