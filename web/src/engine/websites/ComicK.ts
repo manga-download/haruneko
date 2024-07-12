@@ -113,8 +113,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const data = await FetchJSON<APIChapters>(new Request(new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl)));
-        return data.chapters.map(item => {
+        const { chapters } = await FetchJSON<APIChapters>(new Request(new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl)));
+        return chapters.map(item => {
             let title = '';
             if (item.vol) {
                 title += `Vol. ${item.vol} `;
