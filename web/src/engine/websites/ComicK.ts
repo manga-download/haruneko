@@ -1,3 +1,4 @@
+/* eslint-disable semi */
 import { Tags } from '../Tags';
 import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
@@ -14,28 +15,40 @@ type NEXTDATA = {
 
 type APIManga = {
     hid: string,
-    title : string
+    title: string
 }
 
 type APIChapters = {
-    chapters: {
-        hid: string,
-        title: string,
-        id: number,
-        vol: number,
-        chap: number,
-        slug: string,
-        group_name: string[],
-        lang: string,
-    }[]
+    chapters: APIChapter[]
 }
 
-type APIPages = {
-    chapter: {
-        images: {
-            url: string
-        }[]
-    }
+type APISingleChapter = {
+    chapter: APIChapter
+}
+
+type APIChapter = {
+    hid: string,
+    title: string,
+    id: number,
+    vol: number,
+    chap: number,
+    slug: string,
+    group_name: string[],
+    lang: string,
+    server: string,
+    md_images: APIPage[]
+    created_at: string,
+    chapter_id: string,
+    hash: string
+}
+
+type APIPage = {
+    h: number,
+    w: number
+    b2key: string,
+    name: string,
+    gpurl: string | null
+    optimized: number | null
 }
 
 const langMap = {
@@ -61,7 +74,7 @@ const langMap = {
     //'cz': Tags.Language
 };
 
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.comick.fun';
@@ -92,7 +105,7 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
 
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]>{
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
             const data = await FetchJSON<APIManga[]>(new Request(new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl)));
             return data.map(item => {
@@ -141,7 +154,42 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { images } } = await FetchJSON<APIPages>(new Request(new URL(`/chapter/${chapter.Identifier}?tachiyomi=true`, this.apiUrl)));
-        return images.map(image => new Page(this, chapter, new URL(image.url), { Referer: this.URI.href }));
+        const data = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
+        return data.chapter.md_images.map(image => new Page(this, chapter, this.ComputePageURL(image, data.chapter), { Referer: this.URI.href }));
     }
+
+    private ComputePageURL(image: APIPage, chapter: APIChapter): URL {
+        let result = '';
+        if (image.gpurl && !image.b2key) image.gpurl.match(/siasky/) ? result = image.gpurl : result = 'https://lh3.googleusercontent.com/' + image.gpurl;
+
+        if (image.b2key) {
+            result = this.ComputePageURLFromB2key(new Date(chapter.created_at) > new Date('2024-03-14 06:00:00') ? chapter.id : 1, image.b2key);
+        } else {
+            const server = 'mangadex.org' == chapter.server ? 'images.comick.fun' : chapter.server;
+            result = chapter.chapter_id || (null == server ? void 0 : server.match(/mangadex/)) ? `https://'${server}/data/${chapter.hash}/${image.name}` : `https://${server}/${chapter.hash}/${image.name}`;
+        }
+        return new URL(result);
+    }
+
+    private ComputePageURLFromB2key(chapterid: number, b2key: string) {
+        let CDN = 'https://meo2.comick.pictures/';
+        if (chapterid < 3089183) {
+            const CdnId = this.GetCDNId(b2key, 1, 4);
+            CDN = 2 == CdnId || 3 == CdnId ? 'https://meo.comick.pictures/' : 'https://meo3.comick.pictures/';
+        }
+        return CDN + b2key;
+    }
+
+    private GetCDNId(b2key: string, num1: number, num2: number): number {
+        let r = 0;
+        for (let index = 0; index < b2key.length; index++) r = (r << 5) - r + b2key.charCodeAt(index),
+        r &= r;
+        let i = Math.abs(r);
+        return Math.floor(
+            (() => {
+                let e = 10000 * Math.sin(i++);
+                return e - Math.floor(e)
+            })() * (num2 - num1 + 1)
+        ) + num1 }
+
 }
