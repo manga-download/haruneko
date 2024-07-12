@@ -171,7 +171,7 @@ export default class extends DecoratableMangaScraper {
         return new URL(result);
     }
 
-    private ComputePageURLFromB2key(chapterid: number, b2key: string) {
+    private ComputePageURLFromB2key(chapterid: number, b2key: string): string {
         let CDN = 'https://meo2.comick.pictures/';
         if (chapterid < 3089183) {
             const CdnId = this.GetCDNId(b2key, 1, 4);
