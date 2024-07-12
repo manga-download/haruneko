@@ -32,7 +32,6 @@ type APIChapter = {
     id: number,
     vol: number,
     chap: number,
-    slug: string,
     group_name: string[],
     lang: string,
     server?: string,
