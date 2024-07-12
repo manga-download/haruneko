@@ -7,7 +7,7 @@ const config: Config = {
         title: 'ComicK'
     },
     container: {
-        url: 'https://comick.cc/comic/00-solo-leveling',
+        url: 'https://comick.io/comic/00-solo-leveling',
         id: '71gMd0vF',
         title: 'Solo Leveling'
     },
@@ -17,8 +17,8 @@ const config: Config = {
     },
     entry: {
         index: 2,
-        size: 854_209,
-        type: 'image/png'
+        size: 93_076,
+        type: 'image/jpeg'
     }
 };
 
