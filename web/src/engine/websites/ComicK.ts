@@ -35,20 +35,17 @@ type APIChapter = {
     slug: string,
     group_name: string[],
     lang: string,
-    server: string,
+    server?: string,
     md_images: APIPage[]
     created_at: string,
-    chapter_id: string,
-    hash: string
+    chapter_id?: string,
+    hash?: string
 }
 
 type APIPage = {
-    h: number,
-    w: number
     b2key: string,
     name: string,
-    gpurl: string | null
-    optimized: number | null
+    gpurl?: string
 }
 
 const langMap = {
@@ -160,7 +157,7 @@ export default class extends DecoratableMangaScraper {
 
     private ComputePageURL(image: APIPage, chapter: APIChapter): URL {
         let result = '';
-        if (image.gpurl && !image.b2key) image.gpurl.match(/siasky/) ? result = image.gpurl : result = 'https://lh3.googleusercontent.com/' + image.gpurl;
+        if (image.gpurl && !image.b2key) image.gpurl.match(/siasky/) ? result = image.gpurl : result = `https://lh3.googleusercontent.com/${image.gpurl}`;
 
         if (image.b2key) {
             result = this.ComputePageURLFromB2key(new Date(chapter.created_at) > new Date('2024-03-14 06:00:00') ? chapter.id : 1, image.b2key);
