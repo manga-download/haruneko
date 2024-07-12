@@ -5,25 +5,21 @@ import * as Common from './decorators/Common';
 
 const pageScript = `
     new Promise( (resolve, reject) => {
-        try {
-            const url = window.location.href.replace(/\\/1$/, '');
-            const token = document.querySelector('meta[name="csrf-token"]').content.trim();
-            fetch(url, {
-                credentials: 'include',
-                headers: {
-                    'X-CSRF-TOKEN': token,
-                    'X-Requested-With': 'XMLHttpRequest',
+        const url = window.location.href.replace(/\\/1$/, '');
+        const token = document.querySelector('meta[name="csrf-token"]').content.trim();
+        fetch(url, {
+            credentials: 'include',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'X-Requested-With': 'XMLHttpRequest',
 
-                },
-                 origin: window.location.origin,
-                 referrer: window.location.href,
-                 method: 'POST',
-            }).then(response => response.json()
-                .then(data => resolve(data.map(image => img_prt + '/' + image))));
-
-        } catch (error) {
-            reject(error);
-        }
+            },
+            method: 'POST',
+        }).then(response => response.json()
+            .then(data => resolve(data.map(image => img_prt + '/' + image)))
+            .catch(error => reject(error))
+        )
+        .catch(error => reject(error));
     });
  `;
 
