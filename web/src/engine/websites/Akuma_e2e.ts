@@ -12,7 +12,7 @@ const fixture = new TestFixture({
         title: '[Isikenpi] Lethargic Sister Tolerates her Brothers Pranks [English][DarklordMTLs]'
     },
     child: {
-        id: '/g/dey7wcbd/1',
+        id: '/g/dey7wcbd',
         title: '[Isikenpi] Lethargic Sister Tolerates her Brothers Pranks [English][DarklordMTLs]'
     },
     entry: {

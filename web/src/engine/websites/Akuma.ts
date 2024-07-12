@@ -1,7 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './Akuma.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
     new Promise( (resolve, reject) => {
@@ -25,7 +26,7 @@ const pageScript = `
 
 @Common.MangaCSS(/^{origin}\/g\/[^/]+$/, 'h1.entry-title')
 @Common.MangasNotSupported()
-@Common.PagesSinglePageJS(pageScript)
+@Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -37,7 +38,8 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return [new Chapter(this, manga, new URL(`${manga.Identifier}/1`, this.URI).pathname, manga.Title)];
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        return (await FetchWindowScript<string[]>(new Request(new URL(`${chapter.Identifier}/1`, this.URI)), pageScript)).map(image => new Page(this, chapter, new URL(image)));
     }
+
 }
