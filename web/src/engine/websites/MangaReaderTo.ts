@@ -57,7 +57,7 @@ export default class extends DecoratableMangaScraper {
 
         const uri = new URL(`ajax/image/list/${chapterurl.href.includes('chapter') ? 'chap' : 'vol'}/${readingId}?quality=high`, this.URI);
         const { status, html } = await FetchJSON<AJAXResponse>(new Request(uri));
-        if (!status) return [];
+        if (status !== true ) return [];
 
         const dom = new DOMParser().parseFromString(html, 'text/html');
         const imagesArr = [...dom.querySelectorAll<HTMLDivElement>('div.iv-card')];
