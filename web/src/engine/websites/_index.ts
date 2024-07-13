@@ -323,7 +323,6 @@ export { default as MangaDenizi } from './MangaDenizi';
 export { default as MangaDex } from './MangaDex';
 export { default as MangaDig } from './MangaDig';
 export { default as MangaDistrict } from './MangaDistrict';
-export { default as MangaDiyari } from './MangaDiyari';
 export { default as Mangadon } from './Mangadon';
 export { default as MangaDoom } from './MangaDoom';
 export { default as MangaDoor } from './MangaDoor';
