@@ -1,22 +1,18 @@
 import { Tags } from '../Tags';
 import icon from './CoolMic.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
-const chaptersScript = `
-    new Promise( resolve =>{
-        resolve(JSON.parse(document.querySelector('title-page').getAttribute(':page-objects')).episodes.map(episode => {
-            return {
-                id: episode.id.toString(),
-                title : episode.number.toString()
-            };
-        }));
-    });
-`;
+type JsonChapters = {
+    episodes: {
+        id: number,
+        number : string
+    }[]
+}
 
 type APIPages = {
     image_data: {
@@ -33,7 +29,6 @@ type CookieSigner = {
 
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
 @Common.MangasNotSupported()
-@Common.ChaptersSinglePageJS(chaptersScript)
 
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/v1/`;
@@ -44,6 +39,12 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const [jsonNode] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'title-page');
+        const { episodes } = JSON.parse(jsonNode.getAttribute(':page-objects')) as JsonChapters;
+        return episodes.map(episode => new Chapter(this, manga, episode.id.toString(), episode.number.toString().trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
