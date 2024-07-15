@@ -1,60 +1,45 @@
 import { Tags } from '../Tags';
 import icon from './MangaTales.webp';
 import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
-import * as Common from './decorators/Common';
+import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
-type APIResult = {
+type EncryptedData = {
     iv: boolean,
     data: string;
-}
+};
 
-type TMangaSearch = {
-    title: string,
-    manga_types: {
-        include: string[],
-        exclude: string[]
-    },
-    oneshot: {
-        value: null
-    },
-    story_status: {
-        include: string[],
-        exclude: string[]
-    },
-    translation_status: {
-        include: string[],
-        exclude: string[]
-    },
-    categories: {
-        include: string[],
-        exclude: string[]
-    },
-    chapters: {
-        min: string,
-        max: string
-    },
-    dates: {
-        start: null,
-        end: null
-    },
-    page: number
-}
-
-type APIData = {
-    [id: string]: number | string | Array<number>[]
-}
-
-type PackedData = {
+type PackedData = Record<string, JSONElement> & {
     cols: string[],
     isCompact: boolean,
     isObject: boolean,
     isArray: boolean,
     maxLevel: number,
-    rows: PackedData[] | APIData[]
-
+    rows: PackedData[],
 }
+
+type MangaSearchRestriction = {
+    include: string[],
+    exclude: string[],
+};
+
+type MangaSearch = {
+    title?: string,
+    oneshot?: boolean,
+    manga_types: MangaSearchRestriction,
+    story_status: MangaSearchRestriction,
+    translation_status: MangaSearchRestriction,
+    categories: MangaSearchRestriction,
+    chapters: {
+        min?: string,
+        max?: string,
+    },
+    dates: {
+        start?: string,
+        end?: string,
+    },
+    page: number
+};
 
 type APISingleManga = {
     mangaDataAction: {
@@ -66,11 +51,11 @@ type APISingleManga = {
 };
 
 type APIMangas = {
-    mangas: {
+    mangas?: {
         id: number,
         title: string
     }[]
-}
+};
 
 type APIChapters = {
     mangaReleases: {
@@ -83,7 +68,7 @@ type APIChapters = {
         title: string,
         chapter: number
     }[]
-}
+};
 
 type APIPages = {
     globals: {
@@ -104,12 +89,16 @@ type APIPages = {
             }
         }
     }
-}
+};
+
 export default class extends DecoratableMangaScraper {
+
     private readonly apiUrl = 'https://mangatales.com/api/mangas/';
+
     public constructor() {
-        super('mangatales', `MangaTales`, 'https://mangatales.com', Tags.Language.Arabic, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('mangatales', 'MangaTales', 'https://mangatales.com', Tags.Language.Arabic, Tags.Media.Manga, Tags.Source.Aggregator);
     }
+
     public override get Icon() {
         return icon;
     }
@@ -119,101 +108,93 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const response = await FetchCSS(new Request(url), 'script[data-component-name="HomeApp"]');
-        const data: APISingleManga = JSON.parse(response[0].textContent);
-        return new Manga(this, provider, data.mangaDataAction.mangaData.id.toString(), data.mangaDataAction.mangaData.title.trim());
+        const elements = await FetchCSS(new Request(url), 'script[data-component-name="HomeApp"]');
+        const { mangaDataAction: { mangaData } } = JSON.parse(elements.shift().textContent) as APISingleManga;
+        return new Manga(this, provider, mangaData.id.toString(), mangaData.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const searchBody: TMangaSearch = {
-            title: '',
-            manga_types: {
-                include: ['1', '2', '3', '4', '5', '6', '7', '8'],
-                exclude: []
-            },
-            oneshot: { value: null },
-            story_status: { include: [], exclude: [] },
-            translation_status: { include: [], exclude: ['3'] },
-            categories: { include: [], exclude: [] },
-            chapters: { min: '', max: '' },
-            dates: { start: null, end: null },
-            page: 0
-        };
         const mangaList : Manga[]= [];
         for (let page = 1, run = true; run; page++) {
-            searchBody.page = page;
-            const mangas = await this.GetMangasFromPage(provider, searchBody, this.apiUrl);
+            const mangas = await this.GetMangasFromPage(provider, page);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async GetMangasFromPage(provider: MangaPlugin, searchBody: TMangaSearch, apiUrl: string): Promise<Manga[]> {
-        const request = new Request(new URL('search', apiUrl), {
+    private async GetMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
+        const unrestricted = { include: [], exclude: [] };
+        const request = new Request(new URL('search', this.apiUrl), {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
             },
-            body: JSON.stringify(searchBody)
+            body: JSON.stringify(<MangaSearch>{
+                manga_types: unrestricted,
+                story_status: unrestricted,
+                translation_status: unrestricted,
+                categories: unrestricted,
+                chapters: {},
+                dates: {},
+                page,
+            }),
         });
 
-        const response = await FetchJSON<APIResult>(request);
-        const data = response.iv ? await Decrypt(response.data) : response.data;
-        const { mangas }: APIMangas = JSON.parse(data);
-        return !mangas ? [] : mangas.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
+        const data = await FetchJSON<EncryptedData | PackedData | APIMangas>(request);
+        const { mangas } = TryUnpack(await TryDecrypt(data));
+        return mangas?.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim())) ?? [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(manga.Identifier, this.apiUrl));
-        const response = await FetchJSON<APIResult>(request);
-        const strdata = response.iv ? await Decrypt(response.data) : JSON.stringify(response);
-        const tmpdata: PackedData | APIChapters = JSON.parse(strdata);
-        const chapters: APIChapters = (tmpdata as PackedData).isCompact ? Unpack(tmpdata as PackedData) as APIChapters : tmpdata as APIChapters;
-        return chapters.mangaReleases.map(chapter => {
-            const team = chapter.teams.find(t => t.id === chapter.team_id);
-            let title = 'Vol.' + chapter.volume + ' Ch.' + chapter.chapter;
-            title += chapter.title ? ' - ' + chapter.title : '';
-            title += team.name ? ' [' + team.name + ']' : '';
-            //url format /mangas/<mangaid>/anything/<chapterNumber>
-            const id = [manga.Identifier, manga.Title, chapter.chapter].join('/');
-            return new Chapter(this, manga, id, title);
+        const data = await FetchJSON<EncryptedData & PackedData & APIChapters>(request);
+        return TryUnpack(await TryDecrypt(data)).mangaReleases.map(chapter => {
+            const team = chapter.teams.find(team => team.id === chapter.team_id);
+            const title = [
+                'Vol.' + chapter.volume,
+                'Ch.' + chapter.chapter,
+                chapter.title || team?.name ? '-' : '',
+                chapter.title || '',
+                team?.name ? `[${team.name}]` : '',
+            ].join(' ');
+            const id = [ manga.Identifier, manga.Title, chapter.chapter ].join('/'); // slug
+            return new Chapter(this, manga, id, title.trim());
         });
-
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new Request(new URL(`/mangas/${chapter.Identifier}`, this.URI));
         const response = await FetchCSS(request, 'script[data-component-name="HomeApp"]');
-        const data: APIPages = JSON.parse(response[0].textContent);
-
-        const url = (data.globals.wla.configs.http_media_server || data.globals.wla.configs.media_server) + '/uploads/releases/';
-        let images: string[] = [];
-
-        if (data.readerDataAction.readerData.release.hq_pages?.length > 0) {
-            images = data.readerDataAction.readerData.release.hq_pages.split('\r\n');
-        } else if (data.readerDataAction.readerData.release.mq_pages?.length > 0) {
-            images = data.readerDataAction.readerData.release.mq_pages.split('\r\n');
-        } else if (data.readerDataAction.readerData.release.lq_pages?.length > 0) {
-            images = data.readerDataAction.readerData.release.lq_pages.split('\r\n');
-        }
-
-        return images.map(image => {
-            return new Page(this, chapter, new URL(image, url));
-        });
+        const { globals: { wla: { configs } }, readerDataAction: { readerData: { release } } } = JSON.parse(response[0].textContent) as APIPages;
+        const url = (configs.http_media_server || configs.media_server) + '/uploads/releases/';
+        return (release.hq_pages || release.mq_pages || release.lq_pages).split('\r\n').map(image => new Page(this, chapter, new URL(image, url)));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        let data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (data.type === 'text/html') {
-            page.Link.href = new URL(page.Link.href.replace('/hq', '/mq')).href;
-            data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        }
-        return data;
+        return this.imageTaskPool.Add(async () => {
+            for(const quality of ['/hq', '/mq', '/lq']) {
+                const imageLink = page.Link;
+                const request = new Request(imageLink.href.replace('/hq', quality), {
+                    signal,
+                    headers: {
+                        Referer: page.Parameters?.Referer ?? imageLink.origin,
+                    }
+                });
+                const response = await Fetch(request);
+                const data = await response.blob();
+                if(data.type.startsWith('image/')) {
+                    return data;
+                }
+            }
+        }, priority, signal);
     }
-
 }
 
-function Unpack(t: PackedData | APIData, ...args) {
+function TryUnpack<T>(data: PackedData | T): T {
+    return <T>(data['isCompact'] === true || data['isCompact'] === false ? Unpack(data as PackedData) : data);
+}
+
+function Unpack(t: PackedData, ...args: number[]) {
     const e = arguments.length > 1 && void 0 !== args[1] ? args[1] : 1;
     if (!t || e > t.maxLevel)
         return t;
@@ -245,30 +226,16 @@ function Unpack(t: PackedData | APIData, ...args) {
     }
 }
 
-async function Decrypt(t: string): Promise<string> {
-    const e = t.split("|");
-    const n = e[0];
-    const r = e[2];
-    const o = e[3];
-    const hash = await crypto.subtle.digest('SHA-256', Buffer.from(o));
-    const i = Buffer.from(hash).toString('hex');//c.default.SHA256(o).toString();
+async function TryDecrypt<T>(data: EncryptedData | T): Promise<T> {
+    return <T>(data['iv'] ? JSON.parse(await Decrypt((data as EncryptedData).data)) : data);
+}
 
-    const plaintext = Buffer.from(n, 'base64');
-    const key = Buffer.from(i, 'hex');
-    const iv = Buffer.from(r, 'base64');
-
-    const secretKey = await crypto.subtle.importKey(
-        'raw',
-        key,
-        {
-            name: 'AES-CBC',
-            length: 128
-        }, true, ['decrypt']);
-
-    const decrypted = await crypto.subtle.decrypt({
-        name: 'AES-CBC',
-        iv: iv
-    }, secretKey, plaintext);
-
+async function Decrypt(serialized: string): Promise<string> {
+    const encrypted = serialized.split('|');
+    const data = Buffer.from(encrypted[0], 'base64');
+    const cipher = { name: 'AES-CBC', iv: Buffer.from(encrypted[2], 'base64') };
+    const hash = await crypto.subtle.digest('SHA-256', Buffer.from(encrypted[3]));
+    const key = await crypto.subtle.importKey('raw', Buffer.from(hash), { name: 'AES-CBC', length: 128 }, true, [ 'decrypt' ]);
+    const decrypted = await crypto.subtle.decrypt(cipher, key, data);
     return new TextDecoder('utf-8').decode(decrypted);
 }
