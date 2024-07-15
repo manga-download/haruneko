@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [jsonNode] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'title-page');
         const { episodes } = JSON.parse(jsonNode.getAttribute(':page-objects')) as JsonChapters;
-        return episodes.map(episode => new Chapter(this, manga, episode.id.toString(), episode.number.toString().trim()));
+        return episodes.map(episode => new Chapter(this, manga, episode.id.toString(), episode.number.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
