@@ -593,6 +593,7 @@ export { default as RidiBooks } from './RidiBooks';
 export { default as Rio2Manga } from './Rio2Manga';
 export { default as RizzComics } from './RizzComics';
 export { default as RobinManga } from './RobinManga';
+export { default as RokuHentai } from './RokuHentai';
 export { default as RomantikManga } from './RomantikManga';
 export { default as RudraScans } from './RudraScans';
 export { default as RuyaManga } from './RuyaManga';
