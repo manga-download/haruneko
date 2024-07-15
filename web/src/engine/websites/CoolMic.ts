@@ -15,10 +15,10 @@ type JsonChapters = {
 }
 
 type APIPages = {
-    image_data: {
+    image_data?: {
         path: string
     }[],
-    signed_cookie: CookieSigner
+    signed_cookie?: CookieSigner
 }
 
 type CookieSigner = {
