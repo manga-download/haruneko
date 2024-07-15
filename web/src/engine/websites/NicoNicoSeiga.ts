@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './NicoNicoSeiga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type APIManga = {
@@ -36,13 +36,23 @@ type APIResult<T> = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.nicomanga.jp/api/v1/app/manga/';
+    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/comic/(\\d+)$`);
 
     public constructor() {
-        super('niconicoseiga', `ニコニコ静画 (niconico seiga)`, 'https://sp.manga.nicovideo.jp/', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('niconicoseiga', `ニコニコ静画 (niconico seiga)`, 'https://sp.manga.nicovideo.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return this.mangaRegexp.test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const title = (await FetchCSS<HTMLHeadingElement>(new Request(url), 'section.comic_header h2.title')).pop().textContent.trim();
+        return new Manga(this, provider, url.match(this.mangaRegexp)[1], title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -60,13 +70,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { meta, data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`contents/${manga.Identifier}/episodes`, this.apiUrl)));
-        return meta.status == 200 ? data.result.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.meta.title.trim())) : [];
+        const { meta, data: { result } } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`contents/${manga.Identifier}/episodes`, this.apiUrl)));
+        return meta.status === 200 ? result.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.meta.title.trim())) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { meta, data } = await FetchJSON<APIResult<APIPage[]>>(new Request(new URL(`episodes/${chapter.Identifier}/frames`, this.apiUrl)));
-        return meta.status == 200 ? data.result.map(page => new Page(this, chapter, new URL(page.meta.source_url), { drm_hash: page.meta.drm_hash })) : [];
+        const { meta, data: { result } } = await FetchJSON<APIResult<APIPage[]>>(new Request(new URL(`episodes/${chapter.Identifier}/frames`, this.apiUrl)));
+        return meta.status === 200 ? result.map(page => new Page(this, chapter, new URL(page.meta.source_url), { drm_hash: page.meta.drm_hash })) : [];
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
