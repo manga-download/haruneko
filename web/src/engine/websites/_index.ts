@@ -3,6 +3,7 @@ export { default as AdonisFansub } from './AdonisFansub';
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as AGS } from './AGS';
 export { default as Ainzscans } from './Ainzscans';
+export { default as Akuma } from './Akuma';
 export { default as Alceascan } from './Alceascan';
 export { default as AlliedFansub } from './AlliedFansub';
 export { default as AllPornComic } from './AllPornComic';
