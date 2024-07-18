@@ -5,7 +5,7 @@ const config = {
     plugin: {
         id: 'golgebahcesi',
         title: 'Gölge Bahçesi'
-    },
+    }, /*Region Locked : Turkish
     container: {
         url: 'https://golgebahcesi.com/manga/ozel-memur/',
         id: '/manga/ozel-memur/',
@@ -19,7 +19,7 @@ const config = {
         index: 0,
         size: 485_139,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);
