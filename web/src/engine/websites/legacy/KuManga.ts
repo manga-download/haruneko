@@ -22,6 +22,7 @@ const pageScript = `
     });
 `;
 
+@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.title_container h1')
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
