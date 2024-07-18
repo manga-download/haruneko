@@ -1,13 +1,12 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './VerComicsPorno.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
-//TODO : In theory it should work but website use Cloudflare
 @Common.MangaCSS(/^{origin}\/[^/]+$/, 'div.content div.posts h1.titl')
-@Common.MangasMultiPageCSS('/page/{page}', 'h2.information a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('/comics-porno/page/{page}', 'div.blog-list-items h2.information a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageCSS('div.wp-content p noscript img')
+@Common.PagesSinglePageCSS('div.wp-content p noscript img:not([src*="download.png"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
