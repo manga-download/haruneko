@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
                 const promise = Common.FetchMangasMultiPageCSS.call(this, provider, category + '?page={page}', 'div.view-content table tr td strong a', 0);
                 promises.push(promise);
             }
-            const results = (await Promise.all(promises)).flat(1);
+            const results = (await Promise.all(promises)).flat();
             return results.distinct();
         } catch (error) {
             cancellator.abort();
