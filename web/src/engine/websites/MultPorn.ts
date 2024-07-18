@@ -6,8 +6,7 @@ import { FetchHTML, FetchJSON, FetchWindowScript } from '../platform/FetchProvid
 
 const pageScript = `
     new Promise( resolve => {
-        const pages = Array(jcgal.getImageCount()).fill().map((_, index) => jcgal.getImageInfo(index + 1).largeImageURL);
-        resolve(pages);
+        resolve(Array(jcgal.getImageCount()).fill().map((_, index) => jcgal.getImageInfo(index + 1).largeImageURL));
     });
 `;
 
