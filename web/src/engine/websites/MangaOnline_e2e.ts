@@ -5,7 +5,7 @@ const config = {
     plugin: {
         id: 'mangaonline',
         title: 'Manga Online'
-    },
+    }, /* Region Locked - pt-br
     container: {
         url: 'https://mangaonline.biz/manga/jujutsu-kaisen/',
         id: '/manga/jujutsu-kaisen/',
@@ -19,7 +19,7 @@ const config = {
         index: 0,
         size: 386_052,
         type: 'image/png'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);
