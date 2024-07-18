@@ -378,6 +378,7 @@ export { default as MangaNexus } from './MangaNexus';
 export { default as MangaOku } from './MangaOku';
 export { default as MangaOkuTR } from './MangaOkuTR';
 export { default as MangaOni } from './MangaOni';
+export { default as MangaOnline } from './MangaOnline';
 export { default as MangaOnlineTeam } from './MangaOnlineTeam';
 export { default as MangaOwlio } from './MangaOwlio';
 export { default as MangaPanda } from './MangaPanda';
