@@ -114,7 +114,7 @@ See: https://github.com/nwjs/nw.js/issues/8157
 Hot-Reloading is not working correctly, but the web-application will reload automatically whenever a change is made to the source.
 Changes made to the source code of the desktop clients while running however requires the corresponding desktop client to be closed and restarted.
 
-1. Host the web-application locally at http://localhost:3000
+1. Host the web-application locally at [localhost:3000](http://localhost:3000)
 ```shell
 npm run serve:dev --workspace web
 ```
@@ -128,7 +128,7 @@ npm run launch:dev --workspace app/electron
 Changes to the source code are neither reflected in the web-application, nor in the desktop client.
 Both needs to be restarted in order to apply source code changes.
 
-1. Host the web-application locally at http://localhost:3000
+1. Host the web-application locally at [localhost:5000](http://localhost:5000)
 ```shell
 npm run serve:prod --workspace web
 ```
