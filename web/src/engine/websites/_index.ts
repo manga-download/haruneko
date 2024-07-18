@@ -410,6 +410,7 @@ export { default as MangaShip } from './MangaShip';
 export { default as MangaShiro } from './MangaShiro';
 export { default as MangaSiginagi } from './MangaSiginagi';
 export { default as MangasOrigines } from './MangasOrigines';
+export { default as MangasScans } from './MangasScans';
 export { default as MangaStarz } from './MangaStarz';
 export { default as MangaSushi } from './MangaSushi';
 export { default as MangaSusuku } from './MangaSusuku';
