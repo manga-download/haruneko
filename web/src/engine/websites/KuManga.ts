@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
                 retrieveCategories: 'false',
                 retrieveAuthors: 'false',
                 perPage: '200',
-                'page': page.toString()
+                page: page.toString()
             }).toString(),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
