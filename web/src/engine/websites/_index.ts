@@ -161,6 +161,7 @@ export { default as GloryManga } from './GloryManga';
 export { default as GManga } from './GManga';
 export { default as Gntai } from './Gntai';
 export { default as GoldenMangas } from './GoldenMangas';
+export { default as GolgeBahcesi } from './GolgeBahcesi';
 export { default as GoofFansub } from './GoofFansub';
 export { default as GourmetScans } from './GourmetScans';
 export { default as Grimelek } from './Grimelek';
