@@ -1,4 +1,3 @@
-/* eslint-disable semi */
 import { Tags } from '../Tags';
 import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
@@ -184,8 +183,9 @@ export default class extends DecoratableMangaScraper {
         return Math.floor(
             (() => {
                 let e = 10000 * Math.sin(i++);
-                return e - Math.floor(e)
+                return e - Math.floor(e);
             })() * (num2 - num1 + 1)
-        ) + num1 }
+        ) + num1;
+    }
 
 }
