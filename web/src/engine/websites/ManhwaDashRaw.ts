@@ -5,13 +5,13 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 function MangaLabelExtractor(element: HTMLElement): string {
-    return element.textContent.replace(/–.*$/, '').trim();
+    return StripLabelJunk(element.textContent);
 }
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.text.replace(/–.*$/, '').trim()
+        title: StripLabelJunk(anchor.text)
     };
 }
 
@@ -29,4 +29,7 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
+}
+function StripLabelJunk(text: string): string {
+    return text.replace(/–.*$/, '').trim();
 }
