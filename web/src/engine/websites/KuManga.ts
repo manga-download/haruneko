@@ -24,9 +24,9 @@ const getTokenScript = `
         function btoaReverse(content) {
             return btoa(content).split('').reverse().join('');
         }
-        const data = document.querySelector('#searchinput').getAttribute('dt');
-        const tokenIdentifier = btoaReverse(data).replace(/=/g, 'k');
-        const tokenAttribute = btoaReverse(btoaReverse(data)).replace(/=/g, 'k').toLowerCase();
+        const data = btoaReverse(document.querySelector('#searchinput').getAttribute('dt'));
+        const tokenIdentifier = data.replace(/=/g, 'k');
+        const tokenAttribute = btoaReverse(data).replace(/=/g, 'k').toLowerCase();
         resolve(document.getElementById(tokenIdentifier).getAttribute(tokenAttribute));
     })
 `;
@@ -36,7 +36,7 @@ const getTokenScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kumanga', `KuManga`, 'https://www.kumanga.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('kumanga', `KuManga`, 'https://www.kumanga.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
