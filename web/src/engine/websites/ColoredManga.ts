@@ -8,18 +8,36 @@ import type { Priority } from '../taskpool/DeferredTask';
 type APIManga = {
     name: string
     chapters: APIChapter[]
+    volume: APIVolume[];
 }
 
 type APIChapter = {
     id: string,
     title: string,
     number: string,
-    totalImage: number
+    totalImage: number,
+    volume?: string;
+}
+
+type APIVolume = {
+    number: string,
+    chapters: APIChapter[]
 }
 
 type APIImage = {
-    image : string
+    image : string //base64 image data URI
 }
+
+function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+
+    return {
+        id: anchor.pathname.match(/\/manga\/([^/]+)/)[1],
+        title: anchor.text.trim()
+    };
+}
+
+@Common.MangasSinglePageCSS('/manga', 'div#themes_outside__WCut6 a:not([id])', MangaInfoExtractor)
+
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/`;
     private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/manga/([^/]+)$`);
@@ -38,18 +56,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaSlug = url.match(this.mangaRegexp)[1];
-        const mangaData = await this.GetMangaData(mangaSlug);
-        return new Manga(this, provider, mangaSlug, mangaData.name);
-    }
-
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, '/manga', 'div#themes_outside__WCut6 a:not([id])');
-        return mangas.map(manga => new Manga(this, provider, manga.Identifier.match(/\/manga\/([^/]+)/)[1], manga.Title));
+        const { name } = await this.GetMangaData(mangaSlug);
+        return new Manga(this, provider, mangaSlug, name);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.GetMangaData(manga.Identifier);
-        return chapters.map(chapter => {
+        const mangaData = await this.GetMangaData(manga.Identifier);
+        return this.ExtractChaptersData(mangaData).map(chapter => {
             const title = [
                 chapter.number,
                 chapter.title ? '-' : '',
@@ -59,40 +72,49 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
+    private ExtractChaptersData(mangaData: APIManga): APIChapter[] {
+        return mangaData.chapters.length > 0 ? mangaData.chapters : mangaData.volume.reduce((chaptersAccumulator: APIChapter[], currentVolume) => {
+            currentVolume.chapters.forEach(chapter => chapter.volume = currentVolume.number);
+            chaptersAccumulator.push(...currentVolume.chapters);
+            return chaptersAccumulator;
+        }, []);
+    }
+
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { name, chapters } = await this.GetMangaData(chapter.Parent.Identifier);
-        const url = new URL(`/images/content/${name}/${chapter.Title}`, this.URI);
-        const { totalImage } = chapters.find(item => item.id === chapter.Identifier);
-        return new Array(totalImage).fill(0).map((_, index) => new Page(this, chapter, this.URI, { path: url.pathname, number: (index+1).toString().padStart(4, '0') }));
+        const mangaData = await this.GetMangaData(chapter.Parent.Identifier);
+        const { totalImage, volume } = this.ExtractChaptersData(mangaData).find(item => item.id === chapter.Identifier);
+        const path = volume ? `/images/content/${mangaData.name}/${volume}/${chapter.Title}` : `/images/content/${mangaData.name}/${chapter.Title}`;
+        return new Array(totalImage).fill(0).map((_, index) => new Page(this, chapter, this.URI, { path, number: (index + 1).toString().padStart(4, '0') }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+
         return await this.imageTaskPool.Add(async () => {
 
-            const formdata = new FormData();
-            formdata.append('path', decodeURI(page.Parameters['path'] as string));
-            formdata.append('number', page.Parameters['number'] as string);
+            const request = this.CreateRequest('dynamicImages', {
+                path: page.Parameters['path'] as string,
+                number: page.Parameters['number'] as string
+            });
 
-            const request = this.CreateRequest('dynamicImages', formdata);
             const { image } = await FetchJSON<APIImage>(request);
-
-            const response = await fetch(image);//turn base64image into response
+            const response = await fetch(image);
             return Common.GetTypedData(await response.arrayBuffer());
 
         }, priority, signal);
     }
 
     private async GetMangaData(mangaSlug: string): Promise<APIManga> {
-        const formdata = new FormData();
-        formdata.append('id', mangaSlug);
-        return await FetchJSON<APIManga>(this.CreateRequest('selectedManga', formdata));
+        return await FetchJSON<APIManga>(this.CreateRequest('selectedManga', {
+            id: mangaSlug
+        }));
     }
 
-    private CreateRequest(endpoint: string, formData: FormData): Request {
+    private CreateRequest(endpoint: string, records: Record<string, string>): Request {
+        const formData = new FormData();
+        Object.keys(records).forEach(key => formData.set(key, records[key]));
         return new Request(new URL(endpoint, this.apiUrl), {
             method: 'PUT',
             body: formData
         });
     }
-
 }
