@@ -30,15 +30,24 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 
 async function DetectNW(): Promise<string> {
     const executables = [
-        path.resolve('node_modules', 'nw', 'nwjs', 'nw'),
-        path.resolve('node_modules', 'nw', 'nwjs', 'nw.exe'),
-        path.resolve('node_modules', 'nw', 'nwjs', 'nwjs.app', 'Contents', 'MacOS', 'nwjs'),
-        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw'),
-        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw.exe'),
-        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nwjs.app', 'Contents', 'MacOS', 'nwjs'),
+        'nw',
+        'nw.exe',
+        path.join('nwjs.app', 'Contents', 'MacOS', 'nwjs'),
     ];
+    const rootModule = path.resolve('node_modules', 'nw');
+    const appModule = path.resolve('app', 'nw', 'node_modules', 'nw');
 
-    for(const nw of executables) {
+    let search: string[] = [];
+    try {
+        const folder = (await fs.readdir(rootModule)).filter(entry => entry.startsWith('nwjs-')).shift() ?? 'nwjs';
+        search = executables.map(segment => path.resolve(rootModule, folder, segment));
+    } catch {}
+    try {
+        const folder = (await fs.readdir(appModule)).filter(entry => entry.startsWith('nwjs-')).shift() ?? 'nwjs';
+        search = executables.map(segment => path.resolve(appModule, folder, segment));
+    } catch {}
+
+    for(const nw of search) {
         try {
             if((await fs.stat(nw)).isFile()) {
                 console.log(new Date().toISOString(), '=>', 'Detected NW:', nw);

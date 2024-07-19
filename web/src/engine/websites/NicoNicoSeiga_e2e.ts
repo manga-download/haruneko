@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'quantumscans',
-        title: 'Quantum Scans'
+        id: 'niconicoseiga',
+        title: 'ニコニコ静画 (niconico seiga)'
     },
     container: {
-        url: 'https://qscomics.org/series/master-of-the-martial-arts-library/',
-        id: '/series/master-of-the-martial-arts-library/',
-        title: 'Master of the Martial Arts Library'
+        url: 'https://sp.manga.nicovideo.jp/comic/62094',
+        id: '62094',
+        title: '寿司ガキ'
     },
     child: {
-        id: '/master-of-the-martial-arts-library-chapter-1/',
-        title: 'Chapter 1'
+        id: '712584',
+        title: '第1話'
     },
     entry: {
         index: 0,
-        size: 2_670_186,
+        size: 199_413,
         type: 'image/jpeg'
     }
 };

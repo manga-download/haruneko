@@ -29,7 +29,7 @@ For this example the title [Berserk](https://mangadex.org/title/801513ba-a712-49
 
 ## Apply URL from Browser
 
-In some situations it may be useful to copy a link of a supported website title from the browser and paste it directly into HakuNeko (e.g., when updaing the title list takes very long).
+In some situations it may be useful to copy a link of a supported website title from the browser and paste it directly into HakuNeko (e.g., when updating the title list takes very long).
 For this example the title [Berserk](https://mangadex.org/title/801513ba-a712-498c-8f57-cae55b38cc92/berserk) from the MangaDex website will be used.
 
 ::: warning IMPORTANT
