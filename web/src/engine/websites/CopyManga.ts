@@ -103,19 +103,15 @@ export default class extends DecoratableMangaScraper {
 
     }
 
-    private async Decrypt<T>(encryptedData: string, keyString: string = this.defaultKey): Promise<T> {
+    private async Decrypt<T>(encryptedData: string): Promise<T> {
 
-        const key = Buffer.from(keyString, 'utf-8');
-        const iv = Buffer.from(encryptedData.substring(0x0, 0x10), 'utf-8');
-        const cipher = Buffer.from(encryptedData.substring(0x10, encryptedData.length), 'hex');
-
-        const secretKey = await crypto.subtle.importKey(
-            'raw',
-            key,
-            {
-                name: 'AES-CBC',
-                length: 128
-            }, true, ['encrypt', 'decrypt']);
+        const key = Buffer.from(this.defaultKey, 'utf-8');
+        const iv = Buffer.from(encryptedData.substring(0, 16), 'utf-8');
+        const cipher = Buffer.from(encryptedData.substring(16, encryptedData.length), 'hex');
+        const secretKey = await crypto.subtle.importKey('raw', key, {
+            name: 'AES-CBC',
+            length: 128
+        }, true, ['decrypt']);
 
         const data = await crypto.subtle.decrypt({
             name: 'AES-CBC',
@@ -126,11 +122,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     private CreateApiRequest(pathname: string): Request {
-        const request = new Request(new URL(pathname, this.URI), {
+        return new Request(new URL(pathname, this.URI), {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             }
         });
-        return request;
     }
 }
