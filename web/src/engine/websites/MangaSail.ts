@@ -22,10 +22,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterslist = [];
+        const chapterslist: Array<Chapter> = [];
         for (let page = 0, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(page, manga);
-            chapters.length > 0 && !this.EndsWith(chapterslist, chapters) ? chapterslist.push(...chapters) : run = false;
+            chapterslist.isMissingLastItemFrom(chapters) ? chapterslist.push(...chapters) : run = false;
         }
         return chapterslist;
     }
@@ -40,12 +40,5 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
         const data: Page[] = await Common.FetchPagesSinglePageJS.call(this, chapter, 'Drupal.settings.showmanga.paths');
         return data.filter(page => IsImage(page.Link.href));
-    }
-
-    private EndsWith(target: Chapter[], source: Chapter[]) {
-        if (target.length < source.length) {
-            return false;
-        }
-        return target[target.length - 1].Identifier === source[source.length - 1].Identifier;
     }
 }
