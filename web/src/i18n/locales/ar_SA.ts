@@ -8,10 +8,11 @@ import enUS from './en_US';
 function base(): VariantResource {
   try {
     return enUS;
-  } catch(error) {
-    if(error instanceof ReferenceError) {
-      return {} as VariantResource;
+  } catch (error) {
+    if (error instanceof ReferenceError) {
+      return ({} as VariantResource);
     }
+
     throw error;
   }
 }
@@ -150,6 +151,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_MediaDirectory_PermissionError: "الصلاحية غير كافية للحصول على دليل التحميل!",
   Settings_Global_WebsiteSubDirectory: "استخدام الدلائل الفرعية",
   Settings_Global_WebsiteSubDirectoryInfo: "تعيين HakuNeko يقوم بتخزين الوسائط مباشرة في الدليل، أو استخدام الدلائل الفرعية لكل موقع",
+  Settings_Global_MangaExportFormat: 'Manga/Comic Download Format',
+  Settings_Global_MangaExportFormatInfo: 'The container format to store the downloaded content for mangas/comics',
+  Settings_Global_MangaExportFormat_FolderWithImages: 'Folder with Images',
+  Settings_Global_MangaExportFormat_ComicBookArchive: 'Comic Book Archive (*.cbz)',
+  Settings_Global_MangaExportFormat_ElectronicPublication: 'E-Book Publication (*.epub)',
+  Settings_Global_MangaExportFormat_PortableDocumentFormat: 'Portable Document Format (*.pdf)',
   Settings_Global_DescramblingFormat: "تنسيق فك التشرذم",
   Settings_Global_DescramblingFormatInfo: "حدد تنسيق صورة الإخراج لمواقع الويب التي تستضيف الصور المحيرة (هذا لن ينطبق على الغربيات التي توفر بالفعل صور صالحة)",
   Settings_Global_DescramblingQuality: "إزالة جودة التشرذم",
