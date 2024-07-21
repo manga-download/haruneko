@@ -10,7 +10,7 @@ function base(): VariantResource {
     return enUS;
   } catch(error) {
     if(error instanceof ReferenceError) {
-      return {} as VariantResource;
+      return <VariantResource>{};
     }
     throw error;
   }
