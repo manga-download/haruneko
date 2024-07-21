@@ -8,10 +8,11 @@ import enUS from './en_US';
 function base(): VariantResource {
   try {
     return enUS;
-  } catch(error) {
-    if(error instanceof ReferenceError) {
-      return {} as VariantResource;
+  } catch (error) {
+    if (error instanceof ReferenceError) {
+      return ({} as VariantResource);
     }
+
     throw error;
   }
 }
@@ -150,6 +151,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_MediaDirectory_PermissionError: "¡Permisos insuficientes para acceder al directorio de descarga!",
   Settings_Global_WebsiteSubDirectory: "Usar Sub-Directorios",
   Settings_Global_WebsiteSubDirectoryInfo: "Establecer si HakuNeko almacenará los medios directamente en el directorio, o usará subdirectorios por sitio web",
+  Settings_Global_MangaExportFormat: 'Manga/Comic Download Format',
+  Settings_Global_MangaExportFormatInfo: 'The container format to store the downloaded content for mangas/comics',
+  Settings_Global_MangaExportFormat_FolderWithImages: 'Folder with Images',
+  Settings_Global_MangaExportFormat_ComicBookArchive: 'Comic Book Archive (*.cbz)',
+  Settings_Global_MangaExportFormat_ElectronicPublication: 'E-Book Publication (*.epub)',
+  Settings_Global_MangaExportFormat_PortableDocumentFormat: 'Portable Document Format (*.pdf)',
   Settings_Global_DescramblingFormat: "Formato de De-Scramble",
   Settings_Global_DescramblingFormatInfo: "Seleccione el formato de imagen de salida para sitios web que albergan imágenes desconcertadas (esto no se aplicará a los wesites que ya proporcionan imágenes válidas)",
   Settings_Global_DescramblingQuality: "Calidad de De-Scramble",
