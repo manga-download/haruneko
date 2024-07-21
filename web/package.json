@@ -6,6 +6,7 @@
         "npm": ">=10.2.4"
     },
     "dependencies": {
+        "jspdf": "^2.5.1",
         "jszip": "^3.10.1",
         "protobufjs": "^7.3.2"
     },
