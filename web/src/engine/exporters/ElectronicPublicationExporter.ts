@@ -1,8 +1,8 @@
 import JSZip from 'jszip';
-import { ChapterExporter } from './ChapterExporter';
+import { MangaExporter } from './MangaExporter';
 import { SanitizeFileName } from '../StorageController';
 
-export class ElectronicPublicationExporter extends ChapterExporter {
+export class ElectronicPublicationExporter extends MangaExporter {
 
     private readonly xmlParser = new DOMParser();
     private readonly xmlSerializer = new XMLSerializer();

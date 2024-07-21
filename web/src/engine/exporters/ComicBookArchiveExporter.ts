@@ -1,8 +1,8 @@
 import JSZip from 'jszip';
-import { ChapterExporter } from './ChapterExporter';
+import { MangaExporter } from './MangaExporter';
 import { SanitizeFileName } from '../StorageController';
 
-export class ComicBookArchiveExporter extends ChapterExporter {
+export class ComicBookArchiveExporter extends MangaExporter {
 
     public async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, targetBaseName: string): Promise<void> {
         const zip = new JSZip();

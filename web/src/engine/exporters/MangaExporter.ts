@@ -11,7 +11,7 @@ const mimeFileExtension = {
     'image/bmp': '.bmp',
 };
 
-export abstract class ChapterExporter {
+export abstract class MangaExporter {
 
     constructor(private readonly storageController: StorageController) {}
 

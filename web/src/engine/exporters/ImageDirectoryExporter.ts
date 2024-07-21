@@ -1,8 +1,8 @@
-import { ChapterExporter } from './ChapterExporter';
+import { MangaExporter } from './MangaExporter';
 import { SanitizeFileName } from '../StorageController';
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 
-export class ImageDirectoryExporter extends ChapterExporter {
+export class ImageDirectoryExporter extends MangaExporter {
 
     public async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, targetBaseName: string): Promise<void> {
         const taskPool = new TaskPool(8);

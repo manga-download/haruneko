@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { ChapterExporter } from './ChapterExporter';
+import { MangaExporter } from './MangaExporter';
 import { SanitizeFileName } from '../StorageController';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
 import { ConvertBitmap } from '../transformers/ImageConverter';
@@ -7,7 +7,7 @@ import { ConvertBitmap } from '../transformers/ImageConverter';
 const pdfImageFormats = [ 'image/png', 'image/jpeg' ];
 const pageWidth = 2400; // (W)QUXGA - Portrait
 
-export class PortableDocumentFormatExporter extends ChapterExporter {
+export class PortableDocumentFormatExporter extends MangaExporter {
 
     private async PrepareImages(sourceFileList: Map<number, string>) {
         const taskPool = new TaskPool(8);

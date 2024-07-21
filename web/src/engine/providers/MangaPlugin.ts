@@ -1,13 +1,13 @@
 import { EngineResourceKey as R } from '../../i18n/ILocale';
 import { Key, Scope } from '../SettingsGlobal';
-import type { Check, Directory, ISettings, SettingsManager } from '../SettingsManager';
+import type { Check, Choice, Directory, ISettings, SettingsManager } from '../SettingsManager';
 import { SanitizeFileName, type StorageController, Store } from '../StorageController';
 import type { Tag } from '../Tags';
 import { type Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 import icon from '../../img/manga.webp';
 import { Exception, NotImplementedError } from '../Error';
-import { ChapterExportFormat, CreateChapterExportRegistry } from '../exporters/ChapterExporterRegistry';
+import { CreateChapterExportRegistry } from '../exporters/MangaExporterRegistry';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -178,11 +178,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
         // TODO: Find more appropriate way to inject the storage dependency
         const registry = CreateChapterExportRegistry(this.Parent?.Parent['storageController']);
-        // TODO: Use selected format(s) from settings
-        const formats = [ ChapterExportFormat.RAWs /*, ChapterExportFormat.CBZ, ChapterExportFormat.EPUB, ChapterExportFormat.PDF*/ ];
-        for(const format of formats) {
-            await registry[format].Export(resources, directory, this.Title);
-        }
+        await registry[settings.Get<Choice>(Key.MangaExportFormat).Value].Export(resources, directory, this.Title);
     }
 }
 
