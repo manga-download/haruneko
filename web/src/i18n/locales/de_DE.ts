@@ -10,7 +10,7 @@ function base(): VariantResource {
     return enUS;
   } catch (error) {
     if (error instanceof ReferenceError) {
-      return ({} as VariantResource);
+      return (<VariantResource> {});
     }
 
     throw error;
@@ -151,12 +151,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_MediaDirectory_PermissionError: "Unzureichende Berechtigung, um auf das Verzeichnis mit den heruntergeladene Inhalte zuzugreifen!",
   Settings_Global_WebsiteSubDirectory: "Unterverzeichnisse verwenden",
   Settings_Global_WebsiteSubDirectoryInfo: "Legen Sie fest, ob HakuNeko Medien direkt im Verzeichnis speichern soll oder Unterverzeichnisse pro Website verwenden soll",
-  Settings_Global_MangaExportFormat: 'Manga/Comic Download Format',
-  Settings_Global_MangaExportFormatInfo: 'The container format to store the downloaded content for mangas/comics',
-  Settings_Global_MangaExportFormat_FolderWithImages: 'Folder with Images',
-  Settings_Global_MangaExportFormat_ComicBookArchive: 'Comic Book Archive (*.cbz)',
-  Settings_Global_MangaExportFormat_ElectronicPublication: 'E-Book Publication (*.epub)',
-  Settings_Global_MangaExportFormat_PortableDocumentFormat: 'Portable Document Format (*.pdf)',
+  Settings_Global_MangaExportFormat: "Manga/Comic Speicher Format",
+  Settings_Global_MangaExportFormatInfo: "Das Speicherformat für die heruntergeladenen Inhalte von Mangas/Comics",
+  Settings_Global_MangaExportFormat_FolderWithImages: "Ordner mit Bildern",
+  Settings_Global_MangaExportFormat_ComicBookArchive: "Komprimiertes Comic Buch (*.cbz)",
+  Settings_Global_MangaExportFormat_ElectronicPublication: "E-Buch Veröffentlichung (*.epub)",
+  Settings_Global_MangaExportFormat_PortableDocumentFormat: "Portables Dokumenten-Format (*.pdf)",
   Settings_Global_DescramblingFormat: "Entkachelungs Format",
   Settings_Global_DescramblingFormatInfo: "Wählen Sie das Ausgabe-Bildformat für Webseiten, die gekachelte Bilder verwenden (dies gilt NICHT für Webseiten, die bereits gültige Bilder bereitstellen)",
   Settings_Global_DescramblingQuality: "Entkachelungs Qualität",
