@@ -178,7 +178,8 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
         // TODO: Find more appropriate way to inject the storage dependency
         const registry = CreateChapterExportRegistry(this.Parent?.Parent['storageController']);
-        const formats = [ ChapterExportFormat.RAWs, ChapterExportFormat.CBZ, ChapterExportFormat.EPUB, ChapterExportFormat.PDF ];
+        // TODO: Use selected format(s) from settings
+        const formats = [ ChapterExportFormat.RAWs /*, ChapterExportFormat.CBZ, ChapterExportFormat.EPUB, ChapterExportFormat.PDF*/ ];
         for(const format of formats) {
             await registry[format].Export(resources, directory, this.Title);
         }
