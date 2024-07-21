@@ -8,10 +8,11 @@ import enUS from './en_US';
 function base(): VariantResource {
   try {
     return enUS;
-  } catch(error) {
-    if(error instanceof ReferenceError) {
-      return {} as VariantResource;
+  } catch (error) {
+    if (error instanceof ReferenceError) {
+      return ({} as VariantResource);
     }
+
     throw error;
   }
 }
@@ -150,6 +151,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_MediaDirectory_PermissionError: "İndirme dizinine erişim izni yetersiz!",
   Settings_Global_WebsiteSubDirectory: "Alt Dizinleri Kullan",
   Settings_Global_WebsiteSubDirectoryInfo: "HakuNeko'nun medyayı doğrudan dizinde mi depolayacağını yoksa web sitesi başına alt dizinler mi oluşturacağını ayarlayın",
+  Settings_Global_MangaExportFormat: 'Manga/Comic Download Format',
+  Settings_Global_MangaExportFormatInfo: 'The container format to store the downloaded content for mangas/comics',
+  Settings_Global_MangaExportFormat_FolderWithImages: 'Folder with Images',
+  Settings_Global_MangaExportFormat_ComicBookArchive: 'Comic Book Archive (*.cbz)',
+  Settings_Global_MangaExportFormat_ElectronicPublication: 'E-Book Publication (*.epub)',
+  Settings_Global_MangaExportFormat_PortableDocumentFormat: 'Portable Document Format (*.pdf)',
   Settings_Global_DescramblingFormat: "Karıştırma Biçimi",
   Settings_Global_DescramblingFormatInfo: "Karıştırılmış görselleri barındıran web siteleri için görsel formatını seçin (bu, halihazırda düzgün görseller sağlayan web siteleri için geçerli OLMAYACAKTIR)",
   Settings_Global_DescramblingQuality: "Karıştırma Kalitesi",
