@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
             }
         });
         const chapterid = (await FetchCSS<HTMLInputElement>(request, 'input#chapter'))[0].value;
-        request = new Request(new URL(`/app/manga/controllers/cont.listImg.php?cid=${chapterid}`, this.URI).href, {
+        request = new Request(new URL(`/app/manga/controllers/cont.listImg.php?cid=${chapterid}`, this.URI), {
             headers: {
                 'Referer': this.URI.origin,
             }
