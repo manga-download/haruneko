@@ -10,7 +10,7 @@ The major part of the application with the platform independent business logic i
 This separation allows to deliver patches faster, without the need to update the desktop client everytime a new version is deployed.
 
 <!-- Edit Image: https://app.diagrams.net/ -->
-![](/assets/infrastructure.svg)
+![](../public/assets/infrastructure.svg)
 
 ### Web-Application
 
@@ -26,3 +26,4 @@ This separation allows to deliver patches faster, without the need to update the
 - Written in TypeScript with partial JavaScript
 - Uses NodeJS runtime and NPM packet manager
 - Uses Vite for tooling
+- Uses Puppeteer for automated end-to-end tests

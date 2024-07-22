@@ -1,25 +1,15 @@
 import { EngineResourceKey as R } from '../../i18n/ILocale';
 import { Key, Scope } from '../SettingsGlobal';
-import type { Check, Directory, ISettings, SettingsManager } from '../SettingsManager';
+import type { Check, Choice, Directory, ISettings, SettingsManager } from '../SettingsManager';
 import { SanitizeFileName, type StorageController, Store } from '../StorageController';
 import type { Tag } from '../Tags';
 import { type Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 import icon from '../../img/manga.webp';
 import { Exception, NotImplementedError } from '../Error';
+import { CreateChapterExportRegistry } from '../exporters/MangaExporterRegistry';
 
 const settingsKeyPrefix = 'plugin.';
-
-// See: https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
-const mimeFileExtension = {
-    default: '.bin',
-    'image/avif': '.avif',
-    'image/webp': '.webp',
-    'image/jpeg': '.jpg',
-    'image/png': '.png',
-    'image/gif': '.gif',
-    'image/bmp': '.bmp',
-};
 
 /**
  * The abstract base class that any custom manga scraper must implement.
@@ -185,29 +175,10 @@ export class Chapter extends StoreableMediaContainer<Page> {
             const manga = SanitizeFileName(this.Parent?.Title);
             directory = await directory.getDirectoryHandle(manga, { create: true });
         }
-        //if(/* ouput format folder with images ... */) {
-        await this.StoreImageFolder(directory, resources);
-        //}
-    }
 
-    private async StoreImageFolder(directory: FileSystemDirectoryHandle, resources: Map<number, string>): Promise<void> {
-        const chapter = SanitizeFileName(this.Title);
-        directory = await directory.getDirectoryHandle(chapter, { create: true });
-        // TODO: delete all existing entries?
-        const digits = resources.size.toString().length;
-        for(const index of resources.keys()) {
-            // TODO: inject storage controller
-            const sc = this.Parent?.Parent['storageController'] as StorageController;
-            const data = await sc.LoadTemporary<Blob>(resources.get(index));
-            const extension = mimeFileExtension[data.type] ?? mimeFileExtension.default;
-            const name = (index + 1).toString().padStart(digits, '0') + extension;
-            const file = await directory.getFileHandle(name, { create: true });
-            const stream = await file.createWritable();
-            await stream.write(data);
-            await stream.close();
-        } // TODO: Maybe parallelization of storing files?
-
-        // Perform post processing (e.g. pdf, ffmpeg, ...)
+        // TODO: Find more appropriate way to inject the storage dependency
+        const registry = CreateChapterExportRegistry(this.Parent?.Parent['storageController']);
+        await registry[settings.Get<Choice>(Key.MangaExportFormat).Value].Export(resources, directory, this.Title);
     }
 }
 

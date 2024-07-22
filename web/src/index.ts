@@ -1,9 +1,18 @@
 import { CreateAppWindow } from './engine/platform/AppWindow';
 import { FeatureFlags } from './engine/FeatureFlags';
+import type { HakuNeko } from './engine/HakuNeko';
+import './engine/ArrayExtensions';
 
 const appHook = '#app';
 const noticeHook = '#hakuneko-notice';
 const splashPath = '/splash.html';
+
+declare global {
+    var HakuNeko: HakuNeko;
+    interface Window {
+        HakuNeko: HakuNeko;
+    }
+}
 
 function showErrorNotice(root: HTMLElement, error?: Error) {
     function format(text?: string): string {

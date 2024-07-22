@@ -14,7 +14,7 @@
         "yargs": "17.7.2"
     },
     "devDependencies": {
-        "@types/ws": "8.5.10",
+        "@types/ws": "8.5.11",
         "extract-zip": "2.0.1",
         "nw": "0.89.0-sdk",
         "plist": "3.1.0"
