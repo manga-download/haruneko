@@ -5,33 +5,22 @@ import * as Common from './Common';
 
 const pagesWithServersScript = `
     new Promise(resolve => {
-        const payload = {
+        resolve({
             pics: rm_h.pics.map(pic => rm_h.reader.preparePicUrl(pic.url)),
             servers: rm_h.servers.map(server => server.path)
-        };
-        resolve(payload)
+        });
     });
 `;
 
-export const queryMangas = [
-    'div.tile div.desc h3 a',
-].join(',');
-
-export const queryChapters = [
-    'a.chapter-link.cp-l'
-].join(',');
-
+export const queryMangas = 'div.tile div.desc h3 a';
+export const queryChapters = 'a.chapter-link.cp-l';
+export const queryMangaTitle = 'div#mangaBox h1.names span.name';
+export const pathMangas = '/list?offset={page}';
+export const pageMangaOffset = 70;
 export const queryPages = [
     'div#all img.img-responsive',
     'div.text-center img[loading="lazy"]',
 ].join(',');
-
-export const queryMangaTitle = [
-    'div#mangaBox h1.names span.name',
-].join(',');
-
-export const pathMangas = '/list?offset={page}';
-export const pageMangaOffset = 70;
 
 type ImagesData = {
     pics: string[],
