@@ -60,6 +60,7 @@ export { default as CloverManga } from './CloverManga';
 export { default as Cocorip } from './Cocorip';
 export { default as CoffeeManga } from './CoffeeManga';
 export { default as ColaManga } from './ColaManga';
+export { default as ColoredManga } from './ColoredManga';
 export { default as Comic21 } from './Comic21';
 export { default as ComicAction } from './ComicAction';
 export { default as ComicBorder } from './ComicBorder';
