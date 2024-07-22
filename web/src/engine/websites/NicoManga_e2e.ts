@@ -13,7 +13,8 @@ const config = {
     },
     child: {
         id: '/read-kage-no-jitsuryokusha-ni-naritakute-raw-chapter-60.2.html',
-        title: 'Chapter 60.2'
+        title: 'Chapter 60.2',
+        timeout: 15000
     },
     entry: {
         index: 0,
