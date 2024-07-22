@@ -1,27 +1,18 @@
 import { Tags } from '../Tags';
 import icon from './WeLoveManga.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchCSS, FetchHTML, FetchWindowScript } from '../platform/FetchProvider';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-const chapterScript = `
-    new Promise(async resolve => {
-        loadChapterData(mIds);
-        const nodes = [...document.querySelectorAll('ul.list-chapters a[title]')];
-        const chapters= nodes.map(chapter => {
-            return {
-                id : chapter.pathname,
-                title : chapter.title
-            };
-        });
-        resolve(chapters);
-    });
-`;
+AddAntiScrapingDetection(async (render) => {
+    const dom = await render();
+    return dom.documentElement.innerHTML.includes(`ct_anti_ddos_key`) ? FetchRedirection.Automatic : undefined;
+});
 
 @Common.MangaCSS(/^{origin}\/(mgraw-)?\d+\/$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
-@Common.ChaptersSinglePageJS(chapterScript, 1000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
@@ -30,6 +21,27 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        return await FetchWindowScript(new Request(new URL('/manga-list.html', this.URI)), 'true', 3000, 15000);//trigger antiDDOSS
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        let request = new Request(new URL(manga.Identifier, this.URI), {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(/var mIds\s*=\s*['"]([^'"]+)['"]/)[1];
+        const apiUrl = new URL(`/app/manga/controllers/cont.Listchapter.php?mid=${mangaSlug}`, this.URI);
+        request = new Request(apiUrl, {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'a');
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -46,7 +58,7 @@ export default class extends DecoratableMangaScraper {
             }
         });
         const nodes = await FetchCSS(request, 'img.chapter-img:not([alt*="nicoscan"])');
-        return nodes.map(image => new Page(this, chapter, new URL(image.dataset.original.replace(/\n/g, ''), this.URI)));
+        return nodes.map(image => new Page(this, chapter, new URL(image.dataset.srcset.replace(/\n/g, ''), this.URI), { Referer: this.URI.origin }));
     }
 
 }
