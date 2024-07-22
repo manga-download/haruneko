@@ -1,50 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './KLManga.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
-
-const chapterScript = `
-    new Promise(async resolve => {
-        const r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let randomEndpoint = '';
-        for (let o = 0; o < 25; o++) randomEndpoint += r.charAt(Math.floor(Math.random() * r.length));
-        const uri = new URL(randomEndpoint + '.lstc', window.location.origin);
-        uri.searchParams.set('slug', dataL);
-        const response = await fetch(uri);
-        data = await response.text();
-        const dom = new DOMParser().parseFromString(data, "text/html");
-        const nodes = [...dom.querySelectorAll('a.chapter[title]')];
-        const chapters= nodes.map(chapter => {
-            return {
-                id : chapter.pathname,
-                title : chapter.title
-            };
-        });
-        resolve(chapters);
-    });
-`;
-
-const pageScript = `
-    new Promise(async resolve => {
-        const chapId = document.querySelector('input#chapter').value;
-        const r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let randomEndpoint = '';
-        for (let o = 0; o < 30; o++) randomEndpoint += r.charAt(Math.floor(Math.random() * r.length));
-        const uri = new URL(randomEndpoint + '.iog', window.location.origin);
-        uri.searchParams.set('cid', chapId);
-        const response = await fetch(uri);
-        const data = await response.text();
-        const dom = new DOMParser().parseFromString(data, "text/html");
-        const nodes = [...dom.querySelectorAll('img.chapter-img[alt*="Page"]')];
-        resolve(nodes.map(picture => picture.src).filter(image => !image.match(/olimposcan/)));
-    });
-`;
+import { FetchCSS, FetchHTML } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasSinglePageCSS(FlatManga.pathSinglePageManga, FlatManga.queryMangas)
-@Common.ChaptersSinglePageJS(chapterScript, 1000)
-@Common.PagesSinglePageJS(pageScript, 1000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -54,6 +16,52 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        let request = new Request(new URL(manga.Identifier, this.URI), {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(/var dataL\s*=\s*['"](.*)['"]/)[1];
+        const apiUrl = this.GenerateRandomEndPoint(25, '.lstc');
+        apiUrl.searchParams.set('slug', mangaSlug);
+        request = new Request(apiUrl, {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'a.chapter[title]');
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.title.trim()));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        let request = new Request(new URL(chapter.Identifier, this.URI), {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+
+        const chapterid = (await FetchCSS<HTMLInputElement>(request, 'input#chapter'))[0].value;
+        const apiUrl = this.GenerateRandomEndPoint(30, '.iog');
+        apiUrl.searchParams.set('cid', chapterid);
+        request = new Request(apiUrl, {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'img.chapter-img[alt*="Page"]');
+        return data
+            .map(picture => new Page(this, chapter, new URL(picture.getAttribute('src'), this.URI), { Referer: this.URI.origin }))
+            .filter(page => !page.Link.href.match(/olimposcan/));
+    }
+
+    private GenerateRandomEndPoint(length: number, suffix: string): URL {
+        const r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let randomEndpoint = '';
+        for (let o = 0; o < length; o++) randomEndpoint += r.charAt(Math.floor(Math.random() * r.length));
+        return new URL(randomEndpoint + suffix, this.URI);
     }
 
 }
