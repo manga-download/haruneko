@@ -1,45 +1,18 @@
 import { Tags } from '../Tags';
 import icon from './RawInu.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
+import { FetchCSS, FetchHTML, FetchWindowScript } from '../platform/FetchProvider';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-const chapterScript = `
-    new Promise(async resolve => {
-        const uri = new URL('app/manga/controllers/cont.Listchapter.php', window.location.origin);
-        const slug = document.documentElement.innerHTML.match(/var slugs\\s*=\\s*'([^']+)/i)[1];
-        uri.searchParams.set('slug', slug);
-        const response = await fetch(uri);
-        data = await response.text();
-        const dom = new DOMParser().parseFromString(data, "text/html");
-        const nodes = [...dom.querySelectorAll('a')];
-        const chapters= nodes.map(chapter => {
-            return {
-                id : chapter.pathname,
-                title : chapter.title.trim()
-            };
-        });
-        resolve(chapters);
-    });
-`;
+AddAntiScrapingDetection(async (render) => {
+    const dom = await render();
+    return dom.documentElement.innerHTML.includes(`ct_anti_ddos_key`) ? FetchRedirection.Automatic : undefined;
+});
 
-const pageScript = `
-    new Promise(async resolve => {
-        const chapId = document.querySelector('input#chapter').value;
-        const uri = new URL('app/manga/controllers/cont.imagesChap.php', window.location.origin);
-        uri.searchParams.set('cid', chapId);
-        const response = await fetch(uri);
-        const data = await response.text();
-        const dom = new DOMParser().parseFromString(data, "text/html");
-        const nodes = [...dom.querySelectorAll('img')];
-        resolve(nodes.map(picture => picture.dataset.src.trim()));
-    });
-`;
-
-@Common.MangaCSS(/^{origin}\/[^.]+\.html$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/[^.]+\.html$/, 'li.breadcrumb-item.active', FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
-@Common.ChaptersSinglePageJS(chapterScript, 500)
-@Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
@@ -49,4 +22,42 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
+
+    public override async Initialize(): Promise<void> {
+        return await FetchWindowScript(new Request(new URL('/manga-list.html', this.URI)), `window`, 3000, 30000);//trigger antiDDOSS
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        let request = new Request(new URL(manga.Identifier, this.URI), {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(/var sLugs\s*=\s*['"]([^'"]+)['"]/)[1];
+        const apiUrl = new URL(`/app/manga/controllers/cont.Listchapter.php?slug=${mangaSlug}`, this.URI);
+        request = new Request(apiUrl, {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'a');
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.title.trim()));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        let request = new Request(new URL(chapter.Identifier, this.URI), {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const chapterid = (await FetchCSS<HTMLInputElement>(request, 'input#chapter'))[0].value;
+        request = new Request(new URL(`/app/manga/controllers/cont.imagesChap.php?cid=${chapterid}`, this.URI), {
+            headers: {
+                'Referer': this.URI.origin
+            }
+        });
+        const nodes = await FetchCSS<HTMLImageElement>(request, 'img');
+        return nodes.map(image => new Page(this, chapter, new URL(image.dataset.src, this.URI), { Referer: this.URI.origin }));
+    }
+
 }
