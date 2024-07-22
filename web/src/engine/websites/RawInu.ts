@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        return await FetchWindowScript(new Request(new URL('/manga-list.html', this.URI)), 'true', 3000, 30000);//trigger antiDDOSS
+        return await FetchWindowScript(new Request(new URL('/manga-list.html', this.URI)), 'true', 3000, 15000);//trigger antiDDOSS
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
