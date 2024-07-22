@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
                 'Referer': this.URI.origin
             }
         });
-        const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(/var dataL\s*=\s*['"](.*)['"]/)[1];
+        const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(/var dataL\s*=\s*['"]([^'"]+)['"]/)[1];
         const apiUrl = this.GenerateRandomEndPoint(25, '.lstc');
         apiUrl.searchParams.set('slug', mangaSlug);
         request = new Request(apiUrl, {

@@ -30,7 +30,7 @@ export default class extends DecoratableMangaScraper {
             }
         });
 
-        const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(/var sLugs\s*=\s*['"](.*)['"]/)[1];
+        const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(/var sLugs\s*=\s*['"]([^'"]+)['"]/)[1];
         const apiUrl = new URL(`/app/manga/controllers/cont.Listchapter.php?slug=${mangaSlug}`, this.URI);
         request = new Request(apiUrl, {
             headers: {
