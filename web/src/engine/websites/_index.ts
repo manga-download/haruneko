@@ -693,7 +693,6 @@ export { default as TraduccionesAmistosas } from './TraduccionesAmistosas';
 export { default as TraduccionesMoonlight } from './TraduccionesMoonlight';
 export { default as TresDaos } from './TresDaos';
 export { default as TritiniaScans } from './TritiniaScans';
-export { default as TruyenChapVn } from './TruyenChapVn';
 export { default as TruyenQQ } from './TruyenQQ';
 export { default as TruyenTranhDammy } from './TruyenTranhDammy';
 export { default as TruyenTranhOnline } from './TruyenTranhOnline';
