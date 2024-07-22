@@ -7,7 +7,7 @@ const config: Config = {
         title: 'ReadManga'
     },
     container: {
-        url: 'https://readmanga.live/tomo_tian___devushka_',
+        url: 'https://1.readmanga.io/tomo_tian___devushka_',
         id: '/tomo_tian___devushka_',
         title: 'Tomo-chan is a girl!'
     },
