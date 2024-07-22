@@ -4,12 +4,6 @@ import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
 import { FetchCSS, FetchHTML, FetchWindowScript } from '../platform/FetchProvider';
-import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
-
-AddAntiScrapingDetection(async (render) => {
-    const dom = await render();
-    return dom.documentElement.innerHTML.includes(`ct_anti_ddos_key`) ? FetchRedirection.Automatic : undefined;
-});
 
 @Common.MangaCSS(/^{origin}\/[^.]+\.html$/, 'li.breadcrumb-item.active', FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
