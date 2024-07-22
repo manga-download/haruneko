@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './MangaTR.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
@@ -10,7 +10,6 @@ function MangaLabelExtractor(element: HTMLTitleElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, 'body title', MangaLabelExtractor)
-@Common.MangasSinglePageCSS('/manga-list.html', FlatManga.queryMangas)
 @FlatManga.PagesSinglePageCSS('img.chapter-img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -26,13 +25,17 @@ export default class extends DecoratableMangaScraper {
         return FetchWindowScript(request, `window.cookieStore.set('read_type', '1')`, 0, 30000);
     }
 
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        return (await Common.FetchMangasSinglePageCSS.call(this, provider, '/manga-list.html', FlatManga.queryMangas)).filter(manga => manga.Title);
+    }
+
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
-        return chapterList.distinct();
+        return chapterList;
     }
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
         const mangaslug = manga.Identifier.match(/manga-([^/]+)\.html/)[1];
