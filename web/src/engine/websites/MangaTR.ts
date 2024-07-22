@@ -38,8 +38,8 @@ export default class extends DecoratableMangaScraper {
         return chapterList;
     }
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
-        const mangaslug = manga.Identifier.match(/manga-([^/]+)\.html/)[1];
-        const url = new URL('/cek/fetch_pages_manga.php?manga_cek=' + mangaslug, this.URI);
+        const mangaSlug = manga.Identifier.match(/manga-([^/]+)\.html/)[1];
+        const url = new URL(`/cek/fetch_pages_manga.php?manga_cek=${mangaSlug}`, this.URI);
         const request = new Request(url, {
             method: 'POST',
             body: 'page=' + page,

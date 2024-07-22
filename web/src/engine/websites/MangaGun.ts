@@ -31,8 +31,7 @@ export default class extends DecoratableMangaScraper {
         });
 
         const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(/var sLugs\s*=\s*['"](.*)['"]/)[1];
-        const apiUrl = new URL('/app/manga/controllers/cont.Listchapter.php', this.URI);
-        apiUrl.searchParams.set('slug', mangaSlug);
+        const apiUrl = new URL(`/app/manga/controllers/cont.Listchapter.php?slug=${mangaSlug}`, this.URI);
         request = new Request(apiUrl, {
             headers: {
                 'Referer': this.URI.origin
@@ -50,8 +49,7 @@ export default class extends DecoratableMangaScraper {
         });
 
         const chapterid = await FetchWindowScript<string>(request, `document.querySelector('input#chapter').value`, 3000);//increased delay for AntiScrapper
-        const apiUrl = new URL('/app/manga/controllers/cont.Showimage.php', this.URI);
-        apiUrl.searchParams.set('cid', chapterid);
+        const apiUrl = new URL(`/app/manga/controllers/cont.Showimage.php?cid=${chapterid}`, this.URI);
         request = new Request(apiUrl, {
             headers: {
                 'Referer': this.URI.origin
