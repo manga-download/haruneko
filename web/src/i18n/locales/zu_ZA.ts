@@ -5,14 +5,13 @@ import enUS from "./en_US";
  * Get the en-US translation map, or an empty map in case of a circular (self) reference
  */
 
-function base() {
+function base(): VariantResource {
   try {
     return enUS;
-  } catch (error) {
-    if (error instanceof ReferenceError) {
-      return {};
+  } catch(error) {
+    if(error instanceof ReferenceError) {
+      return {} as VariantResource;
     }
-
     throw error;
   }
 }

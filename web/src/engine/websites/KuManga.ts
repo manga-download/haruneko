@@ -54,10 +54,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const token = await FetchWindowScript<string>(new Request(new URL(`/mangalist?&page=1`, this.URI)), getTokenScript);
-        const mangaList = [];
+        const mangaList: Array<Manga> = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider, token);
-            mangas.length > 0 && !Common.EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
+            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
@@ -97,5 +97,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`/manga/${manga.Identifier}/p/${page}`, this.URI)), 'div.media-body h5 > a');
         return data.map(element => new Chapter(this, manga, element.pathname.replace('/c/', '/leer/'), element.text.replace(manga.Title, '').trim().replace(/ -$/, '')));
     }
-
 }
