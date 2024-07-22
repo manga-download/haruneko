@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
                 'Referer': this.URI.origin
             }
         });
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'img.chapter-img[alt*="Page"]');
+        const data = await FetchCSS<HTMLImageElement>(request, 'img.chapter-img[alt*="Page"]');
         return data
             .map(picture => new Page(this, chapter, new URL(picture.getAttribute('src'), this.URI), { Referer: this.URI.origin }))
             .filter(page => !page.Link.href.match(/olimposcan/));

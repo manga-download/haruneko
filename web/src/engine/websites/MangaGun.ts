@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
                 'Referer': this.URI.origin
             }
         });
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'img');
+        const data = await FetchCSS<HTMLImageElement>(request, 'img');
         return data.map(picture => new Page(this, chapter, new URL(picture.dataset.src, this.URI), { Referer: this.URI.origin }));
     }
 }
