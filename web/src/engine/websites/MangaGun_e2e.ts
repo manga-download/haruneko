@@ -12,7 +12,7 @@ const config = {
         title: 'OSHI NO KO'
     },
     child: {
-        id: '/gunchap-146-shmg-oshi-no-ko-raw.html',
+        id: '/read-oshi-no-ko-raw-chapter-146.html',
         title: 'Chapter 146'
     },
     entry: {
