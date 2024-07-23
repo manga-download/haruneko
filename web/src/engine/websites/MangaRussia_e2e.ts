@@ -7,12 +7,12 @@ const config = {
         title: 'MangaRussia'
     },
     container: {
-        url: 'https://www.mangarussia.com/manga/%D0%94%D0%B0%D0%BD%D0%B4%D0%B0%D0%B4%D0%B0%D0%BD.html',
-        id: '/manga/%D0%94%D0%B0%D0%BD%D0%B4%D0%B0%D0%B4%D0%B0%D0%BD.html',
+        url: 'https://www.mangarussia.com/manga/Дандадан.html',
+        id: encodeURI('/manga/Дандадан.html'),
         title: 'Дандадан',
     },
     child: {
-        id: '/chapter/%D0%94%D0%B0%D0%BD%D0%B4%D0%B0%D0%B4%D0%B0%D0%BD+16+-+141+%D0%9F%D0%B5%D1%80%D0%B5%D0%B5%D0%BB%D0%B8+%D0%B2%D0%BA%D1%83%D1%81%D0%BD%D1%8F%D1%88%D0%B5%D0%BA/4332724/',
+        id: encodeURI('/chapter/Дандадан+16+-+141+Переели+вкусняшек/4332724/'),
         title: '16 - 141 Переели вкусняшек',
     },
     entry: {
