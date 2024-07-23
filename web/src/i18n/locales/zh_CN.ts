@@ -5,21 +5,21 @@ import enUS from './en_US';
  * Get the en-US translation map, or an empty map in case of a circular (self) reference
  */
 
-function base(): VariantResource {
+function base() {
   try {
     return enUS;
   } catch (error) {
     if (error instanceof ReferenceError) {
-      return (<VariantResource> {});
+      return {};
+    } else {
+      throw error;
     }
-
-    throw error;
   }
 }
 
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
   //       => This is just a placeholder to ensure to be included in auto-generated translations (e.g., with crowdin)
-  ...base(),
+  ...(base() as VariantResource),
   // [SECTION]: FrontendController
   FrontendController_Reload_ConfirmNotice: "需要重启才能应用请求的更改。\n任何未保存的更改都将丢失并激活操作(e)。 ，下载) 将被中止!\n\n您想现在重新启动吗？",
   // [SECTION]: Frontend (Common/Shared)
