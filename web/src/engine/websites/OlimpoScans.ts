@@ -10,7 +10,7 @@ import * as FlatManga from './decorators/FlatManga';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('olimposcans', `OlimpoScans`, 'https://olimposcans.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('olimposcans', `OlimpoScans`, 'https://leerolimpo.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

@@ -7,7 +7,7 @@ const config = {
         title: 'OlimpoScans'
     },
     container: {
-        url: 'https://olimposcans.com/comic-bjorn-el-barbaro.html',
+        url: 'https://leerolimpo.com/comic-bjorn-el-barbaro.html',
         id: '/comic-bjorn-el-barbaro.html',
         title: 'BJORN EL BARBARO'
     },
