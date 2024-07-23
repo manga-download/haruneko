@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './Alphapolis.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
@@ -26,7 +26,6 @@ function ChaptersExtractor(element: HTMLDivElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/official\/\d+/, 'div.manga-detail-description > div.title')
-@Common.MangasMultiPageCSS(`/manga/official/search?page={page}`, 'div.official-manga-panel > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.episode-unit', ChaptersExtractor)
 export default class extends DecoratableMangaScraper {
 
@@ -36,6 +35,11 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, '/manga/official/search?page={page}', 'div.official-manga-panel > a', 1, 1, 0, MangaInfoExtractor);
+        return mangas.filter(manga => !manga.Title.endsWith('...'));//website truncate some manga name we cant do something clean about that => people will use clipboard for them
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
