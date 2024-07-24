@@ -33,20 +33,21 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const results : Manga[]= [];
-        for (const character of '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('') ) {
+        const results: Manga[] = [];
+        for (const character of '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')) {
             const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/search?category=official_manga&query=${character}&page={page}`, 'div.mangas-list div.wrap div.title a', 1, 1, 500);
             results.push(...mangas);
         }
-        results.push(...(await Common.FetchMangasMultiPageCSS.call(this, provider, '/manga/index?sort=title&limit=1000&page={page}', 'div.content-main div.content-title a', 1, 1, 500)));
+        results.push(...await Common.FetchMangasMultiPageCSS.call(this, provider, '/manga/index?sort=title&limit=1000&page={page}', 'div.content-main div.content-title a', 1, 1, 500));
         return results.distinct();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), 'viewer-manga-horizontal');
+        const [viewer]= await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '[v-bind\\:pages]');
         try {
-            const pages = JSON.parse(data[0].getAttribute('v-bind:pages'));
-            return pages.filter(element =>  typeof element === 'string' && !element.match('white_page') && element != '').map(element => new Page(this, chapter, new URL(element.replace(/\/[0-9]+x[0-9]+(([./])[\w]+)/, '/1080x1536$1')), { fallbackURL: element }));
+            const pages = JSON.parse(viewer.getAttribute('v-bind:pages'));
+            const isVertical = viewer.getAttribute('v-bind:is-vertical-manga') === '1';
+            return pages.filter(element => typeof element === 'string' && !element.match('white_page') && element != '').map(element => new Page(this, chapter, isVertical ? new URL( element ) : new URL(element.replace(/\/[0-9]+x[0-9]+(([./])[\w]+)/, '/1080x1536$1')), { fallbackURL: element }));
         } catch (error) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
@@ -54,11 +55,11 @@ export default class extends DecoratableMangaScraper {
 
     //Since high resolution is not always available, use the real picture url instead of the forces one in case of failure
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        let blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (!blob.type.startsWith('image')) {
-            const fakepage = new Page(this, page.Parent as Chapter, new URL(page.Parameters.fallbackURL as string));
-            blob = await Common.FetchImageAjax.call(this, fakepage, priority, signal);
+        try {
+            return await Common.FetchImageAjax.call(this, page, priority, signal);
+        } catch (error) {
+            page.Link.href = page.Parameters.fallbackURL as string;
+            return await Common.FetchImageAjax.call(this, page, priority, signal);
         }
-        return blob;
     }
 }
