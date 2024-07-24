@@ -4,14 +4,6 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
-type NEXTDATA = {
-    props: {
-        pageProps: {
-            comic: APIManga
-        }
-    }
-}
-
 type APIManga = {
     hid: string,
     title: string
@@ -87,8 +79,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const comicdata = await FetchWindowScript<NEXTDATA>(new Request(url), '__NEXT_DATA__', 2000);
-        return new Manga(this, provider, comicdata.props.pageProps.comic.hid, comicdata.props.pageProps.comic.title.trim());
+        const manga = await FetchWindowScript<APIManga>(new Request(url), '__NEXT_DATA__.props.pageProps.comic', 2000);
+        return new Manga(this, provider, manga.hid, manga.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -103,9 +95,7 @@ export default class extends DecoratableMangaScraper {
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
             const data = await FetchJSON<APIManga[]>(new Request(new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl)));
-            return data.map(item => {
-                return new Manga(this, provider, item.hid, item.title.trim());
-            });
+            return data.map(item => new Manga(this, provider, item.hid, item.title.trim()));
         } catch (error) {
             return [];
         }
@@ -149,43 +139,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
-        return data.chapter.md_images.map(image => new Page(this, chapter, this.ComputePageURL(image, data.chapter), { Referer: this.URI.href }));
-    }
-
-    private ComputePageURL(image: APIPage, chapter: APIChapter): URL {
-        let result = '';
-        if (image.gpurl && !image.b2key) image.gpurl.match(/siasky/) ? result = image.gpurl : result = `https://lh3.googleusercontent.com/${image.gpurl}`;
-
-        if (image.b2key) {
-            result = this.ComputePageURLFromB2key(new Date(chapter.created_at) > new Date('2024-03-14 06:00:00') ? chapter.id : 1, image.b2key);
-        } else {
-            const server = 'mangadex.org' == chapter.server ? 'images.comick.fun' : chapter.server;
-            result = chapter.chapter_id || (null == server ? void 0 : server.match(/mangadex/)) ? `https://'${server}/data/${chapter.hash}/${image.name}` : `https://${server}/${chapter.hash}/${image.name}`;
-        }
-        return new URL(result);
-    }
-
-    private ComputePageURLFromB2key(chapterid: number, b2key: string): string {
-        let CDN = 'https://meo2.comick.pictures/';
-        if (chapterid < 3089183) {
-            const CdnId = this.GetCDNId(b2key, 1, 4);
-            CDN = 2 == CdnId || 3 == CdnId ? 'https://meo.comick.pictures/' : 'https://meo3.comick.pictures/';
-        }
-        return CDN + b2key;
-    }
-
-    private GetCDNId(b2key: string, num1: number, num2: number): number {
-        let r = 0;
-        for (let index = 0; index < b2key.length; index++) r = (r << 5) - r + b2key.charCodeAt(index),
-        r &= r;
-        let i = Math.abs(r);
-        return Math.floor(
-            (() => {
-                let e = 10000 * Math.sin(i++);
-                return e - Math.floor(e);
-            })() * (num2 - num1 + 1)
-        ) + num1;
+        const { chapter: { md_images } } = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
+        return md_images.map(image => new Page(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), { Referer: this.URI.href }));
     }
 
 }
