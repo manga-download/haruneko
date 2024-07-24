@@ -20,22 +20,16 @@ type APISingleChapter = {
 type APIChapter = {
     hid: string,
     title: string,
-    id: number,
     vol: number,
     chap: number,
     group_name: string[],
     lang: string,
-    server?: string,
     md_images: APIPage[]
-    created_at: string,
-    chapter_id?: string,
-    hash?: string
 }
 
 type APIPage = {
     b2key: string,
     name: string,
-    gpurl?: string
 }
 
 const langMap = {
