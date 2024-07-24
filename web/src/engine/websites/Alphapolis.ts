@@ -13,20 +13,15 @@ AddAntiScrapingDetection(async (render) => {
     return dom.documentElement.innerHTML.includes('window.awsWafCookieDomainList') ? FetchRedirection.Automatic : undefined;
 });
 
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('.title').textContent.replace('[R18]', '').trim();
+function ChaptersExtractor(element: HTMLElement) {
+
+    const id = element instanceof HTMLAnchorElement ? (element as HTMLAnchorElement).pathname : element.querySelector<HTMLAnchorElement>('a.read-episode').pathname;
+    const title = element.querySelector('.title').textContent.trim();
     return { id, title };
 }
 
-function ChaptersExtractor(element: HTMLDivElement) {
-    const id = element.querySelector<HTMLAnchorElement>('a.read-episode').pathname;
-    const title = element.querySelector<HTMLDivElement>('div.title').textContent.trim();
-    return { id, title };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/official\/\d+/, 'div.manga-detail-description > div.title')
-@Common.ChaptersSinglePageCSS('div.episode-unit', ChaptersExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/(official|\d+)\/\d+/, 'div.manga-detail-description > div.title, div.content-main > h1.title')
+@Common.ChaptersSinglePageCSS('div.episode-unit, div.episodes div.episode a', ChaptersExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -38,16 +33,20 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, '/manga/official/search?page={page}', 'div.official-manga-panel > a', 1, 1, 0, MangaInfoExtractor);
-        return mangas.filter(manga => !manga.Title.endsWith('...'));//website truncate some manga name we cant do something clean about that => people will use clipboard for them
+        const results : Manga[]= [];
+        for (const character of '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('') ) {
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/search?category=official_manga&query=${character}&page={page}`, 'div.mangas-list div.wrap div.title a', 1, 1, 500);
+            results.push(...mangas);
+        }
+        results.push(...(await Common.FetchMangasMultiPageCSS.call(this, provider, '/manga/index?sort=title&limit=1000&page={page}', 'div.content-main div.content-title a', 1, 1, 500)));
+        return results.distinct();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI));
-        const data = await FetchCSS(request, 'viewer-manga-horizontal');
+        const data = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), 'viewer-manga-horizontal');
         try {
             const pages = JSON.parse(data[0].getAttribute('v-bind:pages'));
-            return pages.filter(element => typeof element != 'object' && !element.match('white_page')).map(element => new Page(this, chapter, new URL(element.replace(/\/[0-9]+x[0-9]+.([\w]+)/, '/1080x1536.$1')), {fallbackURL: element}));
+            return pages.filter(element =>  typeof element === 'string' && !element.match('white_page') && element != '').map(element => new Page(this, chapter, new URL(element.replace(/\/[0-9]+x[0-9]+(([./])[\w]+)/, '/1080x1536$1')), { fallbackURL: element }));
         } catch (error) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
