@@ -5,20 +5,21 @@ import enUS from './en_US';
  * Get the en-US translation map, or an empty map in case of a circular (self) reference
  */
 
-function base(): VariantResource {
+function base() {
   try {
     return enUS;
-  } catch(error) {
-    if(error instanceof ReferenceError) {
-      return {} as VariantResource;
+  } catch (error) {
+    if (error instanceof ReferenceError) {
+      return {};
+    } else {
+      throw error;
     }
-    throw error;
   }
 }
 
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
   //       => This is just a placeholder to ensure to be included in auto-generated translations (e.g., with crowdin)
-  ...base(),
+  ...(base() as VariantResource),
   // [SECTION]: FrontendController
   FrontendController_Reload_ConfirmNotice: "Ein Neustart ist erforderlich, um die angeforderten Änderungen zu übernehmen.\nUngespeicherte Änderungen gehen verloren und aktive Operationen (z.B., Downloads) werden abgebrochen!\n\nSoll jetzt ein Neustart durchgeführt werden?",
   // [SECTION]: Frontend (Common/Shared)
@@ -150,6 +151,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_MediaDirectory_PermissionError: "Unzureichende Berechtigung, um auf das Verzeichnis mit den heruntergeladene Inhalte zuzugreifen!",
   Settings_Global_WebsiteSubDirectory: "Unterverzeichnisse verwenden",
   Settings_Global_WebsiteSubDirectoryInfo: "Legen Sie fest, ob HakuNeko Medien direkt im Verzeichnis speichern soll oder Unterverzeichnisse pro Website verwenden soll",
+  Settings_Global_MangaExportFormat: "Manga/Comic Speicher Format",
+  Settings_Global_MangaExportFormatInfo: "Das Speicherformat für die heruntergeladenen Inhalte von Mangas/Comics",
+  Settings_Global_MangaExportFormat_FolderWithImages: "Ordner mit Bildern",
+  Settings_Global_MangaExportFormat_ComicBookArchive: "Komprimiertes Comic Buch (*.cbz)",
+  Settings_Global_MangaExportFormat_ElectronicPublication: "E-Buch Veröffentlichung (*.epub)",
+  Settings_Global_MangaExportFormat_PortableDocumentFormat: "Portables Dokumenten-Format (*.pdf)",
   Settings_Global_DescramblingFormat: "Entkachelungs Format",
   Settings_Global_DescramblingFormatInfo: "Wählen Sie das Ausgabe-Bildformat für Webseiten, die gekachelte Bilder verwenden (dies gilt NICHT für Webseiten, die bereits gültige Bilder bereitstellen)",
   Settings_Global_DescramblingQuality: "Entkachelungs Qualität",

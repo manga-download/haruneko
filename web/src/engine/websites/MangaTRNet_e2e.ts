@@ -8,7 +8,7 @@ const config: Config = {
     },
     container: {
         url: 'https://mangatr.net/manga/king-of-apocalypse/',
-        id: JSON.stringify({ post: '57188', slug: '/manga/king-of-apocalypse/'}),
+        id: JSON.stringify({ post: '1121', slug: '/manga/king-of-apocalypse/'}),
         title: 'King of Apocalypse'
     },
     child: {
@@ -17,8 +17,8 @@ const config: Config = {
     },
     entry: {
         index: 2,
-        size: 345_258,
-        type: 'image/jpeg'
+        size: 345_058,
+        type: 'image/webp'
     }
 };
 
