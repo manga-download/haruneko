@@ -1,7 +1,7 @@
 import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
-import { Event } from './Event';
 import { Priority } from './taskpool/DeferredTask';
 import type { StorageController } from './StorageController';
+import { Observable, type IObservable } from './Observable';
 
 export const enum Status {
     Paused = 'paused',
@@ -12,59 +12,34 @@ export const enum Status {
     Failed = 'failed',
 }
 
-/*
-export interface IDownloadTask {
-    readonly ID: symbol;
-    readonly Created: Date;
-    readonly Media: MediaContainer<MediaItem>;
-    readonly Errors: Error[];
-    readonly Status: Status;
-    readonly StatusChanged: Event<typeof this, Status>;
-    readonly Progress: number;
-    readonly ProgressChanged: Event<typeof this, number>;
-}
-*/
-
 export class DownloadTask {
 
     public readonly ID = Symbol();
     public readonly Created = new Date();
-    public readonly StatusChanged: Event<DownloadTask, Status> = new Event<DownloadTask, Status>();
-    public readonly ProgressChanged: Event<DownloadTask, number> = new Event<DownloadTask, number>();
 
-    constructor(public readonly Media: StoreableMediaContainer<MediaItem>, private readonly storageController: StorageController) {
-    }
+    constructor(public readonly Media: StoreableMediaContainer<MediaItem>, private readonly storageController: StorageController) {}
 
     private errors: Error[] = [];
     public get Errors(): Error[] {
         return this.errors.map(error => error);
     }
 
-    private status: Status = Status.Queued;
-    public get Status(): Status {
+    private readonly status = new Observable(Status.Queued, this);
+    public get Status(): IObservable<Status, DownloadTask> {
         return this.status;
     }
-    private UpdateStatus(status: Status) {
-        if(this.status !== status) {
-            this.status = status;
-            this.StatusChanged.Dispatch(this, this.status);
-        }
-    }
 
-    private progress = 0.0;
-    public get Progress(): number {
+    private progress = new Observable(0.0, this);
+    public get Progress(): IObservable<number, DownloadTask> {
         return this.progress;
     }
-    private UpdateProgress(completed: number) {
-        const progress = this.Media.Entries.length ? completed / this.Media.Entries.length : 0.0;
-        if(this.progress !== progress) {
-            this.progress = progress;
-            this.ProgressChanged.Dispatch(this, this.progress);
-        }
+
+    private UpdateProgress(processed: number) {
+        this.progress.Value = this.Media.Entries.Value.length > 0 ? processed / this.Media.Entries.Value.length : 0.0;
     }
 
     private get IsRunning(): boolean {
-        return this.Status === Status.Downloading || this.Status === Status.Processing;
+        return this.status.Value === Status.Downloading || this.status.Value === Status.Processing;
     }
 
     public async Run(/* Target Directory / Archive ? */): Promise<void> {
@@ -72,7 +47,7 @@ export class DownloadTask {
         if(this.IsRunning) {
             return;
         }
-        this.UpdateStatus(Status.Downloading);
+        this.status.Value = Status.Downloading;
         this.UpdateProgress(0);
         this.errors = [];
 
@@ -82,7 +57,7 @@ export class DownloadTask {
             this.Abort = cancellator.abort.bind(cancellator);
             await this.Media.Update();
             // TODO: What if no entries?
-            const promises = this.Media.Entries.map(async (item, index: number) => {
+            const promises = this.Media.Entries.Value.map(async (item, index: number) => {
                 try {
                     const data = await item.Fetch(Priority.Low, cancellator.signal);
                     const resource = await this.storageController.SaveTemporary(data);
@@ -96,8 +71,8 @@ export class DownloadTask {
             });
             await Promise.allSettled(promises);
             if(this.Errors.length === 0) {
-                this.UpdateProgress(-1 * this.Media.Entries.length);
-                this.UpdateStatus(Status.Processing);
+                this.UpdateProgress(-1 * this.Media.Entries.Value.length);
+                this.status.Value = Status.Processing;
                 await this.Media.Store(resourcemap);
             }
         } catch(error) {
@@ -105,7 +80,7 @@ export class DownloadTask {
         } finally {
             await this.storageController.RemoveTemporary(...resourcemap.values());
             this.UpdateProgress(resourcemap.size);
-            this.UpdateStatus(this.Errors.length > 0 ? Status.Failed : Status.Completed);
+            this.status.Value = this.Errors.length > 0 ? Status.Failed : Status.Completed;
             this.Abort = this.DisabledAbort;
         }
     }
