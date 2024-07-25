@@ -7,17 +7,17 @@ const config = {
         title: 'NhatTruyen'
     },
     container: {
-        url: 'https://nhattruyenss.com/truyen-tranh/initial-d-2658',
-        id: '/truyen-tranh/initial-d-2658',
+        url: 'https://nhattruyenvn.com/truyen-tranh/initial-d',
+        id: '/truyen-tranh/initial-d',
         title: 'Initial D'
     },
     child: {
-        id: '/truyen-tranh/initial-d/chap-712/1121626',
+        id: '/truyen-tranh/initial-d/chuong-712',
         title: 'Chapter 712'
     },
     entry: {
         index: 0,
-        size: 263_806,
+        size: 247_096,
         type: 'image/jpeg'
     }
 };
