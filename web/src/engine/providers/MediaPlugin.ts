@@ -5,7 +5,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import icon from '../../img/media.webp';
 import { NotImplementedError } from '../Error';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import { Observable, ObservableArray, type IObservable, type IObservableArray } from '../Observable';
+import { Observable, ObservableArray, type IObservable } from '../Observable';
 
 export type MediaChild = MediaContainer<MediaChild> | MediaItem;
 
@@ -37,11 +37,11 @@ export abstract class MediaContainer<T extends MediaChild> {
         return icon;
     }
 
-    public get Tags(): IObservableArray<Tag, MediaContainer<T>> {
+    public get Tags(): IObservable<Tag[], MediaContainer<T>> {
         return this.tags;
     }
 
-    public get Entries(): IObservableArray<T, MediaContainer<T>> {
+    public get Entries(): IObservable<T[], MediaContainer<T>> {
         return this.entries;
     }
 

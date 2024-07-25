@@ -63,15 +63,6 @@ export class Observable<TValue, TOwner = null> implements IObservable<TValue, TO
     }
 }
 
-export interface IObservableArray<TEntry, TOwner> extends IObservable<TEntry[], TOwner> {
-    Pop(): TEntry | undefined;
-    Push(...items: TEntry[]): number;
-    Shift(): TEntry | undefined;
-    Unshift(...items: TEntry[]): number;
-    Splice(start: number, deleteCount: number, ...items: TEntry[]): TEntry[];
-    Sort(compareFn?: (a: TEntry, b: TEntry) => number): TEntry[];
-}
-
 export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[], TOwner> implements IObservableArray<TEntry, TOwner> {
 
     /**
