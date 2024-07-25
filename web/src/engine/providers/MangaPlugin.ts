@@ -73,10 +73,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
     }
 
     private async Prepare() {
-        super.SetTags(this.scraper.Tags);
+        this.tags.Value = this.scraper.Tags;
         this._settings.Initialize(...this.scraper.Settings);
         const mangas = await this.storageController.LoadPersistent<{ id: string, title: string }[]>(Store.MediaLists, this.Identifier) || [];
-        super.SetEntries(mangas.map(manga => this.CreateEntry(manga.id, manga.title)));
+        this.entries.Value = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
     }
 
     public override get Settings(): ISettings {
@@ -96,11 +96,11 @@ export class MangaPlugin extends MediaContainer<Manga> {
         return super.Initialize();
     }
 
-    public CreateEntry(identifier: string, title: string): Manga {
+    public override CreateEntry(identifier: string, title: string): Manga {
         return new Manga(this.scraper, this, identifier, title);
     }
 
-    public async TryGetEntry(url: string): Promise<Manga> {
+    public override async TryGetEntry(url: string): Promise<Manga> {
         if(this.scraper.ValidateMangaURL(url)) {
             await this.Initialize();
             const manga = await this.scraper.FetchManga(this, url);
@@ -108,13 +108,13 @@ export class MangaPlugin extends MediaContainer<Manga> {
         }
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.SetEntries(await this.scraper.FetchMangas(this));
-        const mangas = super.Entries.Value.map(entry => {
+    protected async PerformUpdate(): Promise<Manga[]> {
+        const entries = await this.scraper.FetchMangas(this);
+        const mangas = entries.map(entry => {
             return { id: entry.Identifier, title: entry.Title };
         });
         await this.storageController.SavePersistent(mangas, Store.MediaLists, this.Identifier);
+        return entries;
     }
 }
 
@@ -128,13 +128,12 @@ export class Manga extends MediaContainer<Chapter> {
         return icon;
     }
 
-    public CreateEntry(identifier: string, title: string): Chapter {
+    public override CreateEntry(identifier: string, title: string): Chapter {
         return new Chapter(this.scraper, this, identifier, title);
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.SetEntries(await this.scraper.FetchChapters(this));
+    protected PerformUpdate(): Promise<Chapter[]> {
+        return this.scraper.FetchChapters(this);
     }
 }
 
@@ -144,9 +143,8 @@ export class Chapter extends StoreableMediaContainer<Page> {
         super(identifier, title, parent);
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.SetEntries(await this.scraper.FetchPages(this));
+    protected PerformUpdate(): Promise<Page[]> {
+        return this.scraper.FetchPages(this);
     }
 
     public get IsStored() {
