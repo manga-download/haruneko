@@ -2,7 +2,6 @@ import { EngineResourceKey as R } from '../../i18n/ILocale';
 import { Key, Scope } from '../SettingsGlobal';
 import type { Check, Choice, Directory, ISettings, SettingsManager } from '../SettingsManager';
 import { SanitizeFileName, type StorageController, Store } from '../StorageController';
-import type { Tag } from '../Tags';
 import { type Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 import icon from '../../img/manga.webp';
@@ -74,9 +73,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
     }
 
     private async Prepare() {
+        super.SetTags(this.scraper.Tags);
         this._settings.Initialize(...this.scraper.Settings);
         const mangas = await this.storageController.LoadPersistent<{ id: string, title: string }[]>(Store.MediaLists, this.Identifier) || [];
-        super.Entries = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
+        super.SetEntries(mangas.map(manga => this.CreateEntry(manga.id, manga.title)));
     }
 
     public override get Settings(): ISettings {
@@ -85,10 +85,6 @@ export class MangaPlugin extends MediaContainer<Manga> {
 
     public override get Icon(): string {
         return this.scraper.Icon;
-    }
-
-    public override get Tags(): Tag[] {
-        return this.scraper.Tags;
     }
 
     public get URI(): URL {
@@ -108,14 +104,14 @@ export class MangaPlugin extends MediaContainer<Manga> {
         if(this.scraper.ValidateMangaURL(url)) {
             await this.Initialize();
             const manga = await this.scraper.FetchManga(this, url);
-            return this.Entries.find((entry) => entry.IsSameAs(manga)) ?? manga;
+            return this.Entries.Value.find((entry) => entry.IsSameAs(manga)) ?? manga;
         }
     }
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        super.Entries = await this.scraper.FetchMangas(this);
-        const mangas = super.Entries.map(entry => {
+        super.SetEntries(await this.scraper.FetchMangas(this));
+        const mangas = super.Entries.Value.map(entry => {
             return { id: entry.Identifier, title: entry.Title };
         });
         await this.storageController.SavePersistent(mangas, Store.MediaLists, this.Identifier);
@@ -138,7 +134,7 @@ export class Manga extends MediaContainer<Chapter> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        super.Entries = await this.scraper.FetchChapters(this);
+        super.SetEntries(await this.scraper.FetchChapters(this));
     }
 }
 
@@ -150,7 +146,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        super.Entries = await this.scraper.FetchPages(this);
+        super.SetEntries(await this.scraper.FetchPages(this));
     }
 
     public get IsStored() {

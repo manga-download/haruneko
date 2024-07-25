@@ -5,6 +5,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import icon from '../../img/media.webp';
 import { NotImplementedError } from '../Error';
 import { FetchWindowScript } from '../platform/FetchProvider';
+import { ObservableArray, type IObservableArray } from '../Observable';
 
 export type MediaChild = MediaContainer<MediaChild> | MediaItem;
 
@@ -18,11 +19,10 @@ export abstract class MediaItem {
 
 export abstract class MediaContainer<T extends MediaChild> {
 
-    #tags: Tag[] = [];
-    #entries: T[] = [];
+    #tags = new ObservableArray<Tag, this>([], this);
+    #entries = new ObservableArray<T, this>([], this);
 
-    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: MediaContainer<MediaContainer<T>>) {
-    }
+    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: MediaContainer<MediaContainer<T>>) {}
 
     public get Settings(): ISettings {
         return null;
@@ -36,20 +36,24 @@ export abstract class MediaContainer<T extends MediaChild> {
         return icon;
     }
 
-    public get Tags(): Tag[] {
+    public get Tags(): IObservableArray<Tag, MediaContainer<T>> {
         return this.#tags;
     }
 
-    public get Entries(): T[] {
+    protected SetTags(value: Tag[]) {
+        this.#tags.Value = value;
+    }
+
+    public get Entries(): IObservableArray<T, MediaContainer<T>> {
         return this.#entries;
     }
 
-    protected set Entries(value: T[]) {
-        this.#entries = value;
+    protected SetEntries(value: T[]) {
+        this.#entries.Value = value;
     }
 
     public *[Symbol.iterator](): Iterator<T> {
-        for (const entry of this.Entries) {
+        for (const entry of this.#entries.Value) {
             yield entry;
         }
     }

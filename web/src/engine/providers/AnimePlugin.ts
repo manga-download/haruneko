@@ -25,18 +25,6 @@ export class AnimePlugin extends MediaContainer<Anime> {
         return `animes.${this.Identifier}`;
     }
 
-    public get Entries(): Anime[] {
-        if(super.Entries.length === 0) {
-            // TODO: load entries from cache ...
-            const content = localStorage.getItem(this.EntriesKey) || '[]';
-            // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
-            //                  chrome.storage.local.get(this.EntriesKey, data => data[this.EntriesKey]);
-            const animes = JSON.parse(content) as { id: string, title: string }[];
-            super.Entries = animes.map(anime => this.CreateEntry(anime.id, anime.title));
-        }
-        return this.Entries;
-    }
-
     public async Initialize(): Promise<void> {
         await this._scraper.Initialize();
         return super.Initialize();
@@ -53,9 +41,9 @@ export class AnimePlugin extends MediaContainer<Anime> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        super.Entries = await this._scraper.FetchAnimes(this);
+        super.SetEntries(await this._scraper.FetchAnimes(this));
         // TODO: store entries in cache ...
-        const animes = super.Entries.map(entry => {
+        const animes = super.Entries.Value.map(entry => {
             return {
                 id: entry.Identifier,
                 title: entry.Title
@@ -83,7 +71,7 @@ export class Anime extends MediaContainer<Episode> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        super.Entries = await this._scraper.FetchEpisodes(this);
+        super.SetEntries(await this._scraper.FetchEpisodes(this));
     }
 }
 
@@ -98,7 +86,7 @@ export class Episode extends MediaContainer<Video> {
 
     public async Update(): Promise<void> {
         await this.Initialize();
-        super.Entries = await this._scraper.FetchVideos(this);
+        super.SetEntries(await this._scraper.FetchVideos(this));
     }
 }
 
