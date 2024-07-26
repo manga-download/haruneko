@@ -1,7 +1,17 @@
+import { AddAntiScrapingDetection, FetchRedirection } from "../../platform/AntiScrapingDetection";
 import { FetchCSS, FetchHTML, FetchWindowScript } from "../../platform/FetchProvider";
 import { Chapter, type Manga, type MangaScraper} from "../../providers/MangaPlugin";
 import { Page } from "../../providers/MangaPlugin";
 import * as Common from './Common';
+
+AddAntiScrapingDetection(async (render) => {
+    const dom = await render();
+    if (dom.documentElement.innerHTML.includes(`ct_anti_ddos_key`)) { // Sample => Mangagun, NicoManga, Rawinu, Weloma, WeloveManga
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        return FetchRedirection.Automatic;
+    }
+    return undefined;
+});
 
 export function MangaLabelExtractor(element: HTMLElement) {
     let title = element.getAttribute('text') ? element.getAttribute('text') : element.textContent;
