@@ -31,7 +31,7 @@ const pageScript = `
                 tries++;
                 if (tries > 10) {
                     clearInterval(interval);
-                    reject(error);
+                    reject('Unable to get pictures after more than 10 tries !');
                 }
             }
         }, 1000);
