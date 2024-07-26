@@ -5,7 +5,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as DM5 from './decorators/DM5';
 
-@Common.MangaCSS(/^{origin}\/manga\//, 'div.detail-info span.detail-info-right-title-font')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.detail-info span.detail-info-right-title-font')
 @Common.MangasMultiPageCSS('/directory/{page}.html?az', 'div.manga-list-1 ul li p.manga-list-1-item-title a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapterlist ul li a', Common.AnchorInfoExtractor(true))
 @DM5.PagesSinglePageScript()
