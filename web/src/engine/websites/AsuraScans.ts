@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './AsuraScans.webp';
-import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
+import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
 const excludes = [
     /panda_gif_large/i,
@@ -20,18 +20,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-const chapterScript = `
-    new Promise (resolve => {
-        resolve([...document.querySelectorAll('div.scrollbar-thumb-themecolor a.block')].map(link => {
-            return {
-                id: link.pathname.replace(/-[^-]+(\\/chapter)/, '-$1'),
-                title : link.querySelector('div > h3').textContent.trim()
-            };
-        }));
-    });
-`;
 @Common.MangasMultiPageCSS('/series?page={page}', 'div.grid a', 1, 1, 0, MangaInfoExtractor)
-@Common.ChaptersSinglePageJS(chapterScript)
 @MangaStream.PagesSinglePageCSS(excludes, 'img[alt="chapter"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -55,4 +44,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(this: DecoratableMangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
         return MangaStream.FetchMangaCSS.call(this, provider, url.replace(/-[^-]+$/, '-'), 'div.bg-white div.relative span.text-xl.font-bold');
     }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div.scrollbar-thumb-themecolor a.block');
+        return chapters.map(chapter => new Chapter(this, manga, [manga.Identifier, 'chapter', chapter.pathname.match(/(\d+)+$/)[1]].join('/'), chapter.querySelector('div > h3').textContent.trim()));
+    }
+
 }
