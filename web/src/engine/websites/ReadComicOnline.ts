@@ -16,19 +16,18 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 
 const pageScript = `
     new Promise( (resolve, reject) => {
-        const arrayName = document.documentElement.innerHTML.match(/(\\w+)\\.push\\(pth/)[1];
         let tries = 0;
         const interval = setInterval(function () {
             try {
-                const imagearray = window[arrayName];
-                if (!Array.isArray(imagearray)) return;
-                const lastElement = imagearray[imagearray.length - 1];
-                const url = !/blank.gif/i.test(lastElement) && new URL(lastElement);
-                if (url) {
+                const links = [ ...document.querySelectorAll('#divImage img') ].map(img => img.src);
+                if(links.length > 0 && !links.some(link => /blank.gif/i.test(link))) {
                     clearInterval(interval);
-                    resolve (imagearray);
+                    resolve(links);
                 }
             } catch (error) {
+                clearInterval(interval);
+                reject(error);
+            } finally {
                 tries++;
                 if (tries > 10) {
                     clearInterval(interval);
