@@ -3,8 +3,8 @@ import { MediaContainer, type MediaItem } from './providers/MediaPlugin';
 import './ArrayExtensions';
 
 class MediaContainerMock extends MediaContainer<MediaItem> {
-    public override async Update(): Promise<void> {
-        return Promise.resolve();
+    protected PerformUpdate(): Promise<MediaItem[]> {
+        return Promise.resolve([]);
     }
 }
 
