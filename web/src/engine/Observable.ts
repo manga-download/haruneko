@@ -63,7 +63,7 @@ export class Observable<TValue, TOwner = null> implements IObservable<TValue, TO
     }
 }
 
-export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[], TOwner> implements IObservableArray<TEntry, TOwner> {
+export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[], TOwner> {
 
     /**
      * {@inheritDoc {@link Array.pop}}
