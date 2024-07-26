@@ -196,11 +196,8 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
  * @param extractor - A function to extract page link from an HTML node
  */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query: string = queryPages, exclude: RegExp[] = DefaultExcludes, extractor = PageLinkExtractor): Promise<Page[]> {
-    const uri = new URL(chapter.Identifier, this.URI);
-    const request = new Request(uri.href);
-    const data = await FetchCSS<HTMLImageElement>(request, query);
-    const pages = data.map(page => extractor.call(this, page));
-    return pages.filter(url => !exclude.some(pattern => pattern.test(url))).map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.origin }));
+    const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, query, extractor);
+    return pages.filter(page => !exclude.some(pattern => pattern.test(page.Link.href))).map(page => new Page(this, chapter, page.Link, { Referer: this.URI.origin }));
 }
 
 /**
