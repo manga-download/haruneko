@@ -7,17 +7,17 @@ const config: Config = {
         title: 'OurFeel'
     },
     container: {
-        url: 'https://ourfeel.jp/episode/2550689798581262969',
-        id: '/episode/2550689798581262969',
+        url: 'https://ourfeel.jp/episode/2550689798581262904',
+        id: '/episode/2550689798581262904',
         title: '私たちが恋する理由'
     },
     child: {
-        id: '/episode/2550689798581263037',
-        title: 'Reason.18'
+        id: '/episode/2550689798581262904',
+        title: 'Reason.1'
     },
     entry: {
-        index: 0,
-        size: 2_618_111,
+        index: 4,
+        size: 1_699_678,
         type: 'image/png'
     }
 };

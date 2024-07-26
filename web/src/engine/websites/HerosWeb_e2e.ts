@@ -7,17 +7,17 @@ const config: Config = {
         title: `Hero's (ヒーローズ)`
     },
     container: {
-        url: 'https://viewer.heros-web.com/episode/4856001361588074579',
-        id: '/episode/4856001361588074579',
+        url: 'https://viewer.heros-web.com/episode/3269754496844315695',
+        id: '/episode/3269754496844315695',
         title: '虫葬りの巫女'
     },
     child: {
-        id: '/episode/4856001361514461568',
-        title: '第二十三話  番人の矜持'
+        id: '/episode/3269754496844315695',
+        title: '第一話  羽黒神社の巫女'
     },
     entry: {
         index: 0,
-        size: 1_724_658,
+        size: 2_043_781,
         type: 'image/png'
     }
 };
