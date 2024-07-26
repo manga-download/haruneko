@@ -2,11 +2,13 @@ import { Tags } from '../Tags';
 import icon from './Alphapolis.webp';
 import { type Chapter, DecoratableMangaScraper, Page, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { Fetch, FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+
+type JSONPages = [JSONObject | string]
 
 AddAntiScrapingDetection(async (render) => {
     const dom = await render();
@@ -15,7 +17,7 @@ AddAntiScrapingDetection(async (render) => {
 
 function ChaptersExtractor(element: HTMLElement) {
 
-    const id = element instanceof HTMLAnchorElement ? (element as HTMLAnchorElement).pathname : element.querySelector<HTMLAnchorElement>('a.read-episode').pathname;
+    const id = element instanceof HTMLAnchorElement ? element.pathname : element.querySelector<HTMLAnchorElement>('a.read-episode').pathname;
     const title = element.querySelector('.title').textContent.trim();
     return { id, title };
 }
@@ -43,23 +45,43 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const [viewer]= await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '[v-bind\\:pages]');
+        let viewer: HTMLElement = undefined;
         try {
-            const pages = JSON.parse(viewer.getAttribute('v-bind:pages'));
-            const isVertical = viewer.getAttribute('v-bind:is-vertical-manga') === '1';
-            return pages.filter(element => typeof element === 'string' && !element.match('white_page') && element != '').map(element => new Page(this, chapter, isVertical ? new URL( element ) : new URL(element.replace(/\/[0-9]+x[0-9]+(([./])[\w]+)/, '/1080x1536$1')), { fallbackURL: element }));
+            [viewer] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '[v-bind\\:pages]');
         } catch (error) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
+        const pages: JSONPages = JSON.parse(viewer.getAttribute('v-bind:pages'));
+        const isVertical = viewer.getAttribute('v-bind:is-vertical-manga') === '1';
+        return pages.filter(element => typeof element === 'string' && !element.match('white_page') && element != '').map(element => new Page(this, chapter, isVertical ? new URL(element as string) : new URL((element as string).replace(/\/[0-9]+x[0-9]+/, '/1080x1536')), isVertical ? undefined : { fallbackURL: element }));
+
     }
 
     //Since high resolution is not always available, use the real picture url instead of the forces one in case of failure
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        try {
-            return await Common.FetchImageAjax.call(this, page, priority, signal);
-        } catch (error) {
-            page.Link.href = page.Parameters.fallbackURL as string;
-            return await Common.FetchImageAjax.call(this, page, priority, signal);
-        }
+        return this.imageTaskPool.Add(async () => {
+            try {
+                const request = new Request(page.Link, {
+                    signal: signal,
+                    headers: {
+                        Referer: this.URI.href
+                    }
+                });
+                const response = await Fetch(request);
+                return response.blob();
+            } catch (error) {
+
+                if (page.Parameters.fallbackURL) {
+                    const request = new Request(page.Parameters.fallbackURL as string, {
+                        signal: signal,
+                        headers: {
+                            Referer: this.URI.href
+                        }
+                    });
+                    const response = await Fetch(request);
+                    return response.blob();
+                } else Promise.reject(error);
+            }
+        }, priority, signal);
     }
 }
