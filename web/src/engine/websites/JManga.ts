@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './JManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as Liliana from './decorators/Liliana';
+import * as Liliana from './templates/Liliana';
 import { pageScript } from './RawOtaku';
 
 @Common.MangaCSS(/^{origin}\/read\/[^/]+-raw\/$/, Liliana.queryMangaTitleFromURI)

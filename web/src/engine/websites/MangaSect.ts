@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaSect.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as Liliana from './decorators/Liliana';
+import * as Liliana from './templates/Liliana';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article header h1')
 @Common.MangasMultiPageCSS('/all-manga/{page}/', 'div.grid div.text-center > a')

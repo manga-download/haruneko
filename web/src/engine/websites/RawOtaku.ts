@@ -2,24 +2,21 @@ import { Tags } from '../Tags';
 import icon from './RawOtaku.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as Liliana from './decorators/Liliana';
+import * as Liliana from './templates/Liliana';
 
 export const pageScript = `
-    new Promise(resolve => {
+    new Promise( (resolve, reject ) => {
         const elementid = '#' + manga.lang + '-chapters li[data-number="'+ manga.name +'"]';
         const chapterid = document.querySelector(elementid).dataset.id;
-        $.get(
-            "/json/chapter", {
+        $.get("/json/chapter", {
                 id: chapterid
-            },
-            function(j) {
-                if (j.status == 1) {
-                    const dom = new DOMParser().parseFromString(j.html, 'text/html');
-                    resolve([...dom.querySelectorAll('div.iv-card img')].map(image => image.dataset.src));
-                } else reject();
-            },
-            "json"
-        );
+        }).fail(error => reject(error))
+          .done(result => {
+            const data = JSON.parse(result);
+            if (data.status !=1) reject(new Error('Pages Ajax request failed !'));
+            const dom = new DOMParser().parseFromString(data.html, 'text/html');
+            resolve([...dom.querySelectorAll('div.iv-card img')].map(image => image.dataset.src));
+        })
     })
 `;
 
