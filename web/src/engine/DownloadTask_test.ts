@@ -39,8 +39,8 @@ class TestFixture {
 
     public CreateTestee() {
         const testee = new DownloadTask(this.MediaContainerMock, this.StorageControllerMock);
-        testee.StatusChanged.Subscribe(this.StatusChangedCallbackMock);
-        testee.ProgressChanged.Subscribe(this.ProgressChangedCallbackMock);
+        testee.Status.Subscribe(this.StatusChangedCallbackMock);
+        testee.Progress.Subscribe(this.ProgressChangedCallbackMock);
         return testee;
     }
 
