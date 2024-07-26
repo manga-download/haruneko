@@ -35,9 +35,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         if (/^\/magazine\/\d+$/.test(manga.Identifier)) {
-            const request = new Request(new URL(manga.Identifier, this.URI).href);
-            const data = await FetchCSS(request, '.episode-header-title');
-            return [new Chapter(this, manga, manga.Identifier, data[0].textContent.replace(manga.Title, "").trim())];
+            const [data] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.episode-header-title');
+            return [new Chapter(this, manga, manga.Identifier, data.textContent.replace(manga.Title, '').trim())];
         } else {
             return CoreView.FetchChaptersSinglePageCSS.call(this, manga);
         }
