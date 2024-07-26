@@ -1,9 +1,9 @@
 import { type MediaChild, MediaContainer } from './MediaPlugin';
-import { Event } from '../Event';
 import type { MediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import icon from '../../img/warning.webp';
-import { Exception } from '../Error';
+import { Exception, NotImplementedError } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { type IObservable, Observable } from '../Observable';
 
 /**
  * A dummy representation for a bookmark's origin (media title), which is no longer available.
@@ -15,7 +15,7 @@ class MissingWebsiteEntry extends MediaContainer<MediaChild> {
     public override get Icon(): string {
         return icon;
     }
-    public override async Update(): Promise<void> {
+    protected async PerformUpdate(): Promise<MediaChild[]> {
         throw new Exception(R.Plugin_MissingWebsiteEntry_UpdateError);
     }
 }
@@ -33,7 +33,7 @@ export class MissingWebsite extends MediaContainer<MissingWebsiteEntry> {
     public override CreateEntry(identifier: string, title: string) {
         return new MissingWebsiteEntry(identifier, title);
     }
-    public override async Update(): Promise<void> {
+    protected async PerformUpdate(): Promise<MissingWebsiteEntry[]> {
         throw new Exception(R.Plugin_MissingWebsite_UpdateError);
     }
 }
@@ -43,11 +43,14 @@ export class MissingWebsite extends MediaContainer<MissingWebsiteEntry> {
  */
 export class Bookmark extends MediaContainer<MediaChild> {
 
-    public readonly Changed: Event<typeof this, void> = new Event<typeof this, void>();
+    private readonly updated = new Observable(new Date(), this);
+    public get Updated(): IObservable<Date, Bookmark> {
+        return this.updated;
+    }
 
     constructor(
         public readonly Created: Date,
-        public Updated: Date,
+        updated: Date,
         parent: MediaContainer<MediaContainer<MediaChild>>,
         mediaID: string,
         title: string,
@@ -55,10 +58,7 @@ export class Bookmark extends MediaContainer<MediaChild> {
         private infoID?: string
     ) {
         super(mediaID, title, parent);
-    }
-
-    private Hash(text: string): string {
-        return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
+        this.updated.Value = updated;
     }
 
     public get StorageKey(): string {
@@ -71,7 +71,7 @@ export class Bookmark extends MediaContainer<MediaChild> {
      * If the origin entry does not yet exist, a stand in origin entry will be used.
      */
     private get Origin(): MediaContainer<MediaChild> {
-        const entry = this.Parent.Entries.find(entry => entry.Identifier === this.Identifier) ?? this.origin;
+        const entry = this.Parent.Entries.Value.find(entry => entry.Identifier === this.Identifier) ?? this.origin;
         if(entry) {
             return entry;
         } else {
@@ -106,6 +106,10 @@ export class Bookmark extends MediaContainer<MediaChild> {
         return this.Parent instanceof MissingWebsite;
     }
 
+    protected async PerformUpdate(): Promise<MediaChild[]> {
+        throw new NotImplementedError();
+    }
+
     /**
      * Update the entries of the origin related to this bookmark.
      */
@@ -117,21 +121,20 @@ export class Bookmark extends MediaContainer<MediaChild> {
      * Memorize the current list of entries as list of last known entries,
      * so future requests with {@link GetNewEntries} will be based on these known entries.
      */
+    /*
     public async ApplyEntriesAsKnownEntries(): Promise<void> {
-        const entries = this.Entries;
-        if(entries.length > 0) {
-            this.Updated = new Date();
-            this.Changed.Dispatch(this);
+        if(this.Entries.Value.length > 0) {
+            this.updated.Value = new Date();
         } else {
             // TODO: No entries available, maybe website is broken or entries not yet updated?
         }
     }
+    */
 
     public LinkTracker(tracker: MediaInfoTracker, infoID: string) {
-        this.Updated = new Date();
         this.tracker = tracker;
         this.infoID = infoID;
-        this.Changed.Dispatch(this);
+        this.updated.Value = new Date();
     }
 
     /**
