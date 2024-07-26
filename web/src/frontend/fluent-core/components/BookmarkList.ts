@@ -131,7 +131,7 @@ export class BookmarkList extends FASTElement {
     }
 
     public FilterEntries() {
-        this.filtered = this.Entries.filter(entry => this.Match(entry.Title)).slice(0, 250); /* TODO: virtual scrolling */
+        this.filtered = this.Entries.filter(entry => this.Match(entry.Title)).slice(0, 500); /* TODO: virtual scrolling */
     }
 
     private BookmarksChanged = function(this: BookmarkList) {
