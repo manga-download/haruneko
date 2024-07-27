@@ -7,17 +7,17 @@ const config = {
         title: 'Manhua Gold'
     },
     container: {
-        url: 'https://comickiba.com/manga/isekai-kenkokuki/',
-        id: JSON.stringify({ post: '13858', slug: '/manga/isekai-kenkokuki/' }),
-        title: 'Isekai Kenkokuki'
+        url: 'https://manhuagold.top/manga/cultivator-against-hero-society',
+        id: '/manga/cultivator-against-hero-society',
+        title: 'Cultivator Against Hero Society'
     },
     child: {
-        id: '/manga/isekai-kenkokuki/chapter-1/',
-        title: 'Chapter 1'
+        id: '/manga/cultivator-against-hero-society/chapter-302',
+        title: 'Chapter 302'
     },
     entry: {
         index: 0,
-        size: 139_550,
+        size: 869_273,
         type: 'image/jpeg'
     }
 };

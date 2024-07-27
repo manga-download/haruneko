@@ -1,20 +1,18 @@
 import { Tags } from '../Tags';
 import icon from './ManhuaGold.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import * as Liliana from './templates/Liliana';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="comickiba"])')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS('div.page-break img, li.blocks-gallery-item img')
-@Common.ImageAjax()
-
-// TODO Website is similar to MangareaderTO, and Mangasect. Make a template for MangareaderTO websites
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article header h1')
+@Common.MangasMultiPageCSS(Liliana.mangaPath, 'div.grid div.text-center a.clamp')
+@Common.ChaptersSinglePageCSS(Liliana.queryChapters)
+@Common.PagesSinglePageJS(Liliana.queryPagesScript, 500)
+@Common.ImageElement(false, true, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manhuagold', 'Manhua Gold', 'https://manhuagold.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('manhuagold', 'Manhua Gold', 'https://manhuagold.top', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
