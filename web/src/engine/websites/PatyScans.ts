@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FoolSlide from './decorators/FoolSlide';
 
-@FoolSlide.MangaCSS(/^https?:\/\/lector\.patyscans\.com/)
+@FoolSlide.MangaCSS(/^{origin}\/series\/[^/]+\/$/)
 @FoolSlide.MangasMultiPageCSS()
 @FoolSlide.ChaptersSinglePageCSS()
 @FoolSlide.PagesSinglePageREGEX(/"pages":(\[[\S\W]+\]),/)
