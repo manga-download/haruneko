@@ -42,7 +42,7 @@ export class DownloadManager {
         const added = await this.InvokeQueueTransaction(queue => {
             const result = [];
             for(const container of containers) {
-                if(!queue.some(task => container?.IsSameAs(task.Media))) {
+                if(queue.none(task => container?.IsSameAs(task.Media))) {
                     const task = new DownloadTask(container, this.storageController);
                     result.push(task);
                     queue.push(task);
