@@ -13,7 +13,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/web-comic\/[^/]+\/$/, 'div.title-area h2')
-@SpeedBinb.PagesSinglePageAjax()
+@SpeedBinb.PagesSinglePageAjaxV016061()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

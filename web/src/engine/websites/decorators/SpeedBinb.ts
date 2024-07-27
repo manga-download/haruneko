@@ -169,10 +169,6 @@ function getSpeedBinbVersion(el: HTMLElement, viewerUrl: URL): SpeedBinbVersion 
     return SpeedBinbVersion.vUnknown;
 }
 
-/**********************************************
- ******** Page List Extraction Methods ********
- **********************************************/
-
 const pageScript = `
     new Promise(resolve  => {
         resolve ( { location : window.location.href, pages : document.querySelector("div#content.pages")});
@@ -182,6 +178,55 @@ const pageScript = `
 type PageScriptResult = {
     location: string,
     pages: HTMLElement
+}
+/**********************************************
+ ******** Page List Extraction Methods ********
+ **********************************************/
+
+/**
+ * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
+ * @param useScript - use FetchWindowScript and not Fetch for first request
+ * @param sbVersionOverride - Override SpeedBinb version detection
+ */
+export function PagesSinglePageAjaxV016061() {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
+        return class extends ctor {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+                return FetchPagesSinglePageAjaxV016061.call(this, chapter);
+            }
+        };
+    };
+}
+
+/**
+ * An extension method for extracting all pages for the given {@link chapter} using the given CSS {@link query}.
+ * Supposed to be used when chapter JSON got div[data-ptimg$="ptimg.json"] and each one is a json to a page.
+ * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ * @param useScript - use FetchWindowScript and not Fetch for first request
+ * @param sbVersionOverride - Override SpeedBinb version detection
+ */
+export async function FetchPagesSinglePageAjaxV016061(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+    let viewerUrl = new URL(chapter.Identifier, this.URI);
+    const request = new Request(viewerUrl, {
+        headers: {
+            Referer: this.URI.origin
+        }
+    });
+
+    const response = await Fetch(request);
+    const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const SBpagesElement = dom.querySelector<HTMLElement>('div#content.pages');
+    //handle redirection. Sometimes chapter is redirected
+    if (response.redirected) {
+        viewerUrl = new URL(response.url);
+    }
+
+    const [...imageConfigurations] = SBpagesElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
+    return imageConfigurations.map(element => new Page(this, chapter, getSanitizedURL(viewerUrl.href, element.dataset.ptimg)));
 }
 
 /**

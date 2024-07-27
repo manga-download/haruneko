@@ -20,7 +20,7 @@ function ChapterExtractor(element: HTMLElement) {
 
 @Common.MangasSinglePageCSS('/list', '.box_wrap .box', MangaExtractor)
 @Common.ChaptersSinglePageCSS('#new_story .title, #back_number .title', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax()
+@SpeedBinb.PagesSinglePageAjaxV016061()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
