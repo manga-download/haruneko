@@ -39,8 +39,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const uri = new URL(`${manga.Identifier}?page=${page}`, this.URI);
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(uri), 'div#chapters-list a');
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}?page=${page}`, this.URI)), 'div#chapters-list a');
         return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('span').textContent.trim()));
     }
 }
