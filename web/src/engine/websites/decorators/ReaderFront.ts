@@ -105,17 +105,16 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
         stub: slug
     };
 
-    const request = new Request(apiUrl);
-    const data = await FetchGraphQL<APIManga>(request, 'Work', query, variables);
+    const { work } = await FetchGraphQL<APIManga>(new Request(apiUrl), 'Work', query, variables);
     const id = JSON.stringify({
-        id: data.work.id,
-        language: data.work.language,
-        stub: data.work.stub
+        id: work.id,
+        language: work.language,
+        stub: work.stub
     });
 
-    const title = `${data.work.name.trim()} [${reverselanguageMap[data.work.language]}]`;
+    const title = `${work.name.trim()} [${reverselanguageMap[work.language]}]`;
     const mg = new Manga(this, provider, id, title);
-    const languageTag: Tag = tagsLanguageMap[data.work.language];
+    const languageTag: Tag = tagsLanguageMap[work.language];
     mg.Tags.push(languageTag);
     return mg;
 
@@ -164,9 +163,8 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
             }
         }
     `;
-    const request = new Request(apiUrl);
-    const data = await FetchGraphQL<APIMangas>(request, 'Works', query, variables);
-    return data.works.map(manga => {
+    const { works } = await FetchGraphQL<APIMangas>(new Request(apiUrl), 'Works', query, variables);
+    return works.map(manga => {
         const id = JSON.stringify({
             id: manga.id,
             language: manga.language,
@@ -225,9 +223,8 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
         stub: mangaObj.stub
     };
 
-    const request = new Request(apiUrl);
-    const data = await FetchGraphQL<APIChapters>(request, 'Work', query, variables);
-    return data.work.chapters.map(chapter => {
+    const { work } = await FetchGraphQL<APIChapters>(new Request(apiUrl), 'Work', query, variables);
+    return work.chapters.map(chapter => {
         let title = `Vol. ${chapter.volume} Ch. ${chapter.chapter}.${chapter.subchapter}`;
         title += chapter.name ? ` - ${chapter.name}` : '';
         const chap = new Chapter(this, manga, String(chapter.id), title);
@@ -291,10 +288,9 @@ async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnU
             }
         }
     `;
-    const request = new Request(apiUrl);
-    const data = await FetchGraphQL<APIPages>(request, 'ChapterById', query, variables);
-    return data.chapterById.pages.map(page => {
-        const uri = new URL(['/works', data.chapterById.work.uniqid, data.chapterById.uniqid, page.filename].join('/'), cdnUrl);
+    const { chapterById } = await FetchGraphQL<APIPages>(new Request(apiUrl), 'ChapterById', query, variables);
+    return chapterById.pages.map(page => {
+        const uri = new URL(['/works', chapterById.work.uniqid, chapterById.uniqid, page.filename].join('/'), cdnUrl);
         return new Page(this, chapter, uri);
     });
 
