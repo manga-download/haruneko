@@ -165,7 +165,6 @@ export { default as Ganma } from './Ganma';
 export { default as GateManga } from './GateManga';
 export { default as GDScans } from './GDScans';
 export { default as GenzToon } from './GenzToon';
-export { default as Getsuaku } from './Getsuaku';
 export { default as GhostScan } from './GhostScan';
 export { default as GloryManga } from './GloryManga';
 export { default as GManga } from './GManga';
