@@ -10,13 +10,12 @@ export const pageScript = `
         const chapterid = document.querySelector(elementid).dataset.id;
         $.get("/json/chapter", {
                 id: chapterid
-        }).fail(error => reject(error))
-          .done(result => {
+        }).done(result => {
             const data = JSON.parse(result);
             if (data.status !=1) reject(new Error('Pages Ajax request failed !'));
             const dom = new DOMParser().parseFromString(data.html, 'text/html');
             resolve([...dom.querySelectorAll('div.iv-card img')].map(image => image.dataset.src));
-        })
+        }).fail(error => reject(error));
     })
 `;
 
