@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div.scrollbar-thumb-themecolor a.block');
-        return chapters.map(chapter => new Chapter(this, manga, [manga.Identifier, 'chapter', chapter.pathname.match(/(\d+)+$/)[1]].join('/'), chapter.querySelector('div > h3').textContent.trim()));
+        return chapters.map(chapter => new Chapter(this, manga, [manga.Identifier, 'chapter', chapter.pathname.match(/(\d+)+$/)[1]].join('/'), chapter.textContent.trim()));
     }
 
 }
