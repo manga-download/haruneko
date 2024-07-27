@@ -8,11 +8,11 @@ export const queryMangas = 'ul#contList li p.ell a';
 export const queryChapters = 'div.comic-chapters ul li a';
 export const queryChaptersScript = `
     new Promise(resolve => {
-        let button = document.querySelector('#checkAdult');
+        const button = document.querySelector('#checkAdult');
         if (button) {
             button.click();
         }
-        let chapterList = [...document.querySelectorAll('{queryChapters}')].map(element => {
+        const chapterList = [...document.querySelectorAll('{queryChapters}')].map(element => {
             return {
                 id: new URL(element.href, window.location).pathname,
                 title: element.text.trim().replace(/\\d+p$/, ''),
@@ -24,14 +24,14 @@ export const queryChaptersScript = `
 `;
 
 export const queryPagesScript = `
-new Promise(resolve => {
-    let pageList = [];
-    let pages = {api}.getChapterImageCount();
-    for (let page = 1; page <= pages; page++) {
-        pageList.push({api}.getChapterImage(page));
-    }
-    resolve(pageList);
-});
+    new Promise(resolve => {
+        const pageList = [];
+        const pages = {api}.getChapterImageCount();
+        for (let page = 1; page <= pages; page++) {
+            pageList.push({api}.getChapterImage(page));
+        }
+        resolve(pageList);
+    });
 `;
 
 /**
