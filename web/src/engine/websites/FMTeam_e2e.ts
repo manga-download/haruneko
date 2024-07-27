@@ -12,13 +12,13 @@ const config = {
         title: 'D.Gray-man'
     },
     child: {
-        id: '/read/dgray-man/fr/ch/248',
-        title: 'Nuit 248 : Adieux à A.W. - Contact'
+        id: '/read/dgray-man/fr/ch/251',
+        title: `Nuit 251 : La librairie d'antiquités "Zeugle"`
     },
     entry: {
         index: 1,
-        size: 722_069,
-        type: 'image/png'
+        size: 1_743_016,
+        type: 'image/jpeg'
     }
 };
 
