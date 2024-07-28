@@ -1,24 +1,25 @@
 import type { VariantResource } from '../ILocale'; // HACK: Import a reference to the en-US tranlsation itself, so the auto-generated translation files are based on the en-US translation
 
-import enUS from "./en_US";
+import enUS from './en_US';
 /**
  * Get the en-US translation map, or an empty map in case of a circular (self) reference
  */
 
-function base(): VariantResource {
+function base() {
   try {
     return enUS;
-  } catch(error) {
-    if(error instanceof ReferenceError) {
-      return {} as VariantResource;
+  } catch (error) {
+    if (error instanceof ReferenceError) {
+      return {};
+    } else {
+      throw error;
     }
-    throw error;
   }
 }
 
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
   //       => This is just a placeholder to ensure to be included in auto-generated translations (e.g., with crowdin)
-  ...base(),
+  ...(base() as VariantResource),
   // [SECTION]: FrontendController
   FrontendController_Reload_ConfirmNotice: "crwdns2144:0crwdne2144:0",
   // [SECTION]: Frontend (Common/Shared)
@@ -150,6 +151,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_MediaDirectory_PermissionError: "crwdns1395:0crwdne1395:0",
   Settings_Global_WebsiteSubDirectory: "crwdns1397:0crwdne1397:0",
   Settings_Global_WebsiteSubDirectoryInfo: "crwdns1399:0crwdne1399:0",
+  Settings_Global_MangaExportFormat: "crwdns2168:0crwdne2168:0",
+  Settings_Global_MangaExportFormatInfo: "crwdns2170:0crwdne2170:0",
+  Settings_Global_MangaExportFormat_FolderWithImages: "crwdns2172:0crwdne2172:0",
+  Settings_Global_MangaExportFormat_ComicBookArchive: "crwdns2174:0crwdne2174:0",
+  Settings_Global_MangaExportFormat_ElectronicPublication: "crwdns2176:0crwdne2176:0",
+  Settings_Global_MangaExportFormat_PortableDocumentFormat: "crwdns2178:0crwdne2178:0",
   Settings_Global_DescramblingFormat: "crwdns1401:0crwdne1401:0",
   Settings_Global_DescramblingFormatInfo: "crwdns1403:0crwdne1403:0",
   Settings_Global_DescramblingQuality: "crwdns1411:0crwdne1411:0",

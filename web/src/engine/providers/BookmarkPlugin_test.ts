@@ -1,3 +1,4 @@
+import '../ArrayExtensions';
 import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
 import { MediaContainer, type MediaChild } from './MediaPlugin';

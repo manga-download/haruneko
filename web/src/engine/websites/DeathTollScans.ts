@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Foolslide from './decorators/FoolSlide';
 import * as Common from './decorators/Common';
 
-@Foolslide.MangaCSS(/^https?:\/\/reader\.deathtollscans\.net\/[^/]+\//, 'h1.title')
+@Foolslide.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'h1.title')
 @Foolslide.MangasMultiPageCSS()
 @Foolslide.ChaptersSinglePageCSS()
 @Foolslide.PagesSinglePageREGEX()
