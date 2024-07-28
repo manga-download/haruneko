@@ -7,17 +7,17 @@ const config: Config = {
         title: `MAGCOMI`
     },
     container: {
-        url: 'https://magcomi.com/episode/4856001361578158443',
-        id: '/episode/4856001361578158443',
+        url: 'https://magcomi.com/episode/10834108156766453493',
+        id: '/episode/10834108156766453493',
         title: '琥珀の夢で酔いましょう'
     },
     child: {
-        id: '/episode/4856001361178653776',
-        title: '第33話「僕らはきっと旅に出る」'
+        id: '/episode/10834108156766453493',
+        title: '第1話「Fly Me to the Amber Dream」'
     },
     entry: {
-        index: 0,
-        size: 1_443_425,
+        index: 4,
+        size: 1_784_147,
         type: 'image/png'
     }
 };
