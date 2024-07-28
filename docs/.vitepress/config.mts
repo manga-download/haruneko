@@ -12,6 +12,7 @@ export default defineConfig({
     head: [
         [ 'link', { rel: 'shortcut icon', href: '/assets/favicon.ico' } ],
     ],
+    ignoreDeadLinks: 'localhostLinks',
     themeConfig: {
         logo: '/assets/logo.png',
         nav: [

@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as FoolSlide from './decorators/FoolSlide';
 
-@FoolSlide.MangaCSS(/^https?:\/\/www\.noranofansub\.com\/lector\/series\/[^/]+\/$/)
+@FoolSlide.MangaCSS(/^{origin}\/lector\/series\/[^/]+\/$/)
 @FoolSlide.MangasMultiPageCSS('/lector/directory/{page}')
 @FoolSlide.ChaptersSinglePageCSS()
 @FoolSlide.PagesSinglePageREGEX()

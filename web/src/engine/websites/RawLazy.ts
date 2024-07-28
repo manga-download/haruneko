@@ -18,13 +18,13 @@ function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
 
 type APIResult = {
     mes: string;
-    going: 'yes' | 'no'
 }
 
 @Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', MangaLabelExtractor)
 @Common.ChaptersSinglePageCSS('div.chapters-list a', ChapterExtractor)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
+
     public constructor() {
         super('rawlazy', 'RawLazy', 'https://rawlazy.si', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
@@ -34,43 +34,39 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const nonce = await FetchWindowScript<string>(new Request(this.URI), 'zing.nonce');
         const mangaList: Manga[] = [];
-        let reducer = Promise.resolve();
-        const url = new URL('/wp-admin/admin-ajax.php', this.URI);
+        const uri = new URL('/wp-admin/admin-ajax.php', this.URI);
+        const nonce = await FetchWindowScript<string>(new Request(this.URI), 'zing.nonce');
 
         for (let page = 1, run = true; run; page++) {
-            await reducer;
-            reducer = new Promise(resolve => setTimeout(resolve, 750));
+            const mangas = await this.GetMangasFromPage(provider, uri, nonce, page);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
+    }
 
-            const body = new URLSearchParams({
+    private async GetMangasFromPage(provider: MangaPlugin, uri: URL, nonce: string, page: number) {
+
+        const request = new Request(uri, {
+            credentials: 'include',
+            method: 'POST',
+            body: new URLSearchParams({
                 action: 'z_do_ajax',
                 _action: 'loadmore',
                 nonce: nonce,
                 p: page.toString(),
                 category_id: '0'
-            }).toString();
+            }).toString(),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            }
+        });
 
-            const request = new Request(url, {
-                credentials: 'include',
-                method: 'POST',
-                body: body.toString(),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    Referer: this.URI.href,
-                    Origin: this.URI.origin,
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-
-            const { mes, going } = await FetchJSON<APIResult>(request);
-            const dom = new DOMParser().parseFromString(mes, 'text/html');
-            const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
-            const mangas = nodes.map(manga => new Manga(this, provider, manga.pathname, MangaLabelExtractor.call(this, manga)));
-            mangaList.push(...mangas);
-            run = going === 'yes';
-        }
-        return mangaList.distinct();
+        const { mes: html } = await FetchJSON<APIResult>(request);
+        const container = document.createElement('div');
+        container.innerHTML = html;
+        const links = [...container.querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
+        return links.map(link => new Manga(this, provider, link.pathname, MangaLabelExtractor.call(this, link)));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
