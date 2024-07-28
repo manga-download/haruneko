@@ -44,7 +44,7 @@ export const pathname = '/manga-list/';
  * @param extract - A custom extractor for manga infos
  */
 async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, query = queryMangas, path = pathname, extract = DefaultInfoExtractor): Promise<Manga[]> {
-    const mangalist = [];
+    const mangalist : Manga[] = [];
     const paths = [''].concat('abcdefghijklmnopqrstuvwxyz'.split(''));
     for (const letter of paths) {
         mangalist.push(... await Common.FetchMangasSinglePageCSS.call(this, provider, path + letter, query, extract));

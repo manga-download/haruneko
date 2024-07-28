@@ -7,17 +7,17 @@ const config: Config = {
         title: 'HNI-Scantrad'
     },
     container: {
-        url: 'https://hni-scantrad.com/lel/series/a-trail-of-blood/',
-        id: '/lel/series/a-trail-of-blood/',
-        title: 'A Trail of Blood'
+        url: 'https://hni-scantrad.net/comics/major',
+        id: 'major',
+        title: 'Major'
     },
     child: {
-        id: '/lel/read/a-trail-of-blood/en-us/0/99/',
-        title: 'Chapter 99: Visitors'
+        id: '/read/major/fr/vol/55/ch/517',
+        title: 'Tome 55 - Homerun 517 : Gyrofronde'
     },
     entry: {
-        index: 0,
-        size: 281_073,
+        index: 1,
+        size: 851_052,
         type: 'image/png'
     }
 };

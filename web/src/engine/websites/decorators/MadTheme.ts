@@ -4,8 +4,7 @@ import * as Common from './Common';
 
 const scriptImageLinks = `
     new Promise(resolve => {
-        const images = window.chapImages.split(',');
-        resolve(images.map(image => window.mainServer ? window.mainServer+image : image));
+        resolve(window.chapImages.split(',').map(image => window.mainServer ? window.mainServer+image : image));
     });
 `;
 
@@ -44,9 +43,7 @@ export function ChaptersSinglePageAJAX(query = queryChapterListLinks, extract = 
  */
 export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const id = manga.Identifier.split('/').pop();
-    const uri = new URL(`/api/manga/${id}/chapters?source=detail`, this.URI);
-    const request = new Request(uri);
-    const data = await FetchCSS<HTMLAnchorElement>(request, query);
+    const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`/api/manga/${id}/chapters?source=detail`, this.URI)), query);
     return data.map(element => {
         const { id, title } = extract.call(this, element);
         return new Chapter(this, manga, id, title);
