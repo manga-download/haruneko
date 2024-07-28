@@ -22,7 +22,7 @@ async function UpdateCookieHeader(url: string, headers: Headers) {
     const cookies = value ? value.split(';').map(cookie => cookie.trim()) : [];
     const browserCookies = await chrome.cookies.getAll({ url });
     for(const browserCookie of browserCookies) {
-        if(!cookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
+        if(cookies.none(cookie => cookie.startsWith(browserCookie.name + '='))) {
             cookies.push(`${browserCookie.name}=${browserCookie.value}`);
         }
     }
@@ -182,7 +182,7 @@ export default class extends FetchProvider {
                 win.removeAllListeners('navigation');
                 win.removeAllListeners('loaded');
                 win.removeAllListeners();
-                if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
+                if(invocations.none(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
                     console.warn('FetchWindow() was terminated without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
                 } else if(this.featureFlags.VerboseFetchWindow.Value) {
                     console.log('FetchWindow()::invocations', invocations);

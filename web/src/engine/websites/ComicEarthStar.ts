@@ -91,18 +91,18 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist: Manga[] = [];
-        const oneshots = await this.PerformGraphQL<APIOneshots>('Earthstar_Oneshot', queryOneshots);
-        const series = await this.PerformGraphQL<APISeries>('Earthstar_Series', querySeries);
+        const { seriesOneshot } = await this.PerformGraphQL<APIOneshots>('Earthstar_Oneshot', queryOneshots);
+        const { seriesOngoing, seriesFinished } = await this.PerformGraphQL<APISeries>('Earthstar_Series', querySeries);
 
-        oneshots.seriesOneshot.seriesSlice.seriesList.forEach(serie => {
+        seriesOneshot.seriesSlice.seriesList.forEach(serie => {
             mangalist.push(new Manga(this, provider, new URL(serie.firstEpisode.permalink).pathname, serie.title.trim()));
         });
 
-        series.seriesOngoing.seriesSlice.seriesList.forEach(serie => {
+        seriesOngoing.seriesSlice.seriesList.forEach(serie => {
             mangalist.push(new Manga(this, provider, new URL(serie.firstEpisode.permalink).pathname, serie.title.trim()));
         });
 
-        series.seriesFinished.seriesSlice.seriesList.forEach(serie => {
+        seriesFinished.seriesSlice.seriesList.forEach(serie => {
             mangalist.push(new Manga(this, provider, new URL(serie.firstEpisode.permalink).pathname, serie.title.trim()));
         });
 
@@ -112,6 +112,6 @@ export default class extends DecoratableMangaScraper {
     private async PerformGraphQL<T>(operationName: string, query: string): Promise<T> {
         const uri = new URL(this.apiUrl);
         uri.searchParams.set('opname', operationName);
-        return FetchGraphQL<T>(new Request(uri.href), operationName, query, {});
+        return FetchGraphQL<T>(new Request(uri), operationName, query, {});
     }
 }

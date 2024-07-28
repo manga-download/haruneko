@@ -12,12 +12,12 @@ const config: Config = {
         title: 'ダンジョンの中のひと'
     },
     child: {
-        id: '/episode/14079602755075901255',
-        title: '第32話'
+        id: '/episode/13933686331665056851',
+        title: '第1話'
     },
     entry: {
         index: 0,
-        size: 500_250,
+        size: 712_291,
         type: 'image/png'
     }
 };

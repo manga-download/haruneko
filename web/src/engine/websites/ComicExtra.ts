@@ -16,7 +16,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicextra', `ComicExtra`, 'https://comicextra.org', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
+        super('comicextra', `ComicExtra`, 'https://comixextra.com', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

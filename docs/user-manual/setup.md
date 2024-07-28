@@ -13,7 +13,7 @@ TBD
 3. Open the extracted directory and start the _hakuneko-app.exe_ binary
 
 ::: warning IMPORTANT
-In case the binary file is missing, ensure it was not removed by your anti-virus programm such as Windows Defender.
+In case the binary file is missing, ensure it was not removed by your anti-virus programm such as Windows Defender
 :::
 
 ## MacOS
@@ -23,7 +23,9 @@ In case the binary file is missing, ensure it was not removed by your anti-virus
 3. Copy the _HaruNeko.app_ application to your local Applications folder
 4. Open Launchpad and start _HaruNeko_
 
-**⚠️ Ignore MacOS hints about unknown developers and continue, eventually make sure to unblock HaruNeko in Settings » Privacy & Security**
+::: warning IMPORTANT
+Ignore MacOS hints about unknown developers and continue, eventually make sure to unblock HakuNeko in _Settings » Privacy & Security_
+:::
 
 ## Linux
 

@@ -27,9 +27,23 @@ For this example the title [Berserk](https://mangadex.org/title/801513ba-a712-49
 
 1. ...
 
+## Import/Export Bookmarks
+
+The bookmark import/export feature is useful for keeping backups, or migrating bookmarks from other/older versions (e.g., from HakuNeko Legacy).
+The bookmark export will store all bookmarks from the application in an external JSON file.
+The bookmark import will add bookmarks from the JSON file that do not exist in the application.
+Bookmarks that exist in the application but are not present in the imported file will be kept and **not** be deleted.
+
+![](./assets/menu-bookmark-import+export.webp)
+
+1. Open the menu
+2. Click the corresponding menu entry
+3. In the file dialog navigate to the target directory
+4. Select the bookmark file for import/export
+
 ## Apply URL from Browser
 
-In some situations it may be useful to copy a link of a supported website title from the browser and paste it directly into HakuNeko (e.g., when updaing the title list takes very long).
+In some situations it may be useful to copy a link of a supported website title from the browser and paste it directly into HakuNeko (e.g., when updating the title list takes very long).
 For this example the title [Berserk](https://mangadex.org/title/801513ba-a712-498c-8f57-cae55b38cc92/berserk) from the MangaDex website will be used.
 
 ::: warning IMPORTANT

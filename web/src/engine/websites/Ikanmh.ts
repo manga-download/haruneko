@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Ikanmh.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as MH from './decorators/MH';
+import * as MH from './templates/MH';
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS(MH.mangaPath, MH.queryMangas)

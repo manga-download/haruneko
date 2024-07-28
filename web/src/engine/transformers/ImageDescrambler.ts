@@ -5,13 +5,17 @@ type DrawingCallback = (source: ImageBitmap, target: OffscreenCanvasRenderingCon
 
 export default async function DeScramble(scrambled: ImageBitmapSource, draw: DrawingCallback): Promise<Blob | null> {
     const bitmap = await createImageBitmap(scrambled);
-    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-    await draw(bitmap, canvas.getContext('2d'));
+    try {
+        const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+        await draw(bitmap, canvas.getContext('2d'));
 
-    const settings = HakuNeko.SettingsManager.OpenScope();
-    const options = {
-        type: settings.Get<Text>(GlobalKey.DescramblingFormat).Value,
-        quality: settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value / 100
-    };
-    return canvas.convertToBlob(options);
+        const settings = HakuNeko.SettingsManager.OpenScope();
+        const options = {
+            type: settings.Get<Text>(GlobalKey.DescramblingFormat).Value,
+            quality: settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value / 100
+        };
+        return canvas.convertToBlob(options);
+    } finally {
+        bitmap.close();
+    }
 }

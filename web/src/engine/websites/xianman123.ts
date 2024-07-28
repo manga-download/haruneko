@@ -2,18 +2,11 @@ import { Tags } from '../Tags';
 import icon from './xianman123.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as MH from './decorators/MH';
+import * as MH from './templates/MH';
 
 const pagesScript = `
-    new Promise((resolve, reject) => {
-        try {
-            const pageLinks = picdata.map(pic => imgDomain != '' ? new URL(pic, imgDomain).href : pic);
-            resolve(pageLinks);
-        } catch (error) {
-            reject(error);
-        }
-    });
- `;
+    new Promise( resolve => resolve( picdata.map(pic => imgDomain != '' ? new URL(pic, imgDomain).href : pic)));
+`;
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS('/f-1-0-0-0-0-2-{page}.html', MH.queryMangas)

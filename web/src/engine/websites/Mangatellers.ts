@@ -11,7 +11,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@FoolSlide.MangaCSS(/^https?:\/\/reader\.mangatellers.gr\/series\/[^/]+\/$/)
+@FoolSlide.MangaCSS(/^{origin}\/series\/[^/]+\/$/)
 @FoolSlide.MangasMultiPageCSS()
 @FoolSlide.ChaptersSinglePageCSS(undefined, ChapterExtractor)
 @FoolSlide.PagesSinglePageREGEX()

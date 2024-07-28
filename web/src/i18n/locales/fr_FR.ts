@@ -11,15 +11,15 @@ function base() {
   } catch (error) {
     if (error instanceof ReferenceError) {
       return {};
+    } else {
+      throw error;
     }
-
-    throw error;
   }
 }
 
 const translations: VariantResource = { // NOTE: Use defaults for missing translations
   //       => This is just a placeholder to ensure to be included in auto-generated translations (e.g., with crowdin)
-  ...base(),
+  ...(base() as VariantResource),
   // [SECTION]: FrontendController
   FrontendController_Reload_ConfirmNotice: 'A restart is required in order to apply the requested changes.\nAny unsaved changes will be lost and active operations (e.g., downloads) will be aborted!\n\nDo you want to perform a restart now?',
   // [SECTION]: Frontend (Common/Shared)
@@ -151,6 +151,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_MediaDirectory_PermissionError: "Autorisations insuffisantes pour accéder au répertoire de téléchargement !",
   Settings_Global_WebsiteSubDirectory: "Utiliser les sous-répertoires",
   Settings_Global_WebsiteSubDirectoryInfo: "Définissez si HakuNeko doit stocker les médias directement dans le répertoire ou utiliser des sous-répertoires par site web",
+  Settings_Global_MangaExportFormat: 'Manga/Comic Download Format',
+  Settings_Global_MangaExportFormatInfo: 'The container format to store the downloaded content for mangas/comics',
+  Settings_Global_MangaExportFormat_FolderWithImages: 'Folder with Images',
+  Settings_Global_MangaExportFormat_ComicBookArchive: 'Comic Book Archive (*.cbz)',
+  Settings_Global_MangaExportFormat_ElectronicPublication: 'E-Book Publication (*.epub)',
+  Settings_Global_MangaExportFormat_PortableDocumentFormat: 'Portable Document Format (*.pdf)',
   Settings_Global_DescramblingFormat: "Format après déchiffrement",
   Settings_Global_DescramblingFormatInfo: "Sélectionner le format d'image de sortie pour les sites hébergeant des images chiffrées (cela ne s'appliquera PAS aux sites fournissant déjà des images valides)",
   Settings_Global_DescramblingQuality: "Qualité après déchiffrement",

@@ -7,18 +7,18 @@ const config = {
         title: 'MangaID'
     },
     container: {
-        url: 'https://mangaid.click/manga/1nen-agumi-no-monster',
-        id: '/manga/1nen-agumi-no-monster',
-        title: '1-nen A-gumi no Monster'
+        url: 'https://mangaid.cc/manga/saya-menjadi-penjahatnya/',
+        id: JSON.stringify({ post: '2311', slug: '/manga/saya-menjadi-penjahatnya/' }),
+        title: 'Saya menjadi penjahatnya'
     },
     child: {
-        id: '/manga/1nen-agumi-no-monster/56',
-        title: 'Chapter 56'
+        id: '/manga/saya-menjadi-penjahatnya/chapter-05/',
+        title: 'Chapter-05'
     },
     entry: {
         index: 1,
-        size: 236_228,
-        type: 'image/jpeg'
+        size: 106_062,
+        type: 'image/webp'
     }
 };
 

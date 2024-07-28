@@ -7,17 +7,17 @@ const config: Config = {
         title: 'Asura Scans',
     },
     container: {
-        url: 'https://asuratoon.com/manga/0308950452-dragon-devouring-mage/',
-        id: '/manga/0308950452-dragon-devouring-mage/',
+        url: 'https://asuracomic.net/series/dragon-devouring-mage-f4dac81c',
+        id: '/series/dragon-devouring-mage-',
         title: 'Dragon-Devouring Mage',
     },
     child: {
-        id: '/4460228866-dragon-devouring-mage-1/',
+        id: '/series/dragon-devouring-mage-/chapter/1',
         title: 'Chapter 1',
     },
     entry: {
         index: 1,
-        size: 4_377_432,
+        size: 859_466,
         type: 'image/jpeg'
     }
 };

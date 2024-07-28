@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Qimeitj.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as MH from './decorators/MH';
+import * as MH from './templates/MH';
 import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+$/, MH.queryMangaTitleFromURI)

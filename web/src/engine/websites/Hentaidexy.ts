@@ -58,13 +58,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin) : Promise<Manga[]>{
-        const mangaList = [];
+        const mangaList: Array<Manga> = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(provider, page);
-            mangas.length > 0 && !Common.EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
+            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
+
     private async GetMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
         const uri = new URL('/api/v1/mangas?page=' + page + '&sort=createdAt', this.apiUrl);
         const request = new Request(uri.href);

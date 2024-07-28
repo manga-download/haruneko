@@ -12,12 +12,12 @@ const config = {
         title: 'One Piece'
     },
     child: {
-        id: '/read/one-piece/it/vol/107/ch/1086',
-        title: '[Deluxe] Vol.107 Ch.1086 - I Cinque Astri di Saggezza'
+        id: '/read/one-piece/it/vol/110/ch/1121',
+        title: '[Deluxe] Vol.110 Ch.1121 - Il fluire del tempo'
     },
     entry: {
         index: 1,
-        size: 377_382,
+        size: 365_372,
         type: 'image/webp'
     }
 };

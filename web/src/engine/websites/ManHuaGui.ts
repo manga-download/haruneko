@@ -7,13 +7,13 @@ import * as SinMH from './decorators/SinMH';
 const queryPagesScript = `
             new Promise(resolve => {
                 SMH.imgData = function(data) {
-                    let origin = pVars.manga.filePath;
-                    let pageLinks = data.files.map(file => origin + file + '?e=' + data.sl.e + '&m=' + data.sl.m);
+                    const origin = pVars.manga.filePath;
+                    const pageLinks = data.files.map(file => origin + file + '?e=' + data.sl.e + '&m=' + data.sl.m);
                     return {
                         preInit: () => resolve(pageLinks)
                     };
                 };
-                let script = [...document.querySelectorAll('script:not([src])')].find(script => script.text.trim().startsWith('window[')).text;
+                const script = [...document.querySelectorAll('script:not([src])')].find(script => script.text.trim().startsWith('window[')).text;
                 eval(script);
             } );
 `;

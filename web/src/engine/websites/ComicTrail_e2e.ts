@@ -7,17 +7,17 @@ const config: Config = {
         title: 'Comic Trail (コミックトレイル)'
     },
     container: {
-        url: 'https://comic-trail.com/episode/14079602755223488078',
-        id: '/episode/14079602755223488078',
+        url: 'https://comic-trail.com/episode/3270375685395233042',
+        id: '/episode/3270375685395233042',
         title: '異世界召喚おじさんの銃無双ライフ 〜サバゲー好きサラリーマンは会社終わりに異世界へ直帰する〜'
     },
     child: {
-        id: '/episode/14079602755173408823',
-        title: 'TRIGGER．26　ダイスケvs.ゾル'
+        id: '/episode/3270375685395233042',
+        title: 'TRIGGER．1　異世界と銃'
     },
     entry: {
-        index: 0,
-        size: 1_801_347,
+        index: 4,
+        size: 1_770_223,
         type: 'image/png'
     }
 };

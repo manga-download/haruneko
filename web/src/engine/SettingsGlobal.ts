@@ -2,6 +2,7 @@ import { type SettingsManager, Check, Numeric, Text, Secret, Choice, Directory }
 import { EngineResourceKey as R, LocaleID } from '../i18n/ILocale';
 import type { IFrontendInfo } from '../frontend/IFrontend';
 import { Info as InfoClassic } from '../frontend/classic/FrontendInfo';
+import { MangaExportFormat } from './exporters/MangaExporterRegistry';
 
 export const Scope = '*';
 
@@ -10,6 +11,7 @@ export const enum Key {
     Language = 'language',
     MediaDirectory = 'media-directory',
     UseWebsiteSubDirectory = 'website-subdirectory',
+    MangaExportFormat = 'manga-export-format',
     DescramblingFormat = 'descrambling-format',
     DescramblingQuality = 'descrambling-quality',
     UserAgent = 'UserAgent',
@@ -55,6 +57,16 @@ export async function Initialize(settingsManager: SettingsManager, frontends: IF
             R.Settings_Global_WebsiteSubDirectory,
             R.Settings_Global_WebsiteSubDirectoryInfo,
             false
+        ),
+        new Choice(
+            Key.MangaExportFormat,
+            R.Settings_Global_MangaExportFormat,
+            R.Settings_Global_MangaExportFormatInfo,
+            MangaExportFormat.RAWs,
+            { key: MangaExportFormat.RAWs, label: R.Settings_Global_MangaExportFormat_FolderWithImages },
+            { key: MangaExportFormat.CBZ, label: R.Settings_Global_MangaExportFormat_ComicBookArchive },
+            { key: MangaExportFormat.EPUB, label: R.Settings_Global_MangaExportFormat_ElectronicPublication },
+            { key: MangaExportFormat.PDF, label: R.Settings_Global_MangaExportFormat_PortableDocumentFormat },
         ),
         new Choice(
             Key.DescramblingFormat,

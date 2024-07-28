@@ -7,7 +7,7 @@ const config: Config = {
         title: 'ComicExtra'
     },
     container: {
-        url: 'https://comicextra.org/comic/grimm-fairy-tales-2016',
+        url: 'https://comixextra.com/comic/grimm-fairy-tales-2016',
         id: '/comic/grimm-fairy-tales-2016',
         title: 'Grimm Fairy Tales (2016)'
     },
@@ -17,7 +17,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 349_415,
+        size: 349_477,
         type: 'image/jpeg'
     }
 };

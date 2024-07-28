@@ -124,7 +124,9 @@ describe('TaskPool', () => {
             expect(actual.map(r => r.Value)).toEqual([ '③' ]);
         });
 
-        (process.platform === 'win32' ? it.skip : it)('Should utilize workers for concurrent processing', async () => {
+        (process.platform === 'win32' ? it.skip : it)('Should utilize workers for concurrent processing', {
+            retry: process.platform === 'win32' ? 50 : 5
+        }, async () => {
             const testee = new TaskPool(3, Unlimited);
             const start = performance.now();
             const results = await RunJobs(testee,
@@ -166,7 +168,7 @@ describe('TaskPool', () => {
             // NOTE: Assumption that interval time for checking available workers is ~50 ms (3 performed batches)
             //       See: TaskPool.ConcurrencySlotAvailable()
             expect(elapsed).toBeLessThan(3 * 50);
-        }, { retry: process.platform === 'win32' ? 50 : 5 });
+        });
 
         it('Should reject aborted task', async () => {
             const testee = new TaskPool(1);
@@ -184,7 +186,9 @@ describe('TaskPool', () => {
             expect(action).not.toBeCalled();
         });
 
-        it('Should skip aborted tasks', async () => {
+        it('Should skip aborted tasks', {
+            retry: process.platform === 'win32' ? 50 : 5
+        }, async () => {
             const testee = new TaskPool(1);
             const controller = new AbortController();
             const start = performance.now();
@@ -212,6 +216,6 @@ describe('TaskPool', () => {
             //       See: TaskPool.ConcurrencySlotAvailable()
             const epsilon = process.platform === 'win32' ? 15 : 0;
             expect(elapsed).toBeLessThan(5 * 50 + epsilon);
-        }, { retry: process.platform === 'win32' ? 50 : 5 });
+        });
     });
 });

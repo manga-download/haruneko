@@ -1,5 +1,5 @@
 import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
-import { Observable } from '../../Observable';
+import { Observable, type IObservable } from '../../Observable';
 import type { IPC } from '../InterProcessCommunication';
 import type { ScriptInjection } from '../FetchProviderCommon';
 import { RemoteBrowserWindowController as Channels } from '../../../../../app/src/ipc/Channels';
@@ -7,8 +7,16 @@ import { RemoteBrowserWindowController as Channels } from '../../../../../app/sr
 export default class RemoteBrowserWindow {
 
     private windowID = Number.NaN;
-    public DOMReady = new Observable<Document, RemoteBrowserWindow>(null, this);
-    public BeforeNavigate = new Observable<URL, RemoteBrowserWindow>(null, this);
+
+    private readonly domReady = new Observable<Document, RemoteBrowserWindow>(null, this);
+    public get DOMReady(): IObservable<Document, RemoteBrowserWindow> {
+        return this.domReady;
+    };
+
+    private readonly beforeNavigate = new Observable<URL, RemoteBrowserWindow>(null, this);
+    public get BeforeNavigate(): IObservable<URL, RemoteBrowserWindow> {
+        return this.beforeNavigate;
+    };
 
     constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
         this.ipc.Listen(Channels.Web.OnDomReady, this.OnDomReady.bind(this));
@@ -18,13 +26,13 @@ export default class RemoteBrowserWindow {
     private async OnDomReady(windowID: number): Promise<void> {
         if(windowID === this.windowID) {
             const html = await this.ExecuteScript<string>(`document.querySelector('html').innerHTML`);
-            this.DOMReady.Value = new DOMParser().parseFromString(html, 'text/html');
+            this.domReady.Value = new DOMParser().parseFromString(html, 'text/html');
         }
     }
 
     private async OnBeforeNavigate(windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean): Promise<void> {
         if(windowID === this.windowID && url.startsWith('http') && !isSameDocument) {
-            this.BeforeNavigate.Value = new URL(url);
+            this.beforeNavigate.Value = new URL(url);
         }
     }
 

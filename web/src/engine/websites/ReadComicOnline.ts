@@ -2,6 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ReadComicOnline.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const link = new URL(anchor.href);
@@ -13,19 +14,35 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function MangInfoExtractor(element: HTMLDivElement) { //needed because titles are truncated in link
-    const anchor = element.querySelector<HTMLAnchorElement>('a');
-    const dom = new DOMParser().parseFromString(element.getAttribute('title'), 'text/html');
-    return {
-        id: anchor.pathname,
-        title: dom.querySelector('p.title').textContent.trim()
-    };
-}
+const pageScript = `
+    new Promise( (resolve, reject) => {
+        let tries = 0;
+        const interval = setInterval(function () {
+            try {
+                const links = [ ...document.querySelectorAll('#divImage img') ].map(img => img.src);
+                if(links.length > 0 && !links.some(link => /blank.gif/i.test(link))) {
+                    clearInterval(interval);
+                    resolve(links);
+                }
+            } catch (error) {
+                clearInterval(interval);
+                reject(error);
+            } finally {
+                tries++;
+                if (tries > 10) {
+                    clearInterval(interval);
+                    reject(new Error('Unable to get pictures after more than 10 tries !'));
+                }
+            }
+        }, 1000);
+    });
+
+`;
 
 @Common.MangaCSS(/^{origin}\/Comic\/[^/]+$/, 'div.barContent a.bigChar')
-@Common.MangasMultiPageCSS('/ComicList?page={page}', 'div.list-comic div.item, div.item-list div.group div.col.info', 1, 1, 0, MangInfoExtractor)
+@Common.MangasMultiPageCSS('/ComicList?page={page}', 'table.listing td a')
 @Common.ChaptersSinglePageCSS('div.episodeList table.listing tr td:first-of-type a, div.section ul.list li a', ChapterExtractor)
-@Common.PagesSinglePageJS('lstImages', 2500) //may trigger a captcha request
+@Common.PagesSinglePageJS(pageScript, 1000) //may trigger a captcha request
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -35,6 +52,10 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('list-view', 'list')`);
     }
 
 }
