@@ -36,6 +36,42 @@ describe('Array<MediaContainer<MediaItem>>', () => {
         });
     });
 
+    describe('none()', () => {
+
+        it('Should return true when array is empty', async () => {
+            const actual = [].none(_ => true);
+            expect(actual).toBe(true);
+        });
+
+        it('Should return true when predicate does not satisfy any element', async () => {
+            const actual = [ 1, 2, 3, 4, 5 ].none(n => n < 0);
+            expect(actual).toBe(true);
+        });
+
+        it('Should return false when predicate does satisfy at least one element', async () => {
+            const actual = [ 1, 2, 3, 4, 5 ].none(n => n % 2 === 0);
+            expect(actual).toBe(false);
+        });
+    });
+
+    describe('count()', () => {
+
+        it('Should return 0 when array is empty', async () => {
+            const actual = [].count(_ => true);
+            expect(actual).toBe(0);
+        });
+
+        it('Should return 0 when predicate does not satisfy any element', async () => {
+            const actual = [ 1, 2, 3, 4, 5 ].count(n => n < 0);
+            expect(actual).toBe(0);
+        });
+
+        it('Should return the number of elements satisfying the predicate', async () => {
+            const actual = [ 1, 2, 3, 4, 5 ].count(n => n % 2 !== 0);
+            expect(actual).toBe(3);
+        });
+    });
+
     describe('distinct()', () => {
 
         it('Should remove duplicate entries', async () => {

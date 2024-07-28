@@ -7,18 +7,18 @@ const config: Config = {
         title: 'Senpai Ediciones'
     },
     container: {
-        url: 'https://senpaiediciones.com/manga/clase-suplementaria-especial-despues-de-la-escuela/',
-        id: '/manga/clase-suplementaria-especial-despues-de-la-escuela/',
-        title: 'Clase Suplementaria Especial Después de la Escuela'
+        url: 'https://senpaimangas.online/manga/isekai-walking/',
+        id: '/manga/isekai-walking/',
+        title: 'Isekai Walking'
     },
     child: {
-        id: '/clase-suplementaria-especial-despues-de-la-escuela-capitulo-01/',
-        title: 'Capítulo 01'
+        id: '/isekai-walking-capitulo-01-1/',
+        title: 'Capítulo 01.1'
     },
     entry: {
         index: 0,
-        size: 355_129,
-        type: 'image/jpeg'
+        size: 1_147_179,
+        type: 'image/png'
     }
 };
 

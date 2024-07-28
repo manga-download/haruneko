@@ -2,13 +2,13 @@ import { Tags } from '../Tags';
 import icon from './MangaSect.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as Mojo from './decorators/MojoPortalComic';
+import * as Liliana from './templates/Liliana';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, Mojo.queryMangaTitle)
-@Common.MangasMultiPageCSS('/all-manga/{page}/', Mojo.queryMangas)
-@Common.ChaptersSinglePageCSS(Mojo.queryChapter)
-@Mojo.PagesSinglePageCSS([], Mojo.queryPages)
-@Common.ImageAjax(true)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article header h1')
+@Common.MangasMultiPageCSS('/all-manga/{page}/', 'div.grid div.text-center > a')
+@Common.ChaptersSinglePageCSS(Liliana.queryChapters)
+@Common.PagesSinglePageJS(Liliana.queryPagesScript, 500)
+@Common.ImageAjax(true, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -18,5 +18,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
 }

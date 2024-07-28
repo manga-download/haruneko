@@ -7,17 +7,17 @@ const config = {
         title: 'MangaSect'
     },
     container: {
-        url: 'https://mangasect.net/manga/eternal-club',
-        id: '/manga/eternal-club',
-        title: 'Eternal Club'
+        url: 'https://mangasect.net/manga/jia-you-shuangsheng-nuyou',
+        id: '/manga/jia-you-shuangsheng-nuyou',
+        title: 'Jia You Shuangsheng Nuyou'
     },
     child: {
-        id: '/manga/eternal-club/chapter-274',
-        title: 'Chapter 274'
+        id: '/manga/jia-you-shuangsheng-nuyou/chapter-297',
+        title: 'Chapter 297'
     },
     entry: {
         index: 0,
-        size: 897_274,
+        size: 104_805,
         type: 'image/jpeg'
     }
 };
