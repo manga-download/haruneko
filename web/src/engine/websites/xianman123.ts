@@ -5,10 +5,8 @@ import * as Common from './decorators/Common';
 import * as MH from './templates/MH';
 
 const pagesScript = `
-    new Promise( resolve  => {
-        resolve( picdata.map(pic => imgDomain != '' ? new URL(pic, imgDomain).href : pic));
-    });
- `;
+    new Promise( resolve => resolve( picdata.map(pic => imgDomain != '' ? new URL(pic, imgDomain).href : pic)));
+`;
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS('/f-1-0-0-0-0-2-{page}.html', MH.queryMangas)
