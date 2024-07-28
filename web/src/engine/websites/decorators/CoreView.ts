@@ -71,11 +71,9 @@ function ChapterExtractor(element: HTMLElement, manga: Manga) {
 
  */
 export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, paths = mangaPaths, query = queryMangas, queryURI = queryMangaURI, queryTitle = queryMangaTitle, extractor = MangaExtractor): Promise<Manga[]> {
-    const mangaList = [];
+    const mangaList: Manga[] = [];
     for (const page of paths) {
-        const uri = new URL(page, this.URI).href;
-        const request = new Request(uri);
-        const data = await FetchCSS(request, query);
+        const data = await FetchCSS(new Request(new URL(page, this.URI)), query);
         const mangas= data.map(element => {
             const { id, title } = extractor.call(this, element, queryURI, queryTitle);
             return new Manga(this, provider, id, title);
@@ -118,11 +116,11 @@ export function MangasMultiPageCSS(paths = mangaPaths, query = queryMangas, quer
  * @param extractor - An Extractor to get chapter infos
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
-    const request = new Request(new URL(manga.Identifier, this.URI).href);
+    const request = new Request(new URL(manga.Identifier, this.URI));
     let data = await FetchCSS<HTMLLinkElement>(request, queryChaptersAtomFeed);
     const uri = new URL(data[0].href, this.URI);
     uri.searchParams.set('free_only', '0'); // 0: include non-free, 1: exclude non-free
-    data = await FetchCSS(new Request(uri.href), query);
+    data = await FetchCSS(new Request(uri), query);
     return data.map(element => {
         const { id, title } = extractor.call(this, element, manga);
         return new Chapter(this, manga, id, title);
@@ -160,13 +158,13 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
 async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, query = queryEpisodeJSON): Promise<Page[]> {
     const request = new Request(new URL(chapter.Identifier, this.URI).href);
     const dataElement = await FetchCSS(request, query);
-    const data: ChapterJSON = JSON.parse(dataElement[0].dataset.value);
-    if (!data.readableProduct.isPublic && !data.readableProduct.hasPurchased) {
+    const { readableProduct } : ChapterJSON = JSON.parse(dataElement[0].dataset.value);
+    if (!readableProduct.isPublic && !readableProduct.hasPurchased) {
         throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
     }
-    return data.readableProduct.pageStructure.pages.filter(page => page.type === 'main').map(page => {
+    return readableProduct.pageStructure.pages.filter(page => page.type === 'main').map(page => {
         // NOTE: 'usagi' is not scrambled
-        const parameters = { Referer: this.URI.href, scrambled: data.readableProduct.pageStructure.choJuGiga === 'baku' };
+        const parameters = { Referer: this.URI.href, scrambled: readableProduct.pageStructure.choJuGiga === 'baku' };
         return new Page(this, chapter, new URL(page.src, request.url), parameters);
     });
 }
