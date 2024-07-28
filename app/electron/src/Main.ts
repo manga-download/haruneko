@@ -59,8 +59,6 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
         },
     });
 
-    win.removeMenu();
-    win.setMenu(null);
     win.setMenuBarVisibility(false);
     win.on('closed', () => app.quit());
 
