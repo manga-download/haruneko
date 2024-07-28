@@ -1,72 +1,43 @@
-import { Event } from '../engine/Event';
-import type { IFrontendInfo, IFrontendModule } from './IFrontend';
+import type { IFrontendInfo } from './IFrontend';
 import { Info as InfoClassic } from './classic/FrontendInfo';
 import { Info as InfoFluentCore } from './fluent-core/FrontendInfo';
 import type { Choice, ISettings } from '../engine/SettingsManager';
 import { Key } from '../engine/SettingsGlobal';
-import { InternalError } from '../engine/Error';
 import { ReloadAppWindow, type IAppWindow } from '../engine/platform/AppWindow';
+import { Observable, type IObservable } from '../engine/Observable';
 
 export const FrontendList: IFrontendInfo[] = [
     InfoClassic,
-    InfoFluentCore
+    InfoFluentCore,
 ];
 
 export class FrontendController {
 
-    private activeFrontendID = '';
-    public readonly FrontendLoaded = new Event<IFrontendModule, IFrontendInfo>();
+    private readonly settingSelectedFrontend: Choice;
+    private readonly currentFrontendInfo = new Observable<IFrontendInfo>(null);
+    public get CurrentFrontendInfo(): IObservable<IFrontendInfo, null> {
+        return this.currentFrontendInfo;
+    }
 
-    constructor(root: HTMLElement, private readonly settings: ISettings, private readonly appWindow: IAppWindow) {
-        const load = () => {
-            document.removeEventListener('DOMContentLoaded', load);
-            this.Load(root);
-        };
+    constructor(root: HTMLElement, settings: ISettings, private readonly appWindow: IAppWindow) {
+        this.settingSelectedFrontend = settings.Get<Choice>(Key.Frontend);
+        this.settingSelectedFrontend.Subscribe(value => this.currentFrontendInfo.Value.ID !== value ? ReloadAppWindow() : undefined);
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', load);
+            document.addEventListener('DOMContentLoaded', () => this.Load(root), { once: true });
         } else {
             this.Load(root);
-        }
-        this.settings.Get<Choice>(Key.Frontend).Subscribe(value => {
-            if(this.activeFrontendID !== value) {
-                ReloadAppWindow();
-            }
-        });
-    }
-
-    private GetSettingsFrontendID(): string | null {
-        const frontendID = this.settings.Get<Choice>(Key.Frontend).Value;
-        return FrontendList.some(frontend => frontend.ID === frontendID) ? frontendID : null;
-    }
-
-    private GetFrontendInfoByID(id: string): IFrontendInfo {
-        const info = FrontendList.find(item => item.ID === id);
-        if(info) {
-            return info;
-        } else {
-            throw new InternalError(`The frontend information could not be found in the list of available frontends!`);
-        }
-    }
-
-    private async GetFrontendModuleByID(id: string): Promise<IFrontendModule> {
-        const info = FrontendList.find(item => item.ID === id);
-        if(info) {
-            return info.LoadModule();
-        } else {
-            throw new InternalError(`The frontend could not be found in the list of available frontends!`);
         }
     }
 
     private async Load(hook: HTMLElement): Promise<void> {
         try {
-            const frontendID = this.GetSettingsFrontendID() || FrontendList[0].ID;
-            const frontend = await this.GetFrontendModuleByID(frontendID);
+            const info = FrontendList.find(info => info.ID === this.settingSelectedFrontend.Value) ?? FrontendList.first();
+            const frontend = await info.LoadModule();
             hook.innerHTML = '';
             await frontend.Render(hook, this.appWindow);
-            this.activeFrontendID = frontendID;
-            this.FrontendLoaded.Dispatch(frontend, this.GetFrontendInfoByID(frontendID));
+            this.currentFrontendInfo.Value = info;
         } catch(error) {
-            console.error(`Failed to load frontend!`, error);
+            console.error('Failed to load frontend!', error);
         }
     }
 }
