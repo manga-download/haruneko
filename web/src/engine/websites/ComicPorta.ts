@@ -14,7 +14,7 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangaCSS(/^{origin}\/series\/\d+\/$/, 'div#breadcrumb li:last-of-type')
 @Common.MangasSinglePageCSS('/series/', 'div.series-list ul li h3.title a')
 @Common.ChaptersSinglePageCSS('ul.episode-list li.episode div.inner div.wrap p.episode-btn', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax()
+@SpeedBinb.PagesSinglePageAjaxV016061()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

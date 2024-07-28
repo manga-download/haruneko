@@ -4,11 +4,25 @@ import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
 import DeScramble from '../../transformers/ImageDescrambler';
 
-type JSONPageDatav016452 = {
-    items: Configurationv016452[]
+type ViewerData = {
+    viewerUrl: URL;
+    SBHtmlElement: HTMLElement
 }
 
-type Configurationv016452 = {
+type RequestData = {
+    cid: string,
+    sharingKey :string,
+    dmytime,
+    u0: string,
+    u1: string,
+    request: Request
+}
+
+type JSONPageData = {
+    items: ContentConfiguration[]
+}
+
+type ContentConfiguration = {
     ContentID: string,
     ctbl: string | string[],
     ptbl: string | string[],
@@ -26,7 +40,7 @@ type Paramsv016452 = {
     sharingKey: string
 }
 
-type JSONImageDatav016061 = {
+type JSONImageData = {
     resources: {
         i: {
             src: string
@@ -80,113 +94,76 @@ const JsonFetchScript = `
          });
 `;
 export enum SpeedBinbVersion { v016113 = 1, v016201, v016452, v016130, _default_v016061, vUnknown }
+
 function getSanitizedURL(base: string, append: string): URL {
     const baseURI = new URL(append, base + '/');
     baseURI.pathname = baseURI.pathname.replaceAll(/\/\/+/g, '/');
     return baseURI;
-
 }
 
-function getSpeedBinbVersion(el: HTMLElement, viewerUrl: URL): SpeedBinbVersion {
-    //Comic Brise, Comic Meteor, Comic Polaris, Comic Valkyrie, Digital MargaRet, OneTwoThreeHon : _default_v016061
-    //(el.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]')
-
-    /*CMOA :v016452
-    ptbinb : "/bib/sws/bibGetCntntInfo.php?u0=1&u1=0" U0 U1
-    ptbinbCid : "0000151961_jp_0001"
-    'https://www.cmoa.jp/bib/speedreader/?cid=0000151961_jp_0001&u0=1&u1=0' U0 U1 CID
-
-    BOOKHODAI :v016113 / v016130
-    ptbinb "https://viewer.bookhodai.jp/sws/apis/bibGetCntntInfo.php?s=1&u0=8bec5433d58929b4ab4b5a07398fff33&u1=4554f324862d187e7c9d27c85e1d8d84" UO U1
-    ptbinbCid "300010065401"
-    'https://viewer.bookhodai.jp/speedreader/main.php?cid=300010065401&u0=8bec5433d58929b4ab4b5a07398fff33&u1=4554f324862d187e7c9d27c85e1d8d84&rurl=https%3A%2F%2Fbookhodai.jp%2F&member_id=0' U0 U1 CID
-
-    BOOKLIVE :v016113 / v016130
-    ptbinb : "/bib-api/bibGetCntntInfo" NOTHING
-    ptbinbCid: "60114561_001"
-    'https://booklive.jp/bviewer/s/?cid=60114561_001' CID
-
-    FUTBANET :v016113 / v016130
-    ptbinb: "/sws/bibGetCntntInfo?hash=60ebb4277765619176000000&display_order=1" NOTHING
-    ptbinbCid: "60ebb4277765619176000000_001-001_1"
-    https://gaugau.futabanet.jp/list/work/60ebb4277765619176000000/episodes/1 NOTHING
-
-    GETSUAKU :v016113 / v016130
-    ptbinb: "../sws/bibGetCntntInfo" NOTHING
-    ptbinbCid: "001_gaw_makinasan"
-    https://getsuaku.com/episode/001_gaw_makinasan' NOTHING
-
-    ManpaPlanet :v016113 / v016130
-    ptbinb : "https://mangaplanet.com/sws/apis/bibGetCntntInfo.php NOTHING
-    'https://mangaplanet.com/reader?cid=64c77843994e3' CID
-
-    ManpaPlaza :v016113 / v016130
-    ptbinb: "/sws/apis/bibGetCntntInfo.php?u0=0&u1=https%3A%2F%2Fmangaplaza.com%2Ftitle%2F0303001706%2F%3Forder%3Ddown%26content_id%3D103030017060001" U0 U1
-    ptbinbCid: "103030017060001"
-    'https://reader.mangaplaza.com/speedreader/?cid=103030017060001&u0=0&u1=https%3A%2F%2Fmangaplaza.com%2Ftitle%2F0303001706%2F%3Forder%3Ddown%26content_id%3D103030017060001' U0 U1
-
-    OHTABOOK :v016113 / v016130
-    ptbinb: "https://console.binb.bricks.pub/bibGetCntntInfo?u0=83605b7e01f64a70baeec6bfe102f043" U0
-    ptbinbCid: "cbb2ef02-0210-4050-804d-406713f40f61_1677753204"
-    'https://binb.bricks.pub/contents/cbb2ef02-0210-4050-804d-406713f40f61_1677753204/speed_reader' NOTHING
-
-    S-MANGA: :v016113 / v016130
-    ptbinb: "./sws/apis/bibGetCntntInfo.php" NOTHING
-    ptbinbCid: "4088725093"
-    https://www.s-manga.net/reader/main.php?cid=4088725093' CID
-
-    YANMAGA : v016113 / v016130
-    ptbinb: "/viewer/bibGetCntntInfo?type=comics" NOTHING
-    ptbinbCid: "06A0000000000731237F"
-    'https://yanmaga.jp/viewer/comics/%E5%A4%A2%E3%81%86%E3%81%A4%E3%81%A4%E3%81%AE%E8%8A%B1%E3%81%AE%E5%9C%92/351192c0f7d1cf3b88175f3d9dfae594?cid=06A0000000000731237F' CID
-
-    YOUNGJUMP :v016201
-    ptbinb :"/sws/apis/bibGetCntntInfo.php?u1=10001"  U1
-    ptbinbCid: "101012340"
-    https://www.youngjump.world/reader/reader.html?cid=101012340&u1=10001': CID U1
-*/
-
-    if (el.dataset['ptbinb'] && el.dataset['ptbinbCid']) {
-        return SpeedBinbVersion.v016113;
-    }
-
-    if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && viewerUrl.searchParams.get('u0') && viewerUrl.searchParams.get('u1')) {
-        return SpeedBinbVersion.v016452;
-    }
-
-    if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo') && viewerUrl.searchParams.get('u1')) {
-        return SpeedBinbVersion.v016201;
-    }
-
-    if (el.dataset['ptbinb'] && el.dataset.ptbinb.includes('bibGetCntntInfo')) {
-        return SpeedBinbVersion.v016130;
-    }
-
-    if (el.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]').length > 0) {
-        return SpeedBinbVersion._default_v016061;
-    }
-
-    return SpeedBinbVersion.vUnknown;
-}
-
-const pageScript = `
-    new Promise(resolve  => {
-        resolve ( { location : window.location.href, pages : document.querySelector("div#content.pages")});
+/**
+ *  Return real chapter url & SpeedBinb "pages" element from said page, so we can work
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ */
+async function GetViewerData(this: MangaScraper, chapter: Chapter): Promise<ViewerData> {
+    let viewerUrl = new URL(chapter.Identifier, this.URI);
+    const request = new Request(viewerUrl, {
+        headers: {
+            Referer: this.URI.origin
+        }
     });
-`;
 
-type PageScriptResult = {
-    location: string,
-    pages: HTMLElement
+    const response = await Fetch(request);
+    const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const SBHtmlElement = dom.querySelector<HTMLElement>('div#content.pages');
+    //handle redirection. Sometimes chapter is redirected
+    if (response.redirected) {
+        viewerUrl = new URL(response.url);
+    }
+    return { viewerUrl, SBHtmlElement };
 }
+/**
+ * Create first SpeedBinb AJAX request to perform, using viewerUrl GET parameters, and endpoint from SpeedBinb HTML node
+ * @param viewerUrl - Read Url of the SpeedBinb Viewer
+ * @param sbHtmlElement - HTMLElement extracted from said page
+ */
+async function CreatePtBinbRequestData(viewerUrl: URL, sbHtmlElement: HTMLElement): Promise<RequestData>{
+    let cid = viewerUrl.searchParams.get('cid') || sbHtmlElement.dataset['ptbinbCid'];
+
+    //in case cid is not in url and not in html, try to get it from page redirected by Javascript/ Meta element
+    if (!cid) {
+        cid = await FetchWindowScript<string>(new Request(viewerUrl), 'new URL(window.location).searchParams.get("cid");', 5000);
+    }
+    if (!cid) throw new Error('Unable to find CID (content ID) !');
+
+    const sharingKey = _tt(cid);
+    const uri = getSanitizedURL(viewerUrl.href, sbHtmlElement.dataset.ptbinb);
+    const dmytime = String(Date.now());
+    uri.searchParams.set('cid', cid);
+    uri.searchParams.set('dmytime', dmytime);
+    uri.searchParams.set('k', sharingKey);
+
+    const u0 = viewerUrl.searchParams.get('u0');
+    const u1 = viewerUrl.searchParams.get('u1');
+    if (u0) uri.searchParams.set('u0', u0);
+    if (u1) uri.searchParams.set('u1', u1);
+
+    const request = new Request(uri, {
+        headers: {
+            Referer: viewerUrl.href
+        }
+    });
+
+    return { cid, sharingKey, dmytime, u0, u1, request };
+}
+
 /**********************************************
  ******** Page List Extraction Methods ********
  **********************************************/
 
 /**
- * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
- * @param useScript - use FetchWindowScript and not Fetch for first request
- * @param sbVersionOverride - Override SpeedBinb version detection
+ * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer when chapter JSON got div[data-ptimg$="ptimg.json"]
  */
 export function PagesSinglePageAjaxV016061() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
@@ -206,27 +183,26 @@ export function PagesSinglePageAjaxV016061() {
  * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param useScript - use FetchWindowScript and not Fetch for first request
- * @param sbVersionOverride - Override SpeedBinb version detection
  */
 export async function FetchPagesSinglePageAjaxV016061(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-    let viewerUrl = new URL(chapter.Identifier, this.URI);
-    const request = new Request(viewerUrl, {
-        headers: {
-            Referer: this.URI.origin
-        }
-    });
-
-    const response = await Fetch(request);
-    const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
-    const SBpagesElement = dom.querySelector<HTMLElement>('div#content.pages');
-    //handle redirection. Sometimes chapter is redirected
-    if (response.redirected) {
-        viewerUrl = new URL(response.url);
-    }
-
-    const [...imageConfigurations] = SBpagesElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
+    const { viewerUrl, SBHtmlElement } = await GetViewerData.call(this, chapter);
+    const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
     return imageConfigurations.map(element => new Page(this, chapter, getSanitizedURL(viewerUrl.href, element.dataset.ptimg)));
+}
+
+/**
+ * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer. For version v016130
+ */
+export function PagesSinglePageAjaxv016130() {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
+        return class extends ctor {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+                return FetchPagesSinglePageAjaxv016130.call(this, chapter);
+            }
+        };
+    };
 }
 
 /**
@@ -234,109 +210,102 @@ export async function FetchPagesSinglePageAjaxV016061(this: MangaScraper, chapte
  * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param useScript - use FetchWindowScript and not Fetch for first request
- * @param sbVersionOverride - Override SpeedBinb version detection
  */
-export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, useScript = false, sbVersionOverride: SpeedBinbVersion = undefined): Promise<Page[]> {
-    let viewerUrl = new URL(chapter.Identifier, this.URI);
-    const request = new Request(viewerUrl, {
-        headers: {
-            Referer: this.URI.origin
-        }
-    });//referer needed for ManpaPlanet
+export async function FetchPagesSinglePageAjaxv016130(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+    const { viewerUrl, SBHtmlElement } = await GetViewerData.call(this, chapter);
+    const { request, sharingKey } = await CreatePtBinbRequestData(viewerUrl, SBHtmlElement);
+    const config = await FetchJSON<JSONPageData>(request);
+    return await getPageLinks_v016130.call(this, config.items[0], sharingKey, chapter);
 
-    let SBpagesElement: HTMLElement = undefined;
-
-    // Raw fetching Gives the most accurate version detection and it handle automatic redirection.
-    // We dont use FetchCSS because we must know if request is redirected (302, 303) to get real url
-    // Also, FetchWindowScript doesnt works with Referer, and sometimes Referer is mandatory (MangaPlanet)
-    if (!useScript) {
-        const response = await Fetch(request);
-        const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
-        const data = dom.querySelector<HTMLElement>('div#content.pages');
-        //handle redirection. Sometimes chapter is redirected
-        if (response.redirected) {
-            viewerUrl = new URL(response.url);
-        }
-        SBpagesElement = data;
-    } else {
-        //Use this if chapter is redirected using javascript, or if it must be opened in a window to gather access Cookies (MangaPlaza)
-        const data = await FetchWindowScript<PageScriptResult>(request, pageScript, 2500);
-        if (!data.pages) return []; //chapter may be paywalled, no need to throw an error, so quit gracefully
-        viewerUrl = new URL(data.location);
-        SBpagesElement = data.pages;
-    }
-
-    const SBVersion = sbVersionOverride || getSpeedBinbVersion(SBpagesElement, viewerUrl);
-
-    if (SBVersion == SpeedBinbVersion.v016113) {
-        viewerUrl.searchParams.set('cid', SBpagesElement.dataset['ptbinbCid']);
-    }
-
-    //Handle _default_v016061 : there is no parameter at all
-    //Comic Brise, Comic Meteor, Comic Polaris, Comic Valkyrie, Digital MargaRet, OneTwoThreeHon, TKSuperheroComics
-    if (SBVersion == SpeedBinbVersion._default_v016061) {
-        const [...imageConfigurations] = SBpagesElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
-        return imageConfigurations.map(element => {
-            return new Page(this, chapter, getSanitizedURL(viewerUrl.href, element.dataset.ptimg));
-        });
-    }
-
-    const cid = viewerUrl.searchParams.get('cid');
-    const sharingKey = _tt(cid);
-    const uri = getSanitizedURL(viewerUrl.href, SBpagesElement.dataset.ptbinb);
-    uri.searchParams.set('cid', cid);
-    uri.searchParams.set('dmytime', String(Date.now()));
-    uri.searchParams.set('k', sharingKey);
-
-    switch (SBVersion) {
-        case SpeedBinbVersion.v016113: //BookHodai,  Futabanet, Getsuaku (v016700), MangaPlaza, Ohtabooks
-        case SpeedBinbVersion.v016130: { // Booklive, MangaPlanet, S-Manga, Yanmaga
-            //Doing it like that because of cookies needed for Mangaplanet using viewerUrl on purpose because of CORS issues
-            const data = await FetchWindowScript<JSONPageDatav016452>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
-            return await getPageLinks_v016130(this, data.items[0], sharingKey, chapter);
-        }
-        //YoungJump
-        case SpeedBinbVersion.v016201: {
-            const u = viewerUrl.searchParams.get('u1');
-            uri.searchParams.set('u1', u);
-            //Doing it like that because of cookies needed for YoungJump using viewerUrl on purpose because of CORS issues
-            const data = await FetchWindowScript<JSONPageDatav016452>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
-            return await getPageLinks_v016201(this, data.items[0], sharingKey, u, chapter);
-        }
-        //Cmoa
-        case SpeedBinbVersion.v016452: {
-            const u0 = viewerUrl.searchParams.get('u0');
-            const u1 = viewerUrl.searchParams.get('u1');
-            uri.searchParams.set('u0', u0);
-            uri.searchParams.set('u1', u1);
-            const data = await FetchJSON<JSONPageDatav016452>(new Request(uri));
-            const params: Paramsv016452 = { cid, sharingKey, u0, u1 };
-            return await getPageLinks_v016452(this, data.items[0], params, chapter);
-        }
-    }
-
-    throw new Error('Unsupported version of SpeedBinb reader!');
 }
 
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
- * @param useScript - use FetchWindowScript and not Fetch for first request
- * @param sbVersionOverride - Override SpeedBinb version detection
  */
-export function PagesSinglePageAjax(useScript = false, sbVersionOverride: SpeedBinbVersion = undefined) {
+export function PagesSinglePageAjaxv016452() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageAjax.call(this, chapter, useScript, sbVersionOverride);
+                return FetchPagesSinglePageAjaxv016452.call(this, chapter);
             }
         };
     };
 }
 
-async function getPageLinks_v016452(scraper: MangaScraper, configuration: Configurationv016452, params: Paramsv016452, chapter: Chapter): Promise<Page[]> {
+/**
+ * An extension method for extracting all pages for the given {@link chapter} using the given CSS {@link query}.
+ * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ */
+export async function FetchPagesSinglePageAjaxv016452(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+    const { viewerUrl, SBHtmlElement } = await GetViewerData.call(this, chapter);
+    const { request, sharingKey, cid, u0, u1 } = await CreatePtBinbRequestData(viewerUrl, SBHtmlElement);
+    const config = await FetchJSON<JSONPageData>(request);
+    const params: Paramsv016452 = { cid, sharingKey, u0, u1 };
+    return await getPageLinks_v016452.call(this, config.items[0], params, chapter);
+
+}
+
+/**
+ * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
+ */
+export function PagesSinglePageAjaxv016201() {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
+        return class extends ctor {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+                return FetchPagesSinglePageAjaxv016201.call(this, chapter);
+            }
+        };
+    };
+}
+
+/**
+ * An extension method for extracting all pages for the given {@link chapter} using the given CSS {@link query}.
+ * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ */
+export async function FetchPagesSinglePageAjaxv016201(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+    const { viewerUrl, SBHtmlElement } = await GetViewerData.call(this, chapter);
+    const { request, sharingKey, u1 } = await CreatePtBinbRequestData(viewerUrl, SBHtmlElement);
+    const config = await FetchJSON<JSONPageData>(request);
+    return await getPageLinks_v016201.call(this, config.items[0], sharingKey, u1, chapter);
+}
+
+/**
+ * An extension method for extracting all pages for the given {@link chapter} using the given CSS {@link query}.
+ * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ */
+export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+    const { viewerUrl, SBHtmlElement } = await GetViewerData.call(this, chapter);
+    const { request, sharingKey } = await CreatePtBinbRequestData(viewerUrl, SBHtmlElement);
+    const config = await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', request.url), 2000);
+    return await getPageLinks_v016130.call(this, config.items[0], sharingKey, chapter);
+}
+
+/**
+ * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
+ */
+export function PagesSinglePageAjax() {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+
+        return class extends ctor {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+                return FetchPagesSinglePageAjax.call(this, chapter);
+            }
+        };
+    };
+}
+
+async function getPageLinks_v016452(this: MangaScraper, configuration: ContentConfiguration, params: Paramsv016452, chapter: Chapter): Promise<Page[]> {
     configuration.ctbl = _pt(params.cid, params.sharingKey, configuration.ctbl as string);
     configuration.ptbl = _pt(params.cid, params.sharingKey, configuration.ptbl as string);
     try {
@@ -353,12 +322,12 @@ async function getPageLinks_v016452(scraper: MangaScraper, configuration: Config
         uri.searchParams.set('dmytime', configuration.ContentDate);
         uri.searchParams.set('u0', params.u0);
         uri.searchParams.set('u1', params.u1);
-        return await fetchSBC(scraper, uri, configuration, chapter);
+        return await fetchSBC.call(this, uri, configuration, chapter);
     }
     return Promise.reject(new Error('Content server type not supported!'));
 }
 
-async function getPageLinks_v016201(scraper: MangaScraper, configuration: Configurationv016452, sharingKey: string, u: string, chapter: Chapter): Promise<Page[]> {
+async function getPageLinks_v016201(this: MangaScraper, configuration: ContentConfiguration, sharingKey: string, u: string, chapter: Chapter): Promise<Page[]> {
     const cid = configuration.ContentID;
     configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl as string);
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
@@ -377,14 +346,14 @@ async function getPageLinks_v016201(scraper: MangaScraper, configuration: Config
         const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
             const src = img.getAttribute('src');
             uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
-            return new Page(scraper, chapter, new URL(uri.href.replace('/content', '/img/' + src)));
+            return new Page(this, chapter, new URL(uri.href.replace('/content', '/img/' + src)));
         });
         return pageLinks;
     }
     return Promise.reject(new Error('Content server type not supported!'));
 }
 
-async function getPageLinks_v016130(scraper: MangaScraper, configuration: Configurationv016452, sharingKey: string, chapter: Chapter): Promise<Page[]> {
+async function getPageLinks_v016130(this: MangaScraper, configuration: ContentConfiguration, sharingKey: string, chapter: Chapter): Promise<Page[]> {
     const cid = configuration.ContentID;
     configuration.ctbl = _pt(cid, sharingKey, configuration.ctbl as string);
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
@@ -401,7 +370,7 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
             uri.searchParams.set('dmytime', configuration.ContentDate);
             uri.searchParams.set('p', configuration.p);
             uri.searchParams.set('vm', String(configuration.ViewMode));
-            return await fetchSBC(scraper, uri, configuration, chapter);
+            return await fetchSBC.call(this, uri, configuration, chapter);
         }
         case 1: {//Futabanet, Getsuaku, BookHodai
             const uri = getSanitizedURL(configuration.ContentsServer, 'content.js');
@@ -414,19 +383,19 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
                 let src = img.getAttribute('src');
                 uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
                 if (!src.startsWith('/')) src = '/' + src;
-                return new Page(scraper, chapter, new URL(uri.href.replace('/content.js', src + '/M_H.jpg')));
+                return new Page(this, chapter, new URL(uri.href.replace('/content.js', src + '/M_H.jpg')));
             });
             return pageLinks;
         }
         case 2: {//MangaPlanet, MangaPlaza
             const uri = getSanitizedURL(configuration.ContentsServer, 'content');
-            uri.searchParams.set('dmytime', configuration.ContentDate);
-            const data = await FetchJSON<SBCDATA>(new Request(uri, { headers: { Referer: scraper.URI.href } }));
+            if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
+            const data = await FetchJSON<SBCDATA>(new Request(uri, { headers: { Referer: this.URI.href }}));
             const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
             const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
                 const src = img.getAttribute('src');
                 uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
-                return new Page(scraper, chapter, new URL(uri.href.replace('/content', '/img/' + src)));
+                return new Page(this, chapter, new URL(uri.href.replace('/content', '/img/' + src)));
             });
             return pageLinks;
         }
@@ -434,14 +403,14 @@ async function getPageLinks_v016130(scraper: MangaScraper, configuration: Config
     return Promise.reject(new Error('Content server type not supported!'));
 }
 
-async function fetchSBC(scraper: MangaScraper, uri: URL, configuration: Configurationv016452, chapter: Chapter) {
+async function fetchSBC(this: MangaScraper, uri: URL, configuration: ContentConfiguration, chapter: Chapter) {
     const data = await FetchJSON<SBCDATA>(new Request(uri));
     const dom = new DOMParser().parseFromString(data.ttx, 'text/html');
     const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
         const src = img.getAttribute('src');
         uri.searchParams.set('src', src);
         uri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
-        return new Page(scraper, chapter, new URL(uri.href.replace('/sbcGetCntnt.php', '/sbcGetImg.php')));
+        return new Page(this, chapter, new URL(uri.href.replace('/sbcGetCntnt.php', '/sbcGetImg.php')));
     });
     return pageLinks;
 }
@@ -472,7 +441,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 }
 
 async function descramble_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    const data = await FetchJSON<JSONImageDatav016061>(new Request(page.Link));
+    const data = await FetchJSON<JSONImageData>(new Request(page.Link));
     const fakepage = new Page(scraper, page.Parent as Chapter, new URL(data.resources.i.src, page.Link.href));
     const imagedata: Blob = await Common.FetchImageAjax.call(scraper, fakepage, priority, signal, detectMimeType);
 

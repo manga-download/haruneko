@@ -1,9 +1,9 @@
 ﻿import { Tags } from '../Tags';
 import icon from './MangaPlaza.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Page, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIChapterResult = {
     data: {
@@ -13,8 +13,6 @@ type APIChapterResult = {
 }
 
 @Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.mainTitle h1.titleTxt')
-@Common.MangasNotSupported()
-@SpeedBinb.PagesSinglePageAjax(true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -24,6 +22,21 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('mp_over18_agreement', 'ON')`);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        //fetch genre list
+        let genres = (await FetchCSS<HTMLAnchorElement>(new Request(new URL('/genre/', this.URI)), 'a[href*="/genre/"]')).filter(link => link.pathname.match(/genre\/\d+\/$/)).map(link => link.pathname.match(/\d+/)[0]);
+        genres = Array.from(new Set(genres));
+        const mangaList: Manga[] = [];
+        for (const genre of genres) {
+            mangaList.push(... await Common.FetchMangasMultiPageCSS.call(this, provider, `/genre/${genre}/?page={page}`, 'ul.listBox li div.titleName a'));
+        }
+        return mangaList.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -50,4 +63,10 @@ export default class extends DecoratableMangaScraper {
 
         return chapters.distinct();
     }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI), { headers: { Referer: this.URI.origin } }), 'true', 3000);//set necessary cookies
+        return SpeedBinb.FetchPagesSinglePageAjaxv016130.call(this, chapter);
+    }
+
 }

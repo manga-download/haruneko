@@ -6,7 +6,7 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangasNotSupported()
-@SpeedBinb.PagesSinglePageAjax()
+@SpeedBinb.PagesSinglePageAjaxv016452()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

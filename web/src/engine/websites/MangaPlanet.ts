@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
                 }
                 let url = "";
                 if (origurl.includes("/reader")) {
-                    url = "/reader?cid=" + chapid + "&sk=1";
+                    url = "/reader?cid=" + chapid;
                 } else if (origurl.includes("/viewer")) {
                     url = "https://image.mangaplanet.com/viewer/" + chapid;
                 }
@@ -52,4 +52,10 @@ export default class extends DecoratableMangaScraper {
         }
         return chapters;
     }
+    /*
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI), { headers: { Referer: this.URI.origin } }), 'true', 10000);//set necessary cookies
+        return SpeedBinb.FetchPagesSinglePageAjaxv016130.call(this, chapter);
+    }*/
+
 }

@@ -22,7 +22,7 @@ type SSD = {
 }
 
 @Common.MangasNotSupported()
-@SpeedBinb.PagesSinglePageAjax()
+@SpeedBinb.PagesSinglePageAjaxv016130()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
@@ -43,8 +43,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/search/search.html?seriesid=${manga.Identifier}&order=1`, this.URI);
-        const { data } = await FetchWindowScript<SSD>(new Request(url), 'window.ssd', 2000);
-        return data.item_datas.map(chapter => new Chapter(this, manga, `/reader/main.php?cid=${this.IsbnToCid(chapter.isbn)}`, chapter.item_name.replace(manga.Title, '').trim().replace(/^／/, '').trim()));
+        const { data: { item_datas } } = await FetchWindowScript<SSD>(new Request(url), 'window.ssd', 2000);
+        return item_datas.map(chapter => new Chapter(this, manga, `/reader/main.php?cid=${this.IsbnToCid(chapter.isbn)}`, chapter.item_name.replace(manga.Title, '').trim().replace(/^／/, '').trim()));
     }
 
     IsbnToCid(isbn: string): string {

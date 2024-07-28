@@ -7,7 +7,7 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 function MangaInfoExtractor(element: HTMLElement) {
     return {
         id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.querySelector<HTMLAnchorElement>('div.contents-info div.title').text.trim(),
+        title: element.querySelector<HTMLDivElement>('div.contents-info div.title').textContent.trim(),
     };
 }
 function ChapterExtractor(anchor: HTMLAnchorElement) {
@@ -20,7 +20,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/product\/[^/]+$/, 'header.entry-header h1.page-title')
 @Common.MangasMultiPageCSS('/product/page/{page}', 'div.entry-content', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.released_episodes div.items div.item a', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax()
+@SpeedBinb.PagesSinglePageAjaxV016061()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

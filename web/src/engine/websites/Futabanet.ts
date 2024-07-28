@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         let pages: Page[] = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div.works_tateyomi__img img');
         pages = pages?.map(page => new Page(this, chapter, page.Link, { useCommon: true }));
-        return pages?.length > 0 ? pages : await SpeedBinb.FetchPagesSinglePageAjax.call(this, chapter);
+        return pages?.length > 0 ? pages : await SpeedBinb.FetchPagesSinglePageAjaxv016130.call(this, chapter);
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
