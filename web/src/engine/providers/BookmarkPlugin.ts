@@ -90,7 +90,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         }
         const found = (JSON.parse(await data.text()) as Array<unknown>).map(entry => this.Deserialize(ConvertToSerializedBookmark(entry)));
         result.found = found.length;
-        const imported = found.filter(bookmark => !this.Entries.Value.some(entry => entry.IsSameAs(bookmark)));
+        const imported = found.filter(bookmark => this.Entries.Value.none(entry => entry.IsSameAs(bookmark)));
         for(const bookmark of imported) {
             await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
         }
