@@ -141,21 +141,6 @@ export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelE
  ******** Manga List Extraction Methods ********
  ***********************************************/
 
-export function EndsWith(target: Manga[], source: Manga[]) {
-    if (target.length < source.length) {
-        return false;
-    }
-    /*
-    for(let index = 1; index <= source.length; index++) {
-        if(target[target.length - index].Identifier !== source[source.length - index].Identifier) {
-            return false;
-        }
-    }
-    return true;
-    */
-    return target[target.length - 1].Identifier === source[source.length - 1].Identifier;
-}
-
 /**
  * An extension method that throws an error ... .
  */
@@ -235,8 +220,7 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
         await reducer;
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract as InfoExtractor<HTMLElement>);
-        // Always add when mangaList is empty ... (length = 0)
-        mangas.length > 0 && !EndsWith(mangaList, mangas) ? mangaList.push(...mangas) : run = false;
+        mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
     }
     return mangaList.distinct();
