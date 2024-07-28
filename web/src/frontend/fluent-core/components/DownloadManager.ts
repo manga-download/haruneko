@@ -88,7 +88,7 @@ export class DownloadManager extends FASTElement {
     @observable filtered: DownloadTask[] = [];
 
     public FilterEntries() {
-        this.filtered = this.Entries.filter(task => this.Match(task.Media.Title)).slice(0, 250); /* TODO: virtual scrolling */
+        this.filtered = this.Entries.filter(task => this.Match(task.Media.Title)).slice(0, 500); /* TODO: virtual scrolling */
     }
 
     private DownloadsChanged = async function(this: DownloadManager) {
