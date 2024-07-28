@@ -108,6 +108,7 @@ describe('BookmarkConverter', () => {
             { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
             { sourceID: 'siyahmelek', targetID: 'grimelek' },
             { sourceID: 'smangavfws', targetID: 'smangavf' },
+            { sourceID: 'suryatoon', targetID: 'genztoon' },
             { sourceID: 'sushiscanfr', targetID: 'animesama' },
             { sourceID: 'truemanga', targetID: 'mangamonk' },
             { sourceID: 'vermanhwas', targetID: 'vermanhwa' },

@@ -7,17 +7,17 @@ const config: Config = {
         title: 'EvilFlowers'
     },
     container: {
-        url: 'https://reader.evilflowers.com/series/a_good_person/',
-        id: '/series/a_good_person/',
-        title: 'A Good Person'
+        url: 'https://evilflowers.com/project/spam-mail-hunter/',
+        id: JSON.stringify({ post: '545', slug: '/project/spam-mail-hunter/' }),
+        title: 'Spam Mail Hunter'
     },
     child: {
-        id: '/read/a_good_person/en/1/1/1/',
-        title: 'Chapter 1.1'
+        id: '/project/spam-mail-hunter/volume-08/chapter-36/',
+        title: 'Chapter 36'
     },
     entry: {
-        index: 8,
-        size: 402_200,
+        index: 1,
+        size: 324_347,
         type: 'image/png'
     }
 };
