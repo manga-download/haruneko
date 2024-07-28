@@ -12,19 +12,19 @@
         "docs"
     ],
     "devDependencies": {
-        "@types/chrome": "^0.0.268",
+        "@types/chrome": "^0.0.269",
         "@types/jsdom": "^21.1.7",
         "@types/nw.js": "^0.13.21",
-        "eslint": "^9.7.0",
+        "eslint": "^9.8.0",
         "eslint-plugin-tsdoc": "^0.3.0",
-        "jsdom": "^24.1.0",
-        "puppeteer-core": "^22.13.0",
+        "jsdom": "^24.1.1",
+        "puppeteer-core": "^22.14.0",
         "tslib": "^2.6.3",
-        "typescript": "^5.5.3",
-        "typescript-eslint": "^7.16.1",
-        "vite": "^5.3.3",
-        "vitest": "^2.0.3",
-        "vitest-mock-extended": "^1.3.2"
+        "typescript": "^5.5.4",
+        "typescript-eslint": "^7.17.0",
+        "vite": "^5.3.5",
+        "vitest": "^2.0.4",
+        "vitest-mock-extended": "^2.0.0"
     },
     "scripts": {
         "check": "npm run check --workspaces",
