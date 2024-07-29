@@ -27,7 +27,7 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     const archive = `${base}.${nwExtension}`;
     const sourceFile = `https://dl.nwjs.io/v${nwVersion}/${archive}`;
     const tmpFile = path.resolve(os.tmpdir(), archive);
-    let tmpDir = path.resolve(os.tmpdir(), base);
+    const tmpDir = path.resolve(os.tmpdir(), base);
     const nwDir = path.resolve(os.tmpdir(), base.replace(/^nwjs(-sdk)?/i, pkgConfig.name));
     try {
         await fs.access(tmpFile);
