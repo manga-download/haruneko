@@ -33,7 +33,7 @@ describe('Bookmark', () => {
             const testee = fixture.CreateSparseTestee();
 
             expect(testee.Created.getTime()).toBe(fixture.CreationTime);
-            expect(testee.Updated.getTime()).toBe(fixture.ModificationTime);
+            expect(testee.Updated.Value.getTime()).toBe(fixture.ModificationTime);
             expect(testee.Identifier).toBe(fixture.OriginIdentifier);
             expect(testee.Title).toBe(fixture.OriginTitle);
             expect(testee.Parent).toBe(fixture.MockParent);
@@ -46,7 +46,7 @@ describe('Bookmark', () => {
             const testee = fixture.CreateTestee();
 
             expect(testee.Created.getTime()).toBe(fixture.CreationTime);
-            expect(testee.Updated.getTime()).toBe(fixture.ModificationTime);
+            expect(testee.Updated.Value.getTime()).toBe(fixture.ModificationTime);
             expect(testee.Identifier).toBe(fixture.OriginIdentifier);
             expect(testee.Title).toBe(fixture.OriginTitle);
             expect(testee.Parent).toBe(fixture.MockParent);
@@ -95,7 +95,7 @@ describe('Bookmark', () => {
 
             expect(actual).toBe(entries);
             expect(children.length).toBe(0);
-            expect(fixture.MockParent.Entries.length).toBe(0);
+            expect(fixture.MockParent.Entries.Value.length).toBe(0);
             expect(fixture.MockParent.CreateEntry).toHaveBeenCalledTimes(1);
             expect(fixture.MockParent.CreateEntry).toHaveBeenCalledWith(testee.Identifier, testee.Title);
         });

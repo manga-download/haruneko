@@ -114,10 +114,10 @@ describe('BookmarkPlugin', () => {
                 .SetupInfoTrackers();
             let updatedEntries: Bookmark[];
             const testee = await fixture.CreateTestee(0);
-            testee.EntriesUpdated.Subscribe((_, args) => updatedEntries = args);
+            testee.Entries.Subscribe(args => updatedEntries = args);
             await new Promise(resolve => setTimeout(resolve, 50));
 
-            expect(testee.Entries.length).toBe(3);
+            expect(testee.Entries.Value.length).toBe(3);
             expect(testee.Entries).toBe(updatedEntries);
 
             expect(testee.Entries[0].Title).toBe('Bookmark 01');
