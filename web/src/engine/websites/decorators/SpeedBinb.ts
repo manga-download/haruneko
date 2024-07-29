@@ -87,11 +87,15 @@ type Dimensions = {
 }
 
 const JsonFetchScript = `
-        new Promise(resolve => {
+    new Promise(resolve, reject) => {
+        try {
             fetch('{URI}')
                 .then(response => response.json())
                 .then(json => resolve(json))
-         });
+        } catch {error} {
+            reject(error);
+        }
+    });
 `;
 export enum SpeedBinbVersion { v016113 = 1, v016201, v016452, v016130, _default_v016061, vUnknown }
 
