@@ -18,9 +18,11 @@ describe('ImageProxyTransformer', () => {
 
         it('Should transform photon proxy', () => {
             const uri = new URL('https://i0.wp.com/cdn.image.host/picture.png');
-            expect(testee(uri).href).toBe('http://cdn.image.host/picture.png');
+            expect(testee(uri).href).toBe('https://cdn.image.host/picture.png');
             uri.searchParams.set('ssl', '1');
             expect(testee(uri).href).toBe('https://cdn.image.host/picture.png');
+            uri.searchParams.set('ssl', '0');
+            expect(testee(uri).href).toBe('http://cdn.image.host/picture.png');
             uri.searchParams.set('q', 'token=123&expire=987');
             expect(testee(uri).href).toBe('https://cdn.image.host/picture.png?token=123&expire=987');
         });
