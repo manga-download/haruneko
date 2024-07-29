@@ -68,13 +68,16 @@ if (process.platform === 'linux') {
     await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirTemp);
     dirTemp = await redist(electronVersion, 'linux', 'ia32');
     await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(electronVersion, 'linux', 'ia32');
-    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirTemp);
     dirTemp = await redist(electronVersion, 'linux', 'x64');
     await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirTemp);
     dirTemp = await redist(electronVersion, 'linux', 'x64');
     await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(electronVersion, 'linux', 'x64');
-    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirTemp);
     */
+    const tgz = await import('./bundle-app-tgz.mjs');
+    dirTemp = await redist(electronVersion, process.platform, 'arm64');
+    await tgz.bundle(dirApp, dirRes, dirTemp, dirOut);
+    dirTemp = await redist(electronVersion, process.platform, 'armv7l');
+    await tgz.bundle(dirApp, dirRes, dirTemp, dirOut);
+    dirTemp = await redist(electronVersion, process.platform, 'x64');
+    await tgz.bundle(dirApp, dirRes, dirTemp, dirOut);
 }

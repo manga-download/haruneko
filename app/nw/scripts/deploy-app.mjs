@@ -2,7 +2,7 @@ import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import extract from 'extract-zip';
-import { download } from '../../tools.mjs';
+import { download, run } from '../../tools.mjs';
 
 const pkgFile = 'package.json';
 const pkgConfig = JSON.parse(await fs.readFile(pkgFile));
@@ -27,7 +27,7 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     const archive = `${base}.${nwExtension}`;
     const sourceFile = `https://dl.nwjs.io/v${nwVersion}/${archive}`;
     const tmpFile = path.resolve(os.tmpdir(), archive);
-    const tmpDir = path.resolve(os.tmpdir(), base);
+    let tmpDir = path.resolve(os.tmpdir(), base);
     const nwDir = path.resolve(os.tmpdir(), base.replace(/^nwjs(-sdk)?/i, pkgConfig.name));
     try {
         await fs.access(tmpFile);
@@ -38,7 +38,11 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     console.log('Extracting:', '$TMP/' + path.basename(tmpFile), '=>', '$TMP/' + path.basename(nwDir));
     await fs.rm(tmpDir, { force: true, recursive: true });
     await fs.rm(nwDir, { force: true, recursive: true });
-    await extract(tmpFile, { dir: os.tmpdir() });
+    if (nwPlatform === 'linux') {
+        await run(`tar -xvzf ${tmpFile} -C ${os.tmpdir()}`);
+    }
+    else
+        await extract(tmpFile, { dir: os.tmpdir() });
     await fs.rename(tmpDir, nwDir);
     return nwDir;
 }
@@ -73,13 +77,14 @@ if (process.platform === 'linux') {
     await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirTemp);
     dirTemp = await redist(nwVersion, nwBuildType, 'linux', 'ia32');
     await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(nwVersion, nwBuildType, 'linux', 'ia32');
-    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirTemp);
     dirTemp = await redist(nwVersion, nwBuildType, 'linux', 'x64');
     await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirTemp);
     dirTemp = await redist(nwVersion, nwBuildType, 'linux', 'x64');
     await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(nwVersion, nwBuildType, 'linux', 'x64');
-    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirTemp);
     */
+    const tgz = await import('./bundle-app-tgz.mjs');
+    dirTemp = await redist(nwVersion, nwBuildType, process.platform, 'ia32');
+    await tgz.bundle(dirApp, dirRes, dirTemp, dirOut);
+    dirTemp = await redist(nwVersion, nwBuildType, process.platform, 'x64');
+    await tgz.bundle(dirApp, dirRes, dirTemp, dirOut);
 }
