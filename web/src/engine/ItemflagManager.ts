@@ -1,15 +1,13 @@
 import type { MediaChild, MediaContainer } from './providers/MediaPlugin';
 import { type StorageController, Store } from './StorageController';
-import { Event } from './Event';
 
 export class ItemflagManager {
 
-    public readonly FlagChanged: Event<MediaContainer<MediaChild>, FlagType> = new Event<MediaContainer<MediaChild>, FlagType>();
-    public readonly MediaFlagsChanged: Event<ItemflagManager, MediaContainer<MediaChild>> = new Event<this, MediaContainer<MediaChild>>();
+    //public readonly FlagChanged: Event<MediaContainer<MediaChild>, FlagType> = new Event<MediaContainer<MediaChild>, FlagType>();
+    //public readonly MediaFlagsChanged: Event<ItemflagManager, MediaContainer<MediaChild>> = new Event<this, MediaContainer<MediaChild>>();
 
     private items:Map<string, ItemFlag[]> = new Map();
-    constructor(private readonly storage: StorageController) {
-    }
+    constructor(private readonly storage: StorageController) {}
 
     public async LoadContainerFlags(media: MediaContainer<MediaChild>) {
         if(media.Parent) {
@@ -56,7 +54,7 @@ export class ItemflagManager {
         if (kind === FlagType.Current) {
             // Ignore all previous flags and add flag viewed on all items after entry
             // TODO: Manage flags context per language in case of multiple current flag (1 per language)
-            const items = entry.Parent?.Entries;
+            const items = entry.Parent?.Entries.Value;
             const entryIndex = items?.indexOf(entry);
             items.forEach((item, index) => {
                 if (index > entryIndex) flags.push({
@@ -103,7 +101,7 @@ export class ItemflagManager {
 
     public async GetUnFlaggedItems(media: MediaContainer<MediaContainer<MediaChild>>) {
         const marks = await this.GetContainerItemsFlags(media);
-        return media.Entries.filter(item => {
+        return media.Entries.Value.filter(item => {
             const mark = marks?.find(mark => {
                 return this.IsContainerSameItem(mark, item);
             });
