@@ -24,8 +24,7 @@ describe('ImageProxyTransformer', () => {
             uri.searchParams.set('ssl', '0');
             expect(testee(uri).href).toBe('http://cdn.image.host/picture.png');
             uri.searchParams.set('q', 'token=123&expire=987');
-            uri.searchParams.delete('ssl');
-            expect(testee(uri).href).toBe('https://cdn.image.host/picture.png?token=123&expire=987');
+            expect(testee(uri).href).toBe('http://cdn.image.host/picture.png?token=123&expire=987');
         });
 
         it('Should transform google proxy', () => {
