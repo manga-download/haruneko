@@ -26,17 +26,15 @@ export const bookmarksToContinue = readable<Bookmark[]>([], (set) => {
 });
 
 export const DownloadTasks = readable<DownloadTask[]>([], (set) => {
-    HakuNeko.DownloadManager.GetTasks().then((tasks) => set(tasks));
 
-    async function OnTasksChangedCallback() {
-        set(await HakuNeko.DownloadManager.GetTasks());
+    function OnTasksChangedCallback() {
+        set(HakuNeko.DownloadManager.Queue.Value);
     }
-    HakuNeko.DownloadManager.TasksAdded.Subscribe(OnTasksChangedCallback);
-    HakuNeko.DownloadManager.TasksRemoved.Subscribe(OnTasksChangedCallback);
+
+    set(HakuNeko.DownloadManager.Queue.Value);
+    HakuNeko.DownloadManager.Queue.Subscribe(OnTasksChangedCallback);
 
     return () => {
-        HakuNeko.DownloadManager.TasksAdded.Unsubscribe(OnTasksChangedCallback);
-        HakuNeko.DownloadManager.TasksRemoved.Unsubscribe(OnTasksChangedCallback);
+        HakuNeko.DownloadManager.Queue.Unsubscribe(OnTasksChangedCallback);
     };
-
 });

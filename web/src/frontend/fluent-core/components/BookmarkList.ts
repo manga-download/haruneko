@@ -106,13 +106,13 @@ export class BookmarkList extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
-        HakuNeko.BookmarkPlugin.EntriesUpdated.Subscribe(this.BookmarksChanged);
+        HakuNeko.BookmarkPlugin.Entries.Subscribe(this.BookmarksChanged);
         this.BookmarksChanged();
     }
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
+        HakuNeko.BookmarkPlugin.Entries.Unsubscribe(this.BookmarksChanged);
     }
 
     @observable Entries: Bookmark[] = [];
@@ -135,6 +135,6 @@ export class BookmarkList extends FASTElement {
     }
 
     private BookmarksChanged = function(this: BookmarkList) {
-        this.Entries = HakuNeko.BookmarkPlugin.Entries.slice();
+        this.Entries = HakuNeko.BookmarkPlugin.Entries.Value.slice();
     }.bind(this);
 }
