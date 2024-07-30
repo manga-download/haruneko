@@ -7,6 +7,7 @@ import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from
 import icon from '../../img/manga.webp';
 import { Exception, NotImplementedError } from '../Error';
 import { CreateChapterExportRegistry } from '../exporters/MangaExporterRegistry';
+import { Observable } from '../Observable';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -139,6 +140,8 @@ export class Manga extends MediaContainer<Chapter> {
 
 export class Chapter extends StoreableMediaContainer<Page> {
 
+    private readonly isStored = new Observable<boolean, Chapter>(false);
+
     constructor(private readonly scraper: MangaScraper, parent: Manga, identifier: string, title: string) {
         super(identifier, title, parent);
     }
@@ -148,7 +151,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
     }
 
     public get IsStored() {
-        return false;
+        return this.isStored;
     }
 
     public async Store(resources: Map<number, string>): Promise<void> {
