@@ -7,20 +7,19 @@ const config = {
         title: 'Reaper Scans'
     },
     container: {
-        url: 'https://reaperscans.com/comics/7833-990k-ex-life-hunter',
-        id: '/comics/7833-990k-ex-life-hunter',
+        url: 'https://reaperscans.com/series/990k-ex-life-hunter',
+        id: '49',
         title: '990k Ex-Life Hunter',
-        timeout: 20000
+        timeout: 15000
     },
     child: {
-        id: '/comics/7833-990k-ex-life-hunter/chapters/49372236-chapter-74',
+        id: '/series/990k-ex-life-hunter/chapter-74',
         title: 'Chapter 74',
-        timeout: 20000
 
     },
     entry: {
-        index: 1,
-        size: 1_855_033,
+        index: 0,
+        size: 349_888,
         type: 'image/jpeg'
     }
 };
