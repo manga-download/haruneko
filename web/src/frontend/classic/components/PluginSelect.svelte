@@ -87,7 +87,7 @@
                     rejectconditions.push(true);
                 if (plugin.Tags) {
                     pluginTagsFilter.forEach((tagfilter) => {
-                        if (!plugin.Tags.includes(tagfilter))
+                        if (!plugin.Tags.Value.includes(tagfilter))
                             rejectconditions.push(true);
                     });
                 }

@@ -67,7 +67,7 @@
                     itemNameFilter.toLowerCase(),
                 ) !== -1,
             );
-        if (langFilter) conditions.push(item.Tags.includes(langFilter));
+        if (langFilter) conditions.push(item.Tags.Value.includes(langFilter));
         return conditions.every((condition) => condition);
     });
 
@@ -75,7 +75,7 @@
 
     let MediaLanguages: Tag[] = [];
     $: MediaLanguages = items.reduce((detectedLangaugeTags: Tag[], item) => {
-        const undetectedLangaugeTags = item.Tags.filter(tag => !detectedLangaugeTags.includes(tag) && availableLanguageTags.includes(tag));
+        const undetectedLangaugeTags = item.Tags.Value.filter(tag => !detectedLangaugeTags.includes(tag) && availableLanguageTags.includes(tag));
         return [ ...detectedLangaugeTags, ...undetectedLangaugeTags ];
     }, []);
     $: langComboboxItems =

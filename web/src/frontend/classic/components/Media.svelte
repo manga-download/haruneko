@@ -28,8 +28,7 @@
     async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
     }
-    $: isOrphaned =
-        isBookmarked && (media as Bookmark).IsOrphaned ? true : false;
+    $: isOrphaned = isBookmarked && (media as Bookmark).IsOrphaned ? true : false;
 
     //Context menu
     let mediadiv: HTMLElement;
@@ -37,19 +36,10 @@
     //Unviewed content
     let unFlaggedItems: MediaContainer<MediaChild>[] = [];
     findMediaUnFlaggedContent(media);
-
-    import { EventWatcher } from '../stores/Events';
-    const mediaFlagsChanged = EventWatcher(
-        null,
-        HakuNeko.ItemflagManager.MediaFlagsChanged,
-        media
-    );
-    $: if ($mediaFlagsChanged) findMediaUnFlaggedContent(media);
+    HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(() => findMediaUnFlaggedContent(media))
 
     async function findMediaUnFlaggedContent(media: MediaContainer<MediaContainer<MediaChild>>) {
-        unFlaggedItems = await HakuNeko.ItemflagManager.GetUnFlaggedItems(
-            media
-        );
+        unFlaggedItems = await HakuNeko.ItemflagManager.GetUnFlaggedItems(media);
     }
 </script>
 

@@ -22,21 +22,21 @@
 
     function refreshCounts() {
         completed = $DownloadTasks.filter(
-            (job) => job.Status === Status.Completed
+            (job) => job.Status.Value === Status.Completed
         ).length;
         failed = $DownloadTasks.filter(
-            (job) => job.Status === Status.Failed
+            (job) => job.Status.Value === Status.Failed
         ).length;
         processing = $DownloadTasks.filter((job) =>
-            [Status.Downloading, Status.Processing].includes(job.Status)
+            [Status.Downloading, Status.Processing].includes(job.Status.Value)
         ).length;
     }
 
     function refreshProgress() {
-        status = currentDownload.Status;
+        status = currentDownload.Status.Value;
         switch (status) {
             case Status.Downloading:
-                progress = currentDownload.Progress;
+                progress = currentDownload.Progress.Value;
                 break;
             case Status.Completed:
                 progress = 1;
@@ -53,31 +53,31 @@
     DownloadTasks.subscribe((tasks) => {
         const removed = previousTasks.filter((task) => !tasks.includes(task));
         const added = tasks.filter((task) => !previousTasks.includes(task));
-        removed.forEach((job) => job.StatusChanged.Unsubscribe(refreshStatus));
-        added.forEach((job) => job.StatusChanged.Subscribe(refreshStatus));
+        removed.forEach((job) => job.Status.Unsubscribe(refreshStatus));
+        added.forEach((job) => job.Status.Subscribe(refreshStatus));
         previousTasks = tasks;
         refreshCounts();
     });
 
     function refreshStatus() {
         const nowDownloading = $DownloadTasks.filter((job) =>
-            [Status.Downloading, Status.Processing].includes(job.Status)
+            [Status.Downloading, Status.Processing].includes(job.Status.Value)
         )[0];
         if (nowDownloading && nowDownloading !== currentDownload) {
-            currentDownload?.StatusChanged.Unsubscribe(refreshProgress);
-            currentDownload?.ProgressChanged.Unsubscribe(refreshProgress);
+            currentDownload?.Status.Unsubscribe(refreshProgress);
+            currentDownload?.Progress.Unsubscribe(refreshProgress);
             currentDownload = nowDownloading;
-            currentDownload.ProgressChanged.Subscribe(refreshProgress);
-            currentDownload.StatusChanged.Subscribe(refreshProgress);
+            currentDownload.Progress.Subscribe(refreshProgress);
+            currentDownload.Status.Subscribe(refreshProgress);
         }
         refreshCounts();
     }
 
     onDestroy(() => {
-        currentDownload?.ProgressChanged.Unsubscribe(refreshProgress);
-        currentDownload?.StatusChanged.Unsubscribe(refreshProgress);
+        currentDownload?.Progress.Unsubscribe(refreshProgress);
+        currentDownload?.Status.Unsubscribe(refreshProgress);
         $DownloadTasks.forEach((job) =>
-            job.StatusChanged.Unsubscribe(refreshStatus)
+            job.Status.Unsubscribe(refreshStatus)
         );
     });
 
@@ -119,7 +119,7 @@
                         Status.Downloading,
                         Status.Processing,
                         Status.Queued,
-                    ].includes(job.Status)
+                    ].includes(job.Status.Value)
                 )?.length})
             </div>
         </div>

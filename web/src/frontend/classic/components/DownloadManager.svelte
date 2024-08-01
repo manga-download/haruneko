@@ -52,13 +52,13 @@
         {#if $DownloadTasks.length > 0}
             {#each Object.entries(groupedJobs) as [media, mediajobs] (media)}
                 {@const completed = mediajobs.filter(
-                    (job) => job.Status === Status.Completed
+                    (job) => job.Status.Value === Status.Completed
                 ).length}
                 {@const failed = mediajobs.filter(
-                    (job) => job.Status === Status.Failed
+                    (job) => job.Status.Value === Status.Failed
                 ).length}
                 {@const processing = mediajobs.filter((job) =>
-                    [Status.Downloading, Status.Processing].includes(job.Status)
+                    [Status.Downloading, Status.Processing].includes(job.Status.Value)
                 ).length}
                 <ExpandableTile tileCollapsedLabel="Details">
                     <div slot="above">
