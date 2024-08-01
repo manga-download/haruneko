@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './Mikoroku.webp';
-import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 const pagesScript = `
-    new Promise(resolve => { resolve([...document.querySelectorAll('article#reader img')].map(img => img.src)); });
+    new Promise(resolve =>  resolve([...document.querySelectorAll('article#reader img')].map(img => img.src)));
 `;
 
 type RSS = {
@@ -23,7 +23,21 @@ type RSS = {
     }
 }
 
+const chapterScript = `
+    new Promise ( resolve =>
+        resolve (clwd.arr.filter(chapter => chapter.link != window.location.href)
+            .map(chapter => {
+                return {
+                    id: new URL(chapter.link).pathname,
+                    title : chapter.title.trim()
+                };
+            })
+        )
+    );
+`;
+
 @Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'header h1[itemprop="name"]')
+@Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageJS(pagesScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -42,15 +56,6 @@ export default class extends DecoratableMangaScraper {
             const goodLink = manga.link.find(link => link.rel === 'alternate');
             return new Manga(this, provider, new URL(goodLink.href).pathname, goodLink.title.trim());
         });
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaid = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), 'clwd.settings.cat');
-        const { feed: { entry } } = await FetchJSON<RSS>(new Request(new URL(`/feeds/posts/default/-/${mangaid}?orderby=published&alt=json&max-results=9999`, this.URI)));
-        return entry.map(entry => {
-            const goodLink = entry.link.find(link => link.rel === 'alternate');
-            return new Chapter(this, manga, new URL(goodLink.href, this.URI).pathname, goodLink.title.replace(manga.Title, '').trim());
-        }).filter(chap => chap.Identifier != manga.Identifier);
     }
 
 }
