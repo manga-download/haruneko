@@ -485,6 +485,7 @@ export { default as Mgkomik } from './Mgkomik';
 export { default as MHScans } from './MHScans';
 export { default as Mi2mangaES } from './Mi2mangaES';
 export { default as Migudm } from './Migudm';
+export { default as Mikoroku } from './Mikoroku';
 export { default as MilfToon } from './MilfToon';
 export { default as MindaFanSub } from './MindaFanSub';
 export { default as MiniTwoScan } from './MiniTwoScan';
