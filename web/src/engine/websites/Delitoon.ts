@@ -52,7 +52,7 @@ type APIToken = {
     }
 }
 
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
     private readonly BalconyID: string = undefined;
     private readonly Timezone: string = 'Europe/Paris';
