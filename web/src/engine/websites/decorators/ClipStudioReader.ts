@@ -1,0 +1,289 @@
+//viewer decorators for websites using CLIP STUDIO READER
+// https://www.celsys.com/en/e-booksolution/lab/
+//Pages are scrambled, informations are inside XMLs, and php scripts are named like diazepam_hybrid.php / lorezapam
+
+import { Fetch, FetchCSS } from "../../platform/FetchProvider";
+import { Page, type Chapter, type MangaScraper } from "../../providers/MangaPlugin";
+import type { Priority } from "../../taskpool/DeferredTask";
+import DeScramble from "../../transformers/ImageDescrambler";
+import * as Common from "./Common";
+
+type PageData = {
+    width: number,
+    height: number,
+    scramble: {
+        width: number,
+        height: number
+    }
+}
+
+type PartData = {
+    number: number,
+    scramble: boolean,
+    type: PartType
+}
+
+type ImagePart = {
+    binaryArray?: Uint8Array,
+    image?: HTMLImageElement,
+    scramble: boolean
+}
+
+enum PartType {
+    DATA_TYPE_LESIA = 10,
+    DATA_TYPE_LESIA_OLD = 7,
+    DATA_TYPE_JPEG = 1,
+    DATA_TYPE_GIF = 2,
+    DATA_TYPE_PNG = 3,
+
+};
+enum Modes {
+    MODE_DL_XML = '0',
+    MODE_DL_JPEG = '1',
+    MODE_DL_GIF = '2',
+    MODE_DL_PNG = '3',
+    MODE_DL_FACE_XML = '7',
+    MODE_DL_PAGE_XML = '8'
+}
+
+enum RequestType {
+    REQUEST_TYPE_FILE = '0',
+}
+
+/**********************************************
+ ******** Page List Extraction Methods ********
+ **********************************************/
+
+/**
+ * An extension method for extracting all pages for the given {@link chapter} using the CLIP STUDIO READER AJAX API.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
+ */
+export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+    const pages: Page[] = [];
+    const metadatas = new Map<string, string>();
+
+    //try to get parameters from querystring
+    const chapterUrl = new URL(chapter.Identifier, this.URI);
+    let authkey = chapterUrl.searchParams.get('param');
+    let endpoint = chapterUrl.searchParams.get('cgi');
+
+    if (!authkey || !endpoint) {
+        //otherwise fetch the page
+        (await FetchCSS<HTMLInputElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div#meta input')).forEach(element => metadatas.set(element.name, element.value));
+        authkey = metadatas.get('param');
+        endpoint = metadatas.get('cgi');
+    }
+
+    const url = new URL(endpoint, this.URI);
+    url.searchParams.set('mode', Modes.MODE_DL_FACE_XML);
+    url.searchParams.set('reqtype', RequestType.REQUEST_TYPE_FILE);
+    url.searchParams.set('vm', '4');
+    url.searchParams.set('file', 'face.xml');
+    url.searchParams.set('param', authkey);
+
+    const XML = await FetchXML(new Request(url));
+    const totalpages = parseInt(XML.getElementsByTagName('TotalPage')[0].textContent);
+
+    const pagedata: PageData = {
+        width: parseInt(XML.getElementsByTagName('Width')[0].textContent),
+        height: parseInt(XML.getElementsByTagName('Height')[0].textContent),
+        scramble: {
+            width: parseInt(XML.getElementsByTagName('Scramble')[0].querySelector('Width').textContent),
+            height: parseInt(XML.getElementsByTagName('Scramble')[0].querySelector('Height').textContent)
+        },
+    };
+
+    for (let i = 0; i < totalpages; i++) {
+        const pagename = i.toString().padStart(4, '0') + '.xml';
+        const url = new URL(endpoint, this.URI);
+        url.searchParams.set('mode', Modes.MODE_DL_PAGE_XML);
+        url.searchParams.set('reqtype', RequestType.REQUEST_TYPE_FILE);
+        url.searchParams.set('vm', '4');
+        url.searchParams.set('file', pagename);
+        url.searchParams.set('param', authkey);
+        pages.push(new Page(this, chapter, new URL(url), { ...pagedata }));
+    }
+
+    return pages;
+}
+
+/**
+ * A class decorator for extracting all pages for the given {@link chapter} using the CLIP STUDIO READER AJAX API.
+  */
+export function PagesSinglePageAJAX() {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+                return FetchPagesSinglePageAJAX.call(this, chapter);
+            }
+        };
+    };
+}
+
+/***********************************************
+ ******** Image Data Extraction Methods ********
+ ***********************************************/
+
+/**
+ * An extension method to get the image data for the given {@link page} according to an XHR based-approach.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param page - A reference to the {@link Page} containing the necessary information to acquire the image data
+ * @param priority - The importance level for ordering the request for the image data within the internal task pool
+ * @param signal - An abort signal that can be used to cancel the request for the image data
+ */
+export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    return this.imageTaskPool.Add(async () => {
+        try {
+
+            const pageData = page.Parameters as PageData;
+
+            //fetch Page XML
+            const XML = await FetchXML(new Request(page.Link));
+            const pageIndex = parseInt(XML.getElementsByTagName('PageNo')[0].textContent);
+            const endpoint = page.Link.origin + page.Link.pathname;
+            const authkey = page.Link.searchParams.get('param');
+            const scrambleArray = XML.getElementsByTagName('Scramble')[0].textContent.split(',').map(element => parseInt(element));
+            const parts: PartData[] = [...XML.getElementsByTagName('Kind')].map(element => {
+                return {
+                    number: parseInt(element.getAttribute('No')),
+                    scramble: element.getAttribute('scramble') === '1',
+                    type: parseInt(element.textContent)
+                };
+            });
+
+            return DeScramble(new ImageData(pageData.width, pageData.height), async (_, ctx) => {
+
+                for (const partData of parts) {
+                    switch (partData.type) {
+                        case PartType.DATA_TYPE_JPEG:
+                        case PartType.DATA_TYPE_GIF:
+                        case PartType.DATA_TYPE_PNG:
+                        case PartType.DATA_TYPE_LESIA:
+                        case PartType.DATA_TYPE_LESIA_OLD: {
+                            const partFileName = [pageIndex.toString().padStart(4, '0'), partData.number.toString().padStart(4, '0')].join('_') + '.bin';
+                            const imageUrl = new URL(endpoint);
+                            let type = partData.type;
+                            type !== PartType.DATA_TYPE_LESIA && type !== PartType.DATA_TYPE_LESIA_OLD || (type = PartType.DATA_TYPE_JPEG);
+
+                            imageUrl.searchParams.set('mode', type.toString());
+                            imageUrl.searchParams.set('file', partFileName);
+                            imageUrl.searchParams.set('reqtype', RequestType.REQUEST_TYPE_FILE);
+                            imageUrl.searchParams.set('param', authkey);
+
+                            const part = await LoadPart(imageUrl, partData);
+                            let partCanvas = TranscribeImageToCanvas(part.image);
+                            let transferCanvas = document.createElement('canvas');
+
+                            if (part.image) {
+
+                                if (part.scramble) {
+
+                                    const numCols = pageData.scramble.width;
+                                    const numRow = pageData.scramble.height;
+                                    if (!(scrambleArray.length < numCols * numRow || partCanvas.width < 8 * numCols || partCanvas.height < 8 * numRow)) {
+                                        let partCTX = partCanvas.getContext('2d');
+                                        let transferCTX = transferCanvas.getContext('2d');
+                                        transferCanvas.width = 0;
+                                        transferCanvas.height = 0;
+                                        transferCanvas.width = partCanvas.width;
+                                        transferCanvas.height = partCanvas.height;
+                                        transferCTX.drawImage(partCanvas, 0, 0); //Draw PART on Transfert
+
+                                        let pieceX: number,
+                                            pieceY: number,
+                                            sourceX: number,
+                                            sourceY: number,
+                                            p: number,
+                                            pieceWidth = 8 * Math.floor(Math.floor(partCanvas.width / numCols) / 8),
+                                            pieceHeight = 8 * Math.floor(Math.floor(partCanvas.height / numRow) / 8);
+
+                                        for (let scrambleIndex = 0; scrambleIndex < scrambleArray.length; scrambleIndex++) {
+                                            pieceX = scrambleIndex % numCols;
+                                            pieceY = Math.floor(scrambleIndex / numCols);
+                                            pieceX *= pieceWidth;
+                                            pieceY *= pieceHeight;
+                                            sourceX = (p = scrambleArray[scrambleIndex]) % numCols;
+                                            sourceY = Math.floor(p / numCols);
+                                            sourceX *= pieceWidth;
+                                            sourceY *= pieceHeight;
+                                            partCTX.clearRect(pieceX, pieceY, pieceWidth, pieceHeight);//
+                                            partCTX.drawImage(transferCanvas, sourceX, sourceY, pieceWidth, pieceHeight, pieceX, pieceY, pieceWidth, pieceHeight); //draw TRANSFERT to part
+                                        }
+
+                                        transferCTX.clearRect(0, 0, transferCanvas.width, transferCanvas.height);
+                                        transferCanvas.width = 0;
+                                        transferCanvas.height = 0;
+                                        transferCTX = null;
+                                        transferCanvas = null;
+
+                                        ctx.drawImage(partCTX.canvas, 0, 0);
+                                        partCanvas = null;
+                                        partCTX = null;
+
+                                    }
+
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+
+            });
+        } catch (error) {
+
+        }
+    }, priority, signal);
+}
+
+/**
+ * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
+ */
+export function ImageAjax() {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+                return FetchImageAjax.call(this, page, priority, signal);
+            }
+        };
+    };
+}
+
+async function FetchXML(request: Request): Promise < XMLDocument > {
+    const response = await Fetch(request);
+    const data = await response.text();
+    return new DOMParser().parseFromString(data, 'text/xml');
+}
+async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
+    if (partData.type === PartType.DATA_TYPE_LESIA || partData.type === PartType.DATA_TYPE_LESIA_OLD) {
+        throw new Error('Not suported Yet');
+    } else {
+        return { image: await LoadImage(imageUrl), scramble: partData.scramble };
+    }
+}
+
+function TranscribeImageToCanvas(image: HTMLImageElement) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 0;
+    canvas.height = 0;
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = ctx.createPattern(image, 'no-repeat');
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#000000';
+    return canvas;
+}
+async function LoadImage(url: URL): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+        const uri = new URL(url);
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = error => reject(error);
+        image.src = uri.href;
+    });
+}
