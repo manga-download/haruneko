@@ -69,17 +69,14 @@ export default class extends DecoratableMangaScraper {
                         const id = JSON.stringify({ itemid: chapter.dataset.id, itemtype: type, language: language });
                         const title = chapter.text.trim();
                         const newChapter = new Chapter(this, manga, id, title);
-                        try {
+                        if(chapterLanguageMap[language]) {
                             newChapter.Tags.push(chapterLanguageMap[language]);
-                        } catch (error) {
-                            //console.warn('Unable to find language')
                         }
                         chapterList.push(newChapter);
                     });
             }
         }
         return chapterList;
-
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -134,6 +131,5 @@ export default class extends DecoratableMangaScraper {
             }
 
         });
-
     }
 }

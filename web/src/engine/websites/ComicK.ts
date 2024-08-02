@@ -90,7 +90,7 @@ export default class extends DecoratableMangaScraper {
         try {
             const data = await FetchJSON<APIManga[]>(new Request(new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl)));
             return data.map(item => new Manga(this, provider, item.hid, item.title.trim()));
-        } catch (error) {
+        } catch { // TODO: Do not return empty list for generic errors
             return [];
         }
     }
@@ -136,5 +136,4 @@ export default class extends DecoratableMangaScraper {
         const { chapter: { md_images } } = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
         return md_images.map(image => new Page(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), { Referer: this.URI.href }));
     }
-
 }
