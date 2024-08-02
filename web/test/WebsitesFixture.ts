@@ -67,7 +67,7 @@ export class TestFixture<TWebsitePlugin extends MediaContainer<MediaChild>, TCon
 
     private async GetRemoteEntry(remoteChild: JSHandle<TChild>, entryIndex?: number): Promise<JSHandle<TEntry>> {
         return remoteChild.evaluateHandle(async (child: TChild, index: number) => {
-            return child?.Entries[index] as TEntry;
+            return child?.Entries.Value[index] as TEntry;
         }, entryIndex);
     }
 
