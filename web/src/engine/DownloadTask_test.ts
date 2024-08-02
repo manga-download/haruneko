@@ -46,7 +46,7 @@ class TestFixture {
 
     public SetupMediaContainer(items: MediaItem[]): TestFixture {
         this.MediaContainerEntriesMock.mockReset();
-        this.MediaContainerEntriesMock.mockReturnValue(items);
+        this.MediaContainerEntriesMock.mockReturnValue({ Value: items });
         return this;
     }
 }
@@ -64,9 +64,9 @@ describe('DownloadTask', () => {
             await new Promise(resolve => setTimeout(resolve, 5));
             expect(testee.Media).toBe(fixture.MediaContainerMock);
             expect(testee.Errors).toEqual([]);
-            expect(testee.Status).toBe(Status.Queued);
+            expect(testee.Status.Value).toBe(Status.Queued);
             expect(fixture.StatusChangedCallbackMock).not.toBeCalled();
-            expect(testee.Progress).toBe(0);
+            expect(testee.Progress.Value).toBe(0);
             expect(fixture.ProgressChangedCallbackMock).not.toBeCalled();
         });
     });
@@ -248,13 +248,13 @@ describe('DownloadTask', () => {
             fixture.MediaContainerMock.Store.mockResolvedValue();
             const testee = fixture.CreateTestee();
 
-            expect(testee.Status).toBe(Status.Queued);
+            expect(testee.Status.Value).toBe(Status.Queued);
             const promise = testee.Run();
-            expect(testee.Status).toBe(Status.Downloading);
+            expect(testee.Status.Value).toBe(Status.Downloading);
             await cleaned.Promise;
-            expect(testee.Status).toBe(Status.Processing);
+            expect(testee.Status.Value).toBe(Status.Processing);
             await promise;
-            expect(testee.Status).toBe(Status.Completed);
+            expect(testee.Status.Value).toBe(Status.Completed);
         });
 
         it('Should set expected values on downloading error', async () => {
@@ -264,13 +264,13 @@ describe('DownloadTask', () => {
             fixture.StorageControllerMock.RemoveTemporary.mockImplementationOnce(() => cleaned.Run());
             const testee = fixture.CreateTestee();
 
-            expect(testee.Status).toBe(Status.Queued);
+            expect(testee.Status.Value).toBe(Status.Queued);
             const promise = testee.Run();
-            expect(testee.Status).toBe(Status.Downloading);
+            expect(testee.Status.Value).toBe(Status.Downloading);
             await cleaned.Promise;
-            expect(testee.Status).toBe(Status.Downloading);
+            expect(testee.Status.Value).toBe(Status.Downloading);
             await promise;
-            expect(testee.Status).toBe(Status.Failed);
+            expect(testee.Status.Value).toBe(Status.Failed);
         });
 
         it('Should set expected values on processing error', async () => {
@@ -281,13 +281,13 @@ describe('DownloadTask', () => {
             fixture.MediaContainerMock.Store.mockRejectedValue('o');
             const testee = fixture.CreateTestee();
 
-            expect(testee.Status).toBe(Status.Queued);
+            expect(testee.Status.Value).toBe(Status.Queued);
             const promise = testee.Run();
-            expect(testee.Status).toBe(Status.Downloading);
+            expect(testee.Status.Value).toBe(Status.Downloading);
             await cleaned.Promise;
-            expect(testee.Status).toBe(Status.Processing);
+            expect(testee.Status.Value).toBe(Status.Processing);
             await promise;
-            expect(testee.Status).toBe(Status.Failed);
+            expect(testee.Status.Value).toBe(Status.Failed);
         });
     });
 
@@ -302,9 +302,9 @@ describe('DownloadTask', () => {
             await testee.Run();
 
             expect(fixture.StatusChangedCallbackMock).toBeCalledTimes(3);
-            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, testee, Status.Downloading);
-            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, testee, Status.Processing);
-            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(3, testee, Status.Completed);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, Status.Downloading, testee);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, Status.Processing, testee);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(3, Status.Completed, testee);
         });
 
         it('Should invoke expected events on downloading error', async () => {
@@ -315,8 +315,8 @@ describe('DownloadTask', () => {
             await testee.Run();
 
             expect(fixture.StatusChangedCallbackMock).toBeCalledTimes(2);
-            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, testee, Status.Downloading);
-            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, testee, Status.Failed);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, Status.Downloading, testee);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, Status.Failed, testee,);
         });
 
         it('Should invoke expected events on processing error', async () => {
@@ -328,9 +328,9 @@ describe('DownloadTask', () => {
             await testee.Run();
 
             expect(fixture.StatusChangedCallbackMock).toBeCalledTimes(3);
-            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, testee, Status.Downloading);
-            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, testee, Status.Processing);
-            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(3, testee, Status.Failed);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, Status.Downloading, testee,);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, Status.Processing, testee,);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(3, Status.Failed, testee,);
         });
     });
 
@@ -341,11 +341,11 @@ describe('DownloadTask', () => {
             const fixture = new TestFixture().SetupMediaContainer([ item ]);
             const testee = fixture.CreateTestee();
 
-            expect(testee.Progress).toBe(0);
+            expect(testee.Progress.Value).toBe(0);
             const promise = testee.Run();
-            expect(testee.Progress).toBe(0);
+            expect(testee.Progress.Value).toBe(0);
             await promise;
-            expect(testee.Progress).toBe(1);
+            expect(testee.Progress.Value).toBe(1);
         });
 
         it('Should set expected values on downloading errors', async () => {
@@ -353,11 +353,11 @@ describe('DownloadTask', () => {
             const fixture = new TestFixture().SetupMediaContainer(items);
             const testee = fixture.CreateTestee();
 
-            expect(testee.Progress).toBe(0);
+            expect(testee.Progress.Value).toBe(0);
             const promise = testee.Run();
-            expect(testee.Progress).toBe(0);
+            expect(testee.Progress.Value).toBe(0);
             await promise;
-            expect(testee.Progress).toBe(2/4);
+            expect(testee.Progress.Value).toBe(2/4);
         });
 
         it('Should set expected values on processing error', async () => {
@@ -366,11 +366,11 @@ describe('DownloadTask', () => {
             fixture.MediaContainerMock.Store.mockRejectedValue('o');
             const testee = fixture.CreateTestee();
 
-            expect(testee.Progress).toBe(0);
+            expect(testee.Progress.Value).toBe(0);
             const promise = testee.Run();
-            expect(testee.Progress).toBe(0);
+            expect(testee.Progress.Value).toBe(0);
             await promise;
-            expect(testee.Progress).toBe(1.0);
+            expect(testee.Progress.Value).toBe(1.0);
         });
     });
 
@@ -386,10 +386,10 @@ describe('DownloadTask', () => {
 
             expect(fixture.ProgressChangedCallbackMock).toBeCalledTimes(items.length + 2);
             for(let page = 1; page <= items.length; page++) {
-                expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(page, testee, page/items.length);
+                expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(page, page/items.length, testee);
             }
-            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(items.length + 1, testee, -1.0);
-            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(items.length + 2, testee, 1.0);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(items.length + 1, -1.0, testee);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(items.length + 2, 1.0, testee);
         });
 
         it('Should invoke expected events on downloading errors', async () => {
@@ -400,8 +400,8 @@ describe('DownloadTask', () => {
             await testee.Run();
 
             expect(fixture.ProgressChangedCallbackMock).toBeCalledTimes(2);
-            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(1, testee, 1/items.length);
-            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(2, testee, 2/items.length);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(1, 1/items.length, testee);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(2, 2/items.length, testee);
         });
 
         it('Should invoke expected events on processing error', async () => {
@@ -414,10 +414,10 @@ describe('DownloadTask', () => {
 
             expect(fixture.ProgressChangedCallbackMock).toBeCalledTimes(items.length + 2);
             for(let page = 1; page <= items.length; page++) {
-                expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(page, testee, page/items.length);
+                expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(page, page/items.length, testee);
             }
-            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(items.length + 1, testee, -1.0);
-            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(items.length + 2, testee, 1.0);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(items.length + 1, -1.0, testee);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(items.length + 2, 1.0, testee);
         });
     });
 });

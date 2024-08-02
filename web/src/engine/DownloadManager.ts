@@ -37,7 +37,7 @@ export class DownloadManager {
      */
     public async Enqueue(...containers: StoreableMediaContainer<MediaItem>[]): Promise<void> {
         await this.InvokeQueueTransaction(() => {
-            const tasks = containers
+            const tasks = containers.distinct()
                 .filter(container => this.queue.Value.none(task => task.Media.IsSameAs(container)))
                 .map(container => new DownloadTask(container, this.storageController));
             this.queue.Push(...tasks);
