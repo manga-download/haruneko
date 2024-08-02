@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './FireCross.webp';
 import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import * as ClipStudioReader from './decorators/ClipStudioReader';
 
 type ChapterID = {
@@ -57,8 +57,7 @@ export default class extends DecoratableMangaScraper {
             }).toString()
         }));
 
-        const response = await Fetch(new Request(redirect, { headers: { Referer: this.URI.origin } }));
-        const fakechapter = new Chapter(this, chapter.Parent as Manga, response.redirected ? response.url : redirect, chapter.Title);
+        const fakechapter = new Chapter(this, chapter.Parent as Manga, redirect, chapter.Title);
         return (await ClipStudioReader.FetchPagesSinglePageAJAX.call(this, fakechapter)).map(page => new Page(this, chapter, page.Link, page.Parameters));
     }
 }

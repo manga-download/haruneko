@@ -2,7 +2,7 @@
 // https://www.celsys.com/en/e-booksolution/lab/
 //Pages are scrambled, informations are inside XMLs, and php scripts are named like diazepam_hybrid.php / lorezapam
 
-import { Fetch, FetchCSS } from "../../platform/FetchProvider";
+import { Fetch } from "../../platform/FetchProvider";
 import { Page, type Chapter, type MangaScraper } from "../../providers/MangaPlugin";
 import type { Priority } from "../../taskpool/DeferredTask";
 import DeScramble from "../../transformers/ImageDescrambler";
@@ -61,16 +61,20 @@ enum RequestType {
  */
 export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
     const pages: Page[] = [];
-    const metadatas = new Map<string, string>();
+
+    const chapterUrl = new URL(chapter.Identifier, this.URI);
+    const response = await Fetch(new Request(chapterUrl, { headers: { Referer: this.URI.origin } }));
+    if (response.redirected) chapterUrl.href = response.url;
 
     //try to get parameters from querystring
-    const chapterUrl = new URL(chapter.Identifier, this.URI);
     let authkey = chapterUrl.searchParams.get('param');
     let endpoint = chapterUrl.searchParams.get('cgi');
 
-    if (!authkey || !endpoint) {
-        //otherwise fetch the page
-        (await FetchCSS<HTMLInputElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div#meta input')).forEach(element => metadatas.set(element.name, element.value));
+    if (!authkey || !endpoint) {//otherwise get elements from body
+        const container = document.createElement('template');
+        container.innerHTML = await response.text();
+        const metadatas = new Map<string, string>();
+        container.querySelectorAll<HTMLInputElement>('div#meta input').forEach(element => metadatas.set(element.name, element.value));
         authkey = metadatas.get('param');
         endpoint = metadatas.get('cgi');
     }
@@ -179,29 +183,25 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 
                                     const numCols = pageData.scramble.width;
                                     const numRow = pageData.scramble.height;
+                                    const pieceWidth = 8 * Math.floor(Math.floor(part.image.width / numCols) / 8);
+                                    const pieceHeight = 8 * Math.floor(Math.floor(part.image.height / numRow) / 8);
+
                                     if (!(scrambleArray.length < numCols * numRow || part.image.width < 8 * numCols || part.image.height < 8 * numRow)) {
-
-                                        let pieceX: number,
-                                            pieceY: number,
-                                            sourceX: number,
-                                            sourceY: number,
-                                            p: number,
-                                            pieceWidth = 8 * Math.floor(Math.floor(part.image.width / numCols) / 8),
-                                            pieceHeight = 8 * Math.floor(Math.floor(part.image.height / numRow) / 8);
-
                                         for (let scrambleIndex = 0; scrambleIndex < scrambleArray.length; scrambleIndex++) {
-                                            pieceX = scrambleIndex % numCols;
-                                            pieceY = Math.floor(scrambleIndex / numCols);
+                                            let p: number;
+                                            let pieceX = scrambleIndex % numCols;
+                                            let pieceY = Math.floor(scrambleIndex / numCols);
                                             pieceX *= pieceWidth;
                                             pieceY *= pieceHeight;
-                                            sourceX = (p = scrambleArray[scrambleIndex]) % numCols;
-                                            sourceY = Math.floor(p / numCols);
+                                            let sourceX = (p = scrambleArray[scrambleIndex]) % numCols;
+                                            let sourceY = Math.floor(p / numCols);
                                             sourceX *= pieceWidth;
                                             sourceY *= pieceHeight;
                                             ctx.clearRect(pieceX, pieceY, pieceWidth, pieceHeight);//
                                             ctx.drawImage(part.image, sourceX, sourceY, pieceWidth, pieceHeight, pieceX, pieceY, pieceWidth, pieceHeight);
-                                            part.image = null;
                                         }
+                                        part.image = null;
+
                                     }
                                 } else ctx.drawImage(part.image, 0, 0);
                             } else throw Error('Binary image not supported !');
