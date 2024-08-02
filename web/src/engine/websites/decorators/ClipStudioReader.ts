@@ -162,19 +162,16 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
                         case PartType.DATA_TYPE_PNG:
                         case PartType.DATA_TYPE_LESIA:
                         case PartType.DATA_TYPE_LESIA_OLD: {
+
                             const partFileName = [pageIndex.toString().padStart(4, '0'), partData.number.toString().padStart(4, '0')].join('_') + '.bin';
                             const imageUrl = new URL(endpoint);
                             let type = partData.type;
                             type !== PartType.DATA_TYPE_LESIA && type !== PartType.DATA_TYPE_LESIA_OLD || (type = PartType.DATA_TYPE_JPEG);
-
                             imageUrl.searchParams.set('mode', type.toString());
                             imageUrl.searchParams.set('file', partFileName);
                             imageUrl.searchParams.set('reqtype', RequestType.REQUEST_TYPE_FILE);
                             imageUrl.searchParams.set('param', authkey);
-
                             const part = await LoadPart(imageUrl, partData);
-                            let partCanvas = TranscribeImageToCanvas(part.image);
-                            let transferCanvas = document.createElement('canvas');
 
                             if (part.image) {
 
@@ -182,22 +179,15 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 
                                     const numCols = pageData.scramble.width;
                                     const numRow = pageData.scramble.height;
-                                    if (!(scrambleArray.length < numCols * numRow || partCanvas.width < 8 * numCols || partCanvas.height < 8 * numRow)) {
-                                        let partCTX = partCanvas.getContext('2d');
-                                        let transferCTX = transferCanvas.getContext('2d');
-                                        transferCanvas.width = 0;
-                                        transferCanvas.height = 0;
-                                        transferCanvas.width = partCanvas.width;
-                                        transferCanvas.height = partCanvas.height;
-                                        transferCTX.drawImage(partCanvas, 0, 0); //Draw PART on Transfert
+                                    if (!(scrambleArray.length < numCols * numRow || part.image.width < 8 * numCols || part.image.height < 8 * numRow)) {
 
                                         let pieceX: number,
                                             pieceY: number,
                                             sourceX: number,
                                             sourceY: number,
                                             p: number,
-                                            pieceWidth = 8 * Math.floor(Math.floor(partCanvas.width / numCols) / 8),
-                                            pieceHeight = 8 * Math.floor(Math.floor(partCanvas.height / numRow) / 8);
+                                            pieceWidth = 8 * Math.floor(Math.floor(part.image.width / numCols) / 8),
+                                            pieceHeight = 8 * Math.floor(Math.floor(part.image.height / numRow) / 8);
 
                                         for (let scrambleIndex = 0; scrambleIndex < scrambleArray.length; scrambleIndex++) {
                                             pieceX = scrambleIndex % numCols;
@@ -208,24 +198,13 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
                                             sourceY = Math.floor(p / numCols);
                                             sourceX *= pieceWidth;
                                             sourceY *= pieceHeight;
-                                            partCTX.clearRect(pieceX, pieceY, pieceWidth, pieceHeight);//
-                                            partCTX.drawImage(transferCanvas, sourceX, sourceY, pieceWidth, pieceHeight, pieceX, pieceY, pieceWidth, pieceHeight); //draw TRANSFERT to part
+                                            ctx.clearRect(pieceX, pieceY, pieceWidth, pieceHeight);//
+                                            ctx.drawImage(part.image, sourceX, sourceY, pieceWidth, pieceHeight, pieceX, pieceY, pieceWidth, pieceHeight);
+                                            part.image = null;
                                         }
-
-                                        transferCTX.clearRect(0, 0, transferCanvas.width, transferCanvas.height);
-                                        transferCanvas.width = 0;
-                                        transferCanvas.height = 0;
-                                        transferCTX = null;
-                                        transferCanvas = null;
-
-                                        ctx.drawImage(partCTX.canvas, 0, 0);
-                                        partCanvas = null;
-                                        partCTX = null;
-
                                     }
-
-                                }
-                            }
+                                } else ctx.drawImage(part.image, 0, 0);
+                            } else throw Error('Binary image not supported !');
                             break;
                         }
                     }
@@ -264,7 +243,7 @@ async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
         return { image: await LoadImage(imageUrl), scramble: partData.scramble };
     }
 }
-
+/*
 function TranscribeImageToCanvas(image: HTMLImageElement) {
     const canvas = document.createElement('canvas');
     canvas.width = 0;
@@ -277,7 +256,7 @@ function TranscribeImageToCanvas(image: HTMLImageElement) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#000000';
     return canvas;
-}
+}*/
 async function LoadImage(url: URL): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const uri = new URL(url);
