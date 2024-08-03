@@ -17,16 +17,24 @@ export default class extends Delitoon {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL('/api/balcony-api/novelwriter/search/contents', this.URI);
-        url.search = new URLSearchParams({
-            searchText: '',
-            isCheckDevice: 'true',
-            isIncludeAdult: 'true',
-            contentsThumbnailType: 'MAIN',
-            size: '99999'
-        }).toString();
-        const { data } = await FetchJSON<APIResult<APIMangas>>(this.CreateRequest(url));
-        return data.content.map(element => new Manga(this, provider, element.alias, element.title.trim()));
+        const url = new URL('/api/balcony-api/search/all', this.URI);
+        const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
+            url.search = new URLSearchParams({
+                searchText: character,
+                isCheckDevice: 'true',
+                isIncludeAdult: 'true',
+                contentsThumbnailType: 'MAIN',
+                size: '9999'
+            }).toString();
+            return FetchJSON<APIResult<APIMangas>>(this.CreateRequest(url));
+        });
+
+        const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
+            const mangas = element.data.content.map(element => new Manga(this, provider, element.alias, element.title.trim()));
+            accumulator.push(...mangas);
+            return accumulator;
+        }, []);
+        return results.distinct();
     }
 
 }

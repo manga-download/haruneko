@@ -8,7 +8,7 @@
         text: string;
     }
     let consoleitems: ConsoleItem[] = [];
-    //TODO: find a way to not remove the source file/line from the console
+    // TODO: find a way to not remove the source file/line from the console
     /*    const log = window.console.log.bind(console);
     console.log = (...args: any) => {
         consoleitems = [...consoleitems, { type: 'log', text: args }];
