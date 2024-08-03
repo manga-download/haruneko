@@ -3,23 +3,23 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'truyentranhaudioonline',
-        title: 'Truyện tranh audio'
-    }/*,
+        id: 'nhattruyen',
+        title: 'NhatTruyen'
+    },
     container: {
-        url: 'https://truyentranhaudio.online/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
+        url: 'https://nhattruyenvn.com/truyen-tranh/initial-d',
+        id: '/truyen-tranh/initial-d',
+        title: 'Initial D'
     },
     child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
+        id: '/truyen-tranh/initial-d/chuong-712',
+        title: 'Chapter 712'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 247_096,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
