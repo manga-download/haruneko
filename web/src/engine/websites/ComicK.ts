@@ -90,7 +90,7 @@ export default class extends DecoratableMangaScraper {
         try {
             const data = await FetchJSON<APIManga[]>(new Request(new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl)));
             return data.map(item => new Manga(this, provider, item.hid, item.title.trim()));
-        } catch (error) {
+        } catch { // TODO: Do not return empty list for generic errors
             return [];
         }
     }
