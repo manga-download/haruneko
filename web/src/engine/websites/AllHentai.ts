@@ -7,7 +7,7 @@ import * as ReadM from './decorators/ReadMangaLive';
 //import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 //To see pictures we need to be logged
-//TODO: Add a login button? Well login works for now anyway, using the button in fluent core UI
+// TODO: Add a login button? Well login works for now anyway, using the button in fluent core UI
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, ReadM.queryMangaTitle)
 @Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, ReadM.pageMangaOffset, 1000, Common.AnchorInfoExtractor(true))
