@@ -244,20 +244,7 @@ async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
         return { image: await LoadImage(imageUrl), scramble: partData.scramble };
     }
 }
-/*
-function TranscribeImageToCanvas(image: HTMLImageElement) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 0;
-    canvas.height = 0;
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = ctx.createPattern(image, 'no-repeat');
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#000000';
-    return canvas;
-}*/
+
 async function LoadImage(url: URL): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const uri = new URL(url);
