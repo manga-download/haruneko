@@ -12,7 +12,6 @@
         Pagination,
     } from 'carbon-components-svelte';
     import {
-        CertificateCheck,
         Settings,
         Star,
         StarFilled,
@@ -40,7 +39,7 @@
             name: item.Title,
             website: new URL(item.URI),
             image: item.Icon,
-            tags: item.Tags,
+            tags: item.Tags.Value,
             overflow: item,
             favorite: item,
         };
@@ -73,7 +72,7 @@
     }
 
     let filterFavorites = false;
-    let filteredPluginlist = [];
+    let filteredPluginlist: ReturnType<typeof createDataRow>[] = [];
     $: {
         filteredPluginlist = HakuNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
@@ -85,7 +84,7 @@
                     ) === -1
                 )
                     rejectconditions.push(true);
-                if (plugin.Tags) {
+                if (plugin.Tags.Value) {
                     pluginTagsFilter.forEach((tagfilter) => {
                         if (!plugin.Tags.Value.includes(tagfilter))
                             rejectconditions.push(true);

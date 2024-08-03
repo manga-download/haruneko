@@ -53,8 +53,7 @@
         items = [];
         selectedItems = [];
         loadItem = value?.Update().then(() => {
-            items = (value?.Entries ??
-                []) as unknown as StoreableMediaContainer<MediaItem>[];
+            items = (value?.Entries.Value as StoreableMediaContainer<MediaItem>[]) ?? [];
         });
     });
 
