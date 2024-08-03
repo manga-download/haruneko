@@ -4,7 +4,7 @@ import { DecoratableMangaScraper} from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as ClipStudioReader from './decorators/ClipStudioReader';
 
-@Common.MangaCSS(/^{origin}\/drecomics\/series\/[^/]+$/, 'div.detailComics h1.detailComics_title > span')
+@Common.MangaCSS(/^{origin}\/drecomics\/series\/[^/]+$/, 'div.detailComics h1.detailComics_title span:first-of-type')
 @Common.MangasSinglePageCSS('/drecomics/series', 'div.seriesList li.seriesList__item a.seriesList__link')
 @Common.ChaptersSinglePageCSS('div.ebookListItem a.ebookListItem_title')
 @ClipStudioReader.PagesSinglePageAJAX()
