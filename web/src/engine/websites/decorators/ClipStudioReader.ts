@@ -205,7 +205,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 
                                     }
                                 } else ctx.drawImage(part.image, 0, 0);
-                            } else throw Error('Binary image not supported !');
+                            } else throw new Error('Binary image not supported !');
                             break;
                         }
                     }
@@ -239,7 +239,7 @@ async function FetchXML(request: Request): Promise < XMLDocument > {
 }
 async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
     if (partData.type === PartType.DATA_TYPE_LESIA || partData.type === PartType.DATA_TYPE_LESIA_OLD) {
-        throw new Error('Not suported Yet');
+        throw new Error('Binary part not supported Not supported Yet');
     } else {
         return { image: await LoadImage(imageUrl), scramble: partData.scramble };
     }
