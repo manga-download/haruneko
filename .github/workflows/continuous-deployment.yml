@@ -38,7 +38,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           projectName: haruneko
-          directory: ./web/dist
+          directory: web/dist
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
@@ -48,4 +48,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           projectName: haruneko-docs
-          directory: ./docs/.vitepress/dist
+          directory: docs/.vitepress/dist
