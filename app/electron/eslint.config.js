@@ -1,4 +1,5 @@
 import tseslint from 'typescript-eslint';
+import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config({
     files: [
@@ -7,6 +8,7 @@ export default tseslint.config({
     plugins: {
         '@typescript-eslint': tseslint.plugin,
         //'eslint-plugin-tsdoc': ...,
+        '@stylistic': stylistic,
     },
     languageOptions: {
         ecmaVersion: 2018,
@@ -17,7 +19,7 @@ export default tseslint.config({
     rules: {
         'semi': [ 'error', 'always' ],
         'no-extra-parens': 'off',
-        '@typescript-eslint/no-extra-parens': 'error',
+        '@stylistic/no-extra-parens': 'error',
         '@typescript-eslint/no-unused-vars': [ 'error', { 'argsIgnorePattern': '^_' } ],
         '@typescript-eslint/consistent-type-imports': 'error',
         '@typescript-eslint/ban-ts-comment': 'warn',

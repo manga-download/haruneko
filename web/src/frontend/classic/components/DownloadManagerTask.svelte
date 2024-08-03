@@ -1,5 +1,5 @@
 <script lang="ts">
-    //TODO: text-overflow not working
+    // TODO: text-overflow not working
     import { Button, ProgressBar, TooltipIcon } from 'carbon-components-svelte';
     import { TrashCan, WarningHexFilled } from 'carbon-icons-svelte';
 
