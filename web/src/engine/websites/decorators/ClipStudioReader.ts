@@ -213,7 +213,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 
             });
         } catch (error) {
-
+            Promise.reject(error);
         }
     }, priority, signal);
 }
