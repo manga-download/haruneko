@@ -239,7 +239,7 @@ async function FetchXML(request: Request): Promise < XMLDocument > {
 }
 async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
     if (partData.type === PartType.DATA_TYPE_LESIA || partData.type === PartType.DATA_TYPE_LESIA_OLD) {
-        throw new Error('Binary part not supported Not supported Yet');
+        throw new Error('Binary part not supported');
     } else {
         return { image: await LoadImage(imageUrl), scramble: partData.scramble };
     }
