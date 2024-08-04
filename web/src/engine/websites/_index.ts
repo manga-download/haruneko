@@ -134,7 +134,7 @@ export { default as FbSquads } from './FbSquads';
 export { default as FeelWeb } from './FeelWeb';
 export { default as FenixScan } from './FenixScan';
 export { default as FinalScans } from './FinalScans';
-export { default as FireScans } from './FireScans';
+export { default as FireComics } from './FireComics';
 export { default as FlameComics } from './FlameComics';
 export { default as FlixScansOrg } from './FlixScansOrg';
 export { default as FMTeam } from './FMTeam';
