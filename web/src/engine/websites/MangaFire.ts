@@ -38,8 +38,6 @@ const chapterLanguageMap = new Map<string, Tag>([
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.info > a', 1, 1, 250)
 export default class extends DecoratableMangaScraper {
 
-    private readonly idRegex = /manga\/[^.]+\.(\w+)/;
-
     public constructor() {
         super('mangafire', `MangaFire`, 'https://mangafire.to', Tags.Language.English, Tags.Language.French, Tags.Language.Japanese, Tags.Language.Portuguese, Tags.Language.Spanish, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator);
     }
@@ -49,7 +47,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const id = manga.Identifier.match(this.idRegex).last();
+        const id = manga.Identifier.split('.').pop();
         const request = new Request(new URL(manga.Identifier, this.URI));
         const data = await FetchCSS(request, 'section.m-list div.dropdown-menu a');
         const languageList = data.map(element => element.dataset.code.toLowerCase());
@@ -60,14 +58,12 @@ export default class extends DecoratableMangaScraper {
             for (const type of types) {
                 const uri = new URL(`ajax/read/${id}/${type}/${language}`, this.URI);
                 const { result: { html } } = await FetchJSON<APIResult<APIHtml>>(new Request(uri));
-                const dom = document.createElement('template');
-                dom.innerHTML = html;
+                const dom = new DOMParser().parseFromString(html, 'text/html').body;
                 const chapters = [ ...dom.querySelectorAll('a') ]
                     .filter(anchor => anchor.pathname.includes(`/${type}-`))
                     .map(anchor => {
-                        const id = JSON.stringify({ itemid: anchor.dataset.id, itemtype: type, language: language });
-                        const title = anchor.text.trim();
-                        const chapter = new Chapter(this, manga, id, title);
+                        const id = JSON.stringify({ itemid: anchor.dataset.id, itemtype: type, language });
+                        const chapter = new Chapter(this, manga, id, `${ anchor.text.trim() } (${ language })`);
                         if(chapterLanguageMap.has(language)) {
                             chapter.Tags.Value.push(chapterLanguageMap.get(language));
                         }
@@ -76,7 +72,7 @@ export default class extends DecoratableMangaScraper {
                 chapterList.push(...chapters);
             }
         }
-        return chapterList;
+        return chapterList.distinct();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
