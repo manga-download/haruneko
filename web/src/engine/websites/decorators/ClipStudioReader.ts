@@ -71,11 +71,9 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     let endpoint = chapterUrl.searchParams.get('cgi');
 
     if (!authkey || !endpoint) {//otherwise get elements from body
-
-        const container = document.createElement('div');
-        container.innerHTML = await response.text();
+        const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
         const metadatas = new Map<string, string>();
-        container.querySelectorAll<HTMLInputElement>('div#meta input').forEach(element => metadatas.set(element.name, element.value));
+        dom.querySelectorAll<HTMLInputElement>('div#meta input').forEach(element => metadatas.set(element.name, element.value));
         authkey = metadatas.get('param');
         endpoint = metadatas.get('cgi');
     }
