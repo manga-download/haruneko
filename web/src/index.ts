@@ -64,7 +64,7 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
 
         if(FeatureFlags.ShowSplashScreen) {
             await Promise.race([
-                new Promise<void>(resolve => frontend.FrontendLoaded.Subscribe(() => resolve())),
+                new Promise<void>(resolve => frontend.CurrentFrontendInfo.Subscribe(() => resolve())),
                 new Promise<void>(resolve => setTimeout(resolve, 7500)),
             ]);
             appWindow.HideSplash();

@@ -92,7 +92,7 @@
 
     function loadMedia(media: MediaContainer<MediaContainer<MediaChild>>) {
         if (!media) return;
-        medias = media.Entries ?? [];
+        medias = media.Entries.Value ?? [];
         fuse = new Fuse(medias, {
             keys: ['Title'],
             findAllMatches: true,

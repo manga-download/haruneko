@@ -93,28 +93,28 @@ export class DownloadManagerTask extends FASTElement {
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        this.Entry?.StatusChanged.Unsubscribe(this.UpdateStatus);
-        this.Entry?.ProgressChanged.Unsubscribe(this.UpdateProgress);
+        this.Entry?.Status.Unsubscribe(this.UpdateStatus);
+        this.Entry?.Progress.Unsubscribe(this.UpdateProgress);
     }
 
     @observable Entry: DownloadTask;
     EntryChanged(oldValue: DownloadTask, newValue: DownloadTask) {
-        oldValue?.StatusChanged.Unsubscribe(this.UpdateStatus);
-        newValue?.StatusChanged.Subscribe(this.UpdateStatus);
-        oldValue?.ProgressChanged.Unsubscribe(this.UpdateProgress);
-        newValue?.ProgressChanged.Subscribe(this.UpdateProgress);
+        oldValue?.Status.Unsubscribe(this.UpdateStatus);
+        newValue?.Status.Subscribe(this.UpdateStatus);
+        oldValue?.Progress.Unsubscribe(this.UpdateProgress);
+        newValue?.Progress.Subscribe(this.UpdateProgress);
 
-        this.UpdateStatus(null, this.Entry?.Status);
-        this.UpdateProgress(null, this.Entry?.Progress);
+        this.UpdateStatus(this.Entry?.Status.Value);
+        this.UpdateProgress(this.Entry?.Progress.Value);
     }
     @observable status: Status;
     @observable progress = 0;
 
-    private UpdateStatus = function (this: DownloadManagerTask, _: DownloadTask, value?: Status) {
+    private UpdateStatus = function (this: DownloadManagerTask, value: Status) {
         this.status = value;
     }.bind(this);
 
-    private UpdateProgress = function (this: DownloadManagerTask, _: DownloadTask, value?: number) {
+    private UpdateProgress = function (this: DownloadManagerTask, value: number) {
         this.progress = value ?? 0;
     }.bind(this);
 

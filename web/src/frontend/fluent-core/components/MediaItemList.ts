@@ -177,7 +177,7 @@ export class MediaItemList extends FASTElement {
 
     @observable Container?: MediaContainer<StoreableMediaContainer<MediaItem>>;
     ContainerChanged() {
-        this.Entries = this.Container?.Entries ?? [];
+        this.Entries = this.Container?.Entries.Value ?? [];
     }
 
     @observable Entries: StoreableMediaContainer<MediaItem>[] = [];
