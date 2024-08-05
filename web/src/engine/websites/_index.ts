@@ -433,7 +433,6 @@ export { default as Mangazure } from './Mangazure';
 export { default as ManHastro } from './ManHastro';
 export { default as ManHatic } from './ManHatic';
 export { default as ManhuaAZ } from './ManhuaAZ';
-export { default as ManHuaDex } from './ManHuaDex';
 export { default as ManhuaFast } from './ManhuaFast';
 export { default as ManhuaFastNet } from './ManhuaFastNet';
 export { default as Manhuaga } from './Manhuaga';
