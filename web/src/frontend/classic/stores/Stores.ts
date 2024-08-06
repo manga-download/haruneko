@@ -1,7 +1,6 @@
 import { readable, writable } from 'svelte/store';
 import type { MediaContainer, MediaChild, MediaItem } from '../../../engine/providers/MediaPlugin';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
-import type { DownloadTask } from '../../../engine/DownloadTask';
 import { checkNewContent } from './Settings';
 import type { IAppWindow } from '../../../engine/platform/AppWindow';
 
@@ -23,18 +22,4 @@ export const bookmarksToContinue = readable<Bookmark[]>([], (set) => {
     });
 
     return function stop() { unsubcribe; };
-});
-
-export const DownloadTasks = readable<DownloadTask[]>([], (set) => {
-
-    function OnTasksChangedCallback() {
-        set(HakuNeko.DownloadManager.Queue.Value);
-    }
-
-    set(HakuNeko.DownloadManager.Queue.Value);
-    HakuNeko.DownloadManager.Queue.Subscribe(OnTasksChangedCallback);
-
-    return () => {
-        HakuNeko.DownloadManager.Queue.Unsubscribe(OnTasksChangedCallback);
-    };
 });
