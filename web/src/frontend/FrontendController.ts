@@ -33,7 +33,7 @@ export class FrontendController {
         try {
             const info = FrontendList.find(info => info.ID === this.settingSelectedFrontend.Value) ?? FrontendList.first();
             const frontend = await info.LoadModule();
-            hook.innerHTML = '';
+            hook.replaceChildren();
             await frontend.Render(hook, this.appWindow);
             this.currentFrontendInfo.Value = info;
         } catch(error) {

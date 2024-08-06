@@ -27,9 +27,9 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
     container.append(heading, stacktrace);
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => root.innerHTML = container.outerHTML, { once: true });
+        document.addEventListener('DOMContentLoaded', () => root.replaceChildren(container), { once: true });
     } else {
-        root.innerHTML = container.outerHTML;
+        root.replaceChildren(container);
     }
 }
 
