@@ -43,7 +43,7 @@ describe('DownloadManager', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
-            const tasks = await testee.GetTasks();
+            const tasks = testee.Queue.Value;
 
             expect(tasks.length).toBe(0);
         });
@@ -54,7 +54,7 @@ describe('DownloadManager', () => {
 
             await testee.Enqueue(MockContainer('①'), MockContainer('②'));
             await testee.Enqueue(MockContainer('③'));
-            const tasks = await testee.GetTasks();
+            const tasks = await testee.Queue.Value;
 
             expect(tasks.length).toBe(3);
         });
@@ -69,7 +69,7 @@ describe('DownloadManager', () => {
             const expected = [ '①', '②', '③' ].map(id => MockContainer(id));
             await testee.Enqueue(...expected);
 
-            const queued = (await testee.GetTasks()).map(task => task.Media);
+            const queued = testee.Queue.Value.map(task => task.Media);
             expect(queued).toStrictEqual(expected);
         });
 
@@ -80,7 +80,7 @@ describe('DownloadManager', () => {
             const expected = [ '①', '②', '③' ].map(id => MockContainer(id));
             await testee.Enqueue(...expected, MockContainer('②'), MockContainer('③'), MockContainer('①'));
 
-            const queued = (await testee.GetTasks()).map(task => task.Media);
+            const queued = testee.Queue.Value.map(task => task.Media);
             expect(queued).toStrictEqual(expected);
         });
 
@@ -92,7 +92,7 @@ describe('DownloadManager', () => {
             await testee.Enqueue(...expected);
             await testee.Enqueue(MockContainer('②'), MockContainer('③'), MockContainer('①'));
 
-            const queued = (await testee.GetTasks()).map(task => task.Media);
+            const queued = testee.Queue.Value.map(task => task.Media);
             expect(queued).toStrictEqual(expected);
         });
 
@@ -105,7 +105,7 @@ describe('DownloadManager', () => {
             await testee.Enqueue(first);
             await testee.Enqueue(second);
 
-            const queued = (await testee.GetTasks()).map(task => task.Media);
+            const queued = testee.Queue.Value.map(task => task.Media);
             expect(queued).toStrictEqual([ first, second ]);
         });
 
@@ -118,7 +118,7 @@ describe('DownloadManager', () => {
             await testee.Enqueue(first);
             await testee.Enqueue(second);
 
-            const queued = (await testee.GetTasks()).map(task => task.Media);
+            const queued = testee.Queue.Value.map(task => task.Media);
             expect(queued).toStrictEqual([ first ]);
         });
 
@@ -131,7 +131,7 @@ describe('DownloadManager', () => {
             await testee.Enqueue(first);
             await testee.Enqueue(second);
 
-            const queued = (await testee.GetTasks()).map(task => task.Media);
+            const queued = testee.Queue.Value.map(task => task.Media);
             expect(queued).toStrictEqual([ first ]);
         });
 
@@ -144,7 +144,7 @@ describe('DownloadManager', () => {
             await testee.Enqueue(first);
             await testee.Enqueue(second);
 
-            const queued = (await testee.GetTasks()).map(task => task.Media);
+            const queued = testee.Queue.Value.map(task => task.Media);
             expect(queued).toStrictEqual([ first ]);
         });
 
@@ -157,79 +157,42 @@ describe('DownloadManager', () => {
             const testee = fixture.CreateTestee();
 
             await testee.Enqueue(MockContainer('①'), MockContainer('②'), MockContainer('③'), MockContainer('④'));
-            const tasks = await testee.GetTasks();
+            const tasks = testee.Queue.Value;
             await testee.Dequeue(tasks[1], tasks[2]);
 
-            const queued = await testee.GetTasks();
+            const queued = testee.Queue.Value;
             expect(queued).toStrictEqual([ tasks[0], tasks[3] ]);
         });
     });
 
-    describe('TasksAdded', () => {
+    describe('Queue', () => {
 
-        it('Should invoke expected event with all added tasks', async () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateTestee();
-
-            const callback = vi.fn();
-            const containers = [ '①', '②', '③' ].map(id => MockContainer(id));
-            testee.TasksAdded.Subscribe(callback);
-            await testee.Enqueue(...containers);
-            const tasks = await testee.GetTasks();
-
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, tasks);
-        });
-
-        it('Should invoke expected event with only new tasks added (in given order)', async () => {
+        it('Should invoke expected event when adding tasks', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
             const callback = vi.fn();
             const containers = [ '①', '②', '③' ].map(id => MockContainer(id));
             await testee.Enqueue(MockContainer('②'), MockContainer('x'), MockContainer('o'));
-            testee.TasksAdded.Subscribe(callback);
+            testee.Queue.Subscribe(callback);
             await testee.Enqueue(containers[2], containers[1], containers[0]);
-            const tasks = await testee.GetTasks();
 
             expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, tasks.slice(-2));
-            expect(tasks.slice(-2).map(task => task.Media)).toStrictEqual([ containers[2], containers[0] ]);
-        });
-    });
-
-    describe('TasksRemoved', () => {
-
-        it('Should invoke expected event with all removed tasks', async () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateTestee();
-
-            const callback = vi.fn();
-            const containers = [ '①', '②', '③', '④' ].map(id => MockContainer(id));
-            testee.TasksRemoved.Subscribe(callback);
-            await testee.Enqueue(...containers);
-            const tasks = await testee.GetTasks();
-            await testee.Dequeue(tasks[1], tasks[2]);
-
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, tasks.slice(1, 3));
+            expect(callback).toBeCalledWith(testee.Queue.Value, testee);
         });
 
-        it('Should invoke expected event with only existing tasks removed (in given order)', async () => {
+        it('Should invoke expected event when removing tasks', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
 
             const callback = vi.fn();
             const containers = [ '①', '②', '③', '④' ].map(id => MockContainer(id));
             await testee.Enqueue(...containers);
-            const tasks = await testee.GetTasks();
-            await testee.Dequeue(tasks[3]);
-            testee.TasksRemoved.Subscribe(callback);
-            await testee.Dequeue(tasks[3], tasks[2], tasks[1]);
+            testee.Queue.Subscribe(callback);
+            await testee.Dequeue(testee.Queue.Value[1], testee.Queue.Value[2]);
 
             expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee, [ tasks[1], tasks[2] ]);
-            expect(tasks.slice(1, 3).map(task => task.Media)).toStrictEqual([ containers[1], containers[2] ]);
+            expect(callback).toBeCalledWith(testee.Queue.Value, testee);
         });
     });
 });

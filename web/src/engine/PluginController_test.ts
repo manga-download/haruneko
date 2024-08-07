@@ -76,13 +76,13 @@ describe('PluginController', () => {
                     language: Tags.Language.toArray(),
                 };
                 const actual = {
-                    media: plugin.Tags.filter(tag => expected.media.includes(tag)),
-                    source: plugin.Tags.filter(tag => expected.source.includes(tag)),
-                    language: plugin.Tags.filter(tag => expected.language.includes(tag)),
+                    media: plugin.Tags.Value.filter(tag => expected.media.includes(tag)),
+                    source: plugin.Tags.Value.filter(tag => expected.source.includes(tag)),
+                    language: plugin.Tags.Value.filter(tag => expected.language.includes(tag)),
                 };
 
                 // Skip plugins that are not yet migrated from legacy
-                if(plugin.Tags.length > 0) {
+                if(plugin.Tags.Value.length > 0) {
                     expect.soft(actual.media).not.toHaveLength(0);
                     //expect.soft(actual.source).not.toHaveLength(0);
                     expect.soft(actual.language).not.toHaveLength(0);

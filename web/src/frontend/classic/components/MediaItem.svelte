@@ -21,17 +21,26 @@
     const availableLanguageTags = Tags.Language.toArray();
 
     // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
-    function extractUnicodeFlagFromTags(tags : Tag[]): string {
-        const languageTagTitleResourceKey = tags.find(tag => availableLanguageTags.includes(tag))?.Title;
-        return $Locale[languageTagTitleResourceKey]?.call(undefined)?.slice(0, 4) ?? '🏴';
+    function extractUnicodeFlagFromTags(tags: Tag[]): string {
+        const languageTagTitleResourceKey = tags.find((tag) =>
+            availableLanguageTags.includes(tag),
+        )?.Title;
+        return (
+            $Locale[languageTagTitleResourceKey]
+                ?.call(undefined)
+                ?.slice(0, 4) ?? '🏴'
+        );
     }
 
     import type {
         StoreableMediaContainer,
         MediaItem,
     } from '../../../engine/providers/MediaPlugin';
-    import { FlagType } from '../../../engine/ItemflagManager';
-    import { selectedItem, DownloadTasks } from '../stores/Stores';
+    import {
+        FlagType,
+        type EntryFlagEventData,
+    } from '../../../engine/ItemflagManager';
+    import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
     export let item: StoreableMediaContainer<MediaItem>;
@@ -45,35 +54,37 @@
     ]);
     $: flagicon = flagiconmap.get(flag) || View;
 
-    async function OnFlagChangedCallback(
-        changedItem: StoreableMediaContainer<MediaItem>,
-        changedFlag: FlagType,
-    ) {
-        if (changedItem === item) flag = changedFlag;
-        else if (changedFlag === FlagType.Current)
+    async function OnFlagChangedCallback(flagData: EntryFlagEventData) {
+        if (flagData.Entry === item) {
+            flag = flagData.Kind;
+        } else if (flagData.Kind === FlagType.Current) {
             flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
+        }
     }
-    HakuNeko.ItemflagManager.FlagChanged.Subscribe(OnFlagChangedCallback);
+    HakuNeko.ItemflagManager.EntryFlagEventChannel.Subscribe(
+        OnFlagChangedCallback,
+    );
     onMount(async () => {
         flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
     });
     onDestroy(() => {
-        HakuNeko.ItemflagManager.FlagChanged.Unsubscribe(OnFlagChangedCallback);
-        downloadTask?.StatusChanged.Unsubscribe(refreshDownloadStatus);
-        tasksunsubscribe();
+        HakuNeko.ItemflagManager.EntryFlagEventChannel.Unsubscribe(
+            OnFlagChangedCallback,
+        );
+        downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
+        HakuNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
     });
 
     let downloadTask: DownloadTask;
 
-    let tasksunsubscribe = DownloadTasks.subscribe((tasks) => {
-        downloadTask?.StatusChanged.Unsubscribe(refreshDownloadStatus);
-        downloadTask = tasks.find(
-            (task) => task.Media.Identifier === item.Identifier,
-        );
-        downloadTask?.StatusChanged.Subscribe(refreshDownloadStatus);
-    });
+    async function taskQueueChanged(tasks: DownloadTask[]) {
+        downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
+        downloadTask = tasks.find((task) => task.Media.IsSameAs(item));
+        downloadTask?.Status.Subscribe(refreshDownloadStatus);
+    }
+    HakuNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
 
-    async function refreshDownloadStatus(_sender, status) {
+    async function refreshDownloadStatus(_status: Status, _task: DownloadTask) {
         downloadTask = downloadTask;
     }
 </script>
@@ -101,7 +112,7 @@
         on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
     >
         {#if downloadTask}
-            {@const status = downloadTask.Status}
+            {@const status = downloadTask.Status.Value}
             {#if status === Status.Queued}
                 <PauseFuture fill="var(--cds-icon-secondary)" />
             {:else if status === Status.Paused}
@@ -133,7 +144,7 @@
     <ClickableTile class="title" on:click={(event) => dispatch('view', event)}>
         {#if multilang}
             <span class="multilang">
-                {extractUnicodeFlagFromTags(item.Tags)}
+                {extractUnicodeFlagFromTags(item.Tags.Value)}
             </span>
         {/if}
         <span title={item.Title}>{item.Title}</span>

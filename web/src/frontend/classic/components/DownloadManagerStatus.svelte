@@ -1,6 +1,5 @@
 <script lang="ts">
     import { onDestroy } from 'svelte';
-    import { DownloadTasks } from '../stores/Stores';
     import {
         Button,
         ClickableTile,
@@ -19,24 +18,25 @@
     let progress: number;
     let status: Status;
     let isModalOpen = false;
+    let downloadTasks: DownloadTask[] = HakuNeko.DownloadManager.Queue.Value;
 
     function refreshCounts() {
-        completed = $DownloadTasks.filter(
-            (job) => job.Status === Status.Completed
+        completed = downloadTasks.filter(
+            (job) => job.Status.Value === Status.Completed,
         ).length;
-        failed = $DownloadTasks.filter(
-            (job) => job.Status === Status.Failed
+        failed = downloadTasks.filter(
+            (job) => job.Status.Value === Status.Failed,
         ).length;
-        processing = $DownloadTasks.filter((job) =>
-            [Status.Downloading, Status.Processing].includes(job.Status)
+        processing = downloadTasks.filter((job) =>
+            [Status.Downloading, Status.Processing].includes(job.Status.Value),
         ).length;
     }
 
     function refreshProgress() {
-        status = currentDownload.Status;
+        status = currentDownload.Status.Value;
         switch (status) {
             case Status.Downloading:
-                progress = currentDownload.Progress;
+                progress = currentDownload.Progress.Value;
                 break;
             case Status.Completed:
                 progress = 1;
@@ -50,35 +50,34 @@
         }
     }
 
-    DownloadTasks.subscribe((tasks) => {
+    HakuNeko.DownloadManager.Queue.Subscribe((tasks) => {
         const removed = previousTasks.filter((task) => !tasks.includes(task));
         const added = tasks.filter((task) => !previousTasks.includes(task));
-        removed.forEach((job) => job.StatusChanged.Unsubscribe(refreshStatus));
-        added.forEach((job) => job.StatusChanged.Subscribe(refreshStatus));
-        previousTasks = tasks;
+        removed.forEach((job) => job.Status.Unsubscribe(refreshStatus));
+        added.forEach((job) => job.Status.Subscribe(refreshStatus));
+        previousTasks = [...tasks];
+        downloadTasks = tasks;
         refreshCounts();
     });
 
     function refreshStatus() {
-        const nowDownloading = $DownloadTasks.filter((job) =>
-            [Status.Downloading, Status.Processing].includes(job.Status)
+        const nowDownloading = downloadTasks.filter((job) =>
+            [Status.Downloading, Status.Processing].includes(job.Status.Value),
         )[0];
         if (nowDownloading && nowDownloading !== currentDownload) {
-            currentDownload?.StatusChanged.Unsubscribe(refreshProgress);
-            currentDownload?.ProgressChanged.Unsubscribe(refreshProgress);
+            currentDownload?.Status.Unsubscribe(refreshProgress);
+            currentDownload?.Progress.Unsubscribe(refreshProgress);
             currentDownload = nowDownloading;
-            currentDownload.ProgressChanged.Subscribe(refreshProgress);
-            currentDownload.StatusChanged.Subscribe(refreshProgress);
+            currentDownload.Progress.Subscribe(refreshProgress);
+            currentDownload.Status.Subscribe(refreshProgress);
         }
         refreshCounts();
     }
 
     onDestroy(() => {
-        currentDownload?.ProgressChanged.Unsubscribe(refreshProgress);
-        currentDownload?.StatusChanged.Unsubscribe(refreshProgress);
-        $DownloadTasks.forEach((job) =>
-            job.StatusChanged.Unsubscribe(refreshStatus)
-        );
+        currentDownload?.Progress.Unsubscribe(refreshProgress);
+        currentDownload?.Status.Unsubscribe(refreshProgress);
+        downloadTasks.forEach((job) => job.Status.Unsubscribe(refreshStatus));
     });
 
     const statusmap: Record<Status, 'active' | 'finished' | 'error'> = {
@@ -102,8 +101,8 @@
                 icon={TrashCan}
                 iconDescription="Delete all tasks"
                 on:click={() =>
-                    $DownloadTasks.forEach((task) =>
-                        window.HakuNeko.DownloadManager.Dequeue(task)
+                    downloadTasks.forEach((task) =>
+                        window.HakuNeko.DownloadManager.Dequeue(task),
                     )}
             />
         </div>
@@ -114,17 +113,17 @@
         <div class="label">
             <CloudDownload size={32} />
             <div class="count">
-                Downloads ({$DownloadTasks.filter((job) =>
+                Downloads ({downloadTasks.filter((job) =>
                     [
                         Status.Downloading,
                         Status.Processing,
                         Status.Queued,
-                    ].includes(job.Status)
+                    ].includes(job.Status.Value),
                 )?.length})
             </div>
         </div>
         <div class="downloads">
-            {#if $DownloadTasks.length > 0}
+            {#if downloadTasks.length > 0}
                 <div class="progress">
                     {#if currentDownload}
                         <ProgressBar
@@ -144,27 +143,26 @@
                 <div class="total">
                     <div
                         class="bar val-processing"
-                        style:flex-basis="{(processing /
-                            $DownloadTasks.length) *
+                        style:flex-basis="{(processing / downloadTasks.length) *
                             100}%"
                     />
                     <div
                         class="bar val-completed"
-                        style:flex-basis="{(completed / $DownloadTasks.length) *
+                        style:flex-basis="{(completed / downloadTasks.length) *
                             100}%"
                     />
                     <div
                         class="bar val-failed"
-                        style:flex-basis="{(failed / $DownloadTasks.length) *
+                        style:flex-basis="{(failed / downloadTasks.length) *
                             100}%"
                     />
                     <div
                         class="bar val-pending"
-                        style:flex-basis="{(($DownloadTasks.length -
+                        style:flex-basis="{((downloadTasks.length -
                             completed -
                             failed -
                             processing) /
-                            $DownloadTasks.length) *
+                            downloadTasks.length) *
                             100}%"
                     />
                 </div>

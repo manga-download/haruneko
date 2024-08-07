@@ -63,9 +63,8 @@ export default class extends DecoratableMangaScraper {
         });
 
         const { mes: html } = await FetchJSON<APIResult>(request);
-        const container = document.createElement('div');
-        container.innerHTML = html;
-        const links = [...container.querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
+        const dom = new DOMParser().parseFromString(html, 'text/html');
+        const links = [...dom.querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
         return links.map(link => new Manga(this, provider, link.pathname, MangaLabelExtractor.call(this, link)));
     }
 

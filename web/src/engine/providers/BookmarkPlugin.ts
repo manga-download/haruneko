@@ -2,10 +2,10 @@ import type { PluginController } from '../PluginController';
 import { MediaContainer, type MediaChild } from './MediaPlugin';
 import { type StorageController, Store } from '../StorageController';
 import type { InteractiveFileContentProvider } from '../InteractiveFileContentProvider';
-import { Event } from '../Event';
 import { ConvertToSerializedBookmark } from '../transformers/BookmarkConverter';
 import { Bookmark, MissingWebsite, type BookmarkSerialized } from './Bookmark';
 import { MissingInfoTracker } from '../trackers/IMediaInfoTracker';
+import { NotImplementedError } from '../Error';
 
 export type BookmarkImportResult = {
     cancelled: boolean;
@@ -29,21 +29,15 @@ const defaultBookmarkFileType: FilePickerAcceptType = {
 
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
-    public readonly EntriesUpdated: Event<typeof this, Bookmark[]> = new Event<typeof this, Bookmark[]>();
-
     constructor(private readonly storage: StorageController, private readonly plugins: PluginController, private readonly fileIO: InteractiveFileContentProvider) {
         super('bookmarks', 'Bookmarks');
         this.Load();
     }
 
-    public get Entries(): Bookmark[] {
-        return super.Entries.sort((self, other) => self.Title.localeCompare(other.Title));
-    }
-
-    private OnBookmarkChangedCallback(sender: Bookmark): void {
-        this.EntriesUpdated.Dispatch(this, this.Entries);
+    private readonly OnUpdatedChangedCallback = (_: Date, sender: Bookmark) => {
         this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(sender), Store.Bookmarks, sender.StorageKey);
-    }
+        this.entries.Dispatch();
+    };
 
     private Deserialize(serialized: BookmarkSerialized): Bookmark {
         const parent = this.plugins.WebsitePlugins.find(plugin => plugin.Identifier === serialized.Media.ProviderID) ?? new MissingWebsite(serialized.Media.ProviderID);
@@ -57,22 +51,22 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             tracker,
             serialized.Info?.EntryID
         );
-        bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
+        bookmark.Updated.Subscribe(this.OnUpdatedChangedCallback);
         return bookmark;
     }
 
     private async Load() {
         const bookmarks = await this.storage.LoadPersistent<BookmarkSerialized[]>(Store.Bookmarks);
-        super.Entries = bookmarks.map(bookmark => this.Deserialize(bookmark));
-        this.EntriesUpdated.Dispatch(this, this.Entries);
+        this.entries.Value = bookmarks.map(bookmark => this.Deserialize(bookmark));
     }
 
     public async RefreshAllFlags() {
-        for (const media of super.Entries) {
+        for (const media of super.Entries.Value) {
             await media.Update();
             HakuNeko.ItemflagManager.LoadContainerFlags(media);
         }
     }
+
     public async Import(): Promise<BookmarkImportResult> {
         let data: Blob;
         const result: BookmarkImportResult = {
@@ -96,7 +90,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         }
         const found = (JSON.parse(await data.text()) as Array<unknown>).map(entry => this.Deserialize(ConvertToSerializedBookmark(entry)));
         result.found = found.length;
-        const imported = found.filter(bookmark => this.Entries.none(entry => entry.IsSameAs(bookmark)));
+        const imported = found.filter(bookmark => this.Entries.Value.none(entry => entry.IsSameAs(bookmark)));
         for(const bookmark of imported) {
             await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
         }
@@ -108,7 +102,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
 
     public async Export(): Promise<BookmarkExportResult> {
-        const bookmarks = super.Entries.map(bookmark => this.Serialize(bookmark));
+        const bookmarks = super.Entries.Value.map(bookmark => this.Serialize(bookmark));
         const result: BookmarkExportResult = {
             cancelled: false,
             exported: 0
@@ -135,7 +129,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     private Serialize(bookmark: Bookmark): BookmarkSerialized {
         return {
             Created: bookmark.Created.getTime(),
-            Updated: bookmark.Updated.getTime(),
+            Updated: bookmark.Updated.Value.getTime(),
             Title: bookmark.Title,
             Media: {
                 ProviderID: bookmark.Parent.Identifier,
@@ -153,27 +147,33 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             // TODO: Keep duplicate bookmark, or replace with new one?
             return;
         }
-        const bookmark = new Bookmark(new Date(), new Date(), entry.Parent, entry.Identifier, entry.Title);
-        bookmark.Changed.Subscribe(this.OnBookmarkChangedCallback.bind(this));
-        super.Entries.unshift(bookmark);
-        this.EntriesUpdated.Dispatch(this, this.Entries);
+        const now = new Date();
+        const bookmark = new Bookmark(now, now, entry.Parent, entry.Identifier, entry.Title);
+        bookmark.Updated.Subscribe(this.OnUpdatedChangedCallback);
+        this.entries.Push(bookmark);
         await this.storage.SavePersistent<BookmarkSerialized>(this.Serialize(bookmark), Store.Bookmarks, bookmark.StorageKey);
     }
 
     public async Remove(bookmark: Bookmark) {
-        super.Entries = super.Entries.filter(entry => entry !== bookmark);
-        this.EntriesUpdated.Dispatch(this, this.Entries);
+        bookmark.Updated.Unsubscribe(this.OnUpdatedChangedCallback);
+        this.entries.Value = super.Entries.Value.filter(entry => entry !== bookmark);
         await this.storage.RemovePersistent(Store.Bookmarks, bookmark.StorageKey);
     }
 
     public async Toggle(entry: MediaContainer<MediaContainer<MediaChild>>): Promise<boolean> {
         const bookmark = this.Find(entry);
-        if (bookmark) { await this.Remove(bookmark); return false; }
-        else { await this.Add(entry); return true;}
+        if (bookmark) {
+            await this.Remove(bookmark);
+            return false;
+        }
+        else {
+            await this.Add(entry);
+            return true;
+        }
     }
 
-    public Find(entry: MediaContainer<MediaChild>): Bookmark {
-        return this.Entries.find(bookmark => bookmark.Identifier === entry.Identifier && bookmark.Parent.Identifier === entry.Parent.Identifier);
+    public Find(entry: MediaContainer<MediaChild>): Bookmark | undefined {
+        return this.Entries.Value.find(bookmark => bookmark.IsSameAs(entry));
     }
 
     public IsBookmarked(entry: MediaContainer<MediaChild>): boolean {
@@ -187,14 +187,16 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     }
     */
 
+    protected async PerformUpdate(): Promise<Bookmark[]> {
+        throw new NotImplementedError();
+    }
+
     public async Update(): Promise<void> {
         await this.Load();
     }
 
     public async GetEntriesWithUnflaggedContent(): Promise<Bookmark[]> {
-        const results = await Promise.all(this.Entries.map(
-            async (bookmark) => (await bookmark.GetUnflaggedContent()).length > 0
-        ));
-        return this.Entries.filter((_, index) => results[index]);
+        const results = await Promise.all(this.Entries.Value.map(async bookmark => (await bookmark.GetUnflaggedContent()).length > 0));
+        return this.Entries.Value.filter((_, index) => results[index]);
     }
 }

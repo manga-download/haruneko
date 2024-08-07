@@ -154,6 +154,20 @@ export class ElectronicPublicationExporter extends MangaExporter {
         const navpoint = this.createElementNS(this.lookupNamespaceURI(null), 'navPoint');
         navpoint.setAttribute('id', id);
         navpoint.setAttribute('playOrder', page.toString());
+        //
+        const label = this.createElementNS(this.lookupNamespaceURI(null), 'navLabel');
+        const text = this.createElementNS(this.lookupNamespaceURI(null), 'text');
+        text.textContent = `Page ${ page }`;
+        navpoint.replaceChildren(label);
+        const content = this.createElementNS(this.lookupNamespaceURI(null), 'content');
+        content.setAttribute('src', source);
+
+        label.appendChild(text);
+        navpoint.appendChild(label);
+        navpoint.appendChild(content);
+
+        return navpoint;
+        /*
         navpoint.innerHTML = `
             <navLabel>
                 <text>Page ${page}</text>
@@ -161,6 +175,7 @@ export class ElectronicPublicationExporter extends MangaExporter {
             <content src="${source}"/>
         `;
         return navpoint;
+        */
     }
 
     public async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, targetBaseName: string): Promise<void> {

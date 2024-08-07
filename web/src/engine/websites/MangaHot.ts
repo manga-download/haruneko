@@ -58,9 +58,8 @@ export default class extends DecoratableMangaScraper {
             }
         }));
 
-        const container = document.createElement('template');
-        container.innerHTML = result;
-        const nodes = [...container.content.querySelectorAll<HTMLAnchorElement>('a[id].parent')];
+        const dom = new DOMParser().parseFromString(result, 'text/html');
+        const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('a[id].parent')];
         return nodes.map(node => {
             const chapterid = new URL(node.href, this.URI).searchParams.get('story_id') ?? node.href.match(/dialog\('(\d+)'\)/)[1];
             return new Chapter(this, manga, chapterid, node.querySelector('div.episode_name').textContent.trim());

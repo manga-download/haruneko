@@ -52,12 +52,13 @@ type APIToken = {
     }
 }
 
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
     private readonly BalconyID: string = undefined;
     private readonly Timezone: string = 'Europe/Paris';
     private readonly Platform: string = 'WEB';
     private Token: APIToken = undefined;
+    private readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
 
     public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', balconyID = 'DELITOON_COM', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
         super(id, label, url, ...tags);
@@ -74,27 +75,37 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = new URL(url).href.match(/\/detail\/([^/]+)/)[1];
-        const endpointUrl = new URL(`/api/balcony-api-v2/contents/${mangaid}`, this.URI);
+        const endpointUrl = new URL(`contents/${mangaid}`, this.apiUrl);
         endpointUrl.searchParams.set('isNotLoginAdult', 'true');
         const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(endpointUrl));
         return new Manga(this, provider, mangaid, data.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL('/api/balcony-api-v2/contents/search', this.URI);
-        url.search = new URLSearchParams({
-            searchText: '',
-            isCheckDevice: 'true',
-            isIncludeAdult: 'true',
-            contentsThumbnailType: 'MAIN'
-        }).toString();
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(this.CreateRequest(url));
-        return data.map(element => new Manga(this, provider, element.alias, element.title.trim()));
+        const url = new URL('contents/search', this.apiUrl);
+        const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
+            url.search = new URLSearchParams({
+                searchText: character,
+                isCheckDevice: 'true',
+                isIncludeAdult: 'true',
+                contentsThumbnailType: 'MAIN'
+            }).toString();
+
+            return FetchJSON<APIResult<APIManga[]>>(this.CreateRequest(url));
+        });
+
+        const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
+            const mangas = element.data.map(element => new Manga(this, provider, element.alias, element.title.trim()));
+            accumulator.push(...mangas);
+            return accumulator;
+        }, []);
+
+        return results.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         await this.UpdateToken();
-        const url = new URL(`/api/balcony-api-v2/contents/${manga.Identifier}`, this.URI);
+        const url = new URL(`contents/${manga.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
         const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(url));
         return data.episodes.map(element => {
@@ -106,7 +117,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         await this.UpdateToken();
-        const url = new URL(`/api/balcony-api-v2/contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+        const url = new URL(`contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
         const apiresult = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
         if (apiresult.result === 'ERROR') {
