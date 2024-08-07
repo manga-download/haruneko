@@ -110,6 +110,7 @@ export abstract class MediaScraper<T extends MediaContainer<MediaChild>> {
 
     public readonly URI: URL;
     public readonly Tags: Tag[];
+    // annotatioon
     public readonly Settings: Record<string, ISetting> & Iterable<ISetting> = {
         *[Symbol.iterator](): Iterator<ISetting> {
             for(const setting of Object.values<ISetting>(this)) {
