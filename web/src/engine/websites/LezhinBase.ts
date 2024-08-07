@@ -6,6 +6,8 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { Check, Secret, Text } from '../SettingsManager';
 import type { Priority } from '../taskpool/TaskPool';
 import { FetchImageAjax } from './decorators/Common';
+import DeScramble from '../transformers/ImageDescrambler';
+import type { N } from 'vitest/dist/reporters-yx5ZTtEV.js';
 
 export interface LezhinWindow extends Window {
     __LZ_PRODUCT__?: { all: Array<UIChapter> }
@@ -90,8 +92,8 @@ export interface APIMangasList {
 }
 
 // The image is cut into 5x5 blocks and then scrambled
-const SCRAMBLE_WIDTH_BLOCKS: Number = 5
-const SCRAMBLE_HEIGHT_BLOCKS: Number = 5
+const SCRAMBLE_WIDTH_BLOCKS: number = 5
+const SCRAMBLE_HEIGHT_BLOCKS: number = 5
 
 export default abstract class extends DecoratableMangaScraper {
     protected readonly mangasPerPage: number = 500;
@@ -240,9 +242,19 @@ export default abstract class extends DecoratableMangaScraper {
             'Key-Pair-Id': tokenResponse.data['Key-Pair-Id']
         });
         page.Link.search = imageParams.toString();
+
         const data = await FetchImageAjax.call(this, page, priority, signal, true);
 
-        // TODO: Scramble
+
+        if (!parameters.shuffled) {
+            return data
+        }
+
+        const scrambleTable = this.generateScrambleTable(parameters.episodeID, SCRAMBLE_HEIGHT_BLOCKS * SCRAMBLE_WIDTH_BLOCKS);
+
+        return DeScramble(data, async (image, ctx) => {
+            // TODO: Unscramble
+        });
 
         return data;
     }
@@ -347,5 +359,24 @@ export default abstract class extends DecoratableMangaScraper {
         return "'"
             + str.replace("\\", "\\\\").replace("$", "\\$").replace("'", "\\'")
             + "'";
+    }
+
+    protected generateScrambleTable(episodeID: number, numEls: number) : number[] {
+        const u64Max = 0xFFFFFFFFFFFFFFFFn;
+        const u32Max = 0xFFFFFFFFn;
+
+        let order = [...Array(numEls).keys()];
+        let randomState = BigInt(episodeID);
+
+        for (let i = 0; i < numEls; i++) {
+            randomState ^= (randomState >> 12n) & u64Max;
+            randomState ^= (randomState << 25n) & u64Max;
+            randomState ^= (randomState >> 27n) & u64Max;
+
+            const r = Number(((randomState & u64Max) >> 32n) & u32Max) % numEls;
+            [order[i], order[r]] = [order[r], order[i]];
+        }
+
+        return order;
     }
 }
