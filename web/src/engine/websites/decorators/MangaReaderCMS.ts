@@ -54,8 +54,7 @@ const DefaultInfoExtractor = Common.AnchorInfoExtractor(false);
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
 async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, query = queryMangas, path = pathname, extract = DefaultInfoExtractor): Promise<Manga[]> {
-    const url = new URL(path + 'changeMangaList?type=text', this.URI);
-    const request = new Request(url.href, {
+    const request = new Request(new URL(path + 'changeMangaList?type=text', this.URI), {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
         }
@@ -94,7 +93,7 @@ export function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement
     try {
         const src = image.dataset['src'].split('://').pop();
         return decodeURIComponent(window.atob(src || undefined));
-    } catch (error) {
+    } catch { // TODO: Do not return url for generic errors
         const src = (image.dataset['src'] || image.src).trim();
         return new URL(src, this.URI).href;
     }

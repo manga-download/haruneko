@@ -7,7 +7,7 @@ const config = {
         title: 'MangaFreak'
     },
     container: {
-        url: 'https://w15.mangafreak.net/Manga/Against_The_Gods',
+        url: 'https://w1.mangafreak.me/Manga/Against_The_Gods',
         id: '/Manga/Against_The_Gods',
         title: 'Against the Gods'
     },

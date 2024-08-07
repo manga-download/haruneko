@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import '../../ArrayExtensions';
 import { mock } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import type { FeatureFlags } from '../../FeatureFlags';
@@ -7,7 +8,7 @@ import FetchProvider from './FetchProvider';
 class TestFixture {
 
     public readonly mockFeatureFlags = mock<FeatureFlags>();
-    public readonly mockFetch = vi.fn();
+    public readonly mockFetch = vi.fn().mockReturnValueOnce({ headers: { get: () => {} } });
     public readonly chromeFake = {
         cookies: {
             getAll: vi.fn(),

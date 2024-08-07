@@ -8,7 +8,7 @@ const config = {
     },
     /* NEED LOGIN FOR EVERYTHING
     container: {
-        url: 'https://grimelek.co/seri/revenge-by-harem/',
+        url: 'https://grimelek.me/seri/revenge-by-harem/',
         id: JSON.stringify({ slug: '/seri/revenge-by-harem/' }),
         title: 'Revenge By Harem'
     },

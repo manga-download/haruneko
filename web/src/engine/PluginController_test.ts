@@ -2,8 +2,7 @@ import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
 import type { ISettings, SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
-import { PluginController } from './PluginController'; // TODO: Fix '*.proto' file import in typescript and re-enable test
-import type { MediaChild, MediaContainer } from './providers/MediaPlugin';
+import { PluginController } from './PluginController';
 import { Tags } from './Tags';
 
 class TestFixture {
@@ -62,22 +61,33 @@ describe('PluginController', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        it.skip('Should have mandatory tags', async () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateTestee();
+        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', (plugin) => {
 
-            function missingMandatoryTags(plugin: MediaContainer<MediaContainer<MediaChild>>): boolean {
-                return plugin.Tags.length < 3
-                    || !plugin.Tags.some(tag => Tags.Media.toArray().includes(tag))
-                    || !plugin.Tags.some(tag => Tags.Source.toArray().includes(tag))
-                    || !plugin.Tags.some(tag => Tags.Language.toArray().includes(tag));
-            }
+            it('Should have valid URI', async () => {
+                expect(plugin.URI.origin).toMatch(/^http/);
+                //const response = await fetch(plugin.URI);
+                //expect(response.url).toBe(plugin.URI.href);
+            });
 
-            const pluginsMissingTags = testee.WebsitePlugins.filter(missingMandatoryTags).map(plugin => plugin.Title);
-            if (pluginsMissingTags.length > 0) {
-                console.log(pluginsMissingTags);
-            }
-            expect(pluginsMissingTags.length).toBe(0);
+            it('Should have mandatory tags', async () => {
+                const expected = {
+                    media: Tags.Media.toArray(),
+                    source: Tags.Source.toArray(),
+                    language: Tags.Language.toArray(),
+                };
+                const actual = {
+                    media: plugin.Tags.Value.filter(tag => expected.media.includes(tag)),
+                    source: plugin.Tags.Value.filter(tag => expected.source.includes(tag)),
+                    language: plugin.Tags.Value.filter(tag => expected.language.includes(tag)),
+                };
+
+                // Skip plugins that are not yet migrated from legacy
+                if(plugin.Tags.Value.length > 0) {
+                    expect.soft(actual.media).not.toHaveLength(0);
+                    //expect.soft(actual.source).not.toHaveLength(0);
+                    expect.soft(actual.language).not.toHaveLength(0);
+                }
+            });
         });
     });
 

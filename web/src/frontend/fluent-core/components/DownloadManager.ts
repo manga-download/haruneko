@@ -66,15 +66,13 @@ export class DownloadManager extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
-        HakuNeko.DownloadManager.TasksAdded.Subscribe(this.DownloadsChanged);
-        HakuNeko.DownloadManager.TasksRemoved.Subscribe(this.DownloadsChanged);
+        HakuNeko.DownloadManager.Queue.Subscribe(this.DownloadsChanged);
         this.DownloadsChanged();
     }
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        HakuNeko.DownloadManager.TasksAdded.Unsubscribe(this.DownloadsChanged);
-        HakuNeko.DownloadManager.TasksRemoved.Unsubscribe(this.DownloadsChanged);
+        HakuNeko.DownloadManager.Queue.Unsubscribe(this.DownloadsChanged);
     }
 
     @observable Entries: DownloadTask[] = [];
@@ -88,10 +86,10 @@ export class DownloadManager extends FASTElement {
     @observable filtered: DownloadTask[] = [];
 
     public FilterEntries() {
-        this.filtered = this.Entries.filter(task => this.Match(task.Media.Title)).slice(0, 250); /* TODO: virtual scrolling */
+        this.filtered = this.Entries.filter(task => this.Match(task.Media.Title)).slice(0, 500); /* TODO: virtual scrolling */
     }
 
-    private DownloadsChanged = async function(this: DownloadManager) {
-        this.Entries = (await HakuNeko.DownloadManager.GetTasks()).slice();
-    }.bind(this);
+    private DownloadsChanged = async () => {
+        this.Entries = HakuNeko.DownloadManager.Queue.Value.slice();
+    };
 }

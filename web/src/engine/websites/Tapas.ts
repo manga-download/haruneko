@@ -24,7 +24,10 @@ type APIManga = {
 
 type APIChapters = {
     data: {
-        body: string;
+        episodes: {
+            id: number,
+            title : string
+        }[]
     }
 }
 
@@ -36,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://story-api.tapas.io/cosmos/api/v1/landing/';
 
     public constructor() {
-        super('tapas', `Tapas`, 'https://tapas.io', Tags.Media.Manga, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
+        super('tapas', `Tapas`, 'https://tapas.io', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -48,7 +51,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const seriesId = (await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property="al:android:url"]'))[0].content.split('/').pop();
+        const seriesId = (await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property="al:android:url"]'))[0].content.replace(/\/info$/, '').split('/').pop();
         const { data } = await FetchJSON<APISingleManga>(new Request(new URL(`/series/${seriesId}?`, this.URI), {
             headers: {
                 Accept: 'application/json, text/javascript, */*;',
@@ -67,19 +70,25 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
 
-    async GetMangasFromPage(page: number, provider: MangaPlugin) {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin) {
         const url = new URL(`${this.apiUrl}genre?category_type=COMIC&size=200&page=${page}`);
         const { data: { items } } = await FetchJSON<APIMangas>(new Request(url));
         return items.map(manga => new Manga(this, provider, manga.seriesId.toString(), manga.title.trim()));
     }
 
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL(`/series/${manga.Identifier}/episodes?max_limit=9999`, this.URI);
-        const { data: { body } } = await FetchJSON<APIChapters>(new Request(url));
-        const dom = new DOMParser().parseFromString(body, 'text/html');
-        return [...dom.querySelectorAll('li')].map(chapter => {
-            const title = chapter.querySelector('a.item__thumb img').getAttribute('alt').trim();
-            return new Chapter(this, manga, `/episode/${chapter.dataset.id}`, title);
-        });
+        const chapterList = [];
+        for (let page = 1, run = true; run; page++) {
+            const chapters = await this.GetChaptersFromPage(manga, page);
+            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
+        }
+        return chapterList;
     }
+
+    private async GetChaptersFromPage(manga : Manga, page: number) {
+        const url = new URL(`/series/${manga.Identifier}/episodes?page=${page}`, this.URI);
+        const { data: { episodes } } = await FetchJSON<APIChapters>(new Request(url));
+        return episodes.map(chapter => new Chapter(this, manga, `/episode/${chapter.id}`, chapter.title.trim()));
+    }
+
 }

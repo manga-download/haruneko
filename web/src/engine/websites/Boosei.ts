@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('boosei', 'Boosei', 'https://boosei.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Accessibility.RegionLocked);
+        super('boosei', 'Boosei', 'https://boosei.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

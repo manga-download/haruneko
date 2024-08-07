@@ -23,22 +23,40 @@ jobs:
       - name: Install NPM Packages
         run: npm install
       - name: Build Application
-        run: npm run bundle --workspace app/nw
-      - name: Upload Release Builds
+        run: npm run bundle --workspace app/nw --workspace app/electron
+      - name: Upload NW Builds
         uses: actions/upload-artifact@v4
         with:
-          name: bundle-${{ matrix.os }}
+          name: bundle-nw-${{ matrix.os }}
           retention-days: 3
-          path: app/nw/bundle
+          path: app/nw/bundle/
+      - name: Upload Electron Builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-electron-${{ matrix.os }}
+          retention-days: 3
+          path: app/electron/bundle/
+  release-notes:
+    needs: build
+    name: Prepare Release Notes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref }}
+          fetch-depth: 1
       - name: Upload Release Templates
         uses: actions/upload-artifact@v4
-        if: ${{ matrix.os == 'windows-latest' }}
         with:
           name: release-templates
           retention-days: 3
           path: .github/RELEASE_TEMPLATE/*.md
   publish:
-    needs: build
+    needs:
+      - build
+      - release-notes
     name: Publish Release
     runs-on: ubuntu-latest
     steps:
@@ -50,11 +68,11 @@ jobs:
         uses: actions/download-artifact@v4
       - name: Create Release Description
         run: |
-          DESCRIPTION=$(cat ./release-templates/pre-release.md | tr '\r\n' '\\n' | sed s/{TAG}/$RELEASE_TAG/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_64_ZIP}/$(ls ./bundle-* | grep 'x64.zip')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_32_ZIP}/$(ls ./bundle-* | grep 'ia32.zip')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_X64_DMG}/$(ls ./bundle-* | grep 'x64.dmg')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_ARM64_DMG}/$(ls ./bundle-* | grep 'arm64.dmg')/g)
+          DESCRIPTION=$(cat ./release-templates/pre-release.md | jq -sR | sed s/{TAG}/$RELEASE_TAG/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_64_ZIP}/$(ls ./bundle-nw-* | grep 'x64.zip')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_32_ZIP}/$(ls ./bundle-nw-* | grep 'ia32.zip')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_X64_DMG}/$(ls ./bundle-nw-* | grep 'x64.dmg')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_ARM64_DMG}/$(ls ./bundle-nw-* | grep 'arm64.dmg')/g)
           echo -n $DESCRIPTION > ./release-templates/description.md
       - name: Create Release Tag
         run: |
@@ -62,7 +80,7 @@ jobs:
           echo \"prerelease\":true, >> ./body.json
           echo \"tag_name\":\"$RELEASE_TAG\", >> ./body.json
           echo \"name\":\"canary • $RELEASE_DATE\", >> ./body.json
-          echo \"body\":\"$(cat ./release-templates/description.md)\" >> ./body.json
+          echo \"body\":$(cat ./release-templates/description.md) >> ./body.json
           echo } >> ./body.json
           echo +++ REQUEST +++
           cat ./body.json

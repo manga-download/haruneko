@@ -1,5 +1,13 @@
 <script lang="ts">
-    import { type ISetting, Check, Choice, Numeric, Directory, Secret, Text } from '../../../../engine/SettingsManager';
+    import {
+        type ISetting,
+        Check,
+        Choice,
+        Numeric,
+        Directory,
+        Secret,
+        Text,
+    } from '../../../../engine/SettingsManager';
     import InputCheck from './InputCheck.svelte';
     import InputChoice from './InputChoice.svelte';
     import InputNumeric from './InputNumeric.svelte';
@@ -10,23 +18,23 @@
     export let settings: ISetting[];
 </script>
 
-{#each settings as setting}
+{#each settings as setting (setting.ID)}
     {#if setting instanceof Choice}
-        <InputChoice setting={setting} />
+        <InputChoice {setting} />
     {/if}
     {#if setting instanceof Check}
-        <InputCheck setting={setting} />
+        <InputCheck {setting} />
     {/if}
     {#if setting instanceof Text}
-        <InputText setting={setting} />
+        <InputText {setting} />
     {/if}
     {#if setting instanceof Secret}
-        <InputSecret setting={setting} />
+        <InputSecret {setting} />
     {/if}
     {#if setting instanceof Numeric}
-        <InputNumeric setting={setting} />
+        <InputNumeric {setting} />
     {/if}
     {#if setting instanceof Directory}
-        <InputDirectory setting={setting} />
+        <InputDirectory {setting} />
     {/if}
 {/each}

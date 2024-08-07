@@ -14,7 +14,7 @@ endif::[]
 
 ---
 
-Prototype of HakuNeko based on NW.js + TypeScript + Vite
+Prototype of HakuNeko based on Electron/NW.js + TypeScript + Vite
 
 ## Status
 ////
@@ -22,138 +22,14 @@ This section shows the latest build and test results for the master branch.
 
 image:https://img.shields.io/github/downloads/manga-download/haruneko/latest/total?label=HaruNeko%20%28Stable%29&logo=github[link=https://github.com/manga-download/haruneko/releases/latest, title="Download the latest stable release of HaruNeko", window="_blank"]
 ////
-image:https://img.shields.io/github/downloads-pre/manga-download/haruneko/latest/total?color=blue&label=HaruNeko%20%28Nightly%29&logo=azure-devops[link=https://github.com/manga-download/haruneko/releases, title="Download the latest pre-release (nightly build) of HaruNeko", window="_blank"]
+image:https://img.shields.io/github/downloads-pre/manga-download/haruneko/latest/total?color=blue&label=HaruNeko%20%28Nightly%29&logo=github[link=https://github.com/manga-download/haruneko/releases, title="Download the latest pre-release (nightly build) of HaruNeko", window="_blank"]
 image:https://github.com/manga-download/haruneko/actions/workflows/continuous-integration.yml/badge.svg[link=https://github.com/manga-download/haruneko/actions/workflows/continuous-integration.yml, title="Continuous Integration", window="_blank"]
 image:https://app.codacy.com/project/badge/Grade/814f4127d85245e0a763f13a901ba1b4[link=https://app.codacy.com/gh/manga-download/haruneko/dashboard, title="Code Quality Gate", window="_blank"]
 image:https://badges.crowdin.net/hakuneko/localized.svg[link=https://crowdin.com/project/hakuneko, title="Crowdin Translation", window="_blank"]
 
-## Development
+## Documentation
 
-Make sure **git** and **NodeJS + NPM** are installed on your system.
-
-### Installation
-
-First start by cloning the repository from https://github.com/manga-download/haruneko.git
-```bash
-git clone "https://github.com/manga-download/haruneko.git"
-```
-
-Then change into the project directory and install the dependencies +
-```bash
-npm install
-# If you are on Apple Silicon (arm64) and NW isn't starting, try:
-# See: https://github.com/nwjs/nw.js/issues/8157
-xattr -cr ./node_modules/nw/nwjs/nwjs.app
-```
-
-### Run
-
-HakuNeko consists of two parts, a web-application that needs to be hosted and an NW.js client running the web-application.
-
-As a developer you probably want to launch the application and also want changes made to the source code reflecting in the running application.
-This can be achieved by hosting the source code directly on http://localhost:3000
-```bash
-npm run serve:dev --workspace web
-```
-Then launch the NW.js application to load the hosted web-application
-```bash
-npm run launch:dev --workspace app/nw
-```
-
-The same procedure can be applied to run a production build of both parts, but these can not be modified while running.
-Host the production web-application on http://localhost:5000
-```bash
-npm run serve:prod --workspace web
-```
-And then start the production NW.js application
-```bash
-npm run launch:prod --workspace app/nw
-```
-
-////
-Use the console from the developer tools (F12) to investigate `HakuNeko` API, e.g.
-
-```javascript
-(async () => {
-    const website = HakuNeko.PluginController.WebsitePlugins[0];
-    console.log('Website:', website.Title);
-    if(website.Entries.length === 0) {
-        console.log('=>', 'Updating manga list (this may take some time ...)');
-        await website.Update();
-    } else {
-        console.log('=>', 'Using manga list from local cache');
-    }
-
-    async function getPages(mangaIndex, chapterIndex) {
-
-        const manga = website.Entries[mangaIndex]; // or with iterator: [...website][mangaIndex];
-        console.log(' '.repeat(4), 'Manga:', manga.Title);
-        if(manga.Entries.length === 0) {
-            console.log(' '.repeat(4), '=>', 'Updating chapter list');
-            await manga.Update();
-        } else {
-            console.log(' '.repeat(4), '=>', 'Use current chapter list');
-        }
-        
-        const chapter = manga.Entries[chapterIndex]; // or with iterator: [...manga][chapterIndex];
-        console.log(' '.repeat(8), 'Chapter:', chapter.Title);
-        if(chapter.Entries.length === 0) {
-            console.log(' '.repeat(8), '=>', 'Updating page list');
-            await chapter.Update();
-        } else {
-            console.log(' '.repeat(8), '=>', 'Use current page list');
-        }
-        
-        for(const page of chapter) {
-            console.log(' '.repeat(12), 'Page:', page.SourceURL);
-        }
-    }
-
-    await getPages(0, 0);
-    await getPages(13, 7);
-```
-////
-
-### Continuous Inspection
-
-After making changes to the source code, it is recommend to validate the code style, check for code smells and perform a static code analysis.
-```sh
-npm run check
-```
-
-### Testing
-
-To ensure the application behaves as expected, tests need to be added.
-All tests are written side by side to their (logical) corresponding implementation directly in the source code directory.
-Overall, there are two test categories.
-
-#### Unit and Component Tests
-Unit tests (file extension `⋆.test.ts`) are very lightweight within a limited scope (e.g. single method of a class).
-Component tests (file extension `⋆.spec.ts`) can be more complex and test relations and coherences within a module (e.g. a composed UI control).
-To start these tests, simply run
-```sh
-npm run test
-```
-
-#### End-To-End Tests
-End-To-End tests (file extension `⋆.e2e.ts`) are performed by interacting with the (web-)application itself.
-This includes tests which are consuming the engine API as well as tests that run against the UI.
-The environment for these tests is a running instance of the NW.js production build, controlled by the tests through `puppeteer`.
-To start these tests, simply run
-```sh
-npm run test:e2e
-```
-
-#### Website Tests
-Website tests (file extension `⋆.e2e.ts` in _/src/engine/websites_) will run some basic checks for each website.
-The environment for these tests is a running instance of the NW.js production build, controlled by the tests through `puppeteer`.
-[WARNING]
-Running all tests will take very very long and may use up a lot of your internet bandwidth.
-
-To start these test(s), simply run
-```sh
-# Test all websites
-npm run test:websites
-# Test a certain website
-npm run test:websites -- MangaDex
-```
+image:https://img.shields.io/badge/-read-blue?logo=html5&label=User%20Manual[link=https://haruneko-docs.pages.dev/user-manual/, title="User Manual (online)", window="_blank"]
+image:https://img.shields.io/badge/-edit-red?logo=github&label=User%20Manual[link=https://github.com/manga-download/haruneko/tree/master/docs/user-manual, title="User Manual (source)", window="_blank"]
+image:https://img.shields.io/badge/-read-blue?logo=html5&label=Development%20Guide[link=https://haruneko-docs.pages.dev/development-guide/, title="User Manual (online)", window="_blank"]
+image:https://img.shields.io/badge/-edit-red?logo=github&label=Development%20Guide[link=https://github.com/manga-download/haruneko/tree/master/docs/development-guide, title="User Manual (source)", window="_blank"]

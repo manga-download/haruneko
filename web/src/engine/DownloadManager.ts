@@ -1,37 +1,34 @@
 import { DownloadTask, Status } from './DownloadTask';
+import { ObservableArray, type IObservable } from './Observable';
 import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
-import { Event } from './Event';
 
 export class DownloadManager {
 
     private processing = false;
-    private queue: DownloadTask[] = [];
+    private queue = new ObservableArray<DownloadTask, DownloadManager>([], this);
     private queueTransactionLock = false;
-    public readonly TasksAdded: Event<typeof this, DownloadTask[]> = new Event<typeof this, DownloadTask[]>();
-    public readonly TasksRemoved: Event<typeof this, DownloadTask[]> = new Event<typeof this, DownloadTask[]>();
 
-    constructor(private readonly storageController: StorageController) {
+    constructor(private readonly storageController: StorageController) {}
+
+    public get Queue(): IObservable<DownloadTask[], DownloadManager> {
+        return this.queue;
     }
 
     /**
      * Perform a thread/concurrency safe operation on {@link queue}
      */
-    private async InvokeQueueTransaction<R>(transaction: (queue: DownloadTask[]) => R): Promise<R> {
+    private async InvokeQueueTransaction<R>(transaction: () => R): Promise<R> {
         try {
             // TODO: Use a better locking mechanism?
             while(this.queueTransactionLock) {
                 await new Promise(resolve => setTimeout(resolve, 5));
             }
             this.queueTransactionLock = true;
-            return transaction(this.queue);
+            return transaction();
         } finally {
             this.queueTransactionLock = false;
         }
-    }
-
-    public GetTasks(): Promise<DownloadTask[]> {
-        return this.InvokeQueueTransaction(queue => queue.map(task => task));
     }
 
     /**
@@ -39,18 +36,12 @@ export class DownloadManager {
      * Only containers that are not present in the download queue will be added.
      */
     public async Enqueue(...containers: StoreableMediaContainer<MediaItem>[]): Promise<void> {
-        const added = await this.InvokeQueueTransaction(queue => {
-            const result = [];
-            for(const container of containers) {
-                if(!queue.some(task => container?.IsSameAs(task.Media))) {
-                    const task = new DownloadTask(container, this.storageController);
-                    result.push(task);
-                    queue.push(task);
-                }
-            }
-            return result;
+        await this.InvokeQueueTransaction(() => {
+            const tasks = containers.distinct()
+                .filter(container => this.queue.Value.none(task => task.Media.IsSameAs(container)))
+                .map(container => new DownloadTask(container, this.storageController));
+            this.queue.Push(...tasks);
         });
-        this.TasksAdded.Dispatch(this, added);
         this.Process();
     }
 
@@ -59,20 +50,16 @@ export class DownloadManager {
      * Only tasks that are present in the download queue will be removed.
      */
     public async Dequeue(...tasks: DownloadTask[]): Promise<void> {
-        const removed = await this.InvokeQueueTransaction(queue => {
-            const result = [];
-            this.queue = queue.filter(task => {
+        await this.InvokeQueueTransaction(() => {
+            this.queue.Value = this.queue.Value.filter(task => {
                 if(tasks.includes(task)) {
-                    result.push(task);
                     task.Abort();
                     return false;
                 } else {
                     return true;
                 }
             });
-            return result;
         });
-        this.TasksRemoved.Dispatch(this, removed);
     }
 
     private async Process() {
@@ -83,7 +70,7 @@ export class DownloadManager {
 
         while(this) {
             try {
-                const task = this.queue.find(t => t.Status === Status.Queued);
+                const task = await this.InvokeQueueTransaction(() => this.queue.Value.find(task => task.Status.Value === Status.Queued));
                 if(task) {
                     await task.Run();
                 } else {

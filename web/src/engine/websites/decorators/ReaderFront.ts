@@ -1,10 +1,8 @@
 // Readerfornt template : https://github.com/dvaJi/ReaderFront
-//Ajax / GraphQL based
-// Support EN and ES language content
 
 import { FetchGraphQL } from '../../platform/FetchProvider';
 import { type MangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import { type Tag, Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import * as Common from './Common';
 
 const languageMap = {
@@ -86,8 +84,8 @@ type APIPages = {
  */
 async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: string): Promise<Manga> {
     const uri = new URL(url);
-    const language = uri.pathname.match(/work\/([a-z]{2})\/([^/]+)/)[1];
-    const slug = uri.pathname.match(/work\/([a-z]{2})\/([^/]+)/)[2];
+    const language = uri.pathname.match(/work\/([a-z]{2})\/[^/]+/).last();
+    const slug = uri.pathname.match(/work\/[a-z]{2}\/([^/]+)/).last();
 
     const query = `
         query Work($language: Int, $stub: String) {
@@ -105,20 +103,17 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
         stub: slug
     };
 
-    const request = new Request(apiUrl);
-    const data = await FetchGraphQL<APIManga>(request, 'Work', query, variables);
+    const { work } = await FetchGraphQL<APIManga>(new Request(apiUrl), 'Work', query, variables);
     const id = JSON.stringify({
-        id: data.work.id,
-        language: data.work.language,
-        stub: data.work.stub
+        id: work.id,
+        language: work.language,
+        stub: work.stub
     });
 
-    const title = `${data.work.name.trim()} [${reverselanguageMap[data.work.language]}]`;
-    const mg = new Manga(this, provider, id, title);
-    const languageTag: Tag = tagsLanguageMap[data.work.language];
-    mg.Tags.push(languageTag);
-    return mg;
-
+    const title = `${work.name.trim()} [${reverselanguageMap[work.language]}]`;
+    const manga = new Manga(this, provider, id, title);
+    manga.Tags.Value.push(tagsLanguageMap[work.language]);
+    return manga;
 }
 
 /**
@@ -145,6 +140,10 @@ export function MangaAJAX(pattern: RegExp, apiUrl: string) {
 /***********************************************
  ******** Manga List Extraction Methods ********
  ***********************************************/
+
+/**
+ * ...
+ */
 async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: string, languages: string[]): Promise<Manga[]> {
     const mappedLanguages: number[] = [];
     for (const lang of languages) {
@@ -164,19 +163,17 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
             }
         }
     `;
-    const request = new Request(apiUrl);
-    const data = await FetchGraphQL<APIMangas>(request, 'Works', query, variables);
-    return data.works.map(manga => {
+    const { works: entries } = await FetchGraphQL<APIMangas>(new Request(apiUrl), 'Works', query, variables);
+    return entries.map(entry => {
         const id = JSON.stringify({
-            id: manga.id,
-            language: manga.language,
-            stub: manga.stub
+            id: entry.id,
+            language: entry.language,
+            stub: entry.stub
         });
-        const title = `${manga.name.trim()} [${reverselanguageMap[manga.language]}]`;
-        const mg = new Manga(this, provider, id, title);
-        const languageTag: Tag = tagsLanguageMap[manga.language];
-        mg.Tags.push(languageTag);
-        return mg;
+        const title = `${entry.name.trim()} [${reverselanguageMap[entry.language]}]`;
+        const manga = new Manga(this, provider, id, title);
+        manga.Tags.Value.push(tagsLanguageMap[entry.language]);
+        return manga;
     });
 
 }
@@ -201,6 +198,9 @@ export function MangasSinglePageAJAX(apiUrl: string, languages = DefaultLanguage
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
+/**
+ * ...
+ */
 async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, manga: Manga): Promise<Chapter[]> {
     const mangaObj: MangaIdentifier = JSON.parse(manga.Identifier);
 
@@ -225,23 +225,24 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
         stub: mangaObj.stub
     };
 
-    const request = new Request(apiUrl);
-    const data = await FetchGraphQL<APIChapters>(request, 'Work', query, variables);
-    return data.work.chapters.map(chapter => {
-        let title = `Vol. ${chapter.volume} Ch. ${chapter.chapter}.${chapter.subchapter}`;
-        title += chapter.name ? ` - ${chapter.name}` : '';
-        const chap = new Chapter(this, manga, String(chapter.id), title);
-        const languageTag: Tag = tagsLanguageMap[mangaObj.language];
-        chap.Tags.push(languageTag);
-        return chap;
+    const { work: { chapters: entries } } = await FetchGraphQL<APIChapters>(new Request(apiUrl), 'Work', query, variables);
+    return entries.map(entry => {
+        const title = [
+            `Vol. ${entry.volume}`,
+            `Ch. ${entry.chapter}.${entry.subchapter}`,
+            entry.name ? '-' : '',
+            entry.name ?? '',
+        ].join(' ').trim();
+        const chapter = new Chapter(this, manga, String(entry.id), title);
+        chapter.Tags.Value.push(tagsLanguageMap[mangaObj.language]);
+        return chapter;
     });
-
 }
 
 /**
  * A class decorator that adds the ability to extract chapter list from a manga using the website api url
  * @param apiUrl - The url of the graphql api
-  */
+ */
 export function ChaptersSinglePageAJAX(apiUrl: string) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
@@ -252,26 +253,14 @@ export function ChaptersSinglePageAJAX(apiUrl: string) {
         };
     };
 }
+
 /*************************************************
  ******** Pages Extraction Methods ********
  *************************************************/
 
 /**
- * A class decorator that adds the ability to extract pages list from a chapter using the website api URL and CDN url
- * @param apiUrl - The url of the graphql api
- * @param cdnUrl - the base url where images are stored. It can be the same as {@link apiUrl}
+ * ...
  */
-export function PagesSinglePageAJAX(apiUrl: string, cdnUrl: string) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        Common.ThrowOnUnsupportedDecoratorContext(context);
-        return class extends ctor {
-            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageAJAX.call(this, apiUrl, cdnUrl, chapter);
-            }
-        };
-    };
-}
-
 async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnUrl: string, chapter: Chapter): Promise<Page[]> {
     const variables: JSONObject = {
         id: parseInt(chapter.Identifier)
@@ -291,11 +280,25 @@ async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnU
             }
         }
     `;
-    const request = new Request(apiUrl);
-    const data = await FetchGraphQL<APIPages>(request, 'ChapterById', query, variables);
-    return data.chapterById.pages.map(page => {
-        const uri = new URL(['/works', data.chapterById.work.uniqid, data.chapterById.uniqid, page.filename].join('/'), cdnUrl);
+    const { chapterById: { pages, work: { uniqid: mangaID }, uniqid: chapterID } } = await FetchGraphQL<APIPages>(new Request(apiUrl), 'ChapterById', query, variables);
+    return pages.map(page => {
+        const uri = new URL(['/works', mangaID, chapterID, page.filename].join('/'), cdnUrl);
         return new Page(this, chapter, uri);
     });
+}
 
+/**
+ * A class decorator that adds the ability to extract pages list from a chapter using the website api URL and CDN url
+ * @param apiUrl - The url of the graphql api
+ * @param cdnUrl - the base url where images are stored. It can be the same as {@link apiUrl}
+ */
+export function PagesSinglePageAJAX(apiUrl: string, cdnUrl: string) {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+                return FetchPagesSinglePageAJAX.call(this, apiUrl, cdnUrl, chapter);
+            }
+        };
+    };
 }

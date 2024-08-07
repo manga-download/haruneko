@@ -9,7 +9,8 @@ const config: Config = {
     container: {
         url: 'https://lelscanfr.com/manga/four-knights-of-the-apocalypse',
         id: '/manga/four-knights-of-the-apocalypse',
-        title: 'Four Knights Of The Apocalypse'
+        title: 'Four Knights Of The Apocalypse',
+        timeout: 15000
     },
     child: {
         id: '/manga/four-knights-of-the-apocalypse/144',

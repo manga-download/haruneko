@@ -132,7 +132,7 @@ export default class extends DecoratableMangaScraper {
         let data: MangaViewerResponse = undefined;
         try {
             data = await FetchProto<MangaViewerResponse>(request, protoTypes, 'ComicFuz.MangaViewerResponse');
-        } catch (error) {
+        } catch { // TODO: Do not use same message for generic errors
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return data.pages
