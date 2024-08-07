@@ -22,9 +22,11 @@ const legacyWebsiteIdentifierMap = {
     'galaxyaction': 'galaxymanga',
     'gateanimemanga': 'gatemanga',
     'imperioscans': 'neroxus',
+    'kissaway': 'klmanga',
     'kisscomic': 'readcomiconline',
     'komikav': 'apkomik',
     'kumascans': 'retsu',
+    'lovehug': 'welovemanga',
     'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
     'mangamx': 'mangaoni',
     'manganel': 'manganato',
