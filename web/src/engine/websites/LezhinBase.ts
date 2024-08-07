@@ -1,4 +1,4 @@
-import { Tag, Tags } from '../Tags';
+import { type Tag, Tags } from '../Tags';
 import icon from './Lezhin.webp';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
@@ -11,6 +11,11 @@ export interface LezhinWindow extends Window {
     __LZ_PRODUCT__?: { all: Array<UIChapter> }
     __LZ_DATA__?: { all: Array<UIChapter> }
     __LZ_CONFIG__?: LZConfig
+}
+
+export interface LZConfig extends JSONObject {
+    contentsCdnUrl: string
+    token: string
 }
 
 export interface APIKeyPair {
@@ -51,7 +56,7 @@ export interface APIPages {
             }
         }
     }
-}  
+}
 
 export interface UIChapter extends JSONObject {
     id: number
@@ -73,11 +78,6 @@ export interface UIChapter extends JSONObject {
     }
 }
 
-export interface LZConfig extends JSONObject {
-    contentsCdnUrl: string
-    token: string
-}
-
 export interface APIMangasList {
     data: Array<{
         id: number,
@@ -88,6 +88,10 @@ export interface APIMangasList {
     count: number,
     code:number
 }
+
+// The image is cut into 5x5 blocks and then scrambled
+const SCRAMBLE_WIDTH_BLOCKS: Number = 5
+const SCRAMBLE_HEIGHT_BLOCKS: Number = 5
 
 export default abstract class extends DecoratableMangaScraper {
     protected readonly mangasPerPage: number = 500;
@@ -136,7 +140,7 @@ export default abstract class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         await this.initializeAccount();
         const script = function(this: Window) {
-            const product = (this as LezhinWindow).__LZ_PRODUCT__ ?? (this as LezhinWindow).__LZ_DATA__
+            const product = (this as LezhinWindow).__LZ_PRODUCT__ ?? (this as LezhinWindow).__LZ_DATA__;
             if (!product) {
                 return Promise.reject('Could not get chapters product data (LezhinBase:FetchChapters). Available keys are: '
                     + Object.keys(this.window).filter(a => (a > '__LZ^' && a < '__LZ`')).join(', '));
@@ -145,34 +149,34 @@ export default abstract class extends DecoratableMangaScraper {
                 .filter(chapter => {
                     return ((chapter.purchased) 
                     || (chapter.coin === 0)
-                    || (chapter.freedAt && chapter.freedAt < Date.now()) 
-                    ||  (chapter.prefree && chapter.prefree.closeTimer && chapter.prefree.closeTimer.expiredAt > Date.now()));
+                    || (chapter.freedAt && chapter.freedAt < Date.now())
+                    || (chapter.prefree && chapter.prefree.closeTimer && chapter.prefree.closeTimer.expiredAt > Date.now()));
                 });
             return Promise.resolve(chapters);
-        }
+        };
 
         const request = this.createRequest(new URL(`/comic/${manga.Identifier}`, this.URI));
-        let chapters = await  FetchWindowScript(request, script, 2500, 10000);
-        return chapters.map((chap) => new Chapter(this, manga, chap.name, 
-            `${chap.display.displayName} - ${chap.display.title}`))
+        let chapters = await FetchWindowScript(request, script, 2500, 10000);
+        return chapters.map((chap) => new Chapter(this, manga, chap.name,
+            `${chap.display.displayName} - ${chap.display.title}`));
     }
 
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
         await this.initializeAccount();
 
         const script = function(this: Window, chapterName: string): Promise<boolean> {
-            const product = (this as LezhinWindow).__LZ_PRODUCT__ ?? (this as LezhinWindow).__LZ_DATA__
+            const product = (this as LezhinWindow).__LZ_PRODUCT__ ?? (this as LezhinWindow).__LZ_DATA__;
             if (!product) {
                 return Promise.reject('Could not get chapters product data (LezhinBase:FetchPages). Available keys are: '
                     + Object.keys(this.window).filter(a => (a > '__LZ^' && a < '__LZ`')).join(', '));
             }
-            const chapter = product.all.find(chapter => chapter.name == chapterName)
+            const chapter = product.all.find(chapter => chapter.name == chapterName);
             return Promise.resolve(chapter.purchased);
-        }
+        };
 
         const scriptText = `(${script})(
             ${this.stringToLiteral(chapter.Identifier)}
-        )`
+        )`;
 
         const purchasedRequest = this.createRequest(new URL(`/comic/${chapter.Parent.Identifier}`, this.URI));
         let purchased: boolean = await FetchWindowScript(purchasedRequest, scriptText, 2500, 10000);
@@ -197,10 +201,10 @@ export default abstract class extends DecoratableMangaScraper {
             shuffled: content.data.extra.comic.metadata?.imageShuffle ?? false,
             purchased: purchased,
             subscribed: content.data.extra.subscribed,
-        }
+        };
         const extension = this.Settings.forceJPEG.Value ? '.jpg' : '.webp';
 
-        const pages = content.data.extra.episode.pagesInfo ?? content.data.extra.episode.scrollsInfo
+        const pages = content.data.extra.episode.pagesInfo ?? content.data.extra.episode.scrollsInfo;
         return pages.map((page) => {
             const url = new URL('/v2' + page.path + extension, this.cdnURI);
             return new Page(this, chapter, url, parameters);
@@ -222,10 +226,10 @@ export default abstract class extends DecoratableMangaScraper {
         });
         tokenURI.search = tokenParams.toString();
 
-        const tokenRequest = this.createRequest(tokenURI, 
+        const tokenRequest = this.createRequest(tokenURI,
             {'x-referer': this.apiURI.toString()});
         const tokenResponse = await FetchJSON<APIKeyPair>(tokenRequest);
-        
+
         //update image url
         const imageParams = new URLSearchParams({
             'purchased': purchasedParam,
@@ -272,7 +276,7 @@ export default abstract class extends DecoratableMangaScraper {
             return;
         }
 
-        const script = function(this: Window, username: string, password: string): Promise<string> {    
+        const script = function(this: Window, username: string, password: string): Promise<string> {
             const form = this.document.querySelector('form#email') as HTMLFormElement;
             const usernameBox = form.querySelector('input#login-email') as HTMLInputElement;
             const passwordBox = form.querySelector('input#login-password') as HTMLInputElement;
@@ -292,10 +296,10 @@ export default abstract class extends DecoratableMangaScraper {
         const scriptText = `(${script})(
             ${this.stringToLiteral(this.Settings.username.Value as string)},
             ${this.stringToLiteral(this.Settings.password.Value as string)}
-        )`
+        )`;
 
         try {
-            const request = this.createRequest(new URL('/login#email', this.URI))
+            const request = this.createRequest(new URL('/login#email', this.URI));
             await FetchWindowScript(request, scriptText, 2500);
         } catch(error) {
             console.error(`Could not log in: Error ${error}`);
@@ -334,14 +338,14 @@ export default abstract class extends DecoratableMangaScraper {
             method: 'GET',
             //mode: 'cors',
             //redirect: 'follow',
-            //credentials: 'same-origin',            
+            //credentials: 'same-origin',
             headers: headers
         });
     }
 
     protected stringToLiteral(str: string): string {
-        return "'" 
-            + str.replace("\\", "\\\\").replace("$", "\\$").replace("'", "\\'") 
+        return "'"
+            + str.replace("\\", "\\\\").replace("$", "\\$").replace("'", "\\'")
             + "'";
     }
 }
