@@ -7,7 +7,6 @@ import { Check, Secret, Text } from '../SettingsManager';
 import type { Priority } from '../taskpool/TaskPool';
 import { FetchImageAjax } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
-import type { N } from 'vitest/dist/reporters-yx5ZTtEV.js';
 
 export interface LezhinWindow extends Window {
     __LZ_PRODUCT__?: { all: Array<UIChapter> }
