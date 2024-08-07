@@ -1,5 +1,7 @@
-﻿import { FetchCSS } from '../../platform/FetchProvider';
-import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+﻿import { DOM } from '@microsoft/fast-element';
+import { Fetch, FetchCSS, FetchWindowPreloadScript, FetchWindowScript } from '../../platform/FetchProvider';
+import { MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
 export function MangaLabelExtractor(element: HTMLElement) {
     return ((element as HTMLMetaElement).content || element.textContent).replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
@@ -35,12 +37,12 @@ export const queryChapters = [
     'div.chapter_list table tr td:first-of-type a',
     'div.chapterbox ul li a.chapter_list_a', //NineManga
 ].join(',');
-export const queryPages = 'select#page';
-export const querySubPages = 'option';
+export const queryPages = 'select#page option';
 export const queryImages = [
     'img#comicpic',
     'img.manga_pic'
 ].join(',');
+
 
 /*************************************************
  ******** Chapter List Extraction Methods ********
@@ -102,43 +104,76 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
  * Use this when the chapter is made from multiples pages and each "sub pages" get a single or more images
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param queryPagesArg - A CSS selector to the element containing all subpages : Typically a <select> element
- * @param querySubPagesArg - A CSS query to match all elements from {@link queryPagesArg}. Ie. '<option>
- * @param queryImagesArg - A CSS query to locate the images in each subpage
- * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link querySubPagesArg})
+ * @param query - A CSS selector to the element containing all subpages : Typically <select> opyions elements
+ * @param extractor - A function to extract the subpage information from a single element (found with {@link query})
   * */
-export async function FetchPagesMultiPagesCSS(this: MangaScraper, chapter: Chapter, queryPagesArg: string, querySubPagesArg: string, queryImagesArg: string, extractSubPages: LinkExtractor): Promise<Page[]> {
-    const data = await FetchCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), queryPagesArg); //Here we got the sub pages list NODES
-    //There may be MORE than one page list element on the page, we need only one !
-    const subpages = [...data[0].querySelectorAll(querySubPagesArg)].map(element => extractSubPages.call(this, element));
 
-    const pagelist: Page[] = [];
-    for (const subpage of subpages) {
-        const request = new Request(subpage);
-        const imgdata = await FetchCSS<HTMLImageElement>(request, queryImagesArg);
-        imgdata.map(element => {
-            const picUrl = element.getAttribute('src');
-            pagelist.push(new Page(this, chapter, new URL(picUrl, this.URI), { Referer: subpage }));
-        });
-    }
-    return pagelist;
+export async function FetchPagesSinglePagesCSS(this: MangaScraper, chapter: Chapter, query: string = queryPages, extractor: LinkExtractor = PageLinkExtractor): Promise<Page[]> {
+    const data = await FetchCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), query);
+    //There may be MORE than one page list element on the page, we need only one !
+    const subpages = Array.from(new Set([...data.map(element => extractor.call(this, element))]));
+    return subpages.map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.href }));
+
 }
 
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter using the given CSS
  * Use this when the chapter is made from multiples pages and each "sub pages" get a single or more images
- * @param queryPagesArg - A CSS selector to the element containing all subpages : Typically a <select> element
- * @param querySubPagesArg - A CSS query to match all elements from {@link queryPages_arg}. Ie. 'option'
- * @param queryImagesArg - A CSS query to locate the images in each subpage
- * @param extractSubPages - A function to extract the subpage information from a single element (found with {@link querySubPagesArg})
+ * @param query - A CSS selector to the element containing all subpages : Typically <select> opyions elements
+ * @param extractor - A function to extract the subpage information from a single element (found with {@link query})
  */
-export function PagesMultiPageCSS(queryPagesArg: string = queryPages, querySubPagesArg: string = querySubPages, queryImagesArg: string = queryImages, extractSubPages: LinkExtractor = PageLinkExtractor) {
+
+export function PagesSinglePageCSS(query: string = queryPages, extractor: LinkExtractor = PageLinkExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesMultiPagesCSS.call(this, chapter, queryPagesArg, querySubPagesArg, queryImagesArg, extractSubPages );
+                return FetchPagesSinglePagesCSS.call(this, chapter, query, extractor );
+            }
+        };
+    };
+}
+
+
+/**
+ * An extension method that adds the ability to get the image data when Page is the link to an HTML Page.
+ *  Use this when Chapter are composed of multiple html Page and each page hold an image
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param page - A reference to the {@link Page} containing the necessary information to acquire the image data
+ * @param priority - The importance level for ordering the request for the image data within the internal task pool
+ * @param signal - An abort signal that can be used to cancel the request for the image data
+ * @param queryImage - a query to get the image in the html page Page
+ * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * @param deProxifyLink - Remove common image proxies (default false)
+ */
+export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, queryImage: string = queryImages, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
+    const image = await this.imageTaskPool.Add(async () => {
+       const request = new Request(page.Link, {
+            signal: signal,
+               // Referer: page.Link.origin, //To avoid redirection on crappy hosts, DONT USE referrer on html subpages
+        });
+        const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].getAttribute('src');
+        const parameters = page.Parameters?.Referer ? { Referer: page.Parameters?.Referer } : { Referer: page.Link.origin };
+        return new Page(this, page.Parent as Chapter, new URL(realimage, request.url), parameters);
+    }, priority, signal);
+
+    return await Common.FetchImageAjax.call(this, image, priority, signal, detectMimeType, deProxifyLink);
+}
+
+/**
+ * A class decorator that adds the ability to get the image data when Page is the link to an HTML Page.
+ * Use this when Chapter are composed of multiple html Page and each page hold an image
+ * @param queryImage - a query to get the image in the html page Page
+ * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
+ * @param deProxifyLink - Remove common image proxies (default false)
+ */
+export function ImageAjaxFromHTML(queryImage: string = queryImages, detectMimeType = false, deProxifyLink = false) {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+                return FetchImageAjaxFromHTML.call(this, page, priority, signal, queryImage, detectMimeType, deProxifyLink);
             }
         };
     };
