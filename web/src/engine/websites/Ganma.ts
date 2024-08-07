@@ -109,7 +109,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL('/api/1.0/magazines/web/' + chapter.Parent.Identifier, this.URI), {
+        const request = new Request(new URL(`/api/1.0/magazines/web/${chapter.Parent.Identifier}`, this.URI), {
             headers: {
                 'X-From': this.URI.href
             }
