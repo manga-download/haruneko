@@ -669,7 +669,6 @@ export { default as Tempestfansub } from './Tempestfansub';
 export { default as TempestScans } from './TempestScans';
 export { default as TenshiID } from './TenshiID';
 export { default as TheBlank } from './TheBlank';
-export { default as TheGuildScans } from './TheGuildScans';
 export { default as ThreeHentai } from './ThreeHentai';
 export { default as TitanManga } from './TitanManga';
 export { default as TmoManga } from './TmoManga';
