@@ -1,6 +1,5 @@
-﻿import { DOM } from '@microsoft/fast-element';
-import { Fetch, FetchCSS, FetchWindowPreloadScript, FetchWindowScript } from '../../platform/FetchProvider';
-import { MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+﻿import { FetchCSS } from '../../platform/FetchProvider';
+import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
 export function MangaLabelExtractor(element: HTMLElement) {
@@ -42,7 +41,6 @@ export const queryImages = [
     'img#comicpic',
     'img.manga_pic'
 ].join(',');
-
 
 /*************************************************
  ******** Chapter List Extraction Methods ********
@@ -135,7 +133,6 @@ export function PagesSinglePageCSS(query: string = queryPages, extractor: LinkEx
     };
 }
 
-
 /**
  * An extension method that adds the ability to get the image data when Page is the link to an HTML Page.
  *  Use this when Chapter are composed of multiple html Page and each page hold an image
@@ -149,9 +146,9 @@ export function PagesSinglePageCSS(query: string = queryPages, extractor: LinkEx
  */
 export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, queryImage: string = queryImages, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     const image = await this.imageTaskPool.Add(async () => {
-       const request = new Request(page.Link, {
+        const request = new Request(page.Link, {
             signal: signal,
-               // Referer: page.Link.origin, //To avoid redirection on crappy hosts, DONT USE referrer on html subpages
+            // Referer: page.Link.origin, //To avoid redirection on crappy hosts, DONT USE referrer on html subpages
         });
         const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].getAttribute('src');
         const parameters = page.Parameters?.Referer ? { Referer: page.Parameters?.Referer } : { Referer: page.Link.origin };

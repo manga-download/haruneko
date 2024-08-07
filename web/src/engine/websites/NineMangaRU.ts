@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './NineMangaRU.webp';
-import { Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as TAADD from './decorators/TAADD';
 import * as Common from './decorators/Common';
-import { Fetch, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', TAADD.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(TAADD.mangaPath, TAADD.queryMangas)
@@ -31,7 +31,7 @@ export default class extends DecoratableMangaScraper {
 
         let response = await Fetch(request);
         const serverPage = response.url;
-        const buttonLink = new DOMParser().parseFromString((await response.text()), 'text/html').querySelector<HTMLAnchorElement>('a.cool-blue').href;
+        const buttonLink = new DOMParser().parseFromString(await response.text(), 'text/html').querySelector<HTMLAnchorElement>('a.cool-blue').href;
         const cookieValue = new URL(buttonLink, response.url).searchParams.get('cid');
 
         //2) get javascript redirect from page
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
         let result;
         const pageRegexp = /(http[^'"]+)['"]/g;
         while (result = pageRegexp.exec(data)) {
-            pages.push(new Page(this, chapter, new URL(result[1]), { Referer: lastLocation.href }))
+            pages.push(new Page(this, chapter, new URL(result[1]), { Referer: lastLocation.href }));
         }
 
         return pages;
