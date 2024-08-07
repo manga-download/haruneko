@@ -181,7 +181,7 @@ export default class extends MangaScraper {
                 const chapter = new Chapter(this, manga, entry.id, title.trim());
                 const languageCode = entry.attributes.translatedLanguage?.split('-')?.shift();
                 if(chapterLanguageMap.has(languageCode)) {
-                    chapter.Tags.push(chapterLanguageMap.get(languageCode));
+                    chapter.Tags.Value.push(chapterLanguageMap.get(languageCode));
                 }
                 return chapter;
             });

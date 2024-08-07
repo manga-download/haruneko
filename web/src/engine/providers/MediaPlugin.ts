@@ -5,6 +5,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import icon from '../../img/media.webp';
 import { NotImplementedError } from '../Error';
 import { FetchWindowScript } from '../platform/FetchProvider';
+import { Observable, ObservableArray, type IObservable } from '../Observable';
 
 export type MediaChild = MediaContainer<MediaChild> | MediaItem;
 
@@ -18,38 +19,38 @@ export abstract class MediaItem {
 
 export abstract class MediaContainer<T extends MediaChild> {
 
-    #tags: Tag[] = [];
-    #entries: T[] = [];
+    protected readonly tags = new ObservableArray<Tag, this>([], this);
+    protected readonly entries = new ObservableArray<T, this>([], this);
+    private readonly updating = new Observable<boolean, this>(false, this);
 
-    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: MediaContainer<MediaContainer<T>>) {
-    }
+    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: MediaContainer<MediaContainer<T>>) {}
 
     public get Settings(): ISettings {
-        return null;
+        throw new NotImplementedError();
     }
 
     public get URI(): URL {
-        return null;
+        throw new NotImplementedError();
     }
 
     public get Icon(): string {
         return icon;
     }
 
-    public get Tags(): Tag[] {
-        return this.#tags;
+    public get Tags(): IObservable<Tag[], MediaContainer<T>> {
+        return this.tags;
     }
 
-    public get Entries(): T[] {
-        return this.#entries;
+    public get Entries(): IObservable<T[], MediaContainer<T>> {
+        return this.entries;
     }
 
-    protected set Entries(value: T[]) {
-        this.#entries = value;
+    public get IsUpdating(): IObservable<boolean, MediaContainer<T>> {
+        return this.updating;
     }
 
     public *[Symbol.iterator](): Iterator<T> {
-        for (const entry of this.Entries) {
+        for (const entry of this.entries.Value) {
             yield entry;
         }
     }
@@ -83,12 +84,25 @@ export abstract class MediaContainer<T extends MediaChild> {
         throw new NotImplementedError();
     }
 
-    public abstract Update(): Promise<void>;
+    protected abstract PerformUpdate(): Promise<T[]>;
+
+    public async Update(): Promise<void> {
+        if(this.updating.Value) {
+            return;
+        }
+
+        try {
+            await this.Initialize();
+            this.entries.Value = await this.PerformUpdate();
+        } finally {
+            this.updating.Value = false;
+        }
+    }
 }
 
 export abstract class StoreableMediaContainer<T extends MediaItem> extends MediaContainer<T> {
 
-    public abstract get IsStored(): boolean;
+    public abstract get IsStored(): IObservable<boolean, MediaContainer<T>>;
     public abstract Store(resources: Map<number, string>): Promise<void>;
 }
 

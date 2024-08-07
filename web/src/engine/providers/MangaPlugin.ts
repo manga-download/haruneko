@@ -2,12 +2,12 @@ import { EngineResourceKey as R } from '../../i18n/ILocale';
 import { Key, Scope } from '../SettingsGlobal';
 import type { Check, Choice, Directory, ISettings, SettingsManager } from '../SettingsManager';
 import { SanitizeFileName, type StorageController, Store } from '../StorageController';
-import type { Tag } from '../Tags';
 import { type Priority, TaskPool } from '../taskpool/TaskPool';
 import { MediaContainer, StoreableMediaContainer, MediaItem, MediaScraper } from './MediaPlugin';
 import icon from '../../img/manga.webp';
 import { Exception, NotImplementedError } from '../Error';
 import { CreateChapterExportRegistry } from '../exporters/MangaExporterRegistry';
+import { Observable } from '../Observable';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -74,9 +74,10 @@ export class MangaPlugin extends MediaContainer<Manga> {
     }
 
     private async Prepare() {
+        this.tags.Value = this.scraper.Tags;
         this._settings.Initialize(...this.scraper.Settings);
         const mangas = await this.storageController.LoadPersistent<{ id: string, title: string }[]>(Store.MediaLists, this.Identifier) || [];
-        super.Entries = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
+        this.entries.Value = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
     }
 
     public override get Settings(): ISettings {
@@ -85,10 +86,6 @@ export class MangaPlugin extends MediaContainer<Manga> {
 
     public override get Icon(): string {
         return this.scraper.Icon;
-    }
-
-    public override get Tags(): Tag[] {
-        return this.scraper.Tags;
     }
 
     public get URI(): URL {
@@ -100,25 +97,25 @@ export class MangaPlugin extends MediaContainer<Manga> {
         return super.Initialize();
     }
 
-    public CreateEntry(identifier: string, title: string): Manga {
+    public override CreateEntry(identifier: string, title: string): Manga {
         return new Manga(this.scraper, this, identifier, title);
     }
 
-    public async TryGetEntry(url: string): Promise<Manga> {
+    public override async TryGetEntry(url: string): Promise<Manga> {
         if(this.scraper.ValidateMangaURL(url)) {
             await this.Initialize();
             const manga = await this.scraper.FetchManga(this, url);
-            return this.Entries.find((entry) => entry.IsSameAs(manga)) ?? manga;
+            return this.Entries.Value.find((entry) => entry.IsSameAs(manga)) ?? manga;
         }
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.Entries = await this.scraper.FetchMangas(this);
-        const mangas = super.Entries.map(entry => {
+    protected async PerformUpdate(): Promise<Manga[]> {
+        const entries = await this.scraper.FetchMangas(this);
+        const mangas = entries.map(entry => {
             return { id: entry.Identifier, title: entry.Title };
         });
         await this.storageController.SavePersistent(mangas, Store.MediaLists, this.Identifier);
+        return entries;
     }
 }
 
@@ -132,29 +129,29 @@ export class Manga extends MediaContainer<Chapter> {
         return icon;
     }
 
-    public CreateEntry(identifier: string, title: string): Chapter {
+    public override CreateEntry(identifier: string, title: string): Chapter {
         return new Chapter(this.scraper, this, identifier, title);
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.Entries = await this.scraper.FetchChapters(this);
+    protected PerformUpdate(): Promise<Chapter[]> {
+        return this.scraper.FetchChapters(this);
     }
 }
 
 export class Chapter extends StoreableMediaContainer<Page> {
 
+    private readonly isStored = new Observable<boolean, Chapter>(false);
+
     constructor(private readonly scraper: MangaScraper, parent: Manga, identifier: string, title: string) {
         super(identifier, title, parent);
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.Entries = await this.scraper.FetchPages(this);
+    protected PerformUpdate(): Promise<Page[]> {
+        return this.scraper.FetchPages(this);
     }
 
     public get IsStored() {
-        return false;
+        return this.isStored;
     }
 
     public async Store(resources: Map<number, string>): Promise<void> {

@@ -1,6 +1,7 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
+import type { Bookmark } from '../../../engine/providers/Bookmark';
 import type { SearchBox } from './SearchBox';
 import S from '../services/StateService';
 import { Exception } from '../../../engine/Error';
@@ -180,7 +181,7 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         <img id="logo" src="${model => model.Selected?.Icon}"></img>
         <div id="title">${model => model.Selected?.Title ?? '…'}</div>
         <div id="controls">
-            <div class="hint">${model => model.updating.includes(model.Container?.Identifier) || model.pasting ? '┄' : (model.filtered?.length ?? '') + '／' + (model.Container?.Entries.length ?? '')}</div>
+            <div class="hint">${model => model.updating.includes(model.Container?.Identifier) || model.pasting ? '┄' : (model.filtered?.length ?? '') + '／' + (model.Container?.Entries.Value.length ?? '')}</div>
             <fluent-button
                 id="button-update-entries"
                 appearance="stealth"
@@ -214,14 +215,14 @@ export class MediaTitleSelect extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
-        HakuNeko.BookmarkPlugin.EntriesUpdated.Subscribe(this.BookmarksChanged);
+        HakuNeko.BookmarkPlugin.Entries.Subscribe(this.BookmarksChanged);
         HakuNeko.PastedClipboardURL.Subscribe(this.PastedClipboardUrlChanged);
         this.FilterEntries();
     }
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
+        HakuNeko.BookmarkPlugin.Entries.Unsubscribe(this.BookmarksChanged);
         HakuNeko.PastedClipboardURL.Unsubscribe(this.PastedClipboardUrlChanged);
     }
 
@@ -230,7 +231,7 @@ export class MediaTitleSelect extends FASTElement {
 
     @observable Container: MediaContainer<MediaContainer<MediaChild>>;
     ContainerChanged() {
-        const entry = this.Container?.Entries.find(entry => entry.Identifier === this.Selected?.Identifier);
+        const entry = this.Container?.Entries.Value.find(entry => entry.Identifier === this.Selected?.Identifier);
         this.Selected = entry ?? this.Selected;
         this.FilterEntries();
     }
@@ -242,7 +243,7 @@ export class MediaTitleSelect extends FASTElement {
     @observable Selected: MediaContainer<MediaChild>;
     SelectedChanged(previous: MediaContainer<MediaChild>, current: MediaContainer<MediaChild>) {
         if(current !== previous) {
-            this.BookmarksChanged(HakuNeko.BookmarkPlugin);
+            this.BookmarksChanged(HakuNeko.BookmarkPlugin.Entries.Value, HakuNeko.BookmarkPlugin);
             this.$emit('selectedChanged', this.Selected);
         }
     }
@@ -261,7 +262,7 @@ export class MediaTitleSelect extends FASTElement {
     @observable pasting = false;
 
     public async FilterEntries() {
-        this.filtered = this.Container?.Entries?.filter(entry => this.Match(entry.Title)) ?? [];
+        this.filtered = this.Container?.Entries?.Value.filter(entry => this.Match(entry.Title)) ?? [];
     }
 
     public SelectEntry(entry: MediaContainer<MediaChild>) {
@@ -301,7 +302,7 @@ export class MediaTitleSelect extends FASTElement {
         }
     }
 
-    private BookmarksChanged = function(this: MediaTitleSelect, sender: BookmarkPlugin) {
+    private BookmarksChanged = function(this: MediaTitleSelect, _: Bookmark[], sender: BookmarkPlugin) {
         this.bookmark = this.Selected && sender.IsBookmarked(this.Selected);
     }.bind(this);
 
@@ -311,7 +312,7 @@ export class MediaTitleSelect extends FASTElement {
             for(const website of HakuNeko.PluginController.WebsitePlugins) {
                 let media = await website.TryGetEntry(uri.href);
                 if(media) {
-                    media = HakuNeko.BookmarkPlugin.Entries.find(entry => entry.IsSameAs(media)) ?? media;
+                    media = HakuNeko.BookmarkPlugin.Entries.Value.find(entry => entry.IsSameAs(media)) ?? media;
                     await media.Update();
                     if(!this.Selected || !this.Selected.IsSameAs(media)) {
                         this.Selected = media;

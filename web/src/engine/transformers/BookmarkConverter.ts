@@ -16,6 +16,7 @@ const legacyWebsiteIdentifierMap = {
     'crazyscans': 'mangacultivator',
     'dalsei': 'viyafansub',
     'evascans': 'manwe',
+    'firescans': 'firecomics',
     'firstkiss': 'likemanga',
     'flamescans-org': 'flamecomics',
     'galaxyaction': 'galaxymanga',
