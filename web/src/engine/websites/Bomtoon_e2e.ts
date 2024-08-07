@@ -11,16 +11,15 @@ const config = {
         id: 'not_friend_all',
         title: '친구말고 [개정판]'
     },
-    /* All mangas are 18+ and unable to verify age without mobile / korean thing?
     child: {
         id: '1',
         title: '1화'
     },
     entry: {
         index: 0,
-        size: -1,
-        type: 'image/webp'
-    }*/
+        size: 66_636,
+        type: 'image/jpeg'
+    }
 };
 
 const fixture = new TestFixture(config);

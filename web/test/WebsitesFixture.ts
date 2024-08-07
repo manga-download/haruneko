@@ -59,7 +59,7 @@ export class TestFixture<TWebsitePlugin extends MediaContainer<MediaChild>, TCon
 
     private async GetRemoteChild(remoteContainer: JSHandle<TContainer>, childID: string): Promise<JSHandle<TChild>> {
         return remoteContainer.evaluateHandle(async (container: TContainer, id: string) => {
-            const child = (container.Entries as TChild[]).find(child => child.Identifier === id);
+            const child = (container.Entries.Value as TChild[]).find(child => child.Identifier === id);
             await child?.Update();
             return child;
         }, childID);
@@ -67,7 +67,7 @@ export class TestFixture<TWebsitePlugin extends MediaContainer<MediaChild>, TCon
 
     private async GetRemoteEntry(remoteChild: JSHandle<TChild>, entryIndex?: number): Promise<JSHandle<TEntry>> {
         return remoteChild.evaluateHandle(async (child: TChild, index: number) => {
-            return child?.Entries[index] as TEntry;
+            return child?.Entries.Value[index] as TEntry;
         }, entryIndex);
     }
 
