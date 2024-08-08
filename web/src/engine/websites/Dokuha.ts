@@ -2,7 +2,7 @@
 import icon from './Dokuha.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type JSONImage = undefined | {
@@ -44,9 +44,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const data = new Uint8Array(await blob.arrayBuffer());
-        return this.DecryptPicture(data, page.Parameters['scrambleJSONUrl'] as string);
+        return this.imageTaskPool.Add(async () => {
+
+            const response = await Fetch(new Request(page.Link, {
+                signal,
+                headers: {
+                    Referer: page.Link.origin,
+                }
+            }));
+            const data = new Uint8Array(await response.arrayBuffer());
+            return this.DecryptPicture(data, page.Parameters['scrambleJSONUrl'] as string);
+
+        }, priority, signal);
     }
 
     private async DecryptPicture(data: Uint8Array, jsonUrl: string): Promise<Blob> {

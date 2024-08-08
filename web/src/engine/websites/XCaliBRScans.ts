@@ -74,9 +74,7 @@ export default class extends DecoratableMangaScraper {
         // div#readerarea div.kage div.sword_box div.sword img
         // 2
 
-        const uri = new URL(chapter.Identifier, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchWindowScript<PageScriptResult>(request, pagescript, 2500);
+        const data = await FetchWindowScript<PageScriptResult>(new Request(new URL(chapter.Identifier, this.URI)), pagescript, 2500);
         const piclist = data.imagz.map(link => DeProxify(new URL(link)).href);
         switch (data.scrambled) {
 
@@ -91,8 +89,7 @@ export default class extends DecoratableMangaScraper {
 
                 //create one Page for each 2 pictures
                 for (let i = 0; i < piclist.length - 1; i += 2) {
-                    const parameters = { scrambled: data.scrambled, secondaryPic: piclist[i + 1] };
-                    const page = new Page(this, chapter, new URL(piclist[i], this.URI), parameters);
+                    const page = new Page(this, chapter, new URL(piclist[i], this.URI), { scrambled: data.scrambled, secondaryPic: piclist[i + 1] });
                     pages.push(page);
                     count += 2;
                 }
@@ -108,31 +105,42 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blobMainImage = await Common.FetchImageAjax.call(this, page, priority, signal);
-
         switch (page.Parameters.scrambled) {
-            case 0: // No scrambling, return image
-                return blobMainImage;
-            case 1: // Flip picture
+            case 0: {// No scrambling, return image {
+                return await Common.FetchImageAjax.call(this, page, priority, signal);
+            }
+            case 1: {// Flip picture
+                const blobMainImage = await Common.FetchImageAjax.call(this, page, priority, signal);
                 return DeScramble(blobMainImage, async (bitmap, ctx) => {
                     ctx.scale(-1, 1);
                     ctx.drawImage(bitmap, 0, 0, -bitmap.width, bitmap.height);
                 });
-            case 2: // Combine/Flip 2 pictures
-            {
-                const pageUrl = (page.Parameters.secondaryPic) as string;
-                const request = new Request(pageUrl, { headers: { Referer: this.URI.href } });
-                const response = await Fetch(request);
-                const b1 = await createImageBitmap(blobMainImage);
-                const b2 = await createImageBitmap(await response.blob());
-                return DeScramble(new ImageData(b1.width + b2.width, b1.height), async (_, ctx) => {
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(b2, 0, 0, -b2.width, b2.height);
-                    ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
-                });
             }
-            default:
-                throw Error();
+            case 2: { // Combine + Flip 2 pictures
+                return this.imageTaskPool.Add(async () => {
+                    const blobMainImage = await this.FetchBlob(page.Link.href, signal);
+                    const blobSecondImage = await this.FetchBlob((page.Parameters.secondaryPic) as string, signal);
+                    const b1 = await createImageBitmap(blobMainImage);
+                    const b2 = await createImageBitmap(blobSecondImage);
+                    return DeScramble(new ImageData(b1.width + b2.width, b1.height), async (_, ctx) => {
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(b2, 0, 0, -b2.width, b2.height);
+                        ctx.drawImage(b1, -b2.width, 0, -b1.width, b1.height);
+                    });
+                }, priority, signal);
+            }
         }
+
     }
+
+    private async FetchBlob(url: string, signal: AbortSignal): Promise<Blob> {
+        const response = await Fetch(new Request(url, {
+            signal,
+            headers: {
+                Referer: this.URI.href
+            }
+        }));
+        return response.blob();
+    }
+
 }

@@ -31,17 +31,29 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blobMainImage = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (!page.Parameters?.secondaryPic) return blobMainImage;
-        const pageUrl = (page.Parameters.secondaryPic) as string;
-        const request = new Request(pageUrl, { headers: { Referer: this.URI.href } });
-        const response = await Fetch(request);
-        const b1 = await createImageBitmap(blobMainImage);
-        const b2 = await createImageBitmap(await response.blob());
-        return DeScramble(new ImageData(b1.width + b2.width, b1.height), async (_, ctx) => {
-            ctx.drawImage(b1, 0, 0);
-            ctx.drawImage(b2, b1.width, 0);
-        });
+        return !page.Parameters?.secondaryPic ? await Common.FetchImageAjax.call(this, page, priority, signal) :
+
+            this.imageTaskPool.Add(async () => {
+                if (!page.Parameters?.secondaryPic) return await this.FetchBlob(page.Link.href, signal);
+
+                const blobMainImage = await this.FetchBlob(page.Link.href, signal);
+                const blobSecondImage = await this.FetchBlob((page.Parameters.secondaryPic) as string, signal);
+                const b1 = await createImageBitmap(blobMainImage);
+                const b2 = await createImageBitmap(blobSecondImage);
+                return DeScramble(new ImageData(b1.width + b2.width, b1.height), async (_, ctx) => {
+                    ctx.drawImage(b1, 0, 0);
+                    ctx.drawImage(b2, b1.width, 0);
+                });
+            }, priority, signal);
     }
 
+    private async FetchBlob(url: string, signal: AbortSignal): Promise<Blob> {
+        const response = await Fetch(new Request(url, {
+            signal,
+            headers: {
+                Referer: this.URI.href
+            }
+        }));
+        return response.blob();
+    }
 }
