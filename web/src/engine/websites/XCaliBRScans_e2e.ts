@@ -25,7 +25,7 @@ const configNormal: Config = {
 const fixtureNormal = new TestFixture(configNormal);
 describe(fixtureNormal.Name, async () => (await fixtureNormal.Connect()).AssertWebsite());
 
-const configScrambled1: Config = {
+const configScrambledSinglePicture: Config = {
     plugin: {
         id: 'xcalibrscans',
         title: 'xCaliBR Scans'
@@ -46,10 +46,10 @@ const configScrambled1: Config = {
     }
 };
 
-const fixtureScrambled1 = new TestFixture(configScrambled1);
-describe(fixtureScrambled1.Name, async () => (await fixtureScrambled1.Connect()).AssertWebsite());
+const fixtureScrambledSinglePicture = new TestFixture(configScrambledSinglePicture);
+describe(fixtureScrambledSinglePicture.Name, async () => (await fixtureScrambledSinglePicture.Connect()).AssertWebsite());
 
-const configScrambled2: Config = {
+const configScrambledTwoPIctures: Config = {
     plugin: {
         id: 'xcalibrscans',
         title: 'xCaliBR Scans'
@@ -70,5 +70,5 @@ const configScrambled2: Config = {
     }
 };
 
-const fixtureScrambled2 = new TestFixture(configScrambled2);
-describe(fixtureScrambled2.Name, async () => (await fixtureScrambled2.Connect()).AssertWebsite());
+const fixtureScrambledTwoPictures = new TestFixture(configScrambledTwoPIctures);
+describe(fixtureScrambledTwoPictures.Name, async () => (await fixtureScrambledTwoPictures.Connect()).AssertWebsite());
