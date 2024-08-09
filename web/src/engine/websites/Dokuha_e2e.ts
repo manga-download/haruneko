@@ -12,7 +12,7 @@ const config = {
         title: '桜通信 超合本版'
     },
     child: {
-        id: '/comicweb/viewer/comic/%E6%A1%9C%E9%80%9A%E4%BF%A1+%E8%B6%85%E5%90%88%E6%9C%AC%E7%89%88/1',
+        id: encodeURI('/comicweb/viewer/comic/桜通信+超合本版/1'),
         title: 'Vol.１'
     },
     entry: {
