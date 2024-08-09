@@ -5,10 +5,10 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "skipLibCheck": true,
-        "noEmit": true,
+        "noEmit": true
     },
     "include": [
         "src/**/*.ts",
-        "src/**/*.d.ts",
+        "src/**/*.d.ts"
     ]
 }

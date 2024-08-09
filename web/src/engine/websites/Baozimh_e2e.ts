@@ -16,8 +16,8 @@ const config = {
         title: '第53話 坦誠？'
     },
     entry: {
-        index: 53,
-        size: 113_017,
+        index: 5,
+        size: 164_832,
         type: 'image/jpeg'
     }
 };
