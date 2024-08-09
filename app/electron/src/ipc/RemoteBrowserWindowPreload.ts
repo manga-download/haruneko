@@ -1,5 +1,5 @@
 export const argvPreloadScript = '--preload-script=';
-const invoke: (script: string) => unknown = window['eval'];
+const invoke: (script: string) => unknown = globalThis['eval'];
 
 const preload = process.argv.find(arg => arg.startsWith(argvPreloadScript))?.split(argvPreloadScript).pop() ?? '';
 if(preload) {
