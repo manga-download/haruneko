@@ -63,11 +63,9 @@ export default class extends DecoratableMangaScraper {
                     .filter(anchor => anchor.pathname.includes(`/${type}-`))
                     .map(anchor => {
                         const id = JSON.stringify({ itemid: anchor.dataset.id, itemtype: type, language });
-                        const chapter = new Chapter(this, manga, id, `${ anchor.text.trim() } (${ language })`);
-                        if(chapterLanguageMap.has(language)) {
-                            chapter.Tags.Value.push(chapterLanguageMap.get(language));
-                        }
-                        return chapter;
+                        return new Chapter(this, manga, id, `${ anchor.text.trim() } (${ language })`,
+                            ...chapterLanguageMap.has(language) ? [ chapterLanguageMap.get(language) ] : []
+                        );
                     });
                 chapterList.push(...chapters);
             }

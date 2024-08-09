@@ -178,12 +178,10 @@ export default class extends MangaScraper {
                     entry.attributes.translatedLanguage ? '(' + entry.attributes.translatedLanguage + ')' : null,
                     groups.length > 0 ? '[' + groups.map(group => group.attributes.name).join(', ') + ']' : null,
                 ].filter(segment => segment).join(' ').trim();
-                const chapter = new Chapter(this, manga, entry.id, title.trim());
                 const languageCode = entry.attributes.translatedLanguage?.split('-')?.shift();
-                if(chapterLanguageMap.has(languageCode)) {
-                    chapter.Tags.Value.push(chapterLanguageMap.get(languageCode));
-                }
-                return chapter;
+                return new Chapter(this, manga, entry.id, title.trim(),
+                    ...chapterLanguageMap.has(languageCode) ? [ chapterLanguageMap.get(languageCode) ] : []
+                );
             });
     }
 
