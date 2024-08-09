@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'instamanhwa',
-        title: 'InstaManhwa'
+        id: 'xmanhwa',
+        title: 'XManhwa'
     },
     container: {
-        url: 'https://www.instamanhwa.com/manga/am-i-the-daughter',
-        id: JSON.stringify({ post: '1276', slug: '/manga/am-i-the-daughter' }),
-        title: 'Am I the Daughter?'
+        url: 'https://www.xmanhwa.me/manga/cold-hot/',
+        id: JSON.stringify({ post: '25936', slug: '/manga/cold-hot/' }),
+        title: 'Cold? Hot!'
     },
     child: {
-        id: '/manga/am-i-the-daughter/chapter-1',
+        id: '/manga/cold-hot/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
-        index: 1,
-        size: 160_654,
+        index: 0,
+        size: 193_651,
         type: 'image/jpeg'
     }
 };

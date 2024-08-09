@@ -22,6 +22,7 @@ const legacyWebsiteIdentifierMap = {
     'galaxyaction': 'galaxymanga',
     'gateanimemanga': 'gatemanga',
     'imperioscans': 'neroxus',
+    'instamanhwa': 'xmanhwa',
     'kisscomic': 'readcomiconline',
     'komikav': 'apkomik',
     'kumascans': 'retsu',
