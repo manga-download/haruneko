@@ -49,7 +49,7 @@ const configScrambledSinglePicture: Config = {
 const fixtureScrambledSinglePicture = new TestFixture(configScrambledSinglePicture);
 describe(fixtureScrambledSinglePicture.Name, async () => (await fixtureScrambledSinglePicture.Connect()).AssertWebsite());
 
-const configScrambledTwoPIctures: Config = {
+const configScrambledTwoPictures: Config = {
     plugin: {
         id: 'xcalibrscans',
         title: 'xCaliBR Scans'
@@ -70,5 +70,5 @@ const configScrambledTwoPIctures: Config = {
     }
 };
 
-const fixtureScrambledTwoPictures = new TestFixture(configScrambledTwoPIctures);
+const fixtureScrambledTwoPictures = new TestFixture(configScrambledTwoPictures);
 describe(fixtureScrambledTwoPictures.Name, async () => (await fixtureScrambledTwoPictures.Connect()).AssertWebsite());
