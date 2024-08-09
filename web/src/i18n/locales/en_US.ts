@@ -312,6 +312,13 @@ const translations: VariantResource = {
 
   Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
 
+  Plugin_Lezhin_Settings_Username: 'Email',
+  Plugin_Lezhin_Settings_UsernameInfo: 'Email for Lezhin login',
+  Plugin_Lezhin_Settings_Password: 'Password',
+  Plugin_Lezhin_Settings_PasswordInfo: 'Password for Lezhin login',
+  Plugin_Lezhin_Settings_Force_JPEG: 'Force images as JPEG?',
+  Plugin_Lezhin_Settings_Force_JPEGInfo: 'Set images formats as JPEG instead of WEBP.',
+
   Plugin_SheepScanlations_Settings_Username: 'Username',
   Plugin_SheepScanlations_Settings_UsernameInfo: 'Username for automatic account login to Sheep-Scanlations 😉',
   Plugin_SheepScanlations_Settings_Password: 'Password',
