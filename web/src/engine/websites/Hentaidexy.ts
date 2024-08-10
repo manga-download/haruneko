@@ -94,7 +94,7 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(uri.href);
         const data = await FetchJSON<ApiPage>(request);
         return data.chapter.images.map(image => {
-            const lastpart = image.split('/').pop();
+            const lastpart = image.split('/').at(-1);
             return new Page(this, chapter, new URL('/hentaidexy/' + lastpart, this.imageBaseUrl));
         });
     }

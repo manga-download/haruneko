@@ -29,7 +29,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL('/Story/ListChapterByStoryID', this.URI), {
             method: 'POST',
-            body: new URLSearchParams({ StoryID: manga.Identifier.split('-').pop() }).toString(),
+            body: new URLSearchParams({ StoryID: manga.Identifier.split('-').at(-1) }).toString(),
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 Referer: new URL(manga.Identifier, this.URI).href,

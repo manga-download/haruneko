@@ -34,7 +34,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
-    const data = (await FetchCSS<HTMLElement>(request, query)).shift();
+    const data = (await FetchCSS<HTMLElement>(request, query)).at(0);
     return new Manga(this, provider, new URL(url).pathname, Common.ElementLabelExtractor().call(this, data));
 }
 

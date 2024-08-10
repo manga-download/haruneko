@@ -106,7 +106,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
             Referer: uri.href
         }
     });
-    const data = (await FetchCSS<HTMLElement>(request, query)).shift();
+    const data = (await FetchCSS<HTMLElement>(request, query)).at(0);
     let id = uri.pathname;
     id += includeSearch ? uri.search : '';
     id += includeHash ? uri.hash : '';

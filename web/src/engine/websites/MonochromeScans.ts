@@ -41,7 +41,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = url.split('/').pop();
+        const id = url.split('/').at(-1);
         const request = new Request(new URL('/manga/' + id, this.apiUrl));
         const data = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, data.id, data.title.trim());

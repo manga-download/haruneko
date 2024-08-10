@@ -41,7 +41,7 @@ function AnchorInfoExtractor(this: MangaScraper, element: HTMLAnchorElement) {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     const uri = new URL(url);
-    const element = (await FetchCSS<HTMLElement>(new Request(uri), query)).shift();
+    const element = (await FetchCSS<HTMLElement>(new Request(uri), query)).at(0);
     return new Manga(this, provider, uri.origin === this.URI.origin ? uri.pathname : uri.href, element.textContent.trim());
 }
 

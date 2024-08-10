@@ -39,11 +39,11 @@ async function DetectNW(): Promise<string> {
 
     let search: string[] = [];
     try {
-        const folder = (await fs.readdir(rootModule)).filter(entry => entry.startsWith('nwjs-')).shift() ?? 'nwjs';
+        const folder = (await fs.readdir(rootModule)).filter(entry => entry.startsWith('nwjs-')).at(0) ?? 'nwjs';
         search = executables.map(segment => path.resolve(rootModule, folder, segment));
     } catch {}
     try {
-        const folder = (await fs.readdir(appModule)).filter(entry => entry.startsWith('nwjs-')).shift() ?? 'nwjs';
+        const folder = (await fs.readdir(appModule)).filter(entry => entry.startsWith('nwjs-')).at(0) ?? 'nwjs';
         search = executables.map(segment => path.resolve(appModule, folder, segment));
     } catch {}
 

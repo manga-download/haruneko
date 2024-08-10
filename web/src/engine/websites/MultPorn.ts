@@ -97,7 +97,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetChaptersFromAjaxPage(manga: Manga, page: number, settings: DrupalSettings): Promise<Chapter[]> {
 
-        const view = Object.values(settings.views.ajaxViews).shift();
+        const view = Object.values(settings.views.ajaxViews).at(0);
         const params = new URLSearchParams();
         for (const key of Object.keys(view)) {
             params.append(key, view[key]);

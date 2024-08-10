@@ -56,7 +56,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(url);
         const id = uri.pathname.match(/_(\d+)\/?$/)[1];
         const request = new Request(url);
-        const name = (await FetchCSS(request, 'main h1.album-heading')).pop().textContent.trim();
+        const name = (await FetchCSS(request, 'main h1.album-heading')).at(-1).textContent.trim();
         return new Manga(this, provider, id, name);
     }
 

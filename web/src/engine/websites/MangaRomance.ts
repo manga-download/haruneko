@@ -18,7 +18,7 @@ type FeedResults = {
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
-        id: anchor.pathname.split('/').pop(),
+        id: anchor.pathname.split('/').at(-1),
         title: anchor.text.trim()
     };
 }
@@ -41,7 +41,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').pop();
+        const id = new URL(url).pathname.split('/').at(-1);
         const data = await FetchCSS(new Request(this.StripSearch(url)), 'div.sidebar ul li span[dir="ltr"]');
         return new Manga(this, provider, id, data[0].textContent.trim());
     }

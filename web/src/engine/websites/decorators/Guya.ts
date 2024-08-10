@@ -130,6 +130,6 @@ export function PagesSinglePageAJAX() {
 async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
     const { chapters, preferred_sort } = await FetchJSON<APIChapters>(new Request(new URL('/api/series/' + chapter.Parent.Identifier, this.URI)));
     const chap = chapters[chapter.Identifier];
-    const groupname = preferred_sort.shift() || Object.keys(chap.groups).shift();
+    const groupname = preferred_sort.at(0)?? Object.keys(chap.groups).at(0);
     return chap.groups[groupname].map(page => new Page(this, chapter, new URL(`/media/manga/${chapter.Parent.Identifier}/chapters/${chap.folder}/${groupname}/${page}`, this.URI)));
 }

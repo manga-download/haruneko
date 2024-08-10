@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const id = manga.Identifier.split('.').pop();
+        const id = manga.Identifier.split('.').at(-1);
         const request = new Request(new URL(manga.Identifier, this.URI));
         const data = await FetchCSS(request, 'section.m-list div.dropdown-menu a');
         const languageList = data.map(element => element.dataset.code.toLowerCase());
