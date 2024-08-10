@@ -36,7 +36,6 @@ type APIResult<T> = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.nicomanga.jp/api/v1/app/manga/';
-    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/comic/(\\d+)$`);
 
     public constructor() {
         super('niconicoseiga', `ニコニコ静画 (niconico seiga)`, 'https://sp.manga.nicovideo.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
@@ -47,12 +46,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url);
+        return new RegExpSafe(`^${this.URI.origin}/comic/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const title = (await FetchCSS<HTMLHeadingElement>(new Request(url), 'section.comic_header h2.title')).shift().textContent.trim();
-        return new Manga(this, provider, url.match(this.mangaRegexp)[1], title);
+        const title = (await FetchCSS<HTMLHeadingElement>(new Request(url), 'main h1')).at(0).textContent.trim();
+        return new Manga(this, provider, url.split('/').at(-1), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {

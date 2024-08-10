@@ -42,7 +42,7 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.namicomi.com';
-    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/[^/]+/title/(\[^/]+)\/[^/]+$`);
+
     public constructor() {
         super('namicomi', `NamiComi`, 'https://namicomi.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Comic, Tags.Language.Multilingual, Tags.Source.Official);
     }
@@ -52,11 +52,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url);
+        return new RegExpSafe(`^${this.URI.origin}/[^/]+/title/[^/]+/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = url.match(this.mangaRegexp)[1];
+        const id = url.split('/').at(-2);
         const request = new Request(new URL(`/title/${id}`, this.apiUrl));
         const { data } = await FetchJSON<APIResult<APIManga>>(request);
         const title = (data.attributes.title[data.attributes.originalLanguage] || data.attributes.title.en).trim();
@@ -71,6 +71,7 @@ export default class extends DecoratableMangaScraper {
             return new Manga(this, provider, item.id, title);
         });
     }
+
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(`/chapter?titleId=${manga.Identifier}&limit=9999&offset=0`, this.apiUrl));
         const { data } = await FetchJSON<APIResult<APIChapter[]>>(request);
