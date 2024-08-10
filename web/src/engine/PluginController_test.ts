@@ -75,7 +75,7 @@ describe('PluginController', () => {
 
         describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', { concurrent: true }, (plugin) => {
 
-            it('Should have a valid URI', { timeout: 5000 }, async () => {
+            it('Should have a valid URI', { timeout: 10_000 }, async () => {
                 expect(plugin.URI.origin).toMatch(/^http/);
                 const ip = await dns.lookup(plugin.URI.hostname);
                 expect(ip.address).toSatisfy((ip4: string) => {
