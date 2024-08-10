@@ -263,7 +263,7 @@ export function ChaptersSinglePageAJAX(apiUrl: string) {
  */
 async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnUrl: string, chapter: Chapter): Promise<Page[]> {
     const variables: JSONObject = {
-        id: parseInt(chapter.Identifier)
+        id: parseInt(chapter.Identifier, 10)
     };
 
     const query = `
