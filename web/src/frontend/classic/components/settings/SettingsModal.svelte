@@ -13,7 +13,7 @@
 
     import { Scope } from '../../../../engine/SettingsGlobal';
 
-    export let isModalOpen = false;
+    export let isSettingsModalOpen = false;
     export let selectedTab = 0;
 </script>
 
@@ -21,10 +21,10 @@
     id="settingModal"
     size="lg"
     hasScrollingContent
-    bind:open={isModalOpen}
+    bind:open={isSettingsModalOpen}
     passiveModal
     modalHeading="Settings"
-    on:click:button--secondary={() => (isModalOpen = false)}
+    on:click:button--secondary={() => (isSettingsModalOpen = false)}
     on:open
     on:close
     hasForm
