@@ -36,7 +36,7 @@ type APIResult<T> = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.nicomanga.jp/api/v1/app/manga/';
-    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/comic/(\\d+)$`);
+    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/comic/(\\d+)$`);
 
     public constructor() {
         super('niconicoseiga', `ニコニコ静画 (niconico seiga)`, 'https://sp.manga.nicovideo.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);

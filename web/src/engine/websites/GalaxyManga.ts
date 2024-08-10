@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
         super(id, label, url, ...tags);
         this.apiUrl = apiUrl;
         this.cdnUrl = cdnUrl;
-        this.mangaRegexp = new RegExp(`^${this.URI.origin}/series/(\\d+)-(\\d+)[^/]+$`);
+        this.mangaRegexp = new RegExpSafe(`^${this.URI.origin}/series/(\\d+)-(\\d+)[^/]+$`);
     }
 
     public override get Icon() {

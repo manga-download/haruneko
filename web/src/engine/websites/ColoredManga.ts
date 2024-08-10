@@ -40,7 +40,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/`;
-    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/manga/([^/]+)$`);
+    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/manga/([^/]+)$`);
 
     public constructor() {
         super('coloredmanga', 'Colored Manga', 'https://coloredmanga.net', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);

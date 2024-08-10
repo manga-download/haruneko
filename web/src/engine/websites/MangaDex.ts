@@ -115,7 +115,7 @@ export default class extends MangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/title/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/title/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

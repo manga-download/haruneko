@@ -42,7 +42,7 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.namicomi.com';
-    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/[^/]+/title/(\[^/]+)\/[^/]+$`);
+    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/[^/]+/title/(\[^/]+)\/[^/]+$`);
     public constructor() {
         super('namicomi', `NamiComi`, 'https://namicomi.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Comic, Tags.Language.Multilingual, Tags.Source.Official);
     }

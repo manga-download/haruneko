@@ -128,7 +128,7 @@ export function MangaAJAX(pattern: RegExp, apiUrl: string) {
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
-                return new RegExp(source, pattern.flags).test(url);
+                return new RegExpSafe(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaAJAX.call(this, provider, url, apiUrl);
@@ -150,7 +150,7 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
         mappedLanguages.push(languageMap[lang]);
     }
 
-    const variables: JSONObject = {
+    const variables = {
         languages: mappedLanguages
     };
     const query = `
