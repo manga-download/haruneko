@@ -1,10 +1,28 @@
+import * as dns from 'node:dns/promises';
+import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
 import type { JSHandle } from 'puppeteer-core';
 import { PuppeteerFixture } from '../../../test/PuppeteerFixture';
-import type { PluginController } from './PluginController';
 import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
+import type { ISettings, SettingsManager } from './SettingsManager';
+import type { StorageController } from './StorageController';
+import { PluginController } from './PluginController';
 
-export class TestFixture extends PuppeteerFixture {
+class TestFixture {
+
+    public readonly MockStorageController = mock<StorageController>();
+    public readonly MockSettingsManager = mock<SettingsManager>();
+
+    constructor() {
+        this.MockSettingsManager.OpenScope.mockReturnValue(mock<ISettings>());
+    }
+
+    public CreateTestee() {
+        return new PluginController(this.MockStorageController, this.MockSettingsManager);
+    }
+}
+
+export class RemoteFixture extends PuppeteerFixture {
 
     public async GetRemotePluginController(): Promise<JSHandle<PluginController>> {
         return super.Page.evaluateHandle(async () => {
@@ -21,12 +39,27 @@ export class TestFixture extends PuppeteerFixture {
 
 describe('PluginController', () => {
 
-    it('Should have embedded WEBP icon for each website', async () => {
+    describe('Website URIs', { concurrent: true }, () => {
 
-        const fixture = await new TestFixture().Connect();
-        const remoteTestee = await fixture.GetRemoteWebsitePlugins();
+        const plugins = new TestFixture().CreateTestee().WebsitePlugins;
 
-        const actual = await remoteTestee.evaluate(testee => testee.map(website => {
+        it.each(plugins)('Should have a valid URI for $Title', { timeout: 20_000 }, async (plugin) => {
+            expect(plugin.URI.origin).toMatch(/^http/);
+            const ip = await dns.lookup(plugin.URI.hostname);
+            expect(ip.address).toSatisfy((ip4: string) => {
+                const bytes = ip4.split('.').map(s => parseInt(s, 10));
+                return bytes.at(0) > 0 && !bytes.some(n => isNaN(n) || n < 0 || n > 255);
+            });
+            //const response = await fetch(plugin.URI);
+            //expect(response.url).toBe(plugin.URI.href);
+        });
+    });
+
+    describe('Website Icons', { concurrent: true }, async () => {
+
+        const fixture = await new RemoteFixture().Connect();
+        const plugins = await fixture.GetRemoteWebsitePlugins();
+        const icons = await plugins.evaluate(testee => testee.map(website => {
             return {
                 website: website.Title,
                 signature: website.Icon.slice(0, 23),
@@ -34,7 +67,7 @@ describe('PluginController', () => {
             };
         }));
 
-        for(const icon of actual) {
+        it.each(icons)('Should have an embedded WEBP icon for $website', async (icon) => {
             try {
                 expect(icon.signature).toBe('data:image/webp;base64,');
                 expect(icon.length).toBeLessThan(4096);
@@ -42,6 +75,6 @@ describe('PluginController', () => {
                 console.log(`Invalid icon for website <${icon.website}>:`, icon.signature, ' => ', icon.length, 'bytes');
                 throw error;
             }
-        }
+        });
     });
 });
