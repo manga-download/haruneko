@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
 
     public override ValidateMangaURL(url: string): boolean {
         // NOTE: only mangas with ID >= 1000000 have chapters for online reading
-        return new RegExp(`^${this.URI.origin}/[^/]+/contents/\\d{7}/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/[^/]+/contents/\\d{7}/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

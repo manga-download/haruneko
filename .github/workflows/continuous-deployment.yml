@@ -1,0 +1,51 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    name: Publish Web-Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Install NPM Packages
+        run: npm install
+      - name: Code Inspection
+        run: npm run check
+      - name: Unit & Component Tests
+        run: npm run test
+      - name: Build Web-Application
+        run: npm run build --workspace=web
+      - name: Deploy App to CloudFlare
+        uses: cloudflare/pages-action@v1
+        with:
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          projectName: haruneko
+          directory: ./web/build
+      - name: Build Documentation
+        run: npm run build --workspace=docs
+      - name: Deploy Docs to CloudFlare
+        uses: cloudflare/pages-action@v1
+        with:
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          projectName: haruneko-docs
+          directory: ./docs/.vitepress/dist

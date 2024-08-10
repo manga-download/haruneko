@@ -14,22 +14,29 @@ html, body, #app, #hakuneko-notice {
     overflow: hidden;
 }
 
-#hakuneko-notice {
-    background: lightgrey;
-    text-align: center;
-    padding: 2em;
+#windowbar {
+    padding: 0.25em;
+    text-align: right;
+    background: whitesmoke;
     -webkit-app-region: drag;
+}
+
+#windowbar > a {
+    padding: 0.25em;
+    cursor: pointer;
+    font-size: 125%;
+    font-weight: bold;
+    text-decoration: none;
+    -webkit-app-region: no-drag;
+}
+
+#hakuneko-notice {
+    text-align: center;
+    background: lightgrey;
 }
 
 #hakuneko-notice a {
     text-decoration: none;
-}
-
-#windowbar {
-    position: absolute;
-    z-index:10;
-    top:0;
-    right: 0;
 }
 
 .container {
