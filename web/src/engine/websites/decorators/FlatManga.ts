@@ -46,20 +46,20 @@ function CleanChaptertitle(manga: Manga, title: string): string {
 
 export function PageLinkExtractor<E extends HTMLImageElement>(this: MangaScraper, element: E): string {
     try {
-        element.dataset.src = window.atob(element.dataset.src);
-    } catch (_) { /* ignore */ }
+        element.dataset.src = window.atob(element.dataset.src);// eslint-disable-next-line
+    } catch (_) {  }
     try {
-        element.dataset.src = window.atob(element.dataset.srcset);
-    } catch (_) { /* ignore */ }
+        element.dataset.src = window.atob(element.dataset.srcset);// eslint-disable-next-line
+    } catch (_) { }
     try {
-        element.dataset.original = window.atob(element.dataset.original);
-    } catch (_) { /* ignore */ }
+        element.dataset.original = window.atob(element.dataset.original);// eslint-disable-next-line
+    } catch (_) { }
     try {
-        element.dataset.pagespeedLazySrc = window.atob(element.dataset.pagespeedLazySrc);
-    } catch (_) { /* ignore */ }
+        element.dataset.pagespeedLazySrc = window.atob(element.dataset.pagespeedLazySrc);// eslint-disable-next-line
+    } catch (_) { }
     try {
-        element.dataset.aload = window.atob(element.dataset.aload);
-    } catch (_) { /* ignore */ }
+        element.dataset.aload = window.atob(element.dataset.aload);// eslint-disable-next-line
+    } catch (_) {  }
     return element.dataset.aload || element.dataset.src || element.dataset.srcset?.replace(/\n/g, '') || element.dataset.original || element.dataset.pagespeedLazySrc || element.src;
 }
 
