@@ -84,8 +84,8 @@ type APIPages = {
  */
 async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: string): Promise<Manga> {
     const uri = new URL(url);
-    const language = uri.pathname.match(/work\/([a-z]{2})\/[^/]+/).last();
-    const slug = uri.pathname.match(/work\/[a-z]{2}\/([^/]+)/).last();
+    const language = uri.pathname.match(/work\/([a-z]{2})\/[^/]+/).at(-1);
+    const slug = uri.pathname.match(/work\/[a-z]{2}\/([^/]+)/).at(-1);
 
     const query = `
         query Work($language: Int, $stub: String) {
