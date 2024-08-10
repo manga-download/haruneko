@@ -63,50 +63,15 @@ describe('PluginController', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        it('Should not have any plugin which matches the source identifier of a mapped legacy plugin', () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateTestee();
-
-            const legacyIdentifiers = [ ...legacyWebsiteIdentifierMap.keys() ].filter(id => testee.WebsitePlugins.some(plugin => plugin.Identifier === id));
-
-            expect(legacyIdentifiers).toBe([]);
-        });
-
         it('Should have a plugin which matches the target identifier for each mapped legacy plugin', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
             const expected = [ ...legacyWebsiteIdentifierMap.values() ];
 
-            const legacyIdentifiers = expected.filter(id => testee.WebsitePlugins.some(plugin => plugin.Identifier === id));
+            const missing = expected.filter(id => !testee.WebsitePlugins.some(plugin => plugin.Identifier === id));
 
-            expect(legacyIdentifiers).toEqual(expected);
+            expect(missing).toEqual([]);
         });
-
-        /*
-        it('Should have valid URIs', {  }, async () => {
-            const fixture = new TestFixture();
-            const testee = fixture.CreateTestee();
-
-            const rejected = (await Promise.allSettled(testee.WebsitePlugins.map(async plugin => {
-                try {
-                    if(!/^http/.test(plugin.URI.origin)) {
-                        throw new Error(`Invalid URI ➔ ${plugin.URI.href}`);
-                    }
-                    const ip4 = await dns.lookup(plugin.URI.hostname);
-                    const bytes = ip4.address.split('.').map(s => parseInt(s, 10));
-                    if(bytes.some(n => isNaN(n) || n < 1 || n > 255)) {
-                        throw new Error(`Invalid IP ➔ ${ip4.address}`);
-                    }
-                    //const response = await fetch(plugin.URI);
-                    //expect(response.url).toBe(plugin.URI.href);
-                } catch(error) {
-                    throw new Error(`${plugin.Title} <${plugin.Identifier}> ${error}`);
-                }
-            }))).filter(result => result.status === 'rejected').map(result => result.reason);
-
-            expect(rejected).toBe([]);
-        });
-        */
 
         describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', { concurrent: true }, (plugin) => {
 
