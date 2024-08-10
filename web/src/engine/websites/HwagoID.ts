@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/komik\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Hwago"])')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
+@Madara.ChaptersSinglePageAJAXv2('div.chapter-link > a')
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
