@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/manga/\\S+/\\S+`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/\\S+/\\S+`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -94,7 +94,7 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(uri.href);
         const data = await FetchJSON<ApiPage>(request);
         return data.chapter.images.map(image => {
-            const lastpart = image.split('/').pop();
+            const lastpart = image.split('/').at(-1);
             return new Page(this, chapter, new URL('/hentaidexy/' + lastpart, this.imageBaseUrl));
         });
     }

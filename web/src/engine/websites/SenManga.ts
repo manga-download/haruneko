@@ -60,11 +60,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/title/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/title/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = url.split('/').pop();
+        const id = url.split('/').at(-1);
         const uri = new URL('/api/title/' + id, this.URI).href;
         const request = new Request(uri);
         const data = await FetchJSON<APISingleManga>(request);

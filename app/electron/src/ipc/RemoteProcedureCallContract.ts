@@ -27,7 +27,7 @@ export class RemoteProcedureCallContract implements Contract {
         }
 
         if(userAgent !== this.webContents.getUserAgent()) {
-            const file = path.resolve(app.getAppPath(), 'package.json');
+            const file = path.normalize(path.resolve(app.getAppPath(), 'package.json'));
             const manifest = JSON.parse(await fs.readFile(file, 'utf-8'));
             manifest['user-agent'] = userAgent;
             await fs.writeFile(file, JSON.stringify(manifest, null, 2), 'utf-8');

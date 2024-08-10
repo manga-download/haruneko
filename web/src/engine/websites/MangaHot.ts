@@ -185,7 +185,7 @@ export default class extends DecoratableMangaScraper {
 
     GetScrambleType(href: string): number {
         let t = 0;
-        href = href.split('/').pop();
+        href = href.split('/').at(-1);
         const ptn: RegExp = /^[0-9]$/;
         for (let i = 0; i < href.length; i++) {
             ptn.test(href[i]) && (t += parseInt(href[i]));
