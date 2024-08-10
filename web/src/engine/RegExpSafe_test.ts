@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import './RegExpUnsafe';
+import './RegExpSafe';
 
-describe('RegExpUnsafe', () => {
+describe('RegExpSafe', () => {
 
     it('Should be an alias for RegExp to bypass ReDoS check in code analysis', async () => {
         expect(RegExpSafe).toBe(RegExp);
