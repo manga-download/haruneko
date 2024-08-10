@@ -1,9 +1,11 @@
 import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
+import * as dns from 'node:dns/promises';
 import type { ISettings, SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 import { PluginController } from './PluginController';
 import { Tags } from './Tags';
+import { legacyWebsiteIdentifierMap } from './transformers/BookmarkConverter';
 
 class TestFixture {
 
@@ -61,10 +63,25 @@ describe('PluginController', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', (plugin) => {
+        it('Should have a plugin which matches the target identifier for each mapped legacy plugin', () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+            const expected = [ ...legacyWebsiteIdentifierMap.values() ];
 
-            it('Should have valid URI', async () => {
+            const missing = expected.filter(id => !testee.WebsitePlugins.some(plugin => plugin.Identifier === id));
+
+            expect(missing).toEqual([]);
+        });
+
+        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', { concurrent: true }, (plugin) => {
+
+            it('Should have a valid URI', { timeout: 20_000 }, async () => {
                 expect(plugin.URI.origin).toMatch(/^http/);
+                const ip = await dns.lookup(plugin.URI.hostname);
+                expect(ip.address).toSatisfy((ip4: string) => {
+                    const bytes = ip4.split('.').map(s => parseInt(s, 10));
+                    return bytes.at(0) > 0 && !bytes.some(n => isNaN(n) || n < 0 || n > 255);
+                });
                 //const response = await fetch(plugin.URI);
                 //expect(response.url).toBe(plugin.URI.href);
             });
