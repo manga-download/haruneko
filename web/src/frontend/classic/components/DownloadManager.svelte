@@ -69,18 +69,18 @@
                                 style:flex-basis="{(processing /
                                     mediajobs.length) *
                                     100}%"
-                            />
+                            ></div>
                             <div
                                 class="bar val-completed"
                                 style:flex-basis="{(completed /
                                     mediajobs.length) *
                                     100}%"
-                            />
+                            ></div>
                             <div
                                 class="bar val-failed"
                                 style:flex-basis="{(failed / mediajobs.length) *
                                     100}%"
-                            />
+                            ></div>
                             <div
                                 class="bar val-pending"
                                 style:flex-basis="{((mediajobs.length -
@@ -89,7 +89,7 @@
                                     processing) /
                                     mediajobs.length) *
                                     100}%"
-                            />
+                            ></div>
                         </div>
                     </div>
                     <div slot="below" class="below">
@@ -98,13 +98,15 @@
                                 {job}
                                 bind:taskerror
                                 on:update={update}
-                            />
+                            ></DownloadManagerTask>
                         {/each}
                     </div>
                 </ExpandableTile>
             {/each}
         {:else}
-            <div><DocumentDownload size={32} /> No tasks in queues</div>
+            <div>
+                <DocumentDownload size={32}></DocumentDownload> No tasks in queues
+            </div>
         {/if}
     </div>
 
@@ -120,7 +122,7 @@
                     copy={() => {
                         copyErrorToClipBoard(taskerror);
                     }}
-                />
+                ></CopyButton>
                 <h4>{taskerror.Media.Title}</h4>
             </div>
             {#each taskerror.Errors as error}
