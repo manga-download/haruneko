@@ -1,9 +1,11 @@
 import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
+import * as dns from 'node:dns/promises';
 import type { ISettings, SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 import { PluginController } from './PluginController';
 import { Tags } from './Tags';
+import { legacyWebsiteIdentifierMap } from './transformers/BookmarkConverter';
 
 class TestFixture {
 
@@ -61,10 +63,60 @@ describe('PluginController', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', (plugin) => {
+        it('Should not have any plugin which matches the source identifier of a mapped legacy plugin', () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
 
-            it('Should have valid URI', async () => {
+            const legacyIdentifiers = [ ...legacyWebsiteIdentifierMap.keys() ].filter(id => testee.WebsitePlugins.some(plugin => plugin.Identifier === id));
+
+            expect(legacyIdentifiers).toBe([]);
+        });
+
+        it('Should have a plugin which matches the target identifier for each mapped legacy plugin', () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+            const expected = [ ...legacyWebsiteIdentifierMap.values() ];
+
+            const legacyIdentifiers = expected.filter(id => testee.WebsitePlugins.some(plugin => plugin.Identifier === id));
+
+            expect(legacyIdentifiers).toEqual(expected);
+        });
+
+        /*
+        it('Should have valid URIs', {  }, async () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+
+            const rejected = (await Promise.allSettled(testee.WebsitePlugins.map(async plugin => {
+                try {
+                    if(!/^http/.test(plugin.URI.origin)) {
+                        throw new Error(`Invalid URI ➔ ${plugin.URI.href}`);
+                    }
+                    const ip4 = await dns.lookup(plugin.URI.hostname);
+                    const bytes = ip4.address.split('.').map(s => parseInt(s, 10));
+                    if(bytes.some(n => isNaN(n) || n < 1 || n > 255)) {
+                        throw new Error(`Invalid IP ➔ ${ip4.address}`);
+                    }
+                    //const response = await fetch(plugin.URI);
+                    //expect(response.url).toBe(plugin.URI.href);
+                } catch(error) {
+                    throw new Error(`${plugin.Title} <${plugin.Identifier}> ${error}`);
+                }
+            }))).filter(result => result.status === 'rejected').map(result => result.reason);
+
+            expect(rejected).toBe([]);
+        });
+        */
+
+        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', { concurrent: true }, (plugin) => {
+
+            it('Should have valid URIs', { timeout: 5000 }, async () => {
                 expect(plugin.URI.origin).toMatch(/^http/);
+                const ip = await dns.lookup(plugin.URI.hostname);
+                expect(ip.address).toSatisfy((ip4: string) => {
+                    const bytes = ip4.split('.').map(s => parseInt(s, 10));
+                    return bytes.at(0) > 0 && !bytes.some(n => isNaN(n) || n < 0 || n > 255);
+                });
                 //const response = await fetch(plugin.URI);
                 //expect(response.url).toBe(plugin.URI.href);
             });
