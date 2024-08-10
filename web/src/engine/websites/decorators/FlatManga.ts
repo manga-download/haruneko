@@ -123,9 +123,7 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
  * @param extractor - A function to extract chapter info from an HTML node
   */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
-    const url = new URL(manga.Identifier, this.URI);
-    const request = new Request(url.href);
-    const data = await FetchCSS<HTMLAnchorElement>(request, query);
+    const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), query);
     return data.map(anchor => {
         const { id, title } = extractor.call(this, anchor);
         return new Chapter(this, manga, id, CleanChaptertitle(manga, title));
@@ -166,7 +164,7 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
             'Referer': this.URI.origin
         }
     });
-    const mangaRegexp = new RegExp(`var ${mangaIdVariable}\\s*=\\s*['"]([^'"]+)['"]`);
+    const mangaRegexp = new RegExpSafe(`var ${mangaIdVariable}\\s*=\\s*['"]([^'"]+)['"]`);
     const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(mangaRegexp)[1];
     const apiUrl = new URL(`${endpoint}${mangaSlug}`, this.URI);
 
