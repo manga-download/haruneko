@@ -470,7 +470,6 @@ export { default as MomoNoHanaScan } from './MomoNoHanaScan';
 export { default as MonochromeScans } from './MonochromeScans';
 export { default as MonoManga } from './MonoManga';
 export { default as MonzeeKomik } from './MonzeeKomik';
-export { default as MoonWitchInLove } from './MoonWitchInLove';
 export { default as MrYaoi } from './MrYaoi';
 export { default as MultPorn } from './MultPorn';
 export { default as MundoManhwa } from './MundoManhwa';
