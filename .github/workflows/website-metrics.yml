@@ -27,12 +27,14 @@ jobs:
         run: npx --yes vitest run --config=web/scripts/website-metrics.vitest.ts
       - name: Upload Metrics (JSON)
         uses: actions/upload-artifact@v4
+        if: success() || failure()
         with:
           retention-days: 30
           name: website-metrics.json
           path: web/scripts/cache/website-metrics.json
       - name: Upload Metrics (HTML)
         uses: actions/upload-artifact@v4
+        if: success() || failure()
         with:
           retention-days: 30
           name: website-metrics.html
