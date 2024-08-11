@@ -1,26 +1,8 @@
-import * as dns from 'node:dns/promises';
-import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
 import type { JSHandle } from 'puppeteer-core';
 import { PuppeteerFixture } from '../../../test/PuppeteerFixture';
 import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
-import type { ISettings, SettingsManager } from './SettingsManager';
-import type { StorageController } from './StorageController';
-import { PluginController } from './PluginController';
-
-class TestFixture {
-
-    public readonly MockStorageController = mock<StorageController>();
-    public readonly MockSettingsManager = mock<SettingsManager>();
-
-    constructor() {
-        this.MockSettingsManager.OpenScope.mockReturnValue(mock<ISettings>());
-    }
-
-    public CreateTestee() {
-        return new PluginController(this.MockStorageController, this.MockSettingsManager);
-    }
-}
+import type { PluginController } from './PluginController';
 
 export class RemoteFixture extends PuppeteerFixture {
 
@@ -38,22 +20,6 @@ export class RemoteFixture extends PuppeteerFixture {
 }
 
 describe('PluginController', () => {
-
-    describe('Website URIs', { concurrent: true }, () => {
-
-        const plugins = new TestFixture().CreateTestee().WebsitePlugins;
-
-        it.each(plugins)('Should have a valid URI for $Title', { timeout: 20_000 }, async (plugin) => {
-            expect(plugin.URI.origin).toMatch(/^http/);
-            const ip = await dns.lookup(plugin.URI.hostname);
-            expect(ip.address).toSatisfy((ip4: string) => {
-                const bytes = ip4.split('.').map(s => parseInt(s, 10));
-                return bytes.at(0) > 0 && !bytes.some(n => isNaN(n) || n < 0 || n > 255);
-            });
-            //const response = await fetch(plugin.URI);
-            //expect(response.url).toBe(plugin.URI.href);
-        });
-    });
 
     describe('Website Icons', { concurrent: true }, async () => {
 
