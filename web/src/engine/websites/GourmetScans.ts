@@ -27,7 +27,7 @@ const pageScript = `
                 }
             }
         }, 1000);
-       window.dispatchEvent(new KeyboardEvent('mousemove'));
+       window.dispatchEvent(new KeyboardEvent('keydown'));
 
     });
 `;
