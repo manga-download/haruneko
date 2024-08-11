@@ -384,7 +384,6 @@ export { default as MangaSefiri } from './MangaSefiri';
 export { default as MangaSehri } from './MangaSehri';
 export { default as MangaSehriNet } from './MangaSehriNet';
 export { default as MangaShip } from './MangaShip';
-export { default as MangaShiro } from './MangaShiro';
 export { default as MangaSiginagi } from './MangaSiginagi';
 export { default as MangasOrigines } from './MangasOrigines';
 export { default as MangasScans } from './MangasScans';
