@@ -293,7 +293,6 @@ export { default as MangaAction } from './MangaAction';
 export { default as MangaArab } from './MangaArab';
 export { default as MangaAy } from './MangaAy';
 export { default as MangaBat } from './MangaBat';
-export { default as Mangabaz } from './Mangabaz';
 export { default as MangaBob } from './MangaBob';
 export { default as Mangabox } from './Mangabox';
 export { default as MangaBTT } from './MangaBTT';
