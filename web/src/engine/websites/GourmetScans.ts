@@ -24,7 +24,7 @@ const pageScript = `
                     clearInterval(interval);
                     reject(new Error('Unable to get pictures after more than 10 seconds !'));
                 }
-             }
+            }
         }, 1000);
        window.dispatchEvent(new KeyboardEvent('keydown'));
 
