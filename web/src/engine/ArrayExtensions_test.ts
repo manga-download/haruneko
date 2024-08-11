@@ -3,38 +3,12 @@ import { MediaContainer, type MediaItem } from './providers/MediaPlugin';
 import './ArrayExtensions';
 
 class MediaContainerMock extends MediaContainer<MediaItem> {
-    public override async Update(): Promise<void> {
-        return Promise.resolve();
+    protected PerformUpdate(): Promise<MediaItem[]> {
+        return Promise.resolve([]);
     }
 }
 
 describe('Array<MediaContainer<MediaItem>>', () => {
-
-    describe('first()', () => {
-
-        it('Should return null when array is empty', async () => {
-            const actual = [].first();
-            expect(actual).toBeNull();
-        });
-
-        it('Should return first item in array', async () => {
-            const actual = [ 7, 'x', null, true ].first();
-            expect(actual).toBe(7);
-        });
-    });
-
-    describe('last()', () => {
-
-        it('Should return null when array is empty', async () => {
-            const actual = [].last();
-            expect(actual).toBeNull();
-        });
-
-        it('Should return last item in array', async () => {
-            const actual = [ true, null, 'x', 7 ].last();
-            expect(actual).toBe(7);
-        });
-    });
 
     describe('none()', () => {
 

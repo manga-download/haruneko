@@ -3,16 +3,6 @@ import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
 declare global {
     interface Array<T> {
         /**
-         * Returns the first element of an array, or `null` in case the array is empty.
-         */
-        first(): (T | null);
-
-        /**
-         * Returns the last element of an array, or `null` in case the array is empty.
-         */
-        last(): (T | null);
-
-        /**
          * Determines whether all the elements of an array dissatisfy the specified {@link predicate}.
          */
         none(predicate: (element: T, index: number, array: T[]) => unknown): boolean;
@@ -33,24 +23,6 @@ declare global {
          */
         isMissingLastItemFrom<T extends MediaContainer<MediaChild>>(this: T[], items: T[]): boolean;
     }
-}
-
-if (!Array.prototype.first) {
-    Object.defineProperty(Array.prototype, 'first', {
-        value: function <T>(this: Array<T>): T | null {
-            return this.length > 0 ? this[0] : null;
-        },
-        enumerable: false,
-    });
-}
-
-if (!Array.prototype.last) {
-    Object.defineProperty(Array.prototype, 'last', {
-        value: function <T>(this: Array<T>): T | null {
-            return this.length > 0 ? this[this.length - 1] : null;
-        },
-        enumerable: false,
-    });
 }
 
 if (!Array.prototype.none) {
@@ -86,7 +58,7 @@ if (!Array.prototype.distinct) {
 if (!Array.prototype.isMissingLastItemFrom) {
     Object.defineProperty(Array.prototype, 'isMissingLastItemFrom', {
         value: function <T extends MediaContainer<MediaChild>>(this: Array<T>, items: Array<T>): boolean {
-            return items.length > 0 && !items.last().IsSameAs(this.last());
+            return items.length > 0 && !items.at(-1).IsSameAs(this.at(-1));
         },
         enumerable: false,
     });

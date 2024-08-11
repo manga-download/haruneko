@@ -64,11 +64,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/manga/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url : string): Promise<Manga> {
-        const slug = url.split('/').pop();
+        const slug = url.split('/').at(-1);
         const jsonUrl = new URL(`/_next/data/${ this.nextBuild }/manga/${ slug }.json?slug=${ slug }`, this.URI).href;
         const request = new Request(jsonUrl);
         const data = await FetchJSON<JSONManga>(request);
@@ -88,12 +88,11 @@ export default class extends DecoratableMangaScraper {
         try {
             const url = new URL(`/_next/data/${this.nextBuild}/lista-de-mangas.json?p=${page}`, this.URI).href;
             const request = new Request(url);
-            const data = await FetchJSON<JSONMangas>(request);
-            return data.pageProps.mangas.items.map(element => new Manga(this, provider, element.slug, element.name.trim()));
-        } catch (error) {
+            const { pageProps: { mangas: { items } } } = await FetchJSON<JSONMangas>(request);
+            return items.map(item => new Manga(this, provider, item.slug, item.name.trim()));
+        } catch { // TODO: Do not return empty list for generic errors
             return [];
         }
-
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

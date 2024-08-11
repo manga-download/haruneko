@@ -8,15 +8,12 @@ import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-type JSONPages = [JSONObject | string]
-
 AddAntiScrapingDetection(async (render) => {
     const dom = await render();
     return dom.documentElement.innerHTML.includes('window.awsWafCookieDomainList') ? FetchRedirection.Automatic : undefined;
 });
 
 function ChaptersExtractor(element: HTMLElement) {
-
     const id = element instanceof HTMLAnchorElement ? element.pathname : element.querySelector<HTMLAnchorElement>('a.read-episode').pathname;
     const title = element.querySelector('.title').textContent.trim();
     return { id, title };
@@ -48,13 +45,17 @@ export default class extends DecoratableMangaScraper {
         let viewer: HTMLElement = undefined;
         try {
             [viewer] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '[v-bind\\:pages]');
-        } catch (error) {
+        } catch { // TODO: Do not use same message for generic errors
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        const pages: JSONPages = JSON.parse(viewer.getAttribute('v-bind:pages'));
+        const links: unknown[] = JSON.parse(viewer.getAttribute('v-bind:pages'));
         const isVertical = viewer.getAttribute('v-bind:is-vertical-manga') === '1';
-        return pages.filter(element => typeof element === 'string' && !element.match('white_page') && element != '').map(element => new Page(this, chapter, isVertical ? new URL(element as string) : new URL((element as string).replace(/\/[0-9]+x[0-9]+/, '/1080x1536')), isVertical ? undefined : { fallbackURL: element }));
-
+        return (links
+            .filter(link => link && typeof link === 'string' && !/white_page/.test(link)) as string[])
+            .map(link => {
+                const uri = new URL(isVertical ? link : link.replace(/\/[0-9]+x[0-9]+/, '/1080x1536'));
+                return new Page(this, chapter, uri, isVertical ? null : { fallbackURL: link });
+            });
     }
 
     //Since high resolution is not always available, use the real picture url instead of the forces one in case of failure

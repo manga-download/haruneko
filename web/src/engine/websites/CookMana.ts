@@ -38,7 +38,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/episode/\\d+/1/1$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/episode/\\d+/1/1$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -84,11 +84,11 @@ export default class extends DecoratableMangaScraper {
     private ComputeImagesUrl(data: APIPage): URL[] {
         const urls = data.urls?.split(',');
         if (data.folder2 != '') {
-            data.folder2 = data.folder2.split('/').shift();
+            data.folder2 = data.folder2.split('/').at(0);
         }
         return urls?.map(page => {
             if (data.folder2 != '') {
-                page = page.split('/').pop();
+                page = page.split('/').at(-1);
                 return new URL(`${this.cdn2}/kr/${data.folder2}/${data.parentId}/${data.id}/${page}`);
             } else {
                 return data.folder ? new URL(`${this.cdn1}/image_pst-123/${data.folder}/${data.parentId}/${page}`) : new URL(`${this.cdn1}/toon_pst-123/${page}`);
