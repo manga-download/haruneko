@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 const pageScript = `
     new Promise( (resolve, reject) => {
-        let tries = 0;
+        const start = Date.now();
         const interval = setInterval(function () {
             try {
                 if (CryptoJS) {
@@ -20,10 +20,9 @@ const pageScript = `
                 clearInterval(interval);
                 reject(error);
             } finally {
-                tries++;
-                if (tries > 10) {
+                if(Date.now() - start > 10_000) {
                     clearInterval(interval);
-                    reject(new Error('Unable to get pictures after more than 10 tries !'));
+                    reject(new Error('Unable to get pictures after more than 10 seconds !'));
                 }
             }
         }, 1000);
