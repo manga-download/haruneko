@@ -132,7 +132,7 @@ class TestFixture {
             `;
         }).join('');
 
-        await fs.mkdir(directory);
+        await fs.mkdir(directory, { recursive: true });
         await fs.writeFile(path.join(directory, 'website-metrics.json'), JSON.stringify(results, null, 2));
         await fs.writeFile(path.join(directory, 'website-metrics.html'), `<table width="100%" style="user-select: none;">${head}<tbody>${rows}</tbody></table>`);
     }
