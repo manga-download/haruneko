@@ -6,8 +6,9 @@ const config: Config = {
         id: 'neumanga',
         title: 'NeuManga'
     },
+    /* CloudFlare
     container: {
-        url: 'https://neumanga.net/series/cultivation-return-on-campus/',
+        url: 'https://neumanga.xyz/series/cultivation-return-on-campus/',
         id: '/series/cultivation-return-on-campus/',
         title: 'Cultivation Return on Campus'
     },
@@ -19,7 +20,7 @@ const config: Config = {
         index: 0,
         size: 901_328,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);
