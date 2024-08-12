@@ -16,7 +16,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('team1x1', `Team X`, 'https://teamxnovel.com', Tags.Language.Arabic, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('team1x1', `Team X`, 'https://teamoney.site', Tags.Language.Arabic, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
         //this.Settings.url = new Text('urloverride', R.Plugin_Settings_UrlOverride, R.Plugin_Settings_UrlOverrideInfo, this.URI.origin);
         //(this.Settings.url as Text).Subscribe(value => this.URI.href = value);
         //this.URI.href = this.Settings.url.Value as string;
@@ -44,9 +44,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
-        const uri = new URL(`${manga.Identifier}?page=${page}`, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'div.eplister ul li a:not([data-bs-toggle])');
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}?page=${page}`, this.URI)), 'div.eplister ul li a:not([data-bs-toggle])');
         return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('.epl-num:nth-of-type(2)').textContent.trim()));
     }
 }
