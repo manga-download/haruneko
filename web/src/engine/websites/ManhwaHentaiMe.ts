@@ -10,11 +10,17 @@ type MangaID = {
      slug: string;
 }
 
+const AnchorInfoExtractor = Common.AnchorInfoExtractor(false, 'span');
+
+function CleanTitle(title: string): string {
+    return title.replace(/Webtoon Manhwa Hentai$/, '').trim();
+}
+
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const container = anchor.closest<HTMLElement>('div.page-item-detail, div.manga');
     const post = container?.querySelector<HTMLElement>('div[id*="manga-item-"]')?.getAttribute('id').match(/(\d+$)/)[1] || '';
     const slug = anchor.pathname;
-    const title = anchor.text.replace(/Webtoon Manhwa Hentai$/, '').trim();
+    const title = CleanTitle(anchor.text);
     const id = JSON.stringify({ post, slug });
     return { id, title };
 }
@@ -42,7 +48,7 @@ export default class extends DecoratableMangaScraper {
         const post = data.querySelector<HTMLElement>('div#star[data-id]')?.dataset?.id;
         const slug = uri.pathname;
         const element = data.querySelector<HTMLElement>('div.post-title h1');
-        const title = Common.AnchorInfoExtractor(false, 'span').call(this, element).title.replace(/Webtoon Manhwa Hentai$/, '').trim();
+        const title = CleanTitle(AnchorInfoExtractor.call(this, element).title);
         return new Manga(this, provider, JSON.stringify({ post, slug }), title);
     }
 
@@ -62,7 +68,7 @@ export default class extends DecoratableMangaScraper {
 
         const data = await FetchCSS(request, 'ul li.wp-manga-chapter > a');
         return data.map(element => {
-            const { id, title } = Common.AnchorInfoExtractor(false, 'span').call(this, element);
+            const { id, title } = AnchorInfoExtractor.call(this, element);
             return new Chapter(this, manga, id, title.replace(manga.Title, '').trim());
         });
     }
