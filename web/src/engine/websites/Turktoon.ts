@@ -4,7 +4,8 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/turktoon\.com\/manga\/[^/]+\/$/)
+// TODO Recode this using BloggerManga
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
@@ -12,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('turktoon', 'Turktoon', 'https://turktoon.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
+        super('turktoon', 'Turktoon', 'https://www.turktoon.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

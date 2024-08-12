@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
     private nextBuild = '';
 
     public constructor() {
-        super('turkmanga', 'TurkManga', 'https://turkmanga.com.tr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('turkmanga', 'TurkManga', 'https://turkmanga.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

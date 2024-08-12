@@ -7,12 +7,12 @@ import * as Common from './decorators/Common';
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS()
+@MangaStream.PagesSinglePageJS([], `ts_reader.params.sources.shift().images`)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('luascans', 'Lua Scans', 'https://luascans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('luascans', 'Lua Scans', 'https://luacomic.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
