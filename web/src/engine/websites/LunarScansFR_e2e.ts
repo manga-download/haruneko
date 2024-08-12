@@ -7,9 +7,9 @@ const config = {
         title: 'Lunar Scans (FR)'
     },
     container: {
-        url: 'https://lunarscans.fr/manga/regressor-of-the-fallen-family/',
+        url: 'https://gloryscans.fr/manga/regressor-of-the-fallen-family/',
         id: '/manga/regressor-of-the-fallen-family/',
-        title: 'Regressor of the Fallen family'
+        title: 'Regressor of the Fallen Family'
     },
     child: {
         id: '/regressor-of-the-fallen-family-chapitre-4/',
