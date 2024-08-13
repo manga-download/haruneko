@@ -555,7 +555,6 @@ export { default as ReadComicsOnline } from './ReadComicsOnline';
 export { default as ReadFreeComics } from './ReadFreeComics';
 export { default as ReadKomik } from './ReadKomik';
 export { default as ReadManga } from './ReadManga';
-export { default as ReadManhua } from './ReadManhua';
 export { default as ReaperScans } from './ReaperScans';
 export { default as ReaperScansFR } from './ReaperScansFR';
 export { default as Remangas } from './Remangas';
