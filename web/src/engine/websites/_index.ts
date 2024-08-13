@@ -774,7 +774,6 @@ export { default as LineWebtoonTranslate } from './legacy/LineWebtoonTranslate';
 export { default as LineWebtoonZH } from './legacy/LineWebtoonZH';
 export { default as LxHentai } from './legacy/LxHentai';
 export { default as Manatoki } from './legacy/Manatoki';
-export { default as Manga33 } from './legacy/Manga33';
 export { default as MangaFoxFun } from './legacy/MangaFoxFun';
 export { default as MangaHereFun } from './legacy/MangaHereFun';
 export { default as MangaHub } from './legacy/MangaHub';
