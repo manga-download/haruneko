@@ -33,8 +33,9 @@
     }
 
     import type {
-        StoreableMediaContainer,
         MediaItem,
+        MediaContainer,
+        StoreableMediaContainer,
     } from '../../../engine/providers/MediaPlugin';
     import {
         FlagType,
@@ -43,7 +44,7 @@
     import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
-    export let item: StoreableMediaContainer<MediaItem>;
+    export let item: MediaContainer<MediaItem>;
     export let selected: boolean;
     export let hover: boolean;
     export let multilang = false;
@@ -109,7 +110,7 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="Download"
-        on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
+        on:click={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
     >
         {#if downloadTask}
             {@const status = downloadTask.Status.Value}

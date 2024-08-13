@@ -16,19 +16,25 @@
     import { selectedMedia } from '../stores/Stores';
     import { coinflip } from '../lib/transitions';
 
-    import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
+    import type {
+        MediaContainer,
+        MediaChild,
+    } from '../../../engine/providers/MediaPlugin';
     import { Bookmark } from '../../../engine/providers/Bookmark';
 
-    export let media: MediaContainer<MediaContainer<MediaChild>>;
+    export let media: MediaContainer<MediaChild>;
     let selected: boolean = false;
     $: selected = $selectedMedia?.IsSameAs(media);
 
     //Bookmarks
-    $: isBookmarked = media ? HakuNeko.BookmarkPlugin.IsBookmarked(media) : false;
+    $: isBookmarked = media
+        ? HakuNeko.BookmarkPlugin.IsBookmarked(media)
+        : false;
     async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
     }
-    $: isOrphaned = isBookmarked && (media as Bookmark).IsOrphaned ? true : false;
+    $: isOrphaned =
+        isBookmarked && (media as Bookmark).IsOrphaned ? true : false;
 
     //Context menu
     let mediadiv: HTMLElement;
@@ -36,10 +42,16 @@
     //Unviewed content
     let unFlaggedItems: MediaContainer<MediaChild>[] = [];
     findMediaUnFlaggedContent(media);
-    HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(() => findMediaUnFlaggedContent(media))
+    HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(() =>
+        findMediaUnFlaggedContent(media),
+    );
 
-    async function findMediaUnFlaggedContent(media: MediaContainer<MediaContainer<MediaChild>>) {
-        unFlaggedItems = await HakuNeko.ItemflagManager.GetUnFlaggedItems(media);
+    async function findMediaUnFlaggedContent(
+        media: MediaContainer<MediaChild>,
+    ) {
+        unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
+            media,
+        )) as MediaContainer<MediaChild>[];
     }
 </script>
 
