@@ -800,7 +800,6 @@ export { default as MintManga } from './legacy/MintManga';
 export { default as MoreNovel } from './legacy/MoreNovel';
 export { default as MuchoHentai } from './legacy/MuchoHentai';
 export { default as MyAnimeListManga } from './legacy/MyAnimeListManga';
-export { default as MyNovel } from './legacy/MyNovel';
 export { default as MyReadingManga } from './legacy/MyReadingManga';
 export { default as Naver } from './legacy/Naver';
 export { default as NetTruyen } from './legacy/NetTruyen';
