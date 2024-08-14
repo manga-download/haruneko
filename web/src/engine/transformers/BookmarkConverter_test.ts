@@ -26,7 +26,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'flamescans-org', targetID: 'flamecomics' },
     { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
     { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
-    { sourceID: 'heavenmanga', targetID: 'beetoon' },
+    { sourceID: 'heavenmanga', targetID: 'manhwafullnet' },
     { sourceID: 'heavenmanga2', targetID: 'heavenmanga' },
     { sourceID: 'imperioscans', targetID: 'neroxus' },
     { sourceID: 'instamanhwa', targetID: 'xmanhwa' },

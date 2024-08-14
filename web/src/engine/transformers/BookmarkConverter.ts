@@ -24,7 +24,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'flamescans-org', 'flamecomics' ],
     [ 'galaxyaction', 'galaxymanga' ],
     [ 'gateanimemanga', 'gatemanga' ],
-    [ 'heavenmanga', 'beetoon' ],
+    [ 'heavenmanga', 'manhwafullnet' ],
     [' heavenmanga2', 'heavenmanga' ],
     [ 'imperioscans', 'neroxus' ],
     [ 'instamanhwa', 'xmanhwa' ],

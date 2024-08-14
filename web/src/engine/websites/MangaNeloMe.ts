@@ -14,7 +14,7 @@ const chapterScript = `
     });
 `;
 
-@Zbulu.MangaCSS(/^{origin}\/manga\/[^/]+$/)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, Zbulu.queryManga, Zbulu.MangaLabelExtractor)
 @Zbulu.MangasMultiPageCSS('/popular-manga?page={page}')
 @Common.ChaptersSinglePageJS(chapterScript, 2500)
 @Common.ImageAjax()

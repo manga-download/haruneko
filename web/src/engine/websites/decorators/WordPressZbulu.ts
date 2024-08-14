@@ -1,5 +1,5 @@
 import { FetchCSS } from "../../platform/FetchProvider";
-import { Chapter, Manga, type MangaPlugin, type MangaScraper } from "../../providers/MangaPlugin";
+import { Chapter, type Manga, type MangaPlugin, type MangaScraper } from "../../providers/MangaPlugin";
 import * as Common from './Common';
 
 export const queryManga = 'div.comic-info div.info h1.name';
@@ -9,70 +9,25 @@ export const queryPages = 'div.chapter-content-inner img';
 
 export const mangaTitleFilter = /(\s+manga|\s+webtoon|\s+others)+\s*$/gi;
 export const chapterTitleFilter = /^\s*(\s+manga|\s+webtoon|\s+others)+/gi;
-const chapterBloat = ['span', 'div.chapter-date'];
+const chapterBloat = ['span', 'div.chapter-date'].join(',');
 export const chapterPath = '{mangaid}/page-{page}/';
 export const mangaPath = '/manga-list/page-{page}/';
 
 export function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.text.replace(mangaTitleFilter, '').trim()
+        title: CleanMangaTitle(anchor.text)
     };
 }
 
-export function ChapterExtractor(element: HTMLAnchorElement, mangatitle: string) {
+export function MangaLabelExtractor(element: HTMLElement) {
+    return element instanceof HTMLAnchorElement ? CleanMangaTitle(element.text) : CleanMangaTitle(element.textContent);
+}
+
+export function ChapterExtractor(element: HTMLAnchorElement) {
     const id = element.pathname;
-
-    //remove bloat badges
-    for (const bloatCSS of chapterBloat) {
-        while (element.querySelector(bloatCSS)) {
-            const bloatNode = element.querySelector(bloatCSS);
-            bloatNode.parentElement.removeChild(bloatNode);
-        }
-    }
-
-    let title = element.text.trim();
-    title = title.replace(mangatitle, '').replace(chapterTitleFilter, '').trim();
+    const title = element.text.trim().replace(chapterTitleFilter, '').trim();
     return { id, title };
-}
-
-/**
- * An extension method for extracting a single manga from the given {@link url} using the given CSS {@link query}.
- * The `pathname` of the given {@link url}  will be used as identifier for the extracted manga.
- * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
- * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted manga
- * @param url - The url from which the manga shall be extracted
- * @param query - A CSS query to locate the element from which the manga title shall be extracted
- * @param titleFilter - A Regexp used to replace element in extracted manga title
- */
-export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryManga, titleFilter = mangaTitleFilter): Promise<Manga> {
-    const manga = await Common.FetchMangaCSS.call(this, provider, url, query);
-    return new Manga(this, provider, manga.Identifier, manga.Title.replace(titleFilter, '').trim());
-}
-
-/**
- * A class decorator factory that adds the ability to extract a manga using the given CSS {@link query} from any url that matches the given {@link pattern}.
- * The `pathname` of the given {@link url} and the detected `postID` will be used as identifier for the extracted manga.
- * When the CSS {@link query} matches a `meta` element, the manga title will be extracted from its `content` attribute, otherwise the `textContent` of the element will be used as manga title.
- * @param pattern - An expression to check if a manga can be extracted from an url or not
- * @param query - A CSS query to locate the element from which the manga title shall be extracted
- * @param titleFilter - A Regexp used to replace element in extracted manga title
- */
-export function MangaCSS(pattern: RegExp, query: string = queryManga, titleFilter: RegExp = mangaTitleFilter) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        Common.ThrowOnUnsupportedDecoratorContext(context);
-
-        return class extends ctor {
-            public ValidateMangaURL(this: MangaScraper, url: string): boolean {
-                const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
-                return new RegExp(source, pattern.flags).test(url);
-            }
-            public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
-                return await FetchMangaCSS.call(this, provider, url, query, titleFilter);
-            }
-        };
-    };
 }
 
 /***********************************************
@@ -150,7 +105,6 @@ async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path:
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const pathTopage = path.replace('{page}', `${page}`).replace('{mangaid}', manga.Identifier);
         const chapters = await FetchChaptersSinglePageCSS.call(this, manga, pathTopage, query);
-        // Always add when mangaList is empty ... (length = 0)
         chapters.length > 0 && !EndsWith(chapterList, chapters) ? chapterList.push(...chapters) : run = false;
     }
     return chapterList.distinct();
@@ -160,8 +114,8 @@ async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, path
     const request = new Request(new URL(path.replace('//', '/'), this.URI));
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(chapter => {
-        const { id, title } = ChapterExtractor.call(this, chapter, manga.Title);
-        return new Chapter(this, manga, id, title);
+        const { id, title } = Common.AnchorInfoExtractor(false, chapterBloat).call(this, chapter);
+        return new Chapter(this, manga, id, title.replace(manga.Title, ''));
     });
 }
 
@@ -191,4 +145,8 @@ export function ChaptersMultiPageCSS(path: string = chapterPath, query: string =
             }
         };
     };
+}
+
+function CleanMangaTitle(title: string): string {
+    return title.replace(mangaTitleFilter, '').trim();
 }
