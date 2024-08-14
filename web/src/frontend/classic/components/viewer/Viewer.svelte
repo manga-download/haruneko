@@ -44,7 +44,7 @@
         );
 
         await Promise.all(
-            item.Parent.Entries.map(async (entry, index) => {
+            item.Parent.Entries.Value.map(async (entry, index) => {
                 if (entry.IsSameAs(itemtoflag))
                     itemtoflagIndex = index;
                 const flag = await HakuNeko.ItemflagManager.GetItemFlagType(

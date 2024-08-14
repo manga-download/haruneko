@@ -1,4 +1,5 @@
 .DS_Store
+.vscode
 .cache
 cache
 build
@@ -8,3 +9,4 @@ dist
 node_modules
 package-lock.json
 junit.xml
+web/vite.config.ts.timestamp*
