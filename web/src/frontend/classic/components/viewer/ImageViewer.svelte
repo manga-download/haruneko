@@ -41,7 +41,7 @@
         zoomunsubscribe();
     });
 
-    $: entries = item.Entries;
+    $: entries = item.Entries.Value;
 
     const title = item?.Title ?? 'unkown';
     let viewer: HTMLElement;

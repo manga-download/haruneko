@@ -7,7 +7,7 @@ const config = {
         title: 'Lua Scans'
     },
     container: {
-        url: 'https://luascans.com/manga/lady-baby/',
+        url: 'https://luacomic.com/manga/lady-baby/',
         id: '/manga/lady-baby/',
         title: 'Lady Baby'
     },
@@ -17,7 +17,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 1_082_444,
+        size: 449_192,
         type: 'image/webp'
     }
 };

@@ -7,7 +7,7 @@ const config = {
         title: 'Alceascan'
     },
     container: {
-        url: 'https://alceascan.my.id/manga/18-year-old-spy/',
+        url: 'https://alceacomic.my.id/manga/18-year-old-spy/',
         id: '/manga/18-year-old-spy/',
         title: '18 Year Old Spy'
     },

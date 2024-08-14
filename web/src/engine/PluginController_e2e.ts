@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import type { JSHandle } from 'puppeteer-core';
 import { PuppeteerFixture } from '../../../test/PuppeteerFixture';
-import type { PluginController } from './PluginController';
 import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
+import type { PluginController } from './PluginController';
 
-export class TestFixture extends PuppeteerFixture {
+export class RemoteFixture extends PuppeteerFixture {
 
     public async GetRemotePluginController(): Promise<JSHandle<PluginController>> {
         return super.Page.evaluateHandle(async () => {
@@ -21,12 +21,11 @@ export class TestFixture extends PuppeteerFixture {
 
 describe('PluginController', () => {
 
-    it('Should have embedded WEBP icon for each website', async () => {
+    describe('Website Icons', { concurrent: true }, async () => {
 
-        const fixture = await new TestFixture().Connect();
-        const remoteTestee = await fixture.GetRemoteWebsitePlugins();
-
-        const actual = await remoteTestee.evaluate(testee => testee.map(website => {
+        const fixture = await new RemoteFixture().Connect();
+        const plugins = await fixture.GetRemoteWebsitePlugins();
+        const icons = await plugins.evaluate(testee => testee.map(website => {
             return {
                 website: website.Title,
                 signature: website.Icon.slice(0, 23),
@@ -34,7 +33,7 @@ describe('PluginController', () => {
             };
         }));
 
-        for(const icon of actual) {
+        it.each(icons)('Should have an embedded WEBP icon for $website', async (icon) => {
             try {
                 expect(icon.signature).toBe('data:image/webp;base64,');
                 expect(icon.length).toBeLessThan(4096);
@@ -42,6 +41,6 @@ describe('PluginController', () => {
                 console.log(`Invalid icon for website <${icon.website}>:`, icon.signature, ' => ', icon.length, 'bytes');
                 throw error;
             }
-        }
+        });
     });
 });

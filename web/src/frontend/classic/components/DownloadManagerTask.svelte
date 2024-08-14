@@ -1,6 +1,6 @@
 <script lang="ts">
-    //TODO: text-overflow not working
-    import { Button, ProgressBar, TooltipIcon } from 'carbon-components-svelte';
+    // TODO: text-overflow not working
+    import { Button, ProgressBar } from 'carbon-components-svelte';
     import { TrashCan, WarningHexFilled } from 'carbon-icons-svelte';
 
     import { onMount, onDestroy, createEventDispatcher } from 'svelte';
@@ -12,22 +12,22 @@
     export let job: DownloadTask;
     export let taskerror: DownloadTask = undefined;
 
-    async function OnJobChangedCallback(changedJob: DownloadTask) {
+    async function OnJobChangedCallback(_progress: number, changedJob: DownloadTask) {
         job = changedJob;
     }
 
-    async function OnJobStatusChangedCallback(changedJob: DownloadTask) {
-        OnJobChangedCallback(changedJob);
+    async function OnJobStatusChangedCallback(_status: Status, changedJob: DownloadTask) {
+        OnJobChangedCallback(changedJob.Progress.Value, changedJob);
         dispatch('update');
     }
 
     onMount(() => {
-        job.StatusChanged.Subscribe(OnJobStatusChangedCallback);
-        job.ProgressChanged.Subscribe(OnJobChangedCallback);
+        job.Status.Subscribe(OnJobStatusChangedCallback);
+        job.Progress.Subscribe(OnJobChangedCallback);
     });
     onDestroy(() => {
-        job.StatusChanged.Unsubscribe(OnJobStatusChangedCallback);
-        job.ProgressChanged.Unsubscribe(OnJobChangedCallback);
+        job.Status.Unsubscribe(OnJobStatusChangedCallback);
+        job.Progress.Unsubscribe(OnJobChangedCallback);
     });
 
     const StatusIcons: Record<Status, 'active' | 'finished' | 'error'> = {
@@ -43,9 +43,9 @@
 <div class="task">
     <div class="progress">
         <ProgressBar
-            status={StatusIcons[job.Status]}
+            status={StatusIcons[job.Status.Value]}
             size="sm"
-            value={job.Status === Status.Processing ? 100 : job.Progress * 100}
+            value={job.Status.Value === Status.Processing ? 100 : job.Progress.Value * 100}
         >
             <div slot="labelText" class="label">
                 {job.Media.Title}

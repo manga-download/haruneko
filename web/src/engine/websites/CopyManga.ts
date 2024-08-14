@@ -49,7 +49,6 @@ export default class extends DecoratableMangaScraper {
         //this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
         //(this.Settings.url as Text).Subscribe(value => this.URI.href = value);
         //this.URI.href = this.Settings.url.Value as string;
-
     }
 
     public override get Icon() {
@@ -57,11 +56,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/comic/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').pop();
+        const id = new URL(url).pathname.split('/').at(-1);
         const request = this.CreateApiRequest(`/api/v3/comic2/${id}`);
         const { results: { comic } } = await FetchJSON<APIResponse<APISingleComic>>(request);
         return new Manga(this, provider, comic.path_word, comic.name.trim());
@@ -81,7 +80,7 @@ export default class extends DecoratableMangaScraper {
             const request = this.CreateApiRequest(`/api/v3/comics?ordering=-datetime_updated&limit=50&offset=${page * 50}`);
             const data = await FetchJSON<APIResponse<APIResultList<APIComic>>>(request);
             return data.results.list.map(item => new Manga(this, provider, item.path_word, item.name.trim()));
-        } catch (error) {
+        } catch { // TODO: Do not return empty list for generic errors
             return [];
         }
     }
@@ -100,7 +99,6 @@ export default class extends DecoratableMangaScraper {
         const imageData = dataElement.getAttribute('contentKey');
         const images = await this.Decrypt<APIPage[]>(imageData);
         return images.map(image => new Page(this, chapter, new URL(image.url)));
-
     }
 
     private async Decrypt<T>(encryptedData: string): Promise<T> {

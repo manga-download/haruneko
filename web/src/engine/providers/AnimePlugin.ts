@@ -14,57 +14,37 @@ export abstract class AnimeScraper extends MediaScraper<AnimePlugin> {
 
 export class AnimePlugin extends MediaContainer<Anime> {
 
-    private readonly _scraper: AnimeScraper;
-
-    public constructor(scraper: AnimeScraper) {
+    public constructor(private readonly scraper: AnimeScraper) {
         super(scraper.Identifier, scraper.Title);
-        this._scraper = scraper;
     }
 
     private get EntriesKey() {
         return `animes.${this.Identifier}`;
     }
 
-    public get Entries(): Anime[] {
-        if(super.Entries.length === 0) {
-            // TODO: load entries from cache ...
-            const content = localStorage.getItem(this.EntriesKey) || '[]';
-            // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
-            //                  chrome.storage.local.get(this.EntriesKey, data => data[this.EntriesKey]);
-            const animes = JSON.parse(content) as { id: string, title: string }[];
-            super.Entries = animes.map(anime => this.CreateEntry(anime.id, anime.title));
-        }
-        return this.Entries;
-    }
-
     public async Initialize(): Promise<void> {
-        await this._scraper.Initialize();
+        await this.scraper.Initialize();
         return super.Initialize();
     }
 
     public CreateEntry(identifier: string, title: string): Anime {
-        return new Anime(this._scraper, this, identifier, title);
+        return new Anime(this.scraper, this, identifier, title);
     }
 
     public async TryGetEntry(url: string): Promise<Anime> {
         await this.Initialize();
-        return this._scraper.FetchAnime(this, url);
+        return this.scraper.FetchAnime(this, url);
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.Entries = await this._scraper.FetchAnimes(this);
-        // TODO: store entries in cache ...
-        const animes = super.Entries.map(entry => {
-            return {
-                id: entry.Identifier,
-                title: entry.Title
-            };
+    protected async PerformUpdate(): Promise<Anime[]> {
+        const entries = await this.scraper.FetchAnimes(this);
+        /*
+        const animes = entries.map(entry => {
+            return { id: entry.Identifier, title: entry.Title };
         });
-        // May instead use: https://developer.chrome.com/docs/extensions/reference/storage/
-        //                  chrome.storage.local.set({ this.EntriesKey: animes }, () => {});
-        const content = JSON.stringify(animes);
-        localStorage.setItem(this.EntriesKey, content);
+        await this.storageController.SavePersistent(animes, Store.MediaLists, this.Identifier);
+        */
+        return entries;
     }
 }
 
@@ -81,24 +61,19 @@ export class Anime extends MediaContainer<Episode> {
         return new Episode(this._scraper, this, identifier, title);
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.Entries = await this._scraper.FetchEpisodes(this);
+    public PerformUpdate(): Promise<Episode[]> {
+        return this._scraper.FetchEpisodes(this);
     }
 }
 
 export class Episode extends MediaContainer<Video> {
 
-    private readonly _scraper: AnimeScraper;
-
-    constructor(scraper: AnimeScraper, parent: MediaContainer<Episode>, identifier: string, title: string) {
+    constructor(private readonly scraper: AnimeScraper, parent: MediaContainer<Episode>, identifier: string, title: string) {
         super(identifier, title, parent);
-        this._scraper = scraper;
     }
 
-    public async Update(): Promise<void> {
-        await this.Initialize();
-        super.Entries = await this._scraper.FetchVideos(this);
+    public PerformUpdate(): Promise<Video[]> {
+        return this.scraper.FetchVideos(this);
     }
 }
 
