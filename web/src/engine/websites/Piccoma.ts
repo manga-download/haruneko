@@ -108,7 +108,7 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(`${this.URI.origin}/web/product/${manga.Identifier}/episodes?etype=V`);
         const data = await FetchCSS<HTMLUListElement>(request, 'ul.PCM-volList li');
         return data.map(element => {
-            const volume = [ ...element.querySelectorAll<HTMLElement>('div.PCM-prdVol_btns > a:not([class*="buyBtn"])') ].pop();
+            const volume = [ ...element.querySelectorAll<HTMLElement>('div.PCM-prdVol_btns > a:not([class*="buyBtn"])') ].at(-1);
             const title = [
                 element.querySelector<HTMLElement>('div.PCM-prdVol_title h2').innerText.trim(),
                 volume.classList.contains('PCM-prdVol_freeBtn') ? ` (${ volume.innerText.trim() })` : '',
@@ -177,7 +177,7 @@ export function script(this: Window) {
         })();
 
         function extractSeed(uri: URL): string {
-            const checksum = uri.searchParams.get('q') ?? uri.pathname.split('/').slice(-2).shift();
+            const checksum = uri.searchParams.get('q') ?? uri.pathname.split('/').at(-2);
             const expiration = uri.searchParams.get('expires');
             const sum = expiration.split('').reduce((accumulator, character) => accumulator + parseInt(character), 0);
             const residualIndex = sum % checksum.length;

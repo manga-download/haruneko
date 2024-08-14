@@ -10,32 +10,6 @@ class MediaContainerMock extends MediaContainer<MediaItem> {
 
 describe('Array<MediaContainer<MediaItem>>', () => {
 
-    describe('first()', () => {
-
-        it('Should return null when array is empty', async () => {
-            const actual = [].first();
-            expect(actual).toBeNull();
-        });
-
-        it('Should return first item in array', async () => {
-            const actual = [ 7, 'x', null, true ].first();
-            expect(actual).toBe(7);
-        });
-    });
-
-    describe('last()', () => {
-
-        it('Should return null when array is empty', async () => {
-            const actual = [].last();
-            expect(actual).toBeNull();
-        });
-
-        it('Should return last item in array', async () => {
-            const actual = [ true, null, 'x', 7 ].last();
-            expect(actual).toBe(7);
-        });
-    });
-
     describe('none()', () => {
 
         it('Should return true when array is empty', async () => {

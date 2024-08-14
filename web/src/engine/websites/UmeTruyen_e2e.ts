@@ -7,7 +7,7 @@ const config = {
         title: 'UmeTruyen'
     },
     container: {
-        url: 'https://umetruyenvip.com/truyen-vet-do.html',
+        url: 'https://umetruyenz.com/truyen-vet-do.html',
         id: '/truyen-vet-do.html',
         title: 'Vết Đỏ'
     },
@@ -17,7 +17,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 1_383_438,
+        size: 1_266_999,
         type: 'image/jpeg'
     }
 };
