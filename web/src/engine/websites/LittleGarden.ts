@@ -40,7 +40,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const slug = manga.Identifier.split('/').pop();
+        const slug = manga.Identifier.split('/').at(-1);
         const query = `
             query chapters($slug: String, $limit: Float, $skip: Float, $order: Float!, $isAdmin: Boolean!) {
                 chapters(limit: $limit, skip: $skip, where: {
@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaSlug = chapter.Parent.Identifier.split('/').pop();
+        const mangaSlug = chapter.Parent.Identifier.split('/').at(-1);
         const chapterid: ChapterIdentifier = JSON.parse(chapter.Identifier);
         const query = `
             query chapter($slug: String, $number: Float) {

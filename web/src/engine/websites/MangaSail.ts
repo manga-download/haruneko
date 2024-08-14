@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 function IsImage(page: string) {
-    return [ 'png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp' ].includes(page.toLowerCase().split('.').pop());
+    return [ 'png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp' ].includes(page.toLowerCase().split('.').at(-1));
 }
 
 @Common.MangaCSS(/^{origin}\/content\/[^/]+$/, 'div.main-content-inner h1.page-header')

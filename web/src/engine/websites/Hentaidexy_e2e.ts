@@ -7,17 +7,17 @@ const config = {
         title: 'Hentaidexy'
     },
     container: {
-        url: 'https://hentaidexy.net/manga/638755355c636ee1bff6222b/second-life-ranker',
-        id: '638755355c636ee1bff6222b',
+        url: 'https://dexyscan.com/manga/66afa9ad8b11e637395b2e60/second-life-ranker',
+        id: '66afa9ad8b11e637395b2e60',
         title: 'Second Life Ranker'
     },
     child: {
-        id: '649e79432081fe6c7fa67d92',
+        id: '66afb16a8b11e637395b4471',
         title: 'Chapter 161'
     },
     entry: {
         index: 0,
-        size: 933_472,
+        size: 821_246,
         type: 'image/jpeg'
     }
 };

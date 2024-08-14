@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('euphoriascan', 'Euphoria Scan', 'https://yaoisbls.com.br', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Rating.Pornographic);
+        super('euphoriascan', 'Euphoria Scan', 'https://euphoriascan.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

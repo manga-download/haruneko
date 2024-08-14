@@ -5,23 +5,21 @@ const config = {
     plugin: {
         id: 'demonsect',
         title: 'Demon Sect',
-        //timeout: 25000
     },
     container: {
         url: 'https://dsectcomics.org/comics/reencarnacao-maldita/',
-        id: JSON.stringify({ post: '684', slug: '/comics/reencarnacao-maldita/' }),
-        title: 'Reencarna��o Maldita',
-        //timeout: 30000
+        id: '/comics/reencarnacao-maldita/',
+        title: 'Reencarnação Maldita',
     },
     child: {
-        id: '/comics/reencarnacao-maldita/cap-81/',
-        title: 'CAP. 81',
-        //timeout: 25000
+        id: '/reencarnacao-maldita-chapter-81-s2-fim/',
+        title: 'Capítulo 81 {S2 FIM}',
     },
     entry: {
         index: 1,
-        size: 523_180,
-        type: 'image/webp',
+        size: 1_882_466,
+        type: 'image/jpeg',
+        timeout: 10000
     }
 };
 

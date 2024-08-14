@@ -7,18 +7,18 @@ const config = {
         title: 'Euphoria Scan'
     },
     container: {
-        url: 'https://yaoisbls.com.br/manga/19-days-mob/',
-        id: JSON.stringify({ post: '128', slug: '/manga/19-days-mob/' }),
-        title: '19 days mob'
+        url: 'https://euphoriascan.com/manga/two-souls/',
+        id: JSON.stringify({ post: '370', slug: '/manga/two-souls/' }),
+        title: 'Two Souls'
     },
     child: {
-        id: '/manga/19-days-mob/capitulo-unico/',
-        title: 'Capítulo único'
+        id: '/manga/two-souls/capitulo-61/',
+        title: 'Capítulo 61'
     },
     entry: {
         index: 0,
-        size: 333_638,
-        type: 'image/png'
+        size: 146_039,
+        type: 'image/jpeg'
     }
 };
 

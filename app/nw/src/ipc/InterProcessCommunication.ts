@@ -36,7 +36,7 @@ export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
     public async Send(channel: TChannelsOut, ...parameters: JSONArray): Promise<void> {
         // TODO: improve query filter e.g., windowID or tabID
         const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
-        const tab = tabs.length > 0 ? tabs.shift() : undefined;
+        const tab = tabs.length > 0 ? tabs.at(0) : undefined;
         if(tab?.id) {
             return new Promise<void>(resolve => chrome.tabs.sendMessage<Message, void>(tab.id, { channel, parameters }, resolve));
         } else {
