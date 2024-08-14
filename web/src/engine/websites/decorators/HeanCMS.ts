@@ -195,6 +195,7 @@ export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: M
             chapterList.push(new Chapter(this, manga, id, title));
         }));
         return chapterList;
+        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     } catch (error) {
         return [];
     }
