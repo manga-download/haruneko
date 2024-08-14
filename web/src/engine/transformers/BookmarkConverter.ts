@@ -2,70 +2,59 @@ import { VariantResourceKey as R } from '../../i18n/ILocale';
 import { Exception } from '../Error';
 import type { BookmarkSerialized } from '../providers/Bookmark';
 
-const legacyWebsiteIdentifierMap = {
-    '9anime': 'aniwave',
-    'aresnov': 'scarmanga',
-    'azoramanga': 'azoraworld',
-    'apolltoons': 'mundomanhwa',
-    'bacamangaorg': 'bacamanga',
-    'bananascan': 'harmonyscan',
-    'blogtruyen': 'blogtruyenmoi', //there is also a blogtruyen now, same website template
-    'cocomanhua': 'colamanga',
-    'comicbushi': 'comicgrowl',
-    'comicwalker': 'kadocomi',
-    'crazyscans': 'mangacultivator',
-    'dalsei': 'viyafansub',
-    'evascans': 'manwe',
-    'firstkiss': 'likemanga',
-    'flamescans-org': 'flamecomics',
-    'galaxyaction': 'galaxymanga',
-    'gateanimemanga': 'gatemanga',
-    'imperioscans': 'neroxus',
-    'kisscomic': 'readcomiconline',
-    'komikav': 'apkomik',
-    'kumascans': 'retsu',
-    'lyrascans': 'quantumscans', //https://www.mangaupdates.com/groups.html?id=35005683580 'Formerly known as LyraScans'
-    'mangamx': 'mangaoni',
-    'manganel': 'manganato',
-    'manganelos': 'mangapure',
-    'mangaproz': 'mangapro',
-    'mangaraw': 'mangageko',
-    'manhuaes': 'manhuaaz',
-    'manhuascan': 'kaliscan',
-    'manhwaclub': 'manhwahentai',
-    'muctau': 'bibimanga',
-    'nitroscans': 'nitromanga',
-    'nonbiri': 'comic21',
-    'oxapk': 'manjanoon',
-    'ozulscans': 'kingofmanga',
-    'prismascans': 'demonsect',
-    'randomscan': 'luratoon',
-    'realmscans': 'rizzcomics',
-    'reaperscansid': 'shinigamiid',
-    'rightdarkscan': 'darkscan',
-    'scansmangasxyz': 'scansmangasme',
-    'scanhentaimenu': 'xmanga',
-    'secretscans': 'lynxscans',
-    'shonenmagazine-pocket': 'shonenmagazine',
-    'siyahmelek': 'grimelek',
-    'smangavfws': 'smangavf',
-    'suryatoon': 'genztoon',
-    'sushiscanfr': 'animesama',
-    'toomics-de': 'toomics', //old id contains manga language ie /en/webtoon/etc..... so they are unique and can be merged into global toomics
-    'toomics-en': 'toomics', // Toomics Korean works differently, no id change and special plugin
-    'toomics-es': 'toomics',
-    'toomics-fr': 'toomics',
-    'toomics-it': 'toomics',
-    'toomics-jp': 'toomics',
-    'toomics-mx': 'toomics',
-    'toomics-pt': 'toomics',
-    'toomics-sc': 'toomics',
-    'toomics-tc': 'toomics',
-    'truemanga': 'mangamonk',
-    'vermanhwas': 'vermanhwa',
-    'webtoontrcom': 'webtoontrnet',
-    'yugenmangas': 'yugenmangas-es'
-};
+/**
+ * DO NOT USE!
+ * @remark - Only exported for testing
+ */
+export const legacyWebsiteIdentifierMap = new Map([
+    [ '9anime', 'aniwave' ],
+    [ 'aresnov', 'scarmanga' ],
+    [ 'azoramanga', 'azoraworld' ],
+    [ 'apolltoons', 'mundomanhwa' ],
+    [ 'bacamangaorg', 'bacamanga' ],
+    [ 'bananascan', 'harmonyscan' ],
+    [ 'blogtruyen', 'blogtruyenmoi' ],
+    [ 'cocomanhua', 'colamanga' ],
+    [ 'comicbushi', 'comicgrowl' ],
+    [ 'comicwalker', 'kadocomi' ],
+    [ 'dalsei', 'viyafansub' ],
+    [ 'evascans', 'manwe' ],
+    [ 'firescans', 'firecomics' ],
+    [ 'firstkiss', 'likemanga' ],
+    [ 'flamescans-org', 'flamecomics' ],
+    [ 'galaxyaction', 'galaxymanga' ],
+    [ 'gateanimemanga', 'gatemanga' ],
+    [ 'imperioscans', 'neroxus' ],
+    [ 'instamanhwa', 'xmanhwa' ],
+    [ 'kisscomic', 'readcomiconline' ],
+    [ 'komikav', 'apkomik' ],
+    [ 'kumascans', 'retsu' ],
+    [ 'lyrascans', 'quantumscans' ],
+    [ 'mangamx', 'mangaoni' ],
+    [ 'manganel', 'manganato' ],
+    [ 'mangaproz', 'mangapro' ],
+    [ 'mangaraw', 'mangageko' ],
+    [ 'manhuaes', 'manhuaaz' ],
+    [ 'manhuascan', 'kaliscan' ],
+    [ 'manhwaclub', 'manhwahentai' ],
+    [ 'nitroscans', 'nitromanga' ],
+    [ 'nonbiri', 'comic21' ],
+    [ 'oxapk', 'manjanoon' ],
+    [ 'ozulscans', 'kingofmanga' ],
+    [ 'prismascans', 'demonsect' ],
+    [ 'realmscans', 'rizzcomics' ],
+    [ 'reaperscansid', 'shinigamiid' ],
+    [ 'rightdarkscan', 'darkscan' ],
+    [ 'scansmangasxyz', 'scansmangasme' ],
+    [ 'scanhentaimenu', 'xmanga' ],
+    [ 'secretscans', 'lynxscans' ],
+    [ 'shonenmagazine-pocket', 'shonenmagazine' ],
+    [ 'siyahmelek', 'grimelek' ],
+    [ 'suryatoon', 'genztoon' ],
+    [ 'sushiscanfr', 'animesama' ],
+    [ 'vermanhwas', 'vermanhwa' ],
+    [ 'webtoontrcom', 'webtoontrnet' ],
+]);
 
 type BookmarkLegacy = {
     title: {
@@ -116,7 +105,7 @@ export function ConvertToSerializedBookmark(data: unknown): BookmarkSerialized {
     };
 
     if (IsLegacyBookmarkFormat(data)) {
-        bookmark.Media.ProviderID = legacyWebsiteIdentifierMap[data.key.connector] ?? data.key.connector;
+        bookmark.Media.ProviderID = legacyWebsiteIdentifierMap.has(data.key.connector) ? legacyWebsiteIdentifierMap.get(data.key.connector) : data.key.connector;
         bookmark.Media.EntryID = data.key.manga;
         bookmark.Title = data.title.manga;
         return bookmark;

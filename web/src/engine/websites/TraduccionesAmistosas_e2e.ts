@@ -7,7 +7,7 @@ const config = {
         title: 'Traducciones Amistosas'
     },
     container: {
-        url: 'https://nartag.com/l/el-retorno-del-jugador',
+        url: 'https://visortraduccionesamistosas.com/l/el-retorno-del-jugador',
         id: '/l/el-retorno-del-jugador',
         title: 'El retorno del jugador'
     },

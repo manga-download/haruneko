@@ -21,7 +21,7 @@
 
 <div id="bookmarkspage" in:fade>
     <Tile id="bookmarks" class="border">
-        {#each window.HakuNeko.BookmarkPlugin.Entries as bookmark (bookmark)}
+        {#each window.HakuNeko.BookmarkPlugin.Entries.Value as bookmark (bookmark)}
             <ClickableTile
                 class="suggesttile"
                 light

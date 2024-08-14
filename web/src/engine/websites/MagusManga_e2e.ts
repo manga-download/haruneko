@@ -7,12 +7,12 @@ const config = {
         title: 'MagusManga'
     },
     container: {
-        url: 'https://neroscans.com/series/4741157281-absolute-threshold/',
-        id: '/series/4741157281-absolute-threshold/',
+        url: 'https://oocini.biz/series/8042757755-absolute-threshold/',
+        id: '/series/8042757755-absolute-threshold/',
         title: 'Absolute Threshold'
     },
     child: {
-        id: '/7417149166-absolute-threshold-chapter-22/',
+        id: '/7884971399-absolute-threshold-chapter-22/',
         title: 'Chapter 22'
     },
     entry: {

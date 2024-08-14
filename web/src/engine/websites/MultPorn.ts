@@ -48,7 +48,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/(${categories.join('|')})/[^/]+`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/(${categories.join('|')})/[^/]+`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -97,7 +97,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetChaptersFromAjaxPage(manga: Manga, page: number, settings: DrupalSettings): Promise<Chapter[]> {
 
-        const view = Object.values(settings.views.ajaxViews).shift();
+        const view = Object.values(settings.views.ajaxViews).at(0);
         const params = new URLSearchParams();
         for (const key of Object.keys(view)) {
             params.append(key, view[key]);

@@ -8,7 +8,7 @@ export async function FetchMangas(this: DecoratableMangaScraper, provider: Manga
     const mangaList : Manga [] = [];
     for(let page = 1, run = true; run; page++) {
         const uri = new URL(path + search, this.URI);
-        const main = (await FetchCSS(new Request(uri), queryMain))?.shift();
+        const main = (await FetchCSS(new Request(uri), queryMain))?.at(0);
         const entries = [...main.querySelectorAll<HTMLAnchorElement>(queryMangas)];
         const mangas = entries
             //.filter(entry => /* entry.innerText.trim() */)

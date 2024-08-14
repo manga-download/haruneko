@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     test: {
@@ -9,6 +8,6 @@ export default defineConfig({
         dir: './web/src',
         include: [ '**/*[_.]e2e.[jt]s' ],
         exclude: [ '**/engine/websites/**' ],
-        reporters: process.env.GITHUB_ACTIONS ? ['basic', 'github-actions'] : [ 'default', 'hanging-process' ],
+        reporters: process.env.GITHUB_ACTIONS ? [ 'basic', 'github-actions' ] : [ 'default', 'hanging-process' ],
     },
 });

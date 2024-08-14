@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
             body: new URLSearchParams({
-                'info[manga]': chapter.Parent.Identifier.split('/').pop(),
+                'info[manga]': chapter.Parent.Identifier.split('/').at(-1),
                 'info[chapter]': chapter.Identifier.split('/').slice(-2)[0],
                 'info[ch_sub]': '0',
                 'info[title]': 'Digital Team'
