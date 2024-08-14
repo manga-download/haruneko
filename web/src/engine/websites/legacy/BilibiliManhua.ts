@@ -288,7 +288,7 @@ export default class extends DecoratableMangaScraper {
                 await this.RefreshToken();
                 return;
             }
-
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
         } catch (error) {
             this.auth.accessToken = '';
             this.auth.refreshToken = '';
@@ -306,6 +306,7 @@ export default class extends DecoratableMangaScraper {
             this.auth.accessToken = data.access_token;
             this.auth.refreshToken = data.refresh_token;
             this.token_expires_at = now + 60 * 10;//expires in 10 minutes
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
         } catch (error) {
             //
         }
