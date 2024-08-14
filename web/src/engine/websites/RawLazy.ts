@@ -22,7 +22,6 @@ type APIResult = {
 
 const IframeScript = `
     new Promise( (resolve, reject) => {
-        const start = Date.now();
         const interval = setInterval(function () {
             try {
                 if (document.querySelector('#idIframe')) {
@@ -32,13 +31,12 @@ const IframeScript = `
             } catch (error) {
                 clearInterval(interval);
                 reject(error);
-            } finally {
-                if(Date.now() - start > 10_000) {
-                    clearInterval(interval);
-                    reject(new Error('Unable to get iframe after more than 10 seconds !'));
-                }
             }
         }, 1000);
+        AbortSignal.timeout(10_000).onabort = function({ target: { reason } }) {
+            clearInterval(interval);
+            reject(reason);
+        };
     })
 
 `;
@@ -102,7 +100,6 @@ export default class extends DecoratableMangaScraper {
     private Script(selector: string): string {
         return `
             new Promise( (resolve, reject) => {
-                const start = Date.now();
                 const interval = setInterval(function () {
                     try {
                         if (document.querySelector('${selector}')?.href != '#') {
@@ -112,13 +109,12 @@ export default class extends DecoratableMangaScraper {
                     } catch (error) {
                         clearInterval(interval);
                         reject(error);
-                    } finally {
-                        if(Date.now() - start > 10_000) {
-                            clearInterval(interval);
-                            reject(new Error('Unable to get pictures after more than 10 seconds !'));
-                        }
                     }
                 }, 1000);
+                AbortSignal.timeout(10_000).onabort = function({ target: { reason } }) {
+                    clearInterval(interval);
+                    reject(reason);
+                };
             })
         `;
     }
