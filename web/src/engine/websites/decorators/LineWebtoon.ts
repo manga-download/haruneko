@@ -160,9 +160,9 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
     const manga = await Common.FetchMangaCSS.call(this, provider, url, query, extract, includeSearch, includeHash);
     try {
         const languageCode = url.match(languageRegexp)[1];
-        manga.Tags.push(mangasLanguageMap[languageCode]);
+        manga.Tags.Value.push(mangasLanguageMap[languageCode]);
     } catch (error) {
-        //
+        console.log(error);
     }
     return manga;
 }
