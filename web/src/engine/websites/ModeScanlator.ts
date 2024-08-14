@@ -6,6 +6,7 @@ import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
 import * as JSZip from 'jszip';
 import type { Priority } from '../taskpool/TaskPool';
 
+// TODO This site is using HEANCMS, there is a PR for that
 const pagescript = `
     new Promise((resolve, reject) => {
         try {
@@ -29,7 +30,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('modescanlator', `Mode Scanlator`, 'https://modescanlator.com', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator), Tags.Accessibility.RegionLocked;
+        super('modescanlator', `Mode Scanlator`, 'https://site.modescanlator.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator), Tags.Accessibility.RegionLocked;
     }
     public override get Icon() {
         return icon;

@@ -36,7 +36,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'lyrascans', targetID: 'quantumscans' },
     { sourceID: 'mangamx', targetID: 'mangaoni' },
     { sourceID: 'manganel', targetID: 'manganato' },
-    { sourceID: 'manganelos', targetID: 'mangapure' },
     { sourceID: 'mangaproz', targetID: 'mangapro' },
     { sourceID: 'mangaraw', targetID: 'mangageko' },
     { sourceID: 'manhuaes', targetID: 'manhuaaz' },

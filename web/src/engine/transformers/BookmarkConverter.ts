@@ -34,7 +34,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'lyrascans', 'quantumscans' ],
     [ 'mangamx', 'mangaoni' ],
     [ 'manganel', 'manganato' ],
-    [ 'manganelos', 'mangapure' ],
     [ 'mangaproz', 'mangapro' ],
     [ 'mangaraw', 'mangageko' ],
     [ 'manhuaes', 'manhuaaz' ],
