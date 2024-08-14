@@ -114,41 +114,44 @@ describe('BookmarkPlugin', () => {
                 .SetupInfoTrackers();
             let updatedEntries: Bookmark[];
             const testee = await fixture.CreateTestee(0);
-            testee.EntriesUpdated.Subscribe((_, args) => updatedEntries = args);
+            testee.Entries.Subscribe(args => updatedEntries = args);
             await new Promise(resolve => setTimeout(resolve, 50));
 
-            expect(testee.Entries.length).toBe(3);
-            expect(testee.Entries).toBe(updatedEntries);
+            expect(testee.Entries.Value.length).toBe(3);
+            expect(testee.Entries.Value).toBe(updatedEntries);
 
-            expect(testee.Entries[0].Title).toBe('Bookmark 01');
-            expect(testee.Entries[0].Identifier).toBe('website-01/manga');
-            expect(testee.Entries[0].Parent).not.toBeInstanceOf(MissingWebsite);
-            expect(testee.Entries[0].Parent.Identifier).toBe('website-01');
-            expect(testee.Entries[0].Parent.Title).toBe('Website 01');
-            expect(testee.Entries[0].Tracker).not.toBeInstanceOf(MissingInfoTracker);
-            expect(testee.Entries[0].Tracker.Identifier).toBe('tracker-01');
-            expect(testee.Entries[0].Tracker.Title).toBe('Tracker 01');
-            expect(testee.Entries[0].InfoID).toBe('tracker-01/manga');
+            let actual = testee.Entries.Value[0];
+            expect(actual.Title).toBe('Bookmark 01');
+            expect(actual.Identifier).toBe('website-01/manga');
+            expect(actual.Parent).not.toBeInstanceOf(MissingWebsite);
+            expect(actual.Parent.Identifier).toBe('website-01');
+            expect(actual.Parent.Title).toBe('Website 01');
+            expect(actual.Tracker).not.toBeInstanceOf(MissingInfoTracker);
+            expect(actual.Tracker.Identifier).toBe('tracker-01');
+            expect(actual.Tracker.Title).toBe('Tracker 01');
+            expect(actual.InfoID).toBe('tracker-01/manga');
 
-            expect(testee.Entries[1].Title).toBe('Bookmark 02');
-            expect(testee.Entries[1].Identifier).toBe('website-02/manga');
-            expect(testee.Entries[1].Parent).toBeInstanceOf(MissingWebsite);
-            expect(testee.Entries[1].Parent.Identifier).toBe('website-02');
-            expect(testee.Entries[1].Parent.Title).toBe('website-02');
-            expect(testee.Entries[1].Tracker).toBeInstanceOf(MissingInfoTracker);
-            expect(testee.Entries[1].Tracker.Identifier).toBe('tracker-02');
-            expect(testee.Entries[1].Tracker.Title).toBe('tracker-02');
-            expect(testee.Entries[1].InfoID).toBe('tracker-02/manga');
+            actual = testee.Entries.Value[1];
+            expect(actual.Title).toBe('Bookmark 02');
+            expect(actual.Identifier).toBe('website-02/manga');
+            expect(actual.Parent).toBeInstanceOf(MissingWebsite);
+            expect(actual.Parent.Identifier).toBe('website-02');
+            expect(actual.Parent.Title).toBe('website-02');
+            expect(actual.Tracker).toBeInstanceOf(MissingInfoTracker);
+            expect(actual.Tracker.Identifier).toBe('tracker-02');
+            expect(actual.Tracker.Title).toBe('tracker-02');
+            expect(actual.InfoID).toBe('tracker-02/manga');
 
-            expect(testee.Entries[2].Title).toBe('Bookmark 03');
-            expect(testee.Entries[2].Identifier).toBe('website-03/manga');
-            expect(testee.Entries[2].Parent).toBeInstanceOf(MissingWebsite);
-            expect(testee.Entries[2].Parent.Identifier).toBe('website-03');
-            expect(testee.Entries[2].Parent.Title).toBe('website-03');
-            expect(testee.Entries[2].Tracker).toBeInstanceOf(MissingInfoTracker);
-            expect(testee.Entries[2].Tracker.Identifier).toBeNull();
-            expect(testee.Entries[2].Tracker.Title).toBeNull();
-            expect(testee.Entries[2].InfoID).toBeNull();
+            actual = testee.Entries.Value[2];
+            expect(actual.Title).toBe('Bookmark 03');
+            expect(actual.Identifier).toBe('website-03/manga');
+            expect(actual.Parent).toBeInstanceOf(MissingWebsite);
+            expect(actual.Parent.Identifier).toBe('website-03');
+            expect(actual.Parent.Title).toBe('website-03');
+            expect(actual.Tracker).toBeInstanceOf(MissingInfoTracker);
+            expect(actual.Tracker.Identifier).toBeNull();
+            expect(actual.Tracker.Title).toBeNull();
+            expect(actual.InfoID).toBeNull();
         });
     });
 
@@ -312,7 +315,7 @@ describe('BookmarkPlugin', () => {
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
-            const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
+            const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').at(0);
             const testee = await fixture.CreateTestee();
             const actual = await testee.Export();
 

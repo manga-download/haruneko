@@ -4,7 +4,7 @@ function DeProxifyGoogle(uri: URL): URL {
 }
 
 function DeProxifyPhoton(uri: URL): URL {
-    let url = uri.searchParams.get('ssl') ? 'https://' : 'http://';
+    let url = !uri.searchParams.has('ssl') ? `${uri.protocol}//` : uri.searchParams.get('ssl') === '1' ? 'https://' : 'http://';
     url += uri.pathname.slice(1);
     const search = uri.searchParams.get('q');
     if(search) {

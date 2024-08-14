@@ -14,9 +14,9 @@
         "yargs": "17.7.2"
     },
     "devDependencies": {
-        "@types/ws": "8.5.11",
+        "@types/ws": "8.5.12",
         "extract-zip": "2.0.1",
-        "electron": "31.3.0",
+        "electron": "31.3.1",
         "plist": "3.1.0"
     },
     "scripts": {

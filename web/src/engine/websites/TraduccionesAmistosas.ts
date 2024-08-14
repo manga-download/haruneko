@@ -17,7 +17,7 @@ function ChapterExtractor(element: HTMLElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('traduccionesamistosas', 'Traducciones Amistosas', 'https://nartag.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('traduccionesamistosas', 'Traducciones Amistosas', 'https://visortraduccionesamistosas.com', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

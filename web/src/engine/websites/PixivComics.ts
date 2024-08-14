@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/works/\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/works/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -124,9 +124,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-        const plaintext = new TextEncoder().encode(timestamp + 'mAtW1X8SzGS880fsjEXlM73QpS1i4kUMBhyhdaYySk8nWz533nrEunaSplg63fzT');
+        const plaintext = new TextEncoder().encode(timestamp + '4yX5JnooikMsznkIF2Pc1zDCoMmKJdJj27HPrSyEVzgmepcghvumFihiv0LAK0Se');
         const hash = Buffer.from(await crypto.subtle.digest('SHA-256', plaintext)).toString('hex');
-        const uri = new URL(`episodes/${chapter.Identifier}/read_v3`, this.apiURL);
+        const uri = new URL(`episodes/${chapter.Identifier}/read_v4`, this.apiURL);
         const request = new Request(uri.href, {
             headers: {
                 'x-requested-with': 'pixivcomic',

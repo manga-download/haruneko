@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('fbsquads', 'Fleur Blanche Squads', 'https://fbsscan.com', Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Rating.Pornographic, Tags.Source.Scanlator);
+        super('fbsquads', 'Fleur Blanche Squads', 'https://fbsquadx.com', Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Rating.Pornographic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
