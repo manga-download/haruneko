@@ -32,28 +32,28 @@ type APIPage = {
     name: string,
 }
 
-const langMap = {
-    'ar': Tags.Language.Arabic,
-    'en': Tags.Language.English,
-    //'uk': Tags.Language.Ukrainian,
-    'es': Tags.Language.Spanish,
-    'es-419': Tags.Language.Spanish,
-    'ru': Tags.Language.Russian,
-    'pt-br': Tags.Language.Portuguese,
-    'pt': Tags.Language.Portuguese,
-    'th': Tags.Language.Thai,
-    'it': Tags.Language.Italian,
-    'id': Tags.Language.Indonesian,
-    'fr': Tags.Language.French,
-    'zh': Tags.Language.Chinese,
-    'zh-hk': Tags.Language.Chinese,
-    'de': Tags.Language.German,
-    'tr': Tags.Language.Turkish,
-    'pl': Tags.Language.Polish,
-    'vi': Tags.Language.Vietnamese,
-    'ja': Tags.Language.Japanese,
-    //'cz': Tags.Language
-};
+const chapterLanguageMap = new Map([
+    [ 'ar', Tags.Language.Arabic ],
+    [ 'en', Tags.Language.English ],
+    //[ 'uk', Tags.Language.Ukrainian ],
+    [ 'es', Tags.Language.Spanish ],
+    [ 'es-419', Tags.Language.Spanish ],
+    [ 'ru', Tags.Language.Russian ],
+    [ 'pt-br', Tags.Language.Portuguese ],
+    [ 'pt', Tags.Language.Portuguese ],
+    [ 'th', Tags.Language.Thai ],
+    [ 'it', Tags.Language.Italian ],
+    [ 'id', Tags.Language.Indonesian ],
+    [ 'fr', Tags.Language.French ],
+    [ 'zh', Tags.Language.Chinese ],
+    [ 'zh-hk', Tags.Language.Chinese ],
+    [ 'de', Tags.Language.German ],
+    [ 'tr', Tags.Language.Turkish ],
+    [ 'pl', Tags.Language.Polish ],
+    [ 'vi', Tags.Language.Vietnamese ],
+    [ 'ja', Tags.Language.Japanese ],
+    //[ 'cz', Tags.Language
+]);
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
@@ -105,8 +105,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const { chapters } = await FetchJSON<APIChapters>(new Request(new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl)));
-        return chapters.map(item => {
+        const { chapters: entries } = await FetchJSON<APIChapters>(new Request(new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl)));
+        return entries.map(item => {
             let title = '';
             if (item.vol) {
                 title += `Vol. ${item.vol} `;
@@ -121,14 +121,9 @@ export default class extends DecoratableMangaScraper {
             if (item.group_name && item.group_name.length) {
                 title += ` [${item.group_name.join(', ')}]`;
             }
-            const chap = new Chapter(this, manga, item.hid, title);
-            try {
-                chap.Tags.push(langMap[item.lang]);
-            }
-            catch {
-                console.log('ComicK : unable to map language ' + item.lang);
-            }
-            return chap;
+            return new Chapter(this, manga, item.hid, title,
+                ...chapterLanguageMap.has(item.lang) ? [ chapterLanguageMap.get(item.lang) ] : []
+            );
         });
     }
 

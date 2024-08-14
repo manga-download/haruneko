@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Ngomik'
     },
     container: {
-        url: 'https://ngomik.net/manga/reborn-as-the-heavenly-demon/',
+        url: 'https://ngomik.mom/manga/reborn-as-the-heavenly-demon/',
         id: '/manga/reborn-as-the-heavenly-demon/',
         title: 'Reborn as The Heavenly Demon'
     },

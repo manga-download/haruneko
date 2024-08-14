@@ -42,7 +42,7 @@ function Format(this: string, ...params: string[]) {
     for(const index in params) {
         text = text.replace(`{${index}}`, params[index]);
         /*
-        const regex = new RegExp(`\\{${index}\\}`, 'g');
+        const regex = new RegExpSafe(`\\{${index}\\}`, 'g');
         text = text.replace(regex, params[index]);
         */
     }

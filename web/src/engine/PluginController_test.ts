@@ -4,6 +4,7 @@ import type { ISettings, SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 import { PluginController } from './PluginController';
 import { Tags } from './Tags';
+import { legacyWebsiteIdentifierMap } from './transformers/BookmarkConverter';
 
 class TestFixture {
 
@@ -61,13 +62,17 @@ describe('PluginController', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', (plugin) => {
+        it('Should have a plugin which matches the target identifier for each mapped legacy plugin', () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+            const expected = [ ...legacyWebsiteIdentifierMap.values() ];
 
-            it('Should have valid URI', async () => {
-                expect(plugin.URI.origin).toMatch(/^http/);
-                //const response = await fetch(plugin.URI);
-                //expect(response.url).toBe(plugin.URI.href);
-            });
+            const missing = expected.filter(id => !testee.WebsitePlugins.some(plugin => plugin.Identifier === id));
+
+            expect(missing).toEqual([]);
+        });
+
+        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', { concurrent: true }, (plugin) => {
 
             it('Should have mandatory tags', async () => {
                 const expected = {
@@ -76,13 +81,13 @@ describe('PluginController', () => {
                     language: Tags.Language.toArray(),
                 };
                 const actual = {
-                    media: plugin.Tags.filter(tag => expected.media.includes(tag)),
-                    source: plugin.Tags.filter(tag => expected.source.includes(tag)),
-                    language: plugin.Tags.filter(tag => expected.language.includes(tag)),
+                    media: plugin.Tags.Value.filter(tag => expected.media.includes(tag)),
+                    source: plugin.Tags.Value.filter(tag => expected.source.includes(tag)),
+                    language: plugin.Tags.Value.filter(tag => expected.language.includes(tag)),
                 };
 
                 // Skip plugins that are not yet migrated from legacy
-                if(plugin.Tags.length > 0) {
+                if(plugin.Tags.Value.length > 0) {
                     expect.soft(actual.media).not.toHaveLength(0);
                     //expect.soft(actual.source).not.toHaveLength(0);
                     expect.soft(actual.language).not.toHaveLength(0);

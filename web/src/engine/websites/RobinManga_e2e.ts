@@ -7,18 +7,18 @@ const config = {
         title: 'RobinManga'
     },
     container: {
-        url: 'https://www.robinmanga.com/manga/i-am-a-cultivation-bigshot/',
-        id: '/manga/i-am-a-cultivation-bigshot/',
-        title: 'I Am a Cultivation Bigshot'
+        url: 'https://robinmanga.com/manga/i-learn-to-kill-gods-in-an-asylum/',
+        id: JSON.stringify({ post: '1636', slug: '/manga/i-learn-to-kill-gods-in-an-asylum/'}),
+        title: 'I Learn to Kill Gods in an Asylum'
     },
     child: {
-        id: '/i-am-a-cultivation-bigshot-bolum-235/',
-        title: 'Bölüm 235'
+        id: '/manga/i-learn-to-kill-gods-in-an-asylum/chapter-58/',
+        title: 'Chapter 58'
     },
     entry: {
         index: 1,
-        size: 820_455,
-        type: 'image/jpeg'
+        size: 607_812,
+        type: 'image/webp'
     }
 };
 

@@ -39,13 +39,11 @@ export default class extends DecoratableMangaScraper {
 
     protected readonly apiUrl: string;
     protected readonly cdnUrl: string;
-    protected readonly mangaRegexp: RegExp;
 
     public constructor(id: string = 'galaxymanga', label: string = 'Galaxy Manga', url: string = 'https://flixscans.com', apiUrl: string = 'https://ar.flixscans.site/api/v1/', cdnUrl = 'https://media.flixscans.com', tags = [Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator]) {
         super(id, label, url, ...tags);
         this.apiUrl = apiUrl;
         this.cdnUrl = cdnUrl;
-        this.mangaRegexp = new RegExp(`^${this.URI.origin}/series/(\\d+)-(\\d+)[^/]+$`);
     }
 
     public override get Icon() {
@@ -53,11 +51,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url);
+        return new RegExpSafe(`^${this.URI.origin}/series/(\\d+)-(\\d+)-[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const matches = url.match(this.mangaRegexp);
+        const matches = url.match(/\/(\d+)-(\d+)-/);
         const request = new Request(`${this.apiUrl}series/${matches[2]}/${matches[1]}`);
         const { serie } = await FetchJSON<APIMangaClipboard>(request);
         return new Manga(this, provider, JSON.stringify(<APIManga>{
@@ -99,5 +97,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchJSON<APIPages>(request);
         return data.chapter.chapterData.webtoon.map(image => new Page(this, chapter, new URL(image, this.cdnUrl)));
     }
-
 }

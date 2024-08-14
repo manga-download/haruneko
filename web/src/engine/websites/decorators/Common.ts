@@ -106,7 +106,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
             Referer: uri.href
         }
     });
-    const data = (await FetchCSS<HTMLElement>(request, query)).shift();
+    const data = (await FetchCSS<HTMLElement>(request, query)).at(0);
     let id = uri.pathname;
     id += includeSearch ? uri.search : '';
     id += includeHash ? uri.hash : '';
@@ -128,7 +128,7 @@ export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelE
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
-                return new RegExp(source, pattern.flags).test(url);
+                return new RegExpSafe(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query, extract, includeSearch, includeHash);

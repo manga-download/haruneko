@@ -16,7 +16,7 @@ type APIChapter = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('zhuzhumh', `Zhuzhumh`, 'https://www.zhuzhumh.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('zhuzhumh', `Zhuzhumh`, 'https://cn.zhuzhumh.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

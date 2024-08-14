@@ -7,17 +7,17 @@ const config = {
         title: 'JiangzaiToon'
     },
     container: {
-        url: 'https://jiangzaitoon.dev/manga/ani/',
-        id: JSON.stringify({ post: '7208', slug: '/manga/ani/' }),
-        title: 'Beyond the Memories'
+        url: 'https://jiangzaitoon.pro/manga/19-gun/',
+        id: JSON.stringify({ post: '6872', slug: '/manga/19-gun/' }),
+        title: '19 Days'
     },
     child: {
-        id: '/manga/ani/bolum-14/',
-        title: 'Bölüm 14'
+        id: '/manga/19-gun/bolum-353-skec/',
+        title: 'Bölüm 353 - Skeç'
     },
     entry: {
         index: 1,
-        size: 2_153_193,
+        size: 2_803_320,
         type: 'image/jpeg'
     }
 };

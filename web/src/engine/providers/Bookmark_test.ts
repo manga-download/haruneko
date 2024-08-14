@@ -33,7 +33,7 @@ describe('Bookmark', () => {
             const testee = fixture.CreateSparseTestee();
 
             expect(testee.Created.getTime()).toBe(fixture.CreationTime);
-            expect(testee.Updated.getTime()).toBe(fixture.ModificationTime);
+            expect(testee.Updated.Value.getTime()).toBe(fixture.ModificationTime);
             expect(testee.Identifier).toBe(fixture.OriginIdentifier);
             expect(testee.Title).toBe(fixture.OriginTitle);
             expect(testee.Parent).toBe(fixture.MockParent);
@@ -46,7 +46,7 @@ describe('Bookmark', () => {
             const testee = fixture.CreateTestee();
 
             expect(testee.Created.getTime()).toBe(fixture.CreationTime);
-            expect(testee.Updated.getTime()).toBe(fixture.ModificationTime);
+            expect(testee.Updated.Value.getTime()).toBe(fixture.ModificationTime);
             expect(testee.Identifier).toBe(fixture.OriginIdentifier);
             expect(testee.Title).toBe(fixture.OriginTitle);
             expect(testee.Parent).toBe(fixture.MockParent);
@@ -64,16 +64,16 @@ describe('Bookmark', () => {
             const entries = mock<MediaContainer<MediaChild>[]>();
             const origin = mock<MediaContainer<MediaChild>>();
             Object.defineProperty(origin, 'Identifier', { get: () => testee.Identifier });
-            Object.defineProperty(origin, 'Entries', { get: () => entries });
+            Object.defineProperty(origin, 'Entries', { get: () => { return { Value: entries }; } });
 
             const children = [ origin ];
-            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => children });
+            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => { return { Value: children }; } });
 
-            const actual = testee.Entries;
+            const actual = testee.Entries.Value;
 
             expect(actual).toBe(entries);
             expect(children[0]).toBe(origin);
-            expect(fixture.MockParent.Entries[0]).toBe(origin);
+            expect(fixture.MockParent.Entries.Value[0]).toBe(origin);
             expect(fixture.MockParent.CreateEntry).toHaveBeenCalledTimes(0);
         });
 
@@ -84,18 +84,18 @@ describe('Bookmark', () => {
             const entries = mock<MediaContainer<MediaChild>[]>();
             const origin = mock<MediaContainer<MediaChild>>();
             Object.defineProperty(origin, 'Identifier', { get: () => testee.Identifier });
-            Object.defineProperty(origin, 'Entries', { get: () => entries });
+            Object.defineProperty(origin, 'Entries', { get: () => { return { Value: entries }; } });
 
             const children = [];
             fixture.MockParent.CreateEntry.calledWith(testee.Identifier, testee.Title).mockReturnValue(origin);
-            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => children });
+            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => { return { Value: children }; } });
 
             // Multiple calls to internal `Origin` getter to verify that `CreateEntry` is only called once
-            const actual = testee.Entries || testee.Entries || testee.Entries;
+            const actual = testee.Entries.Value && testee.Entries.Value && testee.Entries.Value;
 
             expect(actual).toBe(entries);
             expect(children.length).toBe(0);
-            expect(fixture.MockParent.Entries.length).toBe(0);
+            expect(fixture.MockParent.Entries.Value.length).toBe(0);
             expect(fixture.MockParent.CreateEntry).toHaveBeenCalledTimes(1);
             expect(fixture.MockParent.CreateEntry).toHaveBeenCalledWith(testee.Identifier, testee.Title);
         });
