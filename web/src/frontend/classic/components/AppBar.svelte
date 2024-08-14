@@ -101,17 +101,17 @@
         {#if showWindowControls}
             <HeaderGlobalAction
                 on:click={minimize}
-                aria-label="Minimize"
+                iconDescription="Minimize"
                 icon={Subtract}
             />
             <HeaderGlobalAction
                 on:click={() => (winMaximized ? restore() : maximize())}
-                aria-label="Maximize"
+                iconDescription="Maximize"
                 icon={winMaximized ? Copy : Checkbox}
             />
             <HeaderGlobalAction
                 on:click={() => close()}
-                aria-label="Close"
+                iconDescription="Close"
                 icon={Close}
                 class="close"
             />

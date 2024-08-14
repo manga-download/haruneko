@@ -63,16 +63,7 @@ export class Observable<TValue, TOwner = null> implements IObservable<TValue, TO
     }
 }
 
-export interface IObservableArray<TEntry, TOwner> extends IObservable<TEntry[], TOwner> {
-    Pop(): TEntry | undefined;
-    Push(...items: TEntry[]): number;
-    Shift(): TEntry | undefined;
-    Unshift(...items: TEntry[]): number;
-    Splice(start: number, deleteCount: number, ...items: TEntry[]): TEntry[];
-    Sort(compareFn?: (a: TEntry, b: TEntry) => number): TEntry[];
-}
-
-export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[], TOwner> implements IObservableArray<TEntry, TOwner> {
+export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[], TOwner> {
 
     /**
      * {@inheritDoc {@link Array.pop}}
@@ -138,5 +129,62 @@ export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[],
         } finally {
             this.Dispatch();
         }
+    }
+}
+
+export class ObservableMap<TKey, TValue, TOwner = null> extends Observable<Map<TKey, TValue>, TOwner> {
+
+    /**
+     * {@inheritDoc {@link Map.size}}
+     */
+    public get Size(): number {
+        return this.Value.size;
+    }
+
+    /**
+     * {@inheritDoc {@link Map.has}}
+     */
+    public Has(key: TKey): boolean {
+        return this.Value.has(key);
+    }
+
+    /**
+     * {@inheritDoc {@link Map.get}}
+     */
+    public Get(key: TKey): TValue | undefined {
+        try {
+            return this.Value.get(key);
+        } finally {
+            this.Dispatch();
+        }
+    }
+
+    /**
+     * {@inheritDoc {@link Map.set}}
+     */
+    public Set(key: TKey, value: TValue): void {
+        try {
+            this.Value.set(key, value);
+        } finally {
+            this.Dispatch();
+        }
+    }
+
+    /**
+     * {@inheritDoc {@link Map.delete}}
+     */
+    public Delete(key: TKey): boolean {
+        try {
+            return this.Value.delete(key);
+        } finally {
+            this.Dispatch();
+        }
+    }
+
+    /**
+     * {@inheritDoc {@link Map.forEach}}
+     */
+    public ForEach(callbackfn: (value: TValue, key: TKey, map: Map<TKey, TValue>) => void): void {
+        return this.Value.forEach(callbackfn);
     }
 }

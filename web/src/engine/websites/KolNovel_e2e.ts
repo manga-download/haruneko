@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Kol Novel (ملوك الروايات)'
     }/*,
     container: {
-        url: 'https://kolnovel.com/manga/.../',
+        url: 'https://kolnovel.online/manga/.../',
         id: '/manga/.../',
         title: 'Manga ?'
     },

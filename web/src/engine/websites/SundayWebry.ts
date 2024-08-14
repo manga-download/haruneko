@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
             return {
                 chapters: chapters.reverse(), nextUrl: data.nextUrl
             };
-        } catch (error) {
+        } catch { // TODO: Do not return incomplete list for generic errors
             return { chapters: [], nextUrl: '' };
         }
     }

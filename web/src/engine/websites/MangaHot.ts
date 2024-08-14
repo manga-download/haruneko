@@ -58,9 +58,8 @@ export default class extends DecoratableMangaScraper {
             }
         }));
 
-        const container = document.createElement('template');
-        container.innerHTML = result;
-        const nodes = [...container.content.querySelectorAll<HTMLAnchorElement>('a[id].parent')];
+        const dom = new DOMParser().parseFromString(result, 'text/html');
+        const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('a[id].parent')];
         return nodes.map(node => {
             const chapterid = new URL(node.href, this.URI).searchParams.get('story_id') ?? node.href.match(/dialog\('(\d+)'\)/)[1];
             return new Chapter(this, manga, chapterid, node.querySelector('div.episode_name').textContent.trim());
@@ -186,7 +185,7 @@ export default class extends DecoratableMangaScraper {
 
     GetScrambleType(href: string): number {
         let t = 0;
-        href = href.split('/').pop();
+        href = href.split('/').at(-1);
         const ptn: RegExp = /^[0-9]$/;
         for (let i = 0; i < href.length; i++) {
             ptn.test(href[i]) && (t += parseInt(href[i]));

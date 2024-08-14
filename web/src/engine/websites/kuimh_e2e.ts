@@ -7,17 +7,17 @@ const config = {
         title: '酷爱漫画 (Kuimh)'
     },
     container: {
-        url: 'https://www.kuimh.com/book/mh11568',
-        id: '/book/mh11568',
-        title: '被大公家领养的圣女',
+        url: 'https://www.woimh.com/book/mh11666',
+        id: '/book/mh11666',
+        title: '上流社会',
     },
     child: {
-        id: '/chapter/393045-3747909',
-        title: '序章',
+        id: '/chapter/398580-3769728',
+        title: '第01话',
     },
     entry: {
         index: 0,
-        size: 34_815,
+        size: 53_440,
         type: 'image/jpeg'
     }
 };

@@ -37,10 +37,9 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangasSinglePageCSS('/manga', 'div#themes_outside__WCut6 a:not([id])', MangaInfoExtractor)
-
 export default class extends DecoratableMangaScraper {
+
     private readonly apiUrl = `${this.URI.origin}/api/`;
-    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/manga/([^/]+)$`);
 
     public constructor() {
         super('coloredmanga', 'Colored Manga', 'https://coloredmanga.net', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
@@ -51,11 +50,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaSlug = url.match(this.mangaRegexp)[1];
+        const mangaSlug = url.split('/').at(-1);
         const { name } = await this.GetMangaData(mangaSlug);
         return new Manga(this, provider, mangaSlug, name);
     }
