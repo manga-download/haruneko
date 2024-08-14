@@ -53,8 +53,10 @@ import type { IFrontendModule } from '../IFrontend';
 
 class SheepUI implements IFrontendModule {
     async Render(root: HTMLElement, windowController: IWindowController): Promise<void> {
+        const app = document.createElement('div');
+        app.textContent = 'Sheep UI Frontend';
         // Mount frontend into the given root node
-        root.innerHTML = `<strong>Sheep UI Frontend</strong>`;
+        root.replaceChildren(app);
         // Wait for frontend to be loaded and rendered
         await new Promise(resolve => setTimeout(resolve, 2500));
     }

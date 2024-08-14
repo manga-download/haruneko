@@ -1,4 +1,4 @@
-import { describe } from 'vitest';
+﻿import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const fixture = new TestFixture({
@@ -7,18 +7,18 @@ const fixture = new TestFixture({
         title: 'MangaPanda'
     },
     container: {
-        url: 'https://mangapanda.in/manga/sheriff-evans-lies',
-        id: '/manga/sheriff-evans-lies',
-        title: 'Sheriff Evans\' Lies'
+        url: 'https://www.mangapanda.in/manga/theres-no-hope-for-winter',
+        id: '/manga/theres-no-hope-for-winter',
+        title: `There’s No Hope for Winter`
     },
     child: {
-        id: '/sheriff-evans-lies-chapter-162',
-        title: 'Chapter 162'
+        id: '/theres-no-hope-for-winter-chapter-79',
+        title: 'Chapter 79',
     },
     entry: {
         index: 0,
-        size: 1_286_660,
-        type: 'image/jpeg'
+        size: 120_950,
+        type: 'image/webp',
     }
 });
 describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

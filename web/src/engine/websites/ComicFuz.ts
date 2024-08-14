@@ -65,12 +65,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/manga/\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/\\d+$`).test(url);
 
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').pop();
+        const id = new URL(url).pathname.split('/').at(-1);
         const data = await this.FetchMangaDetail(id);
         return new Manga(this, provider, id, data.manga.title);
     }
@@ -132,7 +132,7 @@ export default class extends DecoratableMangaScraper {
         let data: MangaViewerResponse = undefined;
         try {
             data = await FetchProto<MangaViewerResponse>(request, protoTypes, 'ComicFuz.MangaViewerResponse');
-        } catch (error) {
+        } catch { // TODO: Do not use same message for generic errors
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return data.pages

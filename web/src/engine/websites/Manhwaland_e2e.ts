@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Manhwaland'
     },
     container: {
-        url: 'https://www.manhwaland.to/manga/got-a-room-uncensored/',
+        url: 'https://www.manhwaland.ink/manga/got-a-room-uncensored/',
         id: '/manga/got-a-room-uncensored/',
         title: 'Got a Room? UNCENSORED'
     },

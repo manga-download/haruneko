@@ -30,7 +30,7 @@ export default class extends DecoratableMangaScraper {
     public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         // TODO: May search through provider.Entries, in case the manga is already in the list ...
         const mangas = await this.FetchMangas(provider);
-        const id = '/' + new URL(url).pathname.split('/').pop();
+        const id = '/' + new URL(url).pathname.split('/').at(-1);
         return mangas.find(manga => manga.Identifier === id);
     }
 
