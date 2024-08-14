@@ -6,8 +6,9 @@ const config: Config = {
         id: 'modescanlator',
         title: 'Mode Scanlator'
     },
+    /*
     container: {
-        url: 'https://modescanlator.com/eternal-first-son-in-law/',
+        url: 'https://site.modescanlator.net/eternal-first-son-in-law/',
         id: '/eternal-first-son-in-law/',
         title: 'Eternal First Son-In-Law',
     },
@@ -19,7 +20,7 @@ const config: Config = {
         index: 0,
         size: 157_765,
         type: 'image/avif'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

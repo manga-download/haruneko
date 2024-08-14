@@ -5,25 +5,36 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 const pageScript = `
-    new Promise((resolve, reject) => {
-        try {
-            let t = new RocketLazyLoadScripts;
-            t._loadEverythingNow();
-        } catch (error) {}
+    new Promise( (resolve, reject) => {
+        const start = Date.now();
+        const interval = setInterval(function () {
+            try {
+                if (CryptoJS) {
+                    clearInterval(interval);
+                    let imgdata = JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {
+                        format: CryptoJSAesJson
+                    }).toString(CryptoJS.enc.Utf8));
+                    resolve(JSON.parse(imgdata));
+                }
+            } catch (error) {
+                clearInterval(interval);
+                reject(error);
+            } finally {
+                if(Date.now() - start > 10_000) {
+                    clearInterval(interval);
+                    reject(new Error('Unable to get pictures after more than 10 seconds !'));
+                }
+            }
+        }, 1000);
+       window.dispatchEvent(new KeyboardEvent('keydown'));
 
-        setTimeout(() => {
-            var imgdata = JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {
-                format: CryptoJSAesJson
-            }).toString(CryptoJS.enc.Utf8));
-            resolve(JSON.parse(imgdata));
-        }, 2500);
     });
 `;
 
 @Madara.MangaCSS(/^{origin}\/project\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Gourmet Scans"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(pageScript)
+@Common.PagesSinglePageJS(pageScript, 5000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -5,9 +5,9 @@ const config = {
     plugin: {
         id: 'inmortalscan',
         title: 'Inmortal Scan'
-    },
+    }, /* Cloudflare
     container: {
-        url: 'https://manga.mundodrama.site/mg/memoir-of-the-king-of-war/',
+        url: 'https://mg.mundodrama.site/mg/memoir-of-the-king-of-war/',
         id: JSON.stringify({ post: '1864', slug: '/mg/memoir-of-the-king-of-war/' }),
         title: 'Memorias del Rey de la Guerra'
     },
@@ -19,7 +19,7 @@ const config = {
         index: 1,
         size: 359_607,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

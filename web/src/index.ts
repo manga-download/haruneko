@@ -2,6 +2,7 @@ import { CreateAppWindow } from './engine/platform/AppWindow';
 import { FeatureFlags } from './engine/FeatureFlags';
 import type { HakuNeko } from './engine/HakuNeko';
 import './engine/ArrayExtensions';
+import './engine/RegExpSafe';
 
 const appHook = '#app';
 const noticeHook = '#hakuneko-notice';

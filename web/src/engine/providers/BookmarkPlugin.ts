@@ -108,7 +108,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
             exported: 0
         };
         const data = new Blob([ JSON.stringify(bookmarks, null, 2) ], { type: 'application/json' });
-        const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
+        const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').at(0);
         try {
             await this.fileIO.SaveFile(data, {
                 suggestedName: `HakuNeko (${today}).bookmarks`,
