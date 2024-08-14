@@ -314,6 +314,7 @@ async function getPageLinks_v016452(this: MangaScraper, configuration: ContentCo
     configuration.ptbl = _pt(params.cid, params.sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
+        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     } catch (error) {
         //
     }
@@ -337,6 +338,7 @@ async function getPageLinks_v016201(this: MangaScraper, configuration: ContentCo
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
+        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     } catch (error) {
         //
     }
@@ -363,6 +365,7 @@ async function getPageLinks_v016130(this: MangaScraper, configuration: ContentCo
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
+        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     } catch (error) {
         //
     }
@@ -533,6 +536,7 @@ function _pt(t: string, i: string, n: string): string[] {
     }
     try {
         return JSON.parse(u);
+        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     } catch (t) {
         return null;
     }
