@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Mode Scanlator'
     },
     container: {
-        url: 'https://modescanlator.com/series/uma-lenda-do-vento',
+        url: 'https://site.modescanlator.com/series/uma-lenda-do-vento',
         id: JSON.stringify({ id: '36', slug: 'uma-lenda-do-vento' }),
         title: 'Uma Lenda do Vento',
     },
