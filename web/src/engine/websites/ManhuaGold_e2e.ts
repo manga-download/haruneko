@@ -12,12 +12,12 @@ const config = {
         title: 'Cultivator Against Hero Society'
     },
     child: {
-        id: '/manga/cultivator-against-hero-society/chapter-302',
-        title: 'Chapter 302'
+        id: '/manga/cultivator-against-hero-society/chapter-311',
+        title: 'Chapter 311'
     },
     entry: {
         index: 0,
-        size: 869_273,
+        size: 957_872,
         type: 'image/jpeg'
     }
 };

@@ -3,7 +3,6 @@
     import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
     import BookmarkAdd from 'carbon-icons-svelte/lib/BookmarkAdd.svelte';
 
-    import { EventWatcher } from '../stores/Events';
     import {
         selectedPlugin,
         selectedMedia,
@@ -36,21 +35,13 @@
         if (isRefreshing) return;
         isRefreshing = true;
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        suggestions =
-            await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent();
+        suggestions = await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent();
         isRefreshing = false;
     }
     refreshSuggestions();
 
-    // on bookmark change
-    EventWatcher(
-        HakuNeko.BookmarkPlugin.Entries,
-        HakuNeko.BookmarkPlugin.EntriesUpdated,
-    ).subscribe(() => refreshSuggestions());
-    // on marks change
-    EventWatcher(null, HakuNeko.ItemflagManager.MediaFlagsChanged).subscribe(
-        () => refreshSuggestions(),
-    );
+    HakuNeko.BookmarkPlugin.Entries.Subscribe(() => refreshSuggestions());
+    HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(() => refreshSuggestions());
 
     async function selectBookmark(bookmark: Bookmark) {
         let unFlaggedContent = await bookmark.GetUnflaggedContent();

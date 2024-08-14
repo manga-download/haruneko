@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hoducomics', `HoduComics`, 'https://hoducomics.com' /*, Tags.Language.English, Tags ... */);
+        super('hoducomics', `HoduComics`, 'https://oktoon.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

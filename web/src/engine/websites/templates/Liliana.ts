@@ -22,7 +22,7 @@ export const queryPagesScript = `
 
             //sort if needed
             nodes.sort(function (a, b) {
-                if (!a.dataset?.index || b.dataset?.index) return 0;
+                if (!a.dataset?.index || !b.dataset?.index) return 0;
                 const za = parseInt(a.dataset.index);
                 const zb = parseInt(b.dataset.index);
                 return za - zb;

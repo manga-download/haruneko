@@ -1,6 +1,8 @@
 // Auto-Generated export from HakuNeko Legacy
 // See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
 
+// TODO Need novel support
+
 //import { Tags } from '../../Tags';
 import icon from './EpikManga.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
@@ -8,7 +10,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('epikmanga', `Epik Manga`, 'https://www.epikmanga.com' /*, Tags.Language.English, Tags ... */);
+        super('epikmanga', `Epik Manga`, 'https://www.epiknovel.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
