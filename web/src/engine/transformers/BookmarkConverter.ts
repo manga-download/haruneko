@@ -25,7 +25,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'galaxyaction', 'galaxymanga' ],
     [ 'gateanimemanga', 'gatemanga' ],
     [ 'heavenmanga', 'manhwafullnet' ],
-    [' heavenmanga2', 'heavenmanga' ],
+    [ 'heavenmanga2', 'heavenmanga' ],
     [ 'imperioscans', 'neroxus' ],
     [ 'instamanhwa', 'xmanhwa' ],
     [ 'kisscomic', 'readcomiconline' ],
