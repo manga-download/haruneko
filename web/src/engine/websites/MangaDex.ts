@@ -115,7 +115,7 @@ export default class extends MangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/title/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/title/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -124,7 +124,7 @@ export default class extends MangaScraper {
         const id = (uri.pathname.match(regexGUID) || uri.hash.match(regexGUID))[0].toLowerCase();
         const request = new Request(`${this.api}/manga/${id}`, { headers: { Referer: this.URI.href }});
         const { data: { attributes: { title: titles } } } = await FetchJSON<APIContainer<APIManga>>(request);
-        const title = titles.en || Object.values(titles).shift();
+        const title = titles.en || Object.values(titles).at(0);
         return new Manga(this, provider, id, title);
     }
 

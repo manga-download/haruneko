@@ -17,7 +17,7 @@ export default class extends GalaxyManga {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const matches = url.match(this.mangaRegexp);
+        const matches = url.match(/\/(\d+)-(\d+)-/);
         const request = new Request(`${this.apiUrl}webtoon/series/${matches[2]}/${matches[1]}`);
         const { serie } = await FetchJSON<APIMangaClipboard>(request);
         return new Manga(this, provider, JSON.stringify(<APIManga>{
@@ -39,5 +39,4 @@ export default class extends GalaxyManga {
         const data = await FetchJSON<APIPages>(request);
         return data.chapter.chapterData.webtoon.map(image => new Page(this, chapter, new URL(image, this.cdnUrl)));
     }
-
 }

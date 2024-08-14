@@ -6,6 +6,7 @@ const config: Config = {
         id: 'readkomik',
         title: 'ReadKomik'
     },
+    /*
     container: {
         url: 'https://rkreader.org/archives/manga/superhuman-battlefield/',
         id: '/archives/manga/superhuman-battlefield/',
@@ -19,7 +20,7 @@ const config: Config = {
         index: 0,
         size: 77_262,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

@@ -58,7 +58,7 @@ export class ElectronicPublicationExporter extends MangaExporter {
                     <dc:language>${language}</dc:language>
                     <dc:identifier id="${uuidRefernce}">${uid}</dc:identifier>
                     <meta name="generator" content="HakuNeko"/>
-                    <meta property="dcterms:modified">${new Date().toISOString().split('.').shift()}Z</meta>
+                    <meta property="dcterms:modified">${new Date().toISOString().split('.').at(0)}Z</meta>
                 </metadata>
                 <manifest>
                     <item id="NCX" href="toc.ncx" media-type="application/x-dtbncx+xml"></item>

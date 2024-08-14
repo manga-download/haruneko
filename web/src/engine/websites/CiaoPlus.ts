@@ -36,7 +36,6 @@ type TDimension = {
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
-    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/comics/title/(\\d+)/episode/\\d+$`);
     private readonly apiUrl = 'https://api.ciao.shogakukan.co.jp/';
 
     public constructor() {
@@ -48,11 +47,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url);
+        return new RegExpSafe(`^${this.URI.origin}/comics/title/\\d+/episode/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaid = parseInt(url.match(this.mangaRegexp)[1]);
+        const mangaid = parseInt(url.split('/').at(-3));
         const request = await this.CreateRequest(`/title/list?platform=3&title_id_list=${mangaid}`);
         const { title_list: [manga] } = await FetchJSON<APIMangas>(request);
         return new Manga(this, provider, manga.title_id.toString(), manga.title_name.trim());

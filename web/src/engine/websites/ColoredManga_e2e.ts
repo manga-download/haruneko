@@ -9,7 +9,7 @@ const configChapters = {
     container: {
         url: 'https://coloredmanga.net/manga/BvguMqKouwqnxtcAASsYG7mbE3bfLq',
         id: 'BvguMqKouwqnxtcAASsYG7mbE3bfLq',
-        title: 'The Beginning After the End (Colour)'
+        title: 'The Beginning After the End (Coloured)'
     },
     child: {
         id: 'oVQ96zDSgqnRQxPhXYUr2MX33GnCg5',
