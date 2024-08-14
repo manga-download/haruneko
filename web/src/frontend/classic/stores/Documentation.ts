@@ -47,7 +47,7 @@ export const documentation = readable<DocCategory[]>([], (set) => {
                     image.setAttribute('src', baseUrl + src);
                 }
             });
-            //TODO replace DOM parsing with markdown analysis (would require a markdown parser)
+            // TODO replace DOM parsing with markdown analysis (would require a markdown parser)
             const h2Elements = main.querySelectorAll('h2');
             h2Elements.forEach((h2) => {
                 const sections: DocSection[] = [];

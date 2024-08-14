@@ -4,29 +4,24 @@
     import DocumentDownload from 'carbon-icons-svelte/lib/DocumentDownload.svelte';
 
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
-    import { DownloadTasks } from '../stores/Stores';
     import DownloadManagerTask from './DownloadManagerTask.svelte';
 
     let taskerror: DownloadTask;
+    let downloadTasks: DownloadTask[] = HakuNeko.DownloadManager.Queue.Value;
 
-    $: groupedJobs = groupBy(
-        $DownloadTasks,
-        (elt) => elt.Media.Parent.Identifier
+    HakuNeko.DownloadManager.Queue.Subscribe((tasks) => {
+        downloadTasks = tasks;
+    });
+
+    $: groupedJobs = Object.groupBy(
+        downloadTasks,
+        (elt) => elt.Media.Parent.Identifier,
     );
+
     function update() {
         groupedJobs = groupedJobs;
     }
-    function groupBy<T>(
-        arr: T[],
-        keysSupplier: (item: T) => any
-    ): Record<string, T[]> {
-        return arr.reduce<Record<string, T[]>>((prev, curr) => {
-            const groupKey = keysSupplier(curr);
-            const group = prev[groupKey] || [];
-            group.push(curr);
-            return { ...prev, [groupKey]: group };
-        }, {});
-    }
+
     function copyErrorToClipBoard(task: DownloadTask) {
         let message = `${task.Media.Title}\r\n`;
         message += task.Errors.map((error) => {
@@ -49,16 +44,18 @@
     }}
 >
     <div id="tasks">
-        {#if $DownloadTasks.length > 0}
+        {#if downloadTasks.length > 0}
             {#each Object.entries(groupedJobs) as [media, mediajobs] (media)}
                 {@const completed = mediajobs.filter(
-                    (job) => job.Status === Status.Completed
+                    (job) => job.Status.Value === Status.Completed,
                 ).length}
                 {@const failed = mediajobs.filter(
-                    (job) => job.Status === Status.Failed
+                    (job) => job.Status.Value === Status.Failed,
                 ).length}
                 {@const processing = mediajobs.filter((job) =>
-                    [Status.Downloading, Status.Processing].includes(job.Status)
+                    [Status.Downloading, Status.Processing].includes(
+                        job.Status.Value,
+                    ),
                 ).length}
                 <ExpandableTile tileCollapsedLabel="Details">
                     <div slot="above">

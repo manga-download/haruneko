@@ -130,7 +130,7 @@ export default class extends FetchProvider {
                             await destroy();
                             resolve(result);
                     }
-                } catch(error) {
+                } catch {
                     await destroy();
                 }
             });

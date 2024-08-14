@@ -9,7 +9,7 @@ const config = {
     container: {
         url: 'https://www.delitoon.com/detail/daf_4100032',
         id: 'daf_4100032',
-        title: 'À mon premier amour'
+        title: `Moriarty's Perfect Crime`
     },
     child: {
         id: '1',
@@ -17,7 +17,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 47_192,
+        size: 96_500,
         type: 'image/webp'
     }
 };

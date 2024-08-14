@@ -1,5 +1,5 @@
 import { vi, describe, it, expect } from 'vitest';
-import { Observable, ObservableArray } from './Observable';
+import { Observable, ObservableArray, ObservableMap } from './Observable';
 
 describe('Observable', () => {
 
@@ -146,6 +146,69 @@ describe('ObservableArray', () => {
 
         expect(actual).toBe(testee.Value);
         expect(testee.Value).toStrictEqual([ 1, 2, 3, 4, 5 ]);
+        expect(callback).toHaveBeenCalledWith(testee.Value, undefined);
+        expect(callback).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe('ObservableMap', () => {
+
+    it('Should extend Observable', () => {
+        const testee = new ObservableMap<string, number>(new Map());
+        expect(testee).toBeInstanceOf(Observable);
+    });
+
+    it('Should determine the size of map', () => {
+        const testee = new ObservableMap<string, number>(new Map([
+            [ 'x', 7 ],
+            [ 'y', 11 ],
+            [ 'z', 13 ],
+        ]));
+        expect(testee.Size).toBe(3);
+    });
+
+    it('Should determine the existance of an element in the map', () => {
+        const testee = new ObservableMap<string, number>(new Map([ [ 'x', 7 ] ]));
+        expect(testee.Has('x')).toBe(true);
+    });
+
+    it('Should get an element in the map', () => {
+        const testee = new ObservableMap<string, number>(new Map([ [ 'x', 7 ] ]));
+        expect(testee.Get('x')).toBe(7);
+    });
+
+    it('Should notify each subscriber when an element is inserted', () => {
+        const callback = vi.fn();
+        const testee = new ObservableMap<string, number>(new Map());
+
+        testee.Subscribe(callback);
+        testee.Set('x', 13);
+
+        expect(testee.Value.get('x')).toBe(13);
+        expect(callback).toHaveBeenCalledWith(testee.Value, undefined);
+        expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should notify each subscriber when an element is updated', () => {
+        const callback = vi.fn();
+        const testee = new ObservableMap<string, number>(new Map([ [ 'x', 7 ] ]));
+
+        testee.Subscribe(callback);
+        testee.Set('x', 13);
+
+        expect(testee.Value.get('x')).toBe(13);
+        expect(callback).toHaveBeenCalledWith(testee.Value, undefined);
+        expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should notify each subscriber when an element is removed', () => {
+        const callback = vi.fn();
+        const testee = new ObservableMap<string, number>(new Map([ [ 'x', 7 ] ]));
+
+        testee.Subscribe(callback);
+        testee.Delete('x');
+
+        expect(testee.Size).toBe(0);
         expect(callback).toHaveBeenCalledWith(testee.Value, undefined);
         expect(callback).toHaveBeenCalledTimes(1);
     });

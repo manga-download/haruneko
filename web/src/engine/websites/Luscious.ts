@@ -49,14 +49,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/albums/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/albums/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         const id = uri.pathname.match(/_(\d+)\/?$/)[1];
         const request = new Request(url);
-        const name = (await FetchCSS(request, 'main h1.album-heading')).pop().textContent.trim();
+        const name = (await FetchCSS(request, 'main h1.album-heading')).at(-1).textContent.trim();
         return new Manga(this, provider, id, name);
     }
 
