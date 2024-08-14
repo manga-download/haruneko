@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Lami-Manga'
     },
     container: {
-        url: 'https://www.lami-manga.com/manga/player-who-cant-level-up/',
+        url: 'https://mangalami.com/manga/player-who-cant-level-up/',
         id: '/manga/player-who-cant-level-up/',
         title: 'Player Who Can’t Level Up'
     },

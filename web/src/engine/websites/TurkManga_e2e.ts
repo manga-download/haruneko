@@ -7,17 +7,17 @@ const config = {
         title: 'TurkManga'
     },
     container: {
-        url: 'https://turkmanga.com.tr/manga/mercenary-enrollment',
+        url: 'https://turkmanga.net/manga/mercenary-enrollment',
         id: '/manga/mercenary-enrollment',
         title: 'Mercenary Enrollment'
     },
     child: {
-        id: 'bolum-1',
-        title: 'Bölüm 0'
+        id: 'bolum-196',
+        title: 'Bölüm 195'
     },
     entry: {
-        index: 0,
-        size: 646_789,
+        index: 1,
+        size: 1_496_390,
         type: 'image/jpeg'
     }
 };

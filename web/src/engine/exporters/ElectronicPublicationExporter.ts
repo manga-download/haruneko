@@ -58,7 +58,7 @@ export class ElectronicPublicationExporter extends MangaExporter {
                     <dc:language>${language}</dc:language>
                     <dc:identifier id="${uuidRefernce}">${uid}</dc:identifier>
                     <meta name="generator" content="HakuNeko"/>
-                    <meta property="dcterms:modified">${new Date().toISOString().split('.').shift()}Z</meta>
+                    <meta property="dcterms:modified">${new Date().toISOString().split('.').at(0)}Z</meta>
                 </metadata>
                 <manifest>
                     <item id="NCX" href="toc.ncx" media-type="application/x-dtbncx+xml"></item>
@@ -154,6 +154,20 @@ export class ElectronicPublicationExporter extends MangaExporter {
         const navpoint = this.createElementNS(this.lookupNamespaceURI(null), 'navPoint');
         navpoint.setAttribute('id', id);
         navpoint.setAttribute('playOrder', page.toString());
+        //
+        const label = this.createElementNS(this.lookupNamespaceURI(null), 'navLabel');
+        const text = this.createElementNS(this.lookupNamespaceURI(null), 'text');
+        text.textContent = `Page ${ page }`;
+        navpoint.replaceChildren(label);
+        const content = this.createElementNS(this.lookupNamespaceURI(null), 'content');
+        content.setAttribute('src', source);
+
+        label.appendChild(text);
+        navpoint.appendChild(label);
+        navpoint.appendChild(content);
+
+        return navpoint;
+        /*
         navpoint.innerHTML = `
             <navLabel>
                 <text>Page ${page}</text>
@@ -161,6 +175,7 @@ export class ElectronicPublicationExporter extends MangaExporter {
             <content src="${source}"/>
         `;
         return navpoint;
+        */
     }
 
     public async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, targetBaseName: string): Promise<void> {

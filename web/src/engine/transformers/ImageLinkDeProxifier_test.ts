@@ -16,13 +16,16 @@ describe('ImageProxyTransformer', () => {
             expect(testee(uri).href).toBe(url);
         });
 
-        it('Should transform photon proxy', () => {
-            const uri = new URL('https://i0.wp.com/cdn.image.host/picture.png');
-            expect(testee(uri).href).toBe('http://cdn.image.host/picture.png');
-            uri.searchParams.set('ssl', '1');
-            expect(testee(uri).href).toBe('https://cdn.image.host/picture.png');
-            uri.searchParams.set('q', 'token=123&expire=987');
-            expect(testee(uri).href).toBe('https://cdn.image.host/picture.png?token=123&expire=987');
+        it.each([
+            [ 'http://i0.wp.com/cdn.image.host/picture.png', 'http://cdn.image.host/picture.png' ],
+            [ 'http://i0.wp.com/cdn.image.host/picture.png?ssl=0', 'http://cdn.image.host/picture.png' ],
+            [ 'http://i0.wp.com/cdn.image.host/picture.png?ssl=1&q=token%3D123%26expire%3D987', 'https://cdn.image.host/picture.png?token=123&expire=987' ],
+            [ 'https://i0.wp.com/cdn.image.host/picture.png?q=token%3D123%26expire%3D987', 'https://cdn.image.host/picture.png?token=123&expire=987' ],
+            [ 'https://i0.wp.com/cdn.image.host/picture.png?ssl=0', 'http://cdn.image.host/picture.png' ],
+            [ 'https://i0.wp.com/cdn.image.host/picture.png?ssl=1', 'https://cdn.image.host/picture.png' ],
+        ])('Should transform photon proxy', (url, expected) => {
+            const uri = new URL(url);
+            expect(testee(uri).href).toBe(expected);
         });
 
         it('Should transform google proxy', () => {

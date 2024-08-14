@@ -7,7 +7,7 @@ const config = {
         title: 'Manga168'
     },
     container: {
-        url: 'https://manga168.com/manga/overgeared-remake/',
+        url: 'https://manga168.net/manga/overgeared-remake/',
         id: '/manga/overgeared-remake/',
         title: 'Overgeared (Remake)'
     },

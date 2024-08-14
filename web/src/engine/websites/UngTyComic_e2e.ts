@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Ung Ty Comic'
     },
     container: {
-        url: 'https://ungtycomicsvip.com/ba-tong-vuong-phi-lat-xe-chi-nam.html',
+        url: 'https://ungtycomicsvip.net/ba-tong-vuong-phi-lat-xe-chi-nam.html',
         id: '/ba-tong-vuong-phi-lat-xe-chi-nam.html',
         title: 'Bá Tổng Vương Phi Lật Xe Chỉ Nam',
     },

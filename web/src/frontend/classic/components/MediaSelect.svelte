@@ -9,7 +9,10 @@
     } from 'carbon-components-svelte';
 
     import { UpdateNow, CopyLink } from 'carbon-icons-svelte';
-    import type { ComboBoxItem } from 'carbon-components-svelte/src/ComboBox/ComboBox.svelte';
+    import type {
+        ComboBoxItem,
+        ComboBoxItemId,
+    } from 'carbon-components-svelte/src/ComboBox/ComboBox.svelte';
     // Third Party
     import Fuse from 'fuse.js';
     // Svelte
@@ -43,7 +46,6 @@
         minMatchCharLength: 1,
         fieldNormWeight: 0,
     });
-    $selectedPlugin = HakuNeko.BookmarkPlugin;
     let currentPlugin: MediaContainer<MediaContainer<MediaChild>>;
     let loadPlugin: Promise<void>;
     let disablePluginRefresh = false;
@@ -85,14 +87,14 @@
         const previousPlugin = currentPlugin;
         currentPlugin = $selectedPlugin;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
-            loadMedia(currentPlugin);
-        if (disablePluginRefresh) disablePluginRefresh = false;
+            loadMedia($selectedPlugin);
+        disablePluginRefresh = false;
     }
     $: pluginDropdownSelected = currentPlugin?.Identifier;
 
     function loadMedia(media: MediaContainer<MediaContainer<MediaChild>>) {
         if (!media) return;
-        medias = media.Entries ?? [];
+        medias = media.Entries.Value ?? [];
         fuse = new Fuse(medias, {
             keys: ['Title'],
             findAllMatches: true,
@@ -156,10 +158,15 @@
         }
     }
 
-    async function selectPlugin(id: string) {
+    async function selectPlugin(id: ComboBoxItemId) {
         $selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
             (plugin) => plugin.Identifier === id,
         );
+    }
+
+    let pluginDropdownValue: string;
+    async function selectFocus(event: FocusEvent) {
+        pluginDropdownValue = '';
     }
 </script>
 
@@ -190,6 +197,8 @@
         <ComboBox
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
+            bind:value={pluginDropdownValue}
+            on:focus={selectFocus}
             on:clear={() => ($selectedPlugin = undefined)}
             on:select={(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
