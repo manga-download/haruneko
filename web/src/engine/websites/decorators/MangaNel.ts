@@ -41,8 +41,7 @@ function AnchorInfoExtractor(this: MangaScraper, element: HTMLAnchorElement) {
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
     const uri = new URL(url);
-    const request = new Request(uri.href);
-    const element = (await FetchCSS<HTMLElement>(request, query)).shift();
+    const element = (await FetchCSS<HTMLElement>(new Request(uri), query)).at(0);
     return new Manga(this, provider, uri.origin === this.URI.origin ? uri.pathname : uri.href, element.textContent.trim());
 }
 
@@ -58,7 +57,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
-                return new RegExp(source, pattern.flags).test(url);
+                return new RegExpSafe(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query);

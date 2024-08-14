@@ -250,6 +250,12 @@ export enum EngineResourceKey {
     Settings_Global_MediaDirectory_PermissionError = 'Settings_Global_MediaDirectory_PermissionError',
     Settings_Global_WebsiteSubDirectory = 'Settings_Global_WebsiteSubDirectory',
     Settings_Global_WebsiteSubDirectoryInfo = 'Settings_Global_WebsiteSubDirectoryInfo',
+    Settings_Global_MangaExportFormat = 'Settings_Global_MangaExportFormat',
+    Settings_Global_MangaExportFormatInfo = 'Settings_Global_MangaExportFormatInfo',
+    Settings_Global_MangaExportFormat_FolderWithImages = 'Settings_Global_MangaExportFormat_FolderWithImages',
+    Settings_Global_MangaExportFormat_ComicBookArchive = 'Settings_Global_MangaExportFormat_ComicBookArchive',
+    Settings_Global_MangaExportFormat_ElectronicPublication = 'Settings_Global_MangaExportFormat_ElectronicPublication',
+    Settings_Global_MangaExportFormat_PortableDocumentFormat = 'Settings_Global_MangaExportFormat_PortableDocumentFormat',
     Settings_Global_DescramblingFormat = 'Settings_Global_DescramblingFormat',
     Settings_Global_DescramblingFormatInfo = 'Settings_Global_DescramblingFormatInfo',
     Settings_Global_DescramblingQuality = 'Settings_Global_DescramblingQuality',
@@ -292,6 +298,8 @@ export enum EngineResourceKey {
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
+    FetchProvider_Fetch_CloudFlareChallenge = 'FetchProvider_Fetch_CloudFlareChallenge',
+    FetchProvider_Fetch_Forbidden = 'FetchProvider_Fetch_Forbidden',
 
     BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',
 }

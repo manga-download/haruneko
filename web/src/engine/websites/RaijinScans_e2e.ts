@@ -7,7 +7,7 @@ const config = {
         title: 'RaijinScans'
     },
     container: {
-        url: 'https://raijinscans.com/manga/legendary-blacksmiths-vengeance/',
+        url: 'https://raijinscans.fr/manga/legendary-blacksmiths-vengeance/',
         id: JSON.stringify({post: '13549', slug: '/manga/legendary-blacksmiths-vengeance/' }),
         title: 'Legendary Blacksmith’s Vengeance'
     },

@@ -5,9 +5,9 @@ import { exec, spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
 
 export const AppURL = 'http://localhost:5000/';
-const viteExe = path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
-const tempDir = path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32));
-const userDir = path.resolve(tempDir, 'user-data');
+const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite'));
+const tempDir = path.normalize(path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32)));
+const userDir = path.normalize(path.resolve(tempDir, 'user-data'));
 
 let server: ReturnType<typeof spawn>;
 let browser: puppeteer.Browser;
@@ -30,17 +30,26 @@ async function CloseSplashScreen(target: puppeteer.Target) {
 
 async function DetectNW(): Promise<string> {
     const executables = [
-        path.resolve('node_modules', 'nw', 'nwjs', 'nw'),
-        path.resolve('node_modules', 'nw', 'nwjs', 'nw.exe'),
-        path.resolve('node_modules', 'nw', 'nwjs', 'nwjs.app', 'Contents', 'MacOS', 'nwjs'),
-        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw'),
-        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nw.exe'),
-        path.resolve('app', 'nw', 'node_modules', 'nw', 'nwjs', 'nwjs.app', 'Contents', 'MacOS', 'nwjs'),
+        'nw',
+        'nw.exe',
+        path.join('nwjs.app', 'Contents', 'MacOS', 'nwjs'),
     ];
+    const rootModule = path.normalize(path.resolve('node_modules', 'nw'));
+    const appModule = path.normalize(path.resolve('app', 'nw', 'node_modules', 'nw'));
 
-    for(const nw of executables) {
+    let search: string[] = [];
+    try {
+        const folder = (await fs.readdir(rootModule)).filter(entry => entry.startsWith('nwjs-')).at(0) ?? 'nwjs';
+        search = executables.map(segment => path.resolve(rootModule, folder, segment));
+    } catch {}
+    try {
+        const folder = (await fs.readdir(appModule)).filter(entry => entry.startsWith('nwjs-')).at(0) ?? 'nwjs';
+        search = executables.map(segment => path.resolve(appModule, folder, segment));
+    } catch {}
+
+    for(const nw of search) {
         try {
-            if((await fs.stat(nw)).isFile()) {
+            if((await fs.stat(path.normalize(nw))).isFile()) {
                 console.log(new Date().toISOString(), '=>', 'Detected NW:', nw);
                 return nw;
             }

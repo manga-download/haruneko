@@ -22,7 +22,7 @@ async function UpdateCookieHeader(url: string, headers: Headers) {
     const cookies = value ? value.split(';').map(cookie => cookie.trim()) : [];
     const browserCookies = await chrome.cookies.getAll({ url });
     for(const browserCookie of browserCookies) {
-        if(!cookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
+        if(cookies.none(cookie => cookie.startsWith(browserCookie.name + '='))) {
             cookies.push(`${browserCookie.name}=${browserCookie.value}`);
         }
     }
@@ -136,7 +136,9 @@ export default class extends FetchProvider {
     public async Fetch(request: Request): Promise<Response> {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         await UpdateCookieHeader(request.url, request.headers);
-        return fetch(request);
+        const response = await fetch(request);
+        await super.ValidateResponse(response);
+        return response;
     }
 
     public async FetchWindow(request: Request, timeout: number, preload: ScriptInjection<void> = () => undefined): Promise<NWJS_Helpers.win> {
@@ -180,8 +182,8 @@ export default class extends FetchProvider {
                 win.removeAllListeners('navigation');
                 win.removeAllListeners('loaded');
                 win.removeAllListeners();
-                if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
-                    console.warn('FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
+                if(invocations.none(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
+                    console.warn('FetchWindow() was terminated without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
                 } else if(this.featureFlags.VerboseFetchWindow.Value) {
                     console.log('FetchWindow()::invocations', invocations);
                 }

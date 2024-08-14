@@ -12,7 +12,6 @@
         Pagination,
     } from 'carbon-components-svelte';
     import {
-        CertificateCheck,
         Settings,
         Star,
         StarFilled,
@@ -40,7 +39,7 @@
             name: item.Title,
             website: new URL(item.URI),
             image: item.Icon,
-            tags: item.Tags,
+            tags: item.Tags.Value,
             overflow: item,
             favorite: item,
         };
@@ -54,7 +53,6 @@
         pageSizes: [5, 10, 20],
     };
 
-    let isSettingOpen = false;
     let pluginToConfigure: MediaContainer<MediaChild>;
 
     const langTags = Tags.Language.toArray();
@@ -74,7 +72,7 @@
     }
 
     let filterFavorites = false;
-    let filteredPluginlist = [];
+    let filteredPluginlist: ReturnType<typeof createDataRow>[] = [];
     $: {
         filteredPluginlist = HakuNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
@@ -86,9 +84,9 @@
                     ) === -1
                 )
                     rejectconditions.push(true);
-                if (plugin.Tags) {
+                if (plugin.Tags.Value) {
                     pluginTagsFilter.forEach((tagfilter) => {
-                        if (!plugin.Tags.includes(tagfilter))
+                        if (!plugin.Tags.Value.includes(tagfilter))
                             rejectconditions.push(true);
                     });
                 }
@@ -234,7 +232,6 @@
                             iconDescription="Connector's settings"
                             on:click={(e) => {
                                 pluginToConfigure = cell.value;
-                                isSettingOpen = true;
                                 e.stopPropagation();
                             }}
                         />
@@ -267,12 +264,10 @@
         id="pluginSettingsModal"
         size="lg"
         hasScrollingContent
-        bind:open={isSettingOpen}
+        open
         passiveModal
         modalHeading="Settings"
-        on:click:button--secondary={() => (isSettingOpen = false)}
-        on:open
-        on:close
+        on:close={() => (pluginToConfigure = undefined)}
         hasForm
     >
         <SettingsViewer settings={[...pluginToConfigure.Settings]} />

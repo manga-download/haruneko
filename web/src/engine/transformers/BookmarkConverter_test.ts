@@ -8,6 +8,56 @@ import { LocaleID } from '../../i18n/ILocale';
 import { Key } from '../SettingsGlobal';
 import { GetLocale } from '../../i18n/Localization';
 
+const legacyWebsiteIdentifierMapTestCases = [
+    { sourceID: '9anime', targetID: 'aniwave' },
+    { sourceID: 'aresnov', targetID: 'scarmanga' },
+    { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
+    { sourceID: 'azoramanga', targetID: 'azoraworld' },
+    { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
+    { sourceID: 'bananascan', targetID: 'harmonyscan' },
+    { sourceID: 'blogtruyen', targetID: 'blogtruyenmoi' },
+    { sourceID: 'cocomanhua', targetID: 'colamanga' },
+    { sourceID: 'comicbushi', targetID: 'comicgrowl' },
+    { sourceID: 'comicwalker', targetID: 'kadocomi' },
+    { sourceID: 'dalsei', targetID: 'viyafansub' },
+    { sourceID: 'evascans', targetID: 'manwe' },
+    { sourceID: 'firescans', targetID: 'firecomics' },
+    { sourceID: 'firstkiss', targetID: 'likemanga' },
+    { sourceID: 'flamescans-org', targetID: 'flamecomics' },
+    { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
+    { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
+    { sourceID: 'imperioscans', targetID: 'neroxus' },
+    { sourceID: 'instamanhwa', targetID: 'xmanhwa' },
+    { sourceID: 'kisscomic', targetID: 'readcomiconline' },
+    { sourceID: 'komikav', targetID: 'apkomik' },
+    { sourceID: 'kumascans', targetID: 'retsu' },
+    { sourceID: 'lyrascans', targetID: 'quantumscans' },
+    { sourceID: 'mangamx', targetID: 'mangaoni' },
+    { sourceID: 'manganel', targetID: 'manganato' },
+    { sourceID: 'mangaproz', targetID: 'mangapro' },
+    { sourceID: 'mangaraw', targetID: 'mangageko' },
+    { sourceID: 'manhuaes', targetID: 'manhuaaz' },
+    { sourceID: 'manhuascan', targetID: 'kaliscan' },
+    { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
+    { sourceID: 'nitroscans', targetID: 'nitromanga' },
+    { sourceID: 'nonbiri', targetID: 'comic21' },
+    { sourceID: 'oxapk', targetID: 'manjanoon' },
+    { sourceID: 'ozulscans', targetID: 'kingofmanga' },
+    { sourceID: 'prismascans', targetID: 'demonsect' },
+    { sourceID: 'realmscans', targetID: 'rizzcomics' },
+    { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
+    { sourceID: 'rightdarkscan', targetID: 'darkscan' },
+    { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
+    { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
+    { sourceID: 'secretscans', targetID: 'lynxscans' },
+    { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
+    { sourceID: 'siyahmelek', targetID: 'grimelek' },
+    { sourceID: 'suryatoon', targetID: 'genztoon' },
+    { sourceID: 'sushiscanfr', targetID: 'animesama' },
+    { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
+    { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
+];
+
 // Mocking globals
 {
     const mockChoice = mock<Choice>({ Value: LocaleID.Locale_enUS });
@@ -59,64 +109,11 @@ describe('BookmarkConverter', () => {
             expect(actual).toStrictEqual(expected);
         });
 
-        it.each<{ sourceID: string, targetID: string }>([
-            { sourceID: '9anime', targetID: 'aniwave' },
-            { sourceID: 'aresnov', targetID: 'scarmanga' },
-            { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
-            { sourceID: 'azoramanga', targetID: 'azoraworld' },
-            { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
-            { sourceID: 'bananascan', targetID: 'harmonyscan' },
-            { sourceID: 'blogtruyen', targetID: 'blogtruyenmoi' },
-            { sourceID: 'cocomanhua', targetID: 'colamanga' },
-            { sourceID: 'comicbushi', targetID: 'comicgrowl' },
-            { sourceID: 'comicwalker', targetID: 'kadocomi' },
-            { sourceID: 'crazyscans', targetID: 'mangacultivator' },
-            { sourceID: 'dalsei', targetID: 'viyafansub' },
-            { sourceID: 'evascans', targetID: 'manwe' },
-            { sourceID: 'firstkiss', targetID: 'likemanga' },
-            { sourceID: 'flamescans-org', targetID: 'flamecomics' },
-            { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
-            { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
-            { sourceID: 'heavenmanga', targetID: 'beetoon' }, // (future zbulu PR)
-            { sourceID: 'heavenmanga2', targetID: 'heavenmanga' }, // (future zbulu PR)
-            { sourceID: 'kisscomic', targetID: 'readcomiconline' },
-            { sourceID: 'komikav', targetID: 'apkomik' },
-            { sourceID: 'kumascans', targetID: 'retsu' },
-            { sourceID: 'imperioscans', targetID: 'neroxus' },
-            { sourceID: 'lovehug', targetID: 'welovemanga' },
-            { sourceID: 'lyrascans', targetID: 'quantumscans' },
-            { sourceID: 'mangamx', targetID: 'mangaoni' },
-            { sourceID: 'manganel', targetID: 'manganato' },
-            { sourceID: 'manganelos', targetID: 'mangapure' },
-            { sourceID: 'mangaproz', targetID: 'mangapro' },
-            { sourceID: 'mangaraw', targetID: 'mangageko' },
-            { sourceID: 'manhuaes', targetID: 'manhuaaz' },
-            { sourceID: 'manhuascan', targetID: 'kaliscan' },
-            { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
-            { sourceID: 'muctau', targetID: 'bibimanga' },
-            { sourceID: 'nitroscans', targetID: 'nitromanga' },
-            { sourceID: 'nonbiri', targetID: 'comic21' },
-            { sourceID: 'oxapk', targetID: 'manjanoon' },
-            { sourceID: 'ozulscans', targetID: 'kingofmanga' },
-            { sourceID: 'prismascans', targetID: 'demonsect' },
-            { sourceID: 'randomscan', targetID: 'luratoon' },
-            { sourceID: 'realmscans', targetID: 'rizzcomics' },
-            { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
-            { sourceID: 'rightdarkscan', targetID: 'darkscan' },
-            { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
-            { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
-            { sourceID: 'secretscans', targetID: 'lynxscans' },
-            { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
-            { sourceID: 'siyahmelek', targetID: 'grimelek' },
-            { sourceID: 'smangavfws', targetID: 'smangavf' },
-            { sourceID: 'sushiscanfr', targetID: 'animesama' },
-            { sourceID: 'truemanga', targetID: 'mangamonk' },
-            { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
-            { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
-            { sourceID: 'yugenmangas', targetID: 'yugenmangas-es' },
+        it('Should have expected number of legacy mappings', async () => {
+            expect(testee.legacyWebsiteIdentifierMap.size).toBe(legacyWebsiteIdentifierMapTestCases.length);
+        });
 
-            // TODO: Add all test cases from BookmarkConverter::legacyWebsiteIdentifierMap ...
-        ])('Should migrate website ID from legacy bookmark', async (data) => {
+        it.each(legacyWebsiteIdentifierMapTestCases)('Should migrate website ID from legacy bookmark', async (data) => {
             const actual = testee.ConvertToSerializedBookmark({
                 key: { connector: data.sourceID, manga: 'manga-key' },
                 title: { connector: 'website-title', manga: 'manga-title' },

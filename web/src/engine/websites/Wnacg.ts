@@ -19,15 +19,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //get first "image" page
         const url = new URL(chapter.Identifier, this.URI);
-        let request = new Request(url.href);
-        const firstlink = (await FetchCSS<HTMLAnchorElement>(request, 'ul li.gallary_item div.pic_box > a:first-of-type')).pop();
-
-        //fetch option values
-        request = new Request(new URL(firstlink.pathname, this.URI).href);
+        const element = (await FetchCSS<HTMLAnchorElement>(new Request(url.href), 'ul li.gallary_item div.pic_box > a:first-of-type')).at(-1);
+        const request = new Request(new URL(element.pathname, this.URI).href);
         const options = await FetchCSS<HTMLOptionElement>(request, 'div.newpage select.pageselect option');
         return options.map(option => new Page(this, chapter, new URL(`/photos-view-id-${option.value}.html`, this.URI)));
-
     }
 }

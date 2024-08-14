@@ -1,33 +1,22 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { TextInput } from 'carbon-components-svelte';
     import type { Directory } from '../../../../engine/SettingsManager';
     import { Locale } from '../../stores/Settings';
     import SettingItem from './SettingItem.svelte';
 
     export let setting: Directory;
-    let current: Directory;
-    let value: FileSystemDirectoryHandle;
+    let value: FileSystemDirectoryHandle = setting.Value;
 
-	onMount(() => {
-		return () => {
-			current?.Unsubscribe(OnValueChangedCallback);
-		};
-	});
+    onMount(() => {
+        setting.Subscribe(OnValueChanged);
+    });
+    onDestroy(() => {
+        setting.Unsubscribe(OnValueChanged);
+    });
 
-    $: Update(setting);
-
-    function Update(setting: Directory) {
-        if (current !== setting) {
-            current?.Unsubscribe(OnValueChangedCallback);
-            setting?.Subscribe(OnValueChangedCallback);
-            value = setting.Value;
-            current = setting;
-        }
-    }
-
-    function OnValueChangedCallback(val: FileSystemDirectoryHandle) {
-        value = val;
+    function OnValueChanged(newValue: FileSystemDirectoryHandle) {
+        value = newValue;
     }
 
     async function SelectFolder() {

@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 // TODO: Need novel support
 
-@MangaStream.MangaCSS(/^https?:\/\/kolnovel\.com\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/series/list-mode/')
 @MangaStream.ChaptersSinglePageCSS('div.eplister ul li a', 'div:not(.epl-date)')
 @MangaStream.PagesSinglePageCSS()
@@ -14,7 +14,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kolnovel', 'Kol Novel (ملوك الروايات)', 'https://kolnovel.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic);
+        super('kolnovel', 'Kol Novel (ملوك الروايات)', 'https://kolnovel.online', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Novel, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

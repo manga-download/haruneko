@@ -7,7 +7,7 @@ const config: Config = {
         title: 'MangaSwat'
     },
     container: {
-        url: 'https://normoyun.com/manga/emperor-and-the-female-knight',
+        url: 'https://tatwt.com/manga/emperor-and-the-female-knight',
         id: '/manga/emperor-and-the-female-knight',
         title: 'Emperor And The Female Knight'
     },

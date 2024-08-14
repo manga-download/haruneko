@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('niverafansub', 'Nivera Fansub', 'https://niverafansub.net', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
+        super('niverafansub', 'Nivera Fansub', 'https://niverafansub.org', Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

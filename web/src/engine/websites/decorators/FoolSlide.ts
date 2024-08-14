@@ -34,7 +34,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
-    const data = (await FetchCSS<HTMLElement>(request, query)).shift();
+    const data = (await FetchCSS<HTMLElement>(request, query)).at(0);
     return new Manga(this, provider, new URL(url).pathname, Common.ElementLabelExtractor().call(this, data));
 }
 
@@ -51,7 +51,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
         return class extends ctor {
             public ValidateMangaURL(this: MangaScraper, url: string): boolean {
                 const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
-                return new RegExp(source, pattern.flags).test(url);
+                return new RegExpSafe(source, pattern.flags).test(url);
             }
             public async FetchManga(this: MangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
                 return FetchMangaCSS.call(this, provider, url, query);
@@ -100,8 +100,7 @@ const ChapterInfoExtractor = Common.AnchorInfoExtractor();
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks, extractor = ChapterInfoExtractor): Promise<Chapter[]> {
-    const uri = new URL(manga.Identifier, this.URI);
-    const request = new Request(uri.href, {
+    const request = new Request(new URL(manga.Identifier, this.URI), {
         method: 'POST',
         body: 'adult=true',
         headers: {
@@ -144,8 +143,7 @@ export function ChaptersSinglePageCSS(query: string = queryChapterListLinks, ext
  * only the first regular expression that matches will be used
  */
 export async function FetchPagesSinglePageREGEX(this: MangaScraper, chapter: Chapter, ...matchers: RegExp[]): Promise<Page[]> {
-    const uri = new URL(chapter.Identifier, this.URI);
-    const request = new Request(uri.href, {
+    const request = new Request(new URL(chapter.Identifier, this.URI), {
         method: 'POST',
         body: 'adult=true',
         headers: {

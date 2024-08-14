@@ -60,7 +60,9 @@ export default class extends FetchProvider {
 
     async Fetch(request: Request): Promise<Response> {
         console.log('Platform::Electron::FetchProvider::Fetch()', '=>', request);
-        return fetch(request);
+        const response = await fetch(request);
+        await super.ValidateResponse(response);
+        return response;
     }
 
     public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
@@ -128,7 +130,7 @@ export default class extends FetchProvider {
                             await destroy();
                             resolve(result);
                     }
-                } catch(error) {
+                } catch {
                     await destroy();
                 }
             });

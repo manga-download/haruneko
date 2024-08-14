@@ -17,7 +17,8 @@ export class RemoteProcedureCallContract implements Contract {
                 url: `https://${ cookie.domain.replace(/^\./, '') }${ cookie.path }`,
                 name: cookie.name,
                 value: cookie.value,
-                expirationDate: cookie.expirationDate,
+                // Enforce 1 month expiration to persist cookie after application restart
+                expirationDate: Math.round(Date.now() / 1000 + 2628000), // cookie.expirationDate
                 httpOnly: cookie.httpOnly,
                 secure: cookie.secure,
                 sameSite: cookie.sameSite,
@@ -26,7 +27,7 @@ export class RemoteProcedureCallContract implements Contract {
         }
 
         if(userAgent !== this.webContents.getUserAgent()) {
-            const file = path.resolve(app.getAppPath(), 'package.json');
+            const file = path.normalize(path.resolve(app.getAppPath(), 'package.json'));
             const manifest = JSON.parse(await fs.readFile(file, 'utf-8'));
             manifest['user-agent'] = userAgent;
             await fs.writeFile(file, JSON.stringify(manifest, null, 2), 'utf-8');

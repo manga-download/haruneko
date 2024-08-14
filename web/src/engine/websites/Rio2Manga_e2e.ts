@@ -7,7 +7,7 @@ const config = {
         title: 'Rio2Manga'
     },
     container: {
-        url: 'https://rio2manga.net/manga/occupy-the-monarch/',
+        url: 'https://zinchanmanga.mobi/manga/occupy-the-monarch/',
         id: JSON.stringify({ post: '1428', slug: '/manga/occupy-the-monarch/' }),
         title: 'Occupy the Monarch'
     },

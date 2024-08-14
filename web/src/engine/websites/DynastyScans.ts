@@ -57,7 +57,7 @@ export default class extends DecoratableMangaScraper {
                     }
                 }
             }
-            catch (error) {
+            catch { // TODO: Do not return incomplete list for generic errors
                 run = false;
             }
         }

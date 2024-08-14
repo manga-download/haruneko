@@ -1,33 +1,24 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { PasswordInput } from 'carbon-components-svelte';
     import type { Secret } from '../../../../engine/SettingsManager';
     import { Locale } from '../../stores/Settings';
     import SettingItem from './SettingItem.svelte';
 
     export let setting: Secret;
-    let current: Secret;
-    let value: string;
+    let value: string = setting.Value;
+
+    $: setting.Value = value;
 
     onMount(() => {
-        return () => {
-            current?.Unsubscribe(OnValueChangedCallback);
-        };
+        setting.Subscribe(OnValueChanged);
+    });
+    onDestroy(() => {
+        setting.Unsubscribe(OnValueChanged);
     });
 
-    $: Update(setting);
-
-    function Update(setting: Secret) {
-        if (current !== setting) {
-            current?.Unsubscribe(OnValueChangedCallback);
-            setting?.Subscribe(OnValueChangedCallback);
-            value = setting.Value;
-            current = setting;
-        }
-    }
-
-    function OnValueChangedCallback(val: string) {
-        value = val;
+    function OnValueChanged(newValue: string) {
+        value = newValue;
     }
 </script>
 
@@ -35,9 +26,5 @@
     labelText={$Locale[setting.Label]()}
     helperText={$Locale[setting.Description]()}
 >
-    <PasswordInput
-        hideLabel
-        {value}
-        on:change={(event) => (setting.Value = event.currentTarget['value'])}
-    />
+    <PasswordInput hideLabel bind:value />
 </SettingItem>

@@ -7,7 +7,7 @@ const config = {
         title: 'PojokManga'
     },
     container: {
-        url: 'https://pojokmanga.org/komik/magic-emperor/',
+        url: 'https://pojokmanga.info/komik/magic-emperor/',
         id: JSON.stringify({ post: '2447', slug: '/komik/magic-emperor/' }),
         title: 'Magic Emperor'
     },

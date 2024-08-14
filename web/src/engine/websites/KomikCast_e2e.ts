@@ -7,18 +7,18 @@ const config: Config = {
         title: 'KomikCast'
     },
     container: {
-        url: 'https://komikcast.ch/komik/swordmasters-youngest-son/',
+        url: 'https://komikcast.cz/komik/swordmasters-youngest-son/',
         id: '/komik/swordmasters-youngest-son/',
         title: 'Swordmaster’s Youngest Son'
     },
     child: {
-        id: '/chapter/swordmasters-youngest-son-chapter-01-bahasa-indonesia/',
-        title: 'Chapter 01-fix'
+        id: '/chapter/swordmasters-youngest-son-chapter-116-bahasa-indonesia/',
+        title: 'Chapter 116'
     },
     entry: {
-        index: 0,
-        size: 1_133_808,
-        type: 'image/png'
+        index: 1,
+        size: 342_909,
+        type: 'image/jpeg'
     }
 };
 

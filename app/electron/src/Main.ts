@@ -21,7 +21,7 @@ type Manifest = {
 
 async function LoadManifest(): Promise<Manifest> {
     const file = path.resolve(app.getAppPath(), 'package.json');
-    const content = await fs.readFile(file, { encoding: 'utf-8' });
+    const content = await fs.readFile(path.normalize(file), { encoding: 'utf-8' });
     return JSON.parse(content) as Manifest;
 }
 
@@ -59,8 +59,6 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
         },
     });
 
-    win.removeMenu();
-    win.setMenu(null);
     win.setMenuBarVisibility(false);
     win.on('closed', () => app.quit());
 

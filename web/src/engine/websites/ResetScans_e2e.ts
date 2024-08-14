@@ -7,7 +7,7 @@ const config = {
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://reset-scans.xyz/manga/the-ultimate-of-all-ages/',
+        url: 'https://resetscan.com/manga/the-ultimate-of-all-ages/',
         id: JSON.stringify({ post: '2313', slug: '/manga/the-ultimate-of-all-ages/' }),
         title: 'The Ultimate of All Ages'
     },
