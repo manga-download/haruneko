@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Kiryuu'
     },
     container: {
-        url: 'https://kiryuu.id/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
+        url: 'https://kiryuu.org/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
         id: '/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
         title: 'The Modern Era’s Strongest Soldier Conquers Another World’s Dungeon'
     },

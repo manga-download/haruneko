@@ -91,7 +91,7 @@ export function MangasSinglePageCSS(query = queryMangas, path = pathname, extrac
 
 export function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement): string {
     try {
-        const src = image.dataset['src'].split('://').pop();
+        const src = image.dataset['src'].split('://').at(-1);
         return decodeURIComponent(window.atob(src || undefined));
     } catch { // TODO: Do not return url for generic errors
         const src = (image.dataset['src'] || image.src).trim();

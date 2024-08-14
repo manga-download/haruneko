@@ -7,7 +7,7 @@ function ChapterInfoExtractor(element: HTMLAnchorElement) {
     element.querySelectorAll('i').forEach(bloat => bloat.parentElement?.removeChild(bloat));
     return {
         id: element.pathname,
-        title: element.innerText.split('-').shift().trim(),
+        title: element.innerText.split('-').at(0).trim(),
     };
 }
 

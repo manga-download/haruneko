@@ -71,11 +71,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/title/\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/title/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').pop();
+        const id = new URL(url).pathname.split('/').at(-1);
         const request = new Request(`${this.apiURL}/title/detail?titleId=${id}`);
         const { data } = await FetchJSON<APIResult<APIManga>>(request);
         return new Manga(this, provider, data.titleId.toString(), data.titleName);
@@ -177,7 +177,7 @@ export default class extends DecoratableMangaScraper {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
         if (page.Link.href.includes('/end_page/')) return data; //https://cycomi.com/title/191 got unencrypted end page
         const encrypted = await new Response(data).arrayBuffer();
-        const passphrase = page.Link.pathname.split('/').filter(part => /^[0-9a-zA-Z]{32}$/.test(part)).shift() as string;
+        const passphrase = page.Link.pathname.split('/').filter(part => /^[0-9a-zA-Z]{32}$/.test(part)).at(0) as string;
         const decrypted = Decrypt(new Uint8Array(encrypted), passphrase);
         return new Blob([decrypted], { type: data.type });
     }

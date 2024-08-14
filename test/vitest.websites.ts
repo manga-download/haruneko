@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     test: {
@@ -8,6 +7,6 @@ export default defineConfig({
         globalSetup: './test/PuppeteerGlobal.ts',
         dir: './web/src/engine/websites',
         include: [ '**/*[_.]e2e.[jt]s' ],
-        reporters: process.env.GITHUB_ACTIONS ? ['basic', 'github-actions'] : [ 'default', 'hanging-process' ],
+        reporters: process.env.GITHUB_ACTIONS ? [ 'basic', 'github-actions' ] : [ 'default', 'hanging-process' ],
     },
 });

@@ -7,7 +7,7 @@ const config = {
         title: 'Zhuzhumh'
     },
     container: {
-        url: 'https://www.zhuzhumh.com/book/shisiruguiweijunzi.html',
+        url: 'https://cn.zhuzhumh.com/book/shisiruguiweijunzi.html',
         id: '/book/shisiruguiweijunzi.html',
         title: '视死如归魏君子'
     },

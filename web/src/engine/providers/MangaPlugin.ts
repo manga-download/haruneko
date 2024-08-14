@@ -8,6 +8,7 @@ import icon from '../../img/manga.webp';
 import { Exception, NotImplementedError } from '../Error';
 import { CreateChapterExportRegistry } from '../exporters/MangaExporterRegistry';
 import { Observable } from '../Observable';
+import type { Tag } from '../Tags';
 
 const settingsKeyPrefix = 'plugin.';
 
@@ -70,12 +71,12 @@ export class MangaPlugin extends MediaContainer<Manga> {
     public constructor(private readonly storageController: StorageController, private readonly settingsManager: SettingsManager, private readonly scraper: MangaScraper) {
         super(scraper.Identifier, scraper.Title);
         this._settings = this.settingsManager.OpenScope(settingsKeyPrefix + this.Identifier);
+        this.tags.Value = this.scraper.Tags;
         this.Prepare();
     }
 
     private async Prepare() {
-        this.tags.Value = this.scraper.Tags;
-        this._settings.Initialize(...this.scraper.Settings);
+        await this._settings.Initialize(...this.scraper.Settings);
         const mangas = await this.storageController.LoadPersistent<{ id: string, title: string }[]>(Store.MediaLists, this.Identifier) || [];
         this.entries.Value = mangas.map(manga => this.CreateEntry(manga.id, manga.title));
     }
@@ -121,8 +122,9 @@ export class MangaPlugin extends MediaContainer<Manga> {
 
 export class Manga extends MediaContainer<Chapter> {
 
-    constructor(private readonly scraper: MangaScraper, parent: MangaPlugin, identifier: string, title: string) {
+    constructor(private readonly scraper: MangaScraper, parent: MangaPlugin, identifier: string, title: string, ...tags: Tag[]) {
         super(identifier, title, parent);
+        this.tags.Value = tags;
     }
 
     public override get Icon() {
@@ -142,8 +144,9 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
     private readonly isStored = new Observable<boolean, Chapter>(false);
 
-    constructor(private readonly scraper: MangaScraper, parent: Manga, identifier: string, title: string) {
+    constructor(private readonly scraper: MangaScraper, parent: Manga, identifier: string, title: string, ...tags: Tag[]) {
         super(identifier, title, parent);
+        this.tags.Value = tags;
     }
 
     protected PerformUpdate(): Promise<Page[]> {

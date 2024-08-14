@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/manhwaindo\.id\/series\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/series\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS(undefined, '/series/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manhwaindo', 'ManhwaIndo', 'https://manhwaindo.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
+        super('manhwaindo', 'ManhwaIndo', 'https://manhwaindo.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
     }
 
     public override get Icon() {
