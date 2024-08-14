@@ -93,26 +93,25 @@ export function ImageAjax() {
 
 async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
 
-    return this.imageTaskPool.Add(async () => {
-        const blob = await GetImage(page, signal);
-        if (blob.type.startsWith('image/')) return blob;
+    const blob = await FetchBlob(page, priority, signal);
+    if (blob.type.startsWith('image/')) return blob;
 
-        const alternativeUrls: string[] = (page.Parameters.alternativeUrls as string).split(',');
-        for (const alternativeUrl of alternativeUrls) {
-            page.Link.href = alternativeUrl;
-            const blob = await GetImage(page, signal);
-            if (blob.type.startsWith('image/')) return blob;
-        }
-    }, priority, signal);
+    const alternativeUrls: string[] = (page.Parameters.alternativeUrls as string).split(',');
+    for (const alternativeUrl of alternativeUrls) {
+        page.Link.href = alternativeUrl;
+        const blob = await FetchBlob(page, priority, signal);
+        if (blob.type.startsWith('image/')) return blob;
+    }
 }
 
-async function GetImage(page: Page, signal: AbortSignal): Promise<Blob> {
-    const request = new Request(page.Link, {
-        signal: signal,
-        headers: {
-            Referer: page.Parameters?.Referer ?? page.Link.origin,
-        }
-    });
-    const response = await Fetch(request);
-    return await Common.GetTypedData(await response.arrayBuffer());
+async function FetchBlob(page : Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    return this.imageTaskPool.Add(async () => {
+        const response = await Fetch(new Request(page.Link, {
+            signal,
+            headers: {
+                Referer: page.Parameters?.Referer ?? page.Link.origin,
+            }
+        }));
+        return await Common.GetTypedData(await response.arrayBuffer());
+    }, priority, signal);
 }
