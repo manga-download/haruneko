@@ -37,7 +37,7 @@ function LoginScript(username: string, password: string): string {
 }
 
 const ChapterAccessScript = `
-    new Promise ( resolve => resolve(!window.__LZ_DATA__ ? -1 : __LZ_DATA__.purchased.includes(__LZ_DATA__.episode.id) ? 1: 0))
+    new Promise ( resolve => resolve(!window.__LZ_DATA__ ? -1 : __LZ_DATA__.purchased?.includes(__LZ_DATA__.episode.id) ? 1: 0))
 `;
 
 enum ChapterAccess { MUST_LOGIN = -1, NOT_PURCHASED = 0, PURCHASED = 1}
@@ -65,7 +65,7 @@ type APIKeyPair = {
     data: {
         Policy: string
         Signature: string
-        "Key-Pair-Id": string
+        'Key-Pair-Id': string
         expiredAt: number
         now: number
     }
@@ -85,7 +85,11 @@ type APIPages = {
         id: string
         extra: {
             subscribed: boolean
-            comic: { metadata: { imageShuffle: boolean } }
+            comic: {
+                metadata: {
+                    imageShuffle: boolean
+                }
+            }
             episode: {
                 scrollsInfo?: Array<{ path: string }>
                 pagesInfo?: Array<{ path: string }>
@@ -112,16 +116,16 @@ type TDimensions = {
 @Common.ChaptersSinglePageCSS('ul[class*=style_episodeListContents__list] li a', ChapterExtractor)
 export default class extends DecoratableMangaScraper {
     private readonly locale: string;
-    private readonly apiURI = 'https://www.lezhinus.com/lz-api/v2/';
+    private readonly apiUrl = 'https://www.lezhinus.com/lz-api/v2/';
     private cdnURI: string;
     private token?: string;
-    private suffix: string;
+    private languagePath: string;
 
-    public constructor(identifier: string, name: string, url: string, locale: string, suffix: string, tags: Tag[]) {
+    public constructor(identifier: string, name: string, url: string, locale: string, languagePath: string, tags: Tag[]) {
         super(identifier, name, url, ...tags);
         this.locale = locale;
         this.token = undefined;
-        this.suffix = suffix;
+        this.languagePath = languagePath;
 
         this.Settings.username = new Text('username', W.Plugin_Lezhin_Settings_Username, W.Plugin_Lezhin_Settings_UsernameInfo, '');
         this.Settings.password = new Secret('password', W.Plugin_Lezhin_Settings_Password, W.Plugin_Lezhin_Settings_PasswordInfo, '');
@@ -139,7 +143,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/${this.suffix}/comic/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/${this.languagePath}/comic/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -159,7 +163,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<MangasList> {
         const mangasPerPage: number = 500;
-        const uri = new URL('contents', this.apiURI);
+        const uri = new URL('contents', this.apiUrl);
         const params = new URLSearchParams({
             menu: 'general',
             limit: mangasPerPage.toString(),
@@ -173,7 +177,7 @@ export default class extends DecoratableMangaScraper {
         });
 
         const { data, hasNext } = await FetchJSON<APIMangasList>(request);
-        const mangas = data.map(manga => new Manga(this, provider, new URL(`/${this.suffix}/comic/${manga.alias}`, this.URI).pathname, manga.title.trim()));
+        const mangas = data.map(manga => new Manga(this, provider, new URL(`/${this.languagePath}/comic/${manga.alias}`, this.URI).pathname, manga.title.trim()));
         return { mangas, hasNext };
     }
 
@@ -188,7 +192,7 @@ export default class extends DecoratableMangaScraper {
             throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
         }
 
-        const uri = new URL('inventory_groups/comic_viewer', this.apiURI);
+        const uri = new URL('inventory_groups/comic_viewer', this.apiUrl);
         const params = new URLSearchParams({
             platform: 'web',
             store: 'web',
@@ -210,8 +214,6 @@ export default class extends DecoratableMangaScraper {
         };
 
         const extension = this.Settings.forceJPEG.Value ? '.jpg' : '.webp';
-        //const extension = '.jpg';
-
         const pages = content.data.extra.episode.pagesInfo ?? content.data.extra.episode.scrollsInfo;
         return pages.map(page => new Page(this, chapter, new URL('/v2' + page.path + extension, this.cdnURI), parameters));
     }
@@ -220,7 +222,7 @@ export default class extends DecoratableMangaScraper {
         const parameters = page.Parameters as EpisodeParameters;
         const purchasedParam = (parameters.subscribed || parameters.purchased).toString();
 
-        const tokenURI = new URL('cloudfront/signed-url/generate', this.apiURI);
+        const tokenURI = new URL('cloudfront/signed-url/generate', this.apiUrl);
         const tokenParams = new URLSearchParams({
             contentId: parameters.comicID.toString(),
             episodeId: parameters.episodeID.toString(),
@@ -278,7 +280,7 @@ export default class extends DecoratableMangaScraper {
 
     private async InitializeAccount() {
 
-        //refresh token, whatever happend
+        //refresh token, in any case
         this.token = (await this.GetLzConfig()).token;
 
         //if token is defined , or we miss credential infos there is nothing to do.
@@ -286,15 +288,15 @@ export default class extends DecoratableMangaScraper {
             return;
         }
         const username = this.Settings.username.Value as string;
-        const password = (this.Settings.password.Value as string).replace("'", "\\'");//Escape password because its injected between single quotes
+        const password = (this.Settings.password.Value as string).replaceAll("'", "\\'");//Escape password because its injected between single quotes
 
         //attempt login (that works)
-        await FetchWindowScript(new Request(new URL(`/${this.suffix}/login`, this.URI)), LoginScript(username, password), 1500 );
+        await FetchWindowScript(new Request(new URL(`/${this.languagePath}/login`, this.URI)), LoginScript(username, password), 1500 );
 
         this.token = (await this.GetLzConfig()).token;
 
         //force Language
-        await Fetch(this.CreateRequest(new URL(`/${this.suffix}/locale/${this.locale}`, this.URI)));
+        await Fetch(this.CreateRequest(new URL(`/${this.languagePath}/locale/${this.locale}`, this.URI)));
 
     }
 
@@ -349,14 +351,14 @@ class LezhinRandomizer {
         this.seed = episodeId;
         this.state = BigInt(this.seed);
         const numPieces = numColAndRows * numColAndRows;
-        const o = Array.from({ length: numPieces }, function (_, length) { return length; });
-        for (let a = 0; a < o.length;a++) {
+        const order = Array.from({ length: numPieces }, function (_, length) { return length; });
+        for (let a = 0; a < order.length;a++) {
             const s = this.Random(numPieces);
-            const u = o[a];
-            o[a] = o[s];
-            o[s] = u;
+            const u = order[a];
+            order[a] = order[s];
+            order[s] = u;
         }
-        this.order = o;
+        this.order = order;
     }
 }
 
