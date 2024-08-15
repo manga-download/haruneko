@@ -32,5 +32,8 @@
         "test": "npm run test --workspaces",
         "test:e2e": "npm run build --workspaces && vitest run --config=test/vitest.e2e.js",
         "test:websites": "npm run build --workspaces && vitest run --config=test/vitest.websites.js"
+    },
+    "dependencies": {
+        "exifreader": "^4.23.3"
     }
 }
