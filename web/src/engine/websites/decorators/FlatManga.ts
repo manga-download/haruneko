@@ -1,4 +1,4 @@
-import { AddAntiScrapingDetection, FetchRedirection } from "../../platform/AntiScrapingDetection";
+﻿import { AddAntiScrapingDetection, FetchRedirection } from "../../platform/AntiScrapingDetection";
 import { FetchCSS, FetchHTML, FetchWindowScript } from "../../platform/FetchProvider";
 import { Chapter, type Manga, type MangaScraper} from "../../providers/MangaPlugin";
 import { Page } from "../../providers/MangaPlugin";
@@ -15,18 +15,16 @@ AddAntiScrapingDetection(async (render) => {
 
 export function MangaLabelExtractor(element: HTMLElement) {
     let title = element.getAttribute('text') ? element.getAttribute('text') : element.textContent;
-    title = title.replace(/\s*-\s*RAW$/i, '');
-    return title.trim();
+    return CleanTitle(title);
 }
 export function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
     let title = anchor.getAttribute('text') ? anchor.getAttribute('text') : anchor.textContent;
-    title = title.replace(/\s*-\s*RAW$/i, '').trim();
-    return { id, title };
+    return { id, title: CleanTitle(title) };
 }
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
-    if (anchor.dataset.href) {
+    if (anchor.dataset?.href) {
         anchor.setAttribute('href', anchor.dataset.href + anchor.getAttribute('href'));
     }
     const id = anchor.pathname;
@@ -37,30 +35,23 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function CleanChaptertitle(manga: Manga, title: string): string {
-    const mangaTitle = manga.Title.replace(/\s*-\s*RAW$/i, '').replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&');
-    title = title.replace(new RegExp(mangaTitle, 'i'), '');
-    title = title.replace(/^\s*-\s*/, '');
-    return title.replace(/-\s*-\s*Read\s*Online\s*$/, '').trim();
+export function CleanTitle(title: string): string {
+    title = title.replace(/\s*[~\-―〜]\s*RAW\s*\(MANGA\)\s*$/i, '').trim();
+    title = title.replace(/\s*[~\-―〜]\s*(MANGA)?\s*RAW\s*$/i, '').trim();
+    title = title.replace(/\(raw\)/i, '').trim();
+    return title.replace(/\(manga\)/i, '').trim();
 }
 
 export function PageLinkExtractor<E extends HTMLImageElement>(this: MangaScraper, element: E): string {
+
+    let page = element.dataset.aload || element.dataset.src || element.dataset.srcset || element.dataset.original || element.dataset.pagespeedLazySrc || element.src;
     try {
-        element.dataset.src = window.atob(element.dataset.src);// eslint-disable-next-line
-    } catch (_) {  }
-    try {
-        element.dataset.src = window.atob(element.dataset.srcset);// eslint-disable-next-line
-    } catch (_) { }
-    try {
-        element.dataset.original = window.atob(element.dataset.original);// eslint-disable-next-line
-    } catch (_) { }
-    try {
-        element.dataset.pagespeedLazySrc = window.atob(element.dataset.pagespeedLazySrc);// eslint-disable-next-line
-    } catch (_) { }
-    try {
-        element.dataset.aload = window.atob(element.dataset.aload);// eslint-disable-next-line
-    } catch (_) {  }
-    return element.dataset.aload || element.dataset.src || element.dataset.srcset?.replace(/\n/g, '') || element.dataset.original || element.dataset.pagespeedLazySrc || element.src;
+        page = window.atob(page);/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    } catch (error) {
+        //
+    }
+    return page.replace(/\n/g, '');
+
 }
 
 const DefaultExcludes = [/3282f6a4b7_o/, /donate/];
@@ -126,7 +117,8 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
     const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), query);
     return data.map(anchor => {
         const { id, title } = extractor.call(this, anchor);
-        return new Chapter(this, manga, id, CleanChaptertitle(manga, title));
+        let finaltitle = title.replace(manga.Title, '').trim() ?? title;
+        return new Chapter(this, manga, id, CleanTitle(finaltitle));
     }).distinct();
 }
 
@@ -176,7 +168,8 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(chapter => {
         const { id, title } = extractor.call(this, chapter);
-        return new Chapter(this, manga, id, CleanChaptertitle(manga, title));
+        let finaltitle = title.replace(manga.Title, '').trim() ?? title;
+        return new Chapter(this, manga, id, CleanTitle(finaltitle));
     });
 }
 

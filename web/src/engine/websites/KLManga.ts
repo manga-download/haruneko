@@ -11,8 +11,8 @@ function GenerateRandomEndPoint(length: number, suffix: string): string {
     return randomEndpoint + suffix;
 }
 
-@Common.MangaCSS(/^{origin}\/[^/]+\.html$/, FlatManga.queryMangaTitle)
-@Common.MangasSinglePageCSS(FlatManga.pathSinglePageManga, FlatManga.queryMangas)
+@Common.MangaCSS(/^{origin}\/[^/]+\.html$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
+@Common.MangasSinglePageCSS(FlatManga.pathSinglePageManga, FlatManga.queryMangas, FlatManga.MangaExtractor)
 @FlatManga.ChaptersSinglePageAJAX(GenerateRandomEndPoint(25, '.lstc?slug='), 'dataL', 'a.chapter[title]')
 @FlatManga.PagesSinglePageAJAX(GenerateRandomEndPoint(30, '.iog?cid='), 'img.chapter-img[alt*="Page"]', [/olimposcan/] )
 

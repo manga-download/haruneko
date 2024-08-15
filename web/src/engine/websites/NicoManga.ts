@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
             }
         });
         const { manga_list, lang: { manga_slug } } = await FetchJSON<APIMangas>(request);
-        return manga_list.map(manga => new Manga(this, provider, `/${manga_slug}-${manga.slug}.html`, manga.name.trim()));
+        return manga_list.map(manga => new Manga(this, provider, `/${manga_slug}-${manga.slug}.html`, FlatManga.CleanTitle(manga.name.trim())));
     }
 
 }

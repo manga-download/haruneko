@@ -50,9 +50,10 @@ export default class extends DecoratableMangaScraper {
         });
 
         const data = await FetchCSS<HTMLAnchorElement>(request, 'table.table tr td.table-bordered:first-of-type > a');
-        const escapedMangaTitle = manga.Title.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const regexp = new RegExp(escapedMangaTitle, 'i');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.replace(regexp, '').trim() || chapter.text.trim()));
+        return data.map(chapter => {
+            const title = FlatManga.CleanTitle(chapter.text.replace(manga.Title, '')) || chapter.text.trim();
+            return new Chapter(this, manga, chapter.pathname, title);
+        });
     }
 
 }
