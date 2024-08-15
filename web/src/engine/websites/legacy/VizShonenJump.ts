@@ -4,10 +4,10 @@
 //import { Tags } from '../../Tags';
 import icon from './VizShonenJump.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import { Fetch, FetchCSS, FetchHTML, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
+import { Fetch, FetchCSS, FetchHTML, FetchWindowScript } from '../../platform/FetchProvider';
 import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from '../decorators/Common';
-import * as ExifReader from 'exifreader';
+import exifr from 'exifr';
 import DeScramble from '../../transformers/ImageDescrambler';
 
 type UserInfos = {
@@ -22,13 +22,10 @@ type PagesInfos = {
     mangaID: string
 }
 
-type PageData = {
-    metadata : string
-}
-
-type TDimensions = {
-    height: number,
-    width : number
+type ExifData = {
+    ImageUniqueID: string,
+    ImageWidth: number,
+    ImageHeight: number
 }
 
 const UserInfoScript = `
@@ -179,32 +176,10 @@ export default class extends DecoratableMangaScraper {
             url.searchParams.set('device_id', '3');
             url.searchParams.set('manga_id', mangaID);
             url.searchParams.set('page', index.toString());
-            return url;
-            //return new Page(this, chapter, url, { Referer: chapterurl.href });
+            return new Page(this, chapter, url, { Referer: chapterurl.href });
         });
 
-        //Fetch Metadata ONCE
-        const url = new URL(pages[0]);
-        url.searchParams.delete('page');
-        url.searchParams.set('pages', '0');
-
-        let request = new Request(url, {
-            headers: {
-                Referer: chapterurl.href,
-                Origin: this.URI.origin
-            }
-        });
-        const { metadata } = await FetchJSON<PageData>(request);
-
-        request = new Request(metadata, {
-            headers: {
-                Referer: chapterurl.href,
-                Origin: this.URI.origin
-            }
-        });
-        const dimensions = await FetchJSON<TDimensions>(request);
-
-        return pages.map(page => new Page(this, chapter, page, { Referer: chapterurl.href, ...dimensions }));
+        return pages;
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -216,20 +191,21 @@ export default class extends DecoratableMangaScraper {
             }
         }));
 
-        const { width, height } = page.Parameters as TDimensions; //NOT ALWAYS RELIABLE, we must absolutely USE Exif.ImageWidth && Exif.ImageHeight but that lib doesnt always work
-
         const img_url = await response.text();
         const buffer = await this.FetchBuffer(img_url, priority, signal, page.Parameters.Referer);
+        const tags: ExifData = await exifr.parse(buffer);
+
+        const width = tags.ImageWidth;
+        const height = tags.ImageHeight;
+        const shuffleMap = tags.ImageUniqueID.split(':');
 
         return DeScramble(new ImageData(width, height), async (_, ctx) => {
             const EXIFWIDTH = width;
             const EXIFHEIGHT = height;
 
-            const tags = ExifReader.load(buffer);
             const blob = await Common.GetTypedData(buffer);
             const bitmap = await createImageBitmap(blob);
 
-            const shuffleMap = tags.ImageUniqueID.description.split(':');
             let x_split = Math.floor(EXIFWIDTH / 10),
                 y_split = Math.floor(EXIFHEIGHT / 15);
 

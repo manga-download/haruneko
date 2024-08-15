@@ -34,6 +34,6 @@
         "test:websites": "npm run build --workspaces && vitest run --config=test/vitest.websites.js"
     },
     "dependencies": {
-        "exifreader": "^4.23.3"
+        "exifr": "^7.1.3"
     }
 }
