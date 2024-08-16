@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicfire', `COMIC ファイア (Comic Fire/Hobby Japan)`, 'https://www.hobbyjapan.co.jp/comic' /*, Tags.Language.English, Tags ... */);
+        super('comicfire', `COMIC ファイア (Comic Fire/Hobby Japan)`, 'https://firecross.jp/comic' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
