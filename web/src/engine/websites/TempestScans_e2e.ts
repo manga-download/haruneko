@@ -3,22 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'tempestfansub',
-        title: 'Tempestfansub'
+        id: 'tempestscans',
+        title: 'Tempest Scans'
     },
     container: {
-        url: 'https://tempestfansub.com/manga/chainsaw-man/',
-        id: '/manga/chainsaw-man/',
-        title: 'Chainsaw Man'
+        url: 'https://tempestscans.net/manga/solo-leveling-ragnarok/',
+        id: '/manga/solo-leveling-ragnarok/',
+        title: 'Solo Leveling Ragnarok'
     },
     child: {
-        id: '/chainsaw-man-1/',
-        title: 'Bölüm: 1',
-        timeout: 15000
+        id: '/solo-leveling-ragnarok-13/',
+        title: 'Bölüm: 13',
     },
     entry: {
-        index: 1,
-        size: 328_785,
+        index: 0,
+        size: 1_288_033,
         type: 'image/jpeg'
     }
 };

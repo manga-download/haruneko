@@ -3,22 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'tempestfansub',
-        title: 'Tempestfansub'
+        id: 'kombatch',
+        title: 'KomBatch'
     },
     container: {
-        url: 'https://tempestfansub.com/manga/chainsaw-man/',
-        id: '/manga/chainsaw-man/',
-        title: 'Chainsaw Man'
+        url: 'https://kombatch.cc/manga/a-turning-point/',
+        id: '/manga/a-turning-point/',
+        title: 'A Turning Point'
     },
     child: {
-        id: '/chainsaw-man-1/',
-        title: 'Bölüm: 1',
-        timeout: 15000
+        id: '/a-turning-point-chapter-57/',
+        title: 'Chapter 57',
     },
     entry: {
-        index: 1,
-        size: 328_785,
+        index: 0,
+        size: 133_399,
         type: 'image/jpeg'
     }
 };
