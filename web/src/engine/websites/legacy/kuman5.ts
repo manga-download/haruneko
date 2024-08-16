@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kuman5', `酷漫屋 (Kuman57)`, 'http://www.kmwu6.com' /*, Tags.Language.English, Tags ... */);
+        super('kuman5', `酷漫屋 (Kuman57)`, 'http://www.kmw6.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
