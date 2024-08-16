@@ -74,6 +74,7 @@ export const Tags = {
     Accessibility: {
         toArray: GetCategoryTags,
         Title: TC.Tags_Accessibility,
+        DomainRotation: new Tag(TC.Tags_Accessibility, T.Tags_Accessibility_DomainRotation, T.Tags_Accessibility_DomainRotationDescription),
         RegionLocked: new Tag(TC.Tags_Accessibility, T.Tags_Accessibility_RegionLock, T.Tags_Accessibility_RegionLockDescription),
         RateLimited: new Tag(TC.Tags_Accessibility, T.Tags_Accessibility_RateLimit, T.Tags_Accessibility_RateLimitDescription),
     },
