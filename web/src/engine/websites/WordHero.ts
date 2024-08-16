@@ -13,7 +13,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('wordhero', 'WordHero', 'https://wordhero.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Rating.Erotica);
+        super('wordhero', 'WordHero', 'https://www.wordhero.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Rating.Erotica);
     }
 
     public override get Icon() {

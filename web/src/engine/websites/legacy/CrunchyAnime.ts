@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('crunchyanime', `Crunchyroll* (Anime)`, 'https://crunchyroll.com' /*, Tags.Language.English, Tags ... */);
+        super('crunchyanime', `Crunchyroll* (Anime)`, 'https://www.crunchyroll.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
