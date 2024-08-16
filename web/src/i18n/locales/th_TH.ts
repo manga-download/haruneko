@@ -224,6 +224,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Source_Scanlator: 'Scanlator',
   Tags_Source_Aggregator: 'Aggregator',
   Tags_Accessibility: 'Accessibility',
+  Tags_Accessibility_DomainRotation: 'Domain Rotation',
+  Tags_Accessibility_DomainRotationDescription: 'Regular changing its (sub-)domain, probably to avoid scraping or DMCA',
   Tags_Accessibility_RegionLock: 'Region-Lock',
   Tags_Accessibility_RegionLockDescription: 'Access only for unlocked countries (Geo-IP)',
   Tags_Accessibility_RateLimit: 'Rate-Limit',
