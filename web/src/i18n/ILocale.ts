@@ -67,6 +67,8 @@ export enum TagResourceKey {
     Tags_Source_Official = 'Tags_Source_Official',
     Tags_Source_Scanlator = 'Tags_Source_Scanlator',
     Tags_Source_Aggregator = 'Tags_Source_Aggregator',
+    Tags_Accessibility_DomainRotation = 'Tags_Accessibility_DomainRotation',
+    Tags_Accessibility_DomainRotationDescription = 'Tags_Accessibility_DomainRotationDescription',
     Tags_Accessibility_RegionLock = 'Tags_Accessibility_RegionLock',
     Tags_Accessibility_RegionLockDescription = 'Tags_Accessibility_RegionLockDescription',
     Tags_Accessibility_RateLimit = 'Tags_Accessibility_RateLimit',

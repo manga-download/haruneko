@@ -13,7 +13,7 @@ const config: Config = {
     },
     child: {
         id: '/chainsaw-man-1/',
-        title: 'Bölüm 1',
+        title: 'Bölüm: 1',
         timeout: 15000
     },
     entry: {

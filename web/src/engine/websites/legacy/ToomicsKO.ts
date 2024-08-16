@@ -4,6 +4,7 @@
 //import { Tags } from '../../Tags';
 import icon from './ToomicsKO.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { FetchWindowScript } from '../../platform/FetchProvider';
 
 export default class extends DecoratableMangaScraper {
 
@@ -13,6 +14,11 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        // NOTE: Open the korean URL to set the 'content_lang' cookie, otherwise 'www.toomics.com' will keep redirecting to 'global.toomics.com'
+        return FetchWindowScript(new Request('https://toomics.com/ko'), '');
     }
 }
 

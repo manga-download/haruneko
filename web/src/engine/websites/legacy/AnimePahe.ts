@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('animepahe', `animepahe`, 'https://animepahe.com' /*, Tags.Language.English, Tags ... */);
+        super('animepahe', `animepahe`, 'https://animepahe.ru' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
