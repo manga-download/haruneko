@@ -8,7 +8,8 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('taomanhua', `神漫画 (Tao Manhua)`, 'https://www.taomanhua.com' /*, Tags.Language.English, Tags ... */);
+        // NOTE: Redirects from www.taomanhua.com to www.kanman.com, seems only some 404 pages are still shown on the domain => https://www.taomanhua.com/app/mht-pc.html
+        super('taomanhua', `神漫画 (Tao Manhua)`, 'https://www.kanman.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

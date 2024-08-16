@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicmedu', `COMIC MeDu (こみっくめづ)`, 'http://comic-medu.com' /*, Tags.Language.English, Tags ... */);
+        super('comicmedu', `COMIC MeDu (こみっくめづ)`, 'https://comic-medu.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
