@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangalek', 'مانجا ليك (Mangalek)', 'https://manga-lek.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Arabic);
+        super('mangalek', 'مانجا ليك (Mangalek)', 'https://lekmanga.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Arabic);
     }
 
     public override get Icon() {
