@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Qiman5.webp';
 import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from './../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from './../platform/FetchProvider';
 
 type APIChapters = {
     data: {
@@ -11,7 +11,7 @@ type APIChapters = {
     }[]
 }
 
-@Common.MangaCSS(/^{origin}\/[^.]+\.html$/, 'div.info h1.name_mh')
+@Common.MangaCSS(/^{origin}\/[^./]+\.html$/, 'div.info h1.name_mh')
 @Common.MangasMultiPageCSS('/category/tags/6/page/{page}', 'div.item p.title a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
 
@@ -32,8 +32,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages = await Common.FetchPagesSinglePageJS.call(this, chapter, `decodeURIComponent(authCrypt.decode(DATA, 'qiman2')).split(',');`, 500);
-        return pages.map(page => new Page(this, chapter, page.Link, { Referer: this.URI.href }));
+        const pages = await FetchWindowScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), `decodeURIComponent(authCrypt.decode(DATA, 'qiman2')).split(',');`, 500);
+        return pages.map(page => new Page(this, chapter, new URL(page), { Referer: this.URI.href }));
     }
 
 }
