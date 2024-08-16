@@ -7,19 +7,19 @@ const config = {
         title: 'PornComix Online'
     },
     container: {
-        url: 'https://www.porncomixonline.net/m-comic/shockabuki-hermione-and-grimoire-of-lust/',
-        id: JSON.stringify({ post: '6220732', slug: '/m-comic/shockabuki-hermione-and-grimoire-of-lust/' }),
-        title: 'Hermione and Grimoire of lust'
+        url: 'https://porncomix.online/comic/yuki-space-assassin-fear-and-loathing-in-asmodaeva/',
+        id: JSON.stringify({ post: '6222702', slug: '/comic/yuki-space-assassin-fear-and-loathing-in-asmodaeva/' }),
+        title: 'Space Assassin Fear'
     },
     child: {
-        id: '/m-comic/shockabuki-hermione-and-grimoire-of-lust/shockabuki-hermione-and-grimoire-of-lust/',
-        title: 'Shockabuki – Hermione and Grimoire of lust'
-    }, /*
+        id: '/comic/yuki-space-assassin-fear-and-loathing-in-asmodaeva/yuki-space-assassin-fear-and-loathing-in-asmodaeva/',
+        title: 'Yuki -Space Assassin Fear and Loathing in Asmodaeva'
+    },
     entry: {
         index: 0,
-        size: 234_596, //picture size alternate between 226_729 and 234_596
+        size: 613_984,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

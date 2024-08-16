@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ohtabooks', `Ohtabooks`, 'http://webcomic.ohtabooks.com' /*, Tags.Language.English, Tags ... */);
+        super('ohtabooks', `Ohtabooks`, 'https://webcomic.ohtabooks.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

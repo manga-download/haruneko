@@ -3,21 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'shakai',
-        title: 'Shakai'
+        id: 'tempestscans',
+        title: 'Tempest Scans'
     },
     container: {
-        url: 'https://shakai.ru/manga/2489',
-        id: '2489',
-        title: 'Oyasumi Punpun / Спокойной ночи, Пунпун',
+        url: 'https://tempestscans.net/manga/solo-leveling-ragnarok/',
+        id: '/manga/solo-leveling-ragnarok/',
+        title: 'Solo Leveling Ragnarok'
     },
     child: {
-        id: '13_147',
-        title: '13_147'
+        id: '/solo-leveling-ragnarok-13/',
+        title: 'Bölüm: 13',
     },
     entry: {
         index: 0,
-        size: 513_938,
+        size: 1_288_033,
         type: 'image/jpeg'
     }
 };

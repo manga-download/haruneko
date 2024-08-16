@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangatoon-vi', `MangaToon (Vietnamese)`, 'https://mangatoon.mobi/vi' /*, Tags.Language.English, Tags ... */);
+        super('mangatoon-vi', `MangaToon (Vietnamese)`, 'https://mangatooncom.vn/vi' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

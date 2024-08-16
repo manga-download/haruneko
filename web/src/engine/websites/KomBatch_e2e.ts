@@ -1,23 +1,23 @@
-import { describe } from 'vitest';
+﻿import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'mangashiro',
-        title: 'MangaShiro'
+        id: 'kombatch',
+        title: 'KomBatch'
     },
     container: {
-        url: 'https://mangashiro.me/manga/hackgu/',
-        id: '/manga/hackgu/',
-        title: '.hack//G.U.+'
+        url: 'https://kombatch.cc/manga/a-turning-point/',
+        id: '/manga/a-turning-point/',
+        title: 'A Turning Point'
     },
     child: {
-        id: '/hackg-u-chapter-01/',
-        title: 'Chapter 01'
+        id: '/a-turning-point-chapter-57/',
+        title: 'Chapter 57',
     },
     entry: {
-        index: 1,
-        size: 115_639,
+        index: 0,
+        size: 133_399,
         type: 'image/jpeg'
     }
 };

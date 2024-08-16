@@ -14,15 +14,14 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/comic-list?page={page}', 'ul.line-list > li > a')
 @Common.ChaptersSinglePageCSS('ul.basic-list > li > a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.chapter-container > img')
-@Common.ImageAjax()
+@Common.ImageElement(false)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('viewcomics', 'ViewComics', 'https://viewcomics.org', Tags.Media.Comic, Tags.Language.English, Tags.Source.Aggregator);
+        super('viewcomics', 'ViewComics', 'https://azcomix.me', Tags.Media.Comic, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

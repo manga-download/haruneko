@@ -7,18 +7,20 @@ const config = {
         title: 'Argos Scan'
     },
     container: {
-        url: 'https://argosscan.com/obras/159/battle-frenzy-webtoon-',
-        id: '159',
-        title: 'Battle Frenzy (Webtoon)'
+        url: 'https://argoscomic.com/manga/apocalipse-implacavel/',
+        id: '/manga/apocalipse-implacavel/',
+        title: 'Apocalipse Implacavel',
+        timeout: 10000
+
     },
     child: {
-        id: 'a204ff55-72b2-4ebe-b8db-ee9cfe138f48',
-        title: 'Ch. 222 - Capítulo 222'
+        id: '/manga/apocalipse-implacavel/1a-temporada/capitulo-01/',
+        title: 'Capítulo 01',
     },
     entry: {
-        index: 0,
-        size: 1_191_872,
-        type: 'image/jpeg'
+        index: 1,
+        size: 190_316,
+        type: 'image/webp'
     }
 };
 

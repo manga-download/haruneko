@@ -7,18 +7,18 @@ const config = {
         title: 'RawLazy'
     },
     container: {
-        url: 'https://rawlazy.si/manga-lazy/%e3%82%ad%e3%83%b3%e3%82%b0%e3%83%80%e3%83%a0-raw-free/',
-        id: '/manga-lazy/%e3%82%ad%e3%83%b3%e3%82%b0%e3%83%80%e3%83%a0-raw-free/',
-        title: 'キングダム'
+        url: 'https://rawlazy.tv/manga-lazy/彼女-お借りします-raw-free/',
+        id: encodeURI('/manga-lazy/彼女-お借りします-raw-free/'),
+        title: '彼女、お借りします'
     },
     child: {
-        id: '/manga-chapter/%e3%82%ad%e3%83%b3%e3%82%b0%e3%83%80%e3%83%a0-raw-%e3%80%90%e7%ac%ac795%e8%a9%b1%e3%80%91/',
-        title: '第795話'
+        id: encodeURI('/manga-chapter/彼女、お借りします-raw-【第340話】/').toLowerCase(),
+        title: '第340話'
     },
     entry: {
         index: 0,
-        size: 225_650,
-        type: 'image/jpeg'
+        size: 276_488,
+        type: 'image/webp'
     }
 };
 
