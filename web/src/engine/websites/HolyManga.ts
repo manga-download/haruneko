@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './HolyManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { Fetch } from '../platform/FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import * as Zbulu from './decorators/WordPressZbulu';
 
@@ -14,16 +14,14 @@ import * as Zbulu from './decorators/WordPressZbulu';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('holymanga', `Holy Manga`, 'https://holymanga.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('holymanga', `Holy Manga`, 'https://holymanga.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation );
     }
     public override get Icon() {
         return icon;
     }
 
     public override async Initialize(): Promise<void> {
-        const response = await Fetch(new Request(this.URI));
-        console.log(`Assigned URL ${response.url} to ${this.Title}`);
-        this.URI.href = response.url;
-        return;
+        this.URI.href = await FetchWindowScript(new Request(this.URI), 'window.location.origin');
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
