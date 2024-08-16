@@ -3,21 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'shakai',
-        title: 'Shakai'
+        id: 'kombatch',
+        title: 'KomBatch'
     },
     container: {
-        url: 'https://shakai.ru/manga/2489',
-        id: '2489',
-        title: 'Oyasumi Punpun / Спокойной ночи, Пунпун',
+        url: 'https://kombatch.cc/manga/a-turning-point/',
+        id: '/manga/a-turning-point/',
+        title: 'A Turning Point'
     },
     child: {
-        id: '13_147',
-        title: '13_147'
+        id: '/a-turning-point-chapter-57/',
+        title: 'Chapter 57',
     },
     entry: {
         index: 0,
-        size: 513_938,
+        size: 133_399,
         type: 'image/jpeg'
     }
 };
