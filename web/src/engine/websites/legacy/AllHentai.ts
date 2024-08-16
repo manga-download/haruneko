@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('allhentai', `AllHentai`, 'http://allhentai.ru' /*, Tags.Language.English, Tags ... */);
+        super('allhentai', `AllHentai`, 'https://z.ahen.me' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

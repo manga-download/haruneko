@@ -7,7 +7,7 @@ const config: Config = {
         title: 'MangaCross'
     },
     container: {
-        url: 'https://mangacross.jp/comics/watamaho/',
+        url: 'https://championcross.jp/series/50d8ea89cfc92/',
         id: 'watamaho',
         title: 'あの頃、私たちは魔法使いでした。'
     },
