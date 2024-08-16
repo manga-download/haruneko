@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nettruyen', `NetTruyen`, 'http://www.nettruyenpro.com' /*, Tags.Language.English, Tags ... */);
+        super('nettruyen', `NetTruyen`, 'https://nettruyenco.vn' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

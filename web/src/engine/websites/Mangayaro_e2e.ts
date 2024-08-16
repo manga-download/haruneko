@@ -7,7 +7,7 @@ const config = {
         title: 'Mangayaro'
     },
     container: {
-        url: 'https://mangayaro.id/manga/surviving-as-a-tyrants-daughter/',
+        url: 'https://www.nowheartruth.com/manga/surviving-as-a-tyrants-daughter/',
         id: '/manga/surviving-as-a-tyrants-daughter/',
         title: `Surviving as a Tyrant’s Daughter`
     },
@@ -17,7 +17,7 @@ const config = {
     },
     entry: {
         index: 1,
-        size: 978_172,
+        size: 978_171,
         type: 'image/jpeg'
     }
 };
