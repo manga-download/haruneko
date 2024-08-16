@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './AsuraScans.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
@@ -42,7 +42,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(this: DecoratableMangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
-        return MangaStream.FetchMangaCSS.call(this, provider, url.replace(/-[^-]+$/, '-'), 'div.bg-white div.relative span.text-xl.font-bold');
+        const manga = await MangaStream.FetchMangaCSS.call(this, provider, url.replace(/-[^-]+$/, '-'), 'title');
+        return new Manga(this, provider, manga.Identifier, manga.Title.replace(' - Asura Scans', '').trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
