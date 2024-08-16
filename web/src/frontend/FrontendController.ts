@@ -31,7 +31,7 @@ export class FrontendController {
 
     private async Load(hook: HTMLElement): Promise<void> {
         try {
-            const info = FrontendList.find(info => info.ID === this.settingSelectedFrontend.Value) ?? FrontendList.first();
+            const info = FrontendList.find(info => info.ID === this.settingSelectedFrontend.Value) ?? FrontendList.at(0);
             const frontend = await info.LoadModule();
             hook.replaceChildren();
             await frontend.Render(hook, this.appWindow);

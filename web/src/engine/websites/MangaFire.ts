@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const id = manga.Identifier.split('.').pop();
+        const id = manga.Identifier.split('.').at(-1);
         const request = new Request(new URL(manga.Identifier, this.URI));
         const data = await FetchCSS(request, 'section.m-list div.dropdown-menu a');
         const languageList = data.map(element => element.dataset.code.toLowerCase());
@@ -63,11 +63,9 @@ export default class extends DecoratableMangaScraper {
                     .filter(anchor => anchor.pathname.includes(`/${type}-`))
                     .map(anchor => {
                         const id = JSON.stringify({ itemid: anchor.dataset.id, itemtype: type, language });
-                        const chapter = new Chapter(this, manga, id, `${ anchor.text.trim() } (${ language })`);
-                        if(chapterLanguageMap.has(language)) {
-                            chapter.Tags.Value.push(chapterLanguageMap.get(language));
-                        }
-                        return chapter;
+                        return new Chapter(this, manga, id, `${ anchor.text.trim() } (${ language })`,
+                            ...chapterLanguageMap.has(language) ? [ chapterLanguageMap.get(language) ] : []
+                        );
                     });
                 chapterList.push(...chapters);
             }

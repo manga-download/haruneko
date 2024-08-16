@@ -21,17 +21,26 @@
     const availableLanguageTags = Tags.Language.toArray();
 
     // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
-    function extractUnicodeFlagFromTags(tags : Tag[]): string {
-        const languageTagTitleResourceKey = tags.find(tag => availableLanguageTags.includes(tag))?.Title;
-        return $Locale[languageTagTitleResourceKey]?.call(undefined)?.slice(0, 4) ?? '🏴';
+    function extractUnicodeFlagFromTags(tags: Tag[]): string {
+        const languageTagTitleResourceKey = tags.find((tag) =>
+            availableLanguageTags.includes(tag),
+        )?.Title;
+        return (
+            $Locale[languageTagTitleResourceKey]
+                ?.call(undefined)
+                ?.slice(0, 4) ?? '🏴'
+        );
     }
 
     import type {
         StoreableMediaContainer,
         MediaItem,
     } from '../../../engine/providers/MediaPlugin';
-    import { FlagType, type EntryFlagEventData } from '../../../engine/ItemflagManager';
-    import { selectedItem, DownloadTasks } from '../stores/Stores';
+    import {
+        FlagType,
+        type EntryFlagEventData,
+    } from '../../../engine/ItemflagManager';
+    import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
     export let item: StoreableMediaContainer<MediaItem>;
@@ -52,23 +61,28 @@
             flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
         }
     }
-    HakuNeko.ItemflagManager.EntryFlagEventChannel.Subscribe(OnFlagChangedCallback);
+    HakuNeko.ItemflagManager.EntryFlagEventChannel.Subscribe(
+        OnFlagChangedCallback,
+    );
     onMount(async () => {
         flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
     });
     onDestroy(() => {
-        HakuNeko.ItemflagManager.EntryFlagEventChannel.Unsubscribe(OnFlagChangedCallback);
+        HakuNeko.ItemflagManager.EntryFlagEventChannel.Unsubscribe(
+            OnFlagChangedCallback,
+        );
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
-        tasksunsubscribe();
+        HakuNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
     });
 
     let downloadTask: DownloadTask;
 
-    let tasksunsubscribe = DownloadTasks.subscribe(tasks => {
+    async function taskQueueChanged(tasks: DownloadTask[]) {
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
-        downloadTask = tasks.find(task => task.Media.IsSameAs(item));
+        downloadTask = tasks.find((task) => task.Media.IsSameAs(item));
         downloadTask?.Status.Subscribe(refreshDownloadStatus);
-    });
+    }
+    HakuNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
 
     async function refreshDownloadStatus(_status: Status, _task: DownloadTask) {
         downloadTask = downloadTask;

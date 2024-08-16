@@ -40,7 +40,8 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangacross', `MangaCross`, 'https://mangacross.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        // Seems to be part of comici.jp
+        super('mangacross', `MangaCross`, 'https://championcross.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
@@ -48,11 +49,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/comics/[^/]+/$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/series/[^/]+/$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.match(/comics\/([^/]+)\//)[1];
+        const id = new URL(url).pathname.split('/').at(-1);
         const uri = new URL(`/api/comics/${id}.json`, this.URI);
         const request = new Request(uri.href);
         const data = await FetchJSON<APIChapters>(request);

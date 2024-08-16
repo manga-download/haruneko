@@ -315,7 +315,7 @@ describe('BookmarkPlugin', () => {
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
-            const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').shift();
+            const today = new Date(Date.now() - 60000 * new Date().getTimezoneOffset()).toISOString().split('T').at(0);
             const testee = await fixture.CreateTestee();
             const actual = await testee.Export();
 
