@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ToomicsKO.webp';
 import { Chapter, type MangaPlugin } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
-import { FetchCSS } from '../platform/FetchProvider';
+import { Fetch, FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import * as Toomics from './decorators/Toomics';
 import * as Common from './decorators/Common';
 
@@ -24,6 +24,11 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        // NOTE: Open the korean URL to set the 'content_lang' cookie, otherwise 'www.toomics.com' will keep redirecting to 'global.toomics.com'
+        return FetchWindowScript(new Request('https://toomics.com/ko'), '');
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -110,7 +115,7 @@ export default class extends DecoratableMangaScraper {
             },
             body: data.toString()
         });
-        const response = await fetch(request);
+        const response = await Fetch(request);
         return response.text();
     }
 
