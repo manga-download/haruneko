@@ -31,6 +31,33 @@ type Result = {
     rank: number;
 }
 
+const expectedOriginRedirectPatterns = new Map([
+    [ 'https://holymanga.net', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/w+\d*\.holymanga\.net$/,
+    ] ],
+    [ 'https://manatoki.net', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/manatoki\d*\.net$/,
+    ] ],
+    [ 'https://mangafreak.me', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/w+\d*\.mangafreak\.me$/,
+    ] ],
+    [ 'https://mintmanga.live', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/\d+\.mintmanga\.one$/,
+    ] ],
+    [ 'https://newtoki.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/newtoki\d+\.com$/,
+    ] ],
+    [ 'https://www.toomics.com', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
+        /^https:\/\/global\.toomics\.com$/,
+    ] ],
+    [ 'https://toonkor.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/toonkor\d+\.com$/,
+    ] ],
+    [ 'https://web.6parkbbs.com', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
+        /^https:\/\/club\.6parkbbs\.com$/,
+    ] ],
+]);
+
 class TestFixture {
 
     public readonly MockStorageController = mock<StorageController>();
@@ -44,12 +71,23 @@ class TestFixture {
         return new PluginController(this.MockStorageController, this.MockSettingsManager);
     }
 
+    private static CheckOriginRedirected(requestURL: string, responseURL: string): boolean {
+        const requestOrigin = new URL(requestURL).origin;
+        const responseOrigin = new URL(responseURL).origin;
+        const patterns = expectedOriginRedirectPatterns.get(requestOrigin);
+        if(patterns) {
+            return !(patterns.some(pattern => pattern.test(responseOrigin)));
+        } else {
+            return requestOrigin !== responseOrigin;
+        }
+    }
+
     public static async GetStatus(uri: URL) {
         const result = { code: StatusCode.ERROR, info: 'Not Processed' };
         try {
             const request = new Request(uri, { signal: AbortSignal.timeout(30_000) });
             const response = await fetch(request);
-            if(uri.origin !== new URL(response.url).origin) {
+            if(this.CheckOriginRedirected(request.url, response.url)) {
                 result.code = StatusCode.WARNING;
                 result.info = 'Redirected: ' + response.url;
             } else {

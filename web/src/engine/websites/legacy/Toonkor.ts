@@ -1,18 +1,24 @@
 // Auto-Generated export from HakuNeko Legacy
 // See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
 
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './Toonkor.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { FetchCSS } from '../../platform/FetchProvider';
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('toonkor', `Toonkor`, 'https://tkor.zone' /*, Tags.Language.English, Tags ... */);
+        super('toonkor', `Toonkor`, 'https://toonkor.com', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = (await FetchCSS<HTMLAnchorElement>(new Request('https://t.me/s/new_toonkor'), 'a[href^="https://toonkor"]')).at(-1).origin;
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
 
