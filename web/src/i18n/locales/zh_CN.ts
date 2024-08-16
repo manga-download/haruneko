@@ -224,6 +224,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Source_Scanlator: 'Scanlator',
   Tags_Source_Aggregator: "聚合器",
   Tags_Accessibility: "无障碍环境",
+  Tags_Accessibility_DomainRotation: 'Domain Rotation',
+  Tags_Accessibility_DomainRotationDescription: 'Regular changing its (sub-)domain, probably to avoid scraping or DMCA',
   Tags_Accessibility_RegionLock: "区域锁定",
   Tags_Accessibility_RegionLockDescription: "只允许已解锁国家 (Geo-IP)",
   Tags_Accessibility_RateLimit: "评分限制",

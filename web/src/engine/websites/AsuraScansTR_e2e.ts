@@ -6,6 +6,7 @@ const config: Config = {
         id: 'asurascans-tr',
         title: 'Asura Scans (TR)',
     },
+    /* CloudFlare
     container: {
         url: 'https://asurascans.com.tr/manga/age-of-arrogance/',
         id: JSON.stringify({ post: "605", slug: "/manga/age-of-arrogance/" }),
@@ -19,7 +20,7 @@ const config: Config = {
         index: 1,
         size: 199_932,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

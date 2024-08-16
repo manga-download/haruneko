@@ -7,7 +7,7 @@ const config = {
         title: 'TruyenTranhtuan'
     },
     container: {
-        url: 'https://truyentuan.com/huyen-thoai-giao-si-tro-lai/',
+        url: 'https://truyentuan.xyz/huyen-thoai-giao-si-tro-lai/',
         id: '/huyen-thoai-giao-si-tro-lai/',
         title: 'Huyền Thoại Giáo Sĩ Trở Lại'
     },
