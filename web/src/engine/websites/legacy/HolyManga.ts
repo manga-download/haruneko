@@ -1,18 +1,24 @@
 // Auto-Generated export from HakuNeko Legacy
 // See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
 
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './HolyManga.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { FetchWindowScript } from '../../platform/FetchProvider';
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('holymanga', `Holy Manga`, 'https://holymanga.net' /*, Tags.Language.English, Tags ... */);
+        super('holymanga', `Holy Manga`, 'https://holymanga.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), 'window.location.origin');
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
 
