@@ -15,6 +15,14 @@ export class RateLimit {
     public get Throttle() {
         return this.amount > 0 && this.interval > 0 ? this.interval * 1000 / this.amount : 0;
     }
+
+    /**
+     * Create a new {@link RateLimit} instance.
+     * @param amount - Maximum number of units within an interval of 60 seconds.
+     */
+    public static PerMinute(amount: number) {
+        return new RateLimit(amount, 60);
+    }
 }
 
 export const Unlimited = new RateLimit(0, 0);

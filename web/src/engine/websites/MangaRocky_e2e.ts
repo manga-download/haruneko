@@ -7,7 +7,7 @@ const config = {
         title: 'Manga Rocky'
     },
     container: {
-        url: 'https://mangarocky.com/manga/kanojo-okarishimasu/',
+        url: 'https://manga1.online/manga/kanojo-okarishimasu/',
         id: JSON.stringify({ post: '2798', slug: '/manga/kanojo-okarishimasu/' }),
         title: 'Kanojo, Okarishimasu'
     },

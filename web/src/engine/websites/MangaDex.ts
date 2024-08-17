@@ -5,8 +5,6 @@ import { MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../provide
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import * as Common from './decorators/Common';
-import { Numeric } from '../SettingsManager';
-import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type CachedManga = {
     id: string,
@@ -101,13 +99,10 @@ const chapterLanguageMap = new Map([
 export default class extends MangaScraper {
 
     private readonly api = 'https://api.mangadex.org';
-    private readonly mangasTaskPool = new TaskPool(1, new RateLimit(2, 1));
     private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
 
     public constructor() {
         super('mangadex', 'MangaDex', 'https://mangadex.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Source.Scanlator);
-        this.Settings.throttle = new Numeric('throttle.mangas', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 60, 6, 240);
-        (this.Settings.throttle as Numeric).Subscribe(value => this.mangasTaskPool.RateLimit = new RateLimit(value, 60));
     }
 
     public override get Icon() {
