@@ -44,22 +44,25 @@ const BypassAntiAdBlockScript = `
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param script - script used to extract pages url
- * @param prescript - script to execute before everything to bypass anti adblockers
+ * @param prescript - script to execute before everything
  */
 async function FetchPagesPagesFromZips(this: MangaScraper, chapter: Chapter, script: string = pagescript, preScript: string = BypassAntiAdBlockScript): Promise<Page[]> {
-    let request = new Request(new URL(chapter.Identifier, this.URI));
+
+    const request = new Request(new URL(chapter.Identifier, this.URI));
     const files: string[] = await FetchWindowPreloadScript(request, preScript, script, 2500);
     if (files.length == 0) return [];
 
     if (files[0].endsWith('.zip')) {
         const pages: Page[] = [];
         for (const zipurl of files) {
-            request = new Request(new URL(zipurl, this.URI), { headers: { Referer: this.URI.href } });
+            const request = new Request(new URL(zipurl, this.URI), { cache: 'reload', headers: { Referer: this.URI.href } });
             const response = await Fetch(request);
-            const zipdata = await response.arrayBuffer();
-            const zipfile = await JSZip.loadAsync(zipdata);
-            const fileNames = Object.keys(zipfile.files).sort((a, b) => extractNumber(a) - extractNumber(b)).filter(fileName => !fileName.match(/\.(s)$/i));
-            pages.push(...fileNames.map(fileName => new Page(this, chapter, new URL(zipurl, this.URI), { filename: fileName })));
+            const zipfile = await JSZip.loadAsync(await response.arrayBuffer());
+            const fileNames = Object.keys(zipfile.files)
+                .sort((a, b) => extractNumber(a) - extractNumber(b))
+                .filter(key => [/jpe?g$/i, /png$/i, /webp$/i, /avif$/i].some(pattern => pattern.test(key)))
+                .map(key => new Page(this, chapter, new URL(zipurl, this.URI), { key }));
+            pages.push(...fileNames);
         }
         return pages;
 
@@ -77,7 +80,7 @@ function extractNumber(fileName): number {
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
  * @param query - A CSS query to locate the elements from which the page information shall be extracted
  * @param script - script used to extract pages url
- * @param prescript - script to execute before everything to bypass anti adblockers
+ * @param prescript - script to execute before everything
  */
 export function PagesFromZips(script: string = pagescript, preScript: string = BypassAntiAdBlockScript) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
@@ -103,21 +106,13 @@ export function PagesFromZips(script: string = pagescript, preScript: string = B
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
 async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    return !page.Link.href.endsWith('.zip') ? await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType) :
-        await this.imageTaskPool.Add(async () => {
-            const request = new Request(new URL(page.Link, this.URI), {
-                signal,
-                headers: {
-                    Referer: this.URI.href
-                }
-            });
-            const response = await Fetch(request);
-            const zipdata = await response.arrayBuffer();
-            const zipfile = await JSZip.loadAsync(zipdata);
-            const zipEntry = zipfile.files[page.Parameters['filename'] as string];
-            const imagebuffer = await zipEntry.async('nodebuffer');
-            return Common.GetTypedData(imagebuffer);
-        }, priority, signal);
+
+    return !page.Link.href.endsWith('.zip') ? await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType) : this.imageTaskPool.Add(async () => {
+        const response = await Fetch(new Request(page.Link, { cache: 'force-cache' }));
+        const zip = await JSZip.loadAsync(await response.arrayBuffer());
+        return Common.GetTypedData(await zip.files[page.Parameters['key'] as string].async('arraybuffer'));
+    }, priority, signal);
+
 }
 
 /**

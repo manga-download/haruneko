@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'cerisescans',
-        title: 'Cerise Scans'
+        id: 'aurorascan',
+        title: 'Aurora Scan'
     }, /* CloudFlare
     container: {
-        url: 'https://cerisetoon.com/apenas-me-deixe-em-paz/',
-        id: '/apenas-me-deixe-em-paz/',
-        title: 'Apenas Me Deixe em Paz'
+        url: 'https://aurorascan.net/a-estranha-historia-de-banwoldang/',
+        id: '/a-estranha-historia-de-banwoldang/',
+        title: 'A Estranha História de Banwoldang'
     },
     child: {
-        id: '/apenas-me-deixe-em-paz/01/',
+        id: '/a-estranha-historia-de-banwoldang/01/',
         title: 'Capítulo 01',
     },
     entry: {
-        index: 0,
-        size: 171_740,
+        index: 3,
+        size: 543_195,
         type: 'image/avif'
     }*/
 };
