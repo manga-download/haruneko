@@ -44,13 +44,13 @@ const expectedOriginRedirectPatterns = new Map([
     [ 'https://mintmanga.live', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/\d+\.mintmanga\.one$/,
     ] ],
-    [ 'https://newtoki.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+    [ 'https://newtoki0.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/newtoki\d+\.com$/,
     ] ],
     [ 'https://www.toomics.com', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
         /^https:\/\/global\.toomics\.com$/,
     ] ],
-    [ 'https://toonkor.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+    [ 'https://toonkor0.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/toonkor\d+\.com$/,
     ] ],
     [ 'https://web.6parkbbs.com', [ // REASON: This is a valid sub-domain to categorize content from its top-level website

@@ -28,13 +28,12 @@ type APIChapter = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly interactionTaskPool = new TaskPool(1, new RateLimit(15, 60));
+    private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(15));
     private readonly apiUrl = 'https://api.reaperscans.com';
 
     public constructor() {
         super('reaperscans', 'Reaper Scans', 'https://reaperscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
-        this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 15, 1, 60);
-        (this.Settings.throttle as Numeric).Subscribe(value => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
+        this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 15, 1, 60).Subscribe(value => this.interactionTaskPool.RateLimit = RateLimit.PerMinute(value));
     }
 
     public override get Icon() {
