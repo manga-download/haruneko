@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
                 chapter.querySelector('.p-chapterList_name').textContent.trim()]
                 .join(' ').trim();
             const link = chapter.querySelector<HTMLAnchorElement>('a');
-            return new Chapter(this, manga, link.pathname +link.search, title);
+            return new Chapter(this, manga, link.pathname + link.search, title);
         });
     }
 
