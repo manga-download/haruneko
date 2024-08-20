@@ -6,16 +6,16 @@ import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type ContentData = {
-    images: Array<TimageData[]>
-}
-
-type TimageData = {
-    src: string,
-    format: string
+    images: {
+        [id: string]: {
+            src: string,
+            format: string
+        }[]
+    }
 }
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
-@Common.MangasMultiPageCSS('/ebook/comics?page={page}', 'li.seriesList_item a.seriesList_itemTitle')
+@Common.MangasMultiPageCSS('/free/list?page={page}', 'div.p-book_detail dt.p-book_title a')
 
 export default class extends DecoratableMangaScraper {
 
