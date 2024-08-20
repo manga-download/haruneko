@@ -69,7 +69,7 @@ export default class extends DecoratableMangaScraper {
         contentUrl.searchParams.set('ver', ver);
         const { images } = await FetchJSON<ContentData>(new Request(contentUrl));
         return Object.values(images).map(page => {
-            const url = new URL(page[0].src, baseUrl);
+            const url = new URL(page.shift().src, baseUrl);
             url.searchParams.set('ver', ver);
             return new Page(this, chapter, url, { cryptoKey });
         });
