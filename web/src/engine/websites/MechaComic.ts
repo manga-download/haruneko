@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './AdonisFansub.webp';
+import icon from './MechaComic.webp';
 import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
                 chapter.querySelector('.p-chapterList_name').textContent.trim()]
                 .join(' ').trim();
             const link = chapter.querySelector<HTMLAnchorElement>('a');
-            return new Chapter(this, manga, link.pathname + link.search, title);
+            return new Chapter(this, manga, link.pathname, title);
         });
     }
 
@@ -54,12 +54,12 @@ export default class extends DecoratableMangaScraper {
         const response = await Fetch(new Request(chapterUrl));
         if (response.redirected) url.href = response.url;
 
-        const rasterScriptURL = url.searchParams.get("contents");
-        const verticalScriptURL = url.searchParams.get("contents_vertical");
-        const pageScriptURL = url.searchParams.get("contents_page");
-        const cryptokeyURL = url.searchParams.get("cryptokey");
-        const baseUrl = url.searchParams.get("directory");
-        const ver = url.searchParams.get("ver");
+        const rasterScriptURL = url.searchParams.get('contents');
+        const verticalScriptURL = url.searchParams.get('contents_vertical');
+        const pageScriptURL = url.searchParams.get('contents_page');
+        const cryptokeyURL = url.searchParams.get('cryptokey');
+        const baseUrl = url.searchParams.get('directory');
+        const ver = url.searchParams.get('ver');
 
         //Fetch key
         const cryptoKey = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
