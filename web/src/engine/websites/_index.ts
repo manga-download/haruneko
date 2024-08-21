@@ -673,6 +673,7 @@ export { default as TwoAnimx } from './TwoAnimx';
 export { default as UmeTruyen } from './UmeTruyen';
 export { default as UngTyComic } from './UngTyComic';
 export { default as UraSunday } from './UraSunday';
+export { default as Utoon } from './Utoon';
 export { default as UzayManga } from './UzayManga';
 export { default as ValkyrieScan } from './ValkyrieScan';
 export { default as VerComicsPorno } from './VerComicsPorno';
