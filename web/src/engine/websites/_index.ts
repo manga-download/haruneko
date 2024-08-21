@@ -1,5 +1,6 @@
 // Implemented Websites
 export { default as AdonisFansub } from './AdonisFansub';
+export { default as AduManga } from './AduManga';
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as AGS } from './AGS';
 export { default as Ainzscans } from './Ainzscans';
