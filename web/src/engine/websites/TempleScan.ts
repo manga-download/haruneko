@@ -5,7 +5,6 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIManga = {
-    id? : number,
     title: string,
     series_slug: string,
     Season?: {
