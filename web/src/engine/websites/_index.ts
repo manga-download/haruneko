@@ -505,6 +505,7 @@ export { default as Otsugami } from './Otsugami';
 export { default as OurFeel } from './OurFeel';
 export { default as PairOfTwo } from './PairOfTwo';
 export { default as PatyScans } from './PatyScans';
+export { default as PawManga } from './PawManga';
 export { default as PCNet } from './PCNet';
 export { default as PeanuToon } from './PeanuToon';
 export { default as PelaTeam } from './PelaTeam';
