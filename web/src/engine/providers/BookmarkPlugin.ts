@@ -142,7 +142,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         };
     }
 
-    public async Add(entry: MediaContainer<MediaContainer<MediaChild>>) {
+    public async Add(entry: MediaContainer<MediaChild>) {
         if(this.IsBookmarked(entry)) {
             // TODO: Keep duplicate bookmark, or replace with new one?
             return;
@@ -160,7 +160,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
         await this.storage.RemovePersistent(Store.Bookmarks, bookmark.StorageKey);
     }
 
-    public async Toggle(entry: MediaContainer<MediaContainer<MediaChild>>): Promise<boolean> {
+    public async Toggle(entry: MediaContainer<MediaChild>): Promise<boolean> {
         const bookmark = this.Find(entry);
         if (bookmark) {
             await this.Remove(bookmark);
