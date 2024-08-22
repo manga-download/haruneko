@@ -56,11 +56,10 @@
         bind:isPluginModalOpen
         on:close={() => (isPluginModalOpen = false)}
     />
+{/if}$
+{#if isSettingsModalOpen}
+    <SettingsMenu bind:isSettingsModalOpen selectedTab={settingsSelectedTabs} />
 {/if}
-<SettingsMenu
-    bind:isModalOpen={isSettingsModalOpen}
-    selectedTab={settingsSelectedTabs}
-/>
 {#if isBookmarksImportModalOpen}
     <BookmarksImport bind:isModalOpen={isBookmarksImportModalOpen} />
 {/if}

@@ -37,24 +37,17 @@
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
 
-    let medias: MediaContainer<MediaChild>[] = [];
-    let filteredmedias: MediaContainer<MediaChild>[] = [];
-    let fuse = new Fuse(medias, {
-        keys: ['Title'],
-        findAllMatches: true,
-        ignoreLocation: true,
-        minMatchCharLength: 1,
-        fieldNormWeight: 0,
-    });
-    let currentPlugin: MediaContainer<MediaContainer<MediaChild>>;
-    let loadPlugin: Promise<void>;
+    // Plugins selection
+    let currentPlugin: MediaContainer<MediaChild>;
+    let loadPlugin: Promise<MediaContainer<MediaChild>>;
+
     let disablePluginRefresh = false;
 
-    // Todo : implement favorites
+    // TODO: implement favorites
     let pluginsFavorites = ['sheep-scanlations'];
 
     let pluginsCombo: Array<ComboBoxItem>;
-    let orderedPlugins: MediaContainer<MediaContainer<MediaChild>>[] = [];
+    let orderedPlugins: MediaContainer<MediaChild>[] = [];
 
     orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
         return (
@@ -87,14 +80,23 @@
         const previousPlugin = currentPlugin;
         currentPlugin = $selectedPlugin;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
-            loadMedia($selectedPlugin);
+            loadMedias($selectedPlugin);
         disablePluginRefresh = false;
     }
     $: pluginDropdownSelected = currentPlugin?.Identifier;
 
-    function loadMedia(media: MediaContainer<MediaContainer<MediaChild>>) {
-        if (!media) return;
-        medias = media.Entries.Value ?? [];
+    // Medias list
+    let medias: MediaContainer<MediaChild>[] = [];
+    let filteredmedias: MediaContainer<MediaChild>[] = [];
+    let fuse = new Fuse([]);
+
+    $: loadPlugin = loadMedias($selectedPlugin);
+    async function loadMedias(
+        plugin: MediaContainer<MediaChild>,
+    ): Promise<MediaContainer<MediaChild>> {
+        if (!plugin) return;
+        const loadedmedias =
+            (plugin.Entries.Value as MediaContainer<MediaChild>[]) ?? [];
         fuse = new Fuse(medias, {
             keys: ['Title'],
             findAllMatches: true,
@@ -102,6 +104,8 @@
             minMatchCharLength: 1,
             fieldNormWeight: 0,
         });
+        medias = loadedmedias;
+        return plugin;
     }
 
     function filterMedia(mediaNameFilter: string) {
@@ -127,9 +131,8 @@
     async function onUpdateMediaEntriesClick() {
         $selectedMedia = undefined;
         $selectedItem = undefined;
-        loadPlugin = $selectedPlugin?.Update();
-        await loadPlugin;
-        loadMedia($selectedPlugin);
+        await $selectedPlugin.Update();
+        loadPlugin = loadMedias($selectedPlugin);
     }
 
     document.addEventListener('media-paste-url', onMediaPasteURL);
@@ -147,7 +150,7 @@
                     if (!$selectedMedia?.IsSameAs(media)) {
                         $selectedMedia = media;
                         medias = [media];
-                        loadPlugin = Promise.resolve();
+                        loadPlugin = Promise.resolve(media.Parent);
                     }
                     return;
                 }

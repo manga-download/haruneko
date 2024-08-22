@@ -28,34 +28,40 @@
     import type {
         StoreableMediaContainer,
         MediaItem,
+        MediaContainer,
+        MediaChild,
     } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
 
-    let items: StoreableMediaContainer<MediaItem>[] = [];
-    let filteredItems: StoreableMediaContainer<MediaItem>[] = [];
-    let loadItem: Promise<void>;
-    let selectedItems: StoreableMediaContainer<MediaItem>[] = [];
+    let items: MediaContainer<MediaItem>[] = [];
+    let filteredItems: MediaContainer<MediaItem>[] = [];
+    let selectedItems: MediaContainer<MediaItem>[] = [];
 
-    selectedItem.subscribe((item: StoreableMediaContainer<MediaItem>) => {
+    let loadItem: Promise<MediaContainer<MediaChild>>;
+
+    $: loadItem = updateMedia($selectedMedia);
+    async function updateMedia(
+        media: MediaContainer<MediaChild>,
+    ): Promise<MediaContainer<MediaChild>> {
+        items = [];
+        selectedItems = [];
+        if (media) {
+            await media?.Update();
+            items = media?.Entries.Value as MediaContainer<MediaItem>[];
+        }
+        return media;
+    }
+
+    selectedItem.subscribe((item: MediaContainer<MediaItem>) => {
         const position = filteredItems.indexOf(item);
         $selectedItemPrevious = filteredItems[position + 1];
         $selectedItemNext = filteredItems[position - 1];
     });
 
-    const onItemView =
-        (item: StoreableMediaContainer<MediaItem>) => (event) => {
-            if (item === $selectedItem || event.ctrlKey || event.shiftKey)
-                return;
-            $selectedItem = item;
-        };
-
-    selectedMedia.subscribe(async (value) => {
-        items = [];
-        selectedItems = [];
-        loadItem = value?.Update().then(() => {
-            items = (value?.Entries.Value as StoreableMediaContainer<MediaItem>[]) ?? [];
-        });
-    });
+    const onItemView = (item: MediaContainer<MediaItem>) => (event) => {
+        if (item === $selectedItem || event.ctrlKey || event.shiftKey) return;
+        $selectedItem = item;
+    };
 
     let itemNameFilter = '';
     $: filteredItems = items?.filter((item) => {
@@ -74,8 +80,12 @@
 
     let MediaLanguages: Tag[] = [];
     $: MediaLanguages = items.reduce((detectedLangaugeTags: Tag[], item) => {
-        const undetectedLangaugeTags = item.Tags.Value.filter(tag => !detectedLangaugeTags.includes(tag) && availableLanguageTags.includes(tag));
-        return [ ...detectedLangaugeTags, ...undetectedLangaugeTags ];
+        const undetectedLangaugeTags = item.Tags.Value.filter(
+            (tag) =>
+                !detectedLangaugeTags.includes(tag) &&
+                availableLanguageTags.includes(tag),
+        );
+        return [...detectedLangaugeTags, ...undetectedLangaugeTags];
     }, []);
     $: langComboboxItems =
         MediaLanguages.length > 0
@@ -101,106 +111,104 @@
 
     let multipleSelectionDragFrom: number = -1;
     let multipleSelectionDragTo: number = -1;
-    let selectedDragItems: StoreableMediaContainer<MediaItem>[] = [];
-    let contextItem: StoreableMediaContainer<MediaItem>;
+    let selectedDragItems: MediaContainer<MediaItem>[] = [];
+    let contextItem: MediaContainer<MediaItem>;
     let contextMenuOpen;
 
     $: if (!contextMenuOpen) contextItem = null;
 
-    const mouseHandler =
-        (item: StoreableMediaContainer<MediaItem>) => (event: any) => {
-            if (event.button === 2) {
-                contextItem = item;
-            }
-            if (event.button === 0) {
-                // left click
-                switch (event.type) {
-                    case 'mousedown':
-                        multipleSelectionDragFrom = filteredItems.indexOf(item);
-                        multipleSelectionDragTo = -1;
-                        selectedDragItems = [];
-                        break;
-                    case 'mouseenter':
-                        multipleSelectionDragTo = filteredItems.indexOf(item);
-                        break;
-                    case 'mouseup':
-                        multipleSelectionDragTo = filteredItems.indexOf(item);
-                        onItemClick(event, item);
-                        break;
-                }
-            }
-
-            function onItemClick(
-                event: MouseEvent,
-                item: StoreableMediaContainer<MediaItem>,
-            ) {
-                if (multipleSelectionDragFrom !== multipleSelectionDragTo) {
-                    // multiple item
-                    filteredItems.forEach((item, index) => {
-                        // Select all items between first and last drag
-                        if (
-                            (index >= multipleSelectionDragFrom &&
-                                index <= multipleSelectionDragTo) ||
-                            (index >= multipleSelectionDragTo &&
-                                index <= multipleSelectionDragFrom)
-                        )
-                            selectedDragItems.push(item);
-                    });
-
-                    if (event.shiftKey || event.ctrlKey) {
-                        // Merge & dedupe
-                        selectedItems = [
-                            ...new Set([
-                                ...selectedItems,
-                                ...selectedDragItems,
-                            ]),
-                        ];
-                    } else {
-                        selectedItems = selectedDragItems;
-                    }
+    const mouseHandler = (item: MediaContainer<MediaItem>) => (event: any) => {
+        if (event.button === 2) {
+            contextItem = item;
+        }
+        if (event.button === 0) {
+            // left click
+            switch (event.type) {
+                case 'mousedown':
+                    multipleSelectionDragFrom = filteredItems.indexOf(item);
+                    multipleSelectionDragTo = -1;
                     selectedDragItems = [];
+                    break;
+                case 'mouseenter':
+                    multipleSelectionDragTo = filteredItems.indexOf(item);
+                    break;
+                case 'mouseup':
+                    multipleSelectionDragTo = filteredItems.indexOf(item);
+                    onItemClick(event, item);
+                    break;
+            }
+        }
+
+        function onItemClick(
+            event: MouseEvent,
+            item: MediaContainer<MediaItem>,
+        ) {
+            if (multipleSelectionDragFrom !== multipleSelectionDragTo) {
+                // multiple item
+                filteredItems.forEach((item, index) => {
+                    // Select all items between first and last drag
+                    if (
+                        (index >= multipleSelectionDragFrom &&
+                            index <= multipleSelectionDragTo) ||
+                        (index >= multipleSelectionDragTo &&
+                            index <= multipleSelectionDragFrom)
+                    )
+                        selectedDragItems.push(item);
+                });
+
+                if (event.shiftKey || event.ctrlKey) {
+                    // Merge & dedupe
+                    selectedItems = [
+                        ...new Set([...selectedItems, ...selectedDragItems]),
+                    ];
                 } else {
-                    // click on item
-                    if (event.shiftKey) {
-                        //range mode
-                        if (multipleSelectionFrom === -1) {
-                            multipleSelectionFrom = filteredItems.indexOf(item);
-                            multipleSelectionTo = multipleSelectionFrom;
-                            selectedItems = [item];
-                        } else {
-                            multipleSelectionTo = filteredItems.indexOf(item);
-                            if (multipleSelectionFrom > multipleSelectionTo) {
-                                const swap: number = multipleSelectionFrom;
-                                multipleSelectionFrom = multipleSelectionTo;
-                                multipleSelectionTo = swap;
-                            }
-                            selectedItems = filteredItems.slice(
-                                multipleSelectionFrom,
-                                multipleSelectionTo + 1,
-                            );
-                        }
-                    } else if (event.ctrlKey) {
-                        //multiple mode
-                        multipleSelectionFrom = filteredItems.indexOf(item);
-                        multipleSelectionTo = -1;
-                        if (selectedItems.includes(item))
-                            selectedItems = selectedItems.filter(
-                                (search) => search !== item,
-                            );
-                        else selectedItems = [...selectedItems, item];
-                    } else {
-                        //single item
+                    selectedItems = selectedDragItems;
+                }
+                selectedDragItems = [];
+            } else {
+                // click on item
+                if (event.shiftKey) {
+                    //range mode
+                    if (multipleSelectionFrom === -1) {
                         multipleSelectionFrom = filteredItems.indexOf(item);
                         multipleSelectionTo = multipleSelectionFrom;
                         selectedItems = [item];
+                    } else {
+                        multipleSelectionTo = filteredItems.indexOf(item);
+                        if (multipleSelectionFrom > multipleSelectionTo) {
+                            const swap: number = multipleSelectionFrom;
+                            multipleSelectionFrom = multipleSelectionTo;
+                            multipleSelectionTo = swap;
+                        }
+                        selectedItems = filteredItems.slice(
+                            multipleSelectionFrom,
+                            multipleSelectionTo + 1,
+                        );
                     }
+                } else if (event.ctrlKey) {
+                    //multiple mode
+                    multipleSelectionFrom = filteredItems.indexOf(item);
+                    multipleSelectionTo = -1;
+                    if (selectedItems.includes(item))
+                        selectedItems = selectedItems.filter(
+                            (search) => search !== item,
+                        );
+                    else selectedItems = [...selectedItems, item];
+                } else {
+                    //single item
+                    multipleSelectionFrom = filteredItems.indexOf(item);
+                    multipleSelectionTo = multipleSelectionFrom;
+                    selectedItems = [item];
                 }
             }
-        };
+        }
+    };
 
-    function downloadItems(items: StoreableMediaContainer<MediaItem>[]) {
+    function downloadItems(items: MediaContainer<MediaItem>[]) {
         items.forEach((item) => {
-            window.HakuNeko.DownloadManager.Enqueue(item);
+            window.HakuNeko.DownloadManager.Enqueue(
+                item as StoreableMediaContainer<MediaItem>,
+            );
         });
     }
 </script>
