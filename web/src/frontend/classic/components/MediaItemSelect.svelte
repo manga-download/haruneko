@@ -32,6 +32,9 @@
         MediaChild,
     } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
+    import { resizeBar } from '../lib/actions';
+
+    let ref:HTMLElement;
 
     let items: MediaContainer<MediaItem>[] = [];
     let filteredItems: MediaContainer<MediaItem>[] = [];
@@ -287,7 +290,7 @@
     </ContextMenu>
 {/if}
 
-<div id="Item" transition:fade>
+<div id="Item" transition:fade bind:this={ref}>
     <div id="ItemTitle">
         <h5>Item List</h5>
     </div>
@@ -343,6 +346,12 @@
     <div id="ItemCount">
         Items: {filteredItems.length}/{items.length}
     </div>
+    <div 
+        role="separator"
+        aria-orientation="vertical"
+        class="resize"
+        use:resizeBar={{target: ref, orientation:'vertical'}}
+    ></div>
 </div>
 
 <style>
@@ -350,17 +359,16 @@
         display: grid;
         min-height: 0;
         height: 100%;
+        grid-template-columns: 1fr 4px;
         grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
-            'ItemTitle'
-            'LanguageFilter'
-            'ItemFilter'
-            'ItemList'
-            'ItemCount';
+            'ItemTitle Nothing'
+            'LanguageFilter Resize'
+            'ItemFilter Resize'
+            'ItemList Resize'
+            'ItemCount Resize';
         grid-area: Item;
-        overflow-x: hidden;
-        resize: horizontal;
         min-width: 22em;
     }
     #LanguageFilter {
@@ -392,5 +400,14 @@
         white-space: nowrap;
         list-style-type: none;
         padding: 0.25em;
+    }
+    .resize {
+        grid-area: Resize;
+        float:right;
+        width:4px;
+        cursor: col-resize;
+    }
+    .resize:hover {
+            background-color:var(--cds-ui-02); 
     }
 </style>

@@ -36,6 +36,9 @@
     import type { MediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
+    import { resizeBar } from '../lib/actions';
+
+    let ref:HTMLElement;
 
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild>;
@@ -183,7 +186,7 @@
         />
     </div>
 {/if}
-<div id="Media" transition:fade>
+<div id="Media" transition:fade bind:this={ref}>
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
@@ -251,6 +254,13 @@
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
     </div>
+    <div 
+        role="separator"
+        aria-orientation="vertical"
+        class="resize"
+        use:resizeBar={{target: ref, orientation:'vertical'}}
+    > </div>
+    
 </div>
 
 <style>
@@ -258,17 +268,16 @@
         min-height: 0;
         height: 100%;
         display: grid;
+        grid-template-columns: 1fr 4px;
         grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
-            'MediaTitle'
-            'Plugin'
-            'MediaFilter'
-            'MediaList'
-            'MediaCount';
+            'MediaTitle Empty'
+            'Plugin Resize'
+            'MediaFilter Resize'
+            'MediaList Resize'
+            'MediaCount Resize';
         grid-area: Media;
-        overflow-x: hidden;
-        resize: horizontal;
         min-width: 22em;
     }
     #Plugin {
@@ -303,5 +312,13 @@
     }
     .error {
         padding: 0 1em 0 1em;
+    }
+    .resize {
+        grid-area: Resize;
+        width:4px;
+        cursor: col-resize;
+    }
+    .resize:hover {
+            background-color:var(--cds-ui-02); 
     }
 </style>
