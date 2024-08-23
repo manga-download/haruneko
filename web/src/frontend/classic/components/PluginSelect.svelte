@@ -49,7 +49,7 @@
     let pagination = {
         totalItems: 0,
         page: 1,
-        pageSize: 5,
+        pageSize: 10,
         pageSizes: [5, 10, 20],
     };
 
@@ -168,7 +168,7 @@
             { key: 'tags', value: 'Tags' },
             { key: 'overflow', empty: true },
         ]}
-        bind:pageSize={pagination.pageSize}
+        pageSize={pagination.pageSize}
         bind:page={pagination.page}
         rows={filteredPluginlist}
         on:click:row={(event) => {
@@ -204,6 +204,7 @@
             {#if cell.key === 'favorite'}
                 <Button
                     kind="ghost"
+                    size="small"
                     iconDescription="Add to favorites"
                     icon={true ? StarFilled : Star}
                     on:click={(e) => {
@@ -252,11 +253,14 @@
         </div>
     </DataTable>
     <Pagination
-        bind:pageSize={pagination.pageSize}
+        pageSize={pagination.pageSize}
         bind:page={pagination.page}
         totalItems={pagination.totalItems}
-        pageSizes={pagination.pageSizes}
     />
+    <!-- TEMPORARY svelte5 bugfix (original below)
+        bind:pageSize={pagination.pageSize} 
+        pageSizes={pagination.pageSizes} 
+    -->
 </Modal>
 
 {#if pluginToConfigure}
