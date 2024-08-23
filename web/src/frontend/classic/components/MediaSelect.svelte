@@ -17,7 +17,7 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-    import VirtualList from '@sveltejs/svelte-virtual-list';
+    import VirtualList from '../lib/virtualList.svelte';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
@@ -174,6 +174,9 @@
     async function selectFocus(event: FocusEvent) {
         pluginDropdownValue = '';
     }
+    // VirtualList
+    let container:HTMLElement;
+    let containerHeight = 0;
 </script>
 
 {#if isTrackerModalOpen}
@@ -226,20 +229,25 @@
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list">
+    <div id="MediaList" class="list" bind:this={container} bind:clientHeight={containerHeight}>
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
                 <div>... medias</div>
             </div>
         {:then}
-            <VirtualList items={filteredmedias} let:item>
-                <Media
-                    media={item}
-                    on:select={(e) => {
-                        $selectedMedia = e.detail;
-                    }}
-                />
+            <VirtualList {container} items={filteredmedias} itemHeight={24}  {containerHeight} let:item let:dummy let:y>
+                {#if dummy}
+                    <div class="empty" class:dummy style="position: relative; top:{y}px;"></div>
+                {:else}
+                    <Media 
+                        media={item}
+                        style="position: relative; top:{y}px;"
+                        on:select={(e) => {
+                            $selectedMedia = e.detail;
+                        }}
+                    />
+                {/if}
             </VirtualList>
         {:catch error}
             <div class="error">
@@ -296,6 +304,7 @@
         box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
         overflow: hidden;
         user-select: none;
+        overflow: auto;
     }
     #MediaList .loading {
         width: 100%;
@@ -320,5 +329,9 @@
     }
     .resize:hover {
             background-color:var(--cds-ui-02); 
+    }
+    .empty {
+        height: 24px;
+        line-height: 24px;
     }
 </style>

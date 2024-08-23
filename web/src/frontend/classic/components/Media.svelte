@@ -22,6 +22,8 @@
     } from '../../../engine/providers/MediaPlugin';
     import { Bookmark } from '../../../engine/providers/Bookmark';
 
+    export let style = '';
+
     export let media: MediaContainer<MediaChild>;
     let selected: boolean = false;
     $: selected = $selectedMedia?.IsSameAs(media);
@@ -73,7 +75,7 @@
     <ContextMenuDivider />
 </ContextMenu>
 
-<div bind:this={mediadiv} class="media" in:fade class:selected>
+<div bind:this={mediadiv} class="media" {style} in:fade class:selected>
     {#if isOrphaned}
         <span in:coinflip={{ duration: 200 }}>
             <Button
