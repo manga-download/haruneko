@@ -240,13 +240,15 @@
                 {#if dummy}
                     <div class="empty" class:dummy style="position: relative; top:{y}px;"></div>
                 {:else}
-                    <Media 
-                        media={item}
-                        style="position: relative; top:{y}px;"
-                        on:select={(e) => {
-                            $selectedMedia = e.detail;
-                        }}
-                    />
+                    {#key item}
+                        <Media 
+                            media={item}
+                            style="position: relative; top:{y}px;"
+                            on:select={(e) => {
+                                $selectedMedia = e.detail;
+                            }}
+                        />
+                    {/key}
                 {/if}
             </VirtualList>
         {:catch error}

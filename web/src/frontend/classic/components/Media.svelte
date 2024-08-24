@@ -21,6 +21,7 @@
         MediaChild,
     } from '../../../engine/providers/MediaPlugin';
     import { Bookmark } from '../../../engine/providers/Bookmark';
+    import { onDestroy, onMount } from 'svelte';
 
     export let style = '';
 
@@ -43,18 +44,30 @@
 
     //Unviewed content
     let unFlaggedItems: MediaContainer<MediaChild>[] = [];
-    findMediaUnFlaggedContent(media);
-    HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(() =>
-        findMediaUnFlaggedContent(media),
-    );
+    let delayedContentCheck;
 
-    async function findMediaUnFlaggedContent(
-        media: MediaContainer<MediaChild>,
-    ) {
-        unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
-            media,
-        )) as MediaContainer<MediaChild>[];
+
+    async function findMediaUnFlaggedContent(updatedmedia:MediaContainer<MediaChild>) {
+        if (updatedmedia.IsSameAs(media)) { 
+            unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
+                media,
+            )) as MediaContainer<MediaChild>[];
+        } 
     }
+
+    onMount(() => {
+        delayedContentCheck = setTimeout(
+        () => {
+            findMediaUnFlaggedContent(media);
+            HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
+        },1500);
+    });
+
+    onDestroy(() => {
+        clearTimeout(delayedContentCheck);
+        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Unsubscribe(findMediaUnFlaggedContent);
+    });
+    
 </script>
 
 <ContextMenu target={[mediadiv]}>
