@@ -93,6 +93,7 @@ export { default as CyComi } from './CyComi';
 export { default as CypherScans } from './CypherScans';
 export { default as DankeFursLesen } from './DankeFursLesen';
 export { default as DarkScan } from './DarkScan';
+export { default as DayComics } from './DayComics';
 export { default as Daysneo } from './Daysneo';
 export { default as DeathTollScans } from './DeathTollScans';
 export { default as DecadenceScans } from './DecadenceScans';
