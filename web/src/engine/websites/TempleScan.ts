@@ -26,7 +26,7 @@ type APIChapter = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.templescan.net/api/';
-    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/(comic/[^/]+)$`);
+    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/(comic/[^/]+)$`);
 
     public constructor() {
         super('templescan', 'TempleScan', 'https://templescan.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
