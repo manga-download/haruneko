@@ -1,9 +1,6 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './VizShonenJump.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { Fetch, FetchCSS, FetchHTML, FetchWindowScript } from '../../platform/FetchProvider';
 import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from '../decorators/Common';
@@ -48,11 +45,13 @@ const PagesScript = `
     });
 `;
 
+const MangasExtractor = Common.AnchorInfoExtractor(false, '.display-label');
+
 export default class extends DecoratableMangaScraper {
     private userInfos: UserInfos;
 
     public constructor() {
-        super('vizshonenjump', `Viz - Shonen Jump`, 'https://www.viz.com' /*, Tags.Language.English, Tags ... */);
+        super('vizshonenjump', `Viz - Shonen Jump`, 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
         //this.imageTaskPool.RateLimit = new RateLimit(1, 0.5);
     }
 
@@ -62,35 +61,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
-            ...await this.GetMangasAvailableByVolumes(provider),
-            ...await this.GetMangasAvailableByChapters(provider),
-            ...await this.GetMangasAvailableByVizMangaChapters(provider)
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/account/library', 'table.purchase-table a', MangasExtractor ),
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/shonenjump/section/free-chapters', 'table.purchase-table a', MangasExtractor),
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/vizmanga/section/free-chapters', 'div.o_sort_container div.o_sortable a.o_chapters-link', MangasExtractor)
         ].distinct();
-    }
-
-    private async GetMangasAvailableByVolumes(provider: MangaPlugin): Promise<Manga[]> {
-        const dom = await FetchHTML(new Request(new URL('/account/library', this.URI)));
-        if (dom.documentElement.innerText.includes('Log in to view your library')) { // User isn't logged in, so there's no availible volumes
-            return [];
-        }
-        return [...dom.querySelectorAll<HTMLAnchorElement>('table.purchase-table a')].map(manga => new Manga(this, provider, manga.pathname, manga.innerText.trim()));
-    }
-
-    private async GetMangasAvailableByChapters(provider: MangaPlugin): Promise<Manga[]> {
-        const dom = await FetchHTML(new Request(new URL('/read/shonenjump/section/free-chapters', this.URI)));
-        if (!dom.documentElement.innerText.includes('Latest free chapters')) { //'This website is geolocked. It can only be accessed from the USA.\nYou may use MANGA Plus instead.
-            return [];
-        }
-        return [...dom.querySelectorAll<HTMLAnchorElement>('div.o_sort_container div.o_sortable a.o_chapters-link')]
-            .map(manga => new Manga(this, provider, manga.pathname, manga.innerText.trim()));
-    }
-
-    private async GetMangasAvailableByVizMangaChapters(provider: MangaPlugin): Promise<Manga[]> {
-        const dom = await FetchHTML(new Request(new URL('/read/vizmanga/section/free-chapters', this.URI)));
-        if (!dom.documentElement.innerText.includes('Latest free chapters')) { //'This website is geolocked. It can only be accessed from the USA.\nYou may use MANGA Plus instead.
-            return [];
-        }
-        return [...dom.querySelectorAll<HTMLAnchorElement>('div.o_sort_container div.o_sortable a.o_chapters-link')].map(manga => new Manga(this, provider, manga.pathname, manga.innerText.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -104,12 +78,10 @@ export default class extends DecoratableMangaScraper {
         if (manga.Identifier.startsWith('/account/library')) {
             return await this.GetMangaVolumes(manga);
         }
-
-        throw new Error(`Failed to get chapters/volumes for manga ${manga.Identifier}, because the manga type is not supported!`);
     }
 
     private async GetChapters(manga: Manga, hasAccess: boolean): Promise<Chapter[]> {
-        let chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div > a.o_chapter-container[data-target-url], tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]');
+        const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div > a.o_chapter-container[data-target-url], tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]');
         return chapters
             .filter(element => {
                 if (/javascript:.*join/i.test(element.href)) {
@@ -129,8 +101,6 @@ export default class extends DecoratableMangaScraper {
                 if (format && format.length > 1) {
                     return new Chapter(this, manga, targetUrl, 'Ch. ' + format[1].replace(/[-_]/g, '.'));
                 }
-
-                throw new Error(`Unknown chapter format for ${targetUrl}. Please report at https://github.com/manga-download/hakuneko/issues`);
             });
     }
 
