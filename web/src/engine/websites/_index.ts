@@ -297,6 +297,7 @@ export { default as MangaBTT } from './MangaBTT';
 export { default as MangaBuddy } from './MangaBuddy';
 export { default as MangaCanBlog } from './MangaCanBlog';
 export { default as MangaChan } from './MangaChan';
+export { default as MangaChap } from './MangaChap';
 export { default as MangaChill } from './MangaChill';
 export { default as Mangacim } from './Mangacim';
 export { default as MangaClash } from './MangaClash';
