@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangademon',
-        title: 'MangaDemon'
+        id: 'rimuscans',
+        title: 'RimuScans'
     },
     container: {
-        url: 'https://demonicscans.org/manga/Martial-Peak',
-        id: '/manga/Martial-Peak',
-        title: 'Martial Peak'
+        url: 'https://rimuscans.fr/manga/bones/',
+        id: '/manga/bones/',
+        title: 'Bones'
     },
     child: {
-        id: '/chaptered.php?manga=1&chapter=3670',
-        title: '3670'
+        id: '/bones-chapitre-1/',
+        title: 'Chapitre 1'
     },
     entry: {
-        index: 0,
-        size: 328_479,
+        index: 1,
+        size: 1_963_861,
         type: 'image/jpeg'
     }
 };

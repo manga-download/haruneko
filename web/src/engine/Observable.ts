@@ -51,15 +51,17 @@ export class Observable<TValue, TOwner = null> implements IObservable<TValue, TO
     /**
      * Register a {@link callback} that gets invoked whenever the {@link Value} is changed or a notification is forced via {@link Dispatch}.
      */
-    public Subscribe(callback: SubscriberCallback<TValue, TOwner>): void {
+    public Subscribe(callback: SubscriberCallback<TValue, TOwner>): typeof this {
         this.subscribers.add(callback);
+        return this;
     }
 
     /**
      * Unregister the {@link callback} from any further notifications.
      */
-    public Unsubscribe(callback: SubscriberCallback<TValue, TOwner>): void {
+    public Unsubscribe(callback: SubscriberCallback<TValue, TOwner>): typeof this {
         this.subscribers.delete(callback);
+        return this;
     }
 }
 

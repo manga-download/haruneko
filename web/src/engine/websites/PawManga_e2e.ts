@@ -3,21 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'nekomik',
-        title: 'Nekomik'
+        id: 'pawmanga',
+        title: 'PawManga'
     },
     container: {
-        url: 'https://nekomik.me/manga/peerless-dad/',
-        id: '/manga/peerless-dad/',
-        title: 'Peerless Dad'
+        url: 'https://pawmanga.com/manga/ancient-god-games/',
+        id: JSON.stringify({ post: '29716', slug: '/manga/ancient-god-games/'}),
+        title: 'Ancient God Games'
     },
     child: {
-        id: '/peerless-dad-chapter-00/',
-        title: 'Chapter 00'
+        id: '/manga/ancient-god-games/chapter-44/',
+        title: 'Chapter 44'
     },
     entry: {
         index: 1,
-        size: 57_374,
+        size: 53_744,
         type: 'image/jpeg'
     }
 };

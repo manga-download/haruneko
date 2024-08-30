@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangademon',
-        title: 'MangaDemon'
+        id: 'qiman5',
+        title: '奇漫屋 (Qiman5)'
     },
     container: {
-        url: 'https://demonicscans.org/manga/Martial-Peak',
-        id: '/manga/Martial-Peak',
-        title: 'Martial Peak'
+        url: 'https://qiman2.com/16257.html',
+        id: '/16257.html',
+        title: '斗破苍穹之大主宰'
     },
     child: {
-        id: '/chaptered.php?manga=1&chapter=3670',
-        title: '3670'
+        id: '/16257/1274202.html',
+        title: '1话 激战过后'
     },
     entry: {
-        index: 0,
-        size: 328_479,
+        index: 3,
+        size: 278_279,
         type: 'image/jpeg'
     }
 };

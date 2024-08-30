@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './Nekomik.webp';
+import icon from './RimuScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/nekomik\.me\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS()
+@Common.PagesSinglePageJS('ts_reader.params.sources.shift().images', 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nekomik', 'Nekomik', 'https://nekomik.me/', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian);
+        super('rimuscans', 'RimuScans', 'https://rimuscans.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

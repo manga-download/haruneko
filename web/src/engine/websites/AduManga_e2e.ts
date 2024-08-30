@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'truyentranhdammy',
-        title: 'Truyện Nhà Meo'
+        id: 'adumanga',
+        title: 'AduManga'
     },
     container: {
-        url: 'https://truyennhameo.com/manga/du-dich-tham-nhap/',
-        id: JSON.stringify({ post: '10506', slug: '/manga/du-dich-tham-nhap/' }),
-        title: 'Dụ Địch Thâm Nhập'
+        url: 'https://adumanga.com/manga/get-away-matsumoto/',
+        id: '/manga/get-away-matsumoto/',
+        title: 'Get away, Matsumoto!'
     },
     child: {
-        id: '/manga/du-dich-tham-nhap/chapter-4/',
-        title: 'Chapter 4'
+        id: '/get-away-matsumoto-bolum-1/',
+        title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: 261_416,
+        size: 250_586,
         type: 'image/jpeg'
     }
 };

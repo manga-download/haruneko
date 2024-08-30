@@ -7,7 +7,7 @@ const config = {
         title: 'RawLazy'
     },
     container: {
-        url: 'https://rawlazy.tv/manga-lazy/彼女-お借りします-raw-free/',
+        url: 'https://rawlazy.is/manga-lazy/彼女-お借りします-raw-free/',
         id: encodeURI('/manga-lazy/彼女-お借りします-raw-free/'),
         title: '彼女、お借りします'
     },
