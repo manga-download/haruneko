@@ -730,7 +730,6 @@ export { default as ZinMangaNet } from './ZinMangaNet';
 // Legacy Websites
 export { default as AllHentai } from './legacy/AllHentai';
 export { default as AnimePahe } from './legacy/AnimePahe';
-export { default as Aniwave } from './legacy/Aniwave';
 export { default as ArazNovel } from './legacy/ArazNovel';
 export { default as BilibiliManhua } from './legacy/BilibiliManhua';
 export { default as BookLive } from './legacy/BookLive';
