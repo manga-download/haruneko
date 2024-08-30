@@ -495,6 +495,7 @@ export { default as NocturneSummer } from './NocturneSummer';
 export { default as NoraNoFansub } from './NoraNoFansub';
 export { default as Noromax } from './Noromax';
 export { default as NovelMic } from './NovelMic';
+export { default as NoxScans } from './NoxScans';
 export { default as NvManga } from './NvManga';
 export { default as Nyrax } from './Nyrax';
 export { default as OlympusScanlation } from './OlympusScanlation';
