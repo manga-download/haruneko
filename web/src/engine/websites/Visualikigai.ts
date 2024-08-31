@@ -16,7 +16,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'article > img', MangaLabelExtractor)
-    @Common.MangasMultiPageCSS('/series/?pagina={page}', 'section ul li a[q\\:key]', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('/series/?pagina={page}', 'section ul li a[q\\:key]', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageCSS('div.w-full img[alt*="Page"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
