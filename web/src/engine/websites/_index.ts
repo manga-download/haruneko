@@ -686,6 +686,7 @@ export { default as VerComicsPorno } from './VerComicsPorno';
 export { default as VerMangasPorno } from './VerMangasPorno';
 export { default as VerManhwa } from './VerManhwa';
 export { default as ViewComics } from './ViewComics';
+export { default as Visualikigai } from './Visualikigai';
 export { default as ViyaFansub } from './ViyaFansub';
 export { default as VNSharing } from './VNSharing';
 export { default as VoidScans } from './VoidScans';
