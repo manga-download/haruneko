@@ -1,8 +1,19 @@
 <script lang="ts">
     import { crossfade, fade } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
-    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-    const dispatch = createEventDispatcher();
+    import { onDestroy, onMount } from 'svelte';
+    // Events
+    
+    interface Props {
+        item: MediaContainer<MediaItem>;
+        currentImageIndex: number;
+        wide: Boolean;
+        nextItem?: () => void;
+        previousItem?: () => void;
+        close?: () => void;
+    };
+    let { item, currentImageIndex, wide = $bindable(), nextItem, close }: Props  = $props();
+
     // UI
     import { InlineNotification } from 'carbon-components-svelte';
     // engine
@@ -27,10 +38,6 @@
     import { scrollSmoothly, scrollMagic, toggleFullScreen } from './utilities';
     import { dragscroll } from '@svelte-put/dragscroll';
 
-    export let item: MediaContainer<MediaItem>;
-    export let currentImageIndex: number = -1;
-    export let wide: Boolean;
-
     onMount(() => {
         viewer.addEventListener('scroll', onScroll);
     });
@@ -41,14 +48,12 @@
         zoomunsubscribe();
     });
 
-    $: entries = item.Entries.Value;
-
-    const title = item?.Title ?? 'unkown';
+    let entries = $state(item.Entries.Value);
     let viewer: HTMLElement;
 
     function onClose() {
         wide = false;
-        dispatch('close');
+        close();
     }
 
     function onKeyDown(event: KeyboardEvent) {
@@ -74,10 +79,10 @@
                 });
                 break;
             case event.code === 'ArrowRight':
-                dispatch('nextItem');
+                nextItem();
                 break;
             case event.code === 'ArrowLeft':
-                dispatch('previousItem');
+                nextItem();
                 break;
             case event.key === '*':
                 $ViewerZoom = 100;
@@ -136,9 +141,9 @@
     });
 
     // Auto next item after reaching end of page
-    let autoNextItem = false;
+    let autoNextItem = $state(false);
     async function onNextItemCallback() {
-        if (autoNextItem && selectedItemNext) dispatch('nextItem');
+        if (autoNextItem && selectedItemNext) nextItem();
         else {
             autoNextItem = true;
             setTimeout(function () {
@@ -158,34 +163,34 @@
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
     // Dynamic css values
-    $: cssvars = {
-        'viewer-padding': `${$ViewerPadding}em`,
-    };
-    $: cssVarStyles = Object.entries(cssvars)
+    let cssvars = $derived({'viewer-padding': `${$ViewerPadding}em`});
+    let cssVarStyles = $derived(Object.entries(cssvars)
         .map(([key, value]) => `--${key}:${value}`)
-        .join(';');
+        .join(';'));
 
     // Entering wide mode : scroll to image
-    $: if (wide) {
-        if (currentImageIndex != -1) {
-            // delay because of smooth transition
-            setTimeout(() => {
-                const targetScrollImage =
-                    viewer.querySelectorAll('ImageViewer>img')[
-                        currentImageIndex
-                    ];
-                targetScrollImage?.scrollIntoView({
-                    behavior: 'smooth',
-                    inline: 'center',
-                });
-                currentImageIndex = -1;
-            }, 200);
+    $effect(() => {
+         if (wide) {
+            if (currentImageIndex != -1) {
+                // delay because of smooth transition
+                setTimeout(() => {
+                    const targetScrollImage =
+                        viewer.querySelectorAll('ImageViewer>img')[
+                            currentImageIndex
+                        ];
+                    targetScrollImage?.scrollIntoView({
+                        behavior: 'smooth',
+                        inline: 'center',
+                    });
+                    currentImageIndex = -1;
+                }, 200);
+            }
+            document.addEventListener('keydown', onKeyDown);
+        } else {
+            document.removeEventListener('keydown', onKeyDown);
+            if (viewer) viewer.style.userSelect = 'none';
         }
-        document.addEventListener('keydown', onKeyDown);
-    } else {
-        document.removeEventListener('keydown', onKeyDown);
-        if (viewer) viewer.style.userSelect = 'none';
-    }
+    });
 
     const [send, receive] = crossfade({
         duration: 1500,
@@ -198,7 +203,7 @@
     bind:this={viewer}
     role="button"
     tabindex="-1"
-    on:dblclick={() => toggleFullScreen()}
+    ondblclick={() => toggleFullScreen()}
     transition:fade
     class="{wide ? 'wide' : 'thumbnail'} {$ViewerMode} {$ViewerReverseDirection
         ? 'reverse'
@@ -227,11 +232,10 @@
 
     {#each entries as content, index (index)}
         <button
-            on:click={() => {
+            onclick={() => {
                 currentImageIndex = index;
                 wide = true;
             }}
-            on:keypress
             in:send={{ key: index }}
             out:receive={{ key: index }}
         >
@@ -244,14 +248,13 @@
     {/each}
 </div>
 {#if autoNextItem && $selectedItemNext !== undefined}
-    <div transition:fade>
+    <div  style="z-index: 20000; position: fixed; bottom: 2em; right: 2em;" transition:fade>
         <InlineNotification
             kind="info"
             title="Bottom reached"
             subtitle="Click or Press space again to go to next item."
-            on:click={() => dispatch('nextitem')}
-            on:close={() => (autoNextItem = false)}
-            style="z-index: 10000; position: fixed; bottom: 2em; right: 2em;"
+            onclick={() => nextItem()}
+            onclose={() => (autoNextItem = false)}
         />
     </div>
 {/if}
