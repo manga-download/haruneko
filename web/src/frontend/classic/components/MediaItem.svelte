@@ -1,7 +1,15 @@
 <script lang="ts">
-    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+    import { onMount, onDestroy} from 'svelte';
     import { fade } from 'svelte/transition';
-    const dispatch = createEventDispatcher();
+
+    interface Props {
+        item: MediaContainer<MediaItem>;
+        selected: boolean;
+        hover: boolean;
+        multilang ?: boolean;
+        onView: (MouseEvent) => void;
+    };
+    let { item, selected, hover , multilang = false, onView }: Props  = $props();
 
     import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
@@ -44,16 +52,14 @@
     import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
-    export let item: MediaContainer<MediaItem>;
-    export let selected: boolean;
-    export let hover: boolean;
-    export let multilang = false;
+
     let flag: FlagType;
     const flagiconmap = new Map<FlagType, any>([
         [FlagType.Viewed, ViewFilled],
         [FlagType.Current, IconBookmarkFilled],
     ]);
-    $: flagicon = flagiconmap.get(flag) || View;
+
+    let flagicon = $derived(flagiconmap.get(flag) || View);
 
     async function OnFlagChangedCallback(flagData: EntryFlagEventData) {
         if (flagData.Entry === item) {
@@ -90,7 +96,6 @@
     }
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
     class="listitem"
     role="listitem"
@@ -98,11 +103,6 @@
     class:selected
     class:hover
     class:active={$selectedItem?.Identifier === item?.Identifier}
-    on:click
-    on:mousedown
-    on:mouseup
-    on:mouseenter
-    on:keypress
 >
     <Button
         size="small"
@@ -140,9 +140,9 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="View"
-        on:click={(event) => dispatch('view', event)}
+        on:click={(event) => onView(event)}
     />
-    <ClickableTile class="title" on:click={(event) => dispatch('view', event)}>
+    <ClickableTile class="title" on:click={(event) => onView(event)}>
         {#if multilang}
             <span class="multilang">
                 {extractUnicodeFlagFromTags(item.Tags.Value)}

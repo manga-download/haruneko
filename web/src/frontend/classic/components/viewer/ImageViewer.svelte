@@ -7,12 +7,12 @@
     interface Props {
         item: MediaContainer<MediaItem>;
         currentImageIndex: number;
-        wide: Boolean;
-        nextItem?: () => void;
-        previousItem?: () => void;
-        close?: () => void;
+        wide: boolean;
+        onNextItem: () => void;
+        onPreviousItem: () => void;
+        onClose: () => void;
     };
-    let { item, currentImageIndex, wide = $bindable(), nextItem, close }: Props  = $props();
+    let { item, currentImageIndex, wide = $bindable(), onNextItem, onPreviousItem, onClose }: Props  = $props();
 
     // UI
     import { InlineNotification } from 'carbon-components-svelte';
@@ -51,9 +51,9 @@
     let entries = $state(item.Entries.Value);
     let viewer: HTMLElement;
 
-    function onClose() {
+    function viewerclose() {
         wide = false;
-        close();
+        onClose();
     }
 
     function onKeyDown(event: KeyboardEvent) {
@@ -79,10 +79,10 @@
                 });
                 break;
             case event.code === 'ArrowRight':
-                nextItem();
+                onNextItem();
                 break;
             case event.code === 'ArrowLeft':
-                nextItem();
+                onNextItem();
                 break;
             case event.key === '*':
                 $ViewerZoom = 100;
@@ -103,7 +103,7 @@
                 ViewerPadding.decrement();
                 break;
             case event.code === 'Escape':
-                onClose();
+                viewerclose();
                 break;
             case event.code === 'Space':
                 scrollMagic(
@@ -143,7 +143,7 @@
     // Auto next item after reaching end of page
     let autoNextItem = $state(false);
     async function onNextItemCallback() {
-        if (autoNextItem && selectedItemNext) nextItem();
+        if (autoNextItem && selectedItemNext) onNextItem();
         else {
             autoNextItem = true;
             setTimeout(function () {
@@ -214,9 +214,9 @@
     {#if wide}
         <ImageViewerWideSettings
             {item}
-            on:nextItem
-            on:previousItem
-            on:close={onClose}
+            {onNextItem}
+            {onPreviousItem}
+            onClose={viewerclose}
         />
     {/if}
     {#if entries.length === 0}
@@ -253,8 +253,8 @@
             kind="info"
             title="Bottom reached"
             subtitle="Click or Press space again to go to next item."
-            onclick={() => nextItem()}
-            onclose={() => (autoNextItem = false)}
+            onclick={() => onNextItem()}
+            on:close={() => (autoNextItem = false)}
         />
     </div>
 {/if}

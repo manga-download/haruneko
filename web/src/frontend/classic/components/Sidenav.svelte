@@ -30,8 +30,6 @@
         TaskSettings,
     } from 'carbon-icons-svelte';
     import { Locale } from '../stores/Settings';
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';
     import BookmarksImport from './BookmarksImport.svelte';
@@ -42,13 +40,18 @@
         selectedItem,
     } from '../stores/Stores';
     import { SidenavTrail, SidenavIconsOnTop } from '../stores/Settings';
-    export let isOpen: boolean;
+
+    interface Props {
+        isOpen: boolean;
+        onHome: () => void;
+    };
+    let { isOpen=$bindable(), onHome }: Props  = $props();
 
     //Settings Modal
-    let settingsSelectedTabs = 0;
-    let isSettingsModalOpen = false;
-    let isPluginModalOpen = false;
-    let isBookmarksImportModalOpen = false;
+    let settingsSelectedTabs =  $state(0);
+    let isSettingsModalOpen =  $state(false);
+    let isPluginModalOpen = $state(false);
+    let isBookmarksImportModalOpen =  $state(false);
 </script>
 
 {#if isPluginModalOpen}
@@ -70,12 +73,12 @@
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Home()}
                     icon={Home}
-                    on:click={() => dispatch('home')}
+                    onclick={onHome}
                 />
                 <SideNavLink
                     text={'Bookmarks'}
                     icon={Bookmark}
-                    on:click={() => {
+                    onclick={() => {
                         $selectedPlugin = window.HakuNeko.BookmarkPlugin;
                         $selectedMedia = undefined;
                         $selectedItem = undefined;
@@ -85,24 +88,24 @@
             <SideNavLink
                 text={'Paste Media URL'}
                 icon={CopyLink}
-                on:click={() =>
+                onclick={() =>
                     document.dispatchEvent(new Event('media-paste-url'))}
             />
             <SideNavLink
                 text={$Locale.Frontend_Plugins()}
                 icon={PlugFilled}
-                on:click={() => (isPluginModalOpen = true)}
+                onclick={() => (isPluginModalOpen = true)}
             />
             <SideNavLink
                 text="import/export"
                 icon={ImportExport}
-                on:click={() => (isBookmarksImportModalOpen = true)}
+                onclick={() => (isBookmarksImportModalOpen = true)}
             />
             <SideNavMenu text={$Locale.Frontend_Settings()} icon={Settings}>
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_General()}
                     icon={SettingsAdjust}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 0;
                         isSettingsModalOpen = true;
                     }}
@@ -110,7 +113,7 @@
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Interface()}
                     icon={ScreenMap}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 1;
                         isSettingsModalOpen = true;
                     }}
@@ -118,7 +121,7 @@
                 <SideNavLink
                     text="Viewer"
                     icon={SettingsView}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 1;
                         isSettingsModalOpen = true;
                     }}
@@ -126,7 +129,7 @@
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Trackers()}
                     icon={TaskSettings}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 3;
                         isSettingsModalOpen = true;
                     }}
@@ -134,7 +137,7 @@
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Network()}
                     icon={NetworkOverlay}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 4;
                         isSettingsModalOpen = true;
                     }}
@@ -145,7 +148,7 @@
                     text="Documentation"
                     icon={Doc}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open(
                             'https://hakuneko.download/docs/interface/',
                         )}
@@ -154,14 +157,14 @@
                     text="Discord"
                     icon={LogoDiscord}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open('https://discordapp.com/invite/A5d3NDf')}
                 />
                 <SideNavLink
                     text="Open a ticket"
                     icon={Debug}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open(
                             'https://hakuneko.download/docs/troubleshoot/',
                         )}
@@ -170,13 +173,13 @@
                     text="Home page"
                     icon={Home}
                     class="clik-item"
-                    on:click={() => window.open('https://hakuneko.download')}
+                    onclick={() => window.open('https://hakuneko.download')}
                 />
                 <SideNavLink
                     text="Show IP and localisation"
                     icon={Location}
                     class="clik-item"
-                    on:click={() => window.open('https://ipinfo.io/json')}
+                    onclick={() => window.open('https://ipinfo.io/json')}
                 />
             </SideNavMenu>
             <SideNavMenu text={$Locale.Frontend_About()} icon={Information}>
@@ -184,7 +187,7 @@
                     text="Code source"
                     icon={LogoGithub}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open(
                             'https://hakuneko.download/docs/interface/',
                         )}
@@ -193,20 +196,20 @@
                     text="Using version X.X.X"
                     icon={App}
                     class="clik-item"
-                    on:click={() => window.open('https://todo.com')}
+                    onclick={() => window.open('https://todo.com')}
                 />
                 <SideNavLink
                     text="Maintainers"
                     icon={Events}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open('https://discordapp.com/invite/A5d3NDf')}
                 />
                 <SideNavLink
                     text="Contributors"
                     icon={EventsAlt}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open(
                             'https://hakuneko.download/docs/troubleshoot/',
                         )}
@@ -215,7 +218,7 @@
                     text="Artwork"
                     icon={Image}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open('https://www.deviantart.com/hakuneko3kune')}
                 />
             </SideNavMenu>
