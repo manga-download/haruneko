@@ -184,7 +184,7 @@
         class="close"
         icon={Misuse}
         iconDescription="Close"
-        on:click={close}
+        onclick={onClose}
     />
 </div>
 
