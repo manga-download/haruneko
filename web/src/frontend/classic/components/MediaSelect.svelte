@@ -207,7 +207,6 @@
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
             bind:value={pluginDropdownValue}
-            on:focus={selectFocus}
             on:clear={() => ($selectedPlugin = undefined)}
             on:select={(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
