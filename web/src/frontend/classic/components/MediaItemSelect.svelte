@@ -328,9 +328,9 @@
                     selected={selectedItems.includes(item)}
                     hover={item === contextItem}
                     onView={(event) => onItemView(item)(event.detail)}
-                    on:mousedown={mouseHandler(item)}
-                    on:mouseup={mouseHandler(item)}
-                    on:mouseenter={mouseHandler(item)}
+                    onmousedown={mouseHandler(item)}
+                    onmouseup={mouseHandler(item)}
+                    onmouseenter={mouseHandler(item)}
                 />
             {/each}
         {:catch error}
