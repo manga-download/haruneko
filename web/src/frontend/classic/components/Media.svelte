@@ -56,11 +56,12 @@
     }
 
     onMount(() => {
+        const delay = $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 1500;
         delayedContentCheck = setTimeout(
         () => {
             findMediaUnFlaggedContent(media);
             HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
-        },1500);
+        },delay);
     });
 
     onDestroy(() => {
