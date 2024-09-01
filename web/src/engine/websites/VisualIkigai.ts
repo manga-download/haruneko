@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './Visual_Ikigai.webp';
+import icon from './VisualIkigai.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
