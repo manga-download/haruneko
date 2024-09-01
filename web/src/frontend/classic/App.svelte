@@ -41,7 +41,7 @@
 
 <Theme theme={$ThemeSetting}>
     <AppBar
-        home={() => {
+        onHome={() => {
             $selectedItem = null;
             $contentscreen = '/';
         }}

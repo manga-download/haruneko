@@ -82,7 +82,7 @@
         HakuNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
     });
 
-    let downloadTask: DownloadTask;
+    let downloadTask: DownloadTask = $state();
 
     async function taskQueueChanged(tasks: DownloadTask[]) {
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);

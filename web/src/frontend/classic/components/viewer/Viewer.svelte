@@ -23,16 +23,16 @@
         displayedItem = item;
     }
 
-    function previousItem() {
+    function onPreviousItem() {
         currentImageIndex = -1;
         $selectedItem = $selectedItemPrevious;
     }
-    function nextItem() {
+    function onNextItem() {
         currentImageIndex = -1;
         if (wide && !$selectedItemNext) markAsCurrent(item);
         $selectedItem = $selectedItemNext;
     }
-    function close() {
+    function onClose() {
         markAsCurrent(item);
     }
 
@@ -79,9 +79,9 @@
                     item={displayedItem}
                     {currentImageIndex}
                     bind:wide
-                    {nextItem}
-                    {previousItem}
-                    {close}
+                    {onNextItem}
+                    {onPreviousItem}
+                    {onClose}
                 />
             {:else if mode === 'Video'}
                 <VideoViewer />
