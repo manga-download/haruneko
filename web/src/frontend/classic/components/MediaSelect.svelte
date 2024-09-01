@@ -171,9 +171,7 @@
     }
 
     let pluginDropdownValue: string;
-    async function selectFocus(event: FocusEvent) {
-        pluginDropdownValue = '';
-    }
+
     // VirtualList
     let container:HTMLElement;
     let containerHeight = 0;
