@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/mangas\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="YANP FANSUB"])')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="YANP FANSUB"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yanpfansub', 'YanpFansub', 'https://yanpfansub.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('yanpfansub', 'YanpFansub', 'https://trisalyanp.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
