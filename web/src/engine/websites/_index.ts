@@ -53,7 +53,6 @@ export { default as CatTranslator } from './CatTranslator';
 export { default as CeriseScans } from './CeriseScans';
 export { default as Chochox } from './Chochox';
 export { default as CiaoPlus } from './CiaoPlus';
-export { default as CloverManga } from './CloverManga';
 export { default as Cocorip } from './Cocorip';
 export { default as CoffeeManga } from './CoffeeManga';
 export { default as ColaManga } from './ColaManga';
