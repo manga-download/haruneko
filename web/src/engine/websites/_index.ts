@@ -636,7 +636,6 @@ export { default as TarotScans } from './TarotScans';
 export { default as TatakaeScan } from './TatakaeScan';
 export { default as TCBScans } from './TCBScans';
 export { default as Team1x1 } from './Team1x1';
-export { default as Tempestfansub } from './Tempestfansub';
 export { default as TempestScans } from './TempestScans';
 export { default as TenshiID } from './TenshiID';
 export { default as TheBlank } from './TheBlank';
