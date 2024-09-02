@@ -140,7 +140,6 @@ export { default as FreeComicOnline } from './FreeComicOnline';
 export { default as FreeManga } from './FreeManga';
 export { default as FRTiretScan } from './FRTiretScan';
 export { default as FunManga } from './FunManga';
-export { default as FuryoSquad } from './FuryoSquad';
 export { default as Futari } from './Futari';
 export { default as GaiaToon } from './GaiaToon';
 export { default as GalaxyManga } from './GalaxyManga';
