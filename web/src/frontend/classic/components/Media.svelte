@@ -22,10 +22,11 @@
     } from '../../../engine/providers/MediaPlugin';
     import { Bookmark } from '../../../engine/providers/Bookmark';
     import { onDestroy, onMount } from 'svelte';
+    import type { MediaContainer2 } from '../Types';
 
     export let style = '';
 
-    export let media: MediaContainer<MediaChild>;
+    export let media: MediaContainer2;
     let selected: boolean = false;
     $: selected = $selectedMedia?.IsSameAs(media);
 
