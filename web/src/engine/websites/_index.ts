@@ -311,7 +311,6 @@ export { default as Mangadon } from './Mangadon';
 export { default as MangaDoom } from './MangaDoom';
 export { default as MangaEclipse } from './MangaEclipse';
 export { default as MangaEfendisi } from './MangaEfendisi';
-export { default as MangaEffect } from './MangaEffect';
 export { default as MangaEighteenClub } from './MangaEighteenClub';
 export { default as MangaEighteenUS } from './MangaEighteenUS';
 export { default as MangaFire } from './MangaFire';
