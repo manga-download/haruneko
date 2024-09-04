@@ -7,7 +7,7 @@ const config = {
         title: 'Hunters Scan'
     },
     container: {
-        url: 'https://huntersscan.xyz/series/civilizacao-de-nebula/',
+        url: 'https://hunterscomics.com/series/civilizacao-de-nebula/',
         id: JSON.stringify({ post: '6001', slug: '/series/civilizacao-de-nebula/' }),
         title: 'Civilização de Nebula'
     },
