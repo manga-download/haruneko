@@ -17,7 +17,7 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-    import VirtualList from '@sveltejs/svelte-virtual-list';
+    import VirtualList from '../lib/virtualList.svelte';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
@@ -36,6 +36,9 @@
     import type { MediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
+    import { resizeBar } from '../lib/actions';
+
+    let ref:HTMLElement;
 
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild>;
@@ -168,9 +171,10 @@
     }
 
     let pluginDropdownValue: string;
-    async function selectFocus(event: FocusEvent) {
-        pluginDropdownValue = '';
-    }
+
+    // VirtualList
+    let container:HTMLElement;
+    let containerHeight = 0;
 </script>
 
 {#if isTrackerModalOpen}
@@ -183,7 +187,7 @@
         />
     </div>
 {/if}
-<div id="Media" transition:fade>
+<div id="Media" transition:fade bind:this={ref}>
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
@@ -201,7 +205,6 @@
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
             bind:value={pluginDropdownValue}
-            on:focus={selectFocus}
             on:clear={() => ($selectedPlugin = undefined)}
             on:select={(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
@@ -223,20 +226,27 @@
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list">
+    <div id="MediaList" class="list" bind:this={container} bind:clientHeight={containerHeight}>
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
                 <div>... medias</div>
             </div>
         {:then}
-            <VirtualList items={filteredmedias} let:item>
-                <Media
-                    media={item}
-                    on:select={(e) => {
-                        $selectedMedia = e.detail;
-                    }}
-                />
+            <VirtualList {container} items={filteredmedias} itemHeight={24}  {containerHeight} let:item let:dummy let:y>
+                {#if dummy}
+                    <div class="empty" class:dummy style="position: relative; top:{y}px;"></div>
+                {:else}
+                    {#key item}
+                        <Media 
+                            media={item}
+                            style="position: relative; top:{y}px;"
+                            on:select={(e) => {
+                                $selectedMedia = e.detail;
+                            }}
+                        />
+                    {/key}
+                {/if}
             </VirtualList>
         {:catch error}
             <div class="error">
@@ -251,6 +261,13 @@
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
     </div>
+    <div 
+        role="separator"
+        aria-orientation="vertical"
+        class="resize"
+        use:resizeBar={{target: ref, orientation:'vertical'}}
+    > </div>
+    
 </div>
 
 <style>
@@ -258,17 +275,16 @@
         min-height: 0;
         height: 100%;
         display: grid;
+        grid-template-columns: 1fr 4px;
         grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
-            'MediaTitle'
-            'Plugin'
-            'MediaFilter'
-            'MediaList'
-            'MediaCount';
+            'MediaTitle Empty'
+            'Plugin Resize'
+            'MediaFilter Resize'
+            'MediaList Resize'
+            'MediaCount Resize';
         grid-area: Media;
-        overflow-x: hidden;
-        resize: horizontal;
         min-width: 22em;
     }
     #Plugin {
@@ -287,6 +303,7 @@
         box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
         overflow: hidden;
         user-select: none;
+        overflow: auto;
     }
     #MediaList .loading {
         width: 100%;
@@ -303,5 +320,17 @@
     }
     .error {
         padding: 0 1em 0 1em;
+    }
+    .resize {
+        grid-area: Resize;
+        width:4px;
+        cursor: col-resize;
+    }
+    .resize:hover {
+            background-color:var(--cds-ui-02); 
+    }
+    .empty {
+        height: 24px;
+        line-height: 24px;
     }
 </style>

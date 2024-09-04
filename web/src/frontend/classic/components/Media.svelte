@@ -21,8 +21,12 @@
         MediaChild,
     } from '../../../engine/providers/MediaPlugin';
     import { Bookmark } from '../../../engine/providers/Bookmark';
+    import { onDestroy, onMount } from 'svelte';
+    import type { MediaContainer2 } from '../Types';
 
-    export let media: MediaContainer<MediaChild>;
+    export let style = '';
+
+    export let media: MediaContainer2;
     let selected: boolean = false;
     $: selected = $selectedMedia?.IsSameAs(media);
 
@@ -41,18 +45,31 @@
 
     //Unviewed content
     let unFlaggedItems: MediaContainer<MediaChild>[] = [];
-    findMediaUnFlaggedContent(media);
-    HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(() =>
-        findMediaUnFlaggedContent(media),
-    );
+    let delayedContentCheck;
 
-    async function findMediaUnFlaggedContent(
-        media: MediaContainer<MediaChild>,
-    ) {
-        unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
-            media,
-        )) as MediaContainer<MediaChild>[];
+
+    async function findMediaUnFlaggedContent(updatedmedia:MediaContainer<MediaChild>) {
+        if (updatedmedia.IsSameAs(media)) { 
+            unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
+                media,
+            )) as MediaContainer<MediaChild>[];
+        } 
     }
+
+    onMount(() => {
+        const delay = $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 1500;
+        delayedContentCheck = setTimeout(
+        () => {
+            findMediaUnFlaggedContent(media);
+            HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
+        },delay);
+    });
+
+    onDestroy(() => {
+        clearTimeout(delayedContentCheck);
+        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Unsubscribe(findMediaUnFlaggedContent);
+    });
+    
 </script>
 
 <ContextMenu target={[mediadiv]}>
@@ -73,7 +90,7 @@
     <ContextMenuDivider />
 </ContextMenu>
 
-<div bind:this={mediadiv} class="media" in:fade class:selected>
+<div bind:this={mediadiv} class="media" {style} in:fade class:selected>
     {#if isOrphaned}
         <span in:coinflip={{ duration: 200 }}>
             <Button

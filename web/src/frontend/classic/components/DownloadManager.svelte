@@ -18,7 +18,7 @@
         (elt) => elt.Media.Parent.Identifier,
     );
 
-    function update() {
+    function onUpdate() {
         groupedJobs = groupedJobs;
     }
 
@@ -97,7 +97,7 @@
                             <DownloadManagerTask
                                 {job}
                                 bind:taskerror
-                                on:update={update}
+                                {onUpdate}
                             ></DownloadManagerTask>
                         {/each}
                     </div>

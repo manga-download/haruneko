@@ -7,18 +7,18 @@ const config = {
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://resetscan.com/manga/the-ultimate-of-all-ages/',
-        id: JSON.stringify({ post: '2313', slug: '/manga/the-ultimate-of-all-ages/' }),
-        title: 'The Ultimate of All Ages'
+        url: 'https://resetscan.com/manga/scholar-return/',
+        id: JSON.stringify({ post: '2055', slug: '/manga/scholar-return/' }),
+        title: 'The Scholarly Reincarnation'
     },
     child: {
-        id: '/manga/the-ultimate-of-all-ages/chapter-001/',
-        title: 'Chapter 001'
+        id: '/manga/scholar-return/chapter-214',
+        title: 'Chapter 214 - The End'
     },
     entry: {
-        index: 1,
-        size: 3_230_931,
-        type: 'image/jpeg'
+        index: 0,
+        size: 279_842,
+        type: 'image/webp'
     }
 };
 
