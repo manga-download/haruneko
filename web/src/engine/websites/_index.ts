@@ -214,6 +214,7 @@ export { default as JapScan } from './JapScan';
 export { default as JiangzaiToon } from './JiangzaiToon';
 export { default as JManga } from './JManga';
 export { default as JuinJutsuTeam } from './JuinJutsuTeam';
+export { default as KabusManga } from './KabusManga';
 export { default as KadoComi } from './KadoComi';
 export { default as Kakaopage } from './Kakaopage';
 export { default as KaliScan } from './KaliScan';
