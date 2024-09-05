@@ -112,8 +112,20 @@ const template: ViewTemplate<App> = html`
     ${when(model => model.previewEntry, templatePreview)}
 `;
 
+/*
+const template: ViewTemplate<App> = html`
+    <div style="background-color: lightblue;">
+        <div style="margin: 32px; padding: 32px; border: 1px solid red;">
+            <fluent-card>
+            Meow!
+            </fluent-card>
+        </div>
+    </div>
+`;
+*/
+
 @customElement({ name: 'fluent-app', template, styles })
-export default class App extends FASTElement {
+export class App extends FASTElement {
 
     @observable selectedWebsite: MediaContainer<MediaChild>;
     @observable selectedTitle: MediaContainer<MediaChild>;

@@ -1,10 +1,8 @@
 import { provideFluentDesignSystem, allComponents as allFluentComponents } from '@fluentui/web-components';
 provideFluentDesignSystem().withShadowRootMode('closed').register(allFluentComponents);
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */ //=> Import necessary to register web-components
-import * as _ from './components/_index';
+import { App } from './components/_index'; // Import also registers the web-components
 import { createWindowService } from './services/WindowService';
 import type { IFrontendModule } from '../IFrontend';
-import App from './App';
 import type { IAppWindow } from '../../engine/platform/AppWindow';
 
 class FluentCore implements IFrontendModule {

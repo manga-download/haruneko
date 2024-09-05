@@ -1,3 +1,4 @@
+export { App } from '../App';
 export { TitleBar } from './TitleBar';
 export { BookmarkList } from './BookmarkList';
 export { DownloadManager } from './DownloadManager';
