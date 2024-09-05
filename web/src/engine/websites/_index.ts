@@ -165,6 +165,7 @@ export { default as Hachirumi } from './Hachirumi';
 export { default as HadesNoFansub } from './HadesNoFansub';
 export { default as HamTruyen } from './HamTruyen';
 export { default as Hanman18 } from './Hanman18';
+export { default as HariManga } from './HariManga';
 export { default as HarmonyScan } from './HarmonyScan';
 export { default as HastaTeam } from './HastaTeam';
 export { default as HastaTeamDDT } from './HastaTeamDDT';
