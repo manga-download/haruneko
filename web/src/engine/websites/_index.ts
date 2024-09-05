@@ -718,6 +718,7 @@ export { default as YakshaScans } from './YakshaScans';
 export { default as YanpFansub } from './YanpFansub';
 export { default as YaoiChan } from './YaoiChan';
 export { default as YaoiHavenReborn } from './YaoiHavenReborn';
+export { default as YaoiMangaOku } from './YaoiMangaOku';
 export { default as YaoiScan } from './YaoiScan';
 export { default as YaoiTR } from './YaoiTR';
 export { default as YawarakaSpirits } from './YawarakaSpirits';
