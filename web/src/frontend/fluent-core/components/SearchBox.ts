@@ -92,7 +92,7 @@ export class SearchBox extends FASTElement {
             } else {
                 if(this.AllowRegex && this.RegexEnabled) {
                     // TODO: Prevent ReDoS by input validation or sanitization
-                    const regex = new RegExp(this.Needle, this.AllowCase && this.CaseEnabled ? undefined : 'i');
+                    const regex = new RegExpSafe(this.Needle, this.AllowCase && this.CaseEnabled ? undefined : 'i');
                     this.$emit(this.event, (text: string) => regex.test(text));
                 } else {
                     if(this.AllowCase && this.CaseEnabled ) {
