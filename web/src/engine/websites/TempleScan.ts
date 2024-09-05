@@ -26,7 +26,6 @@ type APIChapter = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.templescan.net/api/';
-    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/(comic/[^/]+)$`);
 
     public constructor() {
         super('templescan', 'TempleScan', 'https://templescan.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
@@ -37,11 +36,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url);
+        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { series_slug, title } = await FetchJSON<APIManga>(new Request(new URL(url.match(this.mangaRegexp)[1], this.apiUrl)));
+        const { series_slug, title } = await FetchJSON<APIManga>(new Request(new URL(url.match(/comic\/[^/]+$/).at(0), this.apiUrl)));
         return new Manga(this, provider, series_slug, title);
     }
 
