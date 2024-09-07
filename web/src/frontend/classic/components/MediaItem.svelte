@@ -1,7 +1,18 @@
 <script lang="ts">
-    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+    import { onMount, onDestroy} from 'svelte';
     import { fade } from 'svelte/transition';
-    const dispatch = createEventDispatcher();
+
+    interface Props {
+        item: MediaContainer<MediaItem>;
+        selected: boolean;
+        hover: boolean;
+        multilang ?: boolean;
+        onView: (MouseEvent) => void;
+        onmouseup: (MouseEvent) => void;
+        onmousedown: (MouseEvent) => void;
+        onmouseenter: (MouseEvent) => void;
+    };
+    let { item, selected, hover , multilang = false, onView, onmouseup, onmousedown, onmouseenter }: Props  = $props();
 
     import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
@@ -33,8 +44,9 @@
     }
 
     import type {
-        StoreableMediaContainer,
         MediaItem,
+        MediaContainer,
+        StoreableMediaContainer,
     } from '../../../engine/providers/MediaPlugin';
     import {
         FlagType,
@@ -43,16 +55,14 @@
     import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
-    export let item: StoreableMediaContainer<MediaItem>;
-    export let selected: boolean;
-    export let hover: boolean;
-    export let multilang = false;
+
     let flag: FlagType;
     const flagiconmap = new Map<FlagType, any>([
         [FlagType.Viewed, ViewFilled],
         [FlagType.Current, IconBookmarkFilled],
     ]);
-    $: flagicon = flagiconmap.get(flag) || View;
+
+    let flagicon = $derived(flagiconmap.get(flag) || View);
 
     async function OnFlagChangedCallback(flagData: EntryFlagEventData) {
         if (flagData.Entry === item) {
@@ -75,7 +85,7 @@
         HakuNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
     });
 
-    let downloadTask: DownloadTask;
+    let downloadTask: DownloadTask = $state();
 
     async function taskQueueChanged(tasks: DownloadTask[]) {
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
@@ -89,7 +99,7 @@
     }
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
     class="listitem"
     role="listitem"
@@ -97,11 +107,9 @@
     class:selected
     class:hover
     class:active={$selectedItem?.Identifier === item?.Identifier}
-    on:click
-    on:mousedown
-    on:mouseup
-    on:mouseenter
-    on:keypress
+    {onmouseup}
+    {onmousedown}
+    {onmouseenter}
 >
     <Button
         size="small"
@@ -109,7 +117,7 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="Download"
-        on:click={() => window.HakuNeko.DownloadManager.Enqueue(item)}
+        onclick={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
     >
         {#if downloadTask}
             {@const status = downloadTask.Status.Value}
@@ -139,9 +147,9 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="View"
-        on:click={(event) => dispatch('view', event)}
+        onclick={(event) => onView(event)}
     />
-    <ClickableTile class="title" on:click={(event) => dispatch('view', event)}>
+    <ClickableTile class="title" onclick={(event) => onView(event)}>
         {#if multilang}
             <span class="multilang">
                 {extractUnicodeFlagFromTags(item.Tags.Value)}

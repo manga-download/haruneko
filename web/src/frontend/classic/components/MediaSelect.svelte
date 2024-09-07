@@ -17,7 +17,7 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-    import VirtualList from '@sveltejs/svelte-virtual-list';
+    import VirtualList from '../lib/virtualList.svelte';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
@@ -36,25 +36,21 @@
     import type { MediaInfoTracker } from '../../../engine/trackers/IMediaInfoTracker';
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
+    import { resizeBar } from '../lib/actions';
 
-    let medias: MediaContainer<MediaChild>[] = [];
-    let filteredmedias: MediaContainer<MediaChild>[] = [];
-    let fuse = new Fuse(medias, {
-        keys: ['Title'],
-        findAllMatches: true,
-        ignoreLocation: true,
-        minMatchCharLength: 1,
-        fieldNormWeight: 0,
-    });
-    let currentPlugin: MediaContainer<MediaContainer<MediaChild>>;
-    let loadPlugin: Promise<void>;
+    let ref:HTMLElement;
+
+    // Plugins selection
+    let currentPlugin: MediaContainer<MediaChild>;
+    let loadPlugin: Promise<MediaContainer<MediaChild>>;
+
     let disablePluginRefresh = false;
 
-    // Todo : implement favorites
+    // TODO: implement favorites
     let pluginsFavorites = ['sheep-scanlations'];
 
     let pluginsCombo: Array<ComboBoxItem>;
-    let orderedPlugins: MediaContainer<MediaContainer<MediaChild>>[] = [];
+    let orderedPlugins: MediaContainer<MediaChild>[] = [];
 
     orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
         return (
@@ -87,14 +83,23 @@
         const previousPlugin = currentPlugin;
         currentPlugin = $selectedPlugin;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
-            loadMedia($selectedPlugin);
+            loadMedias($selectedPlugin);
         disablePluginRefresh = false;
     }
     $: pluginDropdownSelected = currentPlugin?.Identifier;
 
-    function loadMedia(media: MediaContainer<MediaContainer<MediaChild>>) {
-        if (!media) return;
-        medias = media.Entries.Value ?? [];
+    // Medias list
+    let medias: MediaContainer<MediaChild>[] = [];
+    let filteredmedias: MediaContainer<MediaChild>[] = [];
+    let fuse = new Fuse([]);
+
+    $: loadPlugin = loadMedias($selectedPlugin);
+    async function loadMedias(
+        plugin: MediaContainer<MediaChild>,
+    ): Promise<MediaContainer<MediaChild>> {
+        if (!plugin) return;
+        const loadedmedias =
+            (plugin.Entries.Value as MediaContainer<MediaChild>[]) ?? [];
         fuse = new Fuse(medias, {
             keys: ['Title'],
             findAllMatches: true,
@@ -102,6 +107,8 @@
             minMatchCharLength: 1,
             fieldNormWeight: 0,
         });
+        medias = loadedmedias;
+        return plugin;
     }
 
     function filterMedia(mediaNameFilter: string) {
@@ -127,9 +134,8 @@
     async function onUpdateMediaEntriesClick() {
         $selectedMedia = undefined;
         $selectedItem = undefined;
-        loadPlugin = $selectedPlugin?.Update();
-        await loadPlugin;
-        loadMedia($selectedPlugin);
+        await $selectedPlugin.Update();
+        loadPlugin = loadMedias($selectedPlugin);
     }
 
     document.addEventListener('media-paste-url', onMediaPasteURL);
@@ -147,7 +153,7 @@
                     if (!$selectedMedia?.IsSameAs(media)) {
                         $selectedMedia = media;
                         medias = [media];
-                        loadPlugin = Promise.resolve();
+                        loadPlugin = Promise.resolve(media.Parent);
                     }
                     return;
                 }
@@ -165,9 +171,10 @@
     }
 
     let pluginDropdownValue: string;
-    async function selectFocus(event: FocusEvent) {
-        pluginDropdownValue = '';
-    }
+
+    // VirtualList
+    let container:HTMLElement;
+    let containerHeight = 0;
 </script>
 
 {#if isTrackerModalOpen}
@@ -180,7 +187,7 @@
         />
     </div>
 {/if}
-<div id="Media" transition:fade>
+<div id="Media" transition:fade bind:this={ref}>
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
@@ -198,7 +205,6 @@
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
             bind:value={pluginDropdownValue}
-            on:focus={selectFocus}
             on:clear={() => ($selectedPlugin = undefined)}
             on:select={(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
@@ -220,20 +226,27 @@
     <div id="MediaFilter">
         <Search size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list">
+    <div id="MediaList" class="list" bind:this={container} bind:clientHeight={containerHeight}>
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
                 <div>... medias</div>
             </div>
         {:then}
-            <VirtualList items={filteredmedias} let:item>
-                <Media
-                    media={item}
-                    on:select={(e) => {
-                        $selectedMedia = e.detail;
-                    }}
-                />
+            <VirtualList {container} items={filteredmedias} itemHeight={24}  {containerHeight} let:item let:dummy let:y>
+                {#if dummy}
+                    <div class="empty" class:dummy style="position: relative; top:{y}px;"></div>
+                {:else}
+                    {#key item}
+                        <Media 
+                            media={item}
+                            style="position: relative; top:{y}px;"
+                            on:select={(e) => {
+                                $selectedMedia = e.detail;
+                            }}
+                        />
+                    {/key}
+                {/if}
             </VirtualList>
         {:catch error}
             <div class="error">
@@ -248,6 +261,13 @@
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
     </div>
+    <div 
+        role="separator"
+        aria-orientation="vertical"
+        class="resize"
+        use:resizeBar={{target: ref, orientation:'vertical'}}
+    > </div>
+    
 </div>
 
 <style>
@@ -255,17 +275,16 @@
         min-height: 0;
         height: 100%;
         display: grid;
+        grid-template-columns: 1fr 4px;
         grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
-            'MediaTitle'
-            'Plugin'
-            'MediaFilter'
-            'MediaList'
-            'MediaCount';
+            'MediaTitle Empty'
+            'Plugin Resize'
+            'MediaFilter Resize'
+            'MediaList Resize'
+            'MediaCount Resize';
         grid-area: Media;
-        overflow-x: hidden;
-        resize: horizontal;
         min-width: 22em;
     }
     #Plugin {
@@ -284,6 +303,7 @@
         box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
         overflow: hidden;
         user-select: none;
+        overflow: auto;
     }
     #MediaList .loading {
         width: 100%;
@@ -300,5 +320,17 @@
     }
     .error {
         padding: 0 1em 0 1em;
+    }
+    .resize {
+        grid-area: Resize;
+        width:4px;
+        cursor: col-resize;
+    }
+    .resize:hover {
+            background-color:var(--cds-ui-02); 
+    }
+    .empty {
+        height: 24px;
+        line-height: 24px;
     }
 </style>
