@@ -29,7 +29,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin) : Promise<Manga[]>{
         const mangalist : Manga[] = [];
-        const paths = ['0'].concat('abcdefghijklmnopqrstuvwxyz'.split(''));
+        const paths = '0abcdefghijklmnopqrstuvwxyz'.split('');
         for (const letter of paths) {
             mangalist.push(... await Common.FetchMangasMultiPageCSS.call(this, provider, `/comic-list/?c=${letter}&page={page}`, 'div.serie-box ul li a'));
         }
