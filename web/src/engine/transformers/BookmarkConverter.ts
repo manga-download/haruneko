@@ -7,7 +7,6 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
  * @remark - Only exported for testing
  */
 export const legacyWebsiteIdentifierMap = new Map([
-    [ '9anime', 'aniwave' ],
     [ 'aresnov', 'scarmanga' ],
     [ 'azoramanga', 'azoraworld' ],
     [ 'apolltoons', 'mundomanhwa' ],

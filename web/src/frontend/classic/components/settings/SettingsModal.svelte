@@ -13,37 +13,45 @@
 
     import { Scope } from '../../../../engine/SettingsGlobal';
 
-    export let isModalOpen = false;
-    export let selectedTab = 0;
+    interface Props {
+        isSettingsModalOpen: boolean;
+        selectedTab: number;
+    };
+    let { isSettingsModalOpen = $bindable(false), selectedTab = 0}: Props  = $props();
 </script>
 
 <Modal
     id="settingModal"
     size="lg"
     hasScrollingContent
-    bind:open={isModalOpen}
+    bind:open={isSettingsModalOpen}
     passiveModal
     modalHeading="Settings"
-    on:click:button--secondary={() => (isModalOpen = false)}
+    on:click:button--secondary={() => (isSettingsModalOpen = false)}
     on:open
     on:close
     hasForm
 >
-    <Tabs type="container" selected={selectedTab}>
+    <Tabs type="container" bind:selected={selectedTab}>
         <Tab label="General" />
         <Tab label="Interface" />
         <Tab label="Viewer" />
         <Tab label="Trackers" />
         <Tab label="Network" />
+        <!-- TODO: selectedtab check: temporary cheat until carbon is svelte5 (snippets instead of slots) -->
         <svelte:fragment slot="content">
-            <TabContent class="settingtab">
+            <TabContent
+                class="settingtab {selectedTab === 0 ? 'activetab' : 'hidden'}"
+            >
                 <SettingsViewer
                     settings={[
                         ...window.HakuNeko.SettingsManager.OpenScope(Scope),
                     ]}
                 />
             </TabContent>
-            <TabContent class="settingtab">
+            <TabContent
+                class="settingtab {selectedTab === 1 ? 'activetab' : 'hidden'}"
+            >
                 TODO : UI Scope needs to be defined
                 <SettingsViewer
                     settings={[
@@ -51,16 +59,22 @@
                     ]}
                 />
             </TabContent>
-            <TabContent class="settingtab">
+            <TabContent
+                class="settingtab {selectedTab === 2 ? 'activetab' : 'hidden'}"
+            >
                 <ViewerSettings />
             </TabContent>
-            <TabContent class="settingtab">
+            <TabContent
+                class="settingtab {selectedTab === 3 ? 'activetab' : 'hidden'}"
+            >
                 {#each [...window.HakuNeko.PluginController.InfoTrackers].filter((tracker) => [...tracker.Settings].length > 0) as tracker}
                     <h4>{tracker.Title}</h4>
                     <SettingsViewer settings={[...tracker.Settings]} />
                 {/each}
             </TabContent>
-            <TabContent class="settingtab">
+            <TabContent
+                class="settingtab {selectedTab === 4 ? 'activetab' : 'hidden'}"
+            >
                 <div>Placeholders, they do nothing</div>
                 <div style="padding-bottom:2em;">
                     <Toggle
@@ -112,5 +126,8 @@
 <style>
     :global(#settingModal .settingtab) {
         height: 70vh;
+    }
+    :global(#settingModal .settingtab.hidden) {
+        display: none;
     }
 </style>

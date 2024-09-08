@@ -21,13 +21,11 @@ function PageExtractor(element: HTMLElement): string {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly interactionTaskPool = new TaskPool(1, new RateLimit(30, 60));
+    private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
 
     public constructor() {
-        super('truyenqq', 'TruyenQQ', 'https://truyenqqviet.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
-        const throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 30, 1, 60);
-        throttle.Subscribe(value => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
-        this.Settings.throttle = throttle;
+        super('truyenqq', 'TruyenQQ', 'https://truyenqqto.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 30, 1, 60).Subscribe(value => this.interactionTaskPool.RateLimit = RateLimit.PerMinute(value));
     }
 
     public override get Icon() {

@@ -12,7 +12,7 @@ import { FetchCSS } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('qimeitj', `Qimeitj`, 'https://qimeitj.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('qimeitj', `Qimeitj`, 'https://hxy4.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
