@@ -7,7 +7,7 @@ const config: Config = {
         title: 'LIAN'
     },
     container: {
-        url: 'https://www.lianscans.my.id/manga/lian-short-yuri-collection/',
+        url: 'https://www.lianscans.com/manga/lian-short-yuri-collection/',
         id: '/manga/lian-short-yuri-collection/',
         title: 'LIAN Short Yuri Collection'
     },

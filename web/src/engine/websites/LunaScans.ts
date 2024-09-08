@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('lunascans', 'Luna Scans', 'https://lunascans.fun', Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Turkish );
+        super('lunascans', 'Luna Scans', 'https://lunascans.org', Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Turkish );
     }
     public override get Icon() {
         return icon;
