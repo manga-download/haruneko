@@ -32,6 +32,9 @@ type Result = {
 }
 
 const expectedOriginRedirectPatterns = new Map([
+    [ 'https://www.corocoro.jp', [ // The website redirects to the top-level domain when requesting the root path only (the sub-domain is still valid for non-empty paths)
+        /^https:\/\/corocoro\.jp$/,
+    ] ],
     [ 'https://holymanga.net', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/w+\d*\.holymanga\.net$/,
     ] ],
@@ -46,6 +49,12 @@ const expectedOriginRedirectPatterns = new Map([
     ] ],
     [ 'https://newtoki0.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/newtoki\d+\.com$/,
+    ] ],
+    [ 'https://piccoma.com/fr', [ // REASON: The website redirects to a sub-domain when requesting from a locked region (outside france)
+        /^https:\/\/fr\.piccoma\.com$/,
+    ] ],
+    [ 'https://pijamalikoi.com', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/www\.pijamalikoi\.com$/,
     ] ],
     [ 'https://www.toomics.com', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
         /^https:\/\/global\.toomics\.com$/,
@@ -72,7 +81,7 @@ class TestFixture {
     }
 
     private static CheckOriginRedirected(requestURL: string, responseURL: string): boolean {
-        const requestOrigin = new URL(requestURL).origin;
+        const requestOrigin = new URL(requestURL).href;
         const responseOrigin = new URL(responseURL).origin;
         const patterns = expectedOriginRedirectPatterns.get(requestOrigin);
         if(patterns) {
