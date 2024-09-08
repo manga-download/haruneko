@@ -80,7 +80,7 @@ class TestFixture {
         return new PluginController(this.MockStorageController, this.MockSettingsManager);
     }
 
-    private static CheckRedirected(requestURL: string, responseURL: string): boolean {
+    private static CheckUnexpectedRedirected(requestURL: string, responseURL: string): boolean {
         const patterns = expectedRedirectPatterns.get(requestURL);
         if(patterns?.length) {
             return !(patterns.some(pattern => pattern.test(responseURL)));
@@ -94,7 +94,7 @@ class TestFixture {
         try {
             const request = new Request(uri, { signal: AbortSignal.timeout(30_000) });
             const response = await fetch(request);
-            if(this.CheckRedirected(request.url, response.url)) {
+            if(this.CheckUnexpectedRedirected(request.url, response.url)) {
                 result.code = StatusCode.WARNING;
                 result.info = 'Redirected: ' + response.url;
             } else {
@@ -179,7 +179,7 @@ class TestFixture {
 
         await fs.mkdir(directory, { recursive: true });
         await fs.writeFile(path.join(directory, 'website-metrics.json'), JSON.stringify(results, null, 2));
-        await fs.writeFile(path.join(directory, 'website-metrics.html'), `<table width="100%" style="user-select: none;">${head}<tbody>${rows}</tbody></table>`);
+        await fs.writeFile(path.join(directory, 'website-metrics.html'), `<h2>Website Status ${new Date().toISOString()}</h2><table width="100%" style="user-select: none;">${head}<tbody>${rows}</tbody></table>`);
     }
 }
 
