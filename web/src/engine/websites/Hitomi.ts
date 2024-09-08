@@ -17,7 +17,7 @@ const pageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hitomi', `Hitomi`, 'https://hitomi.la', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+        super('hitomi', `Hitomi`, 'https://hitomi.la', Tags.Media.Manga, Tags.Language.Multilingual, Tags.Rating.Pornographic, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
