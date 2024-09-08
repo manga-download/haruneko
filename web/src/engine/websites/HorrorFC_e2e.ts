@@ -3,24 +3,23 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'magusmanga',
-        title: 'MagusManga'
+        id: 'horrorfc',
+        title: 'HorrorFC'
     },
-    /* CloudFlare
     container: {
-        url: 'https://magustoon.com/series/01536939fbb/',
-        id: '/series/01536939fbb/',
-        title: 'I Became A Level 999 Mastermind Demon King'
+        url: 'https://horrorfc.com/genkai-chitai/',
+        id: '/genkai-chitai/',
+        title: 'Genkai Chitai'
     },
     child: {
-        id: '/chapter/01536939fbb-b99c3c5ce14/',
-        title: 'Chapter 25'
+        id: '/genkai-chitai-phantom-zone-ii-2-aether-forest/',
+        title: 'Phantom Zone II 2 – Aether Forest'
     },
     entry: {
         index: 1,
-        size: 784_872,
+        size: 1_659_687,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
