@@ -339,6 +339,12 @@ export enum WebsiteResourceKey {
     Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
 }
 
+// [SECTION]: Website CuuTruyen
+export enum WebsiteResourceKey {
+    Plugin_CuuTruyen_Error_NotProcessed = 'Plugin_CuuTruyen_Error_NotProcessed',
+    Plugin_CuuTruyen_Error_InvalidDrmData = 'Plugin_CuuTruyen_Error_InvalidDrmData'
+}
+
 // [SECTION]: Website PocketComics
 export enum WebsiteResourceKey {
     Plugin_PocketComics_LanguageMismatchError = 'Plugin_PocketComics_LanguageMismatchError',

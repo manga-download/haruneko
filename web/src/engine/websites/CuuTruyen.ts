@@ -5,6 +5,8 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as W } from '../../i18n/ILocale';
 
 type APIResult<T> = {
     data: T,
@@ -76,7 +78,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { data: { pages } } = await FetchJSON<APIResult<APIChapter>>(new Request(new URL(`chapters/${chapter.Identifier}`, this.apiUrl)));
         if (pages.some((image) => image.status !== 'processed')) {
-            throw new Error('This chapter is still processing, please try again later.'); // TODO Translate this!
+            throw new Exception(W.Plugin_CuuTruyen_Error_NotProcessed);
         }
 
         return pages.map(page => new Page(this, chapter, new URL(page.image_url), { drmData: page.drm_data }));
@@ -88,7 +90,7 @@ export default class extends DecoratableMangaScraper {
             const decryptedDrmData = decodeXorCipher(Buffer.from(page.Parameters.drmData as string, 'base64').toString(), '3141592653589793');
 
             if (!decryptedDrmData.startsWith('#v4|')) {
-                throw new Error(`Invalid DRM data (does not start with magic bytes): ${decryptedDrmData}`); // TODO Translate this!
+                throw new Exception(W.Plugin_CuuTruyen_Error_InvalidDrmData, decryptedDrmData);
             }
 
             let sy = 0;
