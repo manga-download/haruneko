@@ -284,7 +284,6 @@ export { default as MaID } from './MaID';
 export { default as MaidScan } from './MaidScan';
 export { default as Manga3S } from './Manga3S';
 export { default as Manga18FX } from './Manga18FX';
-export { default as Manga68 } from './Manga68';
 export { default as Manga168 } from './Manga168';
 export { default as Manga347 } from './Manga347';
 export { default as MangaAction } from './MangaAction';
