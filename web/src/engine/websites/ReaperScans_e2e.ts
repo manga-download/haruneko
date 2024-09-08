@@ -15,6 +15,7 @@ const config = {
     child: {
         id: '/series/990k-ex-life-hunter/chapter-74',
         title: 'Chapter 74',
+        timeout: 10000
 
     },
     entry: {
