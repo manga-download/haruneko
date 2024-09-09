@@ -5,7 +5,7 @@ import { checkNewContent } from './Settings';
 import type { IAppWindow } from '../../../engine/platform/AppWindow';
 
 export const WindowController = writable<IAppWindow>(null);
-export const selectedPlugin = writable<MediaContainer<MediaContainer<MediaChild>>>(HakuNeko.BookmarkPlugin);
+export const selectedPlugin = writable<MediaContainer<MediaChild>>(HakuNeko.BookmarkPlugin);
 export const selectedMedia = writable<MediaContainer<MediaChild>>();
 export const selectedItem = writable<MediaContainer<MediaItem>>();
 export const selectedItemPrevious = writable<MediaContainer<MediaItem>>();

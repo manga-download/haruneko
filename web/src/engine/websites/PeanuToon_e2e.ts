@@ -9,7 +9,8 @@ const config = {
     container: {
         url: 'https://www.peanutoon.com/ko/comic/detail/5765',
         id: '/ko/comic/detail/5765',
-        title: '대표님의 삐뚤어진 사랑'
+        title: '대표님의 삐뚤어진 사랑',
+        timeout: 15000
     },
     child: {
         id: '/ko/comic/view/103427',
@@ -17,8 +18,8 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 32_126,
-        type: 'image/webp'
+        size: 150_829,
+        type: 'image/jpeg'
     }
 };
 
