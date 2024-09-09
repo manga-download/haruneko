@@ -81,9 +81,6 @@ const styles: ElementStyles = css`
 const listitem: ViewTemplate<Bookmark> = html`
     <li class=${model => model?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
         <img class="icon" src="${model => model.Parent.Icon}"></img>
-        <!--
-        <img class="icon" src="${model => model.Icon}"></img>
-        -->
         <div>${model => model.Title}</div>
     </li>
 `;

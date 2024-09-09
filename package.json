@@ -12,20 +12,20 @@
         "docs"
     ],
     "devDependencies": {
-        "@stylistic/eslint-plugin": "^2.6.1",
-        "@types/chrome": "^0.0.269",
+        "@stylistic/eslint-plugin": "^2.7.2",
+        "@types/chrome": "^0.0.270",
         "@types/jsdom": "^21.1.7",
-        "@types/nw.js": "^0.13.21",
-        "eslint": "^9.8.0",
+        "@types/nw.js": "^0.91.0",
+        "eslint": "^9.10.0",
         "eslint-plugin-tsdoc": "^0.3.0",
-        "jsdom": "^24.1.1",
-        "puppeteer-core": "^22.15.0",
-        "tslib": "^2.6.3",
+        "jsdom": "^25.0.0",
+        "puppeteer-core": "^23.3.0",
+        "tslib": "^2.7.0",
         "typescript": "^5.5.4",
-        "typescript-eslint": "^8.0.0",
-        "vite": "^5.3.5",
+        "typescript-eslint": "^8.4.0",
+        "vite": "^5.4.3",
         "vitest": "^2.0.5",
-        "vitest-mock-extended": "^2.0.0"
+        "vitest-mock-extended": "^2.0.2"
     },
     "scripts": {
         "check": "npm run check --workspaces",

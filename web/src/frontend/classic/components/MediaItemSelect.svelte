@@ -68,7 +68,7 @@
 
     let itemNameFilter = '';
     $: filteredItems = items?.filter((item) => {
-        let conditions: Boolean[] = [];
+        let conditions: boolean[] = [];
         if (itemNameFilter)
             conditions.push(
                 item.Title.toLowerCase().indexOf(
@@ -222,40 +222,40 @@
             <ContextMenuOption
                 labelText="Download - {contextItem?.Title}"
                 shortcutText="⌘D"
-                on:click={() => downloadItems([contextItem])}
+                onclick={() => downloadItems([contextItem])}
             />
         {/if}
         {#if selectedItems.length > 1}
             <ContextMenuOption
                 labelText="Download {selectedItems.length} selecteds"
                 shortcutText="⌘S"
-                on:click={() => downloadItems(selectedItems)}
+                onclick={() => downloadItems(selectedItems)}
             />
         {/if}
         <ContextMenuOption
             labelText="Download all"
             shortcutText="⌘A"
-            on:click={() => downloadItems(filteredItems)}
+            onclick={() => downloadItems(filteredItems)}
         />
         {#if contextItem}
             <ContextMenuDivider />
             <ContextMenuOption
                 labelText="View"
                 shortcutText="⌘V"
-                on:click={() => {
+                onclick={() => {
                     $selectedItem = contextItem;
                 }}
             />
             <ContextMenuOption labelText="Flag as">
                 <ContextMenuOption
                     labelText="Not viewed"
-                    on:click={async () => {
+                    onclick={async () => {
                         window.HakuNeko.ItemflagManager.UnflagItem(contextItem);
                     }}
                 />
                 <ContextMenuOption
                     labelText="Viewed"
-                    on:click={async () => {
+                    onclick={async () => {
                         window.HakuNeko.ItemflagManager.FlagItem(
                             contextItem,
                             FlagType.Viewed,
@@ -264,7 +264,7 @@
                 />
                 <ContextMenuOption
                     labelText="Current"
-                    on:click={async () => {
+                    onclick={async () => {
                         window.HakuNeko.ItemflagManager.FlagItem(
                             contextItem,
                             FlagType.Current,
@@ -327,10 +327,10 @@
                     multilang={!langFilter && MediaLanguages.length > 1}
                     selected={selectedItems.includes(item)}
                     hover={item === contextItem}
-                    on:view={(event) => onItemView(item)(event.detail)}
-                    on:mousedown={mouseHandler(item)}
-                    on:mouseup={mouseHandler(item)}
-                    on:mouseenter={mouseHandler(item)}
+                    onView={(event) => onItemView(item)(event.detail)}
+                    onmousedown={mouseHandler(item)}
+                    onmouseup={mouseHandler(item)}
+                    onmouseenter={mouseHandler(item)}
                 />
             {/each}
         {:catch error}

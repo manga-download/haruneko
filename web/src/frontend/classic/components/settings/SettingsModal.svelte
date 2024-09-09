@@ -13,8 +13,11 @@
 
     import { Scope } from '../../../../engine/SettingsGlobal';
 
-    export let isSettingsModalOpen = false;
-    export let selectedTab = 0;
+    interface Props {
+        isSettingsModalOpen: boolean;
+        selectedTab: number;
+    };
+    let { isSettingsModalOpen = $bindable(false), selectedTab = 0}: Props  = $props();
 </script>
 
 <Modal
