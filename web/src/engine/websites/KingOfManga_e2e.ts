@@ -7,7 +7,7 @@ const config: Config = {
         title: 'KingOfManga'
     },
     container: {
-        url: 'https://kingofscans.com/comics/the-tale-of-the-tiger-girl/',
+        url: 'https://myshojo.com/comics/the-tale-of-the-tiger-girl/',
         id: '/comics/the-tale-of-the-tiger-girl/',
         title: 'The Tale of the Tiger Girl',
     },
@@ -16,7 +16,7 @@ const config: Config = {
         title: 'Chapter 1'
     },
     entry: {
-        index: 1,
+        index: 2,
         size: 115_416,
         type: 'image/webp'
     }
