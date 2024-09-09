@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'darkscan',
-        title: 'Dark Scan'
+        id: 'mycomiclist',
+        title: 'MyComicList'
     },
     container: {
-        url: 'https://dark-scan.com/manga/okashi-na-tensei/',
-        id: JSON.stringify({ post: '256', slug: '/manga/okashi-na-tensei/' }),
-        title: 'Okashi na tensei'
+        url: 'https://mycomiclist.org/comic/avengers-united-infinity-comic',
+        id: '/comic/avengers-united-infinity-comic',
+        title: 'Avengers United Infinity Comic'
     },
     child: {
-        id: '/manga/okashi-na-tensei/capitulo-51-2/',
-        title: 'Capitulo 51.2'
+        id: '/avengers-united-infinity-comic/issue-45/all',
+        title: '#45'
     },
     entry: {
         index: 0,
-        size: 1_145_527,
+        size: 299_036,
         type: 'image/jpeg'
     }
 };

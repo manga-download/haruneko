@@ -130,6 +130,19 @@
             />
         </span>
     {/if}
+    <button 
+        class="website"
+        onclick={() => {
+            window.open(media.Parent.URI.href, '_blank');
+        }}
+        title="Open {media.Parent.URI.href}"
+    >
+        <img
+            class="pluginIcon"
+            src={media.Parent.Icon}
+            alt="Media Plugin Icon"
+        />
+    </button>
     <ClickableTile
         class="title"
         on:click={(e) => {
@@ -174,6 +187,20 @@
         display: flex;
         align-items: center;
         padding: 0;
+    }
+    .media button.website {
+        position:relative;
+        top:0.2em;
+        padding:0;
+        border: none;
+        background: none;
+        background-color: unset;
+        margin-right: 0.4em;
+    }
+    .media .pluginIcon {
+        width: 1.4em;
+        height: 1.4em;
+        border-radius:20%;
     }
     .media :global(button) {
         min-height: unset;

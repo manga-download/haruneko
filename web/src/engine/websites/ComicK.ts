@@ -58,7 +58,7 @@ const chapterLanguageMap = new Map([
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.comick.fun';
+    private readonly apiUrl = 'https://api.comick.io';
 
     public constructor() {
         super('comick', `ComicK`, 'https://comick.io', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
@@ -105,7 +105,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const { chapters: entries } = await FetchJSON<APIChapters>(new Request(new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl)));
+        const { chapters: entries } = await FetchJSON<APIChapters>(new Request(new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl), {
+            headers: {
+                Referer: this.URI.href,
+                Origin: this.URI.origin
+            }
+        }));
         return entries.map(item => {
             let title = '';
             if (item.vol) {

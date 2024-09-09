@@ -56,7 +56,7 @@
     import { Locale } from '../stores/Settings';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
 
-    let flag: FlagType;
+    let flag: FlagType = $state();
     const flagiconmap = new Map<FlagType, any>([
         [FlagType.Viewed, ViewFilled],
         [FlagType.Current, IconBookmarkFilled],

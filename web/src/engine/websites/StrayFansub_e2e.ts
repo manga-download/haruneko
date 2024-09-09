@@ -3,26 +3,23 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'boosei',
-        title: 'Boosei'
+        id: 'strayfansub',
+        title: 'Stray Fansub'
     },
-    // Geo-blocked (Region: Indonesia)
-    /*
     container: {
-        url: 'https://boosei.net/manga/gaishuu-isshoku/',
-        id: '/manga/gaishuu-isshoku/',
-        title: 'Gaishuu Isshoku'
+        url: 'https://strayfansub.com/manga/dash/',
+        id: JSON.stringify({ post: '40', slug: '/manga/dash/'}),
+        title: 'DASH'
     },
     child: {
-        id: '/gaishuu-isshoku-chapter-01/',
-        title: 'Chapter 01'
+        id: '/manga/dash/05-bolum/',
+        title: '05. Bölüm'
     },
     entry: {
-        index: 0,
-        size: 143_218,
+        index: 1,
+        size: 1_368_758,
         type: 'image/jpeg'
     }
-    */
 };
 
 const fixture = new TestFixture(config);

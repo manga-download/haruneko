@@ -18,7 +18,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('visualikigai', 'Visual Ikigai', 'https://visorikigai.nipase.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('visualikigai', 'Visual Ikigai', 'https://lectorikigai.erigu.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

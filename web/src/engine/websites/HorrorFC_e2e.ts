@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangainn',
-        title: 'MangaInn'
+        id: 'horrorfc',
+        title: 'HorrorFC'
     },
     container: {
-        url: 'https://www.mangainn.net/freezing_zero',
-        id: '/freezing_zero',
-        title: 'Freezing Zero'
+        url: 'https://horrorfc.com/genkai-chitai/',
+        id: '/genkai-chitai/',
+        title: 'Genkai Chitai'
     },
     child: {
-        id: '/freezing_zero/38/all-pages',
-        title: '38'
+        id: '/genkai-chitai-phantom-zone-ii-2-aether-forest/',
+        title: 'Phantom Zone II 2 – Aether Forest'
     },
     entry: {
-        index: 0,
-        size: 201_052,
+        index: 1,
+        size: 1_659_687,
         type: 'image/jpeg'
     }
 };
