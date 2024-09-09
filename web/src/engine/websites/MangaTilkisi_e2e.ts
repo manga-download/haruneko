@@ -1,0 +1,26 @@
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
+
+const config = {
+    plugin: {
+        id: 'mangatilkisi',
+        title: 'Manga Tilkisi'
+    },
+    container: {
+        url: 'https://www.mangatilkisi.com/manga/yasakli-yuce-buyucunun-reenkarnasyonu/',
+        id: JSON.stringify({ post: '210', slug: '/manga/yasakli-yuce-buyucunun-reenkarnasyonu/' }),
+        title: 'Yasaklı Yüce Büyücünün Reenkarnasyonu'
+    },
+    child: {
+        id: '/manga/yasakli-yuce-buyucunun-reenkarnasyonu/bolum-66/',
+        title: 'Bölüm 66'
+    },
+    entry: {
+        index: 1,
+        size: 346_236,
+        type: 'image/webp'
+    }
+};
+
+const fixture = new TestFixture(config);
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());

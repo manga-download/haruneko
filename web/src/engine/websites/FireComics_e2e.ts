@@ -7,8 +7,8 @@ const config = {
         title: 'FireComics'
     },
     container: {
-        url: 'https://firecomics.org/manga/i-became-the-target-of-the-harem-in-another-world/',
-        id: JSON.stringify({ post: '594', slug: '/manga/i-became-the-target-of-the-harem-in-another-world/' }),
+        url: 'https://firescans.xyz/manga/i-became-the-target-of-the-harem-in-another-world/',
+        id: JSON.stringify({ post: '488', slug: '/manga/i-became-the-target-of-the-harem-in-another-world/' }),
         title: 'I Became the Target of the Harem in Another World'
     },
     child: {
