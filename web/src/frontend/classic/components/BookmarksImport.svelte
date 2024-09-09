@@ -72,11 +72,12 @@
                 </div>
             {/if}
         {:catch error}
-            <InlineLoading status="error" description="Error: {error}" />
+            <InlineLoading status="error" description="Error: {error}"
+            ></InlineLoading>
         {/await}
     {/if}
     {#if action === 'export'}
-        <div />
+        <div></div>
     {/if}
 </Modal>
 
