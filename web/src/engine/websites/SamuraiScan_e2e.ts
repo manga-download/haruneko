@@ -7,7 +7,7 @@ const config = {
         title: 'Samurai Scan'
     },
     container: {
-        url: 'https://samuraiscan.ragnarokscanlation.net/dl/camino-celestial-del-maestro-marcial-estelar/',
+        url: 'https://latan.visorsmr.com/dl/camino-celestial-del-maestro-marcial-estelar/',
         id: JSON.stringify({ post: '39', slug: '/dl/camino-celestial-del-maestro-marcial-estelar/' }),
         title: 'Camino Celestial del Maestro Marcial Estelar'
     },
