@@ -6,20 +6,21 @@ const config = {
         id: 'magusmanga',
         title: 'MagusManga'
     },
+    /* CloudFlare
     container: {
-        url: 'https://oocini.biz/series/8042757755-absolute-threshold/',
-        id: '/series/8042757755-absolute-threshold/',
-        title: 'Absolute Threshold'
+        url: 'https://magustoon.com/series/01536939fbb/',
+        id: '/series/01536939fbb/',
+        title: 'I Became A Level 999 Mastermind Demon King'
     },
     child: {
-        id: '/7884971399-absolute-threshold-chapter-22/',
-        title: 'Chapter 22'
+        id: '/chapter/01536939fbb-b99c3c5ce14/',
+        title: 'Chapter 25'
     },
     entry: {
         index: 1,
-        size: 718_960,
+        size: 784_872,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

@@ -7,7 +7,7 @@ const config = {
         title: 'NightScans'
     },
     container: {
-        url: 'https://night-scans.com/series/4190634673-all-football-talents-are-mine/',
+        url: 'https://nightsup.net/series/4190634673-all-football-talents-are-mine/',
         id: '/series/4190634673-all-football-talents-are-mine/',
         title: 'All Football Talents Are Mine'
     },

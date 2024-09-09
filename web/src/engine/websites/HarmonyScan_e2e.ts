@@ -5,21 +5,21 @@ const config: Config = {
     plugin: {
         id: 'harmonyscan',
         title: 'Harmony Scan'
-    },
+    }, /* CloudFlare
     container: {
-        url: 'https://banana-scan.com/manga/a-rank-boukensha-no-slow-life/',
-        id: '/manga/a-rank-boukensha-no-slow-life/',
-        title: 'A-Rank Boukensha No Slow Life'
+        url: 'https://harmony-scan.fr/manga/hyakuren-no-haou-to-seiyaku-no-ikusa-otome/',
+        id: JSON.stringify({ post: '1909', slug: '/manga/hyakuren-no-haou-to-seiyaku-no-ikusa-otome/' }),
+        title: 'Le maître du Ragnarok et la bénédiction des Einherjar'
     },
     child: {
-        id: '/a-rank-boukensha-no-slow-life-chapitre-1/',
-        title: 'Chapitre 1'
+        id: '/manga/hyakuren-no-haou-to-seiyaku-no-ikusa-otome/chapitre-12/',
+        title: 'Chapitre 12 - Une sincérité toute simple…'
     },
     entry: {
-        index: 1,
-        size: 964_314,
+        index: 0,
+        size: 784_545,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

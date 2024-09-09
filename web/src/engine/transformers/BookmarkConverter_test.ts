@@ -9,7 +9,6 @@ import { Key } from '../SettingsGlobal';
 import { GetLocale } from '../../i18n/Localization';
 
 const legacyWebsiteIdentifierMapTestCases = [
-    { sourceID: '9anime', targetID: 'aniwave' },
     { sourceID: 'aresnov', targetID: 'scarmanga' },
     { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
     { sourceID: 'azoramanga', targetID: 'azoraworld' },
@@ -47,7 +46,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'prismascans', targetID: 'demonsect' },
     { sourceID: 'realmscans', targetID: 'rizzcomics' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
-    { sourceID: 'rightdarkscan', targetID: 'darkscan' },
     { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
     { sourceID: 'secretscans', targetID: 'lynxscans' },
