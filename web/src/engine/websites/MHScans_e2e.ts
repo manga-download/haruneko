@@ -7,7 +7,7 @@ const config = {
         title: 'MHScans'
     },
     container: {
-        url: 'https://mh.twobluescans.com/series/de-un-simple-soldado-a-monarca/',
+        url: 'https://mhscans.manhuaonline.org/series/de-un-simple-soldado-a-monarca/',
         id: JSON.stringify({ post: '2337', slug: '/series/de-un-simple-soldado-a-monarca/' }),
         title: `De un Simple Soldado a Monarca`
     },
