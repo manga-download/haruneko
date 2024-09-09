@@ -6,23 +6,21 @@ const config = {
         id: 'sinensisscan',
         title: 'Sinensis Scans',
         timeout: 35000, //warning : WEBSITE IS SLOW IN BROWSER
-    },
+    }, /* CloudFlare
     container: {
-        url: 'https://sinensisscan.net/manga/9436/',
-        id: JSON.stringify({ post: '9436', slug: '/manga/9436/' }),
-        title: 'A vida de um passarinho',
+        url: 'https://sinensistoon.com/a-vida-de-um-passarinho/',
+        id: '/a-vida-de-um-passarinho/',
+        title: 'A Vida de Um Passarinho',
     },
     child: {
-        id: '/manga/9436/cap-01/',
-        title: 'Cap. 01',
-        timeout: 15000
-
+        id: '/a-vida-de-um-passarinho/01/',
+        title: 'Capítulo 01',
     },
     entry: {
         index: 0,
-        size: 514_538,
-        type: 'image/jpeg'
-    }
+        size: 148_236,
+        type: 'image/avif'
+    } */
 };
 
 const fixture = new TestFixture(config);

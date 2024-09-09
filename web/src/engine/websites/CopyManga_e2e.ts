@@ -1,13 +1,13 @@
 ﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const configGlobal: Config = {
     plugin: {
         id: 'copymanga',
         title: 'CopyManga'
     },
     container: {
-        url: 'https://copymanga.site/comic/zhanvmeizhabao',
+        url: 'https://www.copymanga.tv/comic/zhanvmeizhabao',
         id: 'zhanvmeizhabao',
         title: '渣女沒渣報'
     },
@@ -22,5 +22,11 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+const fixtureGlobal = new TestFixture(configGlobal);
+describe(fixtureGlobal.Name, async () => (await fixtureGlobal.Connect()).AssertWebsite());
+
+const configChinaMainland = { ...configGlobal };
+configChinaMainland.container.url = 'https://www.mangacopy.com/comic/zhanvmeizhabao';
+
+const fixtureChinaMainland = new TestFixture(configChinaMainland);
+describe(fixtureChinaMainland.Name, async () => (await fixtureChinaMainland.Connect()).AssertWebsite());

@@ -7,7 +7,7 @@ const config = {
         title: 'Demon Sect',
     },
     container: {
-        url: 'https://dsectcomics.org/comics/reencarnacao-maldita/',
+        url: 'https://seitacelestial.com/comics/reencarnacao-maldita/',
         id: '/comics/reencarnacao-maldita/',
         title: 'Reencarnação Maldita',
     },

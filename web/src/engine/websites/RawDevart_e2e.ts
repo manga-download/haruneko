@@ -7,7 +7,7 @@ const config: Config = {
         title: 'RawDevart'
     },
     container: {
-        url: 'https://endevart.com/comic/ca460be0-15c4-426c-a35f-4b6db35b7d49',
+        url: 'https://rawdevart.art/kono-gomi-o-nanto-yobu-c23178',
         id: 'ca460be0-15c4-426c-a35f-4b6db35b7d49',
         title: 'Kono Gomi o Nanto Yobu'
     },
