@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public constructor() {
-        super('rawdevart', `RawDevart`, 'https://endevart.com', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('rawdevart', `RawDevart`, 'https://rawdevart.art', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
