@@ -131,11 +131,11 @@ export class ItemflagManager {
         return mark?.kind;
     }
 
-    public async GetUnFlaggedItems(media: MediaContainer<MediaChild>) {
+    public async GetUnFlaggedItems(media: MediaContainer<MediaContainer<MediaChild>>) {
         const marks = await this.GetContainerItemsFlags(media);
         return media.Entries.Value.filter(item => {
             const mark = marks?.find(mark => {
-                return this.IsContainerSameItem(mark, item as MediaContainer<MediaChild>);
+                return this.IsContainerSameItem(mark, item);
             });
             return mark === undefined;
         });
