@@ -23,12 +23,15 @@
         WindowController,
     } from '../stores/Stores';
     import { Locale, SidenavIconsOnTop } from '../stores/Settings';
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
 
-    let isSideNavOpen: boolean = false;
+    interface Props {
+        onHome?: () => void;
+    };
+    let { onHome }: Props  = $props();
 
-    let winMaximized = false;
+    let isSideNavOpen: boolean = $state(false);
+
+    let winMaximized = $state(false);
 
     function updateWindowState() {
         winMaximized =
@@ -41,19 +44,21 @@
 
     window.addEventListener('resize', updateWindowState);
 
-    let showWindowControls = false;
-    let minimize: () => void;
-    let maximize: () => void;
-    let restore: () => void;
-    let close: () => void;
+    let showWindowControls = $state(false);
+    let minimize: () => void = $state();
+    let maximize: () => void = $state();
+    let restore: () => void = $state();
+    let close: () => void = $state();
 
-    $: if ($WindowController) {
-        showWindowControls = $WindowController.HasControls;
-        minimize = $WindowController.Minimize.bind($WindowController);
-        maximize = $WindowController.Maximize.bind($WindowController);
-        restore = $WindowController.Restore.bind($WindowController);
-        close = $WindowController.Close.bind($WindowController);
-    }
+    WindowController.subscribe((controller) => {
+        if (controller) {
+            showWindowControls = controller.HasControls;
+            minimize = controller.Minimize.bind(controller);
+            maximize = controller.Maximize.bind(controller);
+            restore = controller.Restore.bind(controller);
+            close = controller.Close.bind(controller);
+        }
+    });
 </script>
 
 <Header
@@ -71,7 +76,7 @@
                 kind="ghost"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
-                on:click={() => dispatch('home')}
+                on:click={onHome}
             />
             <Button
                 class="clickable"
@@ -119,7 +124,7 @@
     </HeaderUtilities>
 </Header>
 
-<Sidenav bind:isOpen={isSideNavOpen} on:home />
+<Sidenav bind:isOpen={isSideNavOpen} {onHome} />
 
 <style>
     :global(#Header) {
