@@ -111,7 +111,7 @@
 <ClickableTile on:click={() => (isModalOpen = true)}>
     <div id="tasksstatus">
         <div class="label">
-            <CloudDownload size={32} />
+            <CloudDownload size={32}></CloudDownload>
             <div class="count">
                 Downloads ({downloadTasks.filter((job) =>
                     [
@@ -131,13 +131,10 @@
                             status={statusmap[status]}
                             labelText="[{currentDownload.Media.Parent
                                 .Title}] {currentDownload.Media.Title}"
-                        />
+                        ></ProgressBar>
                     {:else}
-                        <ProgressBar
-                            size="sm"
-                            value={0}
-                            labelText="<no tasks>"
-                        />
+                        <ProgressBar size="sm" value={0} labelText="<no tasks>"
+                        ></ProgressBar>
                     {/if}
                 </div>
                 <div class="total">
@@ -145,17 +142,17 @@
                         class="bar val-processing"
                         style:flex-basis="{(processing / downloadTasks.length) *
                             100}%"
-                    />
+                    ></div>
                     <div
                         class="bar val-completed"
                         style:flex-basis="{(completed / downloadTasks.length) *
                             100}%"
-                    />
+                    ></div>
                     <div
                         class="bar val-failed"
                         style:flex-basis="{(failed / downloadTasks.length) *
                             100}%"
-                    />
+                    ></div>
                     <div
                         class="bar val-pending"
                         style:flex-basis="{((downloadTasks.length -
@@ -164,7 +161,7 @@
                             processing) /
                             downloadTasks.length) *
                             100}%"
-                    />
+                    ></div>
                 </div>
             {/if}
         </div>

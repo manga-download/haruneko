@@ -47,7 +47,7 @@ const IframeScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rawlazy', 'RawLazy', 'https://rawlazy.tv', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawlazy', 'RawLazy', 'https://rawlazy.is', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
