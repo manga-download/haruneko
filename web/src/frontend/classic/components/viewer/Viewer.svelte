@@ -79,9 +79,9 @@
                     item={displayedItem}
                     {currentImageIndex}
                     bind:wide
-                    on:nextItem={onNextItem}
-                    on:previousItem={onPreviousItem}
-                    on:close={onClose}
+                    {onNextItem}
+                    {onPreviousItem}
+                    {onClose}
                 />
             {:else if mode === 'Video'}
                 <VideoViewer />

@@ -7,7 +7,7 @@ const config = {
         title: 'TruyenQQ'
     },
     container: {
-        url: 'https://truyenqqviet.com/truyen-tranh/long-phi-bat-bai-322',
+        url: 'https://truyenqqto.com/truyen-tranh/long-phi-bat-bai-322',
         id: '/truyen-tranh/long-phi-bat-bai-322',
         title: 'Long Phi Bất Bại'
     },
