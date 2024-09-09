@@ -7,7 +7,7 @@ const config = {
         title: 'Lua Scans'
     },
     container: {
-        url: 'https://luacomic.com/manga/lady-baby/',
+        url: 'https://ponvi.online/manga/lady-baby/',
         id: '/manga/lady-baby/',
         title: 'Lady Baby'
     },
