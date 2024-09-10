@@ -80,9 +80,7 @@
         }),
     ];
 
-
-
-    let pluginDropdownSelected: string = $state(currentPlugin?.Identifier);
+    let pluginDropdownSelected: string = $state();
 
     // Medias list
     let medias: MediaContainer<MediaChild>[] = $state([]);
@@ -91,17 +89,15 @@
     let filteredmedias: MediaContainer<MediaChild>[] = $derived(mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter));
     let fuse = new Fuse([]);
 
-    onMount(() => {
-        loadPlugin = loadMedias($selectedPlugin);
+    loadPlugin = loadMedias($selectedPlugin);
 
-        selectedPlugin.subscribe((plugin) => {
-            const previousPlugin = currentPlugin;
-            currentPlugin = plugin;
-            pluginDropdownSelected = currentPlugin?.Identifier;
-            if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
-                loadMedias(plugin);
-            disablePluginRefresh = false;
-        });
+    selectedPlugin.subscribe((newplugin) => {
+        const previousPlugin = currentPlugin;
+        currentPlugin = newplugin;
+        pluginDropdownSelected = currentPlugin?.Identifier;
+        if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
+            loadMedias(newplugin);
+        disablePluginRefresh = false;
     });
 
     async function loadMedias(
@@ -157,6 +153,7 @@
                 const media = await website.TryGetEntry(link);
                 if (media) {
                     $selectedItem = undefined;
+                    mediaNameFilter = '';
                     if (!$selectedPlugin?.IsSameAs(media.Parent)) {
                         disablePluginRefresh = true;
                         $selectedPlugin = media.Parent;
