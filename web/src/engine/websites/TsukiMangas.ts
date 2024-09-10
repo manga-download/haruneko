@@ -1,8 +1,9 @@
 import { Tags } from '../Tags';
-import icon from './AdonisFansub.webp';
-import { Chapter, DecoratableMangaScraper, Manga, MangaPlugin, Page } from '../providers/MangaPlugin';
+import icon from './TsukiMangas.webp';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIResult<T> = {
     data : T
@@ -18,8 +19,7 @@ type APIChapter = {
     number: string,
     title: string | null
     pages?: {
-        url: string, 
-        server : number
+        url: string,
     }[]
 }
 
@@ -27,7 +27,7 @@ type APIChapter = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = `${this.URI.origin}/api/v3/`;
-    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/obra/(\d+)/[^/]+$`);
+    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/obra/(\\d+)/[^/]+$`);
 
     public constructor() {
         super('tsukimangas', 'Tsuki-Mangas', 'https://tsuki-mangas.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Aggregator);
@@ -43,13 +43,16 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaId = url.match(this.mangaRegexp)[1];
-        const { title } = await FetchJSON<APIManga>(new Request(new URL(`mangas/${mangaId}`, this.apiUrl)));
+        const { title } = await FetchJSON<APIManga>(this.CreateRequest(new URL(`mangas/${mangaId}`, this.apiUrl)));
         return new Manga(this, provider, mangaId, title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        let reducer = Promise.resolve();
         const mangaList : Manga[]= [];
         for (let page = 1, run = true; run; page++) {
+            await reducer;
+            reducer = new Promise(resolve => setTimeout(resolve, 500));
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
@@ -57,7 +60,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`home/lastests?page=${page}?format=0`, this.apiUrl)));
+        const { data } = await FetchJSON<APIResult<APIManga[]>>(this.CreateRequest(new URL(`home/lastests?page=${page}?format=0`, this.apiUrl)));
         return data.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
     }
 
@@ -71,7 +74,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public async GetChaptersFromPage(manga: Manga, page : number): Promise<Chapter[]> {
-        const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`chapters?mangaid=${manga.Identifier}&page=${page}`, this.apiUrl)));
+        const { data } = await FetchJSON<APIResult<APIChapter[]>>(this.CreateRequest(new URL(`chapters?manga_id=${manga.Identifier}&page=${page}&order=desc`, this.apiUrl)));
         return data.map(chapter => {
             const title = (chapter.title ? [chapter.number, chapter.title].join(' : ') : chapter.number).trim();
             return new Chapter(this, manga, chapter.id.toString(), title);
@@ -79,9 +82,33 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //const { pages } = await FetchJSON<APIChapter>(new Request(new URL(`chapter/versions/${chapter.Identifier}`, this.apiUrl)));
-        //return 
+        const { pages } = await FetchJSON<APIChapter>(this.CreateRequest(new URL(`chapter/versions/${chapter.Identifier}`, this.apiUrl)));
+        return pages.map(page => {
+            const alternateUrl = new URL(page.url, 'https://cdn2.tsuki-mangas.com').href;
+            return new Page(this, chapter, new URL(`https://cdn.tsuki-mangas.com/tsuki${page.url}`), { alternateUrl });
+        });
+    }
 
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        try {
+            let blob: Blob = null;
+            blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+
+            if (blob.type.startsWith('image/')) {
+                return blob;
+            } else {
+                page.Link.href = page.Parameters.alternateUrl as string;
+                return Common.FetchImageAjax.call(this, page, priority, signal, true);
+            }
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+        } catch (error) {
+            page.Link.href = page.Parameters.alternateUrl as string;
+            return Common.FetchImageAjax.call(this, page, priority, signal, true);
+        }
+    }
+
+    private CreateRequest(endpoint: URL): Request {
+        return new Request(endpoint, { headers: { Referer: this.URI.origin } });
     }
 
 }
