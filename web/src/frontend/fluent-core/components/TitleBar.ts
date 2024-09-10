@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
-import { IWindowService } from '../services/WindowService';
-import S from '../services/StateService';
+import { WindowManagerService, type IWindowManager } from '../services/WindowManagerService';
+import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
 // See: https://icon-sets.iconify.design/fluent/
 import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw';
@@ -148,7 +148,7 @@ const template: ViewTemplate<TitleBar> = html`
 @customElement({ name: 'fluent-titlebar', template, styles })
 export class TitleBar extends FASTElement {
 
-    @IWindowService window!: IWindowService;
+    @WindowManagerService window!: IWindowManager;
     @observable maximized = false;
     @observable settings = false;
     @observable popup = false;

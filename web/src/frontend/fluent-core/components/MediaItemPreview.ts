@@ -1,7 +1,7 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
 import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Chapter } from '../../../engine/providers/MangaPlugin';
-import S from '../services/StateService';
+import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
 import IconClose from '@fluentui/svg-icons/icons/dismiss_20_regular.svg?raw';
 

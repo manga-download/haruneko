@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../engine/providers/MediaPlugin';
-import S from './services/StateService';
+import { S /*, StateManagerService, type StateManager*/ } from './services/StateManagerService';
 
 const styles: ElementStyles = css`
     :host {
@@ -112,6 +112,7 @@ const template: ViewTemplate<App> = html`
     ${when(model => model.previewEntry, templatePreview)}
 `;
 
+// TODO: Will this work with fast-element 1.x ?
 /*
 const template: ViewTemplate<App> = html`
     <div style="background-color: lightblue;">

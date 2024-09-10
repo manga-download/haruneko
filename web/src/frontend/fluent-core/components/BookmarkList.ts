@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
-import S from '../services/StateService';
+import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
 const styles: ElementStyles = css`
 

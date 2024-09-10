@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
 import { type DownloadTask, Status } from '../../../engine/DownloadTask';
-import S from '../services/StateService';
+import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
 import IconQueued from '@fluentui/svg-icons/icons/clock_20_regular.svg?raw';
 import IconPaused from '@fluentui/svg-icons/icons/pause_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/debug-paused.svg?raw';

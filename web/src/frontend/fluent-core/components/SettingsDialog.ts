@@ -2,7 +2,7 @@ import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html
 import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
 import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
 import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
-import S from '../services/StateService';
+import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 

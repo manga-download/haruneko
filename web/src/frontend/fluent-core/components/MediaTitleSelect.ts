@@ -3,7 +3,7 @@ import type { MediaContainer, MediaChild } from '../../../engine/providers/Media
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
 import type { SearchBox } from './SearchBox';
-import S from '../services/StateService';
+import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 import { Exception } from '../../../engine/Error';
 import { FrontendResourceKey as R } from '../../../i18n/ILocale';
 
@@ -251,7 +251,7 @@ export class MediaTitleSelect extends FASTElement {
     ExpandedChanged() {
         if(this.dropdown) {
             this.dropdown.style.display = this.Expanded ? 'block' : 'none';
-            this.searchbox.control.control.focus();
+            this.searchbox.control.focus();
             //this.searchbox.control.select();
         }
     }

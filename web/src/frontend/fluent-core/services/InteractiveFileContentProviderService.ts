@@ -1,4 +1,5 @@
-import { DI } from '@microsoft/fast-foundation';
+import { DI, Registration } from '@microsoft/fast-element/di.js';
 import { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
 
-export const InteractiveFileContentProviderService = DI.createInterface<InteractiveFileContentProvider>(locator => locator.singleton(InteractiveFileContentProvider));
+export const InteractiveFileContentProviderService = DI.createContext<InteractiveFileContentProvider>();
+DI.getOrCreateDOMContainer(document.body).register(Registration.instance(InteractiveFileContentProviderService, new InteractiveFileContentProvider()));

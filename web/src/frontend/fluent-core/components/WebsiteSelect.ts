@@ -1,7 +1,7 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
 import type { SearchBox } from './SearchBox';
-import S from '../services/StateService';
+import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
 import IconBrowse from '@fluentui/svg-icons/icons/open_20_regular.svg?raw';
@@ -216,7 +216,7 @@ export class WebsiteSelect extends FASTElement {
     ExpandedChanged() {
         if(this.dropdown) {
             this.dropdown.style.display = this.Expanded ? 'block' : 'none';
-            this.searchbox.control.control.focus();
+            this.searchbox.control.focus();
             //this.searchbox.control.select();
         }
     }
