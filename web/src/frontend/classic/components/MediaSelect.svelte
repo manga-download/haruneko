@@ -37,12 +37,13 @@
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
     import { resizeBar } from '../lib/actions';
+    import { onMount } from 'svelte';
 
-    let ref:HTMLElement;
+    let ref:HTMLElement = $state();
 
     // Plugins selection
-    let currentPlugin: MediaContainer<MediaChild>;
-    let loadPlugin: Promise<MediaContainer<MediaChild>>;
+    let currentPlugin: MediaContainer<MediaChild> = $state();
+    let loadPlugin: Promise<MediaContainer<MediaChild>> = $state();
 
     let disablePluginRefresh = false;
 
@@ -53,19 +54,16 @@
         value: MediaContainer<MediaChild>;
         isFavorite: boolean;
     }
-    let pluginsCombo: Array<ComboBoxItemWithValue>;
-    let orderedPlugins: MediaContainer<MediaChild>[] = [];
-
-    orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
-        return (
-            // sort by favorite
-            (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
-                (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
-            //sort by string
-            a.Title.localeCompare(b.Title)
-        );
-    });
-    pluginsCombo = [
+    const orderedPlugins: MediaContainer<MediaChild>[] = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
+            return (
+                // sort by favorite
+                (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
+                    (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
+                //sort by string
+                a.Title.localeCompare(b.Title)
+            );
+        });
+    const pluginsCombo: ComboBoxItemWithValue[] = [
         {
             id: HakuNeko.BookmarkPlugin.Identifier,
             text: HakuNeko.BookmarkPlugin.Title,
@@ -82,28 +80,33 @@
         }),
     ];
 
-    $: {
-        const previousPlugin = currentPlugin;
-        currentPlugin = $selectedPlugin;
-        if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
-            loadMedias($selectedPlugin);
-        disablePluginRefresh = false;
-    }
-    $: pluginDropdownSelected = currentPlugin?.Identifier;
+    let pluginDropdownSelected: string = $state();
 
     // Medias list
-    let medias: MediaContainer<MediaChild>[] = [];
-    let filteredmedias: MediaContainer<MediaChild>[] = [];
+    let medias: MediaContainer<MediaChild>[] = $state([]);
+    let mediaNameFilter = $state('');
+
+    let filteredmedias: MediaContainer<MediaChild>[] = $derived(mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter));
     let fuse = new Fuse([]);
 
-    $: loadPlugin = loadMedias($selectedPlugin);
+    loadPlugin = loadMedias($selectedPlugin);
+
+    selectedPlugin.subscribe((newplugin) => {
+        const previousPlugin = currentPlugin;
+        currentPlugin = newplugin;
+        pluginDropdownSelected = currentPlugin?.Identifier;
+        if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
+            loadMedias(newplugin);
+        disablePluginRefresh = false;
+    });
+
     async function loadMedias(
         plugin: MediaContainer<MediaChild>,
     ): Promise<MediaContainer<MediaChild>> {
         if (!plugin) return;
         const loadedmedias =
             (plugin.Entries.Value as MediaContainer<MediaChild>[]) ?? [];
-        fuse = new Fuse(medias, {
+        fuse = new Fuse(loadedmedias, {
             keys: ['Title'],
             findAllMatches: true,
             ignoreLocation: true,
@@ -122,12 +125,9 @@
                 item.Title.includes(mediaNameFilter),
             );
     }
-    let mediaNameFilter = '';
-    $: filteredmedias =
-        mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter);
 
-    let isTrackerModalOpen = false;
-    let selectedTracker: MediaInfoTracker;
+    let isTrackerModalOpen = $state(false);
+    let selectedTracker: MediaInfoTracker = $state();
 
     function shouldFilterPlugin(item: any, value: string) {
         if (!value) return true;
@@ -137,8 +137,12 @@
     async function onUpdateMediaEntriesClick() {
         $selectedMedia = undefined;
         $selectedItem = undefined;
-        await $selectedPlugin.Update();
-        loadPlugin = loadMedias($selectedPlugin);
+        loadPlugin = updatePlugin($selectedPlugin);
+    }
+
+    async function updatePlugin(plugin: MediaContainer<MediaChild>): Promise<MediaContainer<MediaChild>> {
+        await plugin.Update();
+        return loadMedias($selectedPlugin);
     }
 
     document.addEventListener('media-paste-url', onMediaPasteURL);
@@ -149,6 +153,7 @@
                 const media = await website.TryGetEntry(link);
                 if (media) {
                     $selectedItem = undefined;
+                    mediaNameFilter = '';
                     if (!$selectedPlugin?.IsSameAs(media.Parent)) {
                         disablePluginRefresh = true;
                         $selectedPlugin = media.Parent;
@@ -173,11 +178,9 @@
         );
     }
 
-    let pluginDropdownValue: string;
-
     // VirtualList
-    let container:HTMLElement;
-    let containerHeight = 0;
+    let container:HTMLElement = $state();
+    let containerHeight = $state(0);
 </script>
 
 {#if isTrackerModalOpen}
@@ -200,14 +203,13 @@
             tooltipPosition="right"
             tooltipAlignment="center"
             iconDescription="Paste media link"
-            on:click={onMediaPasteURL}
+            onclick={onMediaPasteURL}
         />
     </div>
     <div id="Plugin">
         <ComboBox
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
-            bind:value={pluginDropdownValue}
             on:clear={() => ($selectedPlugin = undefined)}
             on:select={(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
@@ -233,7 +235,7 @@
             tooltipAlignment="center"
             iconDescription="Update"
             style="float: right;"
-            on:click={onUpdateMediaEntriesClick}
+            onclick={onUpdateMediaEntriesClick}
         />
     </div>
 

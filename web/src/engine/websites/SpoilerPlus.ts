@@ -93,7 +93,6 @@ export function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/[^/]+-raw-free\/$/, 'article#item-detail h1.title-detail', MangaLabelExtractor)
 @Common.MangasMultiPageCSS('/page/{page}/', 'article.item div.image > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.list-chapter ul li a')
-
 export default class extends DecoratableMangaScraper {
     private readonly queryPages: string = '';
 
