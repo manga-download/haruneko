@@ -4,22 +4,21 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 const pageScript = `
-    new Promise( resolve => {
-        const pagelist = (window.chapterImages ?? window.chapter_preloaded_images);
-        resolve(pagelist.map(image => {
-            const uri = new URL(image.src);
-            uri.searchParams.set('quality', '100');
-            uri.searchParams.delete('w');
-            return uri.href;
-        }));
-    });
+    new Promise( resolve => resolve(window.chapterData.images.map(image => image.src)));
 `;
 
-@Common.MangaCSS(/^{origin}\/hentai\/[^/]+\/$/, 'div.post-title h1')
-@Common.MangasMultiPageCSS('/hentai/page/{page}/', 'div.post-title a')
-@Common.ChaptersSinglePageCSS('div.summary_image > a')
+function ChapterExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('img').getAttribute('alt').trim()
+    };
+}
+
+@Common.MangaCSS(/^{origin}\/hentai\/[^/]+\/$/, 'div.manga-titles h1')
+@Common.MangasMultiPageCSS('/hentai/page/{page}/', 'div.manga-grid div.manga-item div.manga-item__bottom a', 1, 1, 150)
+@Common.ChaptersSinglePageCSS('section#mangaSummary a.block', ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 500)
-@Common.ImageElement(false, false, true)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -29,5 +28,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
 }
