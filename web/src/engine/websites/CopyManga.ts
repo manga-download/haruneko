@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
     private readonly defaultKey = 'xxxmanga.woo.key';
 
     public constructor() {
-        super('copymanga', 'CopyManga', 'https://copymanga.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
+        super('copymanga', 'CopyManga', 'https://www.copymanga.tv', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
 
         //this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
         //(this.Settings.url as Text).Subscribe(value => this.URI.href = value);
@@ -56,7 +56,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+$`).test(url) || /^https:\/\/www\.mangacopy\.com\/comic\/[^/]+$/.test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
