@@ -5,19 +5,18 @@ import * as Common from './decorators/Common';
 import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
-//Modded DM5 script
 function ImageScript(pageIndex: number): string {
     return `
-    new Promise(async (resolve, reject) => {
-        try {
-            const response = await fetch('chapterfun.ashx?cid='+ window.chapter_id + '&page=' + '${pageIndex.toString()}');
-            eval( await response.text());
-            resolve(new URL(d[0], window.location.origin).href);
-        } catch(error) {
-            reject(error);
-        }
-    });
-`;
+        new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('chapterfun.ashx?cid='+ window.chapter_id + '&page=' + ${pageIndex});
+                eval(await response.text());
+                resolve(new URL(d[0], window.location.origin).href);
+            } catch(error) {
+                reject(error);
+            }
+        });
+    `;
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.article_content h1.title-top')
@@ -40,10 +39,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const pageUrl = await FetchWindowScript<string>(new Request(page.Link), ImageScript(page.Parameters.pageIndex as number));
         return this.imageTaskPool.Add(async () => {
-            const request = new Request(pageUrl, {
-                signal: signal,
+            const uri = await FetchWindowScript<string>(new Request(page.Link, { signal }), ImageScript(page.Parameters.pageIndex as number));
+            const request = new Request(uri, {
+                signal,
                 headers: {
                     Referer: page.Parameters.Referer
                 }
@@ -51,6 +50,5 @@ export default class extends DecoratableMangaScraper {
             const response = await Fetch(request);
             return response.blob();
         }, priority, signal);
-
     }
 }
