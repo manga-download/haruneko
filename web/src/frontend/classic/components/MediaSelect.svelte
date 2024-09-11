@@ -54,7 +54,7 @@
         value: MediaContainer<MediaChild>;
         isFavorite: boolean;
     }
-    const orderedPlugins: MediaContainer<MediaChild>[] = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
+    const orderedPlugins: MediaContainer<MediaChild>[] = HakuNeko.PluginController.WebsitePlugins.toSorted((a, b) => {
             return (
                 // sort by favorite
                 (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
