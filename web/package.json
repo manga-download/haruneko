@@ -32,7 +32,7 @@
         "svelte": "next",
         "svelte-check": "^4.0.1",
         "svelte-preprocess": "^6.0.2",
-        "vue": "^3.5.3",
+        "vue": "^3.5.4",
         "vue-tsc": "^2.1.6"
     },
     "scripts": {
