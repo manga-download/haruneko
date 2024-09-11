@@ -2,32 +2,27 @@ import { Tags } from '../Tags';
 import icon from './MangaTown.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 //Modded DM5 script
-const pageScript = `
+function ImageScript(pageIndex: number): string {
+    return `
     new Promise(async (resolve, reject) => {
         try {
-            const pagecount = window.total_pages;
-            const pages = [];
-            for (let page = 1; page <= pagecount; page++) {
-                const response = await fetch('chapterfun.ashx?cid='+ window.chapter_id + '&page=' + page);
-                const script = await response.text();
-                eval(script);
-                pages.push(d[0]);
-            }
-            resolve(pages.map(link => new URL(link, window.location.href).href));
-
+            const response = await fetch('chapterfun.ashx?cid='+ window.chapter_id + '&page=' + '${pageIndex.toString()}');
+            eval( await response.text());
+            resolve(new URL(d[0], window.location.origin).href);
         } catch(error) {
             reject(error);
         }
     });
 `;
+}
 
 @Common.MangaCSS(/^{origin}\/manga\//, 'div.article_content h1.title-top')
 @Common.MangasMultiPageCSS('/directory/0-0-0-0-0-0/{page}.htm', 'ul.manga_pic_list li p.title a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('ul.chapter_list li a')
-@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -39,7 +34,23 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchWindowScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), pageScript);
-        return data.map(link => new Page(this, chapter, new URL(link), { Referer: 'https://mangahere.com' }));
+        const chapterUrl = new URL(chapter.Identifier, this.URI);
+        const pageCount = await FetchWindowScript<number>(new Request(chapterUrl), 'window.total_pages');
+        return new Array(pageCount).fill(0).map((_, index) => new Page(this, chapter, chapterUrl, { pageIndex: index + 1, Referer: 'https://mangahere.com' }));
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const pageUrl = await FetchWindowScript<string>(new Request(page.Link), ImageScript(page.Parameters.pageIndex as number));
+        return this.imageTaskPool.Add(async () => {
+            const request = new Request(pageUrl, {
+                signal: signal,
+                headers: {
+                    Referer: page.Parameters.Referer
+                }
+            });
+            const response = await Fetch(request);
+            return response.blob();
+        }, priority, signal);
+
     }
 }
