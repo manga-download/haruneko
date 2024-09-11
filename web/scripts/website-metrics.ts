@@ -33,7 +33,7 @@ type Result = {
 
 const expectedRedirectPatterns = new Map([
     [ 'https://www.corocoro.jp/', [ // The website redirects to the top-level domain when requesting the root path only (the sub-domain is still valid for non-empty paths)
-        /^https:\/\/corocoro\.jp\/$/,
+        /^https:\/\/corocoro-news\.jp\/$/,
     ] ],
     [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/w+\d*\.holymanga\.net\/$/,
