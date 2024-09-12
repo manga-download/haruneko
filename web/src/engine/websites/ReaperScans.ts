@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
         uri.searchParams.set('perPage', '100');
         uri.searchParams.set('series_id', manga.Identifier);
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.interactionTaskPool.Add(async () => this.GetChaptersFromPage(uri, manga, page), Priority.Normal);
+            const chapters = await this.interactionTaskPool.Add(async () => this.GetChaptersFromPage(uri, manga, page), Priority.High);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
