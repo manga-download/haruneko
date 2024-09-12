@@ -7,17 +7,17 @@ const config = {
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://resetscan.com/manga/scholar-return/',
-        id: JSON.stringify({ post: '2055', slug: '/manga/scholar-return/' }),
-        title: 'The Scholarly Reincarnation'
+        url: 'https://reset-scans.xyz/manga/book-eater',
+        id: JSON.stringify({ post: '2055', slug: '/manga/book-eater' }),
+        title: 'Book Eater'
     },
     child: {
-        id: '/manga/scholar-return/chapter-214',
-        title: 'Chapter 214 - The End'
+        id: '/manga/book-eater/100',
+        title: 'Chapter 100'
     },
     entry: {
-        index: 0,
-        size: 279_842,
+        index: 1,
+        size: 181_700,
         type: 'image/webp'
     }
 };
