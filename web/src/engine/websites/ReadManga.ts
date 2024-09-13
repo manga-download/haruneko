@@ -4,9 +4,9 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as ReadM from './decorators/ReadMangaLive';
 
-@Common.MangaCSS(/^{origin}\/[^/]+$/, ReadM.queryMangaTitle)
-@Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, ReadM.pageMangaOffset, 0, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS(ReadM.queryChapters)
+@Common.MangaCSS(/^https:\/\/(1|zz)\.readmanga\.io\/[^/]+$/, '#mangaBox meta[itemprop="name"]')
+@Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, 50, 0)
+@Common.ChaptersSinglePageCSS(ReadM.queryChapters)// TODO: Randomly redirects to Usagi
 @ReadM.PagesSinglePageJS()
 @ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {

@@ -93,18 +93,18 @@ export function ImageAjax() {
 
 async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
 
-    const blob = await FetchBlob(page, priority, signal);
+    const blob = await FetchBlob.call(this, page, priority, signal);
     if (blob.type.startsWith('image/')) return blob;
 
     const alternativeUrls: string[] = (page.Parameters.alternativeUrls as string).split(',');
     for (const alternativeUrl of alternativeUrls) {
         page.Link.href = alternativeUrl;
-        const blob = await FetchBlob(page, priority, signal);
+        const blob = await FetchBlob.call(this, page, priority, signal);
         if (blob.type.startsWith('image/')) return blob;
     }
 }
 
-async function FetchBlob(page : Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+async function FetchBlob(this : MangaScraper, page : Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const response = await Fetch(new Request(page.Link, {
             signal,
