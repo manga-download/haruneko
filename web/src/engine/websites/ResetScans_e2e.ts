@@ -8,7 +8,7 @@ const config = {
     },
     container: {
         url: 'https://reset-scans.xyz/manga/book-eater',
-        id: '/manga/book-eater',
+        id: JSON.stringify({ post: '2055', slug: '/manga/book-eater' }),
         title: 'Book Eater'
     },
     child: {
@@ -17,7 +17,7 @@ const config = {
     },
     entry: {
         index: 1,
-        size: 155_194,
+        size: 181_700,
         type: 'image/webp'
     }
 };
