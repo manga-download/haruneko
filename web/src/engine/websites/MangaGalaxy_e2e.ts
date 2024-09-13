@@ -13,7 +13,7 @@ const config = {
     },
     child: {
         id: '/series/return-of-the-mob-character./chapter-1',
-        title: 'Chapter 1'
+        title: '1'
     },
     entry: {
         index: 0,
