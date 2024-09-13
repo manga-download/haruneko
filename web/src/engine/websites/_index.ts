@@ -555,6 +555,7 @@ export { default as ReaperScans } from './ReaperScans';
 export { default as ReaperScansFR } from './ReaperScansFR';
 export { default as Remangas } from './Remangas';
 export { default as ResetScans } from './ResetScans';
+export { default as ResetScansAlt } from './ResetScansAlt';
 export { default as Retsu } from './Retsu';
 export { default as RidiBooks } from './RidiBooks';
 export { default as RimuScan } from './RimuScan';

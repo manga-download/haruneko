@@ -7,17 +7,17 @@ const config = {
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://reset-scans.xyz/manga/book-eater',
-        id: JSON.stringify({ post: '2055', slug: '/manga/book-eater' }),
-        title: 'Book Eater'
+        url: 'https://reset-scans.co/manga/stuck-in-the-tower/',
+        id: JSON.stringify({ post: '6418', slug: '/manga/stuck-in-the-tower/' }),
+        title: 'Stuck in the Tower'
     },
     child: {
-        id: '/manga/book-eater/100',
-        title: 'Chapter 100'
+        id: '/manga/stuck-in-the-tower/chapter-91/',
+        title: 'Chapter 91'
     },
     entry: {
-        index: 1,
-        size: 181_700,
+        index: 0,
+        size: 275_130,
         type: 'image/webp'
     }
 };
