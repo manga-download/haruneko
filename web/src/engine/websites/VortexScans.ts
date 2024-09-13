@@ -15,7 +15,7 @@ type APISingleManga = {
 type APIManga = {
     id: number,
     slug: string,
-    postTitle: string
+    postTitle: string,
     chapters?: APIChapter[]
 }
 
