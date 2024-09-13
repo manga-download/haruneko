@@ -8,8 +8,11 @@
         hover: boolean;
         multilang ?: boolean;
         onView: (MouseEvent) => void;
+        onmouseup: (MouseEvent) => void;
+        onmousedown: (MouseEvent) => void;
+        onmouseenter: (MouseEvent) => void;
     };
-    let { item, selected, hover , multilang = false, onView }: Props  = $props();
+    let { item, selected, hover , multilang = false, onView, onmouseup, onmousedown, onmouseenter }: Props  = $props();
 
     import { Button, ClickableTile } from 'carbon-components-svelte';
     import {
@@ -29,7 +32,7 @@
     const availableLanguageTags = Tags.Language.toArray();
 
     // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
-    function extractUnicodeFlagFromTags(tags: Tag[]): string {
+    function extractUnicodeFlagFromTags(tags: ReadonlyArray<Tag>): string {
         const languageTagTitleResourceKey = tags.find((tag) =>
             availableLanguageTags.includes(tag),
         )?.Title;
@@ -53,7 +56,7 @@
     import { Locale } from '../stores/Settings';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
 
-    let flag: FlagType;
+    let flag: FlagType = $state();
     const flagiconmap = new Map<FlagType, any>([
         [FlagType.Viewed, ViewFilled],
         [FlagType.Current, IconBookmarkFilled],
@@ -96,6 +99,7 @@
     }
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
     class="listitem"
     role="listitem"
@@ -103,6 +107,9 @@
     class:selected
     class:hover
     class:active={$selectedItem?.Identifier === item?.Identifier}
+    {onmouseup}
+    {onmousedown}
+    {onmouseenter}
 >
     <Button
         size="small"
@@ -110,7 +117,7 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="Download"
-        on:click={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
+        onclick={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
     >
         {#if downloadTask}
             {@const status = downloadTask.Status.Value}
@@ -140,9 +147,9 @@
         tooltipPosition="right"
         tooltipAlignment="end"
         iconDescription="View"
-        on:click={(event) => onView(event)}
+        onclick={(event) => onView(event)}
     />
-    <ClickableTile class="title" on:click={(event) => onView(event)}>
+    <ClickableTile class="title" onclick={(event) => onView(event)}>
         {#if multilang}
             <span class="multilang">
                 {extractUnicodeFlagFromTags(item.Tags.Value)}

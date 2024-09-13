@@ -46,11 +46,13 @@
     <HeaderGlobalAction
         class="previousitem"
         icon={ChevronLeft}
+        iconDescription="Previous Item"
         on:click={onPreviousItem}
     />
     <HeaderGlobalAction
         class="nextitem"
         icon={ChevronRight}
+        iconDescription="Next Item"
         on:click={onNextItem}
     />
     <HeaderAction
@@ -181,21 +183,22 @@
     <HeaderGlobalAction
         class="close"
         icon={Misuse}
-        on:click={close}
+        iconDescription="Close"
+        onclick={onClose}
     />
 </div>
 
 <style>
     #vieweractions {
         opacity: 5%;
-        z-index: 9000;
+        z-index: 4500;
     }
     #vieweractions:hover {
         opacity: 100%;
     }
     #vieweractions :global(.bx--header__action) {
         position: absolute;
-        z-index: 9000;
+        z-index: 4500;
     }
     #vieweractions :global(.close) {
         top: 0;

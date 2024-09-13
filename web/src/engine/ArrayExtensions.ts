@@ -1,28 +1,31 @@
 import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
 
 declare global {
-    interface Array<T> {
-        /**
-         * Determines whether all the elements of an array dissatisfy the specified {@link predicate}.
-         */
-        none(predicate: (element: T, index: number, array: T[]) => unknown): boolean;
+    interface Array<T> extends ArrayExtensions<T> {}
+    interface ReadonlyArray<T> extends ArrayExtensions<T> {}
+}
 
-        /**
-         * Count the elements of an array satisfying the specified {@link predicate}.
-         */
-        count(predicate: (element: T, index: number, array: T[]) => unknown): number;
+type ArrayExtensions<T> = {
+    /**
+     * Determines whether all the elements of an array dissatisfy the specified {@link predicate}.
+     */
+    none(predicate: (element: T, index: number, array: T[]) => unknown): boolean;
 
-        /**
-         * Returns the elements of an array where each element's `Identifier` property is unique.
-         * When the array contains multiple elements with the same `Identifier`, the first element is choosen.
-         */
-        distinct<T extends MediaContainer<MediaChild>>(this: T[]): T[];
+    /**
+     * Count the elements of an array satisfying the specified {@link predicate}.
+     */
+    count(predicate: (element: T, index: number, array: T[]) => unknown): number;
 
-        /**
-         * Check wether the {@link items} array has at least one media item and that media item is different from the last media item in the array.
-         */
-        isMissingLastItemFrom<T extends MediaContainer<MediaChild>>(this: T[], items: T[]): boolean;
-    }
+    /**
+     * Returns the elements of an array where each element's `Identifier` property is unique.
+     * When the array contains multiple elements with the same `Identifier`, the first element is choosen.
+     */
+    distinct<T extends MediaContainer<MediaChild>>(this: T[]): T[];
+
+    /**
+     * Check wether the {@link items} array has at least one media item and that media item is different from the last media item in the array.
+     */
+    isMissingLastItemFrom<T extends MediaContainer<MediaChild>>(this: T[], items: T[]): boolean;
 }
 
 if (!Array.prototype.none) {

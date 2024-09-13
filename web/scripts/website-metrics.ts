@@ -31,30 +31,42 @@ type Result = {
     rank: number;
 }
 
-const expectedOriginRedirectPatterns = new Map([
-    [ 'https://holymanga.net', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/w+\d*\.holymanga\.net$/,
+const expectedRedirectPatterns = new Map([
+    [ 'https://www.corocoro.jp/', [ // The website redirects to the top-level domain when requesting the root path only (the sub-domain is still valid for non-empty paths)
+        /^https:\/\/corocoro-news\.jp\/$/,
     ] ],
-    [ 'https://manatoki.net', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/manatoki\d*\.net$/,
+    [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/w+\d*\.holymanga\.net\/$/,
+    ] ],/*
+    [ 'https://manatoki.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/manatoki\d*\.net\/$/,
+    ] ],*/
+    [ 'https://mangafreak.me/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/w+\d*\.mangafreak\.me\/$/,
     ] ],
-    [ 'https://mangafreak.me', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/w+\d*\.mangafreak\.me$/,
+    [ 'https://mintmanga.live/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/\d+\.mintmanga\.one\/$/,
+    ] ],/*
+    [ 'https://newtoki0.com/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/newtoki\d+\.com\/$/,
+    ] ],*/
+    [ 'https://piccoma.com/fr', [ // REASON: The website redirects to a sub-domain when requesting from a locked region (outside france)
+        /^https:\/\/fr\.piccoma\.com\/fr$/,
     ] ],
-    [ 'https://mintmanga.live', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/\d+\.mintmanga\.one$/,
+    [ 'https://pijamalikoi.com/', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/www\.pijamalikoi\.com\/$/,
     ] ],
-    [ 'https://newtoki0.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/newtoki\d+\.com$/,
+    [ 'https://www.toomics.com/', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
+        /^https:\/\/global\.toomics\.com\/en$/,
+    ] ],/*
+    [ 'https://toonkor0.com/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/toonkor\d+\.com\/$/,
+    ] ],*/
+    [ 'https://web.6parkbbs.com/', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
+        /^https:\/\/club\.6parkbbs\.com\/index.php$/,
     ] ],
-    [ 'https://www.toomics.com', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
-        /^https:\/\/global\.toomics\.com$/,
-    ] ],
-    [ 'https://toonkor0.com', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/toonkor\d+\.com$/,
-    ] ],
-    [ 'https://web.6parkbbs.com', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
-        /^https:\/\/club\.6parkbbs\.com$/,
+    [ 'https://vortextoon.com/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/vortextoon\.com\/home$/,
     ] ],
 ]);
 
@@ -71,14 +83,12 @@ class TestFixture {
         return new PluginController(this.MockStorageController, this.MockSettingsManager);
     }
 
-    private static CheckOriginRedirected(requestURL: string, responseURL: string): boolean {
-        const requestOrigin = new URL(requestURL).origin;
-        const responseOrigin = new URL(responseURL).origin;
-        const patterns = expectedOriginRedirectPatterns.get(requestOrigin);
-        if(patterns) {
-            return !(patterns.some(pattern => pattern.test(responseOrigin)));
+    private static CheckUnexpectedRedirected(requestURL: string, responseURL: string): boolean {
+        const patterns = expectedRedirectPatterns.get(requestURL);
+        if(patterns?.length) {
+            return !(patterns.some(pattern => pattern.test(responseURL)));
         } else {
-            return requestOrigin !== responseOrigin;
+            return new URL(requestURL).origin !== new URL(responseURL).origin;
         }
     }
 
@@ -87,7 +97,7 @@ class TestFixture {
         try {
             const request = new Request(uri, { signal: AbortSignal.timeout(30_000) });
             const response = await fetch(request);
-            if(this.CheckOriginRedirected(request.url, response.url)) {
+            if(this.CheckUnexpectedRedirected(request.url, response.url)) {
                 result.code = StatusCode.WARNING;
                 result.info = 'Redirected: ' + response.url;
             } else {
@@ -172,7 +182,7 @@ class TestFixture {
 
         await fs.mkdir(directory, { recursive: true });
         await fs.writeFile(path.join(directory, 'website-metrics.json'), JSON.stringify(results, null, 2));
-        await fs.writeFile(path.join(directory, 'website-metrics.html'), `<table width="100%" style="user-select: none;">${head}<tbody>${rows}</tbody></table>`);
+        await fs.writeFile(path.join(directory, 'website-metrics.html'), `<h2>Website Status ${new Date().toISOString()}</h2><table width="100%" style="user-select: none;">${head}<tbody>${rows}</tbody></table>`);
     }
 }
 

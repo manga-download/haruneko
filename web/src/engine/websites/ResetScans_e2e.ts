@@ -7,18 +7,18 @@ const config = {
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://resetscan.com/manga/the-ultimate-of-all-ages/',
-        id: JSON.stringify({ post: '2313', slug: '/manga/the-ultimate-of-all-ages/' }),
-        title: 'The Ultimate of All Ages'
+        url: 'https://reset-scans.xyz/manga/book-eater',
+        id: JSON.stringify({ post: '2055', slug: '/manga/book-eater' }),
+        title: 'Book Eater'
     },
     child: {
-        id: '/manga/the-ultimate-of-all-ages/chapter-001/',
-        title: 'Chapter 001'
+        id: '/manga/book-eater/100',
+        title: 'Chapter 100'
     },
     entry: {
         index: 1,
-        size: 3_230_931,
-        type: 'image/jpeg'
+        size: 181_700,
+        type: 'image/webp'
     }
 };
 

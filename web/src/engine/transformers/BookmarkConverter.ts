@@ -43,7 +43,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'prismascans', 'demonsect' ],
     [ 'realmscans', 'rizzcomics' ],
     [ 'reaperscansid', 'shinigamiid' ],
-    [ 'rightdarkscan', 'darkscan' ],
     [ 'scansmangasxyz', 'scansmangasme' ],
     [ 'scanhentaimenu', 'xmanga' ],
     [ 'secretscans', 'lynxscans' ],
