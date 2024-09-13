@@ -31,14 +31,14 @@ const pathname = 'chapterfun.ashx';
 export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Chapter, endpoint = pathname): Promise<Page[]> {
     const script = `
         new Promise(async (resolve, reject) => {
-            try {
+            async function fetchScriptedImages() {
                 const pagecount = window.DM5_IMAGE_COUNT || window.imagecount || 0;
-                const images = window.newImgs ? window.newImgs : await Promise.all([...(new Array(pagecount)).keys()].map(async p => {
-                    eval(await $.ajax({
+                const imageScripts = await Promise.all([...(new Array(pagecount)).keys()].map(page => {
+                    return $.ajax({
                         url: '${endpoint}',
                         data: {
                             cid: window.DM5_CID || window.chapterid,
-                            page: p + 1,
+                            page: page + 1,
                             key: $("#dm5_key").val() || window.guidkey || '',
                             //language: 1,
                             //gtk: 6,
@@ -47,18 +47,24 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
                             _dt: window.DM5_VIEWSIGN_DT,
                             _sign: window.DM5_VIEWSIGN
                         }
-                    }));
-                    return d[0];
+                    });
                 }));
-                const lastIMG = new Image();
-                lastIMG.onload = () => {
-                    if(lastIMG.naturalWidth === 1000 && lastIMG.naturalHeight === 563) {
+                return imageScripts.map(script => {
+                    eval(script);
+                    return new URL(d[0], window.location.href).href;
+                });
+            }
+            try {
+                const images = window.newImgs ? window.newImgs : await fetchScriptedImages();
+                const lastImage = new Image();
+                lastImage.onload = () => {
+                    if(lastImage.naturalWidth === 1000 && lastImage.naturalHeight === 563) {
                         images.pop();
                     }
-                    resolve(images.map(link => new URL(link, window.location.href).href));
+                    resolve(images);
                 };
-                lastIMG.onerror = error => reject(error);
-                lastIMG.src = images.slice(-1).pop();
+                lastImage.onerror = error => reject(error);
+                lastImage.src = images.at(-1);
             } catch(error) {
                 reject(error);
             }

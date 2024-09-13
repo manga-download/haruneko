@@ -14,7 +14,6 @@ type APIChapters = {
 @Common.MangaCSS(/^{origin}\/[^./]+\.html$/, 'div.info h1.name_mh')
 @Common.MangasMultiPageCSS('/category/tags/6/page/{page}', 'div.item p.title a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

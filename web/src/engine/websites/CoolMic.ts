@@ -40,7 +40,6 @@ type CookieSigner = {
 }
 
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
-
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/v1/`;
 
