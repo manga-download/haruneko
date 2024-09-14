@@ -50,9 +50,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(chapter.Identifier, this.URI);
-        let url = chapterUrl;
         const response = await Fetch(new Request(chapterUrl));
-        if (response.redirected) url.href = response.url;
+        const url = response.redirected ? new URL(response.url) : chapterUrl;
 
         const rasterScriptURL = url.searchParams.get('contents');
         const verticalScriptURL = url.searchParams.get('contents_vertical');
@@ -76,26 +75,21 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        let data = await this.imageTaskPool.Add(async () => {
-            const response = await Fetch(new Request(page.Link));
-            return response.arrayBuffer();
-        }, priority, signal);
-
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         const cryptoKey = page.Parameters.cryptoKey as string;
-
-        if (cryptoKey) {
-            const cipherText = data.slice(16);
-            const iv = data.slice(0, 16);
-
-            const aesKey = await crypto.subtle.importKey('raw', Buffer.from(cryptoKey, 'hex'), 'AES-CBC', false, ['decrypt']);
-            data = await crypto.subtle.decrypt({
-                name: 'AES-CBC',
-                iv: iv
-            }, aesKey, cipherText);
-        }
-
-        return Common.GetTypedData(data);
-
+        return cryptoKey ? await DecryptImage(blob, cryptoKey) : blob;
     }
+}
 
+async function DecryptImage(blob: Blob, cryptoKey: string): Promise<Blob> {
+    const data = new Uint8Array(await blob.arrayBuffer());
+    const cipherText = data.slice(16);
+    const iv = data.slice(0, 16);
+    const aesKey = await crypto.subtle.importKey('raw', Buffer.from(cryptoKey, 'hex'), 'AES-CBC', false, ['decrypt']);
+    const decrypted = await crypto.subtle.decrypt({
+        name: 'AES-CBC',
+        iv: iv
+    }, aesKey, cipherText);
+
+    return Common.GetTypedData(decrypted);
 }

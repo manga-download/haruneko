@@ -12,7 +12,7 @@ const config = {
         title: '青島くんはいじわる【フルカラー版】'
     },
     child: {
-        id: '/free_chapters/1706074/download/2b42afb0d91caeaa60d816aaf1bd0e58fc05d1b0',
+        id: '/free_chapters/1706074/download/bef74217cd24f55a00320c6cb544efb8d6af016e',
         title: '001話 豚足と王子様',
     },
     entry: {
