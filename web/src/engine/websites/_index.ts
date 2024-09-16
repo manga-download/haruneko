@@ -262,7 +262,6 @@ export { default as LianScans } from './LianScans';
 export { default as LikeManga } from './LikeManga';
 export { default as LilyManga } from './LilyManga';
 export { default as LilyumFansub } from './LilyumFansub';
-export { default as LireScan } from './LireScan';
 export { default as LittleGarden } from './LittleGarden';
 export { default as LowerWorld } from './LowerWorld';
 export { default as LSHiver } from './LSHiver';
