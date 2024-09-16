@@ -561,6 +561,7 @@ export { default as RobinManga } from './RobinManga';
 export { default as RokuHentai } from './RokuHentai';
 export { default as RomantikManga } from './RomantikManga';
 export { default as RudraScans } from './RudraScans';
+export { default as RuManhua } from './RuManhua';
 export { default as RuyaManga } from './RuyaManga';
 export { default as S2Manga } from './S2Manga';
 export { default as Sadscans } from './Sadscans';
