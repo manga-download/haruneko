@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './PixivComics.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 
@@ -59,6 +59,7 @@ type APIPage = {
 }
 
 export default class extends DecoratableMangaScraper {
+    private salt = 'M7w5HORvvX-VP4tRj2CFQOQFPocBqLvHTIbhTU36UCo';
     private readonly apiURL = 'https://comic.pixiv.net/api/app/';
 
     public constructor() {
@@ -67,6 +68,10 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.salt = await FetchWindowScript(new Request(new URL('/viewer/stories/-', this.URI)), `__NEXT_DATA__.props.pageProps.salt`, 2500) ?? this.salt;
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -124,7 +129,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-        const plaintext = new TextEncoder().encode(timestamp + 'M7w5HORvvX-VP4tRj2CFQOQFPocBqLvHTIbhTU36UCo');
+        const plaintext = new TextEncoder().encode(timestamp + this.salt);
         const hash = Buffer.from(await crypto.subtle.digest('SHA-256', plaintext)).toString('hex');
         const uri = new URL(`episodes/${chapter.Identifier}/read_v4`, this.apiURL);
         const request = new Request(uri.href, {
