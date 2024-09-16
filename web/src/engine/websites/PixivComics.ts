@@ -124,7 +124,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-        const plaintext = new TextEncoder().encode(timestamp + '1P-7eSTKnyxRrsxXrvKcng4L68ju8RvuP38OhGAE-gE');
+        const plaintext = new TextEncoder().encode(timestamp + 'M7w5HORvvX-VP4tRj2CFQOQFPocBqLvHTIbhTU36UCo');
         const hash = Buffer.from(await crypto.subtle.digest('SHA-256', plaintext)).toString('hex');
         const uri = new URL(`episodes/${chapter.Identifier}/read_v4`, this.apiURL);
         const request = new Request(uri.href, {
