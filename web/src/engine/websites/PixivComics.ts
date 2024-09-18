@@ -108,7 +108,7 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(`magazines/v2/${page}/works`, this.apiURL);
         const request = this.PrepareRequest(uri.href);
         const { data: { official_works } } = await FetchJSON<APIMangas>(request);
-        return official_works.map(item => new Manga(this, provider, item.id.toString(), item.title.trim()));
+        return official_works.map(({ id, title }) => new Manga(this, provider, id.toString(), title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -132,14 +132,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //get salt from json
         const { pageProps: { salt } } = await FetchJSON<APISalt>(new Request(new URL(`/_next/data/${this.nextBuild}/viewer/stories/${chapter.Identifier}.json?id=${chapter.Identifier}`, this.URI)));
 
         const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
         const plaintext = new TextEncoder().encode(timestamp + salt);
         const hash = Buffer.from(await crypto.subtle.digest('SHA-256', plaintext)).toString('hex');
         const uri = new URL(`episodes/${chapter.Identifier}/read_v4`, this.apiURL);
-        const request = new Request(uri.href, {
+        const request = new Request(uri, {
             headers: {
                 'x-requested-with': 'pixivcomic',
                 'x-client-time': timestamp,
