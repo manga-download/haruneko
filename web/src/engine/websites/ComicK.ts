@@ -3,6 +3,7 @@ import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIManga = {
     hid: string,
@@ -55,7 +56,6 @@ const chapterLanguageMap = new Map([
     //[ 'cz', Tags.Language
 ]);
 
-@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.comick.io';
@@ -135,5 +135,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { md_images } } = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
         return md_images.map(image => new Page(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), { Referer: this.URI.href }));
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        if (blob.type.startsWith('image/')) return blob;
+
+        page.Link.href = page.Link.href.replace('https://s3.comick.ink/comick/', 'https://meo.comick.pictures/');
+        return Common.FetchImageAjax.call(this, page, priority, signal, true);
+
     }
 }
