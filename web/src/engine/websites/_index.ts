@@ -263,7 +263,6 @@ export { default as LilyManga } from './LilyManga';
 export { default as LilyumFansub } from './LilyumFansub';
 export { default as LittleGarden } from './LittleGarden';
 export { default as LowerWorld } from './LowerWorld';
-export { default as LSHiver } from './LSHiver';
 export { default as LuaScans } from './LuaScans';
 export { default as LumosKomik } from './LumosKomik';
 export { default as LunarScans } from './LunarScans';
