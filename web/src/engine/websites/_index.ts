@@ -566,7 +566,6 @@ export { default as Sany } from './Sany';
 export { default as SarcasmScans } from './SarcasmScans';
 export { default as ScamberTraslator } from './ScamberTraslator';
 export { default as ScanManga } from './ScanManga';
-export { default as ScansMangasme } from './ScansMangasme';
 export { default as ScantradUnion } from './ScantradUnion';
 export { default as ScanVF } from './ScanVF';
 export { default as ScanVFOrg } from './ScanVFOrg';
