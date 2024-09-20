@@ -112,7 +112,7 @@ describe('BookmarkPlugin', () => {
                 .SetupStoredBookmarks(TestFixture.DefaultStoredEntries, 25)
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
-            let updatedEntries: Bookmark[];
+            let updatedEntries: ReadonlyArray<Bookmark>;
             const testee = await fixture.CreateTestee(0);
             testee.Entries.Subscribe(args => updatedEntries = args);
             await new Promise(resolve => setTimeout(resolve, 50));

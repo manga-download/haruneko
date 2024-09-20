@@ -3,22 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'prismahentai',
-        title: 'Prisma Hentai'
+        id: 'resetscansalt',
+        title: 'Reset Scans (alternative)'
     },
     container: {
-        url: 'https://prismahentai.com/manga/607/',
-        id: JSON.stringify({ post: '607', slug: '/manga/607/' }),
-        title: 'A Rental Housekeeper'
+        url: 'https://reset-scans.xyz/manga/book-eater',
+        id: '/manga/book-eater',
+        title: 'Book Eater'
     },
     child: {
-        id: '/manga/607/cap-01/',
-        title: 'Cap. 01'
+        id: '/manga/book-eater/100',
+        title: 'Chapter 100'
     },
     entry: {
         index: 1,
-        size: 1_646_0499,
-        type: 'image/jpg'
+        size: 155_194,
+        type: 'image/webp'
     }
 };
 

@@ -7,17 +7,17 @@ const config = {
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://resetscan.com/manga/scholar-return/',
-        id: JSON.stringify({ post: '2055', slug: '/manga/scholar-return/' }),
-        title: 'The Scholarly Reincarnation'
+        url: 'https://reset-scans.co/manga/stuck-in-the-tower/',
+        id: JSON.stringify({ post: '6418', slug: '/manga/stuck-in-the-tower/' }),
+        title: 'Stuck in the Tower'
     },
     child: {
-        id: '/manga/scholar-return/chapter-214',
-        title: 'Chapter 214 - The End'
+        id: '/manga/stuck-in-the-tower/chapter-91/',
+        title: 'Chapter 91'
     },
     entry: {
         index: 0,
-        size: 279_842,
+        size: 275_130,
         type: 'image/webp'
     }
 };

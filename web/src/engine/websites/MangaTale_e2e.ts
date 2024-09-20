@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Manga Tale'
     },
     container: {
-        url: 'https://mangatale.co/manga/martial-peak/',
+        url: 'https://mangatale.id/manga/martial-peak/',
         id: '/manga/martial-peak/',
         title: 'Martial Peak'
     },
@@ -17,7 +17,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 148_403,
+        size: 124_648,
         type: 'image/jpeg'
     }
 };
