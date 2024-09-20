@@ -43,7 +43,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'prismascans', 'demonsect' ],
     [ 'realmscans', 'rizzcomics' ],
     [ 'reaperscansid', 'shinigamiid' ],
-    [ 'scansmangasxyz', 'scansmangasme' ],
     [ 'scanhentaimenu', 'xmanga' ],
     [ 'secretscans', 'lynxscans' ],
     [ 'shonenmagazine-pocket', 'shonenmagazine' ],
