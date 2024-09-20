@@ -108,7 +108,7 @@ export function PagesFromZips(script: string = pagescript, preScript: string = B
 async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
 
     return !page.Link.href.endsWith('.zip') ? await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType) : this.imageTaskPool.Add(async () => {
-        const response = await Fetch(new Request(page.Link, { cache: 'force-cache' }));
+        const response = await Fetch(new Request(page.Link, { cache: 'force-cache', headers: { Referer: this.URI.href } }));
         const zip = await JSZip.loadAsync(await response.arrayBuffer());
         return Common.GetTypedData(await zip.files[page.Parameters['key'] as string].async('arraybuffer'));
     }, priority, signal);
