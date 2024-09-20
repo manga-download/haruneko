@@ -12,7 +12,7 @@ import * as PeachScan from './decorators/PeachScan';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sinensisscan', 'Sinensis Scans', 'https://sinensistoon.com', Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('sinensisscan', 'Sinensis Scans', 'https://sinensis.leitorweb.com', Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

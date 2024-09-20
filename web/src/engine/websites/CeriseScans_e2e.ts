@@ -7,7 +7,7 @@ const config = {
         title: 'Cerise Scans'
     }, /* CloudFlare
     container: {
-        url: 'https://cerisetoon.com/apenas-me-deixe-em-paz/',
+        url: 'https://cerise.leitorweb.com/apenas-me-deixe-em-paz/',
         id: '/apenas-me-deixe-em-paz/',
         title: 'Apenas Me Deixe em Paz'
     },
