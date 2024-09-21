@@ -12,12 +12,12 @@ const config: Config = {
         title: '海底軍艦'
     },
     child: {
-        id: 'https://vw.mangaz.com/virgo/view/220123/i:0',
-        title: '13'
+        id: 'https://vw.mangaz.com/virgo/view/207781/i:0',
+        title: '1'
     },
     entry: {
-        index: 1,
-        size: 1_402_344,
+        index: 7,
+        size: 704_362,
         type: 'image/png'
     }
 };

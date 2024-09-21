@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 import { type Priority } from './../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 
-type ImageData = {
+type ImagePath = {
     img: string,
     scrambleData: ScrambleData
 }
@@ -80,13 +80,13 @@ export default class extends DecoratableMangaScraper {
             });
         `;
         const request = new Request(new URL(chapter.Identifier, this.URI));
-        const data = await FetchWindowScript<ImageData[]>(request, script, 2500);
-        return data.map(image => new Page(this, chapter, new URL(image.img, this.URI), image.scrambleData));
+        const data = await FetchWindowScript<ImagePath[]>(request, script, 2500);
+        return data.map(image => new Page<ScrambleData>(this, chapter, new URL(image.img, this.URI), image.scrambleData));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<ScrambleData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const scrambleData = page.Parameters as ScrambleData;
+        const scrambleData = page.Parameters;
         return DeScramble(blob, async (image, ctx) => {
             ctx.canvas.width = scrambleData.w;
             ctx.canvas.height = scrambleData.h;
