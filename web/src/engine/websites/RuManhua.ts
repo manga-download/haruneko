@@ -18,9 +18,7 @@ type APIChapter = {
     chaptername: string
 }
 
-const pagesScript = `
-    new Promise (resolve => resolve( [... document.querySelectorAll('div.chapter-img-box img')].map(image=> image.dataset.src || image.src)));
-`;
+const pagesScript = `[... document.querySelectorAll('div.chapter-img-box img')].map(image=> image.dataset.src || image.src);`;
 
 @Common.PagesSinglePageJS(pagesScript, 1500)
 @Common.ImageAjax()
@@ -40,7 +38,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const title = (await FetchCSS(new Request(url), 'div.book-name h1.name')).shift().textContent.trim();
-        const id = url.match(/\/([^/]+)\/$/)[1];
+        const id = url.split('/').at(-2);
         return new Manga(this, provider, id, title);
     }
 
@@ -58,7 +56,7 @@ export default class extends DecoratableMangaScraper {
             method: 'POST',
             body: `s=1&p=${page}`,
             headers: {
-                'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 Origin: this.URI.origin,
                 Referer: this.URI.href,
                 'X-Requested-With': 'XMLHttpRequest'
@@ -68,15 +66,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        //fetch first batch of chapters
         const chapterList = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div.chaplist-box ul li a');
-
-        //fetch "MoreChapters"
         const { data } = await FetchJSON<APIResponse<APIChapter[]>>(new Request(new URL('/morechapter', this.URI), {
             method: 'POST',
             body: `id=${manga.Identifier}`,
             headers: {
-                'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 Origin: this.URI.origin,
                 Referer: this.URI.href,
                 'X-Requested-With': 'XMLHttpRequest'
