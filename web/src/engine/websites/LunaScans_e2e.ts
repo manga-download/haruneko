@@ -7,7 +7,7 @@ const config = {
         title: 'Luna Scans'
     },
     container: {
-        url: 'https://lunascans.org/manga/yilan-ve-serce/',
+        url: 'https://tuhafscans.com/manga/yilan-ve-serce/',
         id: JSON.stringify({ post: '4725', slug: '/manga/yilan-ve-serce/' }),
         title: 'Suzuhebi Kyuuairon'
     },

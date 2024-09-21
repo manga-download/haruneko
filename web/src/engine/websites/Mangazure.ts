@@ -14,29 +14,30 @@ const pageScript = `
 
         function getImageUrl(path) {
             let result = '';
+            const ImgHost = 'https://lh5.googleusercontent.com/';
             if (path.includes('&')) {
                 const y = path.slice(1).split('&');
-                result = $ImgHost;
-                result += y[0] + '/' + y[1] + '/' + y[2] + '/' + y[3] + '/s0/' + y[4] + '.jpg';
+                result = ImgHost;
+                result += y[0] + '/' + y[1] + '/' + y[2] + '/' + y[3] + '/s0/';
             } else {
                 if (path.includes('@')) {
                     result = path.replace('@', '');
-                    result = $ImgHost + result + '=s0';
+                    result = ImgHost + result + '=s0';
                 } else {
                     if (path.includes('#')) {
                         result = path.replace('#', '');
-                        result = $ImgHost + 'drive-viewer/' + result + '=s0';
+                        result = ImgHost + 'drive-viewer/' + result + '=s0';
                     } else {
                         path[0] == '$'
-                            ? (result = path.replace('$', ''), result = $ImgHost + 'd/' + result + '=s0')
-                            : result = $ImgHost + path + '=s0';
+                            ? (result = path.replace('$', ''), result = ImgHost + 'd/' + result + '=s0')
+                            : result = ImgHost + path + '=s0';
                     }
                 }
             }
             return result;
         }
 
-        const rawdata = document.body.innerHTML.match(/\\$chapterContent\\s*=\\s*"([^"]+)/)[1].replace(/<.*>/, '').split('|');
+        const rawdata = $chapterContent.split('|');
         resolve( rawdata
             .filter(page => page != '')
             .map(page => getImageUrl(page)));
@@ -57,7 +58,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /^https:\/\/www\.mangazure\.com\/\d{4}\/\d+\/[^/]+.html$/.test(url);
+        return new RegExpSafe(`^${this.URI.origin}/\\d{4}/\\d+/[^/]+.html$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -75,7 +76,7 @@ export default class extends DecoratableMangaScraper {
                 const url = new URL(`/category?q=${category}&start=${offset}&max=${perPage}`, this.apiUrl);
                 const request = new Request(url, {
                     headers: {
-                        Referer: this.URI.origin,
+                        Referer: this.URI.href,
                         Origin: this.URI.origin
                     }
                 });
@@ -91,7 +92,7 @@ export default class extends DecoratableMangaScraper {
         const url = new URL(`/book?q=${manga.Identifier}`, this.apiUrl);
         const request = new Request(url, {
             headers: {
-                Referer: this.URI.origin,
+                Referer: this.URI.href,
                 Origin: this.URI.origin
             }
         });

@@ -111,9 +111,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
     });
 
     const title = `${work.name.trim()} [${reverselanguageMap[work.language]}]`;
-    const manga = new Manga(this, provider, id, title);
-    manga.Tags.Value.push(tagsLanguageMap[work.language]);
-    return manga;
+    return new Manga(this, provider, id, title, tagsLanguageMap[work.language]);
 }
 
 /**
@@ -171,9 +169,7 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
             stub: entry.stub
         });
         const title = `${entry.name.trim()} [${reverselanguageMap[entry.language]}]`;
-        const manga = new Manga(this, provider, id, title);
-        manga.Tags.Value.push(tagsLanguageMap[entry.language]);
-        return manga;
+        return new Manga(this, provider, id, title, tagsLanguageMap[entry.language]);
     });
 
 }
@@ -233,9 +229,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
             entry.name ? '-' : '',
             entry.name ?? '',
         ].join(' ').trim();
-        const chapter = new Chapter(this, manga, String(entry.id), title);
-        chapter.Tags.Value.push(tagsLanguageMap[mangaObj.language]);
-        return chapter;
+        return new Chapter(this, manga, String(entry.id), title, tagsLanguageMap[mangaObj.language]);
     });
 }
 

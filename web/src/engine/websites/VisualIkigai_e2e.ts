@@ -7,7 +7,7 @@ const config = {
         title: 'Visual Ikigai'
     },
     container: {
-        url: 'https://visorikigai.nipase.com/series/el-sacerdote-ji-soon-es-un-santo/',
+        url: 'https://lectorikigai.erigu.com/series/el-sacerdote-ji-soon-es-un-santo/',
         id: '/series/el-sacerdote-ji-soon-es-un-santo/',
         title: 'El sacerdote Ji Soon es un Santo'
     },

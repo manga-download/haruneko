@@ -40,7 +40,6 @@ type CookieSigner = {
 }
 
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
-
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/v1/`;
 
@@ -98,13 +97,13 @@ export default class extends DecoratableMangaScraper {
         if (!signed_cookie) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        return image_data.map(page => new Page(this, chapter, new URL(page.path), { ...signed_cookie }));
+        return image_data.map(page => new Page<CookieSigner>(this, chapter, new URL(page.path), { ...signed_cookie }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<CookieSigner>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
 
-            const cookiesData = page.Parameters as CookieSigner;
+            const cookiesData = page.Parameters;
             const cookies = Object.keys(cookiesData).map(name => `${name}=${cookiesData[name]}`).join(';');
 
             const request = new Request(page.Link, {

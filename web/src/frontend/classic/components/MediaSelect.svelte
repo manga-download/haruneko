@@ -8,7 +8,7 @@
         InlineNotification,
     } from 'carbon-components-svelte';
 
-    import { UpdateNow, CopyLink } from 'carbon-icons-svelte';
+    import { BookmarkFilled , UpdateNow, CopyLink } from 'carbon-icons-svelte';
     import type {
         ComboBoxItem,
         ComboBoxItemId,
@@ -37,70 +37,76 @@
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
     import { resizeBar } from '../lib/actions';
+    import { onMount } from 'svelte';
 
-    let ref:HTMLElement;
+    let ref:HTMLElement = $state();
 
     // Plugins selection
-    let currentPlugin: MediaContainer<MediaChild>;
-    let loadPlugin: Promise<MediaContainer<MediaChild>>;
+    let currentPlugin: MediaContainer<MediaChild> = $state();
+    let loadPlugin: Promise<MediaContainer<MediaChild>> = $state();
 
     let disablePluginRefresh = false;
 
     // TODO: implement favorites
     let pluginsFavorites = ['sheep-scanlations'];
 
-    let pluginsCombo: Array<ComboBoxItem>;
-    let orderedPlugins: MediaContainer<MediaChild>[] = [];
-
-    orderedPlugins = HakuNeko.PluginController.WebsitePlugins.sort((a, b) => {
-        return (
-            // sort by favorite
-            (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
-                (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
-            //sort by string
-            a.Title.localeCompare(b.Title)
-        );
-    });
-    pluginsCombo = [
+    type ComboBoxItemWithValue = ComboBoxItem & {
+        value: MediaContainer<MediaChild>;
+        isFavorite: boolean;
+    }
+    const orderedPlugins: MediaContainer<MediaChild>[] = HakuNeko.PluginController.WebsitePlugins.toSorted((a, b) => {
+            return (
+                // sort by favorite
+                (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
+                    (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
+                //sort by string
+                a.Title.localeCompare(b.Title)
+            );
+        });
+    const pluginsCombo: ComboBoxItemWithValue[] = [
         {
             id: HakuNeko.BookmarkPlugin.Identifier,
-            text: '📚 Bookmarks',
+            text: HakuNeko.BookmarkPlugin.Title,
+            value : HakuNeko.BookmarkPlugin,
+            isFavorite: true
         },
         ...orderedPlugins.map((plugin) => {
             return {
                 id: plugin.Identifier,
                 text: plugin.Title,
+                value: plugin,
+                isFavorite: pluginsFavorites.includes(plugin.Identifier),
             };
         }),
     ];
 
-    function pluginsComboText(item: ComboBoxItem): string {
-        return pluginsFavorites.includes(item.id)
-            ? '⭐' + item.text
-            : item.text;
-    }
-    $: {
-        const previousPlugin = currentPlugin;
-        currentPlugin = $selectedPlugin;
-        if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
-            loadMedias($selectedPlugin);
-        disablePluginRefresh = false;
-    }
-    $: pluginDropdownSelected = currentPlugin?.Identifier;
+    let pluginDropdownSelected: string = $state();
 
     // Medias list
-    let medias: MediaContainer<MediaChild>[] = [];
-    let filteredmedias: MediaContainer<MediaChild>[] = [];
+    let medias: MediaContainer<MediaChild>[] = $state([]);
+    let mediaNameFilter = $state('');
+
+    let filteredmedias: MediaContainer<MediaChild>[] = $derived(mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter));
     let fuse = new Fuse([]);
 
-    $: loadPlugin = loadMedias($selectedPlugin);
+    loadPlugin = loadMedias($selectedPlugin);
+
+    selectedPlugin.subscribe((newplugin) => {
+        const previousPlugin = currentPlugin;
+        currentPlugin = newplugin;
+        pluginDropdownSelected = currentPlugin?.Identifier;
+        if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
+            loadMedias(newplugin);
+        disablePluginRefresh = false;
+    });
+
     async function loadMedias(
         plugin: MediaContainer<MediaChild>,
     ): Promise<MediaContainer<MediaChild>> {
         if (!plugin) return;
         const loadedmedias =
             (plugin.Entries.Value as MediaContainer<MediaChild>[]) ?? [];
-        fuse = new Fuse(medias, {
+        fuse = new Fuse(loadedmedias, {
             keys: ['Title'],
             findAllMatches: true,
             ignoreLocation: true,
@@ -119,12 +125,9 @@
                 item.Title.includes(mediaNameFilter),
             );
     }
-    let mediaNameFilter = '';
-    $: filteredmedias =
-        mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter);
 
-    let isTrackerModalOpen = false;
-    let selectedTracker: MediaInfoTracker;
+    let isTrackerModalOpen = $state(false);
+    let selectedTracker: MediaInfoTracker = $state();
 
     function shouldFilterPlugin(item: any, value: string) {
         if (!value) return true;
@@ -134,8 +137,12 @@
     async function onUpdateMediaEntriesClick() {
         $selectedMedia = undefined;
         $selectedItem = undefined;
-        await $selectedPlugin.Update();
-        loadPlugin = loadMedias($selectedPlugin);
+        loadPlugin = updatePlugin($selectedPlugin);
+    }
+
+    async function updatePlugin(plugin: MediaContainer<MediaChild>): Promise<MediaContainer<MediaChild>> {
+        await plugin.Update();
+        return loadMedias($selectedPlugin);
     }
 
     document.addEventListener('media-paste-url', onMediaPasteURL);
@@ -146,6 +153,7 @@
                 const media = await website.TryGetEntry(link);
                 if (media) {
                     $selectedItem = undefined;
+                    mediaNameFilter = '';
                     if (!$selectedPlugin?.IsSameAs(media.Parent)) {
                         disablePluginRefresh = true;
                         $selectedPlugin = media.Parent;
@@ -170,11 +178,9 @@
         );
     }
 
-    let pluginDropdownValue: string;
-
     // VirtualList
-    let container:HTMLElement;
-    let containerHeight = 0;
+    let container:HTMLElement = $state();
+    let containerHeight = $state(0);
 </script>
 
 {#if isTrackerModalOpen}
@@ -197,21 +203,31 @@
             tooltipPosition="right"
             tooltipAlignment="center"
             iconDescription="Paste media link"
-            on:click={onMediaPasteURL}
+            onclick={onMediaPasteURL}
         />
     </div>
     <div id="Plugin">
         <ComboBox
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
-            bind:value={pluginDropdownValue}
             on:clear={() => ($selectedPlugin = undefined)}
             on:select={(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
             items={pluginsCombo}
             shouldFilterItem={shouldFilterPlugin}
-            itemToString={pluginsComboText}
-        />
+            let:item
+        >
+            {@const plugin = item as ComboBoxItemWithValue}
+            {#if plugin.value.IsSameAs(HakuNeko.BookmarkPlugin)}
+            <BookmarkFilled class="dropdown icon bookmarks" size={32} />
+                <div class="dropdown title favorite">{plugin.value.Title}</div>
+                <div>Your bookmarked medias</div>
+            {:else}
+                <img class="dropdown icon" alt={plugin.value.Title} src={plugin.value.Icon}/>
+                <div class="dropdown title" class:favorite={plugin.isFavorite}>{plugin.value.Title}</div>
+                <div>{plugin.value.URI}</div>
+            {/if}
+        </ComboBox> 
         <Button
             icon={UpdateNow}
             size="small"
@@ -219,7 +235,7 @@
             tooltipAlignment="center"
             iconDescription="Update"
             style="float: right;"
-            on:click={onUpdateMediaEntriesClick}
+            onclick={onUpdateMediaEntriesClick}
         />
     </div>
 
@@ -233,7 +249,7 @@
                 <div>... medias</div>
             </div>
         {:then}
-            <VirtualList {container} items={filteredmedias} itemHeight={24}  {containerHeight} let:item let:dummy let:y>
+            <VirtualList {container} items={filteredmedias} itemHeight={20}  {containerHeight} let:item let:dummy let:y>
                 {#if dummy}
                     <div class="empty" class:dummy style="position: relative; top:{y}px;"></div>
                 {:else}
@@ -292,6 +308,32 @@
         display: grid;
         grid-template-columns: 1fr auto;
     }
+    #Plugin .dropdown.icon {
+        width: 2em;
+        height: 2em;
+        float:left;
+        margin-right: 0.5em;
+        border-radius: 20%;
+    }
+
+    #Plugin :global(.dropdown.icon.bookmarks) {
+        width: 2em;
+        height: 2em;
+        float:left;
+        margin-right: 0.5em;
+    }
+    #Plugin .dropdown.title {
+        font-weight: bold;
+    }
+    #Plugin .dropdown.title.favorite::before{
+        content:"⭐";
+    }
+    #Plugin :global(.bx--list-box__menu-item)    {
+        height: 3.5em;
+    }
+    #Plugin :global(.bx--list-box__menu-item__option)    {
+        height: 3em;
+    }
     #MediaFilter {
         grid-area: MediaFilter;
         display: grid;
@@ -300,7 +342,6 @@
     #MediaList {
         grid-area: MediaList;
         background-color: var(--cds-field-01);
-        box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
         overflow: hidden;
         user-select: none;
         overflow: auto;
