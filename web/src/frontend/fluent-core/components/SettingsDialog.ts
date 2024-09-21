@@ -113,9 +113,6 @@ const templateSettingRow: ViewTemplate<ISetting> = html`
 const template: ViewTemplate<SettingsDialog> = html`
     <fluent-dialog trap-focus modal ?hidden=${model => model.hidden}>
         <div id="dialog">
-            <!--
-            <fluent-setting-theme-luminance style="width: 100%;"></fluent-setting-theme-luminance>
-            -->
             <div id="header">${() => S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
             <div id="content">
                 <div id="settings">

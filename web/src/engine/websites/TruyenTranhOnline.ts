@@ -13,7 +13,8 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('truyentranhaudioonline', 'Truyện tranh online', 'https://protruyen.xyz', Tags.Media.Manhwa, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        // TODO: Is tutientruyen5.xyz the correct new domain?
+        super('truyentranhaudioonline', 'Truyện tranh online', 'https://protruyen5.xyz', Tags.Media.Manhwa, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

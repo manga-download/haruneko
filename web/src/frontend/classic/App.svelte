@@ -41,7 +41,7 @@
 
 <Theme theme={$ThemeSetting}>
     <AppBar
-        on:home={() => {
+        onHome={() => {
             $selectedItem = null;
             $contentscreen = '/';
         }}
@@ -105,6 +105,7 @@
     }
     #Bottom {
         grid-area: Bottom;
+        margin-bottom:1em;
     }
     :global(#Header) {
         -webkit-app-region: drag;

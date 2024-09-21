@@ -37,11 +37,11 @@ export abstract class MediaContainer<T extends MediaChild> {
         return icon;
     }
 
-    public get Tags(): IObservable<Tag[], MediaContainer<T>> {
+    public get Tags(): IObservable<ReadonlyArray<Tag>, MediaContainer<T>> {
         return this.tags;
     }
 
-    public get Entries(): IObservable<T[], MediaContainer<T>> {
+    public get Entries(): IObservable<ReadonlyArray<T>, MediaContainer<T>> {
         return this.entries;
     }
 

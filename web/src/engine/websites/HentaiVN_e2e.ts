@@ -7,7 +7,7 @@ const config: Config = {
         title: 'HentaiVN'
     },
     container: {
-        url: 'https://hentaivn.cafe/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
+        url: 'https://hentaivn.vin/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
         id: JSON.stringify({ post: '10351', slug: '/truyen-hentai/dong-ho-ngung-dong-thoi-gian/'}),
         title: 'Đồng Hồ Ngưng Đọng Thời Gian'
     },

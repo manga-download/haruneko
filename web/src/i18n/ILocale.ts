@@ -67,6 +67,8 @@ export enum TagResourceKey {
     Tags_Source_Official = 'Tags_Source_Official',
     Tags_Source_Scanlator = 'Tags_Source_Scanlator',
     Tags_Source_Aggregator = 'Tags_Source_Aggregator',
+    Tags_Accessibility_DomainRotation = 'Tags_Accessibility_DomainRotation',
+    Tags_Accessibility_DomainRotationDescription = 'Tags_Accessibility_DomainRotationDescription',
     Tags_Accessibility_RegionLock = 'Tags_Accessibility_RegionLock',
     Tags_Accessibility_RegionLockDescription = 'Tags_Accessibility_RegionLockDescription',
     Tags_Accessibility_RateLimit = 'Tags_Accessibility_RateLimit',
@@ -299,6 +301,7 @@ export enum EngineResourceKey {
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
     FetchProvider_Fetch_CloudFlareChallenge = 'FetchProvider_Fetch_CloudFlareChallenge',
+    FetchProvider_Fetch_VercelChallenge = 'FetchProvider_Fetch_VercelChallenge',
     FetchProvider_Fetch_Forbidden = 'FetchProvider_Fetch_Forbidden',
 
     BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',

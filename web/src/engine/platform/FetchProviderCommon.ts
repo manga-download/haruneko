@@ -15,6 +15,9 @@ export abstract class FetchProvider {
         if(/challenge/i.test(response.headers.get('CF-Mitigated'))) {
             throw new Exception(R.FetchProvider_Fetch_CloudFlareChallenge, response.url);
         }
+        if(/challenge/i.test(response.headers.get('X-Vercel-Mitigated'))) {
+            throw new Exception(R.FetchProvider_Fetch_CloudFlareChallenge, response.url);
+        }
         if(response.status === 403) {
             throw new Exception(R.FetchProvider_Fetch_Forbidden, response.url);
         }

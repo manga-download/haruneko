@@ -7,7 +7,7 @@ const config: Config = {
         title: 'WordHero'
     }/*,
     container: {
-        url: 'https://wordhero.my.id/manga/.../',
+        url: 'https://www.wordhero.my.id/manga/.../',
         id: '/manga/.../',
         title: 'Manga ?'
     },

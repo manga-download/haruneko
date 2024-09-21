@@ -7,18 +7,18 @@ const config = {
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://resetscan.com/manga/the-ultimate-of-all-ages/',
-        id: JSON.stringify({ post: '2313', slug: '/manga/the-ultimate-of-all-ages/' }),
-        title: 'The Ultimate of All Ages'
+        url: 'https://reset-scans.co/manga/stuck-in-the-tower/',
+        id: JSON.stringify({ post: '6418', slug: '/manga/stuck-in-the-tower/' }),
+        title: 'Stuck in the Tower'
     },
     child: {
-        id: '/manga/the-ultimate-of-all-ages/chapter-001/',
-        title: 'Chapter 001'
+        id: '/manga/stuck-in-the-tower/chapter-91/',
+        title: 'Chapter 91'
     },
     entry: {
-        index: 1,
-        size: 3_230_931,
-        type: 'image/jpeg'
+        index: 0,
+        size: 275_130,
+        type: 'image/webp'
     }
 };
 
