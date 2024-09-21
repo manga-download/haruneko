@@ -6,12 +6,16 @@ import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type ContentData = {
-    images: {
-        [id: string]: {
-            src: string,
-            format: string
-        }[]
-    }
+    images: Record<string, ImageData[]>;
+}
+
+type ImageData = {
+    src: string,
+    format : string
+}
+
+type CryptoKey = {
+    cryptoKey : string
 }
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
@@ -28,7 +32,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
+        const chapterList : Chapter[] = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
@@ -60,23 +64,21 @@ export default class extends DecoratableMangaScraper {
         const baseUrl = url.searchParams.get('directory');
         const ver = url.searchParams.get('ver');
 
-        //Fetch key
         const cryptoKey = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
 
-        //Fetch content.json
         const contentUrl = new URL(rasterScriptURL || verticalScriptURL || pageScriptURL, chapterUrl);
         contentUrl.searchParams.set('ver', ver);
         const { images } = await FetchJSON<ContentData>(new Request(contentUrl));
         return Object.values(images).map(page => {
             const url = new URL(page.shift().src, baseUrl);
             url.searchParams.set('ver', ver);
-            return new Page(this, chapter, url, { cryptoKey });
+            return new Page<CryptoKey>(this, chapter, url, { cryptoKey });
         });
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<CryptoKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const cryptoKey = page.Parameters.cryptoKey as string;
+        const cryptoKey = page.Parameters.cryptoKey;
         return cryptoKey ? await DecryptImage(blob, cryptoKey) : blob;
     }
 }
