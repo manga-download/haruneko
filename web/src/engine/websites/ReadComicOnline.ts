@@ -23,7 +23,7 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/Comic\/[^/]+$/, 'div.barContent a.bigChar')
-@Common.MangasMultiPageCSS('/ComicList?page={page}', 'table.listing td a')
+@Common.MangasMultiPageCSS('/ComicList?page={page}', '.list-comic .item > a')
 @Common.ChaptersSinglePageCSS('div.episodeList table.listing tr td:first-of-type a, div.section ul.list li a', ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 1000)
 @Common.ImageAjax()
