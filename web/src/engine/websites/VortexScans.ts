@@ -31,9 +31,7 @@ type MangaID = {
     slug: string,
 }
 
-const pageScript = `
-    new Promise( resolve =>  resolve([...document.querySelectorAll('section img[loading]')].map(img => img.src)) );
-`;
+const pageScript = `[...document.querySelectorAll('section img[loading]')].map(img => img.src);`;
 
 @Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
