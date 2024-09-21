@@ -20,7 +20,6 @@ type CryptoKey = {
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
 @Common.MangasMultiPageCSS('/free/list?page={page}', 'div.p-book_detail dt.p-book_title a')
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
