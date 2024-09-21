@@ -688,6 +688,7 @@ export { default as WebtoonHatti } from './WebtoonHatti';
 export { default as WebtoonTR } from './WebtoonTR';
 export { default as WebtoonTRNET } from './WebtoonTRNET';
 export { default as WebtoonXYZ } from './WebtoonXYZ';
+export { default as WeebCentral } from './WeebCentral';
 export { default as WeiboManhua } from './WeiboManhua';
 export { default as WestManga } from './WestManga';
 export { default as WinterScan } from './WinterScan';
