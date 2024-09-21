@@ -147,11 +147,11 @@ export default class extends DecoratableMangaScraper {
         });
 
         const { data: { reading_episode: { pages } } } = await FetchJSON<APIPages>(request);
-        return pages.map(image => new Page(this, chapter, new URL(image.url), { ...image }));
+        return pages.map(image => new Page<APIPage>(this, chapter, new URL(image.url), { ...image }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const payload = page.Parameters as APIPage;
+    public override async FetchImage(page: Page<APIPage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const payload = page.Parameters;
         const data = await this.imageTaskPool.Add(async () => {
             const request = new Request(page.Link.href, {
                 method: 'GET',
