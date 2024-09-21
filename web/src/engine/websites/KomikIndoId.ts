@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('komikindoid', 'KomikIndoId', 'https://komikindo.tv', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('komikindoid', 'KomikIndoId', 'https://komikindo.ws', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
