@@ -38,8 +38,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        // rco_quality = hq
-        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('rco_readType', '1')`);
+        return FetchWindowScript(new Request(this.URI), `
+            window.cookieStore.set('rco_readType', '1');
+            window.cookieStore.set('rco_quality', 'hq');
+        `);
     }
 
 }
