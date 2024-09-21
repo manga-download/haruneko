@@ -342,7 +342,6 @@ export enum WebsiteResourceKey {
 // [SECTION]: Website CuuTruyen
 export enum WebsiteResourceKey {
     Plugin_CuuTruyen_Error_NotProcessed = 'Plugin_CuuTruyen_Error_NotProcessed',
-    Plugin_CuuTruyen_Error_InvalidDrmData = 'Plugin_CuuTruyen_Error_InvalidDrmData'
 }
 
 // [SECTION]: Website PocketComics

@@ -313,7 +313,6 @@ const translations: VariantResource = {
   Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
 
   Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
-  Plugin_CuuTruyen_Error_InvalidDrmData: 'Invalid DRM data (does not start with magic bytes): {0}',
 
   Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
 

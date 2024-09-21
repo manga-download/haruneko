@@ -3,10 +3,12 @@ import icon from './CuuTruyen.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+import { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as W } from '../../i18n/ILocale';
+import { TaskPool } from '../taskpool/TaskPool';
+import { RateLimit } from '../taskpool/RateLimit';
 
 type APIResult<T> = {
     data: T,
@@ -18,6 +20,11 @@ type APIResult<T> = {
 type APIManga = {
     id: number,
     name: string
+}
+
+type PagedMangaResult = {
+    total_pages: number,
+    mangas: Manga[]
 }
 
 type APIChapter = {
@@ -34,6 +41,7 @@ type APIChapter = {
 
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/v2/`;
+    private readonly mangasTaskPool = new TaskPool(4, new RateLimit(15, 1));
 
     public constructor() {
         super('cuutruyen', 'Cứu Truyện', 'https://cuutruyen.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
@@ -48,21 +56,38 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaid = url.match(/\/mangas\/([0-9]+)/)[1];
+        const mangaid = url.split('/').at(-1);
         const { data: { name } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`mangas/${mangaid}`, this.apiUrl)));
         return new Manga(this, provider, mangaid, name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangasList: Manga[] = [];
+        const mangasList : Manga[]= [];
+        const cancellator = new AbortController();
+        try {
+            const result = await this.GetMangasFromPage(1, provider, cancellator.signal);
+            mangasList.push(...result.mangas);
 
-        for (let page = 1, run = true; run; page++) {
-            const { data, _metadata: { total_pages } } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`mangas/recently_updated?page=${page}&per_page=100`, this.apiUrl)));
-            const mangas = data.map(manga => new Manga(this, provider, manga.id.toString(), manga.name.trim()));
-            mangasList.push(...mangas);
-            run = page < total_pages;
+            const promises = Array(result.total_pages-1).fill(0).map(async (_, index) => {
+                const { mangas } = await this.GetMangasFromPage(index + 2, provider, cancellator.signal);
+                mangasList.push(...mangas);
+            });
+            await Promise.all(promises);
+            return mangasList.distinct();
+        } catch (error) {
+            cancellator.abort();
+            throw error;
         }
-        return mangasList;
+    }
+
+    private async GetMangasFromPage(page: number, provider: MangaPlugin, signal: AbortSignal): Promise<PagedMangaResult>{
+        return this.mangasTaskPool.Add(async () => {
+            const { data, _metadata: { total_pages } } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`mangas/recently_updated?page=${page}&per_page=100`, this.apiUrl)));
+            return {
+                total_pages,
+                mangas: data.map(manga => new Manga(this, provider, manga.id.toString(), manga.name))
+            };
+        }, Priority.Normal, signal);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -88,11 +113,6 @@ export default class extends DecoratableMangaScraper {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return !page.Parameters.drmData ? blob : DeScramble(blob, async (image, ctx) => {
             const decryptedDrmData = decodeXorCipher(Buffer.from(page.Parameters.drmData as string, 'base64').toString(), '3141592653589793');
-
-            if (!decryptedDrmData.startsWith('#v4|')) {
-                throw new Exception(W.Plugin_CuuTruyen_Error_InvalidDrmData, decryptedDrmData);
-            }
-
             let sy = 0;
             for (const piece of decryptedDrmData.split('|').slice(1)) {
                 const [dy, height] = piece.split('-', 2).map(Number);
@@ -104,8 +124,7 @@ export default class extends DecoratableMangaScraper {
 }
 
 function decodeXorCipher(data: string, key: string): string {
-    let output = "";
-
+    let output = '';
     for (let i = 0; i < data.length; i++) {
         output += String.fromCharCode(data.charCodeAt(i) ^ key.charCodeAt(i % key.length));
     }
