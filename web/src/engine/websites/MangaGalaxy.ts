@@ -31,11 +31,7 @@ type MangaID = {
     slug : string
 }
 
-const pageScript = `
-    new Promise (resolve =>  {
-        resolve([...document.querySelectorAll('section img[loading]')].map(image => new URL(image.src, window.location.origin).href));
-    });
-`;
+const pageScript = `[...document.querySelectorAll('section img[loading]')].map(image => new URL(image.src, window.location.origin).href);`;
 
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
@@ -79,7 +75,7 @@ export default class extends DecoratableMangaScraper {
         const { id, slug } = JSON.parse(manga.Identifier) as MangaID;
         const { post: { chapters } } = await FetchJSON<APISingleManga>(new Request(new URL(`chapters?postId=${id}`, this.apiUrl)));
         return chapters ? chapters.map(chapter => {
-            const title = chapter.title ? [chapter.number.toString(), ':', chapter.title].join(' ') : chapter.number.toString();
+            const title = chapter.title ? `${chapter.number} : ${chapter.title}` : chapter.number.toString();
             return new Chapter(this, manga, `/series/${slug}/${chapter.slug}`, title);
         }) : [];
     }
