@@ -50,6 +50,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'suryatoon', 'genztoon' ],
     [ 'sushiscanfr', 'animesama' ],
     [ 'vermanhwas', 'vermanhwa' ],
+    [ 'visualikigai', 'ikigaimangas' ],
     [ 'webtoontrcom', 'webtoontrnet' ],
 ]);
 

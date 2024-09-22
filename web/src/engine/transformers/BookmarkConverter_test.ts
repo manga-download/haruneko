@@ -52,6 +52,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'suryatoon', targetID: 'genztoon' },
     { sourceID: 'sushiscanfr', targetID: 'animesama' },
     { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
+    { sourceID: 'visualikigai', targetID: 'ikigaimangas' },
     { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
 ];
 
