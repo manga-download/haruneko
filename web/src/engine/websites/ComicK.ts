@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+//import * as Common from './decorators/Common';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type APIManga = {
@@ -138,11 +138,31 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        if (blob.type.startsWith('image/')) return blob;
+        return this.imageTaskPool.Add(async () => {
+            try {
+                const request = new Request(page.Link, {
+                    signal: signal,
+                    headers: {
+                        Referer: this.URI.href
+                    }
+                });
+                const response = await Fetch(request);
+                const blob = await response.blob();
+                if (blob.type.startsWith('image/')) return blob;
+                throw new Error('Failed to get high quality picture !');
+                /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+            } catch (error) {
 
-        page.Link.href = page.Link.href.replace('https://s3.comick.ink/comick/', 'https://meo.comick.pictures/');
-        return Common.FetchImageAjax.call(this, page, priority, signal, true);
+                const request = new Request(page.Link.href.replace('https://s3.comick.ink/comick/', 'https://meo.comick.pictures/'), {
+                    signal: signal,
+                    headers: {
+                        Referer: this.URI.href
+                    }
+                });
+                const response = await Fetch(request);
+                return response.blob();
+            }
+        }, priority, signal);
 
     }
 }
