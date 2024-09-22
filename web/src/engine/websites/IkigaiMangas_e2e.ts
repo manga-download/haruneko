@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'IkigaiMangas',
+        id: 'ikigaimangas',
         title: 'Ikigai Mangas'
     },
     container: {
