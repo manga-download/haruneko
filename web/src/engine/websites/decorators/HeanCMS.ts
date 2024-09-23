@@ -147,10 +147,8 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
 async function GetMangaFromPage(this: MangaScraper, provider: MangaPlugin, page: number, apiUrl: string, adult: boolean): Promise<Manga[]> {
     const request = new Request(new URL(`${apiUrl}/query?perPage=100&page=${page}&adult=${adult}`));
     const { data } = await FetchJSON<APIResult<APIMangaV1[]>>(request);
-    if (data.length) {
-        return data.map((manga) => new Manga(this, provider, JSON.stringify({ id: manga.id.toString(), slug: manga.series_slug }), manga.title));
-    }
-    return [];
+    return !data.length ? [] : data.map((manga) => new Manga(this, provider, JSON.stringify({ id: manga.id.toString(), slug: manga.series_slug }), manga.title));
+
 }
 
 /**
@@ -195,8 +193,7 @@ export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: M
             chapterList.push(new Chapter(this, manga, id, title));
         }));
         return chapterList;
-        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    } catch (error) {
+    } catch {
         return [];
     }
 }
@@ -262,11 +259,10 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     const request = new Request(new URL(`${apiUrl}/chapter/${mangaid.slug}/${chapterid.slug}`));
     const data = await FetchJSON<APIPages>(request);
 
-    // check for paywall
     if (data.paywall) {
         throw new Error(`${chapter.Title} is paywalled. Please login.`);
     }
-    // check if novel
+
     if (data.chapter.chapter_type.toLowerCase() === 'novel') {
         return [new Page(this, chapter, new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI), { type: data.chapter_type })];
     }
