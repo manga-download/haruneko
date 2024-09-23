@@ -32,6 +32,10 @@ type APIPage = {
     name: string,
 }
 
+type PageParameters = {
+    mirrors: string[],
+};
+
 const chapterLanguageMap = new Map([
     [ 'ar', Tags.Language.Arabic ],
     [ 'en', Tags.Language.English ],
@@ -133,34 +137,23 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { md_images } } = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
-        return md_images.map(image => new Page(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), { Referer: this.URI.href }));
+        return md_images.map(image => new Page<PageParameters>(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), {
+            mirrors: [
+                new URL(image.b2key, `https://meo.comick.pictures/`).href,
+            ],
+        }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-            try {
-                const request = new Request(page.Link, {
-                    signal: signal,
-                    headers: {
-                        Referer: this.URI.href
-                    }
-                });
-                const response = await Fetch(request);
-                const blob = await response.blob();
-                if (blob.type.startsWith('image/')) return blob;
-                throw new TypeError();
-            } catch {
-
-                const request = new Request(page.Link.href.replace('https://s3.comick.ink/comick/', 'https://meo.comick.pictures/'), {
-                    signal: signal,
-                    headers: {
-                        Referer: this.URI.href
-                    }
-                });
-                const response = await Fetch(request);
-                return response.blob();
+            for(const uri of [ page.Link, ...page.Parameters.mirrors ]) {
+                try {
+                    const request = new Request(uri, { signal: signal, headers: { Referer: this.URI.href } });
+                    const response = await Fetch(request);
+                    const blob = await response.blob();
+                    if (blob.type.startsWith('image/')) return blob;
+                } catch {}
             }
         }, priority, signal);
-
     }
 }
