@@ -1,7 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-//import * as Common from './decorators/Common';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
@@ -149,9 +148,8 @@ export default class extends DecoratableMangaScraper {
                 const response = await Fetch(request);
                 const blob = await response.blob();
                 if (blob.type.startsWith('image/')) return blob;
-                throw new Error('Failed to get high quality picture !');
-                /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-            } catch (error) {
+                throw new TypeError();
+            } catch {
 
                 const request = new Request(page.Link.href.replace('https://s3.comick.ink/comick/', 'https://meo.comick.pictures/'), {
                     signal: signal,
