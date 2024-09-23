@@ -3,12 +3,13 @@ import { Tags } from '../Tags';
 import icon from './Usagi.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import * as ReadM from './decorators/ReadMangaLive';
 
-@Common.MangaCSS(/^{origin}/, '#mangaBox meta[itemprop="name"]')
-@Common.MangasMultiPageCSS('/list?offset={page}', 'div.tile div.desc h3 a', 0, 50, 0)
-@Common.ChaptersSinglePageCSS('tr.item-row a.chapter-link')
-@Common.PagesSinglePageJS(`rm_h.pics.map(pic => pic.url);`, 500)
-@Common.ImageAjax()
+@Common.MangaCSS(/^{origin}/, ReadM.queryMangaTitle)
+@Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, 50, 0)
+@Common.ChaptersSinglePageCSS(ReadM.queryChapters)
+@ReadM.PagesSinglePageJS()
+@ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -31,12 +31,12 @@ const configMultiPage: Config = {
         title: 'Usagi'
     },
     container: {
-        url: 'https://web.usagi.one/one_piece',
-        id: '/one_piece',
+        url: 'https://web.usagi.one/van_pis',
+        id: '/van_pis',
         title: 'Ван Пис'
     },
     child: {
-        id: '/one_piece/vol100/1010',
+        id: '/van_pis/vol100/1010',
         title: '100 - 1010 Королевская воля'
     },
     entry: {

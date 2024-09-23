@@ -9,7 +9,7 @@ const config = {
     container: {
         url: 'https://z.ahen.me/nochiu_ona_nimfomanka',
         id: '/nochiu_ona_nimfomanka',
-        title: 'At Night She’s a Nymphomaniac'
+        title: 'Ночью она нимфоманка'
     },
 /*  Irrelevant tests since we need to be logged
     child: {

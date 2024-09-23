@@ -14,7 +14,7 @@ const pagesWithServersScript = `
 
 export const queryMangas = 'div.tile div.desc h3 a';
 export const queryChapters = 'a.chapter-link.cp-l';
-export const queryMangaTitle = 'div#mangaBox h1.names span.name';
+export const queryMangaTitle = 'meta[itemprop = "name"]';
 export const pathMangas = '/list?offset={page}';
 export const pageMangaOffset = 70;
 export const queryPages = [
@@ -25,6 +25,10 @@ export const queryPages = [
 type ImagesData = {
     pics: string[],
     servers: string[];
+}
+
+type AlternativesUrls = {
+    alternativeUrls: string[]
 }
 
 /*************************************************
@@ -48,13 +52,12 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
         .filter((server, index) => index === images.servers.findIndex(s => s === server));
 
     return images.pics.map(url => {
-        const imageUrl = new URL(url);
-        const alternativeUrls = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server))
-            .filter(altUrl => altUrl.href != imageUrl.href)
-            .join(',');
-        return new Page(this, chapter, imageUrl, {
+        const imageUrl = new URL(url, this.URI);
+        const alternativeUrls = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server).href)
+            .filter(altUrl => altUrl != imageUrl.href);
+        return new Page<AlternativesUrls>(this, chapter, imageUrl, {
             Referer: uri.origin,
-            alternativeUrls: alternativeUrls
+            alternativeUrls
         });
     });
 }
@@ -91,27 +94,34 @@ export function ImageAjax() {
     };
 }
 
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+async function FetchImage(this: MangaScraper, page: Page<AlternativesUrls>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    return this.imageTaskPool.Add(async () => {
+        let blob: Blob = undefined;
+        const alternativeUrls = page.Parameters.alternativeUrls;
 
-    const blob = await FetchBlob.call(this, page, priority, signal);
-    if (blob.type.startsWith('image/')) return blob;
+        while (page.Link.href != '') {
+            try {
+                blob = await FetchBlob.call(this, page, priority, signal);
+                if (blob.type.startsWith('image/')) return blob;
+                throw new TypeError();
+            } catch {
+                blob = undefined;
+                page.Link.href = alternativeUrls.shift() ?? '';
+            }
+        }
 
-    const alternativeUrls: string[] = (page.Parameters.alternativeUrls as string).split(',');
-    for (const alternativeUrl of alternativeUrls) {
-        page.Link.href = alternativeUrl;
-        const blob = await FetchBlob.call(this, page, priority, signal);
-        if (blob.type.startsWith('image/')) return blob;
-    }
+        Promise.reject('');
+
+    }, priority, signal);
+
 }
 
-async function FetchBlob(this : MangaScraper, page : Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-    return this.imageTaskPool.Add(async () => {
-        const response = await Fetch(new Request(page.Link, {
-            signal,
-            headers: {
-                Referer: page.Parameters?.Referer ?? page.Link.origin,
-            }
-        }));
-        return await Common.GetTypedData(await response.arrayBuffer());
-    }, priority, signal);
+async function FetchBlob(this: MangaScraper, page: Page<AlternativesUrls>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    const response = await Fetch(new Request(page.Link, {
+        signal,
+        headers: {
+            Referer: page.Parameters?.Referer ?? page.Link.origin,
+        }
+    }));
+    return await Common.GetTypedData(await response.arrayBuffer());
 }

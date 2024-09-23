@@ -9,7 +9,7 @@ const config: Config = {
     container: {
         url: 'https://selfmanga.live/temnyi_dvoreckii_dodzinsi__ah__eta_prekrasnaia_koshachia_jizn_',
         id: '/temnyi_dvoreckii_dodzinsi__ah__eta_prekrasnaia_koshachia_jizn_',
-        title: 'Kuroshitsuji doujinshi: Ah, It\'s a wonderful Cat Life!',
+        title: 'Темный Дворецкий додзинси: Ах, эта прекрасная кошачья жизнь!',
     },
     child: {
         id: '/temnyi_dvoreckii_dodzinsi__ah__eta_prekrasnaia_koshachia_jizn_/vol1/6',

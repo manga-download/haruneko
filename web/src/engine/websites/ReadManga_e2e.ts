@@ -7,12 +7,12 @@ const configLongStrip: Config = {
         title: 'ReadManga'
     },
     container: {
-        url: 'https://1.readmanga.io/vseveduchii_chitatel__A5664', // Randomly redirects to 'https://web.usagi.one/omniscient_reader_s_viewpoint'
-        id: '/vseveduchii_chitatel__A5664',
+        url: 'https://1.readmanga.io/omniscient_reader_s_viewpoint', // Randomly redirects to 'https://web.usagi.one/omniscient_reader_s_viewpoint'
+        id: '/omniscient_reader_s_viewpoint',
         title: 'Всеведущий читатель'
     },
     child: {
-        id: '/vseveduchii_chitatel__A5664/vol1/100',
+        id: '/omniscient_reader_s_viewpoint/vol1/100',
         title: '1 - 100 То, что невозможно изменить - часть 2'
     },
     entry: {
@@ -31,12 +31,12 @@ const configMultiPage: Config = {
         title: 'ReadManga'
     },
     container: {
-        url: 'https://zz.readmanga.io/van_pis__A5664', // Randomly redirects to 'https://web.usagi.one/one_piece'
-        id: '/van_pis__A5664',
+        url: 'https://zz.readmanga.io/van_pis', // Randomly redirects to 'https://web.usagi.one/one_piece'
+        id: '/van_pis',
         title: 'Ван Пис'
     },
     child: {
-        id: '/van_pis__A5664/vol100/1010',
+        id: '/van_pis/vol100/1010',
         title: '100 - 1010 Королевская воля'
     },
     entry: {

@@ -9,7 +9,7 @@ const config: Config = {
     container: {
         url: 'https://seimanga.me/sword_art_online__progressiv___skerco_glubokoi_nochi/',
         id: '/sword_art_online__progressiv___skerco_glubokoi_nochi/',
-        title: 'Sword Art Online: Progressive - Kuraki Yuuyami no Scherzo',
+        title: 'Sword Art Online: Прогрессив - Скерцо глубокой ночи',
     },
     child: {
         id: '/sword_art_online__progressiv___skerco_glubokoi_nochi/vol3/19',
