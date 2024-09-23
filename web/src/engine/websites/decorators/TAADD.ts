@@ -1,6 +1,7 @@
-﻿import { FetchCSS } from '../../platform/FetchProvider';
+﻿import { Fetch, FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/DeferredTask';
+import DeProxify from '../../transformers/ImageLinkDeProxifier';
 import * as Common from './Common';
 export function MangaLabelExtractor(element: HTMLElement) {
     return ((element as HTMLMetaElement).content || element.textContent).replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
@@ -145,17 +146,22 @@ export function PagesSinglePageCSS(query: string = queryPages, extractor: LinkEx
  * @param deProxifyLink - Remove common image proxies (default false)
  */
 export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, queryImage: string = queryImages, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
-    const image = await this.imageTaskPool.Add(async () => {
-        const request = new Request(page.Link, {
-            signal: signal,
-            // Referer: page.Link.origin, //To avoid redirection on crappy hosts, DONT USE referrer on html subpages
+    return await this.imageTaskPool.Add(async () => {
+        let request = new Request(page.Link, {
+            signal: signal, //To avoid redirection on crappy hosts, DONT USE referrer on html subpages
         });
-        const realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].getAttribute('src');
-        const parameters = page.Parameters?.Referer ? { Referer: page.Parameters?.Referer } : { Referer: page.Link.origin };
-        return new Page(this, page.Parent as Chapter, new URL(realimage, request.url), parameters);
-    }, priority, signal);
+        let realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].getAttribute('src');
+        realimage = deProxifyLink ? DeProxify(new URL(realimage)).href : realimage;
+        request = new Request(realimage, {
+            signal,
+            headers: {
+                Referer: page.Parameters?.Referer ? page.Parameters?.Referer : page.Link.origin
+            }
+        });
+        const response = await Fetch(request);
+        return detectMimeType ? await Common.GetTypedData(await response.arrayBuffer()) : await response.blob();
 
-    return await Common.FetchImageAjax.call(this, image, priority, signal, detectMimeType, deProxifyLink);
+    }, priority, signal);
 }
 
 /**
