@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIManga = {
     hid: string,
@@ -55,7 +55,6 @@ const chapterLanguageMap = new Map([
     //[ 'cz', Tags.Language
 ]);
 
-@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.comick.io';
@@ -135,5 +134,33 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { md_images } } = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
         return md_images.map(image => new Page(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), { Referer: this.URI.href }));
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        return this.imageTaskPool.Add(async () => {
+            try {
+                const request = new Request(page.Link, {
+                    signal: signal,
+                    headers: {
+                        Referer: this.URI.href
+                    }
+                });
+                const response = await Fetch(request);
+                const blob = await response.blob();
+                if (blob.type.startsWith('image/')) return blob;
+                throw new TypeError();
+            } catch {
+
+                const request = new Request(page.Link.href.replace('https://s3.comick.ink/comick/', 'https://meo.comick.pictures/'), {
+                    signal: signal,
+                    headers: {
+                        Referer: this.URI.href
+                    }
+                });
+                const response = await Fetch(request);
+                return response.blob();
+            }
+        }, priority, signal);
+
     }
 }
