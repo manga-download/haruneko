@@ -19,9 +19,7 @@ type APIChapter = {
 }
 
 const scriptPages = `
-    new Promise(resolve) => {
-        resolve(window.pUrl.map(page => page.imgURL));
-    });
+    new Promise(resolve => resolve(window.pUrl.map(page => page.imgURL))) ;
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.site-content div.post-title h3')
@@ -43,7 +41,6 @@ export default class extends DecoratableMangaScraper {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
-
         });
         const { data } = await FetchJSON<APIChapter>(request);
         return data.map(page => new Chapter(this, manga, `/manga/leer/${page.id}`, `Chapter ${page.slug}`));
