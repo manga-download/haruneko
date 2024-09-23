@@ -314,10 +314,7 @@ async function getPageLinks_v016452(this: MangaScraper, configuration: ContentCo
     configuration.ptbl = _pt(params.cid, params.sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
-        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    } catch (error) {
-        //
-    }
+    } catch { }
     if (configuration.ServerType === 0) {//CMOA
         const uri = getSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
         uri.searchParams.set('cid', params.cid);
@@ -338,10 +335,7 @@ async function getPageLinks_v016201(this: MangaScraper, configuration: ContentCo
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
-        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    } catch (error) {
-        //
-    }
+    } catch { }
 
     if (configuration.ServerType === 2) {
         const uri = getSanitizedURL(configuration.ContentsServer, 'content');
@@ -365,10 +359,7 @@ async function getPageLinks_v016130(this: MangaScraper, configuration: ContentCo
     configuration.ptbl = _pt(cid, sharingKey, configuration.ptbl as string);
     try {
         configuration.ServerType = parseInt(configuration.ServerType as string);
-        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    } catch (error) {
-        //
-    }
+    } catch { }
 
     switch (configuration.ServerType as number) {
         case 0: { //Booklive
@@ -536,8 +527,7 @@ function _pt(t: string, i: string, n: string): string[] {
     }
     try {
         return JSON.parse(u);
-        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    } catch (t) {
+    } catch {
         return null;
     }
 }
