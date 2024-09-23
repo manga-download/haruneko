@@ -200,6 +200,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_CloudFlareError: "La solicitud falló debido al siguiente error de CloudFlare: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "Por favor resuelva el Captcha y luego espere a que la aplicación continúe (no cierre el sitio web después de resolver el Captcha)!",
   FetchProvider_Fetch_CloudFlareChallenge: "CloudFlare Anti-Bot ha rechazado la solicitud de \"{0}\".\nAsegúrese de evitar CloudFlare antes de acceder al contenido de este sitio web (por ejemplo, con la extensión del navegador HakuNeko Assistant).",
+  FetchProvider_Fetch_VercelChallenge: 'The request to "{0}" was rejected by Vercel Attack Challenge Mode.\nMake sure to bypass Vercel before accessing the content of this website.',
   FetchProvider_Fetch_Forbidden: "El acceso a \"{0}\" fue denegado.\nAsegúrese de que el sitio web está disponible y accesible (e. ., VPN para evitar el bloqueo de región, inicio de sesión manual a través del enlace del sitio web).",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "Los datos proporcionados parecen no ser válidos/corruptos y no pudieron ser des-serializados con éxito en un marcador!",

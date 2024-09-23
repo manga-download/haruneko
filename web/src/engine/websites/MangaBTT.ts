@@ -18,7 +18,7 @@ function MangaInfoExtractor(element: HTMLImageElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangabtt', 'MangaBTT', 'https://manhwalampo.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('mangabtt', 'MangaBTT', 'https://manhwabtt.cc', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

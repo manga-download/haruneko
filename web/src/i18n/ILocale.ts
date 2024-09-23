@@ -301,6 +301,7 @@ export enum EngineResourceKey {
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
     FetchProvider_Fetch_CloudFlareChallenge = 'FetchProvider_Fetch_CloudFlareChallenge',
+    FetchProvider_Fetch_VercelChallenge = 'FetchProvider_Fetch_VercelChallenge',
     FetchProvider_Fetch_Forbidden = 'FetchProvider_Fetch_Forbidden',
 
     BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',

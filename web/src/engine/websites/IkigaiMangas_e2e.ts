@@ -3,8 +3,8 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'visualikigai',
-        title: 'Visual Ikigai'
+        id: 'ikigaimangas',
+        title: 'Ikigai Mangas'
     },
     container: {
         url: 'https://lectorikigai.erigu.com/series/el-sacerdote-ji-soon-es-un-santo/',

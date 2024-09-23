@@ -200,6 +200,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_CloudFlareError: "请求失败，因为以下云闪光错误：“{0}”",
   FetchProvider_FetchWindow_AlertCaptcha: "请解决验证码，然后等待应用程序继续 (解析验证码后不关闭网站) ！",
   FetchProvider_Fetch_CloudFlareChallenge: "向“{0}”提出的请求被云闪光反机器人检测拒绝。\n请确保在访问此网站的内容前绕过CloudFlare (例如，HakuNeko助理浏览器扩展)。",
+  FetchProvider_Fetch_VercelChallenge: 'The request to "{0}" was rejected by Vercel Attack Challenge Mode.\nMake sure to bypass Vercel before accessing the content of this website.',
   FetchProvider_Fetch_Forbidden: 'The access to "{0}" was denied.\nMake sure the website is available and accessible (e.g., VPN to bypass region lock, manual login via website link).',
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "提供的数据似乎无效/损坏，无法成功地取消序列化到书签！",

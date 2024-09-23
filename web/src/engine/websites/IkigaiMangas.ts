@@ -1,9 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './VisualIkigai.webp';
+import icon from './IkigaiMangas.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
+// TODO: Add Novel support
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -18,7 +19,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('visualikigai', 'Visual Ikigai', 'https://lectorikigai.erigu.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('ikigaimangas', 'Ikigai Mangas', 'https://lectorikigai.erigu.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

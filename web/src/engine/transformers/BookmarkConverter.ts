@@ -43,7 +43,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'prismascans', 'demonsect' ],
     [ 'realmscans', 'rizzcomics' ],
     [ 'reaperscansid', 'shinigamiid' ],
-    [ 'scansmangasxyz', 'scansmangasme' ],
     [ 'scanhentaimenu', 'xmanga' ],
     [ 'secretscans', 'lynxscans' ],
     [ 'shonenmagazine-pocket', 'shonenmagazine' ],
@@ -51,6 +50,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'suryatoon', 'genztoon' ],
     [ 'sushiscanfr', 'animesama' ],
     [ 'vermanhwas', 'vermanhwa' ],
+    [ 'visualikigai', 'ikigaimangas' ],
     [ 'webtoontrcom', 'webtoontrnet' ],
 ]);
 
