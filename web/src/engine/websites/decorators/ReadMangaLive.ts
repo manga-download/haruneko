@@ -27,9 +27,9 @@ type ImagesData = {
     servers: string[];
 }
 
-type AlternativesUrls = {
-    alternativeUrls: string[]
-}
+type PageParameters = {
+    mirrors: string[],
+};
 
 /*************************************************
  ******** Pages Extraction Methods ********
@@ -53,11 +53,10 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
 
     return images.pics.map(url => {
         const imageUrl = new URL(url, this.URI);
-        const alternativeUrls = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server).href)
+        const mirrors = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server).href)
             .filter(altUrl => altUrl != imageUrl.href);
-        return new Page<AlternativesUrls>(this, chapter, imageUrl, {
-            Referer: uri.origin,
-            alternativeUrls
+        return new Page<PageParameters>(this, chapter, imageUrl, {
+            mirrors
         });
     });
 }
@@ -94,34 +93,15 @@ export function ImageAjax() {
     };
 }
 
-async function FetchImage(this: MangaScraper, page: Page<AlternativesUrls>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+async function FetchImage(this: MangaScraper, page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
-        let blob: Blob = undefined;
-        const alternativeUrls = page.Parameters.alternativeUrls;
-
-        while (page.Link.href != '') {
+        for (const uri of [page.Link, ...page.Parameters.mirrors]) {
             try {
-                blob = await FetchBlob.call(this, page, priority, signal);
+                const request = new Request(uri, { signal: signal, headers: { Referer: this.URI.href } });
+                const response = await Fetch(request);
+                const blob = await response.blob();
                 if (blob.type.startsWith('image/')) return blob;
-                throw new TypeError();
-            } catch {
-                blob = undefined;
-                page.Link.href = alternativeUrls.shift() ?? '';
-            }
+            } catch { }
         }
-
-        Promise.reject('');
-
     }, priority, signal);
-
-}
-
-async function FetchBlob(this: MangaScraper, page: Page<AlternativesUrls>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-    const response = await Fetch(new Request(page.Link, {
-        signal,
-        headers: {
-            Referer: page.Parameters?.Referer ?? page.Link.origin,
-        }
-    }));
-    return await Common.GetTypedData(await response.arrayBuffer());
 }
