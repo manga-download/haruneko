@@ -6,6 +6,7 @@ import icon from '../../img/media.webp';
 import { NotImplementedError } from '../Error';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { Observable, ObservableArray, type IObservable } from '../Observable';
+import { DJB2 } from '../Digest';
 
 export type MediaChild = MediaContainer<MediaChild> | MediaItem;
 
@@ -17,13 +18,35 @@ export abstract class MediaItem {
     public abstract Fetch(priority: Priority, signal: AbortSignal): Promise<Blob>;
 }
 
+export class MediaChecksum {
+
+    public readonly Identifier: string;
+    public readonly Title: string;
+
+    constructor(parent: MediaChecksum | null, identifier: string, title: string) {
+        this.Identifier = this.Hash(parent?.Identifier, identifier);
+        this.Title = this.Hash(parent?.Title, title);
+    }
+
+    private Hash(prefix: string | null, segment: string) {
+        return (prefix ?? '') + '/' + DJB2(segment).toString(36);
+    }
+
+    public Match(other: MediaChecksum) {
+        return this.Identifier === other.Identifier || this.Title === other.Title;
+    }
+}
+
 export abstract class MediaContainer<T extends MediaChild> {
 
+    public readonly Checksum: MediaChecksum;
     protected readonly tags = new ObservableArray<Tag, this>([], this);
     protected readonly entries = new ObservableArray<T, this>([], this);
     private readonly updating = new Observable<boolean, this>(false, this);
 
-    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: MediaContainer<MediaContainer<T>>) {}
+    constructor(public readonly Identifier: string, public readonly Title: string, public readonly Parent?: MediaContainer<MediaContainer<T>>) {
+        this.Checksum = new MediaChecksum(Parent?.Checksum, Identifier, Title);
+    }
 
     public get Settings(): ISettings {
         throw new NotImplementedError();
@@ -56,6 +79,7 @@ export abstract class MediaContainer<T extends MediaChild> {
     }
 
     public IsSameAs(other: MediaContainer<T>): boolean {
+        //return this.Checksum.Identifier === other?.Checksum.Identifier;
         if(!this.Identifier || !other?.Identifier) {
             return false;
         }
