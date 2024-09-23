@@ -46,10 +46,8 @@ export function PageLinkExtractor<E extends HTMLImageElement>(this: MangaScraper
 
     let page = element.dataset.aload || element.dataset.src || element.dataset.srcset || element.dataset.original || element.dataset.pagespeedLazySrc || element.src;
     try {
-        page = window.atob(page);/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    } catch (error) {
-        //
-    }
+        page = window.atob(page);
+    } catch { }
     return page.replace(/\n/g, '');
 
 }

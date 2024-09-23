@@ -15,7 +15,6 @@ function GenerateRandomEndPoint(length: number, suffix: string): string {
 @Common.MangasSinglePageCSS(FlatManga.pathSinglePageManga, FlatManga.queryMangas, FlatManga.MangaExtractor)
 @FlatManga.ChaptersSinglePageAJAX(GenerateRandomEndPoint(25, '.lstc?slug='), 'dataL', 'a.chapter[title]')
 @FlatManga.PagesSinglePageAJAX(GenerateRandomEndPoint(30, '.iog?cid='), 'img.chapter-img[alt*="Page"]', [/olimposcan/] )
-
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
