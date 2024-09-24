@@ -408,6 +408,7 @@ export { default as Manhuaga } from './Manhuaga';
 export { default as ManhuaGold } from './ManhuaGold';
 export { default as ManHuaGui } from './ManHuaGui';
 export { default as ManhuaHot } from './ManhuaHot';
+export { default as ManhuaNext } from './ManhuaNext';
 export { default as ManhuaPlus } from './ManhuaPlus';
 export { default as Manhuaren } from './Manhuaren';
 export { default as Manhuass } from './Manhuass';
