@@ -7,14 +7,14 @@ describe('MediaChecksum', () => {
 
         it('Should have expected hashes when created without parent', () => {
             const testee = new MediaChecksum(null, 'id', 'title');
-            expect(testee.Identifier).toBe('/3hm6g');
-            expect(testee.Title).toBe('/2qj8kl');
+            expect(testee.Identifier).toBe('/3hmi01yxmg9j');
+            expect(testee.Title).toBe('/3133ad1wlyfga');
         });
 
         it('Should have expected hashes when created with parent', () => {
             const testee = new MediaChecksum(new MediaChecksum(null, 'p-id', 'p-title'), 'c-id', 'c-title');
-            expect(testee.Identifier).toBe('/yirvp1/yirvom');
-            expect(testee.Title).toBe('/1wec2hk/1wec2h7');
+            expect(testee.Identifier).toBe('/yj8myd10ijc96/yiypqe10it9h5');
+            expect(testee.Title).toBe('/c73f6gbw28hz/lrammj2bv11w');
         });
     });
 

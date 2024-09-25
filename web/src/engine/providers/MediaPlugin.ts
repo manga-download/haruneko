@@ -6,7 +6,7 @@ import icon from '../../img/media.webp';
 import { NotImplementedError } from '../Error';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { Observable, ObservableArray, type IObservable } from '../Observable';
-import { DJB2 } from '../Digest';
+import { DJB64 } from '../Digest';
 
 export type MediaChild = MediaContainer<MediaChild> | MediaItem;
 
@@ -29,7 +29,7 @@ export class MediaChecksum {
     }
 
     private Hash(prefix: string | null, segment: string) {
-        return (prefix ?? '') + '/' + DJB2(segment).toString(36);
+        return (prefix ?? '') + '/' + DJB64(segment);
     }
 
     public Match(other: MediaChecksum) {

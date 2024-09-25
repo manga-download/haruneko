@@ -26,4 +26,12 @@ describe('Digest', () => {
             expect(actual).toBe('C7B5DDF4'); // C7B5DDF4 => https://md5hashing.net/hash/fnv1a32
         });
     });
+
+    describe('DJB64', () => {
+
+        it('Should calculate expected checksum', () => {
+            const actual = Hash.DJB64('Meow!').toUpperCase();
+            expect(actual).toBe('3H8UYC1XC5Y5N');
+        });
+    });
 });
