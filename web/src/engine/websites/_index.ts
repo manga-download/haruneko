@@ -364,6 +364,7 @@ export { default as MangaRocky } from './MangaRocky';
 export { default as MangaRolls } from './MangaRolls';
 export { default as MangaRomance } from './MangaRomance';
 export { default as MangaRose } from './MangaRose';
+export { default as MangaRuhu } from './MangaRuhu';
 export { default as MangAs } from './MangAs';
 export { default as MangaSail } from './MangaSail';
 export { default as MangaScantrad } from './MangaScantrad';
