@@ -3,8 +3,8 @@ import { Exception } from '../Error';
 import type { BookmarkSerialized } from '../providers/Bookmark';
 
 /**
- * DO NOT USE!
- * @remark - Only exported for testing
+ * __DO NOT USE!__
+ * @remarks Only exported for testing
  */
 export const legacyWebsiteIdentifierMap = new Map([
     [ 'aresnov', 'scarmanga' ],
