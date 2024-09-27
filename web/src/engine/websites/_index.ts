@@ -595,7 +595,6 @@ export { default as SheepMangaBroken } from './SheepMangaBroken';
 export { default as ShijieScans } from './ShijieScans';
 export { default as ShinigamiID } from './ShinigamiID';
 export { default as Shirakami } from './Shirakami';
-export { default as ShojoScans } from './ShojoScans';
 export { default as ShonenJumpPlus } from './ShonenJumpPlus';
 export { default as ShonenJumpRookie } from './ShonenJumpRookie';
 export { default as ShonenMagazine } from './ShonenMagazine';
