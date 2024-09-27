@@ -3,11 +3,11 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'mangatale',
-        title: 'Manga Tale'
+        id: 'ikiru',
+        title: 'Ikiru'
     },
     container: {
-        url: 'https://mangatale.id/manga/martial-peak/',
+        url: 'https://ikiru.me/manga/martial-peak/',
         id: '/manga/martial-peak/',
         title: 'Martial Peak'
     },
