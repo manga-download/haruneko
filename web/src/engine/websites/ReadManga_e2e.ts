@@ -7,7 +7,7 @@ const configLongStrip: Config = {
         title: 'ReadManga'
     },
     container: {
-        url: 'https://1.readmanga.io/omniscient_reader_s_viewpoint', // Randomly redirects to 'https://web.usagi.one/omniscient_reader_s_viewpoint'
+        url: 'https://zz.readmanga.io/omniscient_reader_s_viewpoint', // Randomly redirects to 'https://web.usagi.one/omniscient_reader_s_viewpoint'
         id: '/omniscient_reader_s_viewpoint',
         title: 'Всеведущий читатель'
     },
