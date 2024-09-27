@@ -33,6 +33,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'manganel', 'manganato' ],
     [ 'mangaproz', 'mangapro' ],
     [ 'mangaraw', 'mangageko' ],
+    [ 'mangatale', 'ikiru' ],
     [ 'manhuaes', 'manhuaaz' ],
     [ 'manhuascan', 'kaliscan' ],
     [ 'manhwaclub', 'manhwahentai' ],

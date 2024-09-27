@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: '78te',
-        title: '78te (特漫网)'
+        id: 'sakuramanga',
+        title: 'Sakura Manga'
     },
     container: {
-        url: 'https://www.70te.com/cartoon/581',
-        id: '/cartoon/581',
-        title: '家庭教师()'
+        url: 'https://mangasakura.com/p-5-toubun-no-hanayome/',
+        id: '/p-5-toubun-no-hanayome/',
+        title: '5-toubun no Hanayome 五等分の花嫁'
     },
     child: {
-        id: '/chapter/37638',
-        title: '第1话 幻想'
+        id: '/5-toubun-no-hanayome/5-toubun-no-hanayome-chap-121/',
+        title: '5-toubun no Hanayome chap 121'
     },
     entry: {
         index: 0,
-        size: 48_149,
+        size: 202_535,
         type: 'image/jpeg'
     }
 };

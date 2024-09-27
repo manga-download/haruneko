@@ -35,6 +35,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'manganel', targetID: 'manganato' },
     { sourceID: 'mangaproz', targetID: 'mangapro' },
     { sourceID: 'mangaraw', targetID: 'mangageko' },
+    { sourceID: 'mangatale', targetID: 'ikiru' },
     { sourceID: 'manhuaes', targetID: 'manhuaaz' },
     { sourceID: 'manhuascan', targetID: 'kaliscan' },
     { sourceID: 'manhwaclub', targetID: 'manhwahentai' },

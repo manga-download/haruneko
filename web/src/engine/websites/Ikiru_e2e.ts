@@ -3,21 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'franxxmangas',
-        title: 'Franxx Mangas'
+        id: 'ikiru',
+        title: 'Ikiru'
     },
     container: {
-        url: 'https://franxxmangas.net/manga/kuro-no-shoukanshi/',
-        id: '/manga/kuro-no-shoukanshi/',
-        title: 'Kuro no Shoukanshi'
+        url: 'https://ikiru.me/manga/martial-peak/',
+        id: '/manga/martial-peak/',
+        title: 'Martial Peak'
     },
     child: {
-        id: '/kuro-no-shoukanshi-capitulo-01/',
-        title: 'Capítulo 01'
+        id: '/martial-peak-chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 3,
-        size: 199_179,
+        index: 0,
+        size: 124_648,
         type: 'image/jpeg'
     }
 };

@@ -1,7 +1,7 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './SakuraManga.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
-import * as Common from '../decorators/Common';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/p-[^/]+\/$/, 'div#content div.archive-title')
 @Common.MangasMultiPageCSS('/japanese-manga-list/?lcp_page0={page}', 'ul#lcp_instance_0 li a')
@@ -11,7 +11,7 @@ import * as Common from '../decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sakuramanga', `Sakura Manga`, 'https://sakuramanga.org', Tags.Language.Japanese, Tags.Media.Manga);
+        super('sakuramanga', `Sakura Manga`, 'https://mangasakura.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
