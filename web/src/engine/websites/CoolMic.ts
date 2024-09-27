@@ -42,9 +42,11 @@ type CookieSigner = {
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/v1/`;
+    private readonly languageCode : string = 'en';
 
-    public constructor() {
-        super('coolmic', 'CoolMic', 'https://coolmic.me', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official);
+    public constructor(id = 'coolmic', label = 'CoolMic', url = 'https://coolmic.me', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official]) {
+        super(id, label, url, ...tags);
+        this.languageCode = this.URI.href.match(/https:\/\/([a-z]+)\.coolmic/)?.at(-1) ?? this.languageCode;
     }
 
     public override get Icon() {
@@ -54,7 +56,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const token = (await FetchCSS<HTMLMetaElement>(new Request(this.URI), 'meta[name="csrf-token"]')).at(0).content;
         const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
-            const url = new URL('https://en-search.coolmic.me/search');
+            const url = new URL(`https://${this.languageCode}-search.coolmic.me/search`);
             const params = new URLSearchParams({
                 q: `(${character}|*${character})`,
                 size: '10000',

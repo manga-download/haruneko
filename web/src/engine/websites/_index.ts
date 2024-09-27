@@ -79,6 +79,7 @@ export { default as ComikeyArchive } from './ComikeyArchive';
 export { default as ConstellarScans } from './ConstellarScans';
 export { default as CookMana } from './CookMana';
 export { default as CoolMic } from './CoolMic';
+export { default as CoolMicFr } from './CoolMicFr';
 export { default as CopyManga } from './CopyManga';
 export { default as CopyPasteScan } from './CopyPasteScan';
 export { default as CoroCoro } from './CoroCoro';
