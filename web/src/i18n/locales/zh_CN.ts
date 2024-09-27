@@ -288,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: "使用全局CDN",
   Plugin_CopyManga_Settings_GlobalCDNInfo: "向全球CDN请求",
+  Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
   Plugin_PocketComics_LanguageMismatchError: "找不到 manga {0} 所选语言的 {1}",
   Plugin_SheepScanlations_Settings_Username: "用户名",
   Plugin_SheepScanlations_Settings_UsernameInfo: 'Username for automatic account login to Sheep-Scanlations 😉',
