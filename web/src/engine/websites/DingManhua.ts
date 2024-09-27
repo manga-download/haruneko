@@ -21,7 +21,7 @@ type APIChapters = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dingmanhua', 'DingManhua', 'https://dingmanhua.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
+        super('dingmanhua', 'DingManhua', 'https://www.dingmanhua.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
