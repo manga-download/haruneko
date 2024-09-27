@@ -9,7 +9,7 @@ const configs: Config[] = [
             title: 'TuMangaOnline'
         },
         container: {
-            url: 'https://visortmo.com/library/manhwa/63944/enlanube',
+            url: 'https://zonatmo.com/library/manhwa/63944/enlanube',
             id: '/library/manhwa/63944/enlanube',
             title: 'En la nube'
         },
@@ -30,13 +30,13 @@ const configs: Config[] = [
             title: 'TuMangaOnline'
         },
         container: {
-            url: 'https://visortmo.com/library/manhwa/34395/pheromone-holic',
+            url: 'https://zonatmo.com/library/manhwa/34395/pheromone-holic',
             id: '/library/manhwa/34395/pheromone-holic',
             title: 'Pheromone Holic'
         },
         child: {
             id: '/view_uploads/558145',
-            title: 'Capítulo 53.00  Adicta a la Feromona [FINAL] [Plot Twist No Fansub] (es)'
+            title: 'Capítulo 53.00 Adicta a la Feromona [FINAL] [Plot Twist No Fansub] (es)'
         },
         entry: {
             index: 1,
