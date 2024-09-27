@@ -7,7 +7,7 @@ const config = {
         title: 'DingManhua'
     },
     container: {
-        url: 'https://dingmanhua.com/comic/1091.html',
+        url: 'https://www.dingmanhua.com/comic/1091.html',
         id: '/comic/1091.html',
         title: '宿敌看我的眼神逐渐变质'
     },
