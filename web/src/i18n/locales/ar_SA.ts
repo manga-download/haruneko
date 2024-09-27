@@ -288,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: "استخدام CDN العالمية",
   Plugin_CopyManga_Settings_GlobalCDNInfo: "طلب من الشبكة العالمية CDN",
+  Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
   Plugin_PocketComics_LanguageMismatchError: "غير قادر على العثور على مانغا {0} للغة المحددة {1}",
   Plugin_SheepScanlations_Settings_Username: "اسم المستخدم",
   Plugin_SheepScanlations_Settings_UsernameInfo: "اسم المستخدم لتسجيل الدخول التلقائي للحساب إلى مسح الغيف 😉",

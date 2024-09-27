@@ -288,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: "crwdns2098:0crwdne2098:0",
   Plugin_CopyManga_Settings_GlobalCDNInfo: "crwdns2100:0crwdne2100:0",
+  Plugin_CuuTruyen_Error_NotProcessed: "crwdns2186:0crwdne2186:0",
   Plugin_PocketComics_LanguageMismatchError: "crwdns2108:0{0}crwdnd2108:0{1}crwdne2108:0",
   Plugin_SheepScanlations_Settings_Username: "crwdns1553:0crwdne1553:0",
   Plugin_SheepScanlations_Settings_UsernameInfo: "crwdns1555:0crwdne1555:0",
