@@ -3,12 +3,10 @@ import icon from './CuuTruyen.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
-import { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as W } from '../../i18n/ILocale';
-import { TaskPool } from '../taskpool/TaskPool';
-import { RateLimit } from '../taskpool/RateLimit';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIResult<T> = {
     data: T,
@@ -39,9 +37,12 @@ type APIChapter = {
     }[]
 }
 
+type DrmData = {
+    drmData: string
+}
+
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/v2/`;
-    private readonly mangasTaskPool = new TaskPool(4, new RateLimit(15, 1));
 
     public constructor() {
         super('cuutruyen', 'Cứu Truyện', 'https://cuutruyen.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
@@ -62,13 +63,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangasList : Manga[]= [];
+        const mangasList: Manga[] = [];
         const cancellator = new AbortController();
         try {
             const result = await this.GetMangasFromPage(1, provider, cancellator.signal);
             mangasList.push(...result.mangas);
 
-            const promises = Array(result.total_pages-1).fill(0).map(async (_, index) => {
+            const promises = Array(result.total_pages - 1).fill(0).map(async (_, index) => {
                 const { mangas } = await this.GetMangasFromPage(index + 2, provider, cancellator.signal);
                 mangasList.push(...mangas);
             });
@@ -80,14 +81,12 @@ export default class extends DecoratableMangaScraper {
         }
     }
 
-    private async GetMangasFromPage(page: number, provider: MangaPlugin, signal: AbortSignal): Promise<PagedMangaResult>{
-        return this.mangasTaskPool.Add(async () => {
-            const { data, _metadata: { total_pages } } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`mangas/recently_updated?page=${page}&per_page=100`, this.apiUrl)));
-            return {
-                total_pages,
-                mangas: data.map(manga => new Manga(this, provider, manga.id.toString(), manga.name))
-            };
-        }, Priority.Normal, signal);
+    private async GetMangasFromPage(page: number, provider: MangaPlugin, signal: AbortSignal): Promise<PagedMangaResult> {
+        const { data, _metadata: { total_pages } } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`mangas/recently_updated?page=${page}&per_page=100`, this.apiUrl), { signal }));
+        return {
+            total_pages,
+            mangas: data.map(manga => new Manga(this, provider, manga.id.toString(), manga.name))
+        };
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -105,14 +104,13 @@ export default class extends DecoratableMangaScraper {
         if (pages.some((image) => image.status !== 'processed')) {
             throw new Exception(W.Plugin_CuuTruyen_Error_NotProcessed);
         }
-
-        return pages.map(page => new Page(this, chapter, new URL(page.image_url), { drmData: page.drm_data }));
+        return pages.map(page => new Page<DrmData>(this, chapter, new URL(page.image_url), { drmData: page.drm_data }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<DrmData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return !page.Parameters.drmData ? blob : DeScramble(blob, async (image, ctx) => {
-            const decryptedDrmData = decodeXorCipher(Buffer.from(page.Parameters.drmData as string, 'base64').toString(), '3141592653589793');
+            const decryptedDrmData = decodeXorCipher(Buffer.from(page.Parameters.drmData, 'base64').toString(), '3141592653589793');
             let sy = 0;
             for (const piece of decryptedDrmData.split('|').slice(1)) {
                 const [dy, height] = piece.split('-', 2).map(Number);
