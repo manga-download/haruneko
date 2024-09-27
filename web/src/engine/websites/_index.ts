@@ -133,7 +133,6 @@ export { default as FeelWeb } from './FeelWeb';
 export { default as FireComics } from './FireComics';
 export { default as FlameComics } from './FlameComics';
 export { default as FMTeam } from './FMTeam';
-export { default as FranxxMangas } from './FranxxMangas';
 export { default as FreeComicOnline } from './FreeComicOnline';
 export { default as FreeManga } from './FreeManga';
 export { default as FRTiretScan } from './FRTiretScan';
