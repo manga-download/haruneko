@@ -11,6 +11,7 @@ export const queryMangaTitleURI = 'div.info .subj';
 const DefaultLabelExtractor = Common.ElementLabelExtractor();
 const DefaultLanguageRegexp = /\/([a-z]{2})\//;
 
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 const mangasLanguageMap = {
     zh: Tags.Language.Chinese,
     en: Tags.Language.English,
@@ -158,12 +159,10 @@ function ChapterExtractor(element: HTMLAnchorElement) {
   */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query = queryMangaTitleURI, languageRegexp = DefaultLanguageRegexp, extract = DefaultLabelExtractor, includeSearch = true, includeHash = false): Promise<Manga> {
     const manga = await Common.FetchMangaCSS.call(this, provider, url, query, extract, includeSearch, includeHash);
-    try {
+    try {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
         const languageCode = url.match(languageRegexp)[1];
-        manga.Tags.Value.push(mangasLanguageMap[languageCode]);
-    } catch (error) {
-        console.log(error);
-    }
+        //manga.Tags.Value.push(mangasLanguageMap[languageCode]); // TODO: fix manga language attribution ?
+    } catch { }
     return manga;
 }
 
