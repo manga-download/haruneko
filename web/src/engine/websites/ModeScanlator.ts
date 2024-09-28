@@ -3,7 +3,7 @@ import icon from './ModeScanlator.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as HeamCMS from './decorators/HeanCMS';
 
-const apiUrl = 'https://api.modescanlator.com';
+const apiUrl = 'https://api.modescanlator.net';
 
 @HeamCMS.MangaCSS(/^{origin}\/series\/[^/]+$/, apiUrl)
 @HeamCMS.MangasMultiPageAJAX(apiUrl)
@@ -14,7 +14,7 @@ const apiUrl = 'https://api.modescanlator.com';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('modescanlator', `Mode Scanlator`, 'https://site.modescanlator.com', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('modescanlator', `Mode Scanlator`, 'https://site.modescanlator.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
     public override get Icon() {
         return icon;

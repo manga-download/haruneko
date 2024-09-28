@@ -1,40 +1,11 @@
-import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
+import { Exception } from '../../Error';
+import { FetchJSON } from '../../platform/FetchProvider';
 import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
+import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 
-//TODO: get novel color theme from settings and apply them to the script somehow. Setting must ofc have been initializated before
-//add a listener on the aforementionned setting
-
-const DefaultNovelScript = `
-    new Promise((resolve, reject) => {
-        document.body.style.width = '56em';
-        let container = document.querySelector('div.container');
-        container.style.maxWidth = '56em';
-        container.style.padding = '0';
-        container.style.margin = '0';
-        let novel = document.querySelector('div#reader-container');
-        novel.style.padding = '1.5em';
-        [...novel.querySelectorAll(":not(:empty)")].forEach(ele => {
-            ele.style.backgroundColor = 'black'
-            ele.style.color = 'white'
-        })
-        novel.style.backgroundColor = 'black'
-        novel.style.color = 'white'
-        let script = document.createElement('script');
-        script.onerror = error => reject(error);
-        script.onload = async function() {
-            try {
-                let canvas = await html2canvas(novel);
-                resolve([canvas.toDataURL('image/png')]);
-            } catch (error) {
-                reject(error)
-            }
-        }
-        script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
-        document.body.appendChild(script);
-    });
- `;
+// TODO: Add Novel support
 
 type APIMangaV1 = {
     title: string
@@ -80,6 +51,10 @@ type MangaOrChapterId = {
     slug: string
 }
 
+type PageType = {
+    type: 'Comic' | 'Novel'
+}
+
 /***************************************************
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
@@ -92,7 +67,7 @@ type MangaOrChapterId = {
  * @param apiUrl - The url of the HeanCMS api for the website
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, apiUrl: string): Promise<Manga> {
-    const slug = new URL(url).pathname.split('/')[2];
+    const slug = new URL(url).pathname.split('/').at(-1);
     const { title, series_slug, id } = await FetchJSON<APIMangaV1>(new Request(new URL(`${apiUrl}/series/${slug}`)));
     return new Manga(this, provider, JSON.stringify({
         id: id.toString(),
@@ -135,7 +110,7 @@ export function MangaCSS(pattern: RegExp, apiURL: string) {
 export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: string, throttle = 0): Promise<Manga[]> {
     const mangaList: Manga[] = [];
 
-    for (const adult of [true, false]) { //there is no "dont care if adult or not flag"" on "new" api, and old dont care about the flag
+    for (const adult of [true, false]) { //there is no "dont care if adult or not flag" on "new" api, and old dont care about the flag
         for (let page = 1, run = true; run; page++) {
             const mangas = await GetMangaFromPage.call(this, provider, page, apiUrl, adult);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -182,17 +157,19 @@ export async function FetchChaptersSinglePageAJAXv1(this: MangaScraper, manga: M
         const mangaslug = (JSON.parse(manga.Identifier) as MangaOrChapterId).slug;
         const request = new Request(new URL(`${apiUrl}/series/${mangaslug}`));
         const { seasons } = await FetchJSON<APIMangaV1>(request);
-        const chapterList: Chapter[] = [];
-
-        seasons.map((season) => season.chapters.map((chapter) => {
-            const id = JSON.stringify({
-                id: chapter.id.toString(),
-                slug: chapter.chapter_slug
+        return seasons.reduce(async (accumulator: Promise<Chapter[]>, season) => {
+            const chapters = season.chapters.map(chapter => {
+                const id = JSON.stringify({
+                    id: chapter.id.toString(),
+                    slug: chapter.chapter_slug
+                });
+                const title = `${seasons.length > 1 ? 'S' + season.index : ''} ${chapter.chapter_name} ${chapter.chapter_title || ''}`.trim();
+                return new Chapter(this, manga, id, title);
             });
-            const title = `${seasons.length > 1 ? 'S' + season.index : ''} ${chapter.chapter_name} ${chapter.chapter_title || ''}`.trim();
-            chapterList.push(new Chapter(this, manga, id, title));
-        }));
-        return chapterList;
+            (await accumulator).concat(...chapters);
+            return accumulator;
+        }, Promise.resolve<Chapter[]>([]));
+
     } catch {
         return [];
     }
@@ -253,22 +230,21 @@ export function ChaptersSinglePageAJAXv2(apiUrl: string) {
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param apiUrl - The url of the HeanCMS api for the website
  */
-export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, apiUrl: string): Promise<Page[]> {
+export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, apiUrl: string): Promise<Page<PageType>[]> {
     const chapterid: MangaOrChapterId = JSON.parse(chapter.Identifier);
     const mangaid: MangaOrChapterId = JSON.parse(chapter.Parent.Identifier);
-    const request = new Request(new URL(`${apiUrl}/chapter/${mangaid.slug}/${chapterid.slug}`));
-    const data = await FetchJSON<APIPages>(request);
+    const data = await FetchJSON<APIPages>(new Request(new URL(`${apiUrl}/chapter/${mangaid.slug}/${chapterid.slug}`)));
 
     if (data.paywall) {
-        throw new Error(`${chapter.Title} is paywalled. Please login.`);
+        throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
     }
 
     if (data.chapter.chapter_type.toLowerCase() === 'novel') {
-        return [new Page(this, chapter, new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI), { type: data.chapter_type })];
+        throw new Exception(R.Plugin_HeanCMS_ErrorNovelsNotSupported);
     }
 
-    const listImages = data.data as string[] || data.chapter.chapter_data.images;
-    return listImages.map(image => new Page(this, chapter, ComputePageUrl(image, data.chapter.storage, apiUrl), { type: data.chapter.chapter_type }));
+    const listImages = data.data && Array.isArray(data.data) ? data.data as string[] : data.chapter.chapter_data.images;
+    return listImages.map(image => new Page<PageType>(this, chapter, ComputePageUrl(image, data.chapter.storage, apiUrl), { type: data.chapter.chapter_type }));
 }
 
 /**
@@ -279,7 +255,7 @@ export function PagesSinglePageAJAX(apiUrl: string) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page<PageType>[]> {
                 return FetchPagesSinglePageAJAX.call(this, chapter, apiUrl);
             }
         };
@@ -298,16 +274,11 @@ export function PagesSinglePageAJAX(apiUrl: string) {
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  * @param deProxifyLink - Remove common image proxies (default false)
- * @param novelScript  - a custom script to get and transform the novel text into a dataURL
  */
-export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, deProxifyLink = true, novelScript = DefaultNovelScript): Promise<Blob> {
-    if (page.Parameters?.type as string === 'Comic') {
+export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, deProxifyLink = true): Promise<Blob> {
+    if (page.Parameters?.type === 'Comic') {
         return Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType, deProxifyLink);
-    } else {
-        //TODO: test if user want to export the NOVEL as HTML?
-        const data = await FetchWindowScript<string>(new Request(page.Link), novelScript, 1000, 10000);
-        return Common.FetchImageAjax.call(this, new Page(this, page.Parent as Chapter, new URL(data)), priority, signal, false, false);
-    }
+    } else throw new Exception(R.Plugin_HeanCMS_ErrorNovelsNotSupported);
 }
 
 /**
@@ -315,12 +286,12 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  * @param deProxifyLink - Remove common image proxies (default false)
  */
-export function ImageAjax(detectMimeType = false, deProxifyLink = true, novelScript: string = DefaultNovelScript) {
+export function ImageAjax(detectMimeType = false, deProxifyLink = true) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImageAjax.call(this, page, priority, signal, detectMimeType, deProxifyLink, novelScript);
+                return FetchImageAjax.call(this, page, priority, signal, detectMimeType, deProxifyLink);
             }
         };
     };

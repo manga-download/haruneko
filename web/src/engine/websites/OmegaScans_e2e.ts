@@ -24,27 +24,3 @@ const ComicConfig = {
 
 const ComicFixture = new TestFixture(ComicConfig);
 describe(ComicFixture.Name, async () => (await ComicFixture.Connect()).AssertWebsite());
-
-const NovelConfig = {
-    plugin: {
-        id: 'omegascans',
-        title: 'OmegaScans'
-    },
-    container: {
-        url: 'https://omegascans.org/series/the-scion-of-the-labyrinth-city',
-        id: JSON.stringify({ id: '186', slug: 'the-scion-of-the-labyrinth-city' }),
-        title: 'The Scion of the Labyrinth City'
-    },
-    child: {
-        id: JSON.stringify({ id: '3226', slug: 'chapter-28' }),
-        title: 'Chapter 28'
-    },
-    entry: {
-        index: 0,
-        size: 892_312,
-        type: 'image/png'
-    }
-};
-
-const NovelFixture = new TestFixture(NovelConfig);
-describe(NovelFixture.Name, async () => (await NovelFixture.Connect()).AssertWebsite());
