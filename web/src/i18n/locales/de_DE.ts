@@ -288,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: "Globalen Server verwenden",
   Plugin_CopyManga_Settings_GlobalCDNInfo: "Für die Anfragen wird der globale Server anstelle des regionalen Servers verwendet",
+  Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
   Plugin_PocketComics_LanguageMismatchError: "Für die Sprache {1} wurden der Titel {0} nicht gefunden",
   Plugin_SheepScanlations_Settings_Username: "Benutzername",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Benutzername für die automatische Anmeldung bei der Webseite",

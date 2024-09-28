@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'nvmanga',
-        title: 'NvManga'
+        id: 'boomtoon',
+        title: 'Boomtoon'
     },
     container: {
-        url: 'https://nvmanga.com/webtoon/real-world-mobile/',
-        id: JSON.stringify({ post: '14569', slug: '/webtoon/real-world-mobile/' }),
-        title: 'Real World Mobile'
+        url: 'https://www.boomtoon.com/detail/stupid_cupid',
+        id: 'stupid_cupid',
+        title: 'รุ่นพี่จอมบื้อกับรุ่นน้องตัวแสบ'
     },
     child: {
-        id: '/webtoon/real-world-mobile/chapter-54/',
-        title: 'Chapter 54'
+        id: 'f1',
+        title: 'Preview'
     },
     entry: {
         index: 0,
-        size: 53_614,
+        size: 136_802,
         type: 'image/webp'
     }
 };

@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaTale.webp';
+import icon from './Ikiru.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -8,14 +8,15 @@ import * as Common from './decorators/Common';
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
-@Common.ImageAjax()
+@Common.ImageElement()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangatale', 'Manga Tale', 'https://mangatale.id', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('ikiru', 'Ikiru', 'https://ikiru.me', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
+
 }

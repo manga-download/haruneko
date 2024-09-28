@@ -3,21 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'shojoscans',
-        title: 'Shojo Scans',
+        id: 'ikiru',
+        title: 'Ikiru'
     },
     container: {
-        url: 'https://shojoscans.com/comics/couple-how-far-you-can-go/',
-        id: '/comics/couple-how-far-you-can-go/',
-        title: 'Couple, How Far You Can Go?'
+        url: 'https://ikiru.me/manga/martial-peak/',
+        id: '/manga/martial-peak/',
+        title: 'Martial Peak'
     },
     child: {
-        id: '/couple-how-far-you-can-go-chapter-10/',
-        title: 'Chapter 10'
+        id: '/martial-peak-chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 2,
-        size: 606_244,
+        index: 0,
+        size: 124_648,
         type: 'image/jpeg'
     }
 };

@@ -3,21 +3,21 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
-        id: 'franxxmangas',
-        title: 'Franxx Mangas'
+        id: 'coolmicfr',
+        title: 'CoolMic (French)'
     },
     container: {
-        url: 'https://franxxmangas.net/manga/kuro-no-shoukanshi/',
-        id: '/manga/kuro-no-shoukanshi/',
-        title: 'Kuro no Shoukanshi'
+        url: 'https://fr.coolmic.me/titles/593',
+        id: '/titles/593',
+        title: `Les Secrets d'une star`
     },
     child: {
-        id: '/kuro-no-shoukanshi-capitulo-01/',
-        title: 'Capítulo 01'
+        id: '12369',
+        title: '01'
     },
     entry: {
-        index: 3,
-        size: 199_179,
+        index: 0,
+        size: 274_377,
         type: 'image/jpeg'
     }
 };

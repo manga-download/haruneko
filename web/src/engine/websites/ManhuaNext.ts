@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './BestManga.webp';
+import icon from './ManhuaNext.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.summary-content span[property="name"]')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Common.PagesSinglePageJS(`chapter_preloaded_images`, 2500)
+@Madara.ChaptersSinglePageAJAXv2()
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('bestmanga', 'Best Manga', 'https://bestmanga.club', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Russian, Tags.Source.Aggregator);
+        super('manhuanext', 'ManhuaNext', 'https://manhuanext.com', Tags.Media.Manhua, Tags.Source.Aggregator, Tags.Language.English);
     }
 
     public override get Icon() {
