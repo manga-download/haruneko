@@ -342,7 +342,6 @@
     #MediaList {
         grid-area: MediaList;
         background-color: var(--cds-field-01);
-        box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
         overflow: hidden;
         user-select: none;
         overflow: auto;
