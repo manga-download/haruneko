@@ -33,7 +33,6 @@ type APIChapters = {
 
 @Common.PagesSinglePageCSS('article.viewer__body img.content__img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://story-api.tapas.io/cosmos/api/v1/landing/';

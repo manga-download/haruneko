@@ -7,17 +7,17 @@ const config = {
         title: 'Nox Scans'
     },
     container: {
-        url: 'https://noxscans.com/manga/nano-machine/',
-        id: '/manga/nano-machine/',
-        title: 'Nano Machine'
+        url: 'https://www.noxscans.com/manga/dukun-suikastci-oglu/',
+        id: '/manga/dukun-suikastci-oglu/',
+        title: 'Dükün Suikastçı Oğlu'
     },
     child: {
-        id: '/nano-machine-bolum-222/',
-        title: 'Bölüm 222'
+        id: '/dukun-suikastci-oglu-bolum-40/',
+        title: 'Bölüm 40'
     },
     entry: {
-        index: 0,
-        size: 133_188,
+        index: 1,
+        size: 381_002,
         type: 'image/webp'
     }
 };
