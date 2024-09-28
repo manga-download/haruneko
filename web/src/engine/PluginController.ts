@@ -17,11 +17,11 @@ export class PluginController {
         this._websites = Object.values(websites).map((website: new() => unknown) => (new website() as MediaScraper<MediaContainer<MediaContainer<MediaChild>>>).CreatePlugin(storageController, settingsManager));
     }
 
-    public get WebsitePlugins(): MediaContainer<MediaContainer<MediaChild>>[] {
+    public get WebsitePlugins(): ReadonlyArray<MediaContainer<MediaContainer<MediaChild>>> {
         return this._websites;
     }
 
-    public get InfoTrackers(): MediaInfoTracker[] {
+    public get InfoTrackers(): ReadonlyArray<MediaInfoTracker> {
         return this._trackers;
     }
 }

@@ -7,18 +7,18 @@ const config = {
         title: 'HentaiRead'
     },
     container: {
-        url: 'https://hentairead.com/hentai/meccha-kimochi-yokattassho/',
-        id: '/hentai/meccha-kimochi-yokattassho/',
-        title: 'Meccha Kimochi Yokattassho?'
+        url: 'https://hentairead.com/hentai/maryoku-fusoku-de-gomen/',
+        id: '/hentai/maryoku-fusoku-de-gomen/',
+        title: 'Maryoku Fusoku de Gomen!'
     },
     child: {
-        id: '/hentai/meccha-kimochi-yokattassho/english/p/1/',
-        title: 'Meccha Kimochi Yokattassho?'
+        id: '/hentai/maryoku-fusoku-de-gomen/english/p/1/',
+        title: 'Maryoku Fusoku de Gomen!'
     },
     entry: {
         index: 0,
-        size: 102_024,
-        type: 'image/webp'
+        size: 546_393,
+        type: 'image/jpeg'
     }
 };
 
