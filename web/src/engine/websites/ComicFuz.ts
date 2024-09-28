@@ -137,12 +137,12 @@ export default class extends DecoratableMangaScraper {
         }
         return data.pages
             .filter(page => page.image?.imageUrl && page.image.isExtraPage != true)
-            .map(page => new Page(this, chapter, new URL(page.image.imageUrl, this.imgUrl), { ...page.image }));
+            .map(page => new Page<ApiImage>(this, chapter, new URL(page.image.imageUrl, this.imgUrl), { ...page.image }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<ApiImage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        const payload = page.Parameters as ApiImage;
+        const payload = page.Parameters;
         if (!payload.encryptionKey) return data;
         const encrypted = await data.arrayBuffer();
         const decrypted = await this.DecryptPicture(new Uint8Array(encrypted), payload);

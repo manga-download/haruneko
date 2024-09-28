@@ -7,18 +7,18 @@ const config = {
         title: 'Lua Scans'
     },
     container: {
-        url: 'https://ponvi.online/manga/lady-baby/',
-        id: '/manga/lady-baby/',
-        title: 'Lady Baby'
+        url: 'https://luacomic.net/series/18012433589/',
+        id: '/series/18012433589/',
+        title: 'The Archvillain’s Daughter in Law'
     },
     child: {
-        id: '/lady-baby-chapter-213/',
-        title: 'Chapter 213'
+        id: '/chapter/18012433589-8305e0d65cf/',
+        title: 'Chapter 93'
     },
     entry: {
         index: 0,
-        size: 449_192,
-        type: 'image/webp'
+        size: 749_437,
+        type: 'image/jpeg'
     }
 };
 

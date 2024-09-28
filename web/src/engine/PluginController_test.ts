@@ -93,6 +93,12 @@ describe('PluginController', () => {
                     expect.soft(actual.language).not.toHaveLength(0);
                 }
             });
+
+            it('Should have unique tags', async () => {
+                const tags = plugin.Tags.Value.map(tag => `${tag.Category}/${tag.Title}`);
+                const unique = [ ...new Set(tags).values() ];
+                expect(tags).toStrictEqual(unique);
+            });
         });
     });
 
