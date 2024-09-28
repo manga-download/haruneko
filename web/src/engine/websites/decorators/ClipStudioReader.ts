@@ -105,7 +105,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
         url.searchParams.set('vm', '4');
         url.searchParams.set('file', pagename);
         url.searchParams.set('param', authkey);
-        pages.push(new Page(this, chapter, new URL(url), { ...pagedata }));
+        pages.push(new Page<PageData>(this, chapter, new URL(url), { ...pagedata }));
     }
 
     return pages;
@@ -136,11 +136,11 @@ export function PagesSinglePageAJAX() {
  * @param priority - The importance level for ordering the request for the image data within the internal task pool
  * @param signal - An abort signal that can be used to cancel the request for the image data
  */
-export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+export async function FetchImageAjax(this: MangaScraper, page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         try {
 
-            const pageData = page.Parameters as PageData;
+            const pageData = page.Parameters;
 
             //fetch Page XML
             const XML = await FetchXML(new Request(page.Link));
@@ -223,7 +223,7 @@ export function ImageAjax() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+            public async FetchImage(this: MangaScraper, page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImageAjax.call(this, page, priority, signal);
             }
         };
