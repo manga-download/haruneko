@@ -35,12 +35,11 @@ function LoginScript(username: string, password: string): string {
         });
     `;
 }
+enum ChapterAccess { MUST_LOGIN = -1, NOT_PURCHASED = 0, PURCHASED = 1 }
 
 const ChapterAccessScript = `
-    new Promise ( resolve => resolve(!window.__LZ_DATA__ ? -1 : __LZ_DATA__.purchased?.includes(__LZ_DATA__.episode.id) ? 1: 0))
+    new Promise ( resolve => resolve(!window.__LZ_DATA__ ? ${ChapterAccess.MUST_LOGIN} : __LZ_DATA__.purchased?.includes(__LZ_DATA__.episode.id) ? ${ChapterAccess.PURCHASED}: ${ChapterAccess.NOT_PURCHASED}))
 `;
-
-enum ChapterAccess { MUST_LOGIN = -1, NOT_PURCHASED = 0, PURCHASED = 1}
 
 type LZConfig = {
     contentsCdnUrl: string
@@ -181,7 +180,7 @@ export default class extends DecoratableMangaScraper {
         return { mangas, hasNext };
     }
 
-    public async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public async FetchPages(chapter: Chapter): Promise<Page<EpisodeParameters>[]> {
         await this.InitializeAccount();
 
         const chapterAccessRequest = this.CreateRequest(new URL(chapter.Identifier, this.URI));
@@ -215,11 +214,11 @@ export default class extends DecoratableMangaScraper {
 
         const extension = this.Settings.forceJPEG.Value ? '.jpg' : '.webp';
         const pages = content.data.extra.episode.pagesInfo ?? content.data.extra.episode.scrollsInfo;
-        return pages.map(page => new Page(this, chapter, new URL('/v2' + page.path + extension, this.cdnURI), parameters));
+        return pages.map(page => new Page<EpisodeParameters>(this, chapter, new URL('/v2' + page.path + extension, this.cdnURI), parameters));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const parameters = page.Parameters as EpisodeParameters;
+    public override async FetchImage(page: Page<EpisodeParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const parameters = page.Parameters;
         const purchasedParam = (parameters.subscribed || parameters.purchased).toString();
 
         const tokenURI = new URL('cloudfront/signed-url/generate', this.apiUrl);
