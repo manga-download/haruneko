@@ -7,13 +7,13 @@ const config = {
         title: 'Vortex Scans'
     },
     container: {
-        url: 'https://vortexscans.org/series/regenerate-top-players',
-        id: JSON.stringify({ id: '8', slug: 'regenerate-top-players'}),
+        url: 'https://vortextoon.com/series/regenerate-top-players-0806rqqc',
+        id: JSON.stringify({ slug: 'regenerate-top-players-0806rqqc', id: '8'}),
         title: 'Regenerate Top Players'
     },
     child: {
-        id: '/series/regenerate-top-players/chapter-5',
-        title: '5 Crushing Desperation'
+        id: '/series/regenerate-top-players-0806rqqc/chapter-5-6tp05ofz',
+        title: '5 : Crushing Desperation'
     },
     entry: {
         index: 0,

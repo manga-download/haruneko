@@ -4,15 +4,24 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import { type Priority } from './../taskpool/TaskPool';
+import DeScramble from '../transformers/ImageDescrambler';
 
-type ImgObj = {
-    img: string[],
-    b: {
-        Enc: {
-            key: string,
-            iv: string
-        }
-    }
+type ImagePath = {
+    img: string,
+    scrambleData: ScrambleData
+}
+
+type ScrambleData = {
+    h: number,
+    w: number,
+    crops: {
+        h: number,
+        w: number,
+        x: number,
+        x2: number,
+        y: number,
+        y2: number
+    }[]
 }
 
 @Common.MangaCSS(/^{origin}\/series\/detail\/\d+$/, 'li.title')
@@ -36,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL(`/title/addpage_renewal?query=&page=${page}`, this.URI).href, {
+        const request = new Request(new URL(`/title/addpage_renewal?query=&page=${page}`, this.URI), {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -47,7 +56,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier, this.URI).href);
+        const request = new Request(new URL(manga.Identifier, this.URI));
         const data = await FetchCSS(request, 'body');
         if(data[0].querySelector('li.item')) {
             return [ ...data[0].querySelectorAll('li.item') ]
@@ -59,39 +68,31 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const script = `
-            new Promise(async (resolve,reject) => {
-                let g = JCOMI.namespace("JCOMI.document")
-                let b = g.getDoc()
-                let img = g.getImages().map(ele => g.getLocationDir('enc') + ele.file + "?vw=" + encodeURIComponent(JCOMI.namespace("JCOMI.config").getVersion()))
-                resolve({img:img,b:b});
+            new Promise(resolve => {
+                const jNamespace = JCOMI.namespace("JCOMI.document");
+                const jDocument = jNamespace.getDoc();
+                const enc = jDocument.Location.enc ? 'enc' : 'anne';
+                const imgs = jNamespace.getOrders().map(ele => {
+                    const img = jNamespace.getLocationDirAnne(enc) + ele.name + "?" + jDocument.verkey;
+                    return { img, scrambleData : ele.scramble };
+                });
+                resolve(imgs);
             });
         `;
-        const request = new Request(new URL(chapter.Identifier, this.URI).href);
-        const data = await FetchWindowScript<ImgObj>(request, script);
-        return data.img.map(ele => new Page(this, chapter, new URL(ele), data.b.Enc));
+        const request = new Request(new URL(chapter.Identifier, this.URI));
+        const data = await FetchWindowScript<ImagePath[]>(request, script, 2500);
+        return data.map(image => new Page<ScrambleData>(this, chapter, new URL(image.img, this.URI), image.scrambleData));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const encrypted = await new Response(data).arrayBuffer();
-        const iv = Buffer.from(window.btoa(page.Parameters.iv as string), 'base64');
-        const key = Buffer.from(page.Parameters.key as string, 'utf-8');
-
-        const secretKey = await crypto.subtle.importKey(
-            'raw',
-            key,
-            {
-                name: 'AES-CBC',
-                length: 128
-            }, true, ['encrypt', 'decrypt']);
-
-        let decrypted = await crypto.subtle.decrypt({
-            name: 'AES-CBC',
-            iv: iv,
-        }, secretKey, encrypted,);
-
-        const sdecrypted = new TextDecoder('utf-8').decode(decrypted);
-        decrypted = Uint8Array.from(window.atob(sdecrypted), char => char.charCodeAt(0));
-        return await Common.GetTypedData(decrypted);
+    public override async FetchImage(page: Page<ScrambleData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        const scrambleData = page.Parameters;
+        return DeScramble(blob, async (image, ctx) => {
+            ctx.canvas.width = scrambleData.w;
+            ctx.canvas.height = scrambleData.h;
+            for (let crop of scrambleData.crops) {
+                ctx.drawImage(image, crop.x2, crop.y2, crop.w, crop.h, crop.x, crop.y, crop.w, crop.h);
+            }
+        });
     }
 }

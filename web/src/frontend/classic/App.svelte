@@ -105,6 +105,7 @@
     }
     #Bottom {
         grid-area: Bottom;
+        margin-bottom:1em;
     }
     :global(#Header) {
         -webkit-app-region: drag;
