@@ -17,7 +17,7 @@ const config: Config = {
     },
     entry: {
         index: 1,
-        size: 1_011_930,
+        size: 697_616,
         type: 'image/webp'
     }
 };

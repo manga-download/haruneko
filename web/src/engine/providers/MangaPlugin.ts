@@ -182,18 +182,17 @@ export class Chapter extends StoreableMediaContainer<Page> {
     }
 }
 
-type Parameters = JSONObject & {
+type Parameters = {
     readonly Referer?: string;
-    //readonly [member: string]: JSONElement | ArrayBuffer;
 }
 
-export class Page extends MediaItem {
+export class Page<T extends JSONObject = JSONObject> extends MediaItem {
 
     public constructor(
         private readonly scraper: MangaScraper,
         parent: Chapter,
         public readonly Link: URL,
-        public readonly Parameters?: Parameters) {
+        public readonly Parameters?: T & Parameters) {
         super(parent);
     }
 

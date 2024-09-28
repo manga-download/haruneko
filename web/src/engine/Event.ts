@@ -1,5 +1,7 @@
+export type { Observable } from './Observable';
+
 /**
- * @deprecated Use {@link import('./Observable').Observable} instead.
+ * @deprecated Use {@link Observable} instead.
  */
 export class Event<TSender, TArgs> {
 
