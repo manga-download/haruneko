@@ -6,6 +6,10 @@ import { Page, type Chapter, type MangaScraper } from '../../providers/MangaPlug
 import * as Common from './Common';
 import type { Priority } from '../../taskpool/DeferredTask';
 
+type PageKey = {
+    key: string;
+}
+
 export function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname;
     const title = anchor.querySelector('div.info__capitulo__obras span.numero__capitulo').textContent.trim();
@@ -17,9 +21,7 @@ export const mangaPath = '/todas-as-obras/';
 export const queryMangas = 'div.comics__all__box a.titulo__comic__allcomics';
 export const queryChapters = 'ul.capitulos__lista a.link__capitulos';
 
-const pagescript = `
-    new Promise( resolve => resolve ( urls ?? [...document.querySelectorAll('div#imageContainer img')].map(image=> new URL(image.src, window.location.origin).href)));
-`;
+const pagescript = `urls ?? [...document.querySelectorAll('div#imageContainer img')].map(image=> new URL(image.src, window.location.origin).href);`;
 
 const BypassAntiAdBlockScript = `
     fetch = new Proxy(fetch, {
@@ -59,9 +61,9 @@ async function FetchPagesPagesFromZips(this: MangaScraper, chapter: Chapter, scr
             const response = await Fetch(request);
             const zipfile = await JSZip.loadAsync(await response.arrayBuffer());
             const fileNames = Object.keys(zipfile.files)
-                .sort((a, b) => extractNumber(a) - extractNumber(b))
+                .sort((a, b) => ExtractNumber(a) - ExtractNumber(b))
                 .filter(key => [/jpe?g$/i, /png$/i, /webp$/i, /avif$/i].some(pattern => pattern.test(key)))
-                .map(key => new Page(this, chapter, new URL(zipurl, this.URI), { key }));
+                .map(key => new Page<PageKey>(this, chapter, new URL(zipurl, this.URI), { key }));
             pages.push(...fileNames);
         }
         return pages;
@@ -71,7 +73,7 @@ async function FetchPagesPagesFromZips(this: MangaScraper, chapter: Chapter, scr
     }
 }
 
-function extractNumber(fileName): number {
+function ExtractNumber(fileName): number {
     return parseInt(fileName.split(".")[0]);
 }
 
@@ -105,12 +107,12 @@ export function PagesFromZips(script: string = pagescript, preScript: string = B
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+async function FetchImage(this: MangaScraper, page: Page<PageKey>, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
 
     return !page.Link.href.endsWith('.zip') ? await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType) : this.imageTaskPool.Add(async () => {
         const response = await Fetch(new Request(page.Link, { cache: 'force-cache', headers: { Referer: this.URI.href } }));
         const zip = await JSZip.loadAsync(await response.arrayBuffer());
-        return Common.GetTypedData(await zip.files[page.Parameters['key'] as string].async('arraybuffer'));
+        return Common.GetTypedData(await zip.files[page.Parameters.key].async('arraybuffer'));
     }, priority, signal);
 
 }
@@ -123,7 +125,7 @@ export function ImageFromZip(detectMimeType: boolean = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+            public async FetchImage(this: MangaScraper, page: Page<PageKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImage.call(this, page, priority, signal, detectMimeType);
             }
         };
