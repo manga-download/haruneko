@@ -34,6 +34,10 @@ type APIPage = {
     scramble: string
 }
 
+type ScrambleData = {
+    scramble: string
+}
+
 export function MangaExtractor(element: HTMLAnchorElement) {
     const titleElement = element.querySelector<HTMLElement>(queryMangaTitle);
     return {
@@ -103,7 +107,7 @@ export function ChaptersSinglePageCSS(query: string = queryChapter, extract = Ch
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  */
-export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): Promise<Page<ScrambleData>[]> {
     const request = new Request(new URL(chapter.Identifier, this.URI), {
         headers: {
             Referer: this.URI.origin
@@ -113,7 +117,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     if (!viewer) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
     const coord = await FetchCoordInfo.call(this, viewer, chapter);
-    return coord.result.map(image => new Page(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.origin }));
+    return coord.result.map(image => new Page<ScrambleData>(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.origin }));
 }
 
 /**
@@ -163,11 +167,11 @@ function CreateRequest(this: MangaScraper, pageTo: string, viewerId: string, use
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+async function FetchImage(this: MangaScraper, page: Page<ScrambleData>, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     const data = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
     return !page.Parameters?.scramble ? data : DeScramble(data, async (image, ctx) => {
 
-        const decodedArray = DecodeScrambleArray(page.Parameters.scramble as string);
+        const decodedArray = DecodeScrambleArray(page.Parameters.scramble);
         const tileWidth = Math.floor(image.width / 4);
         const tileHeight = Math.floor(image.height / 4);
         for (let k = 0, i = 0; i < 4; i++) {
@@ -189,7 +193,7 @@ export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+            public async FetchImage(this: MangaScraper, page: Page<ScrambleData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImage.call(this, page, priority, signal, detectMimeType);
             }
         };
