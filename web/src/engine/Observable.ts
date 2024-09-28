@@ -26,7 +26,7 @@ export class Observable<TValue, TOwner = null> implements IObservable<TValue, TO
 
     /**
      * Update the current value of the observer and notify all subscribers in case the new value differs from the previous value.
-     * @description
+     * @remarks
      * Subscribers will only be notified for assignments of the value itself.
      * Mutations within the value (e.g., object or array content) are not detected.
      */
@@ -68,7 +68,8 @@ export class Observable<TValue, TOwner = null> implements IObservable<TValue, TO
 export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[], TOwner> {
 
     /**
-     * {@inheritDoc {@link Array.pop}}
+     * {@inheritDoc Array.pop}
+     * @see {@link  Array.pop}
      */
     public Pop(): TEntry | undefined {
         try {
@@ -79,7 +80,8 @@ export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[],
     }
 
     /**
-     * {@inheritDoc {@link Array.push}}
+     * {@inheritDoc Array.push}
+     * @see {@link  Array.push}
      */
     public Push(...items: TEntry[]): number {
         try {
@@ -90,7 +92,8 @@ export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[],
     }
 
     /**
-     * {@inheritDoc {@link Array.shift}}
+     * {@inheritDoc Array.shift}
+     * @see {@link  Array.shift}
      */
     public Shift(): TEntry {
         try {
@@ -101,7 +104,8 @@ export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[],
     }
 
     /**
-     * {@inheritDoc {@link Array.unshift}}
+     * {@inheritDoc Array.unshift}
+     * @see {@link  Array.unshift}
      */
     public Unshift(...items: TEntry[]) {
         try {
@@ -112,7 +116,8 @@ export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[],
     }
 
     /**
-     * {@inheritDoc {@link Array.splice}}
+     * {@inheritDoc Array.splice}
+     * @see {@link  Array.splice}
      */
     public Splice(start: number, deleteCount: number, ...items: TEntry[]): TEntry[] {
         try {
@@ -123,7 +128,8 @@ export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[],
     }
 
     /**
-     * {@inheritDoc {@link Array.sort}}
+     * {@inheritDoc Array.sort}
+     * @see {@link  Array.sort}
      */
     public Sort(compareFn?: (a: TEntry, b: TEntry) => number): TEntry[] {
         try {
@@ -137,21 +143,24 @@ export class ObservableArray<TEntry, TOwner = null> extends Observable<TEntry[],
 export class ObservableMap<TKey, TValue, TOwner = null> extends Observable<Map<TKey, TValue>, TOwner> {
 
     /**
-     * {@inheritDoc {@link Map.size}}
+     * {@inheritDoc Map.size}
+     * @see {@link  Map.size}
      */
     public get Size(): number {
         return this.Value.size;
     }
 
     /**
-     * {@inheritDoc {@link Map.has}}
+     * {@inheritDoc Map.has}
+     * @see {@link  Map.has}
      */
     public Has(key: TKey): boolean {
         return this.Value.has(key);
     }
 
     /**
-     * {@inheritDoc {@link Map.get}}
+     * {@inheritDoc Map.get}
+     * @see {@link  Map.get}
      */
     public Get(key: TKey): TValue | undefined {
         try {
@@ -162,7 +171,8 @@ export class ObservableMap<TKey, TValue, TOwner = null> extends Observable<Map<T
     }
 
     /**
-     * {@inheritDoc {@link Map.set}}
+     * {@inheritDoc Map.set}
+     * @see {@link  Map.set}
      */
     public Set(key: TKey, value: TValue): void {
         try {
@@ -173,7 +183,8 @@ export class ObservableMap<TKey, TValue, TOwner = null> extends Observable<Map<T
     }
 
     /**
-     * {@inheritDoc {@link Map.delete}}
+     * {@inheritDoc Map.delete}
+     * @see {@link  Map.delete}
      */
     public Delete(key: TKey): boolean {
         try {
@@ -184,7 +195,8 @@ export class ObservableMap<TKey, TValue, TOwner = null> extends Observable<Map<T
     }
 
     /**
-     * {@inheritDoc {@link Map.forEach}}
+     * {@inheritDoc Map.forEach}
+     * @see {@link  Map.forEach}
      */
     public ForEach(callbackfn: (value: TValue, key: TKey, map: Map<TKey, TValue>) => void): void {
         return this.Value.forEach(callbackfn);
