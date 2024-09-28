@@ -200,6 +200,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_CloudFlareError: 'The request failed due to the following CloudFlare Error: "{0}"',
   FetchProvider_FetchWindow_AlertCaptcha: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
   FetchProvider_Fetch_CloudFlareChallenge: 'The request to "{0}" was rejected by CloudFlare Anti-Bot detection.\nMake sure to bypass CloudFlare before accessing the content of this website (e.g., with the HakuNeko Assistant browser extension).',
+  FetchProvider_Fetch_VercelChallenge: 'The request to "{0}" was rejected by Vercel Attack Challenge Mode.\nMake sure to bypass Vercel before accessing the content of this website.',
   FetchProvider_Fetch_Forbidden: 'The access to "{0}" was denied.\nMake sure the website is available and accessible (e.g., VPN to bypass region lock, manual login via website link).',
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
@@ -287,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
   Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
+  Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
   Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
   Plugin_SheepScanlations_Settings_Username: 'Username',
   Plugin_SheepScanlations_Settings_UsernameInfo: 'Username for automatic account login to Sheep-Scanlations 😉',

@@ -7,7 +7,7 @@ const config = {
         title: 'MangAs'
     },
     container: {
-        url: 'https://mangas.in/manga/one-piece',
+        url: 'https://m440.in/manga/one-piece',
         id: '/manga/one-piece',
         title: 'One Piece'
     },
