@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './TsukiMangas.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type APIResult<T> = {
@@ -23,12 +23,14 @@ type APIChapter = {
     }[]
 }
 
+type PageParameters = {
+    mirrors: string[],
+};
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = `${this.URI.origin}/api/v3/`;
-    private readonly mangaRegexp = new RegExp(`^${this.URI.origin}/obra/(\\d+)/[^/]+$`);
-
     public constructor() {
         super('tsukimangas', 'Tsuki-Mangas', 'https://tsuki-mangas.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Aggregator);
     }
@@ -38,13 +40,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url);
+        return new RegExp(`^${this.URI.origin}/obra/(\\d+)/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaId = url.match(this.mangaRegexp)[1];
+        const mangaId = url.split('/').at(-2);
         const { title } = await FetchJSON<APIManga>(this.CreateRequest(new URL(`mangas/${mangaId}`, this.apiUrl)));
-        return new Manga(this, provider, mangaId, title.trim());
+        return new Manga(this, provider, mangaId, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -61,7 +63,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const { data } = await FetchJSON<APIResult<APIManga[]>>(this.CreateRequest(new URL(`home/lastests?page=${page}?format=0`, this.apiUrl)));
-        return data.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
+        return data.map(manga => new Manga(this, provider, manga.id.toString(), manga.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -81,30 +83,28 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const { pages } = await FetchJSON<APIChapter>(this.CreateRequest(new URL(`chapter/versions/${chapter.Identifier}`, this.apiUrl)));
-        return pages.map(page => {
-            const alternateUrl = new URL(page.url, 'https://cdn2.tsuki-mangas.com').href;
-            return new Page(this, chapter, new URL(`https://cdn.tsuki-mangas.com/tsuki${page.url}`), { alternateUrl });
+        return !pages ? []: pages.map(page => {
+            return new Page<PageParameters>(this, chapter, new URL(`https://cdn.tsuki-mangas.com/tsuki${page.url}`), {
+                mirrors: [
+                    new URL(page.url, 'https://cdn2.tsuki-mangas.com').href
+                ]
+            });
         });
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        try {
-            let blob: Blob = null;
-            blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-
-            if (blob.type.startsWith('image/')) {
-                return blob;
-            } else {
-                page.Link.href = page.Parameters.alternateUrl as string;
-                return Common.FetchImageAjax.call(this, page, priority, signal, true);
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        return this.imageTaskPool.Add(async () => {
+            for (const uri of [page.Link, ...page.Parameters.mirrors]) {
+                try {
+                    const request = new Request(uri, { signal: signal, headers: { Referer: this.URI.href } });
+                    const response = await Fetch(request);
+                    const blob = await response.blob();
+                    if (blob.type.startsWith('image/')) return blob;
+                } catch { }
             }
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-        } catch (error) {
-            page.Link.href = page.Parameters.alternateUrl as string;
-            return Common.FetchImageAjax.call(this, page, priority, signal, true);
-        }
+        }, priority, signal);
     }
 
     private CreateRequest(endpoint: URL): Request {
