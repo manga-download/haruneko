@@ -12,7 +12,7 @@ export class RemoteFixture extends PuppeteerFixture {
         });
     }
 
-    public async GetRemoteWebsitePlugins(): Promise<JSHandle<MediaContainer<MediaChild>[]>> {
+    public async GetRemoteWebsitePlugins(): Promise<JSHandle<ReadonlyArray<MediaContainer<MediaContainer<MediaChild>>>>> {
         return super.Page.evaluateHandle(async () => {
             return window.HakuNeko.PluginController.WebsitePlugins;
         });

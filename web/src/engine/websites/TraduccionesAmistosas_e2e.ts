@@ -7,7 +7,7 @@ const config = {
         title: 'Traducciones Amistosas'
     },
     container: {
-        url: 'https://visortraduccionesamistosas.com/l/el-retorno-del-jugador',
+        url: 'https://traduccionesamistosas.eyudud.net/l/el-retorno-del-jugador',
         id: '/l/el-retorno-del-jugador',
         title: 'El retorno del jugador'
     },
