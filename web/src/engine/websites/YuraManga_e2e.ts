@@ -7,12 +7,12 @@ const config: Config = {
         title: 'YuraManga'
     },
     container: {
-        url: 'https://yuramanga.my.id/manga/district-12/',
+        url: 'https://www.yuramanga.my.id/2023/08/district-12.html',
         id: JSON.stringify({ post: '2130', slug: '/manga/district-12/' }),
         title: 'District 12'
     },
     child: {
-        id: '/manga/district-12/chapter-6/',
+        id: '/2023/08/district-12-chapter-6.html',
         title: 'Chapter 6'
     },
     entry: {
