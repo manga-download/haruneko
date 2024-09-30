@@ -459,7 +459,6 @@ export { default as MiniTwoScan } from './MiniTwoScan';
 export { default as mkzhan } from './mkzhan';
 export { default as MMFenix } from './MMFenix';
 export { default as ModeScanlator } from './ModeScanlator';
-export { default as MomoNoHanaScan } from './MomoNoHanaScan';
 export { default as MonochromeScans } from './MonochromeScans';
 export { default as MonoManga } from './MonoManga';
 export { default as MonzeeKomik } from './MonzeeKomik';
