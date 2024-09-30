@@ -270,7 +270,6 @@ export { default as LowerWorld } from './LowerWorld';
 export { default as LuaScans } from './LuaScans';
 export { default as LumosKomik } from './LumosKomik';
 export { default as LunarScans } from './LunarScans';
-export { default as LunarScansFR } from './LunarScansFR';
 export { default as LunaScans } from './LunaScans';
 export { default as LupiTeam } from './LupiTeam';
 export { default as Luscious } from './Luscious';
