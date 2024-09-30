@@ -1,7 +1,7 @@
 import { AnnotationCategoryResourceKey as AC, AnnotationResourceKey as A } from '../i18n/ILocale';
 import { /*Store,*/ type StorageController } from './StorageController';
 import { Tag } from './Tags';
-import type { IMediaContainer } from './providers/MediaPlugin';
+import type { MediaChecksum, MediaContainer } from './providers/MediaPlugin';
 
 type EntrySerialized = {
     I: number; // Hash of the MediaContainer.Identifier
@@ -27,7 +27,11 @@ myMedia.Annotations.filter(a => a.Key === GlobalAnnotationKeys.Bookmark)
 
 export class Annotation<K, V extends JSONElement> {
 
-    constructor(private readonly key: K | GlobalAnnotationKeys, private readonly value: V, private readonly unique: boolean = true) {}
+    constructor(private readonly foo: MediaChecksum, private readonly key: K | GlobalAnnotationKeys, private readonly value: V, private readonly unique: boolean = true) {}
+
+    public get Checksum(): MediaChecksum {
+        return null;
+    }
 
     public get Value(): V {
         return this.value;
@@ -74,10 +78,6 @@ export class AnnotationManager {
         for(key in A) {
             this.annotationHashes.set(this.Hash(key), key as A);
         }
-    }
-
-    private Hash(text: string): number {
-        return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0);
     }
 
     private SerializeTag(tag: Tag): TagSerialized {

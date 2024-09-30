@@ -64,6 +64,12 @@ export abstract class MediaContainer<T extends MediaChild> {
         return this.tags;
     }
 
+    // Annotations.Add(key)
+    // Annotations.Get(key)
+    // Annotations.Remove(key)
+    // Annotations.Entries
+    // Annotations.Entries.Subscribe()
+
     public get Entries(): IObservable<ReadonlyArray<T>, MediaContainer<T>> {
         return this.entries;
     }

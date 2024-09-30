@@ -1,28 +1,27 @@
 import { TagCategoryResourceKey as TC, TagResourceKey as T } from '../i18n/ILocale';
-import type { AnnotationCategoryResourceKey as AC, AnnotationResourceKey as A } from '../i18n/ILocale';
 
 export class Tag extends Object {
 
-    public readonly categoryKey: TC | AC;
-    public readonly titleKey: T | A;
-    public readonly descriptionKey: T | A;
+    public readonly categoryKey: TC;
+    public readonly titleKey: T;
+    public readonly descriptionKey: T;
 
-    public constructor(categoryKey: TC | AC, titleKey: T | A, descriptionKey: T | A = null) {
+    public constructor(categoryKey: TC, titleKey: T, descriptionKey: T = null) {
         super();
         this.categoryKey = categoryKey;
         this.titleKey = titleKey;
         this.descriptionKey = descriptionKey;
     }
 
-    public get Category(): TC | AC {
+    public get Category(): TC {
         return this.categoryKey;
     }
 
-    public get Title(): T | A {
+    public get Title(): T {
         return this.titleKey;
     }
 
-    public get Description(): T | A {
+    public get Description(): T {
         return this.descriptionKey ? this.descriptionKey : this.Title;
     }
 }
