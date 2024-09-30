@@ -35,7 +35,6 @@ const pageScript = `[...document.querySelectorAll('section img[loading]')].map(i
 
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://mangagalaxy.net/api/';

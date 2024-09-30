@@ -7,7 +7,7 @@ const config = {
         title: 'MangaBTT'
     },
     container: {
-        url: 'https://manhwalampo.com/manga/sss-grade-saint-knight-67753',
+        url: 'https://manhwabtt.cc/manga/sss-grade-saint-knight-67753',
         id: '/manga/sss-grade-saint-knight-67753',
         title: 'SSS Grade Saint Knight'
     },
@@ -17,7 +17,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 828_203,
+        size: 880_764,
         type: 'image/jpeg'
     }
 };

@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/[^/]+$/, 'section > section > h1.text-center')
-@Common.PagesSinglePageCSS('main#chapter-main section img')
+@Common.PagesSinglePageCSS('main section img[alt*="Page"]:not([x-show]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
                 Referer: chapterUrl
             }
         }), 'a');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.querySelector('span.grow').textContent.trim()));
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.querySelector('span.grow span').textContent.trim()));
     }
 
 }

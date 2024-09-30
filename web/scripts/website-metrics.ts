@@ -65,8 +65,11 @@ const expectedRedirectPatterns = new Map([
     [ 'https://web.6parkbbs.com/', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
         /^https:\/\/club\.6parkbbs\.com\/index.php$/,
     ] ],
-    [ 'https://vortextoon.com/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
-        /^https:\/\/vortextoon\.com\/home$/,
+    [ 'https://vortexscans.org/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/vortexscans\.org\/home$/,
+    ] ],
+    [ 'https://flixscans.net/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/flixscans\.net\/webtoons\/romance\/home$/,
     ] ],
 ]);
 

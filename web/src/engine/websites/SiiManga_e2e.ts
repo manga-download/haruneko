@@ -7,18 +7,18 @@ const config: Config = {
         title: 'SiiManga'
     },
     container: {
-        url: 'https://siimanga.cyou/manga/overlord-of-insects/',
-        id: JSON.stringify({ post: '367', slug: '/manga/overlord-of-insects/' }),
-        title: 'Overlord of Insects'
+        url: 'https://siikomik.com/manga/i-have-90-billion-licking-gold/',
+        id: '/manga/i-have-90-billion-licking-gold/',
+        title: 'I Have 90 Billion Licking Gold'
     },
     child: {
-        id: '/manga/overlord-of-insects/chapter-1/',
-        title: 'Chapter 1'
+        id: '/i-have-90-billion-licking-gold-chapter-365/',
+        title: 'Chapter 365'
     },
     entry: {
-        index: 1,
-        size: 138_898,
-        type: 'image/webp'
+        index: 2,
+        size: 268_110,
+        type: 'image/jpeg'
     }
 };
 
