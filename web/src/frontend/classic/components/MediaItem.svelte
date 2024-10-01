@@ -32,7 +32,7 @@
     const availableLanguageTags = Tags.Language.toArray();
 
     // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
-    function extractUnicodeFlagFromTags(tags: Tag[]): string {
+    function extractUnicodeFlagFromTags(tags: ReadonlyArray<Tag>): string {
         const languageTagTitleResourceKey = tags.find((tag) =>
             availableLanguageTags.includes(tag),
         )?.Title;

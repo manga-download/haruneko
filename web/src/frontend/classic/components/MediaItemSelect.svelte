@@ -382,7 +382,6 @@
     #ItemList {
         grid-area: ItemList;
         background-color: var(--cds-field-01);
-        box-shadow: inset 0 0 0.2em 0.2em var(--cds-ui-background);
         overflow-x: hidden;
     }
     #ItemList .loading {

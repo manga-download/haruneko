@@ -35,6 +35,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'manganel', targetID: 'manganato' },
     { sourceID: 'mangaproz', targetID: 'mangapro' },
     { sourceID: 'mangaraw', targetID: 'mangageko' },
+    { sourceID: 'mangatale', targetID: 'ikiru' },
     { sourceID: 'manhuaes', targetID: 'manhuaaz' },
     { sourceID: 'manhuascan', targetID: 'kaliscan' },
     { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
@@ -46,7 +47,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'prismascans', targetID: 'demonsect' },
     { sourceID: 'realmscans', targetID: 'rizzcomics' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
-    { sourceID: 'scansmangasxyz', targetID: 'scansmangasme' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
     { sourceID: 'secretscans', targetID: 'lynxscans' },
     { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
@@ -54,6 +54,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'suryatoon', targetID: 'genztoon' },
     { sourceID: 'sushiscanfr', targetID: 'animesama' },
     { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
+    { sourceID: 'visualikigai', targetID: 'ikigaimangas' },
     { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
 ];
 

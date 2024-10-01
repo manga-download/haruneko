@@ -30,7 +30,7 @@ export enum MangaExportFormat {
      */
     EPUB = 'application/epub+zip',
     /**
-     * Save images from website in a document, non-compliant images will be converted to JPEG @ q=95%
+     * Save images from website in a document, non-compliant images will be converted to JPEG with q=95%
      */
     PDF = 'application/pdf',
 }
