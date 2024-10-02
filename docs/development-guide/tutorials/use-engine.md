@@ -26,7 +26,6 @@ Every text or error message that is going to be presented to the user should be 
 
 ...
 
-
 ```javascript
 //
 import { GetLocale } from './i18n/Localization';
