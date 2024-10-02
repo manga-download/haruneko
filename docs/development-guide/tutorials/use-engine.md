@@ -37,7 +37,6 @@ import { type ILocale, ResourceKey as R } from './i18n/ILocale';
 
 ...
 
-
 ```javascript
 //
 ```
