@@ -38,7 +38,7 @@ describe('PluginController', () => {
                 expect(icon.signature).toBe('data:image/webp;base64,');
                 expect(icon.length).toBeLessThan(4096);
             } catch(error) {
-                console.log(`Invalid icon for website <${icon.website}>:`, icon.signature, ' => ', icon.length, 'bytes');
+                console.log(`Invalid icon for website <${icon.website}>:`, icon.signature, ' => ', `${icon.length} bytes`);
                 throw error;
             }
         });
