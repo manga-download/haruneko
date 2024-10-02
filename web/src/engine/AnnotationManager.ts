@@ -1,19 +1,7 @@
-import { AnnotationCategoryResourceKey as AC, AnnotationResourceKey as A } from '../i18n/ILocale';
-import { /*Store,*/ type StorageController } from './StorageController';
-import { Tag } from './Tags';
-import type { MediaChecksum, MediaContainer } from './providers/MediaPlugin';
-
-type EntrySerialized = {
-    I: number; // Hash of the MediaContainer.Identifier
-    T: number; // Hash of the MediaContainer.Title
-    Tags: TagSerialized[]
-};
-
-type TagSerialized = {
-    C: number, // Hash of the Tag Category
-    L: number, // Hash of the Tag Label
-    D: number, // Hash of the Tag Description
-}
+//import { AnnotationCategoryResourceKey as AC, AnnotationResourceKey as A } from '../i18n/ILocale';
+//import { /*Store,*/ type StorageController } from './StorageController';
+//import { Tag } from './Tags';
+import type { MediaChecksum, MediaChild, MediaContainer } from './providers/MediaPlugin';
 
 /*
 // Use Case 01: Get annotations for specific media
@@ -40,7 +28,7 @@ export class Annotation<K, V extends JSONElement> {
 
 // ++++++++++++++++++++++++++++++++
 
-const AnnotationKeys = Record<>
+//const AnnotationKeys = Record<string, string>;
 
 export enum GlobalAnnotationKeys {
     Bookmark = 'bookmark',
@@ -50,7 +38,7 @@ const enum FrontendAnnotationKeys {
     Viewed = 'frontend-classic-viewed',
 };
 
-const dbg = new Annotation<FrontendAnnotationKeys, string>(GlobalAnnotationKeys.Bookmark, '');
+const dbg = new Annotation<FrontendAnnotationKeys, string>(null, GlobalAnnotationKeys.Bookmark, '');
 //type X = typeof BasicAnnotationKeys | typeof FrontendAnnotationKeys;
 //let dbg: X = FrontendAnnotationKeys.Meow;
 //dbg = BasicAnnotationKeys.Bookmark;
@@ -58,17 +46,33 @@ console.log(dbg.Value);
 
 // ++++++++++++++++++++++++++++++++
 
+class Annotations {
+    private readonly annotations = new Map<string, JSONObject>();
+
+    public Get<T extends JSONObject>(key: string): T {
+        return this.annotations.get(key) as T;
+    }
+
+    public Set<T extends JSONObject>(key: string, value: T): void {
+        this.annotations.set(key, value);
+    }
+}
+
 export class AnnotationManager {
 
+    private readonly annotationsByIdentifier: Map<string, Annotation<string, JSONObject>[]>;
+    private readonly annotationsByTitle: Map<string, Annotation<string, JSONObject>[]>;
+    private readonly annotations: Annotation<string, JSONObject>[];
+
+    public GetAnnotations(media: MediaContainer<MediaChild>) {
+        return this.annotations.filter(a => a.Checksum.Match(media.Checksum));
+    }
+
+    /*
     private readonly categories: AC[];
     private readonly annotationCategoryHashes = new Map<number, AC>();
     private readonly annotationHashes = new Map<number, A>();
 
-    /**
-     * Create a new instance of the CustomTagsManager
-     * @param storage - The storage to persist custom changes
-     * @param categories - The manager will only handle tags matching the given categories
-     */
     constructor(private readonly storage: StorageController, ...categories: AC[]) {
         this.categories = categories;
         let key: keyof (typeof AC & typeof A);
@@ -100,9 +104,6 @@ export class AnnotationManager {
         };
     }
 
-    /**
-     * Generate a pseudo-unique identifier for a given {@link container}.
-     */
     private StorageKey(container: IMediaContainer): string {
         const parts: string[] = [];
         for(let current = container; current; current = current.Parent) {
@@ -110,6 +111,7 @@ export class AnnotationManager {
         }
         return parts.join(' :: ');
     }
+    */
 
     /**
      * Load the customized tags from persistent storage and apply them to the corresponding entries in the given {@link container}
