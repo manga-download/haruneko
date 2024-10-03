@@ -44,7 +44,7 @@ jobs:
           DISPLAY: ':99'
         run: npm run test:websites -- MangaDex
       - name: Deploy App to CloudFlare
-        if: ${{ github.event.pull_request.labels.*.name == 'Deploy PR' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') && contains(github.event.pull_request.labels.*.name, 'Deploy PR') }}
         uses: cloudflare/pages-action@v1
         with:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
