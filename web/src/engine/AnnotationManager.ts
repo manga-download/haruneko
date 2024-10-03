@@ -11,6 +11,11 @@ myMedia.Annotations.filter(a => a.Key === GlobalAnnotationKeys.Bookmark)
 
 // Use Case 02: Get all media with specific annotations
 
+// Use Case 03: Use Anotations for Bookmarks
+
+// Use Case 04: Use Annotations for (Download) Status
+
+// Use Case 05: Use Annotations for Viewed Status
 */
 
 export class Annotation<K, V extends JSONElement> {
@@ -57,6 +62,8 @@ class Annotations {
         this.annotations.set(key, value);
     }
 }
+
+export type { Annotations };
 
 export class AnnotationManager {
 
