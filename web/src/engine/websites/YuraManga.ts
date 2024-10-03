@@ -7,9 +7,6 @@ import { FetchJSON } from '../platform/FetchProvider';
 type RSS = {
     feed: {
         entry: {
-            title: {
-                $t: string
-            },
             link: {
                 rel: string
                 title: string,
