@@ -1,6 +1,9 @@
 name: Pull Request
 
-on: [pull_request, workflow_dispatch]
+on:
+  pull_request:
+    types: [ opened, synchronize, labeled ]
+  workflow_dispatch:
 
 jobs:
   pull-request:
@@ -40,3 +43,12 @@ jobs:
         env:
           DISPLAY: ':99'
         run: npm run test:websites -- MangaDex
+      - name: Deploy App to CloudFlare
+        if: ${{ github.event.pull_request.labels.*.name == 'Deploy PR' }}
+        uses: cloudflare/pages-action@v1
+        with:
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          projectName: haruneko
+          directory: ./web/build
