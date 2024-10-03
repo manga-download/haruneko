@@ -297,7 +297,6 @@ export { default as MangaCrab } from './MangaCrab';
 export { default as MangaCross } from './MangaCross';
 export { default as MangaDemon } from './MangaDemon';
 export { default as MangaDex } from './MangaDex';
-export { default as MangaDig } from './MangaDig';
 export { default as MangaDistrict } from './MangaDistrict';
 export { default as Mangadon } from './Mangadon';
 export { default as MangaEclipse } from './MangaEclipse';
