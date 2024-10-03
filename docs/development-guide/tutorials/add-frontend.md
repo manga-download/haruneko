@@ -113,10 +113,10 @@ Create a svelte component such as `/src/frontend/sheep-ui/App.svelte`, presentin
 
 ```svelte
 <script lang="ts">
-	let count: number = 0;
-	function increment() {
-		count++;
-	}
+    let count: number = 0;
+    function increment() {
+        count++;
+    }
 </script>
 
 <style>
