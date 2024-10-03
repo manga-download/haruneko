@@ -509,7 +509,6 @@ export { default as Penlab } from './Penlab';
 export { default as PhenixScans } from './PhenixScans';
 export { default as PhoenixScansIT } from './PhoenixScansIT';
 export { default as Piccoma } from './Piccoma';
-export { default as PiccomaFR } from './PiccomaFR';
 export { default as PiedPiper } from './PiedPiper';
 export { default as PijamaliKoi } from './PijamaliKoi';
 export { default as PinkSeaUnicorn } from './PinkSeaUnicorn';
