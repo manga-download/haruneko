@@ -23,6 +23,8 @@ jobs:
           node-version: 20.x
       - name: Install NPM Packages
         run: npm install
+      - name: Build Web-Application
+        run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
         if: ${{ contains(github.event.pull_request.labels.*.name, 'Deploy PR') }}
         uses: cloudflare/pages-action@v1
