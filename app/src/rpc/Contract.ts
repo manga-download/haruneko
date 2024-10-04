@@ -1,6 +1,6 @@
-type Cookie = Omit<chrome.cookies.Cookie, never>;
+type KeyedCookie<T = chrome.cookies.Cookie> = { [K in keyof T]: KeyedCookie<T[K]> };
 
 export interface Contract {
-    SetCloudFlareBypass(userAgent: string, cookies: Cookie[]): Promise<void>;
+    SetCloudFlareBypass(userAgent: string, cookies: KeyedCookie[]): Promise<void>;
     LoadMediaContainerFromURL(url: string): Promise<void>;
 }
