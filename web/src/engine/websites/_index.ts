@@ -470,7 +470,6 @@ export { default as Neroxus } from './Neroxus';
 export { default as NetComics } from './NetComics';
 export { default as NeuManga } from './NeuManga';
 export { default as NewManhua } from './NewManhua';
-export { default as NewType } from './NewType';
 export { default as Ngomik } from './Ngomik';
 export { default as NHentai } from './NHentai';
 export { default as NHentaiCom } from './NHentaiCom';
