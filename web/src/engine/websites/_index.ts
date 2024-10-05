@@ -25,6 +25,7 @@ export { default as ArcuraFansub } from './ArcuraFansub';
 export { default as AresManga } from './AresManga';
 export { default as ArgosScan } from './ArgosScan';
 export { default as ArthurScan } from './ArthurScan';
+export { default as ArvenScans } from './ArvenScans';
 export { default as Ascalon } from './Ascalon';
 export { default as AsmHentai } from './AsmHentai';
 export { default as AstralManga } from './AstralManga';
