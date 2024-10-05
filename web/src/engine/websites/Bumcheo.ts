@@ -21,7 +21,6 @@ type APIMangaDetails = {
 }
 
 type APIChapter = {
-    id: string,
     title: string
     order: number
 }
