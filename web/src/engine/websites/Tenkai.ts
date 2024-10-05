@@ -3,13 +3,10 @@ import icon from './Tenkai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function MangaLabelExtractor(element: HTMLMetaElement) {
-    return element.content.split('|').at(0).trim();
-}
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.querySelector<HTMLDivElement>('div.content h4').textContent.trim()
+        title: anchor.querySelector<HTMLHeadingElement>('div.content h4').textContent.trim()
     };
 }
 function ChapterExtractor(element: HTMLDivElement) {
@@ -19,7 +16,7 @@ function ChapterExtractor(element: HTMLDivElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'meta[property="og:title"]', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'meta[property="og:title"]', (element: HTMLMetaElement) => element.content.split('|').at(0).trim())
 @Common.MangasSinglePageCSS('/comics', 'div.col-xxl-9 div.row a[href*="/comics/"]', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.specmobile div[onclick]', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.page-content div.container div.img-blade img')
