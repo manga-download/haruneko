@@ -59,14 +59,12 @@ export default class extends FetchProvider {
     }
 
     async Fetch(request: Request): Promise<Response> {
-        console.log('Platform::Electron::FetchProvider::Fetch()', '=>', request);
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
     }
 
     public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
-        console.warn('Platform::Electron::FetchProvider::FetchWindowScript()', '=>', request, script, delay, timeout);
         return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout);
     }
 
@@ -123,7 +121,6 @@ export default class extends FetchProvider {
                             clearTimeout(cancellation);
                             await super.Wait(delay);
                             const result = await win.ExecuteScript<T>(script);
-                            console.log('FetchWindowPreloadScript()', 'Result =>', result);
                             await destroy();
                             resolve(result);
                     }

@@ -146,13 +146,12 @@ export default class extends FetchProvider {
         //request.signal.addEventListener('abort', () => undefined);
         //if(request.signal.aborted) { /* */ }
 
-        const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
+        const options: NWJS_Helpers.WindowOpenOption = {
             new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
-            mixed_context: false,
             show: this.featureFlags.VerboseFetchWindow.Value,
             position: 'center',
             width: 1280,
-            height: 720,
+            height: 800,
             //inject_js_start: 'filename'
             //inject_js_end: 'filename'
         };
@@ -219,14 +218,11 @@ export default class extends FetchProvider {
                 return reject(new Error('Failed to open window (invalid content)!'));
             } else {
                 win.eval(null, preload instanceof Function ? `(${preload})()` : preload);
-                //preload(win.window.window, win.window.window);
-                //PreventDialogs(win, win.window.window);
             }
 
             win.on('document-start', (frame: typeof window) => {
                 invocations.push({ name: `win.on('document-start')`, info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
                 if(win.window === frame) {
-                    //preload(win.window.window, frame);
                     if (win.window.document.readyState === 'loading') {
                         win.window.document.addEventListener('DOMContentLoaded', () => {
                             invocations.push({ name: 'DOMContentLoaded', info: win.window?.location?.href });
@@ -237,7 +233,6 @@ export default class extends FetchProvider {
                         performRedirectionOrFinalize();
                     }
                 }
-                //PreventDialogs(win, frame);
             });
 
             // NOTE: Use policy to prevent any new popup windows
