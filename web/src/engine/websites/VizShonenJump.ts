@@ -110,7 +110,7 @@ export default class extends DecoratableMangaScraper {
                 return true;
             })
             .map(chapter => {
-                const targetUrl = /javascript/.test(chapter.dataset.targetUrl) ? chapter.dataset.targetUrl.match(/['"](\/shonenjump[^']+)['"]/)[1] : chapter.dataset.targetUrl;
+                const targetUrl = /javascript/.test(chapter.dataset.targetUrl) ? chapter.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[1] : chapter.dataset.targetUrl;
                 const formatNode = chapter.querySelector<HTMLElement>('.disp-id');
                 if (formatNode) {
                     return new Chapter(this, manga, targetUrl, formatNode.innerText.trim());
@@ -124,7 +124,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetUserInfos() {
-        this.userInfos = await FetchWindowScript<UserInfos>(new Request(new URL('/account/refresh_login_links', this.URI)), UserInfoScript);
+        this.userInfos = await FetchWindowScript<UserInfos>(new Request(new URL(this.URI)), UserInfoScript, 2500);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
