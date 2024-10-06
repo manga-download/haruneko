@@ -8,9 +8,9 @@ import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-AddAntiScrapingDetection(async (render) => {
-    const dom = await render();
-    return dom.documentElement.innerHTML.includes('window.awsWafCookieDomainList') ? FetchRedirection.Automatic : undefined;
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<boolean>(`document.documentElement.innerHTML.includes('window.awsWafCookieDomainList')`);
+    return result ? FetchRedirection.Automatic : undefined;
 });
 
 function ChaptersExtractor(element: HTMLElement) {
