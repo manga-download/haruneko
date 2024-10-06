@@ -33,7 +33,7 @@ type Result = {
 
 const expectedRedirectPatterns = new Map([
     [ 'https://www.corocoro.jp/', [ // The website redirects to the top-level domain when requesting the root path only (the sub-domain is still valid for non-empty paths)
-        /^https:\/\/corocoro\.jp\/$/,
+        /^https:\/\/corocoro-news\.jp\/$/,
     ] ],
     [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/w+\d*\.holymanga\.net\/$/,
@@ -50,9 +50,6 @@ const expectedRedirectPatterns = new Map([
     [ 'https://newtoki0.com/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/newtoki\d+\.com\/$/,
     ] ],*/
-    [ 'https://piccoma.com/fr', [ // REASON: The website redirects to a sub-domain when requesting from a locked region (outside france)
-        /^https:\/\/fr\.piccoma\.com\/fr$/,
-    ] ],
     [ 'https://pijamalikoi.com/', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
         /^https:\/\/www\.pijamalikoi\.com\/$/,
     ] ],
@@ -64,6 +61,12 @@ const expectedRedirectPatterns = new Map([
     ] ],*/
     [ 'https://web.6parkbbs.com/', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
         /^https:\/\/club\.6parkbbs\.com\/index.php$/,
+    ] ],
+    [ 'https://vortexscans.org/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/vortexscans\.org\/home$/,
+    ] ],
+    [ 'https://flixscans.net/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/flixscans\.net\/webtoons\/romance\/home$/,
     ] ],
 ]);
 

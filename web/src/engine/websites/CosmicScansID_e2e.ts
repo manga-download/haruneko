@@ -6,8 +6,9 @@ const config = {
         id: 'cosmicscansid',
         title: 'Cosmic Scans ID'
     },
+    /* CloudFlare
     container: {
-        url: 'https://cosmicscans.id/manga/eleceed/',
+        url: 'https://cosmic1.co/manga/eleceed/',
         id: '/manga/eleceed/',
         title: 'Eleceed'
     },
@@ -19,7 +20,7 @@ const config = {
         index: 1,
         size: 98_349,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

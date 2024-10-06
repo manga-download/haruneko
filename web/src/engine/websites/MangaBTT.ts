@@ -15,11 +15,10 @@ function MangaInfoExtractor(element: HTMLImageElement) {
 @Common.MangasMultiPageCSS('/?page={page}', 'div.row div.ModuleContent div.item figure a img', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageCSS('div.page-chapter img[data-index]')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangabtt', 'MangaBTT', 'https://manhwalampo.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('mangabtt', 'MangaBTT', 'https://manhwabtt.cc', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
