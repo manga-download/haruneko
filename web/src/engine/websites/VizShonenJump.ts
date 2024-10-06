@@ -102,13 +102,7 @@ export default class extends DecoratableMangaScraper {
     private async GetChapters(manga: Manga, hasAccess: boolean): Promise<Chapter[]> {
         const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div > a.o_chapter-container[data-target-url], tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]');
         return chapters
-            .filter(element => {
-                if (/javascript:.*join/i.test(element.href)) {
-                    return hasAccess;
-                }
-                // free
-                return true;
-            })
+            .filter(element => /javascript:.*join/i.test(element.href) ? hasAccess : true)
             .map(chapter => {
                 const targetUrl = /javascript/.test(chapter.dataset.targetUrl) ? chapter.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[1] : chapter.dataset.targetUrl;
                 const formatNode = chapter.querySelector<HTMLElement>('.disp-id');
