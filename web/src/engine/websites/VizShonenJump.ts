@@ -6,6 +6,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import * as Common from './decorators/Common';
 import exifr from 'exifr';
 import DeScramble from '../transformers/ImageDescrambler';
+import { RateLimit } from '../taskpool/RateLimit';
 
 type UserInfos = {
     isLoggedIn: boolean,
@@ -60,6 +61,7 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('vizshonenjump', `Viz - Shonen Jump`, 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
+        this.imageTaskPool.RateLimit = new RateLimit(4, 1);
     }
 
     public override get Icon() {
