@@ -9,8 +9,6 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { RateLimit } from '../taskpool/RateLimit';
 
 type UserInfos = {
-    isLoggedIn: boolean,
-    isAdult: boolean,
     isMember: boolean,
     isVizManga: boolean
 }
@@ -29,8 +27,6 @@ type ExifData = {
 const UserInfoScript = `
     new Promise ( resolve => {
         resolve({
-            isLoggedIn : /[1-9]+/.test(user_id),
-            isAdult : adult === true,
             isMember : is_sj_subscriber === true,
             isVizManga : is_vm_subscriber === true
         });
