@@ -57,8 +57,6 @@ function VolumesExtractor(row: HTMLTableRowElement) {
 
 export default class extends DecoratableMangaScraper {
     private userInfos: UserInfos;
-    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`);
-    private readonly libraryRegexp = new RegExpSafe(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`);
 
     public constructor() {
         super('vizshonenjump', `Viz - Shonen Jump`, 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
@@ -69,11 +67,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url) || this.libraryRegexp.test(url) ;
+        const mangaRegexp = new RegExpSafe(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`);
+        const libraryRegexp = new RegExpSafe(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`);
+        return mangaRegexp.test(url) || libraryRegexp.test(url) ;
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        return this.mangaRegexp.test(url) ? await Common.FetchMangaCSS.call(this, provider, url, 'section#series-intro div h2') : await Common.FetchMangaCSS.call(this, provider, url, 'body > div.row h3.type-md');
+        const mangaRegexp = new RegExpSafe(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`);
+        return mangaRegexp.test(url) ? await Common.FetchMangaCSS.call(this, provider, url, 'section#series-intro div h2') : await Common.FetchMangaCSS.call(this, provider, url, 'body > div.row h3.type-md');
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
