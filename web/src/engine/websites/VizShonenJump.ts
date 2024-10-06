@@ -1,11 +1,11 @@
-import { Tags } from '../../Tags';
+import { Tags } from '../Tags';
 import icon from './VizShonenJump.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import { Fetch, FetchCSS, FetchHTML, FetchWindowScript } from '../../platform/FetchProvider';
-import type { Priority } from '../../taskpool/DeferredTask';
-import * as Common from '../decorators/Common';
+import { Chapter, DecoratableMangaScraper, type Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { Fetch, FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
+import * as Common from './decorators/Common';
 import exifr from 'exifr';
-import DeScramble from '../../transformers/ImageDescrambler';
+import DeScramble from '../transformers/ImageDescrambler';
 
 type UserInfos = {
     isLoggedIn: boolean,
@@ -47,22 +47,40 @@ const PagesScript = `
 
 const MangasExtractor = Common.AnchorInfoExtractor(false, '.display-label');
 
+function VolumesExtractor(row: HTMLTableRowElement) {
+    const anchor = row.querySelector<HTMLAnchorElement>('a.btn-primary-dark');
+    return {
+        id: anchor.pathname + anchor.search,
+        title: row.querySelector<HTMLTableCellElement>('td.product-table--primary').textContent.replace(', Vol.', 'Vol.').trim()
+    };
+}
+
 export default class extends DecoratableMangaScraper {
     private userInfos: UserInfos;
+    private readonly mangaRegexp = new RegExpSafe(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`);
+    private readonly libraryRegexp = new RegExpSafe(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`);
 
     public constructor() {
         super('vizshonenjump', `Viz - Shonen Jump`, 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
-        //this.imageTaskPool.RateLimit = new RateLimit(1, 0.5);
     }
 
     public override get Icon() {
         return icon;
     }
 
+    public override ValidateMangaURL(url: string): boolean {
+        return this.mangaRegexp.test(url) || this.libraryRegexp.test(url) ;
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        return this.mangaRegexp.test(url) ? await Common.FetchMangaCSS.call(this, provider, url, 'section#series-intro div h2') : await Common.FetchMangaCSS.call(this, provider, url, 'body > div.row h3.type-md');
+    }
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
-            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/account/library', 'table.purchase-table a', MangasExtractor ),
-            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/shonenjump/section/free-chapters', 'table.purchase-table a', MangasExtractor),
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/account/library', 'table.purchase-table a', MangasExtractor),
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/account/library/sj', 'table.purchase-table a', MangasExtractor),
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/shonenjump/section/free-chapters', 'div#chpt_grid div.o_sortable a.o_chapters-link', MangasExtractor),
             ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/vizmanga/section/free-chapters', 'div.o_sort_container div.o_sortable a.o_chapters-link', MangasExtractor)
         ].distinct();
     }
@@ -76,7 +94,7 @@ export default class extends DecoratableMangaScraper {
             return await this.GetChapters(manga, this.userInfos.isVizManga);
         }
         if (manga.Identifier.startsWith('/account/library')) {
-            return await this.GetMangaVolumes(manga);
+            return await Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumesExtractor);
         }
     }
 
@@ -104,42 +122,13 @@ export default class extends DecoratableMangaScraper {
             });
     }
 
-    private async GetMangaVolumes(manga: Manga): Promise<Chapter[]> {
-        const dom = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
-
-        const volumeNames = [...dom.querySelectorAll<HTMLElement>('#o_products tr td:nth-child(3)')]
-            .map(volume => {
-                return volume.innerText;
-            });
-
-        const firstVolumeName = volumeNames[0].substring(0, volumeNames[0].indexOf("Vol."));
-        const allNamesMatch = volumeNames.every(volume => volume.startsWith(firstVolumeName));
-
-        let volumes = [...dom.querySelectorAll<HTMLAnchorElement>('#o_products tr td:last-of-type a')]
-            .map(volume => {
-                return new Chapter(this, manga, new URL(volume.href, this.URI).pathname, 'Vol. ' + volume.href.match(/-volume-([-_0-9]+)/i)[1]);
-                //id: this.getRootRelativeOrAbsoluteLink(volume, this.url).substring(1),
-                //title:
-                //};
-            });
-
-        // We're dealing with a manga that contains multiple subseries, so we must give each volume the full name provided or else
-        // the user won't be able to differentiate between series, and would have conflicting volume numbers.
-        if (!allNamesMatch) {
-            for (let i = 0; i < volumes.length; i++) {
-                volumes[i] = new Chapter(this, manga, volumes[i].Identifier, volumeNames[i]);
-            }
-        }
-        return volumes;
-    }
-
     private async GetUserInfos() {
         this.userInfos = await FetchWindowScript<UserInfos>(new Request(new URL('/account/refresh_login_links', this.URI)), UserInfoScript);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
-        const { pagesCount, mangaID } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), PagesScript);
+        const { pagesCount, mangaID } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), PagesScript, 1500);
 
         const pages = Array(pagesCount+1).fill(0).map((_, index) => {
             const url = new URL('/manga/get_manga_url', this.URI);
@@ -153,49 +142,49 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const response = await Fetch(new Request(page.Link, {
-            signal,
-            headers: {
-                Referer: page.Parameters.Referer,
-                Origin: this.URI.origin,
-            }
-        }));
 
-        const img_url = await response.text();
-        const buffer = await this.FetchBuffer(img_url, priority, signal, page.Parameters.Referer);
+        const buffer = await this.imageTaskPool.Add(async () => {
+            let response = await Fetch(new Request(page.Link, {
+                signal,
+                headers: {
+                    Referer: page.Parameters.Referer,
+                    Origin: this.URI.origin,
+                }
+            }));
+
+            const img_url = await response.text();
+            response = await Fetch(new Request(img_url, {
+                signal,
+                headers: {
+                    Referer: page.Parameters.Referer,
+                    Origin: this.URI.origin,
+                    crossOrigin: 'Anonymous'
+                }
+            }));
+            return await response.arrayBuffer();
+
+        }, priority, signal);
+
         const tags: ExifData = await exifr.parse(buffer);
-
-        const width = tags.ImageWidth;
-        const height = tags.ImageHeight;
+        const EXIFWIDTH = tags.ImageWidth;
+        const EXIFHEIGHT = tags.ImageHeight;
         const shuffleMap = tags.ImageUniqueID.split(':');
 
-        return DeScramble(new ImageData(width, height), async (_, ctx) => {
-            const EXIFWIDTH = width;
-            const EXIFHEIGHT = height;
-
+        return DeScramble(new ImageData(EXIFWIDTH, EXIFHEIGHT ), async (_, ctx) => {
             const blob = await Common.GetTypedData(buffer);
             const bitmap = await createImageBitmap(blob);
-
-            let x_split = Math.floor(EXIFWIDTH / 10),
+            const x_split = Math.floor(EXIFWIDTH / 10),
                 y_split = Math.floor(EXIFHEIGHT / 15);
 
             ctx.clearRect(0, 0, EXIFWIDTH, EXIFHEIGHT);
 
+            //Draw borders
             ctx.drawImage(bitmap, 0, 0, EXIFWIDTH, y_split, 0, 0, EXIFWIDTH, y_split);
             ctx.drawImage(bitmap, 0, y_split + 10, x_split, EXIFHEIGHT - 2 * y_split, 0, y_split, x_split, EXIFHEIGHT - 2 * y_split);
-            ctx.drawImage(
-                bitmap,
-                0,
-                14 * (y_split + 10),
-                EXIFWIDTH,
-                bitmap.height - 14 * (y_split + 10),
-                0,
-                14 * y_split,
-                EXIFWIDTH,
-                bitmap.height - 14 * (y_split + 10)
-            );
+            ctx.drawImage(bitmap, 0, 14 * (y_split + 10), EXIFWIDTH, bitmap.height - 14 * (y_split + 10), 0, 14 * y_split, EXIFWIDTH, bitmap.height - 14 * (y_split + 10));
             ctx.drawImage(bitmap, 9 * (x_split + 10), y_split + 10, x_split + (EXIFWIDTH - 10 * x_split), EXIFHEIGHT - 2 * y_split, 9 * x_split, y_split, x_split + (EXIFWIDTH - 10 * x_split), EXIFHEIGHT - 2 * y_split);
 
+            //Draw pieces
             for (let m = 0; m < shuffleMap.length; m++) {
                 const piecevalue = parseInt(shuffleMap[m], 16);
                 ctx.drawImage(
@@ -215,15 +204,4 @@ export default class extends DecoratableMangaScraper {
 
     }
 
-    private async FetchBuffer(url: string, priority: Priority, signal: AbortSignal, referer: string): Promise<ArrayBuffer> {
-        const response = await Fetch(new Request(url, {
-            signal,
-            headers: {
-                Referer: referer,
-                Origin: this.URI.origin,
-                crossOrigin: 'Anonymous'
-            }
-        }));
-        return await response.arrayBuffer();
-    }
 }
