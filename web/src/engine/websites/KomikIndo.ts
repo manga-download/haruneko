@@ -5,14 +5,14 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS('div#content div.soralist ul li a.series', '/manga-list/?list')
+@MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('komikindo', 'KomikIndo', 'https://komikindo.co', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('komikindo', 'KomikIndo', 'https://komiksin.id', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

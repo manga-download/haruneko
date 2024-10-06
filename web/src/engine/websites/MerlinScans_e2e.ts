@@ -7,18 +7,18 @@ const config = {
         title: 'Merlin Scans'
     },
     container: {
-        url: 'https://merlinscans.com/manga/kale/',
-        id: JSON.stringify({ post: '1024', slug: '/manga/kale/' }),
-        title: 'Castle'
+        url: 'https://merlinscans.com/manga/akademinin-dehasi/',
+        id: '/manga/akademinin-dehasi/',
+        title: 'Akademinin Dehası'
     },
     child: {
-        id: '/manga/kale/bolum-106/',
-        title: 'Bölüm 106'
+        id: '/akademinin-dehasi-bolum-65/',
+        title: 'Bölüm 65'
     },
     entry: {
-        index: 0,
-        size: 219_279,
-        type: 'image/jpeg'
+        index: 1,
+        size: 553_600,
+        type: 'image/webp'
     }
 };
 
