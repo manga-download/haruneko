@@ -1,10 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './DayComics.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-
-const pageScript = `[...document.querySelectorAll('div#comicContent div.imgSubWrapper img')].map(image => image.dataset.src);`;
 
 const matureCookieScript = `
     new Promise(async (resolve, reject) => {
@@ -15,7 +13,6 @@ const matureCookieScript = `
                 decodedData.mature = 1;
                 const cookieValue = JSON.stringify(decodedData).unicode().encodeString('test');
                 window.cookieStore.set('userSession', cookieValue);
-                resolve();
             } else { //set +18 for non logged user
                 const response = await fetch('https://api.daycomics.com/preAuth/setMature', {
                     method: 'POST',
@@ -38,54 +35,42 @@ const matureCookieScript = `
     });
 `;
 
-const GetHeadersScript = `
-    new Promise(async (resolve, reject) => {
-        try {
-            const result = {};
+const libraryScript = `
+    [...document.querySelectorAll('section#libraryPage a[href*="/content/"')].map(anchor => {
+      const link = anchor.pathname;
+      const title = anchor.querySelector('div.comicInfo > div > div').textContent.trim();
+      return {
+          id : link,
+          title : title
+      }});
+`;
 
-            const sessionData = (await window.cookieStore.get('userSession'))?.value;
-            if (sessionData) {  //if user is Logged, set mature to 1
-                const decodedData = JSON.parse(sessionData.decodeString('test'));
-                result['user-Id'] = decodedData.userId.toString();
-                result.token = decodedData.token;
-            }
-
-            result['x-api-key'] = 'SUPERCOOLAPIKEY2021';
-            result.deviceId =  localStorage.getItem('udid');
-            result.language = 'en';
-            result['x-origin'] = window.location.origin;
-            result.ua = 'web';
-            result['package-name'] = 'web';
-            result.timestamp = Math.floor((new Date()).getTime()).toString();
-
-            //get fingerprint
-            let fpCookiedata = (await window.cookieStore.get('u_fp_v3'))?.value;
-            if (fpCookiedata) result['visitor-id'] = fpCookiedata
-            else {
-                fpCookiedata = (await window.cookieStore.get('u_fp_v4'))?.value;
-                if (fpCookiedata) result['visitor-id'] = JSON.parse(fpCookiedata.decodeString('visitorUnicode'));
-            }
-            resolve(result);
-        }
-        catch (error) {
-            reject(error);
-        }
-    });
+const chapterScript = `
+    [...document.querySelectorAll('a#episodeItemCon')].map(anchor => {
+      const link = anchor.pathname;
+      let title = anchor.querySelector('div.comicInfo > div > div').textContent.trim();
+      const subtitle = anchor.querySelector('p.episodeStitle')?.textContent.trim();
+      title = subtitle ? title +': '+ subtitle : title;
+      return {
+          id : link,
+          title : title
+      }});
 
 `;
+
+const pageScript = `[...document.querySelectorAll('div#comicContent div.imgSubWrapper img')].map(image => image.dataset.src);`;
 
 type APIResult<T> = {
     data: T
 }
 
-type APIComicDetails = {
-    comic: APIComic,
-    episode : APIChapter[]
+type APIComicForLibrary = {
+    id: string,
+    title: string
 }
 
 type APIComic = {
     comicId: number,
-    language: string,
     information: {
         title: string
     }
@@ -93,34 +78,17 @@ type APIComic = {
 
 type APIComicList = Record<string, APIComic[]>
 
-type APIChapter = {
-    episodeId: number,
-    information: {
-        title: string,
-        subtitle : string
+type NEXTDATACOMIC = {
+    props: {
+        pageProps: {
+            comicTitle: string,
+            comicId: number
+        }
     }
 }
 
-type APIHeaders = {
-    deviceId : string,
-    language: string,
-    token: string,
-    'x-api-key': string,
-    'x-origin': string,
-    'user-Id': string
-    'visitor-id': string,
-    ua: string,
-    'package-name': string,
-    timestamp: string
-}
-
-type APILibrary = {
-    library: {
-        meta: APIComic
-    }[]
-}
-
-@Common.PagesSinglePageJS(pageScript, 1500)
+@Common.ChaptersSinglePageJS(chapterScript, 2500)
+@Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
@@ -135,7 +103,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        return await FetchWindowScript(new Request(this.URI), matureCookieScript, 500);
+        return FetchWindowScript(new Request(this.URI), matureCookieScript, 500);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -143,10 +111,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaId = url.split('/').at(-1);
-        const endpoint = new URL(`v1/page/episode?comicId=${mangaId}`, this.apiUrl);
-        const { data: { comic } } = await FetchJSON<APIResult<APIComicDetails>>(await this.CreateRequest(endpoint));
-        return new Manga(this, provider, mangaId, comic.information.title);
+        const { props: { pageProps: { comicTitle, comicId } } } = await FetchWindowScript<NEXTDATACOMIC>(new Request(url), '__NEXT_DATA__', 2500);
+        return new Manga(this, provider, `/content/${comicId}`, comicTitle);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -161,32 +127,11 @@ export default class extends DecoratableMangaScraper {
     private async GetMangas(provider: MangaPlugin, path: string): Promise<Manga[]> {
         const { data } = await FetchJSON<APIResult<APIComicList>>(new Request(new URL(path, this.apiUrl)));
         const comics = data[path.split('/').at(-1)] ?? [];
-        return comics.map(comic => new Manga(this, provider, comic.comicId.toString(), comic.information.title));
+        return comics.map(comic => new Manga(this, provider, `/content/${comic.comicId}`, comic.information.title));
     }
 
     private async GetMangasFromLibrary(provider: MangaPlugin): Promise<Manga[]> {
-        try {
-            const endpoint = new URL('v1/page/library', this.apiUrl);
-            const { data: { library } } = await FetchJSON<APIResult<APILibrary>>(await this.CreateRequest(endpoint));
-            return library.map(comic => new Manga(this, provider, comic.meta.comicId.toString(), comic.meta.information.title));
-        } catch { }
-        return [];
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const endpoint = new URL(`v1/page/episode?comicId=${manga.Identifier}`, this.apiUrl);
-        const { data: { episode } } = await FetchJSON<APIResult<APIComicDetails>>(await this.CreateRequest(endpoint));
-        return episode.map(episode => new Chapter(this, manga, `/content/${manga.Identifier}/${episode.episodeId}`, episode.information.title));
-    }
-
-    private async CreateRequest(endpoint: URL): Promise<Request> {
-        const apiHeaders = await FetchWindowScript<APIHeaders>(new Request(new URL(this.URI)), GetHeadersScript, 1500);
-        if (apiHeaders['user-Id']) {
-            return new Request(endpoint, {
-                headers: {
-                    ...apiHeaders
-                }
-            });
-        } else return new Request(endpoint);
+        const data = await FetchWindowScript<APIComicForLibrary[]>(new Request(new URL('/library', this.URI)), libraryScript, 2500);
+        return data.map(comic => new Manga(this, provider, comic.id, comic.title));
     }
 }
