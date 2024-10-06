@@ -22,7 +22,7 @@ const scriptPages = `
 @Common.MangaCSS(/^{origin}\//, 'div.gallery_right div.info h1')
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageJS(scriptPages, 2500)
+@Common.PagesSinglePageJS(scriptPages, 3500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -7,7 +7,7 @@ const config: Config = {
         title: 'ManhwaIndo'
     },
     container: {
-        url: 'https://manhwaindo.net/series/9th-class-sword-master/',
+        url: 'https://www.manhwaindo.st/series/9th-class-sword-master/',
         id: '/series/9th-class-sword-master/',
         title: '9th Class Sword Master'
     },

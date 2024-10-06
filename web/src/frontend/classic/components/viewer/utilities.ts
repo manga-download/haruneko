@@ -33,8 +33,7 @@ export function scrollMagic(element: HTMLElement, selector:string, defaultDistan
         nextItemCallback();
         return;
     }
-    // Lets stay on current page
-    // Find current image within view
+    // Find current images within view
     const targetScrollImages = [...images].filter((image) => {
         const rect = image.getBoundingClientRect();
         return rect.top <= window.innerHeight && rect.bottom > 1;
@@ -59,11 +58,12 @@ export function scrollMagic(element: HTMLElement, selector:string, defaultDistan
             behavior: 'smooth',
         });
     }
-    // We have to try to get to next image
     else {
-        // Find next image
-        const nextScrollImage = targetScrollImage.nextElementSibling;
-        // Scroll to it
+        // Next image is the first after the viewport
+        const nextScrollImage = [...images].filter((image) => {
+            const rect = image.getBoundingClientRect();
+            return rect.top >= window.innerHeight;
+        })[0];
         nextScrollImage.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'start'});
     }
 }
