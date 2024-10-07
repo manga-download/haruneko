@@ -1,13 +1,13 @@
-name: Pull Request
+name: Pull Request (CI)
 
-on: [pull_request, workflow_dispatch]
+on: [ pull_request, workflow_dispatch ]
 
 jobs:
   pull-request:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:

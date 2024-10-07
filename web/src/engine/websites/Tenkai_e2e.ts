@@ -3,22 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'komikid',
-        title: 'Komikid'
+        id: 'tenkai',
+        title: 'Tenkai'
     },
     container: {
-        url: 'https://www.komikid.com/manga/one-punchman',
-        id: '/manga/one-punchman',
-        title: 'One Punch-Man'
+        url: 'https://tenkaiscan.net/comics/cafeina',
+        id: '/comics/cafeina',
+        title: 'Cafeina'
     },
     child: {
-        id: '/manga/one-punchman/182',
-        title: '182'
+        id: '/comics/cafeina/capitulo-01',
+        title: 'Cápitulo 01'
     },
     entry: {
         index: 0,
-        size: 458_299,
-        type: 'image/jpeg'
+        size: 164_168,
+        type: 'image/webp'
     }
 };
 

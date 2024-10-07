@@ -1,2 +1,2 @@
 import type { FetchRedirection } from '../AntiScrapingDetection';
-export declare function CheckAntiScrapingDetection(render: () => Promise<Document>): Promise<FetchRedirection>;
+export declare function CheckAntiScrapingDetection(win: any): Promise<FetchRedirection>;
