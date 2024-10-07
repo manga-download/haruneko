@@ -8,8 +8,8 @@ export default class RemoteBrowserWindow {
 
     private windowID = Number.NaN;
 
-    private readonly domReady = new Observable<Document, RemoteBrowserWindow>(null, this);
-    public get DOMReady(): IObservable<Document, RemoteBrowserWindow> {
+    private readonly domReady = new Observable<void, RemoteBrowserWindow>(null, this);
+    public get DOMReady(): IObservable<void, RemoteBrowserWindow> {
         return this.domReady;
     };
 
@@ -25,13 +25,13 @@ export default class RemoteBrowserWindow {
 
     constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
         this.ipc.Listen(Channels.Web.OnDomReady, this.OnDomReady.bind(this));
+        //this.ipc.Listen(Channels.Web.OnDomReady, async (id) => console.log('Window ID:', id));
         this.ipc.Listen(Channels.Web.OnBeforeNavigate, this.OnBeforeNavigate.bind(this));
     }
 
     private async OnDomReady(windowID: number): Promise<void> {
         if(windowID === this.windowID) {
-            const html = await this.ExecuteScript<string>(`document.querySelector('html').innerHTML`);
-            this.domReady.Value = new DOMParser().parseFromString(html, 'text/html');
+            this.domReady.Dispatch();
         }
     }
 
