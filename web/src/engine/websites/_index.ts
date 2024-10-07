@@ -100,6 +100,7 @@ export { default as DelitoonDE } from './DelitoonDE';
 export { default as DelitoonX } from './DelitoonX';
 export { default as DemoneCeleste } from './DemoneCeleste';
 export { default as DemonSect } from './DemonSect';
+export { default as DennoMavo } from './DennoMavo';
 export { default as Desu } from './Desu';
 export { default as DiamondFansub } from './DiamondFansub';
 export { default as DianxiaTrads } from './DianxiaTrads';
