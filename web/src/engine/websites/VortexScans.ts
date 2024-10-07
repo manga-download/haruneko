@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = new URL('/api/', this.URI);
 
     public constructor() {
-        super('vortexscans', `Vortex Scans`, 'https://vortextoon.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
+        super('vortexscans', `Vortex Scans`, 'https://vortexscans.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

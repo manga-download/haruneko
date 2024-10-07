@@ -7,7 +7,7 @@ const ComicConfig = {
         title: 'TempleScan'
     },
     container: {
-        url: 'https://templescan.net/comic/predatory-marriage-complete-edition',
+        url: 'https://templetoons.com/comic/predatory-marriage-complete-edition',
         id: 'predatory-marriage-complete-edition',
         title: `Predatory Marriage (Complete Edition)`
     },

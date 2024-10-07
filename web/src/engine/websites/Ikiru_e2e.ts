@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Ikiru'
     },
     container: {
-        url: 'https://ikiru.me/manga/martial-peak/',
+        url: 'https://ikiru.one/manga/martial-peak/',
         id: '/manga/martial-peak/',
         title: 'Martial Peak'
     },

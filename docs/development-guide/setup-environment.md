@@ -8,18 +8,12 @@
 
 ## Checkout Sources
 
-1. Clone the repository from GitHub
-```shell
-git clone "https://github.com/manga-download/haruneko.git"
-```
-2. Open a terminal and change into the cloned repository
-```shell
-cd haruneko
-```
-3. Download and install all package dependencies
-```shell
-npm install
-```
+1. Clone the repository from GitHub  
+`git clone "https://github.com/manga-download/haruneko.git"`
+2. Open a terminal and change into the cloned repository  
+`cd haruneko`
+3. Download and install all package dependencies  
+`npm install`
 
 ::: info NOTE
 Perform `npm install` regulary after pulling code from the remote repository as a contributor may have changed some package dependencies
@@ -38,25 +32,17 @@ The repository contains four workspaces (projects)
 
 The project uses various tools to perform a static code analysis and detect compile time errors as well as code smells and formatting issues.
 
-- Run code inspection for all projects (e.g., before pushing changes to the remote)
-```shell
-npm run check
-```
+- Run code inspection for all projects (e.g., before pushing changes to the remote)  
+`npm run check`
 
 ## Test
 
-- Run unit/component tests for all projects
-```shell
-npm run test
-```
-- Run end-to-end tests for all projects
-```shell
-npm run test:e2e
-```
-- Run website tests for one or more specific website names
-```shell
-npm run test:websites -- MangaDex
-```
+- Run unit/component tests for all projects  
+`npm run test`
+- Run end-to-end tests for all projects  
+`npm run test:e2e`
+- Run website tests for one or more specific website names  
+`npm run test:websites -- MangaDex`
 
 <!--
 ### Testing
@@ -103,10 +89,12 @@ Run the application based on the current source code locally.
 
 ::: info NOTE
 If you are on Apple Silicon (Arm64) and NW isn't starting, try:
+
 ```zsh
 xattr -cr ./node_modules/nw/nwjs/nwjs.app
 ```
-See: https://github.com/nwjs/nw.js/issues/8157
+
+See: [ARM64 Error | “app” is damaged and can’t be opened.](https://github.com/nwjs/nw.js/issues/8157)
 :::
 
 ### Development Mode
@@ -114,28 +102,20 @@ See: https://github.com/nwjs/nw.js/issues/8157
 Hot-Reloading is not working correctly, but the web-application will reload automatically whenever a change is made to the source.
 Changes made to the source code of the desktop clients while running however requires the corresponding desktop client to be closed and restarted.
 
-1. Host the web-application locally at [localhost:3000](http://localhost:3000)
-```shell
-npm run serve:dev --workspace web
-```
-2. Either run the Electron or NW.js desktop client and connect it to the local hosted web-application
-```shell
-npm run launch:dev --workspace app/electron
-```
+1. Host the web-application locally at [localhost:3000](http://localhost:3000)  
+`npm run serve:dev --workspace web`
+2. Either run the Electron or NW.js desktop client and connect it to the local hosted web-application  
+`npm run launch:dev --workspace app/electron`
 
 ### Production Mode
 
 Changes to the source code are neither reflected in the web-application, nor in the desktop client.
 Both needs to be restarted in order to apply source code changes.
 
-1. Host the web-application locally at [localhost:5000](http://localhost:5000)
-```shell
-npm run serve:prod --workspace web
-```
-2. Either run the Electron or NW.js desktop client and connect it to the local hosted web-application
-```shell
-npm run launch:prod --workspace app/electron
-```
+1. Host the web-application locally at [localhost:5000](http://localhost:5000)  
+`npm run serve:prod --workspace web`
+2. Either run the Electron or NW.js desktop client and connect it to the local hosted web-application  
+`npm run launch:prod --workspace app/electron`
 
 ## Debug
 

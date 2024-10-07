@@ -1,21 +1,56 @@
 import { Tags } from '../Tags';
 import icon from './YuraManga.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchJSON } from '../platform/FetchProvider';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="YuraManga"])')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+type RSS = {
+    feed: {
+        entry: {
+            link: {
+                rel: string
+                title: string,
+                href: string
+            }[]
+        }[]
+    }
+}
+
+const chapterScript = `
+    new Promise ( resolve =>
+        resolve (clwd.arr.filter(chapter => chapter.link != window.location.href)
+            .map(chapter => {
+                return {
+                    id: new URL(chapter.link).pathname,
+                    title : chapter.title.trim()
+                };
+            })
+        )
+    );
+`;
+
+const pagesScript = `[...document.querySelectorAll('div.isi_chapter div.bx_dl img')].map(img => img.dataset.src ?? img.src);`;
+
+@Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'meta[name="description"]')
+@Common.ChaptersSinglePageJS(chapterScript, 500)
+@Common.PagesSinglePageJS(pagesScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yuramanga', 'YuraManga', 'https://yuramanga.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('yuramanga', 'YuraManga', 'https://www.yuramanga.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const { feed: { entry } } = await FetchJSON<RSS>(new Request(new URL('/feeds/posts/default/-/Series?orderby=published&alt=json&max-results=999', this.URI)));
+        return entry.map(manga => {
+            const goodLink = manga.link.find(link => link.rel === 'alternate');
+            return new Manga(this, provider, new URL(goodLink.href).pathname, goodLink.title);
+        });
+    }
+
 }

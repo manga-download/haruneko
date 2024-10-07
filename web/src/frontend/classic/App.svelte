@@ -3,7 +3,6 @@
     import 'carbon-components-svelte/css/all.css';
     import './theme/hakuneko.css';
     import './theme/global.css';
-    import './theme/sidenav-hack.css';
     import { Content } from 'carbon-components-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
