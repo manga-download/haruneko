@@ -34,13 +34,8 @@ describe('PluginController', () => {
         }));
 
         it.each(icons)('Should have an embedded WEBP icon for $website', async (icon) => {
-            try {
-                expect(icon.signature).toBe('data:image/webp;base64,');
-                expect(icon.length).toBeLessThan(4096);
-            } catch(error) {
-                console.log(`Invalid icon for website <${icon.website}>:`, icon.signature, ' => ', icon.length, 'bytes');
-                throw error;
-            }
+            expect(icon.signature).toBe('data:image/webp;base64,');
+            expect(icon.length).toBeLessThan(4096);
         });
     });
 });
