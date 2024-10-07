@@ -229,7 +229,6 @@ export { default as KolNovel } from './KolNovel';
 export { default as KomBatch } from './KomBatch';
 export { default as KomikCast } from './KomikCast';
 export { default as KomikGo } from './KomikGo';
-export { default as Komikid } from './Komikid';
 export { default as KomikIndo } from './KomikIndo';
 export { default as KomikIndoId } from './KomikIndoId';
 export { default as KomikindoInfo } from './KomikindoInfo';
