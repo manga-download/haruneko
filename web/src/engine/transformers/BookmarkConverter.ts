@@ -37,6 +37,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'manhuaes', 'manhuaaz' ],
     [ 'manhuascan', 'kaliscan' ],
     [ 'manhwaclub', 'manhwahentai' ],
+    [ 'neteasecomic', 'bilibilimanhua' ],
     [ 'nitroscans', 'nitromanga' ],
     [ 'nonbiri', 'comic21' ],
     [ 'oxapk', 'manjanoon' ],
