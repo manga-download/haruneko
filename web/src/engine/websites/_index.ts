@@ -124,6 +124,7 @@ export { default as DrakeScans } from './DrakeScans';
 export { default as DuaLeoTruyen } from './DuaLeoTruyen';
 export { default as DynastyScans } from './DynastyScans';
 export { default as EarlyManga } from './EarlyManga';
+export { default as EighteenComic } from './EighteenComic';
 export { default as EightMuses } from './EightMuses';
 export { default as EightMusesXXX } from './EightMusesXXX';
 export { default as ElevenToon } from './ElevenToon';
