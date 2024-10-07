@@ -59,14 +59,12 @@ export default class extends FetchProvider {
     }
 
     async Fetch(request: Request): Promise<Response> {
-        console.log('Platform::Electron::FetchProvider::Fetch()', '=>', request);
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
     }
 
     public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
-        console.warn('Platform::Electron::FetchProvider::FetchWindowScript()', '=>', request, script, delay, timeout);
         return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout);
     }
 
@@ -79,7 +77,7 @@ export default class extends FetchProvider {
 
         const win = new RemoteBrowserWindow(this.ipc as IPC<string, string>);
 
-        win.BeforeNavigate.Subscribe(async uri => {
+        win.BeforeWindowNavigate.Subscribe(async uri => {
             invocations.push({ name: 'BeforeNavigate', info: `URL: ${uri.href}` });
             return this.featureFlags.VerboseFetchWindow.Value ? null : win.Hide();
         });
@@ -105,10 +103,7 @@ export default class extends FetchProvider {
             win.DOMReady.Subscribe(async () => {
                 invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
                 try {
-                    const redirect = await CheckAntiScrapingDetection(async () => {
-                        const html = await win.ExecuteScript<string>(`document.querySelector('html').innerHTML`);
-                        return new DOMParser().parseFromString(html, 'text/html');
-                    });
+                    const redirect = await CheckAntiScrapingDetection(win);
                     invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[redirect]}`});
                     switch (redirect) {
                         case FetchRedirection.Interactive:
@@ -126,7 +121,6 @@ export default class extends FetchProvider {
                             clearTimeout(cancellation);
                             await super.Wait(delay);
                             const result = await win.ExecuteScript<T>(script);
-                            console.log('FetchWindowPreloadScript()', 'Result =>', result);
                             await destroy();
                             resolve(result);
                     }
