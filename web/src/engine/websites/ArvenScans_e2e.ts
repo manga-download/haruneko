@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'mangadig',
-        title: 'MangaDig'
+        id: 'arvenscans',
+        title: 'Arven Scans'
     },
     container: {
-        url: 'https://mangadig.com/manga-wa912941/',
-        id: '/manga-wa912941/',
-        title: `The Duke's Teddy Bear`
+        url: 'https://arvencomics.com/series/catastrophic-necromancer/',
+        id: '/series/catastrophic-necromancer/',
+        title: 'Catastrophic Necromancer'
     },
     child: {
-        id: '/manga-wa912941/1/65.html',
-        title: '(S2) Episode 65'
+        id: '/catastrophic-necromancer-chapter-15/',
+        title: 'Chapter 15'
     },
     entry: {
         index: 0,
-        size: 72_865,
+        size: 834_047,
         type: 'image/jpeg'
     }
 };

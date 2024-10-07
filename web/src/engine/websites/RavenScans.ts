@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './Manjanoon.webp';
+import icon from './RavenScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -12,8 +12,9 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manjanoon', 'Manjanoon', 'https://axztu.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Arabic, Tags.Source.Scanlator);
+        super('ravenscans', 'Raven Scans', 'https://ravenscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
+
     public override get Icon() {
         return icon;
     }

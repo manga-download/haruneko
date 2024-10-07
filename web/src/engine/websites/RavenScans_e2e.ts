@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'lunarscansfr',
-        title: 'Lunar Scans (FR)'
+        id: 'ravenscans',
+        title: 'Raven Scans'
     },
     container: {
-        url: 'https://gloryscans.fr/manga/regressor-of-the-fallen-family/',
-        id: '/manga/regressor-of-the-fallen-family/',
-        title: 'Regressor of the Fallen Family'
+        url: 'https://ravenscans.com/manga/am-i-invincible/',
+        id: '/manga/am-i-invincible/',
+        title: 'Am I Invincible'
     },
     child: {
-        id: '/regressor-of-the-fallen-family-chapitre-4/',
-        title: 'Chapitre 4'
+        id: '/am-i-invincible-chapter-chapter-176/',
+        title: 'Chapter 176'
     },
     entry: {
         index: 1,
-        size: 1_300_265,
+        size: 408_841,
         type: 'image/jpeg'
     }
 };

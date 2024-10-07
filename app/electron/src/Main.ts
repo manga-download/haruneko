@@ -45,17 +45,19 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
     const win = new ApplicationWindow({
         show: false,
         width: 1280,
-        height: 720,
+        height: 800,
         center: true,
         frame: false,
         transparent: true,
         //icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
             webSecurity: false, // Bypass CORS checks
-            nodeIntegration: false,
             contextIsolation: true,
-            preload: path.resolve(app.getAppPath(), 'preload.js'),
+            nodeIntegration: false,
+            nodeIntegrationInWorker: false,
+            nodeIntegrationInSubFrames: false,
             disableBlinkFeatures: 'AutomationControlled',
+            preload: path.resolve(app.getAppPath(), 'preload.js'),
         },
     });
 
@@ -65,10 +67,11 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
     return win;
 }
 
-async function OpenWindow() {
+async function OpenWindow(): Promise<void> {
     InitializeMenu();
     const manifest = await LoadManifest();
     await SetupUserDataDirectory(manifest);
+    app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
     await app.whenReady();
     const win = await CreateApplicationWindow();
     const ipc = new IPC(win.webContents);
@@ -78,9 +81,7 @@ async function OpenWindow() {
     new RemoteBrowserWindowController(ipc);
     new BloatGuard(ipc, win.webContents);
     win.RegisterChannels(ipc);
-    await win.loadURL(await GetArgumentURL() ?? manifest.url, {
-        userAgent: manifest['user-agent'] ?? win.webContents.userAgent.replace(/\s+[^\s]*(hakuneko|electron)[^\s]*\s+/gi, ' '),
-    });
+    return win.loadURL(await GetArgumentURL() ?? manifest.url);
 }
 
 OpenWindow();
