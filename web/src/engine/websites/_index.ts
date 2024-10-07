@@ -359,7 +359,6 @@ export { default as MangaReadCO } from './MangaReadCO';
 export { default as MangaReader } from './MangaReader';
 export { default as MangaReaderTo } from './MangaReaderTo';
 export { default as MangaRockTeam } from './MangaRockTeam';
-export { default as MangaRocky } from './MangaRocky';
 export { default as MangaRolls } from './MangaRolls';
 export { default as MangaRomance } from './MangaRomance';
 export { default as MangaRose } from './MangaRose';
