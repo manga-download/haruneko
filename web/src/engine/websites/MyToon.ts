@@ -12,7 +12,7 @@ import * as Zbulu from './decorators/WordPressZbulu';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mytoon', `MyToon`, 'https://mytoon.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('mytoon', `MyToon`, 'https://mytoon.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

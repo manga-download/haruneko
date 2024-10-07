@@ -14,7 +14,7 @@ import * as Zbulu from './decorators/WordPressZbulu';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('holymanga', `Holy Manga`, 'https://holymanga.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation );
+        super('holymanga', `Holy Manga`, 'https://holymanga.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation );
     }
     public override get Icon() {
         return icon;
