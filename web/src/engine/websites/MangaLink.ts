@@ -5,9 +5,9 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-AddAntiScrapingDetection(async (render) => {
-    const dom = await render();
-    return dom.querySelector('form#lsrecaptcha-form[action*="/.lsrecap/recaptcha?"]') ? FetchRedirection.Interactive : undefined;
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<boolean>(`document.querySelector('form#lsrecaptcha-form[action*="/.lsrecap/recaptcha?"]') && true || false`);
+    return result ? FetchRedirection.Interactive : undefined;
 });
 
 @Madara.MangaCSS(/^{origin}\/readcomics\/[^/]+\/$/)
