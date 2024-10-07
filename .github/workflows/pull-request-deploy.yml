@@ -1,0 +1,36 @@
+name: Pull Request (Deployment)
+
+on:
+  pull_request:
+    types: [ labeled ]
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  pull-request-deploy:
+    name: Publish Web-Application (Preview)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Install NPM Packages
+        run: npm install
+      - name: Build Web-Application
+        run: npm run build --workspace=web
+      - name: Deploy App to CloudFlare
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'Deploy PR') }}
+        uses: cloudflare/pages-action@v1
+        with:
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          projectName: haruneko
+          directory: ./web/build
