@@ -7,18 +7,18 @@ const config = {
         title: 'MagKan'
     },
     container: {
-        url: 'https://kansai.mag-garden.co.jp/oshihen/',
-        id: '/oshihen/',
+        url: 'https://kansai.mag-garden.co.jp/series/76efde6cc8881/',
+        id: '/series/76efde6cc8881/',
         title: '推し変しやがれ!!'
     },
     child: {
-        id: '/assets/files/oshihen1',
+        id: '/episodes/93e16b054f108/',
         title: '第零話'
     },
     entry: {
         index: 1,
-        size: 317_098,
-        type: 'image/jpeg'
+        size: 3_166_820,
+        type: 'image/png'
     }
 };
 
