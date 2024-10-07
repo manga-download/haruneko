@@ -7,17 +7,17 @@ const config = {
         title: 'Traducciones Amistosas'
     },
     container: {
-        url: 'https://traduccionesamistosas.eyudud.net/l/el-retorno-del-jugador',
-        id: '/l/el-retorno-del-jugador',
-        title: 'El retorno del jugador'
+        url: 'https://traduccionesamistosas.eyudud.net/manga/entrenador-de-mascotas/',
+        id: JSON.stringify({ post: '90', slug: '/manga/entrenador-de-mascotas/' }),
+        title: 'Entrenador de Mascotas'
     },
     child: {
-        id: '/v/el-retorno-del-jugador/capitulo-135',
-        title: 'Capitulo 135'
+        id: '/manga/entrenador-de-mascotas/capitulo-252/',
+        title: 'Capitulo 252'
     },
     entry: {
-        index: 2,
-        size: 1_027_155,
+        index: 3,
+        size: 1_869_563,
         type: 'image/jpeg'
     }
 };
