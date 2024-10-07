@@ -180,7 +180,7 @@ export class MediaItemList extends FASTElement {
         this.Entries = this.Container?.Entries.Value ?? [];
     }
 
-    @observable Entries: StoreableMediaContainer<MediaItem>[] = [];
+    @observable Entries: ReadonlyArray<StoreableMediaContainer<MediaItem>> = [];
     EntriesChanged() {
         this.FilterEntries();
     }
@@ -188,7 +188,7 @@ export class MediaItemList extends FASTElement {
     MatchChanged() {
         this.FilterEntries();
     }
-    @observable filtered: StoreableMediaContainer<MediaItem>[] = [];
+    @observable filtered: ReadonlyArray<StoreableMediaContainer<MediaItem>> = [];
     @observable updating: Array<string> = [];
 
     public async FilterEntries() {

@@ -301,6 +301,7 @@ export enum EngineResourceKey {
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
     FetchProvider_Fetch_CloudFlareChallenge = 'FetchProvider_Fetch_CloudFlareChallenge',
+    FetchProvider_Fetch_VercelChallenge = 'FetchProvider_Fetch_VercelChallenge',
     FetchProvider_Fetch_Forbidden = 'FetchProvider_Fetch_Forbidden',
 
     BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',
@@ -342,6 +343,11 @@ export enum WebsiteResourceKey {
 export enum WebsiteResourceKey {
     Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
     Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
+}
+
+// [SECTION]: Website CuuTruyen
+export enum WebsiteResourceKey {
+    Plugin_CuuTruyen_Error_NotProcessed = 'Plugin_CuuTruyen_Error_NotProcessed',
 }
 
 // [SECTION]: Website PocketComics

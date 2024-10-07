@@ -52,6 +52,8 @@ const template: ViewTemplate<MediaItemPreview> = html`
 @customElement({ name: 'fluent-media-item-preview', template, styles })
 export class MediaItemPreview extends FASTElement {
 
+    @observable items: ReadonlyArray<MediaItem>;
+
     @observable Entry: MediaContainer<MediaItem>;
     async EntryChanged() {
         if(this.Entry?.Entries?.Value.length === 0) {
@@ -61,5 +63,4 @@ export class MediaItemPreview extends FASTElement {
         this.items = this.Entry?.Entries.Value ?? [];
         this.$emit('entryChanged', this.Entry);
     }
-    @observable items: MediaItem[];
 }

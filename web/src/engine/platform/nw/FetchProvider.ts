@@ -17,16 +17,18 @@ const fetchApiForbiddenHeaders = [
 ];
 
 async function UpdateCookieHeader(url: string, headers: Headers) {
-    const name = fetchApiSupportedPrefix + 'Cookie';
-    const value = headers.get(name);
-    const cookies = value ? value.split(';').map(cookie => cookie.trim()) : [];
-    const browserCookies = await chrome.cookies.getAll({ url });
+    // TODO: Skip cookie assignment in browser window?
+    const cookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
+    const headerCookies = headers.get(cookieHeaderName)?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
+    const browserCookies = await chrome.cookies.getAll({ url, partitionKey: {} }); // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
     for(const browserCookie of browserCookies) {
-        if(cookies.none(cookie => cookie.startsWith(browserCookie.name + '='))) {
-            cookies.push(`${browserCookie.name}=${browserCookie.value}`);
+        if(headerCookies.none(cookie => cookie.startsWith(browserCookie.name + '='))) {
+            headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
         }
     }
-    headers.set(name, cookies.join('; '));
+    if(headerCookies.length > 0) {
+        headers.set(cookieHeaderName, headerCookies.join('; '));
+    }
 }
 
 function ConcealHeaders(init: HeadersInit): Headers {
@@ -55,9 +57,6 @@ function RevealHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webReque
 function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
 
     let headers = RevealHeaders(details.requestHeaders ?? []);
-
-    // TODO: set cookies from chrome matching the details.url?
-    //       const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
 
     headers = headers.filter(header => {
         return header.name.toLowerCase() !== 'referer' || !header.value?.startsWith(window.location.origin);
@@ -147,13 +146,12 @@ export default class extends FetchProvider {
         //request.signal.addEventListener('abort', () => undefined);
         //if(request.signal.aborted) { /* */ }
 
-        const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
+        const options: NWJS_Helpers.WindowOpenOption = {
             new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
-            mixed_context: false,
             show: this.featureFlags.VerboseFetchWindow.Value,
             position: 'center',
             width: 1280,
-            height: 720,
+            height: 800,
             //inject_js_start: 'filename'
             //inject_js_end: 'filename'
         };
@@ -220,14 +218,11 @@ export default class extends FetchProvider {
                 return reject(new Error('Failed to open window (invalid content)!'));
             } else {
                 win.eval(null, preload instanceof Function ? `(${preload})()` : preload);
-                //preload(win.window.window, win.window.window);
-                //PreventDialogs(win, win.window.window);
             }
 
             win.on('document-start', (frame: typeof window) => {
                 invocations.push({ name: `win.on('document-start')`, info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
                 if(win.window === frame) {
-                    //preload(win.window.window, frame);
                     if (win.window.document.readyState === 'loading') {
                         win.window.document.addEventListener('DOMContentLoaded', () => {
                             invocations.push({ name: 'DOMContentLoaded', info: win.window?.location?.href });
@@ -238,7 +233,6 @@ export default class extends FetchProvider {
                         performRedirectionOrFinalize();
                     }
                 }
-                //PreventDialogs(win, frame);
             });
 
             // NOTE: Use policy to prevent any new popup windows

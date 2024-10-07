@@ -85,13 +85,13 @@ export default class extends DecoratableMangaScraper {
         if (!cookies['CloudFront-Key-Pair-Id']) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        return (data as APIItem).attributes.pages.map(page => new Page(this, chapter, new URL(page.path, this.imgCDN), { ...cookies }));
+        return (data as APIItem).attributes.pages.map(page => new Page<CookieSigner>(this, chapter, new URL(page.path, this.imgCDN), { ...cookies }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<CookieSigner>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await this.imageTaskPool.Add(async () => {
 
-            const cookiesData = page.Parameters as CookieSigner;
+            const cookiesData = page.Parameters;
             const cookies: string[] = [];
             Object.keys(cookiesData).forEach(name => {
                 const value = cookiesData[name];

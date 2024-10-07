@@ -78,12 +78,12 @@
         indented
         labelText={isBookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'}
         shortcutText="⌘F"
-        on:click={toggleBookmark}
+        onclick={toggleBookmark}
     />
     <ContextMenuDivider />
     <ContextMenuOption indented labelText="Trackers">
         <!--{#each window.HakuNeko.PluginController.InfoTrackers as tracker}
-            <ContextMenuOption labelText="{tracker.Title}" on:click={() => {selectedTracker=tracker; isTrackerModalOpen=true;}} />
+            <ContextMenuOption labelText="{tracker.Title}" onclick={() => {selectedTracker=tracker; isTrackerModalOpen=true;}} />
         {/each}
             -->
     </ContextMenuOption>
@@ -101,7 +101,7 @@
                 tooltipPosition="right"
                 tooltipAlignment="end"
                 iconDescription="Plugin missing : remove"
-                on:click={toggleBookmark}
+                onclick={toggleBookmark}
             />
         </span>
     {:else if isBookmarked}
@@ -114,7 +114,7 @@
                 tooltipPosition="right"
                 tooltipAlignment="end"
                 iconDescription="Remove from bookmarks"
-                on:click={toggleBookmark}
+                onclick={toggleBookmark}
             />
         </span>
     {:else}
@@ -126,7 +126,7 @@
                 tooltipPosition="right"
                 tooltipAlignment="end"
                 iconDescription="Add to bookmarks"
-                on:click={toggleBookmark}
+                onclick={toggleBookmark}
             />
         </span>
     {/if}
@@ -136,6 +136,7 @@
             window.open(media.Parent.URI.href, '_blank');
         }}
         title="Open {media.Parent.URI.href}"
+        aria-label="Open {media.Parent.URI.href}"
     >
         <img
             class="pluginIcon"
@@ -145,7 +146,7 @@
     </button>
     <ClickableTile
         class="title"
-        on:click={(e) => {
+        onclick={(e) => {
             e.preventDefault();
             $selectedMedia = media;
         }}
@@ -157,7 +158,7 @@
             icon={PlayFilled}
             kind="ghost"
             size="small"
-            on:click={(e) => {
+            onclick={(e) => {
                 e.preventDefault();
                 $selectedMedia = media;
             }}
