@@ -7,7 +7,7 @@ const config: Config = {
         title: 'KomikIndo'
     },
     container: {
-        url: 'https://komikindo.co/manga/please-go-home-akutsu-san/',
+        url: 'https://komiksin.id/manga/please-go-home-akutsu-san/',
         id: '/manga/please-go-home-akutsu-san/',
         title: 'Please Go Home, Akutsu-san!'
     },
