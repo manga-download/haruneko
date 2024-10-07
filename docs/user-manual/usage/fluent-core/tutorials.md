@@ -1,7 +1,3 @@
-<script setup>
-   import YouTube from '../../../components/YouTube.vue'
-</script>
-
 # Tutorials
 
 ## Preview/Download Media
@@ -111,10 +107,10 @@ Therefore this workaround needs to be repeated in case the content of the websit
 10. Navigate to the website/page that is protected by CloudFlare
 11. Solve the challenge/captcha
 12. Wait for the page to correctly being loaded
-14. Open the _HauNeko Assistant Extension_ and press the button to bypass CloudFlare
-15. Switch back to HakuNeko
-16. In case a restart confiirmation appears, close and re-open HakuNeko
-17. HakuNeko should now be able to access the content of the website
+13. Open the _HauNeko Assistant Extension_ and press the button to bypass CloudFlare
+14. Switch back to HakuNeko
+15. In case a restart confiirmation appears, close and re-open HakuNeko
+16. HakuNeko should now be able to access the content of the website
 
 ### Open Manga/Anime URL from Browser
 
@@ -123,3 +119,8 @@ Therefore this workaround needs to be repeated in case the content of the websit
 <YouTube id="yqWX86uT5jM?mute=1" />
 
 1. ...
+
+<!-- Import VitePress Component(s) -->
+<script setup>
+   import YouTube from '../../../components/YouTube.vue'
+</script>

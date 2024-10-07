@@ -7,13 +7,15 @@ The HakuNeko engine is globally exposed and can easily be scripted, so any sampl
 After starting the application simply press `F12` to open the developer tools and switch to the `Console` tab.
 Now everything is ready to start scripting.
 
-:: info TIP
+::: info TIP
 You may insert `debugger` statements at any line(s) when injecting scripts into the console to break for debugging.
+
 ```javascript
 const today = new Date();
 debugger // break into debugger
 console.log(today);
 ```
+
 :::
 
 ## Localization
@@ -260,7 +262,7 @@ await bookmark.GetNewEntries();
 await HakuNeko.BookmarkPlugin.Remove(bookmark);
 ```
 
-See also: https://github.com/manga-download/haruneko/issues/41
+See also: [Investigate and design a mechanism to check for new chapters/episodes](https://github.com/manga-download/haruneko/issues/41)
 
 ### Tracker Information
 

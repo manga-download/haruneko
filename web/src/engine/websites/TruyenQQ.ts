@@ -9,9 +9,9 @@ import { Numeric } from '../SettingsManager';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-AddAntiScrapingDetection(async (render) => {
-    const dom = await render();
-    return [...dom.querySelectorAll('script')].find(script => /window\.captcha\s*=/.test(script.text) && /chaitin\.cn\/captcha\/api/.test(script.text)) ? FetchRedirection.Automatic : undefined;
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<string[]>(`[...document.querySelectorAll('script')].map(script => script.text)`);
+    return result.some(script => /window\.captcha\s*=/.test(script) && /chaitin\.cn\/captcha\/api/.test(script)) ? FetchRedirection.Automatic : undefined;
 });
 
 function PageExtractor(element: HTMLElement): string {

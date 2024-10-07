@@ -191,14 +191,14 @@
 <style>
     #vieweractions {
         opacity: 5%;
-        z-index: 4500;
+        z-index: 8100;
     }
     #vieweractions:hover {
         opacity: 100%;
     }
     #vieweractions :global(.bx--header__action) {
         position: absolute;
-        z-index: 4500;
+        z-index: 8100;
     }
     #vieweractions :global(.close) {
         top: 0;
