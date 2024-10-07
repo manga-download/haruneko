@@ -4,13 +4,14 @@ import { Chapter, type Manga, type MangaScraper} from "../../providers/MangaPlug
 import { Page } from "../../providers/MangaPlugin";
 import * as Common from './Common';
 
-AddAntiScrapingDetection(async (render) => {
-    const dom = await render();
-    if (dom.documentElement.innerHTML.includes(`ct_anti_ddos_key`)) { // Sample => Mangagun, NicoManga, Rawinu, Weloma, WeloveManga
+AddAntiScrapingDetection(async (invoke) => {
+
+    const result = await invoke<boolean>(`document.documentElement.innerHTML.includes('ct_anti_ddos_key')`);// Sample => Mangagun, NicoManga, Rawinu, Weloma, WeloveManga
+    if (result) {
         await new Promise(resolve => setTimeout(resolve, 3000));
         return FetchRedirection.Automatic;
-    }
-    return undefined;
+    } else return undefined;
+
 });
 
 export function MangaLabelExtractor(element: HTMLElement) {
