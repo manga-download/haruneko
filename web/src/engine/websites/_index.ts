@@ -790,7 +790,6 @@ export { default as MuchoHentai } from './legacy/MuchoHentai';
 export { default as MyAnimeListManga } from './legacy/MyAnimeListManga';
 export { default as MyReadingManga } from './legacy/MyReadingManga';
 export { default as Naver } from './legacy/Naver';
-export { default as NetTruyen } from './legacy/NetTruyen';
 export { default as NewToki } from './legacy/NewToki';
 export { default as NhatTruyen } from './legacy/NhatTruyen';
 export { default as NineMangaBR } from './legacy/NineMangaBR';
