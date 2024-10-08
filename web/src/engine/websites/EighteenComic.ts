@@ -70,11 +70,11 @@ export default class extends DecoratableMangaScraper {
             const seed = page.Parameters.seed;
             const l = image.height % seed ;
             for (let index = 0; index < seed; index++) {
-                let c = Math.floor(image.height / seed);
-                let g = c * index;
-                let w = image.height - c * (index + 1) - l;
-                index == 0 ? c += l : g += l;
-                ctx.drawImage(image, 0, w, image.width, c, 0, g, image.width, c);
+                let sourceHeight = Math.floor(image.height / seed);
+                let destinationY = sourceHeight * index;
+                const sourceY = image.height - sourceHeight * (index + 1) - l;
+                index == 0 ? sourceHeight += l : destinationY += l;
+                ctx.drawImage(image, 0, sourceY, image.width, sourceHeight, 0, destinationY, image.width, sourceHeight);
             }
         });
     }
