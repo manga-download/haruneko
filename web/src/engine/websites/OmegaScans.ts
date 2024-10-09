@@ -1,21 +1,21 @@
 import { Tags } from '../Tags';
-import icon from './ModeScanlator.webp';
+import icon from './OmegaScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as HeamCMS from './decorators/HeanCMS';
 
-const apiUrl = 'https://api.modescanlator.net';
+const apiUrl = 'https://api.omegascans.org';
 
 @HeamCMS.MangaCSS(/^{origin}\/series\/[^/]+$/, apiUrl)
 @HeamCMS.MangasMultiPageAJAX(apiUrl)
 @HeamCMS.ChaptersSinglePageAJAXv2(apiUrl)
 @HeamCMS.PagesSinglePageAJAX(apiUrl)
-@HeamCMS.ImageAjax()
-
+@HeamCMS.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('modescanlator', `Mode Scanlator`, 'https://site.modescanlator.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('omegascans', 'OmegaScans', 'https://omegascans.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Novel, Tags.Language.English, Tags.Source.Scanlator, Tags.Rating.Pornographic);
     }
+
     public override get Icon() {
         return icon;
     }
