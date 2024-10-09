@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
         const dom = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
         const chapterlist = [...dom.querySelectorAll<HTMLAnchorElement>('div.episode ul a')];
         return chapterlist.length > 0 ? chapterlist.map(chapter => {
-            const spanbloat = chapter.querySelector('span');
+            const spanbloat = chapter.querySelector<HTMLSpanElement>('span');
             if (spanbloat) spanbloat.parentNode.removeChild(spanbloat);
             return new Chapter(this, manga, chapter.pathname, chapter.text.replace(manga.Title, '').trim());
         }) : [new Chapter(this, manga, manga.Identifier.replace('/album/', '/photo/'), manga.Title)];
@@ -66,8 +66,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<Seed>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return page.Parameters.seed === -1 ? blob : DeScramble(blob, async (image, ctx) => {
-            const seed = page.Parameters.seed;
+        const seed = page.Parameters.seed;
+        return seed < 0 ? blob : DeScramble(blob, async (image, ctx) => {
             const l = image.height % seed ;
             for (let index = 0; index < seed; index++) {
                 let sourceHeight = Math.floor(image.height / seed);
