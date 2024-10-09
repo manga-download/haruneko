@@ -31,15 +31,15 @@ type MangaID = {
     slug: string,
 }
 
-const pageScript = `[...document.querySelectorAll('section img[loading]')].map(img => img.src);`;
+const pageScript = `[...document.querySelectorAll('section img[loading]')].map(image => new URL(image.getAttribute('src'), window.location.origin).href);`;
 
 @Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = new URL('/api/', this.URI);
 
-    public constructor() {
-        super('vortexscans', `Vortex Scans`, 'https://vortexscans.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
+    public constructor(id = 'vortexscans', label = 'Vortex Scans', url ='https://vortexscans.org', tags = [Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator]) {
+        super(id, label, url, ... tags);
     }
 
     public override get Icon() {
