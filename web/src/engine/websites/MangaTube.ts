@@ -1,30 +1,61 @@
 import { Tags } from '../Tags';
 import icon from './MangaTube.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-type APIMangas = {
-    success: {
-        manga_title: string,
-        manga_type: number,
-        manga_slug: string,
-        manga_id: number,
-        manga_mature: number,
+type APIResult<T> = {
+    success: boolean,
+    data: T,
+}
+
+type MangaClipBoard = {
+    title: string,
+    slug : string
+}
+
+type APIManga = {
+    title: string,
+    slug: string
+}
+
+type APIChapters = {
+    chapters: {
+        id: number,
+        number: number,
+        subNumber: number,
+        name: string
     }[]
 }
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('b').textContent.trim() + ' ' + anchor.querySelector('span.chapter-name').textContent.trim();
-    return { id, title };
+type APIPages = {
+    chapter: {
+        pages: {
+            url: string
+        }[]
+    }
 }
 
-@Common.MangaCSS(/^{origin}\/series\//, 'h1.series-title')
-@Common.ChaptersSinglePageCSS('div.vol-container ul.chapter-list li a[title]', ChapterExtractor)
-@Common.PagesSinglePageJS('manga_reader.pages.map(page => manga_reader.img_path + page.file_name);', 500)
+const mangaScript = `
+    new Promise( resolve => {
+        resolve(
+            {
+                slug : window.laravel.route.data.manga.manga.slug,
+                title: window.laravel.route.data.manga.manga.title
+            });
+    });
+    ;
+`;
+
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<boolean>(`document.documentElement.innerHTML.includes('window.__challange')`);
+    return result ? FetchRedirection.Automatic : undefined;
+});
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+    private readonly apiUrl = new URL('/api/manga/', this.URI);
 
     public constructor() {
         super('mangatube', `MangaTube`, 'https://manga-tube.me', Tags.Language.German, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
@@ -34,28 +65,42 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangasList = [];
-        const url = new URL('/ajax', this.URI);
-        for (let page = 1, run = true; run; page++) {
-            const formBody = new URLSearchParams({
-                'action': 'load_series_list_entries',
-                'parameter[page]': String(page),
-                'parameter[letter]': '',
-                'parameter[sortby]': 'alphabetic',
-                'parameter[order]': 'asc'
-            });
-            const request = new Request(url.href, {
-                method: 'POST',
-                body: formBody,
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded',
-                },
-            });
-            const data = await FetchJSON<APIMangas>(request);
-            const mangas = data.success.map(entry => new Manga(this, provider, '/series/'+entry.manga_slug, entry.manga_title.trim()));
-            mangas.length > 0 ? mangasList.push(...mangas) : run = false;
-        }
-        return mangasList;
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
     }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { slug, title } = await FetchWindowScript<MangaClipBoard>(new Request(url), mangaScript, 1500);
+        return new Manga(this, provider, slug, title);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList: Manga[]= [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this.GetMangasFromPage(page, provider);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
+    }
+
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`search?page=${page}`, this.apiUrl)));
+        return data.map(item => new Manga(this, provider, item.slug, item.title.trim()));
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { data: { chapters } } = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`${manga.Identifier}/chapters`, this.apiUrl)));
+        return chapters.map(item => {
+            let title = item.number != 0 ? item.number.toString() : '';
+            title += item.subNumber != 0 ? '.' + item.subNumber.toString() : '';
+            title += item.name ? ` ${item.name}` : '';
+            return new Chapter(this, manga, item.id.toString(), title.trim());
+        });
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { data: { chapter: { pages } } } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.apiUrl)));
+        return pages.map(item => new Page(this, chapter, new URL(item.url)));
+    }
+
 }
