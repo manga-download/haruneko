@@ -7,15 +7,15 @@ function ImageExtractor(img: HTMLImageElement) {
     return img.dataset.original;
 }
 
-@Common.MangaCSS(/^{origin}\//, 'meta[property="og:title"]')
-@Common.MangasMultiPageCSS('/danhsach/P{page}/index.html', 'h4.story-name a')
-@Common.ChaptersSinglePageCSS('div.chap-item-info h5.name a')
-@Common.PagesSinglePageCSS('div.list-images img', ImageExtractor)
+@Common.MangaCSS(/^{origin}\/[^/]+\.html$/, 'meta[property="og:title"]')
+@Common.MangasMultiPageCSS('/danhsach/P{page}/index.html', 'ul.lst_story li.story_item a.story_title')
+@Common.ChaptersSinglePageCSS('ul.lst-chapter li.chap-item a')
+@Common.PagesSinglePageCSS('div#lst_content div.page-chapter img', ImageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hamtruyen', `HamTruyen`, 'https://hamtruyen.info', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa);
+        super('hamtruyen', `HamTruyen`, 'https://hamtruyen.info', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
