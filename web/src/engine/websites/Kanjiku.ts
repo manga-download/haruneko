@@ -28,8 +28,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new Request(this.URI.href);
-        return FetchWindowScript(request, `window.cookieStore.set('clicked', 'true')`);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('clicked', 'true')`);
     }
 
     public override get Icon() {
