@@ -45,7 +45,6 @@ const mangaScript = `
                 title: window.laravel.route.data.manga.manga.title
             });
     });
-    ;
 `;
 
 AddAntiScrapingDetection(async (invoke) => {
