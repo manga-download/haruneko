@@ -141,7 +141,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private CreatePostRequest(url: URL, body: string, contentType: string = 'application/json'): Request {
+    protected CreatePostRequest(url: URL, body: string, contentType: string = 'application/json'): Request {
         const headers: HeadersInit = {
             Referer: this.URI.origin,
             'x-balcony-id': this.BalconyID,
