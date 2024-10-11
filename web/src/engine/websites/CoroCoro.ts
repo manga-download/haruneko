@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('/rensai', this.URI)), 'script');
         const json = this.FindAndParseJSON(scripts, 'totalChapterLikes');
-        const { weekdays: { mon, tue, wed, thu, fri, sat, sun } } = this.LocateObjectWithnNamedProperty<JSONMangas>(json, 'weekdays');
+        const { weekdays: { mon, tue, wed, thu, fri, sat, sun } } = this.LocateObjectWithNamedProperty<JSONMangas>(json, 'weekdays');
         return [mon, tue, wed, thu, fri, sat, sun].reduce((accumulator: Manga[], day) => {
             const mangas = day.map(manga => new Manga(this, provider, `/title/${manga.id}`, manga.name));
             accumulator.push(...mangas);
@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${manga.Identifier}`, this.URI)), 'script');
         const json = this.FindAndParseJSON(scripts, 'omittedMiddleChapters');
-        const { chapters: { earlyChapters, omittedMiddleChapters, latestChapters } } = this.LocateObjectWithnNamedProperty<JSONChapters>(json, 'chapters');
+        const { chapters: { earlyChapters, omittedMiddleChapters, latestChapters } } = this.LocateObjectWithNamedProperty<JSONChapters>(json, 'chapters');
         return [earlyChapters, omittedMiddleChapters, latestChapters].reduce((accumulator: Chapter[], category) => {
             const chapters = category.map(chapter => new Chapter(this, manga, `/chapter/${chapter.id}`, chapter.title));
             accumulator.push(...chapters);
@@ -93,7 +93,7 @@ export default class extends DecoratableMangaScraper {
         if (!json) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        const { viewerSection: { pages } } = this.LocateObjectWithnNamedProperty<JSONPages>(json, 'viewerSection');
+        const { viewerSection: { pages } } = this.LocateObjectWithNamedProperty<JSONPages>(json, 'viewerSection');
         return pages.map(page => new Page<CryptoParams>(this, chapter, new URL(page.src), page.crypto));
     }
 
@@ -115,7 +115,7 @@ export default class extends DecoratableMangaScraper {
         return JSON.parse(json.substring(json.indexOf(':') + 1));
     }
 
-    private LocateObjectWithnNamedProperty<T>(obj, keyname: string): T {
+    private LocateObjectWithNamedProperty<T>(obj, keyname: string): T {
         if (!obj) return null;
         if (obj[keyname]) {
             return obj as T;
@@ -123,7 +123,7 @@ export default class extends DecoratableMangaScraper {
         let result = null;
         for (let i in obj) {
             if (typeof obj[i] === 'object')
-                result = result ?? this.LocateObjectWithnNamedProperty(obj[i], keyname);
+                result = result ?? this.LocateObjectWithNamedProperty(obj[i], keyname);
         }
         return result;
     }
