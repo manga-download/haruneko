@@ -63,8 +63,7 @@ export default class extends Delitoon {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleParams>[]> {
         await this.UpdateToken();
-        const apiUrl = new URL('/api/balcony-api-v2/', this.URI);
-        const url = new URL(`contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl);
+        const url = new URL(`contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
         const { result, data: { images, isScramble } } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
         if (result === 'ERROR') {
@@ -72,9 +71,8 @@ export default class extends Delitoon {
         }
 
         if (isScramble) {
-            const endpoint = new URL(`contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, apiUrl);
+            const endpoint = new URL(`contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
             const body = JSON.stringify({ line: images[0].line });
-            //get scramblekey
             const { data } = await FetchJSON<APIResult<string>>(this.CreatePostRequest(endpoint, body));
             const pages: Page<ScrambleParams>[] = [];
             for (let image of images) {

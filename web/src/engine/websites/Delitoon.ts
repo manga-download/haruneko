@@ -58,7 +58,7 @@ export default class extends DecoratableMangaScraper {
     private readonly Timezone: string = 'Europe/Paris';
     private readonly Platform: string = 'WEB';
     private Token: APIToken = undefined;
-    private readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
+    protected readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
 
     public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', balconyID = 'DELITOON_COM', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
         super(id, label, url, ...tags);
