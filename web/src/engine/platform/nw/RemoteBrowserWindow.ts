@@ -1,7 +1,8 @@
 import { Observable, type IObservable } from '../../Observable';
+import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
 import type { ScriptInjection } from '../FetchProviderCommon';
 
-export default class RemoteBrowserWindow {
+export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
 
     private nwWindow: NWJS_Helpers.win = undefined;
 
@@ -50,10 +51,34 @@ export default class RemoteBrowserWindow {
 
         this.nwWindow = await new Promise<NWJS_Helpers.win>(resolve => nw.Window.open(request.url, options, resolve));
 
+        /*
+        if(!this.nwWindow.window?.document) {
+            console.warn('New Browser Window has no DOM!');
+        }
+
+        if(this.nwWindow.window === nw.Window.get().window) {
+            console.warn('New Browser Window has the same DOM as the Application Browser Window!');
+        }
+        */
+
         // NOTE: Use policy to prevent any new popup windows
         this.nwWindow.on('new-win-policy', (_frame, _url, policy) => {
             policy.ignore();
         });
+
+        /*
+        export function PreventDialogs(nwWindow: NWJS_Helpers.win, frame: Window): void {
+            if(frame.location.origin.startsWith('http')) {
+                //console.log(`<INJECT-DOM-PREPERATION src="${frame.location.href}">`);
+                nwWindow.window.window.opener = (() => protect(nwWindow, undefined))();
+                nwWindow.window.window.open = (() => protect(nwWindow, proxify(window.open, { closed: false })))();
+                nwWindow.window.window.confirm = (() => protect(nwWindow, proxify(window.confirm, true)))();
+                nwWindow.window.window.prompt = (() => protect(nwWindow, proxify(window.prompt, '')))();
+                nwWindow.window.window.alert = (() => protect(nwWindow, proxify(window.alert, undefined)))();
+                //console.log('</INJECT-DOM-PREPERATION>');
+            }
+        }
+        */
 
         this.nwWindow.on('navigation', (frame, url) => this.OnBeforeNavigate(frame, url));
 

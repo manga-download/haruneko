@@ -37,11 +37,22 @@ export class RemoteBrowserWindowController {
         });
         win.webContents.on('dom-ready', () => this.ipc.Send(Channels.Web.OnDomReady, win.id));
         win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.Web.OnBeforeNavigate, win.id, event.url, event.isMainFrame, event.isSameDocument));
+        win.webContents.on('did-navigate', async () => {
+            await this.SendDebugCommand<void>(win.id, 'Runtime.evaluate', { expression: `console.log('did-navigate');` });
+            await this.SendDebugCommand<void>(win.id, 'Runtime.evaluate', { expression: `console.log('Inspect Function:', inspect(document.querySelector));` });
+        });
+        if(!win.webContents.debugger.isAttached()) {
+            win.webContents.debugger.attach('1.3');
+        }
         return win.id;
     }
 
     private async CloseWindow(windowID: number): Promise<void> {
-        this.FindWindow(windowID).destroy();
+        const win = this.FindWindow(windowID);
+        if(win.webContents.debugger.isAttached()) {
+            win.webContents.debugger.detach();
+        }
+        win.destroy();
     }
 
     private async SetVisibility(windowID: number, show: boolean): Promise<void> {
@@ -55,5 +66,14 @@ export class RemoteBrowserWindowController {
 
     private async LoadURL(windowID: number, url: string, options: string): Promise<void> {
         await this.FindWindow(windowID).loadURL(url, JSON.parse(options));
+    }
+
+    private async SendDebugCommand<T>(windowID: number, message: string, parameters?: JSONObject): Promise<T> {
+        const remoteDebugger = this.FindWindow(windowID).webContents.debugger;
+        if(remoteDebugger.isAttached()) {
+            return remoteDebugger.sendCommand(message, parameters) as Promise<T>;
+        } else {
+            this.Throw(`The debugger is not attached to the window with id ${windowID}!`);
+        }
     }
 }

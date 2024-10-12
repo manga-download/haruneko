@@ -1,12 +1,17 @@
 import protobuf from 'protobufjs';
 import { Exception, InternalError } from '../Error';
 import { EngineResourceKey as R } from '../../i18n/ILocale';
+import { CreateRemoteBrowserWindow } from './RemoteBrowserWindow';
+import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDetection';
+import type { FeatureFlags } from '../FeatureFlags';
 
 export type ScriptInjection<T extends void | JSONElement> = string | ((this: Window) => Promise<T>);
 
 export abstract class FetchProvider {
 
-    protected async Wait(delay: number): Promise<void> {
+    constructor(private readonly featureFlags: FeatureFlags) {}
+
+    private async Wait(delay: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, delay));
     }
 
@@ -176,7 +181,9 @@ export abstract class FetchProvider {
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    public abstract FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T>;
+    public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
+        return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout);
+    }
 
     /**
      * Open the given {@link request} in a new browser window and inject the given {@link script}.
@@ -186,5 +193,69 @@ export abstract class FetchProvider {
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    public abstract FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: string, delay?: number, timeout?: number): Promise<T>
+    public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
+
+        const invocations: {
+            name: string;
+            info: string
+        }[] = [];
+
+        const win = CreateRemoteBrowserWindow();
+
+        win.BeforeWindowNavigate.Subscribe(async uri => {
+            invocations.push({ name: 'BeforeNavigate', info: `URL: ${uri.href}` });
+            return this.featureFlags.VerboseFetchWindow.Value ? null : win.Hide();
+        });
+
+        const destroy = async () => {
+            try {
+                if(this.featureFlags.VerboseFetchWindow.Value) {
+                    console.log('FetchWindow()::invocations', invocations);
+                } else {
+                    win.Close();
+                }
+            } catch(error) {
+                console.warn(error);
+            }
+        };
+
+        return new Promise<T>(async (resolve, reject) => {
+            let cancellation = setTimeout(async () => {
+                await destroy();
+                reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+            }, timeout);
+
+            win.DOMReady.Subscribe(async () => {
+                invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
+                try {
+                    const redirect = await CheckAntiScrapingDetection(win['nwWindow']);
+                    invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[redirect]}`});
+                    switch (redirect) {
+                        case FetchRedirection.Interactive:
+                            // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
+                            clearTimeout(cancellation);
+                            cancellation = setTimeout(() => {
+                                destroy();
+                                reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+                            }, 150_000);
+                            await win.Show();
+                            break;
+                        case FetchRedirection.Automatic:
+                            break;
+                        default:
+                            clearTimeout(cancellation);
+                            await this.Wait(delay);
+                            const result = await win.ExecuteScript<T>(script);
+                            await destroy();
+                            resolve(result);
+                    }
+                } catch {
+                    await destroy();
+                }
+            });
+
+            invocations.push({ name: 'Open', info: `Request URL: ${request.url}`});
+            await win.Open(request, this.featureFlags.VerboseFetchWindow.Value, preload);
+        });
+    }
 }
