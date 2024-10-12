@@ -19,7 +19,7 @@
         "eslint": "^9.11.1",
         "eslint-plugin-tsdoc": "^0.3.0",
         "jsdom": "^25.0.1",
-        "puppeteer-core": "^23.5.1",
+        "puppeteer-core": "^23.5.3",
         "tslib": "^2.7.0",
         "typescript": "^5.6.3",
         "typescript-eslint": "^8.8.1",
