@@ -25,7 +25,6 @@ export default class RemoteBrowserWindow {
 
     constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
         this.ipc.Listen(Channels.Web.OnDomReady, this.OnDomReady.bind(this));
-        //this.ipc.Listen(Channels.Web.OnDomReady, async (id) => console.log('Window ID:', id));
         this.ipc.Listen(Channels.Web.OnBeforeNavigate, this.OnBeforeNavigate.bind(this));
     }
 

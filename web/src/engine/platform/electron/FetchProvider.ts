@@ -1,11 +1,11 @@
 import { Exception } from '../../Error';
 import type { FeatureFlags } from '../../FeatureFlags';
 import { EngineResourceKey as R } from '../../../i18n/ILocale';
-import type { IPC } from '../InterProcessCommunication';
 import RemoteBrowserWindow from './RemoteBrowserWindow';
 import { FetchProvider, type ScriptInjection } from '../FetchProviderCommon';
 import { FetchRedirection } from '../AntiScrapingDetection';
 import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
+import type { IPC } from '../InterProcessCommunication';
 import { FetchProvider as Channels } from '../../../../../app/src/ipc/Channels';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
@@ -95,8 +95,8 @@ export default class extends FetchProvider {
         };
 
         return new Promise<T>(async (resolve, reject) => {
-            let cancellation = setTimeout(() => {
-                destroy();
+            let cancellation = setTimeout(async () => {
+                await destroy();
                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
             }, timeout);
 
