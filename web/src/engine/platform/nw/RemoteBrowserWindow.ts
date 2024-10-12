@@ -1,6 +1,6 @@
 import { Observable, type IObservable } from '../../Observable';
 import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
-import type { ScriptInjection } from '../FetchProviderCommon';
+import type { ScriptInjection } from '../FetchProvider';
 
 export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
 

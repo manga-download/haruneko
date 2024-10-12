@@ -1,5 +1,5 @@
+import { FetchProvider } from '../FetchProvider';
 import type { FeatureFlags } from '../../FeatureFlags';
-import { FetchProvider } from '../FetchProviderCommon';
 import type { IPC } from '../InterProcessCommunication';
 import { FetchProvider as Channels } from '../../../../../app/src/ipc/Channels';
 
@@ -36,11 +36,13 @@ class FetchRequest extends Request {
 
 export default class extends FetchProvider {
 
-    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>, featureFlags: FeatureFlags) {
-        super(featureFlags);
+    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
+        super();
     }
 
-    public Initialize(): void {
+    public Initialize(featureFlags: FeatureFlags): void {
+
+        super.Initialize(featureFlags);
 
         // Abuse the global Request type to check if system is already initialized
         if(globalThis.Request === FetchRequest) {

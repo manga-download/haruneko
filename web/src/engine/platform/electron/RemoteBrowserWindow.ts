@@ -2,7 +2,7 @@ import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
 import { Observable, type IObservable } from '../../Observable';
 import type { IPC } from '../InterProcessCommunication';
 import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
-import type { ScriptInjection } from '../FetchProviderCommon';
+import type { ScriptInjection } from '../FetchProvider';
 import { RemoteBrowserWindowController as Channels } from '../../../../../app/src/ipc/Channels';
 
 export default class RemoteBrowserWindow implements IRemoteBrowserWindow {

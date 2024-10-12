@@ -1,5 +1,5 @@
+import { FetchProvider } from '../FetchProvider';
 import type { FeatureFlags } from '../../FeatureFlags';
-import { FetchProvider } from '../FetchProviderCommon';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -82,15 +82,13 @@ class FetchRequest extends Request {
 
 export default class extends FetchProvider {
 
-    constructor(featureFlags: FeatureFlags) {
-        super(featureFlags);
-    }
-
     /**
      * Configure various system globals to bypass FetchAPI limitations.
      * This method can only be run once for all instances.
      */
-    public Initialize() {
+    public Initialize(featureFlags: FeatureFlags) {
+
+        super.Initialize(featureFlags);
 
         // Abuse the global Request type to check if system is already initialized
         if(globalThis.Request === FetchRequest) {

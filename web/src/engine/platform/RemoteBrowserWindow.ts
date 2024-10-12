@@ -4,7 +4,7 @@ import NodeWebkitRemoteBrowserWindow from './nw/RemoteBrowserWindow';
 import ElectronRemoteBrowserWindow from './electron/RemoteBrowserWindow';
 import GetIPC from './InterProcessCommunication';
 import type { IObservable } from '../Observable';
-import type { ScriptInjection } from './FetchProviderCommon';
+import type { ScriptInjection } from './FetchProvider';
 
 export interface IRemoteBrowserWindow {
     get DOMReady(): IObservable<void, IRemoteBrowserWindow>;
