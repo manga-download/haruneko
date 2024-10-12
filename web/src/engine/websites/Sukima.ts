@@ -156,7 +156,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private async FetchPOST<T>(uri: string, body: unknown) {
+    private async FetchPOST<T extends APIMangas | APICategories>(uri: string, body: unknown) {
         const request = new Request(new URL(uri, this.URI).href, {
             method: 'POST',
             body: JSON.stringify(body),
