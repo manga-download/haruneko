@@ -40,7 +40,6 @@ export abstract class FetchProvider {
     }
 
     protected async ValidateResponse(response: Response): Promise<void> {
-        // TODO: Investigate why the 'cf_clearance' cookie after manual website interaction is not correctly applied in fetch requests
         if(/challenge/i.test(response.headers.get('CF-Mitigated'))) {
             throw new Exception(R.FetchProvider_Fetch_CloudFlareChallenge, response.url);
         }
