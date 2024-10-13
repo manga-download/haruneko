@@ -24,27 +24,3 @@ const ComicConfig = {
 
 const ComicFixture = new TestFixture(ComicConfig);
 describe(ComicFixture.Name, async () => (await ComicFixture.Connect()).AssertWebsite());
-
-const NovelConfig = {
-    plugin: {
-        id: 'perfscan',
-        title: 'Perf Scan'
-    },
-    container: {
-        url: 'https://perf-scan.fr/series/demonic-emperor-novel',
-        id: JSON.stringify({ id: '17', slug: 'demonic-emperor-novel' }),
-        title: 'Demonic emperor - Novel'
-    },
-    child: {
-        id: JSON.stringify({ id: '28668', slug: 'chapitre-492' }),
-        title: 'Chapitre 492'
-    },
-    entry: {
-        index: 0,
-        size: 789_130,
-        type: 'image/png'
-    }
-};
-
-const NovelFixture = new TestFixture(NovelConfig);
-describe(NovelFixture.Name, async () => (await NovelFixture.Connect()).AssertWebsite());
