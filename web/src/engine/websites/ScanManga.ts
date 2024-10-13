@@ -46,7 +46,6 @@ const pagescript = `
 @Common.MangasNotSupported()
 @Common.ChaptersSinglePageCSS('div.contenu_volume_manga ul li.chapitre div.chapitre_nom a')
 @Common.PagesSinglePageJS(pagescript, 500)
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

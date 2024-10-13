@@ -200,6 +200,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_CloudFlareError: "Permintaan gagal karena Error CloudFlare berikut: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "Silakan selesaikan Captcha dan kemudian tunggu aplikasi untuk melanjutkan (jangan tutup situs web setelah menyelesaikan Captcha)!",
   FetchProvider_Fetch_CloudFlareChallenge: 'The request to "{0}" was rejected by CloudFlare Anti-Bot detection.\nMake sure to bypass CloudFlare before accessing the content of this website (e.g., with the HakuNeko Assistant browser extension).',
+  FetchProvider_Fetch_VercelChallenge: 'The request to "{0}" was rejected by Vercel Attack Challenge Mode.\nMake sure to bypass Vercel before accessing the content of this website.',
   FetchProvider_Fetch_Forbidden: 'The access to "{0}" was denied.\nMake sure the website is available and accessible (e.g., VPN to bypass region lock, manual login via website link).',
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
@@ -224,6 +225,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Source_Scanlator: 'Scanlator',
   Tags_Source_Aggregator: 'Aggregator',
   Tags_Accessibility: "Aksesibilitas",
+  Tags_Accessibility_DomainRotation: 'Domain Rotation',
+  Tags_Accessibility_DomainRotationDescription: 'Regular changing its (sub-)domain, probably to avoid scraping or DMCA',
   Tags_Accessibility_RegionLock: "Kunci-Wilayah",
   Tags_Accessibility_RegionLockDescription: "Akses hanya untuk negara yang tidak terkunci (Geo-IP)",
   Tags_Accessibility_RateLimit: "Batasi-Nilai",
@@ -285,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: 'Use Global CDN',
   Plugin_CopyManga_Settings_GlobalCDNInfo: 'Requesting from the Global CDN',
+  Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
   Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
   Plugin_SheepScanlations_Settings_Username: "Nama Pengguna",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Nama Pengguna untuk login akun otomatis ke Sheep-Scanlations 😉",

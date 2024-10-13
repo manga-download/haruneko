@@ -1,21 +1,27 @@
 import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
 import { Observable, type IObservable } from '../../Observable';
-import type { IPC } from '../InterProcessCommunication';
+import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
 import type { ScriptInjection } from '../FetchProviderCommon';
+import type { IPC } from '../InterProcessCommunication';
 import { RemoteBrowserWindowController as Channels } from '../../../../../app/src/ipc/Channels';
 
-export default class RemoteBrowserWindow {
+export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
 
     private windowID = Number.NaN;
 
-    private readonly domReady = new Observable<Document, RemoteBrowserWindow>(null, this);
-    public get DOMReady(): IObservable<Document, RemoteBrowserWindow> {
+    private readonly domReady = new Observable<void, RemoteBrowserWindow>(null, this);
+    public get DOMReady(): IObservable<void, RemoteBrowserWindow> {
         return this.domReady;
     };
 
-    private readonly beforeNavigate = new Observable<URL, RemoteBrowserWindow>(null, this);
-    public get BeforeNavigate(): IObservable<URL, RemoteBrowserWindow> {
-        return this.beforeNavigate;
+    private readonly beforeWindowNavigate = new Observable<URL, RemoteBrowserWindow>(null, this);
+    public get BeforeWindowNavigate(): IObservable<URL, RemoteBrowserWindow> {
+        return this.beforeWindowNavigate;
+    };
+
+    private readonly beforeFrameNavigate = new Observable<URL, RemoteBrowserWindow>(null, this);
+    public get BeforeFrameNavigate(): IObservable<URL, RemoteBrowserWindow> {
+        return this.beforeFrameNavigate;
     };
 
     constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
@@ -25,34 +31,40 @@ export default class RemoteBrowserWindow {
 
     private async OnDomReady(windowID: number): Promise<void> {
         if(windowID === this.windowID) {
-            const html = await this.ExecuteScript<string>(`document.querySelector('html').innerHTML`);
-            this.domReady.Value = new DOMParser().parseFromString(html, 'text/html');
+            this.domReady.Dispatch();
         }
     }
 
     private async OnBeforeNavigate(windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean): Promise<void> {
         if(windowID === this.windowID && url.startsWith('http') && !isSameDocument) {
-            this.beforeNavigate.Value = new URL(url);
+            if(isMainFrame) {
+                this.beforeWindowNavigate.Value = new URL(url);
+            } else {
+                this.beforeFrameNavigate.Value = new URL(url);
+            }
         }
     }
 
     public async Open(request: Request, show: boolean = false, preload: ScriptInjection<void> = '') {
+
         const openOptions: BrowserWindowConstructorOptions = {
             show: show,
             width: 1280,
-            height: 720,
+            height: 800,
+            center: true,
             webPreferences: {
-                preload: preload instanceof Function ? `(${preload})()` : preload,
+                sandbox: true,
                 webSecurity: true,
-                contextIsolation: true,
+                contextIsolation: false, // Disabled for sharing `window` instance in pre-load script: https://www.electronjs.org/docs/latest/tutorial/context-isolation#what-is-it
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
-                nodeIntegrationInSubFrames: false,
+                nodeIntegrationInSubFrames: true, // Enabled to execute pre-load script in all sub-frames: https://github.com/electron/electron/issues/22582
                 disableBlinkFeatures: 'AutomationControlled',
+                preload: preload instanceof Function ? `(${preload})()` : preload,
             }
         };
 
-        this.windowID = await this.ipc.Send(Channels.App.OpenWindow, JSON.stringify(openOptions)) as number;
+        this.windowID = await this.ipc.Send<number>(Channels.App.OpenWindow, JSON.stringify(openOptions));
 
         /*
         if(isNaN(this.windowID)) {
@@ -65,24 +77,28 @@ export default class RemoteBrowserWindow {
             httpReferrer: request.headers.get('Referer') ?? request.referrer ?? request.url,
         };
 
-        await this.ipc.Send(Channels.App.LoadURL, this.windowID, request.url, JSON.stringify(loadOptions));
+        await this.ipc.Send<void>(Channels.App.LoadURL, this.windowID, request.url, JSON.stringify(loadOptions));
     }
 
     public async Close(): Promise<void> {
         if(!isNaN(this.windowID)) {
-            return this.ipc.Send(Channels.App.CloseWindow, this.windowID);
+            return this.ipc.Send<void>(Channels.App.CloseWindow, this.windowID);
         }
     }
 
     public async Show(): Promise<void> {
-        return this.ipc.Send(Channels.App.SetVisibility, this.windowID, true);
+        return this.ipc.Send<void>(Channels.App.SetVisibility, this.windowID, true);
     }
 
     public async Hide(): Promise<void> {
-        return this.ipc.Send(Channels.App.SetVisibility, this.windowID, false);
+        return this.ipc.Send<void>(Channels.App.SetVisibility, this.windowID, false);
     }
 
     public async ExecuteScript<T extends void | JSONElement>(script: ScriptInjection<T> = ''): Promise<T> {
-        return this.ipc.Send(Channels.App.ExecuteScript, this.windowID, script instanceof Function ? `(${script})()` : script);
+        return this.ipc.Send<T>(Channels.App.ExecuteScript, this.windowID, script instanceof Function ? `(${script})()` : script);
+    }
+
+    public async SendDebugCommand<T extends void | JSONElement>(method: string, parameters?: JSONObject): Promise<T> {
+        return this.ipc.Send<T>(Channels.App.SendDebugCommand, this.windowID, method, parameters);
     }
 }

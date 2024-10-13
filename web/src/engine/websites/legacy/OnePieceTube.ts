@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('onepiecetube', `One Piece Tube`, 'http://onepiece-tube.com' /*, Tags.Language.English, Tags ... */);
+        super('onepiecetube', `One Piece Tube`, 'https://onepiece.tube' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

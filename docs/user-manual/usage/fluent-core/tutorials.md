@@ -5,7 +5,7 @@
 Before downloading data, it is up to the user to determine which website shall be used to get the desired title.
 For this example the title [Berserk](https://mangadex.org/title/801513ba-a712-498c-8f57-cae55b38cc92/berserk) from the MangaDex website will be used.
 
-<iframe src="https://www.youtube.com/embed/Gs0BEJ7x9vo" width="100%" height="360" frameBorder="0" allowFullScreen></iframe>
+<YouTube id="Gs0BEJ7x9vo" />
 
 1. First make sure to select a download directory in the settings where all downloaded titles shall be stored
 2. Find and selet the website _MangaDex_
@@ -23,7 +23,7 @@ For this example the title [Berserk](https://mangadex.org/title/801513ba-a712-49
 
 ...
 
-<iframe src="https://www.youtube.com/embed/yDCkoHi9vKI" width="100%" height="360" frameBorder="0" allowFullScreen></iframe>
+<YouTube id="yDCkoHi9vKI" />
 
 1. ...
 
@@ -51,7 +51,7 @@ Only links to titles of supported websites can be applied (see the list of suppo
 Only links to titles are valid, links to chapters or episodes cannot be applied.
 :::
 
-<iframe src="https://www.youtube.com/embed/tgq9UmDtDso" width="100%" height="360" frameBorder="0" allowFullScreen></iframe>
+<YouTube id="tgq9UmDtDso" />
 
 1. In your browser navigate to the desired website and title
 2. Copy the URL from the browser
@@ -91,7 +91,7 @@ Depending on the website the CloudFlare session may expire within 30 minutes ~ 3
 Therefore this workaround needs to be repeated in case the content of the website can no longer be accessed with HakuNeko.
 :::
 
-<iframe src="https://www.youtube.com/embed/nfgW2KT2EcE" width="100%" height="360" frameBorder="0" allowFullScreen></iframe>
+<YouTube id="nfgW2KT2EcE" />
 
 1. Start HakuNeko and open the application settings
 2. Make sure _Remote Control_ is enabled
@@ -107,15 +107,20 @@ Therefore this workaround needs to be repeated in case the content of the websit
 10. Navigate to the website/page that is protected by CloudFlare
 11. Solve the challenge/captcha
 12. Wait for the page to correctly being loaded
-14. Open the _HauNeko Assistant Extension_ and press the button to bypass CloudFlare
-15. Switch back to HakuNeko
-16. In case a restart confiirmation appears, close and re-open HakuNeko
-17. HakuNeko should now be able to access the content of the website
+13. Open the _HauNeko Assistant Extension_ and press the button to bypass CloudFlare
+14. Switch back to HakuNeko
+15. In case a restart confiirmation appears, close and re-open HakuNeko
+16. HakuNeko should now be able to access the content of the website
 
 ### Open Manga/Anime URL from Browser
 
 ...
 
-<iframe src="https://www.youtube.com/embed/yqWX86uT5jM?mute=1" width="100%" height="360" frameBorder="0" allowFullScreen></iframe>
+<YouTube id="yqWX86uT5jM?mute=1" />
 
 1. ...
+
+<!-- Import VitePress Component(s) -->
+<script setup>
+   import YouTube from '../../../components/YouTube.vue'
+</script>

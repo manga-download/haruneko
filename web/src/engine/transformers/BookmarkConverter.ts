@@ -3,11 +3,10 @@ import { Exception } from '../Error';
 import type { BookmarkSerialized } from '../providers/Bookmark';
 
 /**
- * DO NOT USE!
- * @remark - Only exported for testing
+ * __DO NOT USE!__
+ * @remarks Only exported for testing
  */
 export const legacyWebsiteIdentifierMap = new Map([
-    [ '9anime', 'aniwave' ],
     [ 'aresnov', 'scarmanga' ],
     [ 'azoramanga', 'azoraworld' ],
     [ 'apolltoons', 'mundomanhwa' ],
@@ -34,6 +33,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'manganel', 'manganato' ],
     [ 'mangaproz', 'mangapro' ],
     [ 'mangaraw', 'mangageko' ],
+    [ 'mangatale', 'ikiru' ],
     [ 'manhuaes', 'manhuaaz' ],
     [ 'manhuascan', 'kaliscan' ],
     [ 'manhwaclub', 'manhwahentai' ],
@@ -44,8 +44,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'prismascans', 'demonsect' ],
     [ 'realmscans', 'rizzcomics' ],
     [ 'reaperscansid', 'shinigamiid' ],
-    [ 'rightdarkscan', 'darkscan' ],
-    [ 'scansmangasxyz', 'scansmangasme' ],
     [ 'scanhentaimenu', 'xmanga' ],
     [ 'secretscans', 'lynxscans' ],
     [ 'shonenmagazine-pocket', 'shonenmagazine' ],
@@ -53,6 +51,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'suryatoon', 'genztoon' ],
     [ 'sushiscanfr', 'animesama' ],
     [ 'vermanhwas', 'vermanhwa' ],
+    [ 'visualikigai', 'ikigaimangas' ],
     [ 'webtoontrcom', 'webtoontrnet' ],
 ]);
 

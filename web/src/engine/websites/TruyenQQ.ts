@@ -9,9 +9,9 @@ import { Numeric } from '../SettingsManager';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-AddAntiScrapingDetection(async (render) => {
-    const dom = await render();
-    return [...dom.querySelectorAll('script')].find(script => /window\.captcha\s*=/.test(script.text) && /chaitin\.cn\/captcha\/api/.test(script.text)) ? FetchRedirection.Automatic : undefined;
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<string[]>(`[...document.querySelectorAll('script')].map(script => script.text)`);
+    return result.some(script => /window\.captcha\s*=/.test(script) && /chaitin\.cn\/captcha\/api/.test(script)) ? FetchRedirection.Automatic : undefined;
 });
 
 function PageExtractor(element: HTMLElement): string {
@@ -21,13 +21,11 @@ function PageExtractor(element: HTMLElement): string {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly interactionTaskPool = new TaskPool(1, new RateLimit(30, 60));
+    private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
 
     public constructor() {
-        super('truyenqq', 'TruyenQQ', 'https://truyenqqviet.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
-        const throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 30, 1, 60);
-        throttle.Subscribe(value => this.interactionTaskPool.RateLimit = new RateLimit(value, 60));
-        this.Settings.throttle = throttle;
+        super('truyenqq', 'TruyenQQ', 'https://truyenqqto.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 30, 1, 60).Subscribe(value => this.interactionTaskPool.RateLimit = RateLimit.PerMinute(value));
     }
 
     public override get Icon() {
@@ -43,7 +41,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page += 1) {
             const mangas = await this.interactionTaskPool.Add(async () => Common.FetchMangasSinglePageCSS.call(this, provider, `/truyen-moi-cap-nhat/trang-${page}.html`, 'ul.list_grid li h3 a'), Priority.Low);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;

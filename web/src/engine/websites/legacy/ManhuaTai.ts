@@ -8,7 +8,8 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manhuatai', `ManhuaTai`, 'https://www.manhuatai.com' /*, Tags.Language.English, Tags ... */);
+        // NOTE: Redirects from www.manhuatai.com to www.kanman.com, seems only to be available as app => https://www.manhuatai.com/app/mht-pc.html, https://app.321mh.com/app/scheme?pkgname=com.comic.manhuatai&ckey=CK138297596322, https://sj.qq.com/appdetail/com.comic.manhuatai
+        super('manhuatai', `ManhuaTai`, 'https://www.kanman.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

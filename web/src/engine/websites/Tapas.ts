@@ -33,7 +33,6 @@ type APIChapters = {
 
 @Common.PagesSinglePageCSS('article.viewer__body img.content__img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://story-api.tapas.io/cosmos/api/v1/landing/';
@@ -62,7 +61,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 0, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;

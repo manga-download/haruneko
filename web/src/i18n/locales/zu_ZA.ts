@@ -200,6 +200,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_CloudFlareError: "crwdns1427:0{0}crwdne1427:0",
   FetchProvider_FetchWindow_AlertCaptcha: "crwdns1429:0crwdne1429:0",
   FetchProvider_Fetch_CloudFlareChallenge: "crwdns2164:0{0}crwdne2164:0",
+  FetchProvider_Fetch_VercelChallenge: "crwdns2184:0{0}crwdne2184:0",
   FetchProvider_Fetch_Forbidden: "crwdns2166:0{0}crwdne2166:0",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "crwdns1626:0crwdne1626:0",
@@ -224,6 +225,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Source_Scanlator: "crwdns1477:0crwdne1477:0",
   Tags_Source_Aggregator: "crwdns1479:0crwdne1479:0",
   Tags_Accessibility: "crwdns1481:0crwdne1481:0",
+  Tags_Accessibility_DomainRotation: "crwdns2180:0crwdne2180:0",
+  Tags_Accessibility_DomainRotationDescription: "crwdns2182:0crwdne2182:0",
   Tags_Accessibility_RegionLock: "crwdns1483:0crwdne1483:0",
   Tags_Accessibility_RegionLockDescription: "crwdns1485:0crwdne1485:0",
   Tags_Accessibility_RateLimit: "crwdns1487:0crwdne1487:0",
@@ -285,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: "crwdns2098:0crwdne2098:0",
   Plugin_CopyManga_Settings_GlobalCDNInfo: "crwdns2100:0crwdne2100:0",
+  Plugin_CuuTruyen_Error_NotProcessed: "crwdns2186:0crwdne2186:0",
   Plugin_PocketComics_LanguageMismatchError: "crwdns2108:0{0}crwdnd2108:0{1}crwdne2108:0",
   Plugin_SheepScanlations_Settings_Username: "crwdns1553:0crwdne1553:0",
   Plugin_SheepScanlations_Settings_UsernameInfo: "crwdns1555:0crwdne1555:0",

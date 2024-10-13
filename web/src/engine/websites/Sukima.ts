@@ -83,7 +83,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(provider, page);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -130,13 +130,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const pages = await FetchWindowScript<PageInfo[]>(request, pageScript, 1500);
-        return pages.map(page => new Page(this, chapter, new URL(page.page_url), { Referer: request.url, ...page }));
+        return pages.map(page => new Page<PageInfo>(this, chapter, new URL(page.page_url), { Referer: request.url, ...page }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return DeScramble(blob, async (bitmap, ctx) => {
-            const payload = page.Parameters as PageInfo;
+            const payload = page.Parameters;
             const shuffle_map: number[][] = JSON.parse(payload.shuffle_map);
             const xSplitCount = Math.floor(bitmap.width / payload.blocklen);
             const ySplitCount = Math.floor(bitmap.height / payload.blocklen);
@@ -156,7 +156,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private async FetchPOST<T>(uri: string, body: unknown) {
+    private async FetchPOST<T extends APIMangas | APICategories>(uri: string, body: unknown) {
         const request = new Request(new URL(uri, this.URI).href, {
             method: 'POST',
             body: JSON.stringify(body),

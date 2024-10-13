@@ -5,9 +5,9 @@ const config: Config = {
     plugin: {
         id: 'mangaswat',
         title: 'MangaSwat'
-    },
+    }, /* CloudFlare
     container: {
-        url: 'https://tatwt.com/manga/emperor-and-the-female-knight',
+        url: 'https://swatscans.com/manga/emperor-and-the-female-knight',
         id: '/manga/emperor-and-the-female-knight',
         title: 'Emperor And The Female Knight'
     },
@@ -19,7 +19,7 @@ const config: Config = {
         index: 1,
         size: 218_922,
         type: 'image/webp'
-    }
+    } */
 };
 
 const fixture = new TestFixture(config);

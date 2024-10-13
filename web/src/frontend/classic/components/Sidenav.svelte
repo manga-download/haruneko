@@ -30,8 +30,6 @@
         TaskSettings,
     } from 'carbon-icons-svelte';
     import { Locale } from '../stores/Settings';
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';
     import BookmarksImport from './BookmarksImport.svelte';
@@ -42,13 +40,18 @@
         selectedItem,
     } from '../stores/Stores';
     import { SidenavTrail, SidenavIconsOnTop } from '../stores/Settings';
-    export let isOpen: boolean;
+
+    interface Props {
+        isOpen: boolean;
+        onHome: () => void;
+    };
+    let { isOpen=$bindable(), onHome }: Props  = $props();
 
     //Settings Modal
-    let settingsSelectedTabs = 0;
-    let isSettingsModalOpen = false;
-    let isPluginModalOpen = false;
-    let isBookmarksImportModalOpen = false;
+    let settingsSelectedTabs =  $state(0);
+    let isSettingsModalOpen =  $state(false);
+    let isPluginModalOpen = $state(false);
+    let isBookmarksImportModalOpen =  $state(false);
 </script>
 
 {#if isPluginModalOpen}
@@ -56,11 +59,10 @@
         bind:isPluginModalOpen
         on:close={() => (isPluginModalOpen = false)}
     />
+{/if}$
+{#if isSettingsModalOpen}
+    <SettingsMenu bind:isSettingsModalOpen selectedTab={settingsSelectedTabs} />
 {/if}
-<SettingsMenu
-    bind:isModalOpen={isSettingsModalOpen}
-    selectedTab={settingsSelectedTabs}
-/>
 {#if isBookmarksImportModalOpen}
     <BookmarksImport bind:isModalOpen={isBookmarksImportModalOpen} />
 {/if}
@@ -71,12 +73,12 @@
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Home()}
                     icon={Home}
-                    on:click={() => dispatch('home')}
+                    onclick={onHome}
                 />
                 <SideNavLink
                     text={'Bookmarks'}
                     icon={Bookmark}
-                    on:click={() => {
+                    onclick={() => {
                         $selectedPlugin = window.HakuNeko.BookmarkPlugin;
                         $selectedMedia = undefined;
                         $selectedItem = undefined;
@@ -86,24 +88,24 @@
             <SideNavLink
                 text={'Paste Media URL'}
                 icon={CopyLink}
-                on:click={() =>
+                onclick={() =>
                     document.dispatchEvent(new Event('media-paste-url'))}
             />
             <SideNavLink
                 text={$Locale.Frontend_Plugins()}
                 icon={PlugFilled}
-                on:click={() => (isPluginModalOpen = true)}
+                onclick={() => (isPluginModalOpen = true)}
             />
             <SideNavLink
                 text="import/export"
                 icon={ImportExport}
-                on:click={() => (isBookmarksImportModalOpen = true)}
+                onclick={() => (isBookmarksImportModalOpen = true)}
             />
             <SideNavMenu text={$Locale.Frontend_Settings()} icon={Settings}>
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_General()}
                     icon={SettingsAdjust}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 0;
                         isSettingsModalOpen = true;
                     }}
@@ -111,7 +113,7 @@
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Interface()}
                     icon={ScreenMap}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 1;
                         isSettingsModalOpen = true;
                     }}
@@ -119,7 +121,7 @@
                 <SideNavLink
                     text="Viewer"
                     icon={SettingsView}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 1;
                         isSettingsModalOpen = true;
                     }}
@@ -127,7 +129,7 @@
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Trackers()}
                     icon={TaskSettings}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 3;
                         isSettingsModalOpen = true;
                     }}
@@ -135,7 +137,7 @@
                 <SideNavLink
                     text={$Locale.Frontend_Classic_Sidenav_Settings_Network()}
                     icon={NetworkOverlay}
-                    on:click={() => {
+                    onclick={() => {
                         settingsSelectedTabs = 4;
                         isSettingsModalOpen = true;
                     }}
@@ -146,7 +148,7 @@
                     text="Documentation"
                     icon={Doc}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open(
                             'https://hakuneko.download/docs/interface/',
                         )}
@@ -155,14 +157,14 @@
                     text="Discord"
                     icon={LogoDiscord}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open('https://discordapp.com/invite/A5d3NDf')}
                 />
                 <SideNavLink
                     text="Open a ticket"
                     icon={Debug}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open(
                             'https://hakuneko.download/docs/troubleshoot/',
                         )}
@@ -171,13 +173,13 @@
                     text="Home page"
                     icon={Home}
                     class="clik-item"
-                    on:click={() => window.open('https://hakuneko.download')}
+                    onclick={() => window.open('https://hakuneko.download')}
                 />
                 <SideNavLink
                     text="Show IP and localisation"
                     icon={Location}
                     class="clik-item"
-                    on:click={() => window.open('https://ipinfo.io/json')}
+                    onclick={() => window.open('https://ipinfo.io/json')}
                 />
             </SideNavMenu>
             <SideNavMenu text={$Locale.Frontend_About()} icon={Information}>
@@ -185,7 +187,7 @@
                     text="Code source"
                     icon={LogoGithub}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open(
                             'https://hakuneko.download/docs/interface/',
                         )}
@@ -194,20 +196,20 @@
                     text="Using version X.X.X"
                     icon={App}
                     class="clik-item"
-                    on:click={() => window.open('https://todo.com')}
+                    onclick={() => window.open('https://todo.com')}
                 />
                 <SideNavLink
                     text="Maintainers"
                     icon={Events}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open('https://discordapp.com/invite/A5d3NDf')}
                 />
                 <SideNavLink
                     text="Contributors"
                     icon={EventsAlt}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open(
                             'https://hakuneko.download/docs/troubleshoot/',
                         )}
@@ -216,7 +218,7 @@
                     text="Artwork"
                     icon={Image}
                     class="clik-item"
-                    on:click={() =>
+                    onclick={() =>
                         window.open('https://www.deviantart.com/hakuneko3kune')}
                 />
             </SideNavMenu>
@@ -224,8 +226,78 @@
     </span>
 </SideNav>
 
-<style>
+<style global>
     .menuleftpanel :global(a.clik-item) {
         cursor: pointer;
+    }
+
+    /* Theme Hack: https://github.com/carbon-design-system/carbon-components-svelte/issues/762#issuecomment-885484991 */
+
+    .bx--side-nav {
+        background-color: var(--cds-ui-background);
+        color: var(--cds-text-02);
+        border-right: 1px solid var(--cds-ui-02);
+    }
+
+    .bx--side-nav__divider {
+        background-color: var(--cds-ui-03);
+    }
+
+    a.bx--side-nav__link > .bx--side-nav__link-text {
+        color: var(--cds-text-02);
+    }
+
+    .bx--side-nav__submenu {
+        color: var(--cds-text-02);
+    }
+
+    .bx--side-nav__menu a.bx--side-nav__link--current,
+    .bx--side-nav__menu a.bx--side-nav__link[aria-current="page"],
+    a.bx--side-nav__link--current {
+        background-color: var(--cds-hover-ui);
+    }
+
+    .bx--side-nav__menu a.bx--side-nav__link--current > span,
+    .bx--side-nav__menu a.bx--side-nav__link[aria-current="page"] > span,
+    a.bx--side-nav__link--current > span {
+        color: var(--cds-text-01);
+    }
+
+    .bx--side-nav__icon > svg {
+        fill: var(--cds-text-02);
+    }
+
+    a.bx--side-nav__link[aria-current="page"],
+    a.bx--side-nav__link--current {
+        background-color: var(--cds-hover-ui);
+    }
+
+    a.bx--side-nav__link[aria-current="page"] .bx--side-nav__link-text,
+    a.bx--side-nav__link--current .bx--side-nav__link-text {
+        color: var(--cds-text-01);
+    }
+
+    .bx--side-nav__item:not(.bx--side-nav__item--active)
+        > .bx--side-nav__link:hover,
+    .bx--side-nav__menu
+        a.bx--side-nav__link:not(.bx--side-nav__link--current):not([aria-current="page"]):hover {
+        color: var(--cds-text-01);
+        background-color: var(--cds-hover-ui);
+
+    }
+
+    .bx--side-nav__item:not(.bx--side-nav__item--active)
+        > .bx--side-nav__link:hover
+        > span,
+    .bx--side-nav__item:not(.bx--side-nav__item--active)
+        .bx--side-nav__menu-item
+        > .bx--side-nav__link:hover
+        > span {
+        color: var(--cds-text-01);
+    }
+
+    .bx--side-nav__submenu:hover {
+        color: var(--cds-text-01) !important;
+        background-color: var(--cds-hover-ui) !important;
     }
 </style>

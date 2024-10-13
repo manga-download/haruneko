@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public constructor() {
-        super('rawdevart', `RawDevart`, 'https://endevart.com', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('rawdevart', `RawDevart`, 'https://rawdevart.art', Tags.Language.Multilingual, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -66,7 +66,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangalist = [];
+        const mangalist: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangalist.push(...mangas) : run = false;

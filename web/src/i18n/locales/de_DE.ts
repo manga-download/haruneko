@@ -200,6 +200,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_CloudFlareError: "Die Anfrage wurde aufgrund des folgenden Fehlers beim CloudFlare Server zurückgewiesen: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "Bitte lösen Sie das Captcha und warten Sie dann auf die Anwendung (schließen Sie die Website nicht nach dem Lösen des Captcha)!",
   FetchProvider_Fetch_CloudFlareChallenge: "Die Anfrage an \"{0}\" wurde von der CloudFlare Anti-Bot Erkennung zurückgewiesen.\nStelle sicher, dass CloudFlare freigeschaltet wird bevor auf den Inhalt dieser Website zugegriffen wird (z.B. mit der HakuNeko Assistant Browser Erweiterung).",
+  FetchProvider_Fetch_VercelChallenge: 'The request to "{0}" was rejected by Vercel Attack Challenge Mode.\nMake sure to bypass Vercel before accessing the content of this website.',
   FetchProvider_Fetch_Forbidden: "Der Zugriff auf \"{0}\" wurde verweigert.\nStelle sicher, dass die Website erreichbar und der Zugriff berechtigt ist (z.B. VPN um Regionalsperre zu umgehen, manuelle Anmeldung per Webseitenlink).",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "Die Daten scheinen fehlerhaft zu sein, es konnte kein Lesezeichen extrahiert werden!",
@@ -224,6 +225,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Source_Scanlator: 'Scanlator',
   Tags_Source_Aggregator: "Raubkopierer",
   Tags_Accessibility: "Verfügbarkeit",
+  Tags_Accessibility_DomainRotation: 'Domain Rotation',
+  Tags_Accessibility_DomainRotationDescription: 'Regular changing its (sub-)domain, probably to avoid scraping or DMCA',
   Tags_Accessibility_RegionLock: "Regional Eingeschränkt",
   Tags_Accessibility_RegionLockDescription: "Zugriff nur für freigeschaltete Länder (Geo-IP)",
   Tags_Accessibility_RateLimit: "Abfrage Begrenzung",
@@ -285,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: "Globalen Server verwenden",
   Plugin_CopyManga_Settings_GlobalCDNInfo: "Für die Anfragen wird der globale Server anstelle des regionalen Servers verwendet",
+  Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
   Plugin_PocketComics_LanguageMismatchError: "Für die Sprache {1} wurden der Titel {0} nicht gefunden",
   Plugin_SheepScanlations_Settings_Username: "Benutzername",
   Plugin_SheepScanlations_Settings_UsernameInfo: "Benutzername für die automatische Anmeldung bei der Webseite",

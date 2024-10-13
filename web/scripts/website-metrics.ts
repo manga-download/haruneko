@@ -31,6 +31,45 @@ type Result = {
     rank: number;
 }
 
+const expectedRedirectPatterns = new Map([
+    [ 'https://www.corocoro.jp/', [ // The website redirects to the top-level domain when requesting the root path only (the sub-domain is still valid for non-empty paths)
+        /^https:\/\/corocoro-news\.jp\/$/,
+    ] ],
+    [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/w+\d*\.holymanga\.net\/$/,
+    ] ],/*
+    [ 'https://manatoki.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/manatoki\d*\.net\/$/,
+    ] ],*/
+    [ 'https://mangafreak.me/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/w+\d*\.mangafreak\.me\/$/,
+    ] ],
+    [ 'https://mintmanga.live/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/\d+\.mintmanga\.one\/$/,
+    ] ],/*
+    [ 'https://newtoki0.com/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/newtoki\d+\.com\/$/,
+    ] ],*/
+    [ 'https://pijamalikoi.com/', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/www\.pijamalikoi\.com\/$/,
+    ] ],
+    [ 'https://www.toomics.com/', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
+        /^https:\/\/global\.toomics\.com\/en$/,
+    ] ],/*
+    [ 'https://toonkor0.com/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/toonkor\d+\.com\/$/,
+    ] ],*/
+    [ 'https://web.6parkbbs.com/', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
+        /^https:\/\/club\.6parkbbs\.com\/index.php$/,
+    ] ],
+    [ 'https://vortexscans.org/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/vortexscans\.org\/home$/,
+    ] ],
+    [ 'https://flixscans.net/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
+        /^https:\/\/flixscans\.net\/webtoons\/romance\/home$/,
+    ] ],
+]);
+
 class TestFixture {
 
     public readonly MockStorageController = mock<StorageController>();
@@ -44,12 +83,21 @@ class TestFixture {
         return new PluginController(this.MockStorageController, this.MockSettingsManager);
     }
 
+    private static CheckUnexpectedRedirected(requestURL: string, responseURL: string): boolean {
+        const patterns = expectedRedirectPatterns.get(requestURL);
+        if(patterns?.length) {
+            return !(patterns.some(pattern => pattern.test(responseURL)));
+        } else {
+            return new URL(requestURL).origin !== new URL(responseURL).origin;
+        }
+    }
+
     public static async GetStatus(uri: URL) {
         const result = { code: StatusCode.ERROR, info: 'Not Processed' };
         try {
             const request = new Request(uri, { signal: AbortSignal.timeout(30_000) });
             const response = await fetch(request);
-            if(uri.origin !== new URL(response.url).origin) {
+            if(this.CheckUnexpectedRedirected(request.url, response.url)) {
                 result.code = StatusCode.WARNING;
                 result.info = 'Redirected: ' + response.url;
             } else {
@@ -134,7 +182,7 @@ class TestFixture {
 
         await fs.mkdir(directory, { recursive: true });
         await fs.writeFile(path.join(directory, 'website-metrics.json'), JSON.stringify(results, null, 2));
-        await fs.writeFile(path.join(directory, 'website-metrics.html'), `<table width="100%" style="user-select: none;">${head}<tbody>${rows}</tbody></table>`);
+        await fs.writeFile(path.join(directory, 'website-metrics.html'), `<h2>Website Status ${new Date().toISOString()}</h2><table width="100%" style="user-select: none;">${head}<tbody>${rows}</tbody></table>`);
     }
 }
 

@@ -200,6 +200,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_CloudFlareError: "فشل الطلب بسبب خطأ CloudFlare التالي: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "يرجى حل كلمة التحقق ثم الانتظار حتى يستمر التطبيق (لا تغلق الموقع بعد حل كلمة التحقق)!",
   FetchProvider_Fetch_CloudFlareChallenge: "تم رفض طلب \"{0}\" من قبل الكشف المضاد للبوت لـ CloudFlare.\nتأكد من تجاوز CloudFlare قبل الوصول إلى محتوى هذا الموقع (على سبيل المثال مع امتداد متصفح HakuNeko المساعد).",
+  FetchProvider_Fetch_VercelChallenge: 'The request to "{0}" was rejected by Vercel Attack Challenge Mode.\nMake sure to bypass Vercel before accessing the content of this website.',
   FetchProvider_Fetch_Forbidden: "تم رفض الوصول إلى \"{0}\".\nتأكد من أن الموقع متاح ويمكن الوصول إليه (e. .، VPN لتجاوز قفل المنطقة ، تسجيل الدخول اليدوي عبر رابط الموقع).",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "يبدو أن البيانات المقدمة غير صحيحة/فاسدة ولا يمكن رفعها بنجاح إلى علامة مرجعية!",
@@ -224,6 +225,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Tags_Source_Scanlator: 'Scanlator',
   Tags_Source_Aggregator: "مجمع",
   Tags_Accessibility: "إمكانية الوصول",
+  Tags_Accessibility_DomainRotation: 'Domain Rotation',
+  Tags_Accessibility_DomainRotationDescription: 'Regular changing its (sub-)domain, probably to avoid scraping or DMCA',
   Tags_Accessibility_RegionLock: "قفل المنطقة",
   Tags_Accessibility_RegionLockDescription: "الوصول فقط للبلدان غير المقفلة (Geo-IP)",
   Tags_Accessibility_RateLimit: "حد السرعة",
@@ -285,6 +288,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Plugins (specific)
   Plugin_CopyManga_Settings_GlobalCDN: "استخدام CDN العالمية",
   Plugin_CopyManga_Settings_GlobalCDNInfo: "طلب من الشبكة العالمية CDN",
+  Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
   Plugin_PocketComics_LanguageMismatchError: "غير قادر على العثور على مانغا {0} للغة المحددة {1}",
   Plugin_SheepScanlations_Settings_Username: "اسم المستخدم",
   Plugin_SheepScanlations_Settings_UsernameInfo: "اسم المستخدم لتسجيل الدخول التلقائي للحساب إلى مسح الغيف 😉",

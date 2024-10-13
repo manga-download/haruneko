@@ -7,17 +7,17 @@ const config = {
         title: 'CoroCoro Online (コロコロオンライン)'
     },
     container: {
-        url: 'https://www.corocoro.jp/episode/10044607041237230924',
-        id: '/episode/10044607041237230924',
-        title: 'ぷにるはかわいいスライム'
+        url: 'https://www.corocoro.jp/episode/14079602755502771318',
+        id: '/episode/14079602755502771318',
+        title: '勝利の女神：NIKKE すいーとえんかうんと'
     },
     child: {
-        id: '/episode/10044607041237230924',
-        title: '[番外編⑪]'
+        id: '/episode/14079602755502771318',
+        title: '[第1話]'
     },
     entry: {
         index: 0,
-        size: 2_014_202,
+        size: 2_314_013,
         type: 'image/png'
     }
 };

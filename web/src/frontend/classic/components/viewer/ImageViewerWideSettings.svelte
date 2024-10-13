@@ -19,8 +19,6 @@
         HeaderPanelDivider,
         Tooltip,
     } from 'carbon-components-svelte';
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
     import {
         Key,
         Locale,
@@ -33,19 +31,29 @@
         MediaContainer,
         MediaItem,
     } from '../../../../engine/providers/MediaPlugin';
-    export let item: MediaContainer<MediaItem>;
+
+    interface Props {
+        item: MediaContainer<MediaItem>;
+        onNextItem: () => void;
+        onPreviousItem: () => void;
+        onClose: () => void;
+    };
+    let { item, onNextItem, onPreviousItem, onClose }: Props  = $props();
+
 </script>
 
 <div id="vieweractions">
     <HeaderGlobalAction
         class="previousitem"
         icon={ChevronLeft}
-        on:click={() => dispatch('previousItem')}
+        iconDescription="Previous Item"
+        on:click={onPreviousItem}
     />
     <HeaderGlobalAction
         class="nextitem"
         icon={ChevronRight}
-        on:click={() => dispatch('nextItem')}
+        iconDescription="Next Item"
+        on:click={onNextItem}
     />
     <HeaderAction
         icon={CloudServiceManagement}
@@ -61,14 +69,14 @@
                 kind="ghost"
                 size="small"
                 iconDescription="Previous item (ArrowLeft)"
-                on:click={() => dispatch('previousItem')}
+                on:click={onPreviousItem}
             />
             <Button
                 icon={ChevronRight}
                 kind="ghost"
                 size="small"
                 iconDescription="Next item (ArrowRight)"
-                on:click={() => dispatch('nextItem')}
+                on:click={onNextItem}
             />
             <Button
                 icon={ZoomIn}
@@ -175,20 +183,22 @@
     <HeaderGlobalAction
         class="close"
         icon={Misuse}
-        on:click={() => dispatch('close')}
+        iconDescription="Close"
+        onclick={onClose}
     />
 </div>
 
 <style>
     #vieweractions {
         opacity: 5%;
+        z-index: 8100;
     }
     #vieweractions:hover {
         opacity: 100%;
     }
     #vieweractions :global(.bx--header__action) {
         position: absolute;
-        z-index: 9000;
+        z-index: 8100;
     }
     #vieweractions :global(.close) {
         top: 0;
