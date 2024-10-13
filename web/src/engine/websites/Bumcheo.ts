@@ -38,7 +38,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api-web.bumcheo.vn/api/comic/comic/';
 
     public constructor() {
-        super('bumcheo', `Bumcheo`, 'https://bumcheo.vn', Tags.Language.Vietnamese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('bumcheo', `Bumcheo`, 'https://bumcheo.vn', Tags.Language.Vietnamese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
