@@ -7,17 +7,17 @@ const config = {
         title: 'Webtoon TR'
     },
     container: {
-        url: 'https://webtoontr.net/webtoon/dreaming-freedom-5/',
-        id: JSON.stringify({ post: '9028', slug: '/webtoon/dreaming-freedom-5/' }),
-        title: 'Dreaming Freedom'
+        url: 'https://webtoontr.net/webtoon/the-margraves-bastard-used-to-be-the-emperor/',
+        id: JSON.stringify({ post: '14522', slug: '/webtoon/the-margraves-bastard-used-to-be-the-emperor/' }),
+        title: 'The Margrave’s Bastard Used to be the Emperor'
     },
     child: {
-        id: '/webtoon/dreaming-freedom-5/bolum-1/',
-        title: 'Bölüm 1'
+        id: '/webtoon/the-margraves-bastard-used-to-be-the-emperor/bolum-44/',
+        title: 'Bölüm 44'
     },
     entry: {
         index: 0,
-        size: 318_969,
+        size: 157_284,
         type: 'image/jpeg'
     }
 };

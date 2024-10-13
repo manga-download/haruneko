@@ -13,7 +13,7 @@ const scriptChapterList = `
     });
 `;
 
-@MangaStream.MangaCSS(/^https?:\/\/gurukomiklive\.blogspot\.com\/[0-9]{4}\/[0-9]{2}\/[^/]+$/, 'meta[property="og:description"]')
+@MangaStream.MangaCSS(/^{origin}\/[0-9]{4}\/[0-9]{2}\/[^/]+$/, 'meta[property="og:description"]')
 @Common.MangasNotSupported()
 @Common.ChaptersSinglePageJS(scriptChapterList, 2500)
 @MangaStream.PagesSinglePageCSS()
@@ -21,7 +21,7 @@ const scriptChapterList = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('gurukomik', 'Guru Komik', 'https://gurukomiklive.blogspot.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian);
+        super('gurukomik', 'Guru Komik', 'https://gurukomiklive.blogspot.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
