@@ -27,7 +27,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const nonce = await FetchWindowScript<string>(new Request(this.URI), 'misha_loadmore_params.nonce', 500);
-        const mangaList = [];
+        const mangaList : Manga[]= [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider, nonce);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;

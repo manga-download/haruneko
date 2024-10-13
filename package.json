@@ -12,17 +12,17 @@
         "docs"
     ],
     "devDependencies": {
-        "@stylistic/eslint-plugin": "^2.8.0",
+        "@stylistic/eslint-plugin": "^2.9.0",
         "@types/chrome": "^0.0.277",
         "@types/jsdom": "^21.1.7",
         "@types/nw.js": "^0.92.0",
         "eslint": "^9.11.1",
         "eslint-plugin-tsdoc": "^0.3.0",
         "jsdom": "^25.0.1",
-        "puppeteer-core": "^23.5.0",
+        "puppeteer-core": "^23.5.3",
         "tslib": "^2.7.0",
-        "typescript": "^5.6.2",
-        "typescript-eslint": "^8.8.0",
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.8.1",
         "vite": "^5.4.8",
         "vitest": "^2.1.2",
         "vitest-mock-extended": "^2.0.2"
