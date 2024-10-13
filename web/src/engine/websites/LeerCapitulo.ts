@@ -10,8 +10,8 @@ const pageScript = `
         resolve(atob(data.replace(
           /[A-Z0-9]/gi,
           (a) =>
-            'jnFWBd3vuyk7CtVNlDTaI2OXYiHUcSehqLJ6sAwo0x4KQmP8M1pEzZr59GRbfg'[
-              'dj3H2fRS9YulE46IWpXrmhtvyL0Cbw1QMa5xKoUeNVPkTizA8scGqJOnZDBF7g'.indexOf(
+            'gh1HMIcbixVsdKXouLTQqz8vWjEklYZrR4JC7U25yPp6FBfnwa9AGtON0DmS3e'[
+              'rp0LnDJuZwUeHWtg85IN7fP9OC2lh6T3ci1XqAaskSmFVoGzyjEvQ4xMdRKYbB'.indexOf(
                 a
               )
             ]

@@ -37,12 +37,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const chapterurl = new URL(chapter.Identifier, this.URI).href;
+        const chapterurl = new URL(chapter.Identifier, this.URI);
         //Get CSRF and XSRF tokens from meta tag and cookies
         const tokens = await FetchWindowScript<JSONTokens>(new Request(chapterurl), tokenScript, 500);
 
         //Now call the API
-        const url = new URL('/api/getBookByID', this.URI).href;
+        const url = new URL('/api/getBookByID', this.URI);
         const mangaid = chapter.Identifier.match(/\/g\/([\d]+)/)[1];
         const body = JSON.stringify({ id: mangaid });
         const request = new Request(url, {

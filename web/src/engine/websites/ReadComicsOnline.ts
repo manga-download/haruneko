@@ -12,7 +12,7 @@ import * as MangaReader from './decorators/MangaReaderCMS';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('readcomicsonline', `Read Comics Online`, 'https://readcomicsonline.ru', Tags.Language.English, Tags.Media.Comic);
+        super('readcomicsonline', `Read Comics Online`, 'https://readcomicsonline.ru', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

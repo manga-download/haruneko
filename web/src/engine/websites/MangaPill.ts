@@ -13,7 +13,7 @@ const search = new URLSearchParams({ 'q': '', 'type': '', 'status': ''});
 genres.forEach(genre => search.append('genre', genre));
 pathMangas += search.toString();
 
-@Common.MangaCSS(/^{origin}\/manga\//, 'div.container h1')
+@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.container h1')
 @Common.MangasMultiPageCSS(pathMangas, 'div.container a.mb-2')
 @Common.ChaptersSinglePageCSS('div#chapters div a')
 @Common.PagesSinglePageCSS('img')
