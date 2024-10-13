@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'hwagoid',
-        title: 'HwagoID'
+        id: 'dennomavo',
+        title: 'Denno Mavo'
     },
     container: {
-        url: 'https://hwago.site/komik/dreaming-freedom/',
-        id: JSON.stringify({post: '1993', slug: '/komik/dreaming-freedom/' }),
-        title: 'Dreaming Freedom'
+        url: 'https://mavo.takekuma.jp/title.php?title=65',
+        id: '/title.php?title=65',
+        title: '投稿マヴォ入選作品'
     },
     child: {
-        id: '/komik/dreaming-freedom/chapter-126/',
-        title: 'Chapter 126'
+        id: '/viewer.php?id=1543',
+        title: '恐怖のプリマドンナ'
     },
     entry: {
         index: 0,
-        size: 327_953,
+        size: 235_467,
         type: 'image/jpeg'
     }
 };
