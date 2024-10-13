@@ -25,10 +25,10 @@ type APIChapter = {
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.templescan.net/api/';
+    private readonly apiUrl = 'https://api.templetoons.com/api/';
 
     public constructor() {
-        super('templescan', 'TempleScan', 'https://templescan.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('templescan', 'TempleScan', 'https://templetoons.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

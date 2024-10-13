@@ -26,7 +26,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const doc = await FetchHTML(new Request(this.URI.href));
+        const doc = await FetchHTML(new Request(this.URI));
         const mangaList: Manga[] = [...doc.querySelectorAll<HTMLAnchorElement>('section#popular-series ol.series-box-list li section.series-contents a')].map(manga => {
             return new Manga(this, provider, manga.pathname, manga.title.trim());
         });
@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
         let cursor = doc.querySelector<HTMLOListElement>('ol[data-series-read-more-url]').dataset.seriesReadMoreUrl;
 
         while (cursor) {
-            const request = new Request(new URL(cursor, this.URI).href, {
+            const request = new Request(new URL(cursor, this.URI), {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }

@@ -7,7 +7,7 @@ const config: Config = {
         title: 'Galaxy Manga'
     },
     container: {
-        url: 'https://flixscans.net/series/53488-850-berserk',
+        url: 'https://gxcomic.xyz/series/53488-850-berserk',
         id: '/series/53488-850-berserk',
         title: 'Berserk'
     },
