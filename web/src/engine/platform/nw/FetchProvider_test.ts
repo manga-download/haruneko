@@ -34,9 +34,9 @@ class TestFixture {
     }
 
     public CreateTestee(performInitialize: boolean) {
-        const testee = new FetchProvider(this.mockFeatureFlags);
+        const testee = new FetchProvider();
         if(performInitialize) {
-            testee.Initialize();
+            testee.Initialize(this.mockFeatureFlags);
         }
         return testee;
     }
@@ -50,7 +50,7 @@ describe('FetchProvider', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee(false);
             expect(globalThis.Request).toBeNull();
-            testee.Initialize();
+            testee.Initialize(fixture.mockFeatureFlags);
             expect(globalThis.Request.name).toBe('FetchRequest');
         });
 
