@@ -22,12 +22,12 @@ const scriptPages = `
 @Common.MangaCSS(/^{origin}\//, 'div.gallery_right div.info h1')
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageJS(scriptPages, 2500)
+@Common.PagesSinglePageJS(scriptPages, 3500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hentaifox', `HentaiFox`, 'https://hentaifox.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Erotica, Tags.Source.Aggregator);
+        super('hentaifox', `HentaiFox`, 'https://hentaifox.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

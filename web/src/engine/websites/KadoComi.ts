@@ -69,7 +69,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 0, run = true; run; page++) { //start at 0 otherwise miss mangas
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -108,12 +108,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const apiCallUrl = new URL(`contents/viewer?episodeId=${chapter.Identifier}&imageSizeType=width:1284`, this.apiURL);
         const { manuscripts } = await FetchJSON<APIPages>(new Request(apiCallUrl));
-        return manuscripts.map(page => new Page(this, chapter, new URL(page.drmImageUrl), { ...page }));
+        return manuscripts.map(page => new Page<APIPage>(this, chapter, new URL(page.drmImageUrl), { ...page }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<APIPage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        const payload = page.Parameters as APIPage;
+        const payload = page.Parameters;
         switch (payload.drmMode) {
             case 'raw':
                 return data;

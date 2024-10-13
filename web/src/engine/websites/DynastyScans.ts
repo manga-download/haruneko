@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangalist = [];
+        const mangalist: Manga[] = [];
         const categories = ['/series', '/anthologies', '/issues', '/doujins'];
         for (const category of categories) {
             const mangas = await this.GetMangasFromCategory(provider, category);

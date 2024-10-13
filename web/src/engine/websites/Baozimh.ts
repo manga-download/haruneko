@@ -25,7 +25,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://www.baozimh.com/api/bzmhq/';
 
     public constructor() {
-        super('baozimh', `包子漫書 (baozimh)`, 'https://www.baozimh.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Manhua, Tags.Source.Aggregator);
+        super('baozimh', `包子漫書 (baozimh)`, 'https://www.baozimh.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;

@@ -12,7 +12,7 @@ import * as MangaReader from './decorators/MangaReaderCMS';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('on-manga', `مانجا اون لاين (On-Manga)`, 'https://onma.me', Tags.Language.Arabic, Tags.Media.Manhwa);
+        super('on-manga', `مانجا اون لاين (On-Manga)`, 'https://onma.me', Tags.Language.Arabic, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

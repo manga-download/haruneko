@@ -302,7 +302,7 @@ export class MediaTitleSelect extends FASTElement {
         }
     }
 
-    private BookmarksChanged = function(this: MediaTitleSelect, _: Bookmark[], sender: BookmarkPlugin) {
+    private BookmarksChanged = function(this: MediaTitleSelect, _: ReadonlyArray<Bookmark>, sender: BookmarkPlugin) {
         this.bookmark = this.Selected && sender.IsBookmarked(this.Selected);
     }.bind(this);
 

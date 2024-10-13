@@ -8,7 +8,7 @@ const config: Config = {
         timeout: 30000
     },
     container: {
-        url: 'https://flamecomics.me/series/solo-necromancy/',
+        url: 'https://flamecomics.xyz/series/solo-necromancy/',
         id: '/series/solo-necromancy/',
         title: 'Solo Necromancy'
     },

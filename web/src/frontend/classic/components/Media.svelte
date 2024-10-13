@@ -136,6 +136,7 @@
             window.open(media.Parent.URI.href, '_blank');
         }}
         title="Open {media.Parent.URI.href}"
+        aria-label="Open {media.Parent.URI.href}"
     >
         <img
             class="pluginIcon"

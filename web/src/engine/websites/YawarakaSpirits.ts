@@ -4,15 +4,17 @@ import { DecoratableMangaScraper, type Manga, type MangaPlugin, type MangaScrape
 import * as Common from './decorators/Common';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('dl dt').textContent.trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('dl dt').textContent.trim()
+    };
 }
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('dl dt strong').textContent.trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('dl dt strong').textContent.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/[\S]+\/index.html$/, 'div.page__header h2')
@@ -30,7 +32,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-        const mangalist = [];
+        const mangalist: Manga[] = [];
         const path = ['/series/', '/completion/'];
         for (const p of path) {
             const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, p, 'article.work section.work__inner ul li a, article.oldwork section.oldwork__inner ul li a ', MangaExtractor);
@@ -39,7 +41,6 @@ export default class extends DecoratableMangaScraper {
             }
         }
         return mangalist;
-
     }
 
 }

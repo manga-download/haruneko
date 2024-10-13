@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIManga = {
     hid: string,
@@ -32,6 +32,10 @@ type APIPage = {
     name: string,
 }
 
+type PageParameters = {
+    mirrors: string[],
+};
+
 const chapterLanguageMap = new Map([
     [ 'ar', Tags.Language.Arabic ],
     [ 'en', Tags.Language.English ],
@@ -55,7 +59,6 @@ const chapterLanguageMap = new Map([
     //[ 'cz', Tags.Language
 ]);
 
-@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.comick.io';
@@ -78,7 +81,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -134,6 +137,23 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { md_images } } = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
-        return md_images.map(image => new Page(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), { Referer: this.URI.href }));
+        return md_images.map(image => new Page<PageParameters>(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), {
+            mirrors: [
+                new URL(image.b2key, `https://meo.comick.pictures/`).href,
+            ],
+        }));
+    }
+
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        return this.imageTaskPool.Add(async () => {
+            for(const uri of [ page.Link, ...page.Parameters.mirrors ]) {
+                try {
+                    const request = new Request(uri, { signal: signal, headers: { Referer: this.URI.href } });
+                    const response = await Fetch(request);
+                    const blob = await response.blob();
+                    if (blob.type.startsWith('image/')) return blob;
+                } catch {}
+            }
+        }, priority, signal);
     }
 }
