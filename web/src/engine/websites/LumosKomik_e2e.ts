@@ -7,7 +7,7 @@ const config: Config = {
         title: 'LumosKomik'
     },
     container: {
-        url: 'https://lumoskomik.com/komik/the-tales-of-heaven-and-earth/',
+        url: 'https://lumos01.com/komik/the-tales-of-heaven-and-earth/',
         id: JSON.stringify({ post: '8190', slug: '/komik/the-tales-of-heaven-and-earth/'}),
         title: 'The Tales of Heaven And Earth'
     },

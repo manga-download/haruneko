@@ -7,7 +7,7 @@ const config = {
         title: 'HwagoID'
     },
     container: {
-        url: 'https://hwago.org/komik/dreaming-freedom/',
+        url: 'https://hwago.site/komik/dreaming-freedom/',
         id: JSON.stringify({post: '1993', slug: '/komik/dreaming-freedom/' }),
         title: 'Dreaming Freedom'
     },
