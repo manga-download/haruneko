@@ -11,7 +11,7 @@ import { DownloadManager } from './DownloadManager';
 import { Key as GlobalKey } from './SettingsGlobal';
 import type { Check } from './SettingsManager';
 import { CreateBloatGuard } from './platform/BloatGuard';
-import { CreateFetchProvider, SetupFetchProviderExports } from './platform/FetchProvider';
+import { SetupFetchProvider } from './platform/FetchProvider';
 import { CreateRemoteProcedureCallManager } from './platform/RemoteProcedureCallManager';
 import { CreateRemoteProcedureCallContract } from './platform/RemoteProcedureCallContract';
 import type { IFrontendInfo } from '../frontend/IFrontend';
@@ -36,7 +36,7 @@ export class HakuNeko {
         this.#bookmarkPlugin = new BookmarkPlugin(this.#storageController, this.#pluginController, new InteractiveFileContentProvider());
         this.#itemflagManager = new ItemflagManager(this.#storageController);
         this.#downloadManager = new DownloadManager(this.#storageController);
-        SetupFetchProviderExports(CreateFetchProvider(this.#featureFlags));
+        SetupFetchProvider(this.#featureFlags);
     }
 
     public async Initialze(frontends: IFrontendInfo[]): Promise<void> {

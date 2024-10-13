@@ -7,12 +7,12 @@ const config = {
         title: 'Coco漫画'
     },
     container: {
-        url: 'https://www.colamanga.com/manga-bm41941/',
-        id: '/manga-bm41941/',
+        url: 'https://www.colamanga.com/manga-xy280343/',
+        id: '/manga-xy280343/',
         title: `换位关系`
     },
     child: {
-        id: '/manga-bm41941/1/10.html',
+        id: '/manga-xy280343/1/10.html',
         title: '10.傻瓜'
     },
     entry: {

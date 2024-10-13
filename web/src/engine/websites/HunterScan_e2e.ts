@@ -5,9 +5,9 @@ const config = {
     plugin: {
         id: 'hunterscan',
         title: 'Hunters Scan'
-    },
+    }, /* CloudFlare
     container: {
-        url: 'https://hunterscomics.com/series/civilizacao-de-nebula/',
+        url: 'https://htoons.online/series/civilizacao-de-nebula/',
         id: JSON.stringify({ post: '6001', slug: '/series/civilizacao-de-nebula/' }),
         title: 'Civilização de Nebula'
     },
@@ -19,7 +19,7 @@ const config = {
         index: 1,
         size: 3_308_367,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);
