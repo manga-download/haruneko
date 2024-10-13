@@ -23,7 +23,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('lewdmanhwa', `LewdManhwa`, 'https://lewdmanhwa.com', Tags.Language.English, Tags.Media.Manhwa, Tags.Rating.Erotica);
+        super('lewdmanhwa', `LewdManhwa`, 'https://lewdmanhwa.com', Tags.Language.English, Tags.Media.Manhwa, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
