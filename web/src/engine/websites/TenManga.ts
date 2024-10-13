@@ -4,9 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as TAADD from './decorators/TAADD';
 import * as Common from './decorators/Common';
 function ChapterExtractor(anchor: HTMLAnchorElement) {
-    const title = anchor.getElementsByClassName('chp-idx')[0].textContent.trim();
-    const id = anchor.pathname;
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.getElementsByClassName('chp-idx')[0].textContent.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, TAADD.queryMangaTitleFromURI, TAADD.MangaLabelExtractor)

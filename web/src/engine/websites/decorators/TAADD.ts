@@ -9,12 +9,13 @@ export function MangaLabelExtractor(element: HTMLElement) {
 
 type LinkExtractor = (this: MangaScraper, element: HTMLElement) => string;
 export function ChapterExtractor(element: HTMLAnchorElement) {
-    const id = element.pathname + element.search;
-    const title = element.childNodes[0].nodeValue.trim();
-    return { id, title };
+    return {
+        id: element.pathname + element.search,
+        title: element.childNodes[0].nodeValue.trim()
+    };
 }
 
-export function PageLinkExtractor(element: HTMLElement) {
+export function PageLinkExtractor(this: MangaScraper, element: HTMLElement) {
     switch (element.nodeName) {
         case 'OPTION'://Most TAADD websites got a selector with options element
             return new URL((element as HTMLOptionElement).value, this.URI).href;
@@ -68,7 +69,7 @@ async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, quer
     return data.map(element => {
         const { id, title } = extractor.call(this, element);
         const mangaTitle = manga.Title.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&'); //escape special regex chars in manga name
-        let finaltitle = title.replace(new RegExp(mangaTitle, 'i'), '') === '' ? title : title.replace(new RegExp(mangaTitle, 'i'), '');//replace manga title in chapter title
+        let finaltitle = title.replace(new RegExpSafe(mangaTitle, 'i'), '') === '' ? title : title.replace(new RegExp(mangaTitle, 'i'), '');//replace manga title in chapter title
         finaltitle = finaltitle.replace(/\s*new$/, '').trim();
         return new Chapter(this, manga, id, finaltitle );
     });
@@ -109,7 +110,7 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
 
 export async function FetchPagesSinglePagesCSS(this: MangaScraper, chapter: Chapter, query: string = queryPages, extractor: LinkExtractor = PageLinkExtractor): Promise<Page[]> {
     const data = await FetchCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), query);
-    //There may be MORE than one page list element on the page, we need only one !
+    //There may be MORE than one page list element on the page, we need only one ! In case of direct picture links, doesnt matter
     const subpages = Array.from(new Set([...data.map(element => extractor.call(this, element))]));
     return subpages.map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.href }));
 
@@ -155,7 +156,7 @@ export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, pri
         request = new Request(realimage, {
             signal,
             headers: {
-                Referer: page.Parameters?.Referer ? page.Parameters?.Referer : page.Link.origin
+                Referer: page.Parameters?.Referer ? page.Parameters.Referer : page.Link.origin
             }
         });
         const response = await Fetch(request);
