@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'komikid',
-        title: 'Komikid'
+        id: 'dennomavo',
+        title: 'Denno Mavo'
     },
     container: {
-        url: 'https://www.komikid.com/manga/one-punchman',
-        id: '/manga/one-punchman',
-        title: 'One Punch-Man'
+        url: 'https://mavo.takekuma.jp/title.php?title=65',
+        id: '/title.php?title=65',
+        title: '投稿マヴォ入選作品'
     },
     child: {
-        id: '/manga/one-punchman/182',
-        title: '182'
+        id: '/viewer.php?id=1543',
+        title: '恐怖のプリマドンナ'
     },
     entry: {
         index: 0,
-        size: 458_299,
+        size: 235_467,
         type: 'image/jpeg'
     }
 };

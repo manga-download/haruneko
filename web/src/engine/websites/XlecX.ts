@@ -4,8 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const titleElement = anchor.querySelector<HTMLHeadingElement>('h3.thumb__title ');
-    return { id: anchor.pathname, title: titleElement.textContent.trim() };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector<HTMLHeadingElement>('h3.thumb__title ').textContent.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/\d+-[\S]+\.html/, 'main div.sect__content div#dle-content article.page div.page__col-left h1')
