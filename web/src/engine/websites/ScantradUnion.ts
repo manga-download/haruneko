@@ -20,7 +20,7 @@ const pageScript = `
     }
 `;
 
-@Common.MangaCSS(/^{origin}\/manga\//, 'div.projet-description > h2')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.projet-description > h2')
 @Common.MangasMultiPageCSS('/manga/page/{page}/', 'main article div.entry-post > h2 > a')
 @Common.ChaptersSinglePageCSS('div.name-chapter', ChapterInfoExtractor)
 @Common.PagesSinglePageJS(pageScript, 500)

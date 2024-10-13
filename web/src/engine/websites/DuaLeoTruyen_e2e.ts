@@ -7,7 +7,7 @@ const config = {
         title: 'DuaLeoTruyen'
     },
     container: {
-        url: 'https://dualeotruyenceo.com/truyen-tranh/list-truyenss-ngan-chit-chit.html',
+        url: 'https://dualeotruyenbff.com/truyen-tranh/list-truyenss-ngan-chit-chit.html',
         id: '/truyen-tranh/list-truyenss-ngan-chit-chit.html',
         title: 'LIST TRUYỆN NGẮN CHỊT CHỊT'
     },

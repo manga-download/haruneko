@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('hunterscan', 'Hunters Scan', 'https://hunterscomics.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
+        super('hunterscan', 'Hunters Scan', 'https://htoons.online', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
