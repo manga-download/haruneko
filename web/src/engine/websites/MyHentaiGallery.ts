@@ -22,7 +22,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('myhentaigallery', 'MyHentaiGallery', 'https://myhentaigallery.com', Tags.Media.Manga, Tags.Media.Comic, Tags.Language.English, Tags.Rating.Pornographic);
+        super('myhentaigallery', 'MyHentaiGallery', 'https://myhentaigallery.com', Tags.Media.Manga, Tags.Media.Comic, Tags.Language.English, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

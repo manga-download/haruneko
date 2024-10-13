@@ -5,7 +5,7 @@ const config = {
     plugin: {
         id: 'mangagalaxy',
         title: 'Manga Galaxy'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://mangagalaxy.net/series/return-of-the-mob-character.',
         id: JSON.stringify({ slug: 'return-of-the-mob-character.', id: '116'}),
@@ -19,7 +19,7 @@ const config = {
         index: 0,
         size: 650_744,
         type: 'image/webp'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);
