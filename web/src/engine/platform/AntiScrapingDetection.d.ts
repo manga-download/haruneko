@@ -7,6 +7,7 @@ export declare enum FetchRedirection {
     Automatic = 1,
     Interactive = 2
 }
+export declare function PrepareAntiScrapingDetection(invoke: (script: string) => void | Promise<void>): Promise<void>;
 export declare function AddAntiScrapingDetection(detection: AntiScrapingDetection): void;
 export declare function GetAntiScrapingDetections(): AntiScrapingDetection[];
 export {};

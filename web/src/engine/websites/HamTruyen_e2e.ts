@@ -7,17 +7,17 @@ const config: Config = {
         title: 'HamTruyen'
     },
     container: {
-        url: 'https://hamtruyen.info/yeu-than-ky-1385.html',
-        id: '/yeu-than-ky-1385.html',
-        title: 'Yêu Thần Ký'
+        url: 'https://hamtruyen.info/em-chong-say-dam-toi-0.html',
+        id: '/em-chong-say-dam-toi-0.html',
+        title: 'Em chồng say đắm tôi'
     },
     child: {
-        id: '/doc-truyen/yeu-than-ky-chapter-376.html',
-        title: 'Chapter 376'
+        id: '/doc-truyen/em-chong-say-dam-toi-chapter-35.html',
+        title: 'chapter 35'
     },
     entry: {
-        index: 0,
-        size: 182_509,
+        index: 1,
+        size: 365_442,
         type: 'image/jpeg'
     }
 };

@@ -13,7 +13,7 @@ import DeScramble from '../transformers/ImageDescrambler';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('flamecomics', 'Flame Comics', 'https://flamecomics.me', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('flamecomics', 'Flame Comics', 'https://flamecomics.xyz', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -22,7 +22,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const data = await FetchCSS<HTMLDivElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div.composed_figure');
-        if (data.length == 0) return MangaStream.FetchPagesSinglePageCSS.call(this, chapter, [/readonflamescans\.png/]);
+        if (data.length == 0) return MangaStream.FetchPagesSinglePageCSS.call(this, chapter, [/readonflame[^.]+\.(gif|jpeg|jpg|png|avif)$/, /chevron\.png/]);
 
         return data.map(page => {
             const images = [...page.querySelectorAll('img')].map(image => image.getAttribute('src'));

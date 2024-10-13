@@ -146,7 +146,7 @@ export function MangasMultiPageCSS(query = queryMangaListLinks, throttle = 0, pa
  * @param path - An additional prefix for the ajax endpoint relative to {@link this} scraper's base url
  */
 export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, throttle = 0, path = pathname): Promise<Manga[]> {
-    const mangaList = [];
+    const mangaList: Manga[] = [];
     // inject `madara.query_vars` into any website using wp-madara to see full list of supported vars
     const form = new URLSearchParams({
         'action': 'madara_load_more',
