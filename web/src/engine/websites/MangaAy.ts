@@ -21,7 +21,7 @@ function MangaInfoExtractor(element: HTMLElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaay', `Manga Ay`, 'https://manga-ay.com', Tags.Language.Turkish, Tags.Media.Manga);
+        super('mangaay', `Manga Ay`, 'https://manga-ay.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -1,15 +1,16 @@
 import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
 import { Observable, type IObservable } from '../../Observable';
-import type { IPC } from '../InterProcessCommunication';
+import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
 import type { ScriptInjection } from '../FetchProviderCommon';
+import type { IPC } from '../InterProcessCommunication';
 import { RemoteBrowserWindowController as Channels } from '../../../../../app/src/ipc/Channels';
 
-export default class RemoteBrowserWindow {
+export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
 
     private windowID = Number.NaN;
 
-    private readonly domReady = new Observable<Document, RemoteBrowserWindow>(null, this);
-    public get DOMReady(): IObservable<Document, RemoteBrowserWindow> {
+    private readonly domReady = new Observable<void, RemoteBrowserWindow>(null, this);
+    public get DOMReady(): IObservable<void, RemoteBrowserWindow> {
         return this.domReady;
     };
 
@@ -30,8 +31,7 @@ export default class RemoteBrowserWindow {
 
     private async OnDomReady(windowID: number): Promise<void> {
         if(windowID === this.windowID) {
-            const html = await this.ExecuteScript<string>(`document.querySelector('html').innerHTML`);
-            this.domReady.Value = new DOMParser().parseFromString(html, 'text/html');
+            this.domReady.Dispatch();
         }
     }
 

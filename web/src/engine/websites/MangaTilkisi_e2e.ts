@@ -5,9 +5,9 @@ const config = {
     plugin: {
         id: 'mangatilkisi',
         title: 'Manga Tilkisi'
-    },
+    }, /* CloudFlare
     container: {
-        url: 'https://www.mangatilkisi.com/manga/yasakli-yuce-buyucunun-reenkarnasyonu/',
+        url: 'https://www.manga-tilkisi.com/manga/yasakli-yuce-buyucunun-reenkarnasyonu/',
         id: JSON.stringify({ post: '210', slug: '/manga/yasakli-yuce-buyucunun-reenkarnasyonu/' }),
         title: 'Yasaklı Yüce Büyücünün Reenkarnasyonu'
     },
@@ -19,7 +19,7 @@ const config = {
         index: 1,
         size: 346_236,
         type: 'image/webp'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);
