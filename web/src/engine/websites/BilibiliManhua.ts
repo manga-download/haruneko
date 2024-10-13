@@ -181,7 +181,7 @@ export default class extends DecoratableMangaScraper {
         } else return 1600;
     }
 
-    private async FetchTwirp<T>(path: string, body: JSONObject): Promise<T> {
+    private async FetchTwirp<T extends JSONObject>(path: string, body: JSONObject): Promise<T> {
         const uri = new URL(`/twirp/comic.v1.Comic/${path}`, this.URI);
         uri.search = new URLSearchParams({
             device: 'pc',
@@ -203,7 +203,7 @@ export default class extends DecoratableMangaScraper {
         return FetchJSON<T>(request);
     }
 
-    private async FetchWithAccessToken<T>(path: string, body: JSONObject): Promise<T> {
+    private async FetchWithAccessToken<T extends JSONObject>(path: string, body: JSONObject): Promise<T> {
         const server = this.credentialsServer.replace('%AREA%', this.areacode[this.auth.area]);
         const uri = new URL('/twirp/global.v1.User' + path, server);
         uri.search = new URLSearchParams({
