@@ -5,9 +5,10 @@ import * as Common from './decorators/Common';
 import * as LineW from './decorators/LineWebtoon';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname + anchor.search;
-    const title = anchor.querySelector('p.subj').textContent.trim();
-    return { id, title };
+    return {
+        id: anchor.pathname + anchor.search,
+        title: anchor.querySelector('p.subj').textContent.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/[^/]+\/list\?title_no=\d+$/, LineW.queryMangaTitleURI, Common.ElementLabelExtractor(), true)
