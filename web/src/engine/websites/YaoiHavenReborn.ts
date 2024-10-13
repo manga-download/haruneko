@@ -31,11 +31,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
 
         //change to 200 manga per page
-        const uri = new URL(`/doujinshi/`, this.URI);
-        const request = new Request(uri.href);
-        await FetchWindowScript(request, mangasPerPageScript, 2000, 10000);
+        await FetchWindowScript(new Request(new URL(`/doujinshi/`, this.URI)), mangasPerPageScript, 2000, 10000);
 
-        const mangalist = [];
+        const mangalist: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangalist.push(...mangas) : run = false;
@@ -44,9 +42,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const uri = new URL(`/doujinshi/?page=${page}`, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchWindowScript<JSONManga[]>(request, 'app.doujinshi');
+        const data = await FetchWindowScript<JSONManga[]>(new Request(new URL(`/doujinshi/?page=${page}`, this.URI)), 'app.doujinshi');
         return data ? data.map(manga => new Manga(this, provider, '/doujinshi/' + manga.slug, manga.name.trim())) : [];
     }
 }

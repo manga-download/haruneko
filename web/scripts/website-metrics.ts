@@ -50,9 +50,6 @@ const expectedRedirectPatterns = new Map([
     [ 'https://newtoki0.com/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/newtoki\d+\.com\/$/,
     ] ],*/
-    [ 'https://piccoma.com/fr', [ // REASON: The website redirects to a sub-domain when requesting from a locked region (outside france)
-        /^https:\/\/fr\.piccoma\.com\/fr$/,
-    ] ],
     [ 'https://pijamalikoi.com/', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
         /^https:\/\/www\.pijamalikoi\.com\/$/,
     ] ],
