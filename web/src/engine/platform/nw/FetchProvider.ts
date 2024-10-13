@@ -1,4 +1,4 @@
-import { FetchProvider } from '../FetchProvider';
+import { FetchProvider } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name

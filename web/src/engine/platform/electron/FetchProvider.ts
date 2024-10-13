@@ -1,4 +1,4 @@
-import { FetchProvider } from '../FetchProvider';
+import { FetchProvider } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
 import type { IPC } from '../InterProcessCommunication';
 import { FetchProvider as Channels } from '../../../../../app/src/ipc/Channels';
