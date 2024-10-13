@@ -21,7 +21,7 @@ const scriptPages = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hentai2read', `Hentai2R`, 'https://hentai2read.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Erotica, Tags.Source.Aggregator);
+        super('hentai2read', `Hentai2R`, 'https://hentai2read.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

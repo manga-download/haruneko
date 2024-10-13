@@ -3,7 +3,7 @@ import icon from './MaviManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/manga\//, 'span.mangasc-title')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\//, 'span.mangasc-title')
 @Common.MangasMultiPageCSS('/manga-listesi/sayfa/{page}/', 'ul.manga-list li a')
 @Common.ChaptersSinglePageCSS('div.mangaep-list tbody tr td:first-of-type a')
 @Common.PagesSinglePageCSS('div.viewer-cnt div#all img.img-responsive')

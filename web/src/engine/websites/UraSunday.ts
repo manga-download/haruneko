@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (const page of ['/serial_title', '/complete_title']) {
             const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, page, 'div.title-all-list ul li a', MangaExtractor);
             mangaList.push(...mangas);

@@ -15,7 +15,7 @@ function PageLinkExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('porncomix', `PornComix`, 'https://bestporncomix.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Comic, Tags.Rating.Erotica, Tags.Source.Aggregator);
+        super('porncomix', `PornComix`, 'https://bestporncomix.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Comic, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

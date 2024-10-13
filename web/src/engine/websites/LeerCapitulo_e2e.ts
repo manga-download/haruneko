@@ -17,7 +17,7 @@ const fixture = new TestFixture({
     },
     entry: {
         index: 1,
-        size: 457_576, // value switch between 317_943 and 457_576
+        size: 602_693, // value switch between 317_943 and 602_693
         type: 'image/jpeg'
     }
 });
