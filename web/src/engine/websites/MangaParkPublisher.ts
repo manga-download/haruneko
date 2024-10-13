@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(`/api/chapter/${chapter.Identifier}`, this.URI).href);
+        const request = new Request(new URL(`/api/chapter/${chapter.Identifier}`, this.URI));
         const { data } = await FetchJSON<APIPages>(request);
         return data.chapter.map(page => new Page(this, chapter, new URL(page.images[0].path), { key: page.images[0].key }));
     }
@@ -65,14 +65,14 @@ export default class extends DecoratableMangaScraper {
         return Common.GetTypedData(decrypted);
     }
 
-    private Xor(t: Uint8Array, key: string) {
+    private Xor(sourceArray: Uint8Array, key: string) {
         const e = window.atob(key).split('').map(s => s.charCodeAt(0));
-        const r = t.length;
+        const r = sourceArray.length;
         const i = e.length;
         const o = new Uint8Array(r);
 
         for (let a = 0; a < r; a += 1)
-            o[a] = t[a] ^ e[a % i];
+            o[a] = sourceArray[a] ^ e[a % i];
         return o;
     }
 }

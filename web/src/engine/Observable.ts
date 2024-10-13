@@ -40,7 +40,7 @@ export class Observable<TValue, TOwner = null> implements IObservable<TValue, TO
     /**
      * Invoke all registered subscribers passing the current value and owner.
      */
-    public Dispatch(): void {
+    public async Dispatch(): Promise<void> {
         for(const subscription of this.subscribers) {
             try {
                 subscription(this.value, this.owner);
