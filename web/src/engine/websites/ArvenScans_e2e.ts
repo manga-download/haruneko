@@ -7,18 +7,18 @@ const config = {
         title: 'Arven Scans'
     },
     container: {
-        url: 'https://arvencomics.com/series/catastrophic-necromancer/',
-        id: '/series/catastrophic-necromancer/',
-        title: 'Catastrophic Necromancer'
+        url: 'https://arvencomics.com/series/baeac6b0188/',
+        id: '/series/baeac6b0188/',
+        title: 'Solo Necromancy'
     },
     child: {
-        id: '/catastrophic-necromancer-chapter-15/',
-        title: 'Chapter 15'
+        id: '/chapter/baeac6b0188-a37a0a5eeb0/',
+        title: 'Chapter 146'
     },
     entry: {
-        index: 0,
-        size: 834_047,
-        type: 'image/jpeg'
+        index: 1,
+        size: 250_796,
+        type: 'image/webp'
     }
 };
 

@@ -55,13 +55,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         const id = uri.pathname.match(/_(\d+)\/?$/)[1];
-        const request = new Request(url);
-        const name = (await FetchCSS(request, 'main h1.album-heading')).at(-1).textContent.trim();
+        const name = (await FetchCSS(new Request(url), 'main h1.album-heading')).at(-1).textContent.trim();
         return new Manga(this, provider, id, name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -105,14 +104,14 @@ export default class extends DecoratableMangaScraper {
         };
 
         url.searchParams.set('variables', JSON.stringify(variables));
-        const request = new Request(url.href, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
-        const data = await FetchJSON<APIMangaPage>(request);
-        return data.data.album.list.items.map(manga => new Manga(this, provider, String(manga.id), manga.title.trim()));
+        const request = new Request(url, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
+        const { data: { album: { list: { items } } } } = await FetchJSON<APIMangaPage>(request);
+        return items.map(manga => new Manga(this, provider, String(manga.id), manga.title.trim()));
 
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pagelist = [];
+        const pagelist: Page[]= [];
         for (let page = 1, run = true; run; page++) {
             const pagesResults = await this.GetPagesFromChapterPage(page, chapter);
             if (pagesResults.data.picture.list.items.length > 0) {
@@ -154,7 +153,7 @@ export default class extends DecoratableMangaScraper {
             }
         };
         url.searchParams.set('variables', JSON.stringify(variables));
-        const request = new Request(url.href, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
+        const request = new Request(url, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
         return await FetchJSON<PagesResult>(request);
     }
 }

@@ -109,7 +109,7 @@ export default class extends DecoratableMangaScraper {
         return mangalist.distinct();
     }
 
-    private async PerformGraphQL<T>(operationName: string, query: string): Promise<T> {
+    private async PerformGraphQL<T extends APIOneshots | APISeries>(operationName: string, query: string): Promise<T> {
         const uri = new URL(this.apiUrl);
         uri.searchParams.set('opname', operationName);
         return FetchGraphQL<T>(new Request(uri), operationName, query, {});

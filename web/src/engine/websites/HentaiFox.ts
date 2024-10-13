@@ -27,7 +27,7 @@ const scriptPages = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hentaifox', `HentaiFox`, 'https://hentaifox.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Erotica, Tags.Source.Aggregator);
+        super('hentaifox', `HentaiFox`, 'https://hentaifox.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

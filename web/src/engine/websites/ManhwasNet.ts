@@ -3,26 +3,19 @@ import icon from './ManhwasNet.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-const pagesScript = `
-new Promise((resolve, reject) => {
-        try {
-            const images = [...document.querySelectorAll('div#chapter_imgs img[src]:not([src=""])')].map(image => image.src);
-            resolve(images);
-        } catch (error) {
-            reject(error);
-        }
-});
-`;
+const pagesScript = `[...document.querySelectorAll('div#chapter_imgs img[src]:not([src=""])')].map(image => image.src);`;
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('h3.title').textContent.trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector<HTMLHeadingElement>('h3.title').textContent.trim()
+    };
 }
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('p span').textContent.trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector<HTMLSpanElement>('p span').textContent.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article.anime-single h1.title')
@@ -33,7 +26,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manhwasnet', 'Manhwas', 'https://manhwas.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Rating.Erotica);
+        super('manhwasnet', 'Manhwas', 'https://manhwas.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
