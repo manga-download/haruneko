@@ -5,6 +5,7 @@ import type { ScriptInjection } from '../FetchProviderCommon';
 export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
 
     private nwWindow: NWJS_Helpers.win = undefined;
+    private nwDebugTarget: { tabId?: number } = undefined;
 
     private readonly domReady = new Observable<void, RemoteBrowserWindow>(null, this);
     public get DOMReady(): IObservable<void, RemoteBrowserWindow> {
@@ -66,20 +67,6 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             policy.ignore();
         });
 
-        /*
-        export function PreventDialogs(nwWindow: NWJS_Helpers.win, frame: Window): void {
-            if(frame.location.origin.startsWith('http')) {
-                //console.log(`<INJECT-DOM-PREPERATION src="${frame.location.href}">`);
-                nwWindow.window.window.opener = (() => protect(nwWindow, undefined))();
-                nwWindow.window.window.open = (() => protect(nwWindow, proxify(window.open, { closed: false })))();
-                nwWindow.window.window.confirm = (() => protect(nwWindow, proxify(window.confirm, true)))();
-                nwWindow.window.window.prompt = (() => protect(nwWindow, proxify(window.prompt, '')))();
-                nwWindow.window.window.alert = (() => protect(nwWindow, proxify(window.alert, undefined)))();
-                //console.log('</INJECT-DOM-PREPERATION>');
-            }
-        }
-        */
-
         this.nwWindow.on('navigation', (frame, url) => this.OnBeforeNavigate(frame, url));
 
         //this.nwWindow.on('loaded', () => this.OnDomReady(this.nwWindow.window));
@@ -93,10 +80,25 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             }
         });
 
-        //this.nwWindow.window.chrome.debugger.attach();
+        /*
+        export function PreventDialogs(nwWindow: NWJS_Helpers.win, frame: Window): void {
+            if(frame.location.origin.startsWith('http')) {
+                //console.log(`<INJECT-DOM-PREPERATION src="${frame.location.href}">`);
+                nwWindow.window.window.opener = (() => protect(nwWindow, undefined))();
+                nwWindow.window.window.open = (() => protect(nwWindow, proxify(window.open, { closed: false })))();
+                nwWindow.window.window.confirm = (() => protect(nwWindow, proxify(window.confirm, true)))();
+                nwWindow.window.window.prompt = (() => protect(nwWindow, proxify(window.prompt, '')))();
+                nwWindow.window.window.alert = (() => protect(nwWindow, proxify(window.alert, undefined)))();
+                //console.log('</INJECT-DOM-PREPERATION>');
+            }
+        }
+        */
     }
 
     public async Close(): Promise<void> {
+        if(this.nwDebugTarget) {
+            await chrome.debugger.detach(this.nwDebugTarget);
+        }
         this.nwWindow?.removeAllListeners();
         this.nwWindow?.close();
     }
@@ -117,5 +119,24 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             //console.error(inner, outer);
             throw outer;
         }
+    }
+
+    public async SendDebugCommand<T extends void | JSONElement>(method: string, parameters?: JSONObject): Promise<T> {
+        if(!this.nwDebugTarget) {
+            this.nwDebugTarget = await new Promise((resolve, reject) => {
+                chrome.debugger.getTargets(async targets => {
+                    try {
+                        const target = { tabId: targets.find(target => target.type === 'page' && target.url === this.nwWindow.window.location.href).tabId };
+                        await chrome.debugger.attach(target, '1.3');
+                        resolve(target);
+                    } catch(error) {
+                        reject(error);
+                    }
+                });
+            });
+        }
+        return new Promise<T>(async resolve => {
+            chrome.debugger.sendCommand(this.nwDebugTarget, method, parameters, result => resolve(result as T));
+        });
     }
 }
