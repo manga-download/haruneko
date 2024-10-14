@@ -38,7 +38,6 @@ export { default as BacaKomik } from './BacaKomik';
 export { default as BacaManga } from './BacaManga';
 export { default as Baozimh } from './Baozimh';
 export { default as Batoto } from './Batoto';
-export { default as BlogTruyen } from './BlogTruyen';
 export { default as BlogTruyenMoi } from './BlogTruyenMoi';
 export { default as Bokugents } from './Bokugents';
 export { default as Bomtoon } from './Bomtoon';
