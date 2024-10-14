@@ -91,7 +91,7 @@ const templateChoice: ViewTemplate<Choice> = html`
 const templateDirectory: ViewTemplate<Directory> = html`
     <fluent-text-field readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
     <div slot="end" style="display: flex; align-items: center;">
-        <fluent-button appearance="stealth" style="height: fit-content;" :innerHTML=${() => IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
+        <fluent-button appearance="transparent" style="height: fit-content;" :innerHTML=${() => IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
     </div>
     </fluent-text-field>
 `;

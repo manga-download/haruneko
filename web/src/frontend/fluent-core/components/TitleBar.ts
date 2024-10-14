@@ -37,10 +37,6 @@ const styles: ElementStyles = css`
         border-top-right-radius: calc(1px * var(--layer-corner-radius));
     }
 
-    fluent-button {
-        --neutral-fill-stealth-rest: transparent;
-    }
-
     #menu {
         display: block;
     }
@@ -55,15 +51,7 @@ const styles: ElementStyles = css`
         display: flex;
     }
 
-    #controls fluent-anchor {
-        --neutral-fill-stealth-rest: transparent;
-    }
-
-    #controls fluent-anchor:hover {
-        background-color: var(--neutral-fill-stealth-hover);
-    }
-
-    fluent-anchor#close:hover {
+    fluent-anchor-button#close:hover {
         background-color: #FF6060 !important;
     }
 
@@ -77,22 +65,17 @@ const styles: ElementStyles = css`
         z-index: 2147483647;
     }
 
-    #menu-popup {
-        display: none;
-        position: absolute;
-        z-index: 2147483647;
-    }
-
     fluent-menu-item div[slot="start"] {
         display: flex;
     }
 `;
 
 const template: ViewTemplate<TitleBar> = html`
-    <div id="menu">
-        <fluent-button id="menu-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Menu_Description()}" :innerHTML=${() => IconMenu} @click=${model => model.popup = !model.popup}></fluent-button>
-        <div id="menu-overlay" style="display: ${model => model.popup ? 'block' : 'none'}" @click=${model => model.popup = false}></div>
-        <fluent-menu id="menu-popup" style="display: ${model => model.popup ? 'block' : 'none'}">
+    <fluent-menu id="menu">
+        <fluent-menu-button id="menu-button" slot="trigger" appearance="subtle" title="${() => S.Locale.Frontend_FluentCore_Menu_Description()}" :innerHTML=${() => IconMenu}>
+            <span slot="end">X</span>
+        </fluent-menu-button>
+        <fluent-menu-list id="menu-popup">
             <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description()}" :checked=${() => S.SettingPanelBookmarks} @change=${(_, ctx) => S.SettingPanelBookmarks = ctx.event.currentTarget['checked']}>
                 <div slot="start" :innerHTML=${() => IconBookmarkList}></div>
                 ${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label()}
@@ -118,7 +101,7 @@ const template: ViewTemplate<TitleBar> = html`
             <fluent-menu-item title="${() => S.Locale.Settings_FeatureFlags_Description()}">
                 <div slot="start" :innerHTML=${() => IconFeatureFlags}></div>
                 ${() => S.Locale.Settings_FeatureFlags_Label()}
-                <fluent-menu>
+                <fluent-menu-list slot="submenu">
                     <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Description]()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.event.currentTarget['checked']}>
                         <div slot="start" :innerHTML=${() => IconWindowAd}></div>
                         ${() => S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Label]()}
@@ -131,17 +114,17 @@ const template: ViewTemplate<TitleBar> = html`
                         <div slot="start" :innerHTML=${() => IconCrowdinContextTranslation}></div>
                         ${() => S.Locale[HakuNeko.FeatureFlags.CrowdinTranslationMode.Label]()}
                     </fluent-menu-item>
-                </fluent-menu>
+                </fluent-menu-list>
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
             <fluent-setting-theme-luminance></fluent-setting-theme-luminance>
-        </fluent-menu>
-    </div>
+        </fluent-menu-list>
+    </fluent-menu>
     <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
     <div id="controls">
-        <fluent-anchor appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" :innerHTML=${() => IconMinimize} @click="${model => model.window.Minimize()}"></fluent-anchor>
-        <fluent-anchor appearance="stealth" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize} @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}"></fluent-anchor>
-        <fluent-anchor id="close" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" :innerHTML=${() => IconClose} @click=${model => model.window.Close()}></fluent-anchor>
+        <fluent-anchor-button appearance="subtle" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" :innerHTML=${() => IconMinimize} @click="${model => model.window.Minimize()}"></fluent-anchor-button>
+        <fluent-anchor-button appearance="subtle" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize} @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}"></fluent-anchor-button>
+        <fluent-anchor-button id="close" appearance="subtle" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" :innerHTML=${() => IconClose} @click=${model => model.window.Close()}></fluent-anchor-button>
     </div>
 `;
 
@@ -151,17 +134,13 @@ export class TitleBar extends FASTElement {
     @WindowManagerService window!: IWindowManager;
     @observable maximized = false;
     @observable settings = false;
-    @observable popup = false;
 
     public ShowGlobalSettingsDialog() {
-        this.popup = false;
         S.ShowSettingsDialog(...HakuNeko.SettingsManager.OpenScope());
     }
 
-    public async ImportBookmarks()
-    {
+    public async ImportBookmarks() {
         try {
-            this.popup = false;
             const summary = await HakuNeko.BookmarkPlugin.Import();
             console.log(summary);
         } catch(error) {
@@ -170,10 +149,8 @@ export class TitleBar extends FASTElement {
         }
     }
 
-    public async ExportBookmarks()
-    {
+    public async ExportBookmarks() {
         try {
-            this.popup = false;
             const summary = await HakuNeko.BookmarkPlugin.Export();
             console.log(summary);
         } catch(error) {
