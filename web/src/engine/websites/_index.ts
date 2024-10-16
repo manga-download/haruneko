@@ -184,6 +184,7 @@ export { default as HentaiVN } from './HentaiVN';
 export { default as HentaiWebtoon } from './HentaiWebtoon';
 export { default as HentaiZone } from './HentaiZone';
 export { default as HerosWeb } from './HerosWeb';
+export { default as HeroTruyen } from './HeroTruyen';
 export { default as HikariScan } from './HikariScan';
 export { default as Hinapyon } from './Hinapyon';
 export { default as HiperCool } from './HiperCool';
