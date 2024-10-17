@@ -1,6 +1,8 @@
 ﻿import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
+//Region Locked : Korea
+
 const config = {
     plugin: {
         id: 'oktoon',

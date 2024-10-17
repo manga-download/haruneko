@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
     private nextBuild = '67BC1LNj5mBw5tJfo56dQ';
 
     public constructor() {
-        super('oktoon', `OkToon`, 'https://oktoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Aggregator);
+        super('oktoon', `OkToon`, 'https://oktoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
