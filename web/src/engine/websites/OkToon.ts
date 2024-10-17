@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './OKToon.webp';
+import icon from './OkToon.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
