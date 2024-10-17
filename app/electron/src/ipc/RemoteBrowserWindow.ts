@@ -11,6 +11,7 @@ export class RemoteBrowserWindowController {
         this.ipc.Listen(Channels.App.CloseWindow, this.CloseWindow.bind(this));
         this.ipc.Listen(Channels.App.SetVisibility, this.SetVisibility.bind(this));
         this.ipc.Listen(Channels.App.ExecuteScript, this.ExecuteScript.bind(this));
+        this.ipc.Listen(Channels.App.SendDebugCommand, this.SendDebugCommand.bind(this));
         this.ipc.Listen(Channels.App.LoadURL, this.LoadURL.bind(this));
     }
 
@@ -37,11 +38,14 @@ export class RemoteBrowserWindowController {
         });
         win.webContents.on('dom-ready', () => this.ipc.Send(Channels.Web.OnDomReady, win.id));
         win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.Web.OnBeforeNavigate, win.id, event.url, event.isMainFrame, event.isSameDocument));
+        win.webContents.debugger.attach('1.3');
         return win.id;
     }
 
     private async CloseWindow(windowID: number): Promise<void> {
-        this.FindWindow(windowID).destroy();
+        const win = this.FindWindow(windowID);
+        win.webContents.debugger.detach();
+        win.destroy();
     }
 
     private async SetVisibility(windowID: number, show: boolean): Promise<void> {
@@ -51,6 +55,15 @@ export class RemoteBrowserWindowController {
 
     private async ExecuteScript<T extends JSONElement>(windowID: number, script: string): Promise<T> {
         return this.FindWindow(windowID).webContents.executeJavaScript(script, true);
+    }
+
+    private async SendDebugCommand<T extends void | JSONElement>(windowID: number, method: string, parameters?: JSONObject): Promise<T> {
+        const remoteDebugger = this.FindWindow(windowID).webContents.debugger;
+        if(remoteDebugger.isAttached()) {
+            return remoteDebugger.sendCommand(method, parameters) as Promise<T>;
+        } else {
+            this.Throw(`The debugger is not attached to the window with id ${windowID}!`);
+        }
     }
 
     private async LoadURL(windowID: number, url: string, options: string): Promise<void> {
