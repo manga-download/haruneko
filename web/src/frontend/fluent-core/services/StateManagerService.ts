@@ -1,17 +1,31 @@
 import { observable } from '@microsoft/fast-element';
 import { DI, Registration } from '@microsoft/fast-element/di.js';
-//import { baseLayerLuminance, StandardLuminance } from '@fluentui/web-components';
-import { type ISetting, Check, type Choice, Numeric } from '../../../engine/SettingsManager';
+import { webLightTheme, webDarkTheme, type Theme } from '@fluentui/tokens';
+import { setTheme } from '@fluentui/web-components';
+import { type ISetting, Check, Choice } from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
 import { FrontendResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
 
 const SettingKeys = {
     Scope: 'frontend.fluent-core',
-    ThemeLuminance: 'theme.luminance',
+    Theme: 'theme',
     PanelBookmarks: 'panel.bookmarks',
     PanelDownloads: 'panel.downloads',
 };
+
+const FluentThemes = [
+    {
+        key: 'web-light',
+        label: R.Frontend_FluentCore_Settings_ThemeLuminance_Label,
+        theme: webLightTheme,
+    },
+    {
+        key: 'web-dark',
+        label: R.Frontend_FluentCore_Settings_ThemeLuminance_Label,
+        theme: webDarkTheme,
+    },
+];
 
 // TODO: Split into SettingService and LocaleService
 class StateManager {
@@ -20,7 +34,7 @@ class StateManager {
 
     constructor() {
         HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => this.Locale = GetLocale());
-        this.settingThemeLuminanceNumeric.Subscribe(value => this.SettingThemeLuminance = value);
+        this.settingThemeChoice.Subscribe(value => this.SettingTheme = value);
         this.settingPanelBookmarksCheck.Subscribe(value => this.SettingPanelBookmarks = value);
         this.settingPanelDownloadsCheck.Subscribe(value => this.SettingPanelDownloads = value);
         this.Initialize();
@@ -28,21 +42,23 @@ class StateManager {
 
     private async Initialize() {
         await this.settings.Initialize(
-            this.settingThemeLuminanceNumeric,
+            this.settingThemeChoice,
             this.settingPanelBookmarksCheck,
             this.settingPanelDownloadsCheck
         );
-        this.SettingThemeLuminance = this.settingThemeLuminanceNumeric.Value;
+        this.SettingTheme = this.settingThemeChoice.Value;
         this.SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
         this.SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     }
 
     @observable Locale = GetLocale();
 
-    private readonly settingThemeLuminanceNumeric = new Numeric(SettingKeys.ThemeLuminance, R.Frontend_FluentCore_Settings_ThemeLuminance_Label, R.Frontend_FluentCore_Settings_ThemeLuminance_Description, /*StandardLuminance.LightMode*/ 0.98, 0.0, 1.0);
-    @observable SettingThemeLuminance = this.settingThemeLuminanceNumeric.Value;
-    SettingThemeLuminanceChanged() {
-        this.settingThemeLuminanceNumeric.Value = this.SettingThemeLuminance;
+    dbg = FluentThemes.map(({ key, label }) => { return { key, label }; });
+    private readonly settingThemeChoice = new Choice(SettingKeys.Theme, R.Frontend_FluentCore_Settings_ThemeLuminance_Label, R.Frontend_FluentCore_Settings_ThemeLuminance_Description, 'web-light', this.dbg);
+    @observable SettingTheme = this.settingThemeChoice.Value;
+    SettingThemeChanged() {
+        this.settingThemeChoice.Value = this.SettingTheme;
+        setTheme(webLightTheme);
         //baseLayerLuminance.setValueFor(document.body, this.SettingThemeLuminance);
     }
 

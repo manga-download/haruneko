@@ -1,6 +1,4 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css } from '@microsoft/fast-element';
-import { webLightTheme, webDarkTheme } from '@fluentui/tokens';
-import { setTheme } from '@fluentui/web-components';
 import { StateManagerService, type StateManager } from '../services/StateManagerService';
 
 import IconSunlight from '@fluentui/svg-icons/icons/weather_sunny_20_regular.svg?raw';
@@ -20,7 +18,7 @@ const styles: ElementStyles = css`
 `;
 
 const template: ViewTemplate<SettingThemeLuminance> = html`
-    <fluent-button appearance="transparent" :innerHTML=${() => IconMoonlight} @click=${() => setTheme(webDarkTheme)}></fluent-button>
+    <fluent-button appearance="transparent" :innerHTML=${() => IconMoonlight} @click=${model => model.S.SettingTheme = 'web-dark'}></fluent-button>
     <!--
     <fluent-slider id="slider" min="0" max="1" step="0.01" :valueAsNumber=${model => model.S.SettingThemeLuminance} @change=${(model, ctx) => model.S.SettingThemeLuminance = ctx.event.currentTarget['valueAsNumber']}>
         <fluent-slider-label position="0.00"></fluent-slider-label>
@@ -30,7 +28,7 @@ const template: ViewTemplate<SettingThemeLuminance> = html`
         <fluent-slider-label position="1.00"></fluent-slider-label>
     </fluent-slider>
     -->
-    <fluent-button appearance="transparent" :innerHTML=${() => IconSunlight} @click=${() => setTheme(webLightTheme)}></fluent-button>
+    <fluent-button appearance="transparent" :innerHTML=${() => IconSunlight} @click=${model => model.S.SettingTheme = 'web-light'}></fluent-button>
 `;
 
 @customElement({ name: 'fluent-setting-theme-luminance', template, styles })
