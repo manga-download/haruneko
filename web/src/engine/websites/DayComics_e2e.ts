@@ -8,12 +8,12 @@ const config = {
     },
     container: {
         url: 'https://daycomics.com/content/101023',
-        id: '101023',
+        id: '/content/101023',
         title: 'Sex Study Group'
     },
     child: {
         id: '/content/101023/113522',
-        title: 'Episode 1'
+        title: 'Episode 1: Why is she in my house?'
     },
     entry: {
         index: 0,
