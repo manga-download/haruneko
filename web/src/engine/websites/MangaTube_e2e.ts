@@ -1,4 +1,4 @@
-import { describe } from 'vitest';
+﻿import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -13,7 +13,7 @@ const config: Config = {
     },
     child: {
         id: '17006',
-        title: '154.5 Banketteinladung (2)',
+        title: 'Kapitel 154.5 — Banketteinladung (2)',
 
     },
     entry: {

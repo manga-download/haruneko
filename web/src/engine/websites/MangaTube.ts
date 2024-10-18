@@ -1,4 +1,4 @@
-import { Tags } from '../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './MangaTube.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -10,23 +10,22 @@ type APIResult<T> = {
     data: T,
 }
 
-type MangaClipBoard = {
-    title: string,
-    slug : string
-}
-
 type APIManga = {
     title: string,
-    slug: string
+    slug: string,
+    chpFormat: string
 }
 
 type APIChapters = {
-    chapters: {
-        id: number,
-        number: number,
-        subNumber: number,
-        name: string
-    }[]
+    manga: APIManga,
+    chapters: APIChapter[]
+}
+
+type APIChapter = {
+    id: number,
+    number: number,
+    subNumber: number,
+    name: string
 }
 
 type APIPages = {
@@ -37,18 +36,11 @@ type APIPages = {
     }
 }
 
-const mangaScript = `
-    new Promise( resolve => {
-        resolve(
-            {
-                slug : window.laravel.route.data.manga.manga.slug,
-                title: window.laravel.route.data.manga.manga.title
-            });
-    });
-`;
+const mangaScript = 'window.laravel.route.data.manga.manga';
+const chapterScript = 'window.laravel.route.data.manga';
 
 AddAntiScrapingDetection(async (invoke) => {
-    const result = await invoke<boolean>(`document.documentElement.innerHTML.includes('window.__challange')`);
+    const result = await invoke<boolean>(`window.__challange ? true : false;`);
     return result ? FetchRedirection.Automatic : undefined;
 });
 
@@ -69,7 +61,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { slug, title } = await FetchWindowScript<MangaClipBoard>(new Request(url), mangaScript, 1500);
+        const { slug, title } = await FetchWindowScript<APIManga>(new Request(url), mangaScript, 1500);
         return new Manga(this, provider, slug, title);
     }
 
@@ -88,13 +80,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data: { chapters } } = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`${manga.Identifier}/chapters`, this.apiUrl)));
-        return chapters.map(item => {
-            let title = item.number != 0 ? item.number.toString() : '';
-            title += item.subNumber != 0 ? '.' + item.subNumber.toString() : '';
-            title += item.name ? ` ${item.name}` : '';
-            return new Chapter(this, manga, item.id.toString(), title.trim());
-        });
+        const data = await FetchWindowScript<APIChapters>(new Request(new URL(`/series/${manga.Identifier}`, this.URI)), chapterScript, 2500);
+        return data.chapters.map(item => new Chapter(this, manga, item.id.toString(), this.ComputeChapterTitle(data.manga, item)));
+    }
+
+    private ComputeChapterTitle(manga: APIManga, chapter: APIChapter): string {
+        let title = '';
+        if (manga.chpFormat) {
+            const chapterNumber = chapter.subNumber > 0 ? `${chapter.number}.${chapter.subNumber}` : chapter.number.toString();
+            title = manga.chpFormat.replace('%chapter_number%', chapterNumber);
+        } else title = `Kapitel ${chapter.number}`;
+        return chapter.name.length > 0 ? `${title} — ${chapter.name}` : title;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
