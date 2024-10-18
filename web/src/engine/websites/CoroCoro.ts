@@ -8,15 +8,7 @@ import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type JSONMangas = {
-    weekdays: {
-        mon: JSONManga[],
-        tue: JSONManga[],
-        wed: JSONManga[],
-        thu: JSONManga[],
-        fri: JSONManga[],
-        sat: JSONManga[],
-        sun: JSONManga[]
-    }
+    weekdays: Record<string, JSONManga[]>;
 }
 
 type JSONManga = {
@@ -65,21 +57,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('/rensai', this.URI)), 'script');
-        const json = this.FindAndParseJSON(scripts, 'totalChapterLikes');
-        const { weekdays: { mon, tue, wed, thu, fri, sat, sun } } = this.LocateObjectWithNamedProperty<JSONMangas>(json, 'weekdays');
-        return [mon, tue, wed, thu, fri, sat, sun].reduce((accumulator: Manga[], day) => {
+        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('/rensai', this.URI)), 'script:not([src])');
+        const { weekdays } = this.FindJSONObject<JSONMangas>(scripts, /totalChapterLikes/, 'weekdays');
+        return Object.values(weekdays).reduce((accumulator: Manga[], day) => {
             const mangas = day.map(manga => new Manga(this, provider, `/title/${manga.id}`, manga.name));
             accumulator.push(...mangas);
             return accumulator;
         }, []);
-
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${manga.Identifier}`, this.URI)), 'script');
-        const json = this.FindAndParseJSON(scripts, 'omittedMiddleChapters');
-        const { chapters: { earlyChapters, omittedMiddleChapters, latestChapters } } = this.LocateObjectWithNamedProperty<JSONChapters>(json, 'chapters');
+        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${manga.Identifier}`, this.URI)), 'script:not([src])');
+        const { chapters: { earlyChapters, omittedMiddleChapters, latestChapters } } = this.FindJSONObject<JSONChapters>(scripts, /omittedMiddleChapters/, 'chapters');
         return [earlyChapters, omittedMiddleChapters, latestChapters].reduce((accumulator: Chapter[], category) => {
             const chapters = category.map(chapter => new Chapter(this, manga, `/chapter/${chapter.id}`, chapter.title));
             accumulator.push(...chapters);
@@ -88,44 +77,49 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<CryptoParams>[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${chapter.Identifier}`, this.URI)), 'script');
-        const json = this.FindAndParseJSON(scripts, 'viewerSection');
-        if (!json) {
+        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${chapter.Identifier}`, this.URI)), 'script:not([src])');
+        const jsonPages = this.FindJSONObject<JSONPages>(scripts, /viewerSection/, 'viewerSection');
+        if (!jsonPages) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        const { viewerSection: { pages } } = this.LocateObjectWithNamedProperty<JSONPages>(json, 'viewerSection');
-        return pages.map(page => new Page<CryptoParams>(this, chapter, new URL(page.src), page.crypto));
+        return jsonPages.viewerSection.pages.map(page => new Page<CryptoParams>(this, chapter, new URL(page.src), page.crypto));
     }
 
     public override async FetchImage(page: Page<CryptoParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         const cryptoParams = page.Parameters;
-        if (!cryptoParams?.key) return blob;
-        const encrypted = await blob.arrayBuffer();
-        const cipher = { name: 'AES-CBC', iv: Buffer.from(cryptoParams.iv, 'hex') };
-        const cryptoKey = await crypto.subtle.importKey('raw', Buffer.from(cryptoParams.key, 'hex'), cipher, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
-        return Common.GetTypedData(decrypted);
-    }
-
-    private FindAndParseJSON(scripts: HTMLScriptElement[], textToFind: string): JSONObject {
-        const script = scripts.find(script => script.innerText.indexOf(textToFind) > 0)?.innerText;
-        if (!script) return undefined;
-        const json = JSON.parse(script.substring(22, script.length - 2));
-        return JSON.parse(json.substring(json.indexOf(':') + 1));
-    }
-
-    private LocateObjectWithNamedProperty<T>(obj, keyname: string): T {
-        if (!obj) return null;
-        if (obj[keyname]) {
-            return obj as T;
+        switch (cryptoParams.method) {
+            case 'aes-cbc': {
+                const encrypted = await blob.arrayBuffer();
+                const cipher = { name: 'AES-CBC', iv: Buffer.from(cryptoParams.iv, 'hex') };
+                const cryptoKey = await crypto.subtle.importKey('raw', Buffer.from(cryptoParams.key, 'hex'), cipher, false, ['decrypt']);
+                const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
+                return Common.GetTypedData(decrypted);
+            }
+            default: return blob;
         }
-        let result = null;
-        for (let i in obj) {
-            if (typeof obj[i] === 'object')
-                result = result ?? this.LocateObjectWithNamedProperty(obj[i], keyname);
-        }
-        return result;
     }
 
+    private FindJSONObject<T>(scripts: HTMLScriptElement[], scriptRegex: RegExp, keyName: string, currentElement = undefined): T {
+
+        if (scripts && scriptRegex) {
+            const script = scripts.find(script => scriptRegex.test(script.text))?.text;
+            if (!script) return undefined;
+            const json = JSON.parse(script.substring(22, script.length - 2));
+            currentElement = JSON.parse(json.substring(json.indexOf(':') + 1));
+            return this.FindJSONObject<T>(undefined, undefined, keyName, currentElement);
+        }
+
+        if (!currentElement) return undefined;
+        if (currentElement[keyName]) {
+            return currentElement;
+        }
+        let result = undefined;
+        for (let i in currentElement) {
+            if (result) break;
+            if (typeof currentElement[i] === 'object')
+                result = result ?? this.FindJSONObject<T>(undefined, undefined, keyName, currentElement[i]);
+        }
+        return result as T;
+    }
 }
