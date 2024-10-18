@@ -1,13 +1,11 @@
 ﻿import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-//Region Locked : Korea
-
 const config = {
     plugin: {
         id: 'oktoon',
         title: 'OkToon'
-    },
+    }, /* Region Locked : Korea
     container: {
         url: 'https://oktoon.com/webtoon/content/2881',
         id: '2881',
@@ -21,7 +19,7 @@ const config = {
         index: 0,
         size: 123_154,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
 const fixture = new TestFixture(config);

@@ -72,8 +72,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, _url: string): Promise<Manga> {
         const slug = _url.split('/').at(-1);
-        const url = new URL(`/_next/data/${this.nextBuild}/webtoon/content/${slug}.json?slug=${slug}`, this.URI);
-        const { pageProps: { trpcState: { json: { queries: { '0': { state: { data: { id, title } } } } } } } } = await FetchJSON<JSONManga>(new Request(url));
+        const data = await FetchJSON<JSONManga>(new Request(new URL(`/_next/data/${this.nextBuild}/webtoon/content/${slug}.json?slug=${slug}`, this.URI)));
+        const { id, title } = data.pageProps.trpcState.json.queries['0'].state.data;
         return new Manga(this, provider, id, title);
     }
 
@@ -88,7 +88,17 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const parameters = {
-            '0': { json: { type: 'weekly', category: 'general', orderBy: 'update', publishPeriod: null, isAdult: true, limit: 100, cursor: page * 100 } }
+            '0': {
+                json: {
+                    type: 'weekly',
+                    category: 'general',
+                    orderBy: 'update',
+                    publishPeriod: null,
+                    isAdult: true,
+                    limit: 100,
+                    cursor: page * 100
+                }
+            }
         };
         const endpoint = new URL('toon.toons?batch=1', this.apiUrl);
         endpoint.searchParams.set('input', JSON.stringify(parameters));
@@ -98,7 +108,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const parameters = {
-            '0': { json: { toonId: manga.Identifier } }
+            '0': {
+                json:
+                {
+                    toonId: manga.Identifier
+                }
+            }
         };
         const endpoint = new URL('episode.episodes?batch=1', this.apiUrl);
         endpoint.searchParams.set('input', JSON.stringify(parameters));
