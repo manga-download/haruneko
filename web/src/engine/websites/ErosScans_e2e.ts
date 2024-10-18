@@ -3,21 +3,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'genztoon',
-        title: 'GenzToon'
+        id: 'erosscans',
+        title: 'Eros Scans'
     },
     container: {
-        url: 'https://genzupdates.com/series/7e80e1ac248/',
-        id: '/series/7e80e1ac248/',
-        title: 'A Bad Person'
+        url: 'https://helorscans.xyz/manga/absolute-sword-sense/',
+        id: '/manga/absolute-sword-sense/',
+        title: 'Absolute Sword Sense'
     },
     child: {
-        id: '/chapter/7e80e1ac248-65380b2e6a1/',
-        title: 'Chapter 138'
+        id: '/absolute-sword-sense-chapter-100/',
+        title: 'Chapter 100'
     },
     entry: {
-        index: 0,
-        size: 837_140,
+        index: 1,
+        size: 880_280,
         type: 'image/webp'
     }
 };

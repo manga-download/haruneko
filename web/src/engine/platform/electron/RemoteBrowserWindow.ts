@@ -97,4 +97,8 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
     public async ExecuteScript<T extends void | JSONElement>(script: ScriptInjection<T> = ''): Promise<T> {
         return this.ipc.Send<T>(Channels.App.ExecuteScript, this.windowID, script instanceof Function ? `(${script})()` : script);
     }
+
+    public async SendDebugCommand<T extends void | JSONElement>(method: string, parameters?: JSONObject): Promise<T> {
+        return this.ipc.Send<T>(Channels.App.SendDebugCommand, this.windowID, method, parameters);
+    }
 }
