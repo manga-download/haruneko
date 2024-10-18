@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './EighteenComic.webp';
 import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchHTML, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 function MangaInfoExtractor(element: HTMLDivElement) {
@@ -14,11 +14,9 @@ function MangaInfoExtractor(element: HTMLDivElement) {
 
 const pageScript = `
     new Promise ( resolve => {
-        const imagenodes = [...document.querySelectorAll('div.row.thumb-overlay-albums img')];
-        const scrambled = aid > scramble_id;
-        resolve ( imagenodes.map(image => {
+        resolve ( [...document.querySelectorAll('div.row.thumb-overlay-albums img')].map(image => {
             const imageNumber = image.parentNode.id.split('.')[0];
-            const seed = scrambled ? get_num(window.btoa(aid), window.btoa(imageNumber)) : -1;
+            const seed = aid > scramble_id ? get_num(window.btoa(aid), window.btoa(imageNumber)) : 0;
             return {
                 url : image.dataset.original,
                 seed
@@ -49,13 +47,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const dom = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
-        const chapterlist = [...dom.querySelectorAll<HTMLAnchorElement>('div.episode ul a')];
-        return chapterlist.length > 0 ? chapterlist.map(chapter => {
-            const spanbloat = chapter.querySelector<HTMLSpanElement>('span');
-            if (spanbloat) spanbloat.parentNode.removeChild(spanbloat);
-            return new Chapter(this, manga, chapter.pathname, chapter.text.replace(manga.Title, '').trim());
-        }) : [new Chapter(this, manga, manga.Identifier.replace('/album/', '/photo/'), manga.Title)];
+        const chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div.episode ul a', Common.AnchorInfoExtractor(false, 'span'));
+        return chapters.length > 0 ? chapters : [new Chapter(this, manga, manga.Identifier.replace('/album/', '/photo/'), manga.Title)];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<Seed>[]> {
@@ -67,7 +60,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<Seed>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         const seed = page.Parameters.seed;
-        return seed < 0 ? blob : DeScramble(blob, async (image, ctx) => {
+        return seed === 0 ? blob : DeScramble(blob, async (image, ctx) => {
             const l = image.height % seed ;
             for (let index = 0; index < seed; index++) {
                 let sourceHeight = Math.floor(image.height / seed);

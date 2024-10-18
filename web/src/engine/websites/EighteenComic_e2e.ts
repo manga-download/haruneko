@@ -33,7 +33,7 @@ const configScrambled: Config = {
     container: {
         url: 'https://18comic.org/album/557769/',
         id: '/album/557769/',
-        title: '[沒有漢化][ゲズンタイト]HARWEST(COMIC クリベロン 2018年2月号 Vol.64)'
+        title: '上流社會～我要成為人生勝利組～ [禁漫漢化組]'
     },
     child: {
         id: '/photo/557769/',
