@@ -8,6 +8,9 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 export type APIResult<T> = {
     result: string,
+    error?: {
+        code: string
+    }
     data: T
 }
 
@@ -44,14 +47,14 @@ type APIToken = {
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
-    private readonly BalconyID: string = undefined;
     private readonly Platform: string = 'WEB';
     private authorization: APIToken = undefined;
-    private readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
+    protected readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
+    protected BalconyID: string = 'DELITOON_COM';
 
-    public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', balconyID = 'DELITOON_COM', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
+    public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
         super(id, label, url, ...tags);
-        this.BalconyID = balconyID;
+
     }
 
     public override get Icon() {
@@ -108,21 +111,27 @@ export default class extends DecoratableMangaScraper {
         await this.UpdateToken();
         const url = new URL(`contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const { result, data } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
-        if (result === 'ERROR') {
-            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        const { result, error, data } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
+        if (result == 'ERROR') {
+            switch (error.code) {
+                case 'NOT_LOGIN_USER':
+                case 'UNAUTHORIZED_CONTENTS':
+                    throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+            }
         }
         return data.images.map(element => new Page(this, chapter, new URL(element.imagePath)));
     }
 
-    protected CreateRequest(url: URL, includeAuthorization = true): Request {
+    protected CreateRequest(url: URL, includeAuthorization = true, body: string = undefined): Request {
         const request = new Request(url, {
-            method: 'GET',
+            method: body? 'POST':'GET',
             headers: {
                 'Referer': this.URI.origin,
                 'X-Balcony-Id': this.BalconyID,
                 'X-Platform': this.Platform,
+                'Content-type': body ? 'application/json' : undefined
             },
+            body: body
         });
         if (this.authorization && includeAuthorization) {
             request.headers.set('authorization', ' Bearer ' + this.authorization.token);
