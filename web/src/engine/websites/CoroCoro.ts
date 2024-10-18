@@ -105,7 +105,8 @@ export default class extends DecoratableMangaScraper {
         if (scripts && scriptRegex) {
             const script = scripts.find(script => scriptRegex.test(script.text))?.text;
             if (!script) return undefined;
-            const json = JSON.parse(script.substring(22, script.length - 2));
+            //script are like self.__next_f.push([1,"
+            const json = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2));// to remove trailing )]
             currentElement = JSON.parse(json.substring(json.indexOf(':') + 1));
             return this.FindJSONObject<T>(undefined, undefined, keyName, currentElement);
         }
