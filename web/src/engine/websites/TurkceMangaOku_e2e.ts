@@ -7,18 +7,18 @@ const config: Config = {
         title: 'Türkçe Manga Oku'
     },
     container: {
-        url: 'https://turkcemangaoku.com/manga/ben-o-kisi-degilim/',
-        id: JSON.stringify({ post: '1883', slug: '/manga/ben-o-kisi-degilim/'}),
-        title: 'Ben O Kişi Değilim!'
+        url: 'https://trmangaoku.com/manga/gel-beni-al/',
+        id: JSON.stringify({ post: '1253', slug: '/manga/gel-beni-al/'}),
+        title: 'Gel Beni Al!'
     },
     child: {
-        id: '/manga/ben-o-kisi-degilim/bolum-69/',
-        title: 'Bölüm 69'
+        id: '/manga/gel-beni-al/bolum-117/',
+        title: 'Bölüm 117'
     },
     entry: {
         index: 0,
-        size: 138_671,
-        type: 'image/jpeg'
+        size: 556_204,
+        type: 'image/webp'
     }
 };
 

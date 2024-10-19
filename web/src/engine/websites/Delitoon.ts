@@ -8,6 +8,9 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 export type APIResult<T> = {
     result: string,
+    error?: {
+        code: string
+    }
     data: T
 }
 
@@ -31,38 +34,27 @@ export type APIPages = {
     }[]
 }
 
-//Result from /auth/session : to get token
 type APIUser = {
-    user?: APIToken
-}
-
-//Result from /auth/refresh : to refresh token
-type APIRefreshToken = {
-    result: APIToken
-}
-
-//Auth token entity
-type APIToken = {
-    accessToken: {
-        token: string,
-        expiredAt: number
+    user?: {
+        accessToken: APIToken,
     },
-    refreshToken: {
-        token: string
-    }
-}
+};
+
+type APIToken = {
+    token: string,
+    expiredAt: number,
+};
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
-    private readonly BalconyID: string = undefined;
-    private readonly Timezone: string = 'Europe/Paris';
     private readonly Platform: string = 'WEB';
-    private Token: APIToken = undefined;
-    private readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
+    private authorization: APIToken = undefined;
+    protected readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
+    protected BalconyID: string = 'DELITOON_COM';
 
-    public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', balconyID = 'DELITOON_COM', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
+    public constructor(id = 'delitoon', label = 'Delitoon', url = 'https://www.delitoon.com', tags = [Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official]) {
         super(id, label, url, ...tags);
-        this.BalconyID = balconyID;
+
     }
 
     public override get Icon() {
@@ -119,63 +111,39 @@ export default class extends DecoratableMangaScraper {
         await this.UpdateToken();
         const url = new URL(`contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const apiresult = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
-        if (apiresult.result === 'ERROR') {
-            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        const { result, error, data } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
+        if (result == 'ERROR') {
+            switch (error.code) {
+                case 'NOT_LOGIN_USER':
+                case 'UNAUTHORIZED_CONTENTS':
+                    throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+            }
         }
-        return apiresult.data.images.map(element => new Page(this, chapter, new URL(element.imagePath)));
-
+        return data.images.map(element => new Page(this, chapter, new URL(element.imagePath)));
     }
 
-    protected CreateRequest(url: URL): Request {
-        const headers: HeadersInit = {
-            Referer: this.URI.origin,
-            'x-balcony-id': this.BalconyID,
-            'x-balcony-timeZone': this.Timezone,
-            'X-platform': this.Platform,
-        };
-        if (this.Token) headers['authorization'] = ' Bearer ' + this.Token.accessToken.token;
-        return new Request(url, {
-            method: 'GET',
-            headers: headers
+    protected CreateRequest(url: URL, includeAuthorization = true, body: string = undefined): Request {
+        const request = new Request(url, {
+            method: body? 'POST':'GET',
+            headers: {
+                'Referer': this.URI.origin,
+                'X-Balcony-Id': this.BalconyID,
+                'X-Platform': this.Platform,
+                'Content-type': body ? 'application/json' : undefined
+            },
+            body: body
         });
-    }
-
-    private CreatePostRequest(url: URL, body: string, contentType: string = 'application/json'): Request {
-        const headers: HeadersInit = {
-            Referer: this.URI.origin,
-            'x-balcony-id': this.BalconyID,
-            'x-balcony-timeZone': this.Timezone,
-            'X-platform': this.Platform,
-            'Content-type': contentType
-        };
-        if (this.Token) headers['authorization'] = ' Bearer ' + this.Token.accessToken.token;
-        return new Request(url, {
-            method: 'POST',
-            headers: headers,
-            body: body,
-        });
+        if (this.authorization && includeAuthorization) {
+            request.headers.set('authorization', ' Bearer ' + this.authorization.token);
+        }
+        return request;
     }
 
     protected async UpdateToken() {
-        //if token is undefined => try to fetch one
-        if (!this.Token) {
+        if (!this.authorization || this.authorization.expiredAt < Date.now()) {
             const url = new URL('/api/auth/session', this.URI);
-            const { user } = await FetchJSON<APIUser>(this.CreateRequest(url));
-            this.Token = user;
-            return;
+            const { user } = await FetchJSON<APIUser>(this.CreateRequest(url, false));
+            this.authorization = user?.accessToken;
         }
-
-        //if token is defined, check for expiration  and refresh if needed
-        if (Date.now() > this.Token.accessToken.expiredAt) { //24h expiration
-            const url = new URL('/api/balcony/auth/refresh', this.URI);
-            const body = JSON.stringify({
-                accessToken: this.Token.accessToken.token,
-                refreshToken: this.Token.refreshToken.token
-            });
-            const { result } = await FetchJSON<APIRefreshToken>(this.CreatePostRequest(url, body));
-            this.Token = result;
-        }
-
     }
 }
