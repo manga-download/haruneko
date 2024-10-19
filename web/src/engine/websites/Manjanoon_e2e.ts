@@ -7,7 +7,7 @@ const config = {
         title: 'Manjanoon'
     },
     container: {
-        url: 'https://axztu.com/manga/nn-holding-you-captive/',
+        url: 'https://vrnoin.site/manga/nn-holding-you-captive/',
         id: '/manga/nn-holding-you-captive/',
         title: 'Holding You Captive'
     },

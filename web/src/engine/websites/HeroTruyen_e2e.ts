@@ -3,22 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'qiman5',
-        title: '奇漫屋 (Qiman5)'
+        id: 'herotruyen',
+        title: 'Hero Truyen'
     },
     container: {
-        url: 'https://qiman2.com/16257.html',
-        id: '/16257.html',
-        title: '斗破苍穹之大主宰'
+        url: 'https://truyenti.com/chung-cuc-dau-la',
+        id: '/chung-cuc-dau-la',
+        title: 'Chung Cực Đấu La'
     },
     child: {
-        id: '/16257/1274202.html',
-        title: '1话 激战过后'
+        id: '/chung-cuc-dau-la/chapter-550',
+        title: 'Chapter 550'
     },
     entry: {
-        index: 3,
-        size: 278_279,
-        type: 'image/jpeg'
+        index: 0,
+        size: 218_070,
+        type: 'image/webp'
     }
 };
 
