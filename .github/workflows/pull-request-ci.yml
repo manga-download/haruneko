@@ -25,6 +25,7 @@ jobs:
         if: steps.packages.outcome == 'success'
         run: npm run test
   test:
+    needs: inspect
     strategy:
       fail-fast: false
       matrix:
