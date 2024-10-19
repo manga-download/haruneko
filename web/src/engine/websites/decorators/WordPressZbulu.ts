@@ -37,6 +37,9 @@ export function ChapterExtractor(element: HTMLAnchorElement) {
 /**
  * An extension method for extracting multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
  * The range of all {@link path} patterns begins with {@link start} and is incremented by {@link step} until no more new mangas can be extracted.
+ * This method does NOT perform dupe detection while gathering mangas and will stop only when it get 0 results.
+ * Use it instead of Common one when you have duplicate mangas in list and you are certain than last page will be empty.
+ * Duplicates entries are filtered in the end anyway.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
  * @param path - The path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
@@ -53,10 +56,6 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
         await reducer;
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract);
-
-        // THE REASON WHY WE DONT USE Common.MangaMultiPagesCSS method is because on some ZBULU website we have PAGES OF DUPLICATES, it causes the loop
-        // to stop at page 300+ when we have 900 pages to check. Duplicates are filtered manually at the end of the gathering.
-
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
     }
@@ -66,6 +65,9 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
 /**
  * A class decorator that adds the ability to extract multiple mangas from a range of given relative {@link path} patterns using the given CSS {@link query}.
  * The range of all {@link path} patterns begins with {@link start} and is incremented by {@link step} until no more new mangas can be extracted.
+ * This Decorator does NOT perform dupe detection while gathering mangas and will stop only when it get 0 results.
+ * Use it instead of Common one when you have duplicate mangas in list and you are certain than last page will be empty.
+ * Duplicates entries are filtered in the end anyway.
  * @param path - The path pattern relative to the scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param start - The start for the sequence of incremental numbers which are applied to the {@link path} pattern
