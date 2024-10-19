@@ -26,7 +26,7 @@ jobs:
         run: npm run test
   test:
     needs: inspect
-    if: success() || contains(github.ref_name, 'localization')
+    if: success() || contains(github.event.pull_request.title, 'Crowdin')
     strategy:
       fail-fast: false
       matrix:
