@@ -311,7 +311,6 @@ export { default as MangaForFree } from './MangaForFree';
 export { default as MangaFox } from './MangaFox';
 export { default as MangaFoxFull } from './MangaFoxFull';
 export { default as MangaFreak } from './MangaFreak';
-export { default as MangaGalaxy } from './MangaGalaxy';
 export { default as MangaGeko } from './MangaGeko';
 export { default as MangaGezgini } from './MangaGezgini';
 export { default as MangaGG } from './MangaGG';
