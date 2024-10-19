@@ -26,7 +26,7 @@ jobs:
         run: npm run test
   test:
     needs: inspect
-    if: contains(github.ref_name, 'localization') && (success() || failure())
+    if: success() || contains(github.ref_name, 'localization')
     strategy:
       fail-fast: false
       matrix:
