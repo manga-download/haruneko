@@ -27,16 +27,21 @@ jobs:
         with:
           node-version: 20.x
       - name: Install NPM Packages
+        id: packages
         run: npm install
       - name: Code Inspection
+        if: steps.packages.outcome == 'success'
         run: npm run check
       - name: Unit & Component Tests
+        if: steps.packages.outcome == 'success'
         run: npm run test
       - name: End-To-End Tests
+        if: steps.packages.outcome == 'success'
         env:
           DISPLAY: ':99'
         run: npm run test:e2e
       - name: Website Tests (Selection)
+        if: steps.packages.outcome == 'success'
         env:
           DISPLAY: ':99'
         run: npm run test:websites -- MangaDex
