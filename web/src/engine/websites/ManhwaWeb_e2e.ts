@@ -1,0 +1,26 @@
+﻿import { describe } from 'vitest';
+import { TestFixture } from '../../../test/WebsitesFixture';
+
+const config = {
+    plugin: {
+        id: 'manhwaweb',
+        title: 'MahwaWeb'
+    },
+    container: {
+        url: 'https://manhwaweb.com/manga/renacimientodelemperador_1719816094257',
+        id: 'renacimientodelemperador_1719816094257',
+        title: 'Renacimiento Del Emperador'
+    },
+    child: {
+        id: 'renacimientodelemperador_1719816094257-1',
+        title: '1'
+    },
+    entry: {
+        index: 0,
+        size: 832_901,
+        type: 'image/jpeg'
+    }
+};
+
+const fixture = new TestFixture(config);
+describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
