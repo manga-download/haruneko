@@ -7,18 +7,18 @@ const config = {
         title: 'GenzToon'
     },
     container: {
-        url: 'https://genztoons.com/manga/a-bad-person/',
-        id: '/manga/a-bad-person/',
+        url: 'https://genzupdates.com/series/7e80e1ac248/',
+        id: '/series/7e80e1ac248/',
         title: 'A Bad Person'
     },
     child: {
-        id: '/a-bad-person-chapter-1/',
-        title: 'Chapter 1'
+        id: '/chapter/7e80e1ac248-65380b2e6a1/',
+        title: 'Chapter 138'
     },
     entry: {
-        index: 1,
-        size: 251_168,
-        type: 'image/jpeg'
+        index: 0,
+        size: 837_140,
+        type: 'image/webp'
     }
 };
 
