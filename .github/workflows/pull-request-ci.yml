@@ -19,10 +19,10 @@ jobs:
         id: packages
         run: npm install
       - name: Code Inspection
-        if: steps.packages.outcome == 'success'
+        if: steps.packages.outcome == 'success' && (success() || failure())
         run: npm run check
       - name: Unit & Component Tests
-        if: steps.packages.outcome == 'success'
+        if: steps.packages.outcome == 'success' && (success() || failure())
         run: npm run test
   test:
     needs: inspect
@@ -52,12 +52,12 @@ jobs:
         id: packages
         run: npm install
       - name: End-To-End Tests
-        if: steps.packages.outcome == 'success'
+        if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
         run: npm run test:e2e
       - name: Website Tests (Selection)
-        if: steps.packages.outcome == 'success'
+        if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
         run: npm run test:websites -- MangaDex
