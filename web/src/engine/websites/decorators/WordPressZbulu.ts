@@ -105,7 +105,7 @@ async function FetchChaptersMultiPageCSS(this: MangaScraper, manga: Manga, path:
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
         const pathTopage = path.replace('{page}', `${page}`).replace('{mangaid}', manga.Identifier);
         const chapters = await FetchChaptersSinglePageCSS.call(this, manga, pathTopage, query);
-        chapters.length > 0 && !EndsWith(chapterList, chapters) ? chapterList.push(...chapters) : run = false;
+        chapterList.isMissingLastItemFrom(chapters) ? chapterList.push(...chapters) : run = false;
     }
     return chapterList.distinct();
 }
@@ -117,13 +117,6 @@ async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, path
         const { id, title } = Common.AnchorInfoExtractor(false, chapterBloat).call(this, chapter);
         return new Chapter(this, manga, id, title.replace(manga.Title, ''));
     });
-}
-
-export function EndsWith(target: Chapter[], source: Chapter[]) {
-    if (target.length < source.length) {
-        return false;
-    }
-    return target[target.length - 1].Identifier === source[source.length - 1].Identifier;
 }
 
 /**
