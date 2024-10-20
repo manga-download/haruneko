@@ -5,7 +5,6 @@ const config = {
     plugin: {
         id: 'komikindoinfo',
         title: 'KomikindoInfo',
-        timeout: 60000
     },
     container: {
         url: 'https://komikindo.info/series/beauty-in-a-click/',
