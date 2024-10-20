@@ -9,10 +9,6 @@ type APIMangas = {
     next: boolean
 }
 
-type MangaResult = {
-    mangas: Manga[],
-    next: boolean
-}
 type APIManga = {
     _id: string,
     the_real_name: string,
@@ -34,7 +30,7 @@ export default class extends DecoratableMangaScraper {
     public readonly apiUrl = 'https://manhwawebbackend-production.up.railway.app';
 
     public constructor() {
-        super('manhwaweb', 'MahwaWeb', 'https://manhwaweb.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Novel, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('manhwaweb', 'ManhwaWeb', 'https://manhwaweb.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Novel, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
@@ -54,17 +50,15 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            const { mangas, next } = await this.GetMangasFromPage(page, provider);
-            mangaList.push(...mangas);
-            run = next;
+            const mangas = await this.GetMangasFromPage(page, provider);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<MangaResult> {
-        const { data, next } = await FetchJSON<APIMangas>(new Request(new URL(`/manhwa/library?estado=&tipo=&erotico=&demografia=&page=${page}`, this.apiUrl)));
-        const mangas = data.map(manga => new Manga(this, provider, manga._id, manga.the_real_name));
-        return { mangas, next };
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const { data } = await FetchJSON<APIMangas>(new Request(new URL(`/manhwa/library?estado=&tipo=&erotico=&demografia=&page=${page}`, this.apiUrl)));
+        return data.map(manga => new Manga(this, provider, manga._id, manga.the_real_name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

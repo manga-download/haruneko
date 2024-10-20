@@ -4,7 +4,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'manhwaweb',
-        title: 'MahwaWeb'
+        title: 'ManhwaWeb'
     },
     container: {
         url: 'https://manhwaweb.com/manga/renacimientodelemperador_1719816094257',
