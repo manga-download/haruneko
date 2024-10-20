@@ -106,6 +106,7 @@ export { default as Desu } from './Desu';
 export { default as DiamondFansub } from './DiamondFansub';
 export { default as DianxiaTrads } from './DianxiaTrads';
 export { default as Digimon } from './Digimon';
+export { default as DigimonCard } from './DigimonCard';
 export { default as DigitalTeam } from './DigitalTeam';
 export { default as DingManhua } from './DingManhua';
 export { default as DisasterScans } from './DisasterScans';
