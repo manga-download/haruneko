@@ -30,7 +30,7 @@ function PageLinkExtractor(this: MangaScraper, element: HTMLImageElement): strin
     return url.searchParams.get('url') ? decodeURIComponent(url.searchParams.get('url')) : url.href;
 }
 
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(15));

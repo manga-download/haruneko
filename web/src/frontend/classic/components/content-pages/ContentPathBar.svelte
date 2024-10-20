@@ -7,6 +7,7 @@
     <Breadcrumb noTrailingSlash>
         <BreadcrumbItem
             href="#"
+            class="segment"
             isCurrentPage={$contentscreen === '/'}
             on:click={() => ($contentscreen = '/')}
         >
@@ -17,6 +18,7 @@
             {#each steps as step, index}
                 <BreadcrumbItem
                     href="#"
+                    class="segment"
                     isCurrentPage={index === steps.length - 1}
                     on:click={() =>
                         ($contentscreen = $contentscreen
@@ -36,12 +38,12 @@
         transform: translateY(50%);
     }
 
-    #contentpathbar :global(nav ol li a) {
+    #contentpathbar:global(.segment) {
         font-weight: bold;
         user-select: none;
     }
-    #contentpathbar
-        :global(nav ol li a):not(.bx--breadcrumb-item--current):hover {
+
+    #contentpathbar:global(.segment:not([isCurrentPage]):hover) {
         cursor: pointer;
     }
 </style>

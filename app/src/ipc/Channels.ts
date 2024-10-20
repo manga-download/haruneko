@@ -59,8 +59,10 @@ export namespace RemoteBrowserWindowController {
         CloseWindow = 'RemoteBrowserWindowController::CloseWindow',
         /** Channel for IPC callback with signature: `(windowID: number, show: boolean) => Promise<void>` */
         SetVisibility = 'RemoteBrowserWindowController::SetVisibility',
-        /** Channel for IPC callback with signature: `(windowID: number, script: string) => Promise<T>` */
+        /** Channel for IPC callback with signature: `<T extends JSONElement>(windowID: number, script: string) => Promise<T>` */
         ExecuteScript = 'RemoteBrowserWindowController::ExecuteScript',
+        /** Channel for IPC callback with signature: `<T extends void | JSONElement>(windowID: number, method: string, parameters?: JSONObject) => Promise<T>` */
+        SendDebugCommand = 'RemoteBrowserWindowController::SendDebugCommand',
         /** Channel for IPC callback with signature: `(windowID: number, url: string, options: string) => Promise<void>` */
         LoadURL = 'RemoteBrowserWindowController::LoadURL',
     };
@@ -120,6 +122,6 @@ export namespace BloatGuard {
      */
     export const enum App {
         /** Channel for IPC callback with signature: `(patterns: string[]) => Promise<void>` */
-        Initialize = 'BloadGuard::Initialize',
+        Initialize = 'BloatGuard::Initialize',
     }
 }
