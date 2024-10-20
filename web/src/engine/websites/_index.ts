@@ -431,6 +431,7 @@ export { default as ManhwaRaw } from './ManhwaRaw';
 export { default as ManhwasMen } from './ManhwasMen';
 export { default as ManhwasNet } from './ManhwasNet';
 export { default as ManhwaTop } from './ManhwaTop';
+export { default as ManhwaWeb } from './ManhwaWeb';
 export { default as Manhwax } from './Manhwax';
 export { default as Manjanoon } from './Manjanoon';
 export { default as ManmanApp } from './ManmanApp';
