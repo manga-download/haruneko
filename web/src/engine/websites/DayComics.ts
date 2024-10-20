@@ -12,7 +12,7 @@ const matureCookieScript = `
                 const decodedData = JSON.parse(sessionData.decodeString('test'));
                 decodedData.mature = 1;
                 const cookieValue = JSON.stringify(decodedData).unicode().encodeString('test');
-                window.cookieStore.set('userSession', cookieValue);
+                await window.cookieStore.set('userSession', cookieValue);
             } else { // set +18 for non logged user
                 const response = await fetch('https://api.daycomics.com/preAuth/setMature', {
                     method: 'POST',
@@ -25,12 +25,14 @@ const matureCookieScript = `
                 });
                 const data = await response.json();
                 const cookieValue = JSON.stringify(data.data.token).unicode().encodeString('test');
-                window.cookieStore.set('pa_t', cookieValue);
+                await window.cookieStore.set('pa_t', cookieValue);
             }
-            resolve();
         }
-        catch (error) {
-            reject(error);
+        catch {
+            await window.cookieStore.delete('pa_t');
+        }
+        finally {
+            resolve();
         }
     });
 `;
