@@ -1,7 +1,7 @@
 //import { AnnotationCategoryResourceKey as AC, AnnotationResourceKey as A } from '../i18n/ILocale';
-//import { /*Store,*/ type StorageController } from './StorageController';
+import { Store, type StorageController } from './StorageController';
 //import { Tag } from './Tags';
-import type { MediaChecksum, MediaChild, MediaContainer } from './providers/MediaPlugin';
+import type { MediaChecksum } from './providers/MediaPlugin';
 
 /*
 // Use Case 01: Get annotations for specific media
@@ -18,17 +18,8 @@ myMedia.Annotations.filter(a => a.Key === GlobalAnnotationKeys.Bookmark)
 // Use Case 05: Use Annotations for Viewed Status
 */
 
-export class Annotation<K, V extends JSONElement> {
-
-    constructor(private readonly foo: MediaChecksum, private readonly key: K | GlobalAnnotationKeys, private readonly value: V, private readonly unique: boolean = true) {}
-
-    public get Checksum(): MediaChecksum {
-        return null;
-    }
-
-    public get Value(): V {
-        return this.value;
-    }
+export class Annotation<C extends string, V extends JSONElement> {
+    constructor(public readonly Checksum: MediaChecksum, public readonly Category: C, public readonly Value: V) {}
 }
 
 // ++++++++++++++++++++++++++++++++
@@ -40,14 +31,14 @@ export enum GlobalAnnotationKeys {
 };
 
 const enum FrontendAnnotationKeys {
-    Viewed = 'frontend-classic-viewed',
+    Viewed = 'frontend-classic-viewprogress',
 };
 
-const dbg = new Annotation<FrontendAnnotationKeys, string>(null, GlobalAnnotationKeys.Bookmark, '');
+const dbg = new Annotation<FrontendAnnotationKeys, string>(null, FrontendAnnotationKeys.Viewed, 'Meow!');
 //type X = typeof BasicAnnotationKeys | typeof FrontendAnnotationKeys;
 //let dbg: X = FrontendAnnotationKeys.Meow;
 //dbg = BasicAnnotationKeys.Bookmark;
-console.log(dbg.Value);
+console.log('Annotation:', dbg.Value);
 
 // ++++++++++++++++++++++++++++++++
 
@@ -67,12 +58,40 @@ export type { Annotations };
 
 export class AnnotationManager {
 
-    private readonly annotationsByIdentifier: Map<string, Annotation<string, JSONObject>[]>;
-    private readonly annotationsByTitle: Map<string, Annotation<string, JSONObject>[]>;
-    private readonly annotations: Annotation<string, JSONObject>[];
+    private readonly annotations: Map<string, Record<string, Annotation<string, JSONElement>>>;
 
+    constructor(private readonly storage: StorageController) {}
+
+    public async Load() {
+        //const dbg = this.storage.LoadPersistent<>(Store.Annotations);
+    }
+
+    /*
     public GetAnnotations(media: MediaContainer<MediaChild>) {
         return this.annotations.filter(a => a.Checksum.Match(media.Checksum));
+        //this.storage.LoadPersistent(Store.Annotations)
+    }
+    */
+
+    public async Get<C extends string, V extends JSONElement>(checksum: MediaChecksum, category: C): Promise<V> {
+        console.log('AnnotationManager::Get', checksum, category);
+        return this.annotations.get(checksum.Identifier)?.[category]?.Value as V;
+    }
+
+    public async Set<C extends string, V extends JSONElement>(value: V, checksum: MediaChecksum, category: C): Promise<void> {
+        console.log('AnnotationManager::Set', checksum, category, value);
+        //await this.storage.SavePersistent(value, Store.Annotations, checksum.Identifier);
+        // TODO: Update in this.annotations
+        if(!this.annotations.has(checksum.Identifier)) {
+            this.annotations.set(checksum.Identifier, {});
+        }
+    }
+
+    public async Remove(checksum: MediaChecksum, category: string): Promise<void> {
+        console.log('AnnotationManager::Remove', checksum, category);
+        //const dbg = [];
+        await this.storage.RemovePersistent(Store.Annotations, checksum.Identifier);
+        // TODO: Remove from this.annotations
     }
 
     /*
