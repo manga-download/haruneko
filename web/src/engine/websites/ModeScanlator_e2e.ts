@@ -6,21 +6,21 @@ const config: Config = {
         id: 'modescanlator',
         title: 'Mode Scanlator'
     },
-    /*
     container: {
-        url: 'https://site.modescanlator.net/eternal-first-son-in-law/',
-        id: '/eternal-first-son-in-law/',
-        title: 'Eternal First Son-In-Law',
+        url: 'https://site.modescanlator.net/series/uma-lenda-do-vento',
+        id: JSON.stringify({ id: '36', slug: 'uma-lenda-do-vento' }),
+        title: 'Uma Lenda do Vento',
+        timeout: 10000
     },
     child: {
-        id: '/eternal-first-son-in-law/299/',
-        title: 'Capítulo 299',
+        id: JSON.stringify({ id: '2420', slug: 'capitulo-126' }),
+        title: 'Capítulo 126',
     },
     entry: {
         index: 0,
-        size: 157_765,
-        type: 'image/avif'
-    }*/
+        size: 1_222_675,
+        type: 'image/jpeg'
+    }
 };
 
 const fixture = new TestFixture(config);
