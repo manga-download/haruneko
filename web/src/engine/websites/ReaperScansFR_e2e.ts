@@ -8,13 +8,13 @@ const config: Config = {
     },
     /* CloudFlare
     container: {
-        url: 'https://reaperscans.fr/serie/perfect-surgeon/',
-        id: JSON.stringify({ post: '212', slug: '/serie/perfect-surgeon/' }),
-        title: 'Perfect Surgeon'
+        url: 'https://reaper-scans.fr/serie/4ba82a00e72/',
+        id: '/serie/4ba82a00e72/',
+        title: 'Solo Leveling'
     },
     child: {
-        id: '/serie/perfect-surgeon/chapitre-46/',
-        title: 'Chapitre 46'
+        id: '/chapter/4ba82a00e72-3c7a1bde772/',
+        title: 'Chapter 179'
     },
     entry: {
         index: 2,

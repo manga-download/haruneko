@@ -7,7 +7,7 @@ const config = {
         title: 'Eros Scans'
     },
     container: {
-        url: 'https://helorscans.xyz/manga/absolute-sword-sense/',
+        url: 'https://tercoscans.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },

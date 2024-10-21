@@ -7,7 +7,7 @@ const config = {
         title: 'CypherScans'
     },
     container: {
-        url: 'https://cypheroscans.xyz/manga/solo-max-level-newbie/',
+        url: 'https://cypher-scans.xyz/manga/solo-max-level-newbie/',
         id: '/manga/solo-max-level-newbie/',
         title: 'Solo Max-Level Newbie'
     },

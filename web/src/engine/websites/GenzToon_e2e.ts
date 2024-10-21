@@ -5,7 +5,7 @@ const config = {
     plugin: {
         id: 'genztoon',
         title: 'GenzToon'
-    },
+    }, /* CloudFlare
     container: {
         url: 'https://genzupdates.com/series/7e80e1ac248/',
         id: '/series/7e80e1ac248/',
@@ -19,7 +19,7 @@ const config = {
         index: 0,
         size: 837_140,
         type: 'image/webp'
-    }
+    } */
 };
 
 const fixture = new TestFixture(config);
