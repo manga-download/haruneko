@@ -7,12 +7,12 @@ const config = {
         title: 'ComicVn'
     },
     container: {
-        url: 'https://comicvn2.com/hoa-vo-co-su-670dbd0c43a81739310b9597.html',
-        id: '/hoa-vo-co-su-670dbd0c43a81739310b9597.html',
+        url: 'https://comicvn3.net/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
+        id: '/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
         title: 'Hỏa Võ Cố Sự'
     },
     child: {
-        id: '/hoa-vo-co-su/chapter-1-670dbd15f61d243e99169053.html',
+        id: '/hoa-vo-co-su/chapter-1-671205165502ed59626fc2c7.html',
         title: 'Chapter 1'
     },
     entry: {
