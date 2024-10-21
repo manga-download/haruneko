@@ -6,8 +6,14 @@ import * as ZManga from './templates/ZManga';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
 AddAntiScrapingDetection(async (invoke) => {
-    const result = await invoke<boolean>(`window.SafeLineChallenge ? true : false`);
-    return result ? FetchRedirection.Interactive : undefined;
+    if(await invoke<boolean>(`window.SafeLineChallenge ? true : false`)) {
+        if(await invoke<boolean>(`document.querySelector('button#sl-check') ? true : false`)) {
+            return FetchRedirection.Interactive;
+        } else {
+            return FetchRedirection.Automatic;
+        }
+    }
+    return undefined;
 });
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, ZManga.queryMangaTitle)
