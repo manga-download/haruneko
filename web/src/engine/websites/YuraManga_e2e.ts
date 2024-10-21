@@ -7,18 +7,18 @@ const config: Config = {
         title: 'YuraManga'
     },
     container: {
-        url: 'https://www.yuramanga.my.id/2023/08/district-12.html',
-        id: '/2023/08/district-12.html',
-        title: 'District 12'
+        url: 'https://www.yuramanga.my.id/series/demon-cage/',
+        id: '/series/demon-cage/',
+        title: 'Demon Cage'
     },
     child: {
-        id: '/2023/08/district-12-chapter-6.html',
-        title: 'Chapter 6'
+        id: '/demon-cage-chapter-01-bahasa-indonesia/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 1,
-        size: 755_988,
-        type: 'image/webp'
+        index: 0,
+        size: 290_233,
+        type: 'image/jpeg'
     }
 };
 

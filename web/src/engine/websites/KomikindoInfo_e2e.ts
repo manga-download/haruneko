@@ -4,7 +4,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 const config = {
     plugin: {
         id: 'komikindoinfo',
-        title: 'KomikindoInfo'
+        title: 'KomikindoInfo',
     },
     container: {
         url: 'https://komikindo.info/series/beauty-in-a-click/',
