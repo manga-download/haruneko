@@ -7,9 +7,10 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
  * @remarks Only exported for testing
  */
 export const legacyWebsiteIdentifierMap = new Map([
+    [ 'allanimesite', 'allmangato' ],
+    [ 'apolltoons', 'mundomanhwa' ],
     [ 'aresnov', 'scarmanga' ],
     [ 'azoramanga', 'azoraworld' ],
-    [ 'apolltoons', 'mundomanhwa' ],
     [ 'bacamangaorg', 'bacamanga' ],
     [ 'bananascan', 'harmonyscan' ],
     [ 'blogtruyen', 'blogtruyenmoi' ],
