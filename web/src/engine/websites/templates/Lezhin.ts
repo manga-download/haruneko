@@ -174,7 +174,7 @@ export default class extends DecoratableMangaScraper {
         });
         uri.search = params.toString();
         const request = this.CreateRequest(uri, {
-            'X-LZ-Adult': '0',
+            'X-LZ-Adult': '2',
             'X-LZ-AllowAdult': 'true',
         });
 
