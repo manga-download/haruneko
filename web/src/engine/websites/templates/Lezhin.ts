@@ -100,7 +100,7 @@ type TPiece = {
     height: number,
     left: number,
     top: number,
-    width:number
+    width: number
 }
 
 type TDimensions = {
@@ -219,7 +219,7 @@ export default class extends DecoratableMangaScraper {
         });
 
         tokenURI.search = tokenParams.toString();
-        let data : APIKeyPair = undefined;
+        let data: APIKeyPair = undefined;
         try {
             data = await FetchJSON<APIKeyPair>(this.CreateRequest(tokenURI));
         } catch {
@@ -241,7 +241,7 @@ export default class extends DecoratableMangaScraper {
         return !parameters.shuffled ? blob : DeScramble(blob, async (image, ctx) => {
 
             const NUM_COL_ROW = 5;
-            const scrambleTableArray = CreateSuperArray(AddLength(GenerateScrambleTable(parameters.episodeID, NUM_COL_ROW )));
+            const scrambleTableArray = CreateSuperArray(AddLength(GenerateScrambleTable(parameters.episodeID, NUM_COL_ROW)));
             const arrayLength = Math.floor(Math.sqrt(scrambleTableArray.length));
             const dimensions: TDimensions = { width: image.width, height: image.height };
 
@@ -283,7 +283,7 @@ export default class extends DecoratableMangaScraper {
         const password = (this.Settings.password.Value as string).replaceAll("'", "\\'");//Escape password because its injected between single quotes
 
         //attempt login (that works)
-        await FetchWindowScript(new Request(new URL(`/${this.languagePath}/login`, this.URI)), LoginScript(username, password), 1500 );
+        await FetchWindowScript(new Request(new URL(`/${this.languagePath}/login`, this.URI)), LoginScript(username, password), 1500);
 
         this.token = (await this.GetLzConfig()).token;
 
@@ -308,7 +308,7 @@ export default class extends DecoratableMangaScraper {
 
 }
 
-function GenerateScrambleTable(episodeid: number, numColAndRows: number) : number[]{
+function GenerateScrambleTable(episodeid: number, numColAndRows: number): number[] {
     return episodeid ? new LezhinRandomizer(episodeid, numColAndRows).Get() : [];
 }
 class LezhinRandomizer {
@@ -318,21 +318,14 @@ class LezhinRandomizer {
     private seed: number;
 
     private Random(t: number): number {
-        const BIGT = BigInt(t);
-        const big12 = BigInt(12);
-        const big25 = BigInt(25);
-        const big27 = BigInt(27);
-        const big32 = BigInt(32);
-        const BigXXX = BigInt('18446744073709551615');
-
+        const BigNumber = BigInt('18446744073709551615');
         let e = this.state;
-        e = e ^ e >> big12;
-        const shifter = e << big25 & BigXXX;
+        e = e ^ e >> BigInt(12);
+        const shifter = e << BigInt(25) & BigNumber;
         e = e ^ shifter;
-        e = e ^ e >> big27;
-        this.state = e & BigXXX;
-
-        return Number((e >> big32) % BIGT);
+        e = e ^ e >> BigInt(27);
+        this.state = e & BigNumber;
+        return Number((e >> BigInt(32)) % BigInt(t));
     }
 
     public Get(): number[] {
@@ -344,23 +337,23 @@ class LezhinRandomizer {
         this.state = BigInt(this.seed);
         const numPieces = numColAndRows * numColAndRows;
         const order = Array.from({ length: numPieces }, function (_, length) { return length; });
-        for (let a = 0; a < order.length;a++) {
+        for (let index = 0; index < order.length; index++) {
             const s = this.Random(numPieces);
-            const u = order[a];
-            order[a] = order[s];
+            const u = order[index];
+            order[index] = order[s];
             order[s] = u;
         }
         this.order = order;
     }
 }
 
-function AddLength(array: number[]) : number[]{
+function AddLength(array: number[]): number[] {
     return [].concat(array, [
         array.length,
         array.length + 1
     ]);
 }
-function CreateSuperArray(array: number[]) : [string, number][]{
+function CreateSuperArray(array: number[]): [string, number][] {
     //generate "0", "arraylength" array
     const indexArray = Array(array.length).fill(0).map((_, index) => index.toString());
     const resultArray = [];
@@ -369,7 +362,8 @@ function CreateSuperArray(array: number[]) : [string, number][]{
 }
 
 function CalculatePiece(imageDimensions: TDimensions, numColAndRows: number, pieceIndex: number): TPiece {
-    let width, height;
+    let width: number;
+    let height: number;
     const numPieces = numColAndRows * numColAndRows;
     return pieceIndex < numPieces ? (
         width = Math.floor(imageDimensions.width / numColAndRows),
@@ -380,7 +374,7 @@ function CalculatePiece(imageDimensions: TDimensions, numColAndRows: number, pie
             width: width,
             height: height
         }
-    ): pieceIndex === numPieces ?
+    ) : pieceIndex === numPieces ?
         0 === (width = imageDimensions.width % numColAndRows) ? null : {
             left: imageDimensions.width - width,
             top: 0,
@@ -393,6 +387,5 @@ function CalculatePiece(imageDimensions: TDimensions, numColAndRows: number, pie
             top: imageDimensions.height - height,
             width: imageDimensions.width - imageDimensions.width % numColAndRows,
             height: height
-        }
-    ;
+        };
 }
