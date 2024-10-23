@@ -16,8 +16,8 @@ const config = {
         title: 'Chapter 0 - Time for a Revolution ✰'
     },
     entry: {
-        index: 0,
-        size: 947_430,
+        index: 4,
+        size: 655_443,
         type: 'image/jpeg'
     }
 };
