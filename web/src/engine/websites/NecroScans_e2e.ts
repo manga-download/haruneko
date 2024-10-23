@@ -5,7 +5,7 @@ const config = {
     plugin: {
         id: 'necroscans',
         title: 'Necro Scans'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://necroscans.com/series/3b846611bce/',
         id: '/series/3b846611bce/',
@@ -19,7 +19,7 @@ const config = {
         index: 0,
         size: 739_042,
         type: 'image/webp'
-    }*/
+    }
 };
 
 const fixture = new TestFixture(config);

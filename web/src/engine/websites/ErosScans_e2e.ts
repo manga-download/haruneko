@@ -3,22 +3,22 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
-        id: 'alceascan',
-        title: 'Alceascan'
+        id: 'erosscans',
+        title: 'Eros Scans'
     },
     container: {
-        url: 'https://alceacomic.my.id/manga/18-year-old-spy/',
-        id: '/manga/18-year-old-spy/',
-        title: '18 Year Old Spy'
+        url: 'https://tercoscans.xyz/manga/absolute-sword-sense/',
+        id: '/manga/absolute-sword-sense/',
+        title: 'Absolute Sword Sense'
     },
     child: {
-        id: '/18-year-old-spy-chapter-56-indonesia-terbaru/',
-        title: 'Chapter 56'
+        id: '/absolute-sword-sense-chapter-100/',
+        title: 'Chapter 100'
     },
     entry: {
         index: 1,
-        size: 299_001,
-        type: 'image/jpeg'
+        size: 880_280,
+        type: 'image/webp'
     }
 };
 
