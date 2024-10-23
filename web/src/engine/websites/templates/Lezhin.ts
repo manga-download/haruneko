@@ -229,13 +229,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<EpisodeParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const parameters = page.Parameters;
-        const purchasedParam = (parameters.subscribed || parameters.purchased).toString();
-
         const tokenURI = new URL('cloudfront/signed-url/generate', this.apiUrl);
         const tokenParams = new URLSearchParams({
             contentId: parameters.comicID.toString(),
             episodeId: parameters.episodeID.toString(),
-            purchased: purchasedParam,
+            purchased: parameters.purchased.toString(),
             q: '40',
             firstCheckType: 'P',
         });
@@ -250,7 +248,7 @@ export default class extends DecoratableMangaScraper {
 
         //update image url
         const imageParams = new URLSearchParams({
-            purchased: purchasedParam,
+            purchased: parameters.purchased.toString(),
             q: '40',
             updated: parameters.updatedAt.toString(),
             Policy: data.data.Policy,
