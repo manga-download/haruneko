@@ -74,6 +74,14 @@ type EpisodeParameters = {
     subscribed: boolean
 }
 
+type APIEpisode = {
+    data: {
+        episode: {
+            isCollected: boolean
+        }
+    }
+}
+
 type APIPages = {
     data: {
         id: string
@@ -90,7 +98,6 @@ type APIPages = {
                 updatedAt: number,
                 id: number,
                 idComic: number,
-                isCollected?: boolean
             }
         }
     }
@@ -179,6 +186,24 @@ export default class extends DecoratableMangaScraper {
     public async FetchPages(chapter: Chapter): Promise<Page<EpisodeParameters>[]> {
         await this.InitializeAccount();
 
+        const parameters: EpisodeParameters = {
+            episodeID: undefined,
+            comicID: undefined,
+            updatedAt: undefined,
+            shuffled: false,
+            purchased: false,
+            subscribed: false
+        };
+
+        //if we arelogged check if purchased
+        if (this.token) {
+            const uri = new URL(`https://www.lezhinus.com/lz-api/contents/v3/${chapter.Parent.Identifier.split('/').at(-1)}/episodes/${chapter.Identifier.split('/').at(-1)}`);
+            uri.searchParams.set('referrerViewType', 'NORMAL');
+            uri.searchParams.set('objectType', 'comic');
+            const { data: { episode: { isCollected } } } = await FetchJSON<APIEpisode>(this.CreateRequest(uri, { 'X-LZ-Adult': '2', Referrer: new URL(chapter.Identifier, this.URI).href }));
+            parameters.purchased = !!isCollected;
+        }
+
         const uri = new URL('inventory_groups/comic_viewer', this.apiUrl);
         const params = new URLSearchParams({
             platform: 'web',
@@ -189,20 +214,17 @@ export default class extends DecoratableMangaScraper {
             type: 'comic_episode'
         });
         uri.search = params.toString();
-        const content = await FetchJSON<APIPages>(this.CreateRequest(uri));
+        const { data: { extra: { comic, episode, subscribed } } } = await FetchJSON<APIPages>(this.CreateRequest(uri));
 
-        const parameters: EpisodeParameters = {
-            episodeID: content.data.extra.episode.id,
-            comicID: content.data.extra.episode.idComic,
-            updatedAt: content.data.extra.episode.updatedAt,
-            shuffled: content.data.extra.comic.metadata?.imageShuffle ?? false,
-            purchased: !!content.data.extra.episode.isCollected,
-            subscribed: content.data.extra.subscribed,
-        };
+        parameters.episodeID = episode.id;
+        parameters.comicID = episode.idComic;
+        parameters.updatedAt = episode.updatedAt;
+        parameters.shuffled = !!comic.metadata.imageShuffle;
+        parameters.subscribed= subscribed;
 
         const extension = this.Settings.forceJPEG.Value ? '.jpg' : '.webp';
-        const pages = content.data.extra.episode.pagesInfo ?? content.data.extra.episode.scrollsInfo;
-        return pages.map(page => new Page<EpisodeParameters>(this, chapter, new URL('/v2' + page.path + extension, this.cdnURI), parameters));
+        const pages = episode.pagesInfo ?? episode.scrollsInfo;
+        return pages.map(page => new Page<EpisodeParameters>(this, chapter, new URL(`/v2${page.path}${extension}`, this.cdnURI), parameters));
     }
 
     public override async FetchImage(page: Page<EpisodeParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
