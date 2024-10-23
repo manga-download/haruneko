@@ -35,11 +35,6 @@ function LoginScript(username: string, password: string): string {
         });
     `;
 }
-enum ChapterAccess { MUST_LOGIN = -1, NOT_PURCHASED = 0, PURCHASED = 1 }
-
-const ChapterAccessScript = `
-    new Promise ( resolve => resolve(!window.__LZ_DATA__ ? ${ChapterAccess.MUST_LOGIN} : __LZ_DATA__.purchased?.includes(__LZ_DATA__.episode.id) ? ${ChapterAccess.PURCHASED}: ${ChapterAccess.NOT_PURCHASED}))
-`;
 
 type LZConfig = {
     contentsCdnUrl: string
@@ -90,11 +85,12 @@ type APIPages = {
                 }
             }
             episode: {
-                scrollsInfo?: Array<{ path: string }>
-                pagesInfo?: Array<{ path: string }>
-                updatedAt: number
-                id: number
-                idComic: number
+                scrollsInfo?: Array<{ path: string }>,
+                pagesInfo?: Array<{ path: string }>,
+                updatedAt: number,
+                id: number,
+                idComic: number,
+                isCollected?: boolean
             }
         }
     }
@@ -183,14 +179,6 @@ export default class extends DecoratableMangaScraper {
     public async FetchPages(chapter: Chapter): Promise<Page<EpisodeParameters>[]> {
         await this.InitializeAccount();
 
-        const chapterAccessRequest = this.CreateRequest(new URL(chapter.Identifier, this.URI));
-        const chapterAccess = await FetchWindowScript<ChapterAccess>(chapterAccessRequest, ChapterAccessScript, 4000);
-
-        //Avoid unauthorized error on pictures fetch later if we need login to see chapter. Even FREE, a chapter may require login.
-        if (chapterAccess === ChapterAccess.MUST_LOGIN) {
-            throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
-        }
-
         const uri = new URL('inventory_groups/comic_viewer', this.apiUrl);
         const params = new URLSearchParams({
             platform: 'web',
@@ -208,7 +196,7 @@ export default class extends DecoratableMangaScraper {
             comicID: content.data.extra.episode.idComic,
             updatedAt: content.data.extra.episode.updatedAt,
             shuffled: content.data.extra.comic.metadata?.imageShuffle ?? false,
-            purchased: chapterAccess === ChapterAccess.PURCHASED,
+            purchased: !!content.data.extra.episode.isCollected,
             subscribed: content.data.extra.subscribed,
         };
 
@@ -231,16 +219,21 @@ export default class extends DecoratableMangaScraper {
         });
 
         tokenURI.search = tokenParams.toString();
-        const { data } = await FetchJSON<APIKeyPair>(this.CreateRequest(tokenURI));
+        let data : APIKeyPair = undefined;
+        try {
+            data = await FetchJSON<APIKeyPair>(this.CreateRequest(tokenURI));
+        } catch {
+            throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
+        }
 
         //update image url
         const imageParams = new URLSearchParams({
             purchased: purchasedParam,
             q: '40',
             updated: parameters.updatedAt.toString(),
-            Policy: data.Policy,
-            Signature: data.Signature,
-            'Key-Pair-Id': data['Key-Pair-Id']
+            Policy: data.data.Policy,
+            Signature: data.data.Signature,
+            'Key-Pair-Id': data.data['Key-Pair-Id']
         });
         page.Link.search = imageParams.toString();
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
