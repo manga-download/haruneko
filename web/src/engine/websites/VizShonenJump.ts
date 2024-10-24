@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
     public override ValidateMangaURL(url: string): boolean {
         const mangaRegexp = new RegExpSafe(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`);
         const libraryRegexp = new RegExpSafe(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`);
-        return mangaRegexp.test(url) || libraryRegexp.test(url) ;
+        return mangaRegexp.test(url) || libraryRegexp.test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -86,15 +86,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         await this.GetUserInfos();
-        return /^\/vizmanga\/chapters/.test(manga.Identifier) ? this.GetChapters(manga, this.userInfos.isMember)
-            : /^\/shonenjump\/chapters/.test(manga.Identifier) ? this.GetChapters(manga, this.userInfos.isVizManga)
-                : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumesExtractor);
+        return /^\/(shonenjump|vizmanga)\/chapters/.test(manga.Identifier) ? this.GetChapters(manga) : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumesExtractor);
     }
 
-    private async GetChapters(manga: Manga, hasAccess: boolean): Promise<Chapter[]> {
+    private async GetChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div > a.o_chapter-container[data-target-url], tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]');
         return chapters
-            .filter(element => /javascript:.*join/i.test(element.href) ? hasAccess : true)
+            .filter(element => /javascript:.*join/i.test(element.href) ? manga.Identifier.startsWith('vizmanga') ? this.userInfos.isVizManga : this.userInfos.isMember : true)
             .map(chapter => {
                 const targetUrl = /javascript/.test(chapter.dataset.targetUrl) ? chapter.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[1] : chapter.dataset.targetUrl;
                 return new Chapter(this, manga, targetUrl, (chapter.querySelector('.disp-id, tr.o_chapter td > div')?.textContent ?? chapter.text).trim());
@@ -108,7 +106,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
         const { pagesCount, mangaID } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), PagesScript, 1500);
-        return Array(pagesCount+1).fill(0).map((_, index) => {
+        return Array(pagesCount + 1).fill(0).map((_, index) => {
             const url = new URL('/manga/get_manga_url', this.URI);
             url.searchParams.set('device_id', '3');
             url.searchParams.set('manga_id', mangaID);
@@ -145,7 +143,7 @@ export default class extends DecoratableMangaScraper {
         const EXIFHEIGHT = tags.ImageHeight;
         const shuffleMap = tags.ImageUniqueID.split(':');
 
-        return DeScramble(new ImageData(EXIFWIDTH, EXIFHEIGHT ), async (_, ctx) => {
+        return DeScramble(new ImageData(EXIFWIDTH, EXIFHEIGHT), async (_, ctx) => {
             const blob = await Common.GetTypedData(buffer);
             const bitmap = await createImageBitmap(blob);
             const x_split = Math.floor(EXIFWIDTH / 10);
