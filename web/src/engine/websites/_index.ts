@@ -447,6 +447,7 @@ export { default as MerlinScans } from './MerlinScans';
 export { default as Mgkomik } from './Mgkomik';
 export { default as MHScans } from './MHScans';
 export { default as Mi2mangaES } from './Mi2mangaES';
+export { default as MiauScan } from './MiauScan';
 export { default as Migudm } from './Migudm';
 export { default as Mikoroku } from './Mikoroku';
 export { default as MilaSub } from './MilaSub';
