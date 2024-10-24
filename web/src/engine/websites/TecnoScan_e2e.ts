@@ -7,17 +7,17 @@ const config = {
         title: 'Tecno Scan'
     },
     container: {
-        url: 'https://erisoscans.xyz/manga/absolute-sword-sense/',
+        url: 'https://oleros-scans.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },
     child: {
-        id: '/absolute-sword-sense-chapter-92-1/',
-        title: 'Chapter 92.1'
+        id: '/absolute-sword-sense-chapter-105-4/',
+        title: 'Chapter 105.4'
     },
     entry: {
         index: 0,
-        size: 699_530,
+        size: 1_240_942,
         type: 'image/webp'
     }
 };

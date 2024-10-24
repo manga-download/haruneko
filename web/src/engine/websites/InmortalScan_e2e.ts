@@ -7,7 +7,7 @@ const config = {
         title: 'Inmortal Scan'
     }, /* Cloudflare
     container: {
-        url: 'https://mg.mundodrama.site/mg/memoir-of-the-king-of-war/',
+        url: 'https://scaninmortal.com/mg/memoir-of-the-king-of-war/',
         id: JSON.stringify({ post: '1864', slug: '/mg/memoir-of-the-king-of-war/' }),
         title: 'Memorias del Rey de la Guerra'
     },
