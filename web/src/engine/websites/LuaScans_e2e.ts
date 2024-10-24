@@ -5,7 +5,7 @@ const config = {
     plugin: {
         id: 'luascans',
         title: 'Lua Scans'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://luacomic.net/series/18012433589/',
         id: '/series/18012433589/',
@@ -19,7 +19,7 @@ const config = {
         index: 0,
         size: 749_437,
         type: 'image/jpeg'
-    } */
+    }
 };
 
 const fixture = new TestFixture(config);
