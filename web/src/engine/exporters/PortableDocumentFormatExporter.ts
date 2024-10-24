@@ -34,7 +34,7 @@ export class PortableDocumentFormatExporter extends MangaExporter {
 
     /**
      * Test if JPEG data is compatible with JsPDF "headers check"
-     * @param data - A Blob of the image
+     * @param imageData - Image buffer as Uint8Array
      * @returns
      */
     private async IsCompatibleJPEG(imageData: Uint8Array): Promise<boolean> {
