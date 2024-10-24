@@ -1,17 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './VizShonenJump.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { type Chapter, DecoratableMangaScraper, type Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import * as Common from './decorators/Common';
 import exifr from 'exifr';
 import DeScramble from '../transformers/ImageDescrambler';
 import { RateLimit } from '../taskpool/RateLimit';
-
-type UserInfos = {
-    isMember: boolean,
-    isVizManga: boolean
-}
 
 type PagesInfos = {
     pagesCount: number,
@@ -23,15 +18,6 @@ type ExifData = {
     ImageWidth: number,
     ImageHeight: number
 }
-
-const UserInfoScript = `
-    new Promise ( resolve => {
-        resolve({
-            isMember : is_sj_subscriber === true,
-            isVizManga : is_vm_subscriber === true
-        });
-    });
-`;
 
 const PagesScript = `
     new Promise ( resolve => {
@@ -52,8 +38,14 @@ function VolumesExtractor(row: HTMLTableRowElement) {
     };
 }
 
+function ChapterExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: /javascript/.test(anchor.dataset.targetUrl) ? anchor.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[1] : anchor.dataset.targetUrl,
+        title: (anchor.querySelector<HTMLElement>('.disp-id, tr.o_chapter td > div')?.textContent ?? anchor.text).trim()
+    };
+}
+
 export default class extends DecoratableMangaScraper {
-    private userInfos: UserInfos;
 
     public constructor() {
         super('vizshonenjump', 'Viz - Shonen Jump', 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
@@ -85,22 +77,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        await this.GetUserInfos();
-        return /^\/(shonenjump|vizmanga)\/chapters/.test(manga.Identifier) ? this.GetChapters(manga) : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumesExtractor);
-    }
-
-    private async GetChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div > a.o_chapter-container[data-target-url], tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]');
-        return chapters
-            .filter(element => /javascript:.*join/i.test(element.href) ? manga.Identifier.startsWith('vizmanga') ? this.userInfos.isVizManga : this.userInfos.isMember : true)
-            .map(chapter => {
-                const targetUrl = /javascript/.test(chapter.dataset.targetUrl) ? chapter.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[1] : chapter.dataset.targetUrl;
-                return new Chapter(this, manga, targetUrl, (chapter.querySelector('.disp-id, tr.o_chapter td > div')?.textContent ?? chapter.text).trim());
-            });
-    }
-
-    private async GetUserInfos() {
-        this.userInfos = await FetchWindowScript<UserInfos>(new Request(new URL(this.URI)), UserInfoScript, 2500);
+        return /^\/(shonenjump|vizmanga)\/chapters/.test(manga.Identifier)
+            ? Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url]:not([href*="javascript"]), tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]:not([href*="javascript"])', ChapterExtractor)
+            : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumesExtractor);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
