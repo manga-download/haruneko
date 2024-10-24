@@ -56,7 +56,7 @@ export default class extends DecoratableMangaScraper {
     private userInfos: UserInfos;
 
     public constructor() {
-        super('vizshonenjump', `Viz - Shonen Jump`, 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
+        super('vizshonenjump', 'Viz - Shonen Jump', 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
         this.imageTaskPool.RateLimit = new RateLimit(4, 1);
     }
 
@@ -86,15 +86,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         await this.GetUserInfos();
-        if (manga.Identifier.startsWith('/shonenjump/chapters')) {
-            return await this.GetChapters(manga, this.userInfos.isMember);
-        }
-        if (manga.Identifier.startsWith('/vizmanga/chapters')) {
-            return await this.GetChapters(manga, this.userInfos.isVizManga);
-        }
-        if (manga.Identifier.startsWith('/account/library')) {
-            return await Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumesExtractor);
-        }
+        return /^\/vizmanga\/chapters/.test(manga.Identifier) ? this.GetChapters(manga, this.userInfos.isMember)
+            : /^\/shonenjump\/chapters/.test(manga.Identifier) ? this.GetChapters(manga, this.userInfos.isVizManga)
+                : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumesExtractor);
     }
 
     private async GetChapters(manga: Manga, hasAccess: boolean): Promise<Chapter[]> {
@@ -103,15 +97,7 @@ export default class extends DecoratableMangaScraper {
             .filter(element => /javascript:.*join/i.test(element.href) ? hasAccess : true)
             .map(chapter => {
                 const targetUrl = /javascript/.test(chapter.dataset.targetUrl) ? chapter.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[1] : chapter.dataset.targetUrl;
-                const formatNode = chapter.querySelector<HTMLElement>('.disp-id');
-                if (formatNode) {
-                    return new Chapter(this, manga, targetUrl, formatNode.innerText.trim());
-                }
-
-                const format = chapter.dataset.targetUrl.match(/chapter-([-_0-9]+)\//);
-                if (format && format.length > 1) {
-                    return new Chapter(this, manga, targetUrl, 'Ch. ' + format[1].replace(/[-_]/g, '.'));
-                }
+                return new Chapter(this, manga, targetUrl, (chapter.querySelector('.disp-id, tr.o_chapter td > div')?.textContent ?? chapter.text).trim());
             });
     }
 
@@ -122,20 +108,16 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
         const { pagesCount, mangaID } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), PagesScript, 1500);
-
-        const pages = Array(pagesCount+1).fill(0).map((_, index) => {
+        return Array(pagesCount+1).fill(0).map((_, index) => {
             const url = new URL('/manga/get_manga_url', this.URI);
             url.searchParams.set('device_id', '3');
             url.searchParams.set('manga_id', mangaID);
             url.searchParams.set('page', index.toString());
             return new Page(this, chapter, url, { Referer: chapterurl.href });
         });
-
-        return pages;
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-
         const buffer = await this.imageTaskPool.Add(async () => {
             let response = await Fetch(new Request(page.Link, {
                 signal,
@@ -166,8 +148,8 @@ export default class extends DecoratableMangaScraper {
         return DeScramble(new ImageData(EXIFWIDTH, EXIFHEIGHT ), async (_, ctx) => {
             const blob = await Common.GetTypedData(buffer);
             const bitmap = await createImageBitmap(blob);
-            const x_split = Math.floor(EXIFWIDTH / 10),
-                y_split = Math.floor(EXIFHEIGHT / 15);
+            const x_split = Math.floor(EXIFWIDTH / 10);
+            const y_split = Math.floor(EXIFHEIGHT / 15);
 
             ctx.clearRect(0, 0, EXIFWIDTH, EXIFHEIGHT);
 
@@ -192,9 +174,6 @@ export default class extends DecoratableMangaScraper {
                     Math.floor(y_split)
                 );
             }
-
         });
-
     }
-
 }
