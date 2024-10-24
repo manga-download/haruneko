@@ -1,8 +1,10 @@
 //KeyoApp template : websites Similar to MagusManga, StarBoundScan, LuaScans. One page Manga list & hosting images on cdn.igniscans.com
 export const pagesScript = `
 	new Promise ( resolve => {
-		const realUrl = document.documentElement.innerHTML.match(/realUrl\\s*=\\s*\`([^\`]+?)\\$/)[1];
-		resolve( [...document.querySelectorAll('.myImage')].map(image => realUrl+ image.getAttribute('uid')+ '?c=1'));
+		resolve( [...document.querySelectorAll('.myImage')].map(image => {
+			 loadImage(image, 1);
+			 return new URL(image.getAttribute('src'), window.location.href).href;
+	    }));
 	});
 `;
 export const queryMangaTitle = 'meta[property="og:title"]';
