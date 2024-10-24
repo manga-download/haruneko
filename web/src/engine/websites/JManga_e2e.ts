@@ -7,18 +7,18 @@ const config = {
         title: 'JManga'
     },
     container: {
-        url: encodeURI('https://jmanga.org/read/からかい上手-？-の西片さん.1-raw/'),
-        id: encodeURI('/read/からかい上手-？-の西片さん.1-raw/'),
+        url: encodeURI('https://jmanga.to/read/からかい上手-？-の西片さん-raw/'),
+        id: encodeURI('/read/からかい上手-？-の西片さん-raw/'),
         title: 'からかい上手(？)の西片さん'
     },
     child: {
-        id: encodeURI('/read/からかい上手-？-の西片さん/ja/chapter-7-raw/'),
-        title: '章 7: 第7話'
+        id: encodeURI('/read/からかい上手-？-の西片さん/ja/chapter-1-raw/'),
+        title: '章 1: 第1話'
     },
     entry: {
         index: 0,
-        size: 153_198,
-        type: 'image/webp'
+        size: 144_913,
+        type: 'image/jpeg'
     }
 };
 

@@ -5,14 +5,14 @@ import ManhwaHentaiMe from './ManhwaHentaiMe';
 export default class extends ManhwaHentaiMe {
 
     public constructor() {
-        super('manytooncom', 'ManyToon', 'https://manytoon.com', [Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Rating.Pornographic]);
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+\/$`).test(url);
+        super('manytooncom', 'ManyToon', 'https://manytoon.org', [Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Rating.Pornographic, Tags.Source.Aggregator]);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+\/$`).test(url);
     }
 }

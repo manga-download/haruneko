@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './NightComic.webp';
+import icon from './BarManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Night Comic"])')
+@Madara.MangaCSS(/^{origin}\/home\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nightcomic', 'NIGHT COMIC', 'https://nightcomic.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
+        super('barmanga', 'BarManga', 'https://barmanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
