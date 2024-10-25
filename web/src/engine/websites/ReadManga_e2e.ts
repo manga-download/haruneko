@@ -7,8 +7,8 @@ const configLongStrip: Config = {
         title: 'ReadManga'
     },
     container: {
-        url: 'https://zz.readmanga.io/omniscient_reader_s_viewpoint', // Randomly redirects to 'https://web.usagi.one/omniscient_reader_s_viewpoint'
-        id: '/omniscient_reader_s_viewpoint',
+        url: 'https://zz.readmanga.io/vseveduchii_chitatel__A5664', // Randomly redirects to 'https://web.usagi.one/omniscient_reader_s_viewpoint'
+        id: '/vseveduchii_chitatel__A5664',
         title: 'Всеведущий читатель'
     },
     child: {
@@ -31,8 +31,8 @@ const configMultiPage: Config = {
         title: 'ReadManga'
     },
     container: {
-        url: 'https://zz.readmanga.io/van_pis', // Randomly redirects to 'https://web.usagi.one/one_piece'
-        id: '/van_pis',
+        url: 'https://zz.readmanga.io/van_pis__A5664', // Randomly redirects to 'https://web.usagi.one/one_piece'
+        id: '/van_pis__A5664',
         title: 'Ван Пис'
     },
     child: {

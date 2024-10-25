@@ -12,8 +12,18 @@ const pagesWithServersScript = `
     });
 `;
 
+export const chapterScript = `
+    new Promise(resolve => {
+        resolve([...document.querySelectorAll('a.chapter-link.cp-l')].map(chapter => {
+            return {
+                id: chapter.pathname + chapter.search,
+                title: chapter.text.trim(),
+            };
+        }));
+    });
+`;
+
 export const queryMangas = 'div.tile div.desc h3 a';
-export const queryChapters = 'a.chapter-link.cp-l';
 export const queryMangaTitle = 'meta[itemprop = "name"]';
 export const pathMangas = '/list?offset={page}';
 export const pageMangaOffset = 70;

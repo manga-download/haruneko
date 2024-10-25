@@ -11,7 +11,7 @@ import * as ReadM from './decorators/ReadMangaLive';
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, ReadM.queryMangaTitle)
 @Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, ReadM.pageMangaOffset, 1000, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS(ReadM.queryChapters)
+@Common.ChaptersSinglePageJS(ReadM.chapterScript, 500)
 @ReadM.PagesSinglePageJS()
 @ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {

@@ -7,7 +7,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, ReadM.queryMangaTitle)
 @Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, ReadM.pageMangaOffset, 0, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS(ReadM.queryChapters)
+@Common.ChaptersSinglePageJS(ReadM.chapterScript, 500)
 @ReadM.PagesSinglePageJS()
 @ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {

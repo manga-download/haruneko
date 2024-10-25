@@ -5,14 +5,14 @@ const config: Config = {
     plugin: {
         id: 'mintmanga',
         title: 'MintManga'
-    }, /* Unable to find a "Non deleted manga"
-    container: {
-        url: 'https://24.mintmanga.one/blagoslovenie_nebojitelei__A5327',
-        id: '/blagoslovenie_nebojitelei__A5327',
-        title: 'Благословение небожителей',
     },
+    container: {
+        url: 'https://2.mintmanga.one/blagoslovenie_nebojitelei__A3b0f6',
+        id: '/blagoslovenie_nebojitelei__A3b0f6',
+        title: 'Благословение небожителей',
+    }, /* Need to be logged, and chapter link change with user id anyway
     child: {
-        id: '/blagoslovenie_nebojitelei__A5327/vol8/98',
+        id: '/blagoslovenie_nebojitelei__A3b0f67/vol8/98',
         title: '8 - 98 Кто прав, кто виноват',
         timeout: 50000
 

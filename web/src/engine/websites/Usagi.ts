@@ -1,4 +1,3 @@
-// Related Websites: ReadManga, Usagi
 import { Tags } from '../Tags';
 import icon from './Usagi.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -7,7 +6,7 @@ import * as ReadM from './decorators/ReadMangaLive';
 
 @Common.MangaCSS(/^{origin}/, ReadM.queryMangaTitle)
 @Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, 50, 0)
-@Common.ChaptersSinglePageCSS(ReadM.queryChapters)
+@Common.ChaptersSinglePageJS(ReadM.chapterScript, 500)
 @ReadM.PagesSinglePageJS()
 @ReadM.ImageAjax()
 export default class extends DecoratableMangaScraper {

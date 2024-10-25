@@ -11,7 +11,8 @@ const config = {
         id: '/nochiu_ona_nimfomanka',
         title: 'Ночью она нимфоманка'
     },
-/*  Irrelevant tests since we need to be logged
+/*   Need to be logged, and chapter link change with user id anyway
+
     child: {
         id: '/nochiu_ona_nimfomanka/vol1/4',
         title: '2 - 4',
