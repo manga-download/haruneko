@@ -5,6 +5,7 @@ import { exec, spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
 
 export const AppURL = 'http://localhost:5000/';
+export const AppSelector = 'body #app main#hakunekoapp';
 const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite'));
 const tempDir = path.normalize(path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32)));
 const userDir = path.normalize(path.resolve(tempDir, 'user-data'));
@@ -71,14 +72,16 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
-    console.log(new Date().toISOString(), '➔', 'Remote Debugger:', browser.wsEndpoint());
 
     const start = Date.now();
     while(Date.now() - start < 7500) {
         const pages = await browser.pages();
         const page = pages.find(p => p.url() === AppURL);
         if(page) {
+            await page.reload({ timeout: 5000 });
+            await page.waitForSelector(AppSelector, { timeout: 7500 });
             console.log(new Date().toISOString(), '➔', 'Using Page:', [ page.url() ]);
+            console.log(new Date().toISOString(), '➔', 'Remote Debugger:', browser.wsEndpoint());
             return browser;
         } else {
             console.log(new Date().toISOString(), '➔', 'Waiting for Page(s):', pages.map(p => p.url()));
