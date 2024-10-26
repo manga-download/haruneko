@@ -67,20 +67,21 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectNW(),
-        args: [ nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + AppURL ],
+        args: [ nwApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
+    console.log(new Date().toISOString(), '➔', 'Remote Debugger:', browser.wsEndpoint());
 
     const start = Date.now();
     while(Date.now() - start < 7500) {
         const pages = await browser.pages();
         const page = pages.find(p => p.url() === AppURL);
         if(page) {
-            console.log(new Date().toISOString(), '=>', 'Using Page:', [ page.url() ]);
+            console.log(new Date().toISOString(), '➔', 'Using Page:', [ page.url() ]);
             return browser;
         } else {
-            console.log(new Date().toISOString(), '=>', 'Waiting for Page(s):', pages.map(p => p.url()));
+            console.log(new Date().toISOString(), '➔', 'Waiting for Page(s):', pages.map(p => p.url()));
         }
         await delay(1000);
     }
