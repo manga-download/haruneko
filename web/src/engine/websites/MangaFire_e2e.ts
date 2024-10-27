@@ -1,7 +1,6 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configVolume = {
+new TestFixture({
     plugin: {
         id: 'mangafire',
         title: 'MangaFire'
@@ -20,12 +19,9 @@ const configVolume = {
         size: 156_390,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixtureVolume = new TestFixture(configVolume);
-describe(fixtureVolume.Name, async () => (await fixtureVolume.Connect()).AssertWebsite());
-
-const configChapter = {
+new TestFixture({
     plugin: {
         id: 'mangafire',
         title: 'MangaFire'
@@ -44,7 +40,4 @@ const configChapter = {
         size: 353_323,
         type: 'image/jpeg'
     }
-};
-
-const fixtureChapter = new TestFixture(configChapter);
-describe(fixtureChapter.Name, async () => (await fixtureChapter.Connect()).AssertWebsite());
+}).AssertWebsite();

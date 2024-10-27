@@ -2,7 +2,7 @@
   "name": "hakuneko-docs",
   "type": "module",
   "devDependencies": {
-    "vitepress": "^1.4.0"
+    "vitepress": "^1.4.1"
   },
   "scripts": {
     "check": "",

@@ -46,9 +46,9 @@ const mangaClipboardScript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://dashboard.leerolymp.com';
+    private readonly apiUrl = 'https://dashboard.zonaolympus.com';
     public constructor() {
-        super('olympusscanlation', 'Olympus Scanlation', 'https://leerolymp.com/', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('olympusscanlation', 'Olympus Scanlation', 'https://zonaolympus.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -75,12 +75,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { data: { series: { data } } } = await FetchJSON<APIMangas>(new Request(new URL(`/api/series?page=${page}&direction=asc`, this.apiUrl)));
+        const { data: { series: { data } } } = await FetchJSON<APIMangas>(new Request(new URL(`/api/series?page=${page}&direction=asc&type=comic`, this.apiUrl)));
         return data.map(element => new Manga(this, provider, JSON.stringify({ slug: element.slug, type: element.type }), element.name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterslist = [];
+        const chapterslist: Chapter[] = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(page, manga);
             chapters.length > 0 ? chapterslist.push(...chapters) : run = false;
