@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configLongStrip: Config = {
+// CASE: Single-Page Images
+new TestFixture({
     plugin: {
         id: 'usagi',
         title: 'Usagi'
@@ -20,12 +20,10 @@ const configLongStrip: Config = {
         size: 950_618,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixtureLongStrip = new TestFixture(configLongStrip);
-describe(fixtureLongStrip.Name, async () => (await fixtureLongStrip.Connect()).AssertWebsite());
-
-const configMultiPage: Config = {
+// CASE: Multi-Page Images
+new TestFixture({
     plugin: {
         id: 'usagi',
         title: 'Usagi'
@@ -44,7 +42,4 @@ const configMultiPage: Config = {
         size: 554_563,
         type: 'image/png'
     }
-};
-
-const fixtureMultiPage = new TestFixture(configMultiPage);
-describe(fixtureMultiPage.Name, async () => (await fixtureMultiPage.Connect()).AssertWebsite());
+}).AssertWebsite();

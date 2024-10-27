@@ -1,5 +1,4 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
@@ -7,7 +6,7 @@ const config: Config = {
         title: 'Galaxy Manga'
     },
     container: {
-        url: 'https://gxcomic.xyz/series/53488-850-berserk',
+        url: 'https://snowscans.com/series/53488-850-berserk',
         id: '/series/53488-850-berserk',
         title: 'Berserk'
     },
@@ -22,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

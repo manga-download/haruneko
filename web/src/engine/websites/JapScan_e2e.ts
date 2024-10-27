@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixtureSingleReader = new TestFixture({
+// CASE: Single Reader
+new TestFixture({
     plugin: {
         id: 'japscan',
         title: 'JapScan'
@@ -20,10 +20,10 @@ const fixtureSingleReader = new TestFixture({
         size: 614_256,
         type: 'image/jpeg'
     }*/
-});
-describe(fixtureSingleReader.Name, async () => (await fixtureSingleReader.Connect()).AssertWebsite());
+}).AssertWebsite();
 
-const fixtureFullReader = new TestFixture({
+// CASE: Full Reader
+new TestFixture({
     plugin: {
         id: 'japscan',
         title: 'JapScan'
@@ -42,5 +42,4 @@ const fixtureFullReader = new TestFixture({
         size: 173_855,
         type: 'image/jpeg'
     }*/
-});
-describe(fixtureFullReader.Name, async () => (await fixtureFullReader.Connect()).AssertWebsite());
+}).AssertWebsite();

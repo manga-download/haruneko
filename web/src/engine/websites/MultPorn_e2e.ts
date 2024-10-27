@@ -1,8 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-//user  paste a "manga" link
-const configManga = {
+// user paste a "manga" link
+new TestFixture({
     plugin: {
         id: 'multporn',
         title: 'MultPorn'
@@ -22,13 +21,10 @@ const configManga = {
         size: 619_504,
         type: 'image/png'
     }
-};
+}).AssertWebsite();
 
-const fixtureManga = new TestFixture(configManga);
-describe(fixtureManga.Name, async () => (await fixtureManga.Connect()).AssertWebsite());
-
-//user directly paste a "chapter" link
-const configChapter = {
+// user directly paste a "chapter" link
+new TestFixture({
     plugin: {
         id: 'multporn',
         title: 'MultPorn'
@@ -48,7 +44,4 @@ const configChapter = {
         size: 619_504,
         type: 'image/png'
     }
-};
-
-const fixtureChapter = new TestFixture(configChapter);
-describe(fixtureChapter.Name, async () => (await fixtureChapter.Connect()).AssertWebsite());
+}).AssertWebsite();

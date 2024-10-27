@@ -1,14 +1,13 @@
-import { Tags } from '../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './Oremanga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
+import * as ZManga from './templates/ZManga';
 
-//Note : use Zmanga WP theme. May issue a template in the future
-@MangaStream.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.series-title h2')
-@MangaStream.MangasSinglePageCSS('div.mangalist-blc ul li.Manga a.series', '/manga-list/')
-@MangaStream.ChaptersSinglePageCSS('div.series-chapter ul.series-chapterlist li div.flexch-infoz a')
-@MangaStream.PagesSinglePageCSS()
+@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, ZManga.queryMangaTitle)
+@Common.MangasSinglePageCSS('/manga-list-รายชื่อมังงะ/', ZManga.queryManga)
+@Common.ChaptersSinglePageCSS(ZManga.queryChapters, Common.AnchorInfoExtractor(false, 'span.date'))
+@Common.PagesSinglePageCSS('div.reader-area-main img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

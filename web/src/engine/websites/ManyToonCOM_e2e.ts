@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -7,7 +6,7 @@ const config = {
         title: 'ManyToon'
     },
     container: {
-        url: 'https://manytoon.com/comic/boarding-school/',
+        url: 'https://manytoon.org/comic/boarding-school/',
         id: JSON.stringify({ post: '222638', slug: '/comic/boarding-school/' }),
         title: 'Boarding School'
     },
@@ -22,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();
