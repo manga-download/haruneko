@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configOfficial: Config = {
+// CASE: Official
+new TestFixture({
     plugin: {
         id: 'alphapolis',
         title: 'ALPHAPOLIS (アルファポリス)'
@@ -20,12 +20,10 @@ const configOfficial: Config = {
         size: 375_221,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixtureOfficial = new TestFixture(configOfficial);
-describe(fixtureOfficial.Name, async () => (await fixtureOfficial.Connect()).AssertWebsite());
-
-const configManga: Config = {
+// CASE: Unofficial
+new TestFixture({
     plugin: {
         id: 'alphapolis',
         title: 'ALPHAPOLIS (アルファポリス)'
@@ -44,7 +42,4 @@ const configManga: Config = {
         size: 217_919,
         type: 'image/jpeg'
     }
-};
-
-const fixtureManga = new TestFixture(configManga);
-describe(fixtureManga.Name, async () => (await fixtureManga.Connect()).AssertWebsite());
+}).AssertWebsite();

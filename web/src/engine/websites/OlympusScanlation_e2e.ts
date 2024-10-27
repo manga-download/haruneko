@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -7,7 +6,7 @@ const config = {
         title: 'Olympus Scanlation'
     },
     container: {
-        url: 'https://leerolymp.com/series/comic-el-mago-devorador-de-talentos13424',
+        url: 'https://zonaolympus.com/series/comic-el-mago-devorador-de-talentos13424',
         id: JSON.stringify({ slug: 'el-mago-devorador-de-talentos13424', type: 'comic' }),
         title: 'El Mago Devorador de Talentos'
     },
@@ -22,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

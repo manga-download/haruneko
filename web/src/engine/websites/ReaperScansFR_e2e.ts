@@ -1,28 +1,24 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
     plugin: {
         id: 'reaperscansfr',
         title: 'Reaper Scans (French)'
     },
-    /* CloudFlare
     container: {
-        url: 'https://reaperscans.fr/serie/perfect-surgeon/',
-        id: JSON.stringify({ post: '212', slug: '/serie/perfect-surgeon/' }),
-        title: 'Perfect Surgeon'
+        url: 'https://reaper-scans.fr/series/4ba82a00e72/',
+        id: '/series/4ba82a00e72/',
+        title: 'Solo Leveling'
     },
     child: {
-        id: '/serie/perfect-surgeon/chapitre-46/',
-        title: 'Chapitre 46'
+        id: '/chapter/4ba82a00e72-3c7a1bde772/',
+        title: 'Chapter 179'
     },
     entry: {
         index: 2,
-        size: 1_809_155,
+        size: 1_539_628,
         type: 'image/jpeg'
     }
-    */
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();
