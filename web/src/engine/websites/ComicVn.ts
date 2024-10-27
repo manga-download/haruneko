@@ -25,7 +25,7 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicvn', 'ComicVn', 'https://comicvn2.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('comicvn', 'ComicVn', 'https://comicvn3.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
