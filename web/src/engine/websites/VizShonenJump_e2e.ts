@@ -1,4 +1,3 @@
-﻿import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const configShonenJump = {
@@ -22,8 +21,7 @@ const configShonenJump = {
     }
 };
 
-const fixtureShonenJump = new TestFixture(configShonenJump);
-describe(fixtureShonenJump.Name, async () => (await fixtureShonenJump.Connect()).AssertWebsite());
+new TestFixture(configShonenJump).AssertWebsite();
 
 const configViz = {
     plugin: {
@@ -46,5 +44,4 @@ const configViz = {
     }
 };
 
-const fixtureViz = new TestFixture(configViz);
-describe(fixtureViz.Name, async () => (await fixtureViz.Connect()).AssertWebsite());
+new TestFixture(configViz).AssertWebsite();
