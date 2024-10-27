@@ -1,7 +1,7 @@
-import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configNormal: Config = {
+// CASE: Plain Images
+new TestFixture({
     plugin: {
         id: 'xcalibrscans',
         title: 'xCaliBR Scans'
@@ -20,12 +20,10 @@ const configNormal: Config = {
         size: 771_615,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixtureNormal = new TestFixture(configNormal);
-describe(fixtureNormal.Name, async () => (await fixtureNormal.Connect()).AssertWebsite());
-
-const configScrambledSinglePicture: Config = {
+// CASE: Scrambled Single Page Images
+new TestFixture({
     plugin: {
         id: 'xcalibrscans',
         title: 'xCaliBR Scans'
@@ -44,12 +42,10 @@ const configScrambledSinglePicture: Config = {
         size: 5_250_563,
         type: 'image/png'
     }
-};
+}).AssertWebsite();
 
-const fixtureScrambledSinglePicture = new TestFixture(configScrambledSinglePicture);
-describe(fixtureScrambledSinglePicture.Name, async () => (await fixtureScrambledSinglePicture.Connect()).AssertWebsite());
-
-const configScrambledTwoPictures: Config = {
+// CASE: Scrambled Double Page Images
+new TestFixture({
     plugin: {
         id: 'xcalibrscans',
         title: 'xCaliBR Scans'
@@ -68,7 +64,4 @@ const configScrambledTwoPictures: Config = {
         size: 5_771_810,
         type: 'image/png'
     }
-};
-
-const fixtureScrambledTwoPictures = new TestFixture(configScrambledTwoPictures);
-describe(fixtureScrambledTwoPictures.Name, async () => (await fixtureScrambledTwoPictures.Connect()).AssertWebsite());
+}).AssertWebsite();

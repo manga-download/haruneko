@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -7,7 +6,7 @@ const config: Config = {
         title: 'HentaiVN'
     },
     container: {
-        url: 'https://hentaivn.chat/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
+        url: 'https://hentaivn.nl/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
         id: JSON.stringify({ post: '10351', slug: '/truyen-hentai/dong-ho-ngung-dong-thoi-gian/'}),
         title: 'Đồng Hồ Ngưng Đọng Thời Gian'
     },
@@ -22,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();
