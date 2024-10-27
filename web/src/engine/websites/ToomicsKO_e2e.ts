@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 //As we coded the handling
@@ -23,8 +22,7 @@ const configShortened = {
     }
 };
 
-const fixtureShortened = new TestFixture(configShortened);
-describe(fixtureShortened.Name, async () => (await fixtureShortened.Connect()).AssertWebsite());
+new TestFixture(configShortened).AssertWebsite();
 
 //the special way, when manga id is not in url
 const configIDX = {
@@ -48,8 +46,7 @@ const configIDX = {
     }
 };
 
-const fixtureIDX = new TestFixture(configIDX);
-describe(fixtureIDX.Name, async () => (await fixtureIDX.Connect()).AssertWebsite());
+new TestFixture(configIDX).AssertWebsite();
 
 //The link that the users will most likely paste
 const configExpected = {
@@ -73,5 +70,4 @@ const configExpected = {
     }
 };
 
-const fixtureExpected = new TestFixture(configExpected);
-describe(fixtureExpected.Name, async () => (await fixtureExpected.Connect()).AssertWebsite());
+new TestFixture(configExpected).AssertWebsite();
