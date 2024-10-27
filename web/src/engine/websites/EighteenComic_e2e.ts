@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configNotScrambled: Config = {
+// CASE: Plain Images
+new TestFixture({
     plugin: {
         id: '18comic',
         title: '18comic'
@@ -20,12 +20,10 @@ const configNotScrambled: Config = {
         size: 188_690,
         type: 'image/webp'
     }*/
-};
+}).AssertWebsite();
 
-const fixtureNotScrambled = new TestFixture(configNotScrambled);
-describe(fixtureNotScrambled.Name, async () => (await fixtureNotScrambled.Connect()).AssertWebsite());
-
-const configScrambled: Config = {
+// CASE: Scrambled Images
+new TestFixture({
     plugin: {
         id: '18comic',
         title: '18comic'
@@ -44,7 +42,4 @@ const configScrambled: Config = {
         size: 66_916,
         type: 'image/png'
     }*/
-};
-
-const fixtureScrambled = new TestFixture(configScrambled);
-describe(fixtureScrambled.Name, async () => (await fixtureScrambled.Connect()).AssertWebsite());
+}).AssertWebsite();

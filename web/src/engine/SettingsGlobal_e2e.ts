@@ -7,7 +7,7 @@ import { Key } from './SettingsGlobal';
 export class TestFixture extends PuppeteerFixture {
 
     public async GetRemoteGlobalSettings(): Promise<JSHandle<ISettings>> {
-        return super.Page.evaluateHandle(async () => {
+        return this.EvaluateHandle(async () => {
             return window.HakuNeko.SettingsManager.OpenScope();
         });
     }
@@ -17,7 +17,7 @@ describe('SettingsGlobal', () => {
 
     it('Should be initialized and accessible', async () => {
 
-        const fixture = await new TestFixture().Connect();
+        const fixture = new TestFixture();
         const remoteTestee = await fixture.GetRemoteGlobalSettings();
 
         expect(await remoteTestee.evaluate(testee => testee.Get('language').ID)).toBe(Key.Language);
