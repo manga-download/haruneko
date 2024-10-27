@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixtureMagazine = new TestFixture ({
+// CASE: Provided in Magazines
+new TestFixture ({
 
     plugin: {
         id: 'zebrack',
@@ -21,10 +21,10 @@ const fixtureMagazine = new TestFixture ({
         size: 485_738,
         type: 'image/jpeg'
     }
-});
-describe(fixtureMagazine.Name, () => fixtureMagazine.AssertWebsite());
+}).AssertWebsite();
 
-const fixtureTitle = new TestFixture({
+// CASE: Provided in Issues
+new TestFixture({
     plugin: {
         id: 'zebrack',
         title: 'Zebrack(ゼブラック)'
@@ -44,10 +44,10 @@ const fixtureTitle = new TestFixture({
         type: 'image/jpeg'
     }
 
-});
-describe(fixtureTitle.Name, () => fixtureTitle.AssertWebsite());
+}).AssertWebsite();
 
-const fixtureGravure = new TestFixture({
+// CASE: Provided in Gravures
+new TestFixture({
     plugin: {
         id: 'zebrack',
         title: 'Zebrack(ゼブラック)'
@@ -67,10 +67,10 @@ const fixtureGravure = new TestFixture({
         type: 'image/jpeg'
     }
 
-});
-describe(fixtureGravure.Name, () => fixtureGravure.AssertWebsite());
+}).AssertWebsite();
 
-const fixtureVolume = new TestFixture({
+// CASE: Provided in Volumes
+new TestFixture({
     plugin: {
         id: 'zebrack',
         title: 'Zebrack(ゼブラック)'
@@ -90,5 +90,4 @@ const fixtureVolume = new TestFixture({
         type: 'image/jpeg'
     }
 
-});
-describe(fixtureVolume.Name, () => fixtureGravure.AssertWebsite());
+}).AssertWebsite();

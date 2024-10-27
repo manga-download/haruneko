@@ -22,11 +22,12 @@ describe('RemoteBrowserWindowController', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreatTestee();
             expect(testee).toBeDefined();
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledTimes(5);
+            expect(fixture.mockIPC.Listen).toHaveBeenCalledTimes(6);
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.OpenWindow, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.CloseWindow, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.SetVisibility, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.ExecuteScript, expect.anything());
+            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.SendDebugCommand, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.LoadURL, expect.anything());
         });
     });
