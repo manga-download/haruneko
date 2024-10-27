@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -7,7 +6,7 @@ const config = {
         title: 'Inmortal Scan'
     }, /* Cloudflare
     container: {
-        url: 'https://mg.mundodrama.site/mg/memoir-of-the-king-of-war/',
+        url: 'https://scaninmortal.com/mg/memoir-of-the-king-of-war/',
         id: JSON.stringify({ post: '1864', slug: '/mg/memoir-of-the-king-of-war/' }),
         title: 'Memorias del Rey de la Guerra'
     },
@@ -22,5 +21,4 @@ const config = {
     }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

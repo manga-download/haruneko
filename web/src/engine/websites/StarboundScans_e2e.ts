@@ -1,11 +1,10 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'starboundscans',
         title: 'Starbound Scans'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://starboundscans.com/series/17d7ee6e915/',
         id: '/series/17d7ee6e915/',
@@ -19,8 +18,7 @@ const config = {
         index: 2,
         size: 1_653_851,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

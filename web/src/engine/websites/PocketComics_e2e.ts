@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configEnglish: Config = {
+// CASE: English Locale
+new TestFixture({
     plugin: {
         id: 'pocketcomics',
         title: 'Pocket-Comics (コミコ)',
@@ -23,12 +23,10 @@ const configEnglish: Config = {
         size: 114_618,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixtureEnglish = new TestFixture(configEnglish);
-describe(fixtureEnglish.Name, () => fixtureEnglish.AssertWebsite());
-
-const configFrench: Config = {
+// CASE: French Locale
+new TestFixture({
     plugin: {
         id: 'pocketcomics',
         title: 'Pocket-Comics (コミコ)',
@@ -50,7 +48,4 @@ const configFrench: Config = {
         size: 105_584,
         type: 'image/jpeg'
     }
-};
-
-const fixtureFrench = new TestFixture(configFrench);
-describe(fixtureFrench.Name, () => fixtureFrench.AssertWebsite());
+}).AssertWebsite();
