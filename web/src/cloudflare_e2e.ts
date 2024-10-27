@@ -7,9 +7,11 @@ export class TestFixture extends PuppeteerFixture {
     private page: Page;
 
     public async SetupLocation(url: string): Promise<TestFixture> {
-        await this.Connect();
-        this.page = this.page || await super.Browser.newPage();
-        await this.page.goto(url);
+        if(this.page) {
+            await this.page.goto(url);
+        } else {
+            this.page = await this.OpenPage(url);
+        }
         return this;
     }
 
@@ -29,7 +31,7 @@ describe('CloudFlare Bypass', () => {
 
     it.skip('Should bypass JavaScript Challenge', async () => {
 
-        const fixture = await new TestFixture().SetupLocation('https://test.cloudscraper.ovh/challenge');
+        const fixture = await new TestFixture().SetupLocation('https://cloudflare.bot-check.ovh/automatic');
 
         try {
             const challenge = await fixture.GetRemoteProperty('form#challenge-form', 'action');
