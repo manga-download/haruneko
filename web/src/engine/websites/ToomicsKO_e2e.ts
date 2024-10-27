@@ -16,7 +16,7 @@ const configShortened = {
         title: '1'
     },
     entry: {
-        index: 0,
+        index: 2,
         size: 474_869,
         type: 'image/jpeg'
     }
@@ -40,7 +40,7 @@ const configIDX = {
         title: '1',
     },
     entry: {
-        index: 0,
+        index: 2,
         size: 474_869,
         type: 'image/jpeg'
     }
@@ -64,7 +64,7 @@ const configExpected = {
         title: '1'
     },
     entry: {
-        index: 0,
+        index: 2,
         size: 474_869,
         type: 'image/jpeg'
     }
