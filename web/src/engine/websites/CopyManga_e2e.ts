@@ -1,5 +1,4 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const configGlobal: Config = {
     plugin: {
@@ -22,11 +21,11 @@ const configGlobal: Config = {
     }
 };
 
-const fixtureGlobal = new TestFixture(configGlobal);
-describe(fixtureGlobal.Name, async () => (await fixtureGlobal.Connect()).AssertWebsite());
+// CASE: No Region (Global)
+new TestFixture(configGlobal).AssertWebsite();
 
 const configChinaMainland = { ...configGlobal };
 configChinaMainland.container.url = 'https://www.mangacopy.com/comic/zhanvmeizhabao';
 
-const fixtureChinaMainland = new TestFixture(configChinaMainland);
-describe(fixtureChinaMainland.Name, async () => (await fixtureChinaMainland.Connect()).AssertWebsite());
+// CASE: Region China
+new TestFixture(configChinaMainland).AssertWebsite();

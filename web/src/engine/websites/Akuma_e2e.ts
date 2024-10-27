@@ -1,7 +1,6 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixture = new TestFixture({
+new TestFixture({
     plugin: {
         id: 'akuma',
         title: 'Akuma.moe'
@@ -20,5 +19,4 @@ const fixture = new TestFixture({
         size: 223_038,
         type: 'image/jpeg'
     }
-});
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+}).AssertWebsite();

@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -9,11 +8,11 @@ const config: Config = {
     container: {
         url: 'https://harmony-scan.fr/manga/hyakuren-no-haou-to-seiyaku-no-ikusa-otome/',
         id: JSON.stringify({ post: '1909', slug: '/manga/hyakuren-no-haou-to-seiyaku-no-ikusa-otome/' }),
-        title: 'Le maître du Ragnarok et la bénédiction des Einherjar'
+        title: 'Le maï¿½tre du Ragnarok et la bï¿½nï¿½diction des Einherjar'
     },
     child: {
         id: '/manga/hyakuren-no-haou-to-seiyaku-no-ikusa-otome/chapitre-12/',
-        title: 'Chapitre 12 - Une sincérité toute simple…'
+        title: 'Chapitre 12 - Une sincï¿½ritï¿½ toute simpleï¿½'
     },
     entry: {
         index: 0,
@@ -22,5 +21,4 @@ const config: Config = {
     }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();
