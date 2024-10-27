@@ -17,7 +17,7 @@ function ChapterInfoExtractor(element: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('galaxymanga', 'Galaxy Manga', 'https://galaxymanga.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
+        super('galaxymanga', 'Galaxy Manga', 'https://snowscans.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

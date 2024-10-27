@@ -1,5 +1,4 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -7,7 +6,7 @@ const config = {
         title: 'CypherScans'
     },
     container: {
-        url: 'https://cypheroscans.xyz/manga/solo-max-level-newbie/',
+        url: 'https://cypher-scans.xyz/manga/solo-max-level-newbie/',
         id: '/manga/solo-max-level-newbie/',
         title: 'Solo Max-Level Newbie'
     },
@@ -22,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

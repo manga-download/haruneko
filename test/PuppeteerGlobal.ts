@@ -5,6 +5,7 @@ import { exec, spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
 
 export const AppURL = 'http://localhost:5000/';
+export const AppSelector = 'body #app main#hakunekoapp';
 const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite'));
 const tempDir = path.normalize(path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32)));
 const userDir = path.normalize(path.resolve(tempDir, 'user-data'));
@@ -67,7 +68,7 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectNW(),
-        args: [ nwApp, '--disable-blink-features=AutomationControlled', '--origin=' + AppURL ],
+        args: [ nwApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
@@ -77,10 +78,13 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
         const pages = await browser.pages();
         const page = pages.find(p => p.url() === AppURL);
         if(page) {
-            console.log(new Date().toISOString(), '=>', 'Using Page:', [ page.url() ]);
+            await page.reload({ timeout: 5000 });
+            await page.waitForSelector(AppSelector, { timeout: 7500 });
+            console.log(new Date().toISOString(), '➔', 'Using Page:', [ page.url() ]);
+            console.log(new Date().toISOString(), '➔', 'Remote Debugger:', browser.wsEndpoint());
             return browser;
         } else {
-            console.log(new Date().toISOString(), '=>', 'Waiting for Page(s):', pages.map(p => p.url()));
+            console.log(new Date().toISOString(), '➔', 'Waiting for Page(s):', pages.map(p => p.url()));
         }
         await delay(1000);
     }
