@@ -1,27 +1,24 @@
 import * as puppeteer from 'puppeteer-core';
-import { AppURL } from './PuppeteerGlobal';
+import { AppURL, AppSelector } from './PuppeteerGlobal';
 
 export class PuppeteerFixture {
 
-    #browser: puppeteer.Browser;
-    #page: puppeteer.Page;
+    static #browser = puppeteer.connect({ browserWSEndpoint: process.env.browserWS });
+    static #page = this.#browser.then(browser => browser.pages()).then(pages => pages.find(page => page.url() === AppURL));
 
-    constructor() {}
-
-    protected get Browser() {
-        return this.#browser;
+    protected async Reload(): Promise<void> {
+        const page = await PuppeteerFixture.#page;
+        await page.reload({ timeout: 5000 });
+        await page.waitForSelector(AppSelector, { timeout: 7500 });
     }
 
-    protected get Page() {
-        return this.#page;
+    protected async OpenPage(url : string): Promise<puppeteer.Page> {
+        const page = await (await PuppeteerFixture.#browser).newPage();
+        await page.goto(url);
+        return page;
     }
 
-    public async Connect<T extends this>(): Promise<T> {
-        this.#browser = await puppeteer.connect({ browserWSEndpoint: process.env.browserWS });
-        const pages = await this.#browser.pages();
-        this.#page = pages.find(page => page.url() === AppURL);
-        await this.#page.reload();
-        await this.#page.waitForSelector('body div#app main#hakunekoapp', { timeout: 7500 });
-        return this as T;
+    protected EvaluateHandle: typeof puppeteer.Page.prototype.evaluateHandle = async (pageFunction, ...args) => {
+        return (await PuppeteerFixture.#page).evaluateHandle(pageFunction, ...args);
     }
 }
