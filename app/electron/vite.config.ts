@@ -10,7 +10,6 @@ export default defineConfig({
             entry: [
                 resolve(__dirname, 'src', 'Main.ts'),
                 resolve(__dirname, 'src', 'ipc', 'Preload.ts'),
-                resolve(__dirname, 'src', 'ipc', 'RemoteBrowserWindowPreload.ts'),
             ],
             formats: [ 'cjs' ]
         },

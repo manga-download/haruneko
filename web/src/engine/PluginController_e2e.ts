@@ -7,13 +7,13 @@ import type { PluginController } from './PluginController';
 export class RemoteFixture extends PuppeteerFixture {
 
     public async GetRemotePluginController(): Promise<JSHandle<PluginController>> {
-        return super.Page.evaluateHandle(async () => {
+        return this.EvaluateHandle(async () => {
             return window.HakuNeko.PluginController;
         });
     }
 
     public async GetRemoteWebsitePlugins(): Promise<JSHandle<ReadonlyArray<MediaContainer<MediaContainer<MediaChild>>>>> {
-        return super.Page.evaluateHandle(async () => {
+        return this.EvaluateHandle(async () => {
             return window.HakuNeko.PluginController.WebsitePlugins;
         });
     }
@@ -23,7 +23,7 @@ describe('PluginController', () => {
 
     describe('Website Icons', { concurrent: true }, async () => {
 
-        const fixture = await new RemoteFixture().Connect();
+        const fixture = new RemoteFixture();
         const plugins = await fixture.GetRemoteWebsitePlugins();
         const icons = await plugins.evaluate(testee => testee.map(website => {
             return {

@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -8,19 +7,18 @@ const config: Config = {
     },
     container: {
         url: 'https://hikariscan.org/manga/kaette-kudasai-akutsu-san/',
-        id: '/manga/kaette-kudasai-akutsu-san/',
+        id: JSON.stringify({ post: '20', slug: '/manga/kaette-kudasai-akutsu-san/' }),
         title: 'Kaette Kudasai! Akutsu-san'
     },
     child: {
-        id: '/kaette-kudasai-akutsu-san-170/',
-        title: 'Capítulo 170'
+        id: '/manga/kaette-kudasai-akutsu-san/170/',
+        title: '170'
     },
     entry: {
         index: 1,
-        size: 1_028_169,
+        size: 501_625,
         type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

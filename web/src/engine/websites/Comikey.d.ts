@@ -10,4 +10,5 @@ export default class extends DecoratableMangaScraper {
     private FetchPagesPlain;
     private FetchPagesDirectDRM;
     private FetchPagesBrowserDRM;
+    FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
 }
