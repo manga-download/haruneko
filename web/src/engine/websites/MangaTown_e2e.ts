@@ -1,7 +1,6 @@
-import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configMultiPage: Config = {
+new TestFixture({
     plugin: {
         id: 'mangatown',
         title: 'MangaTown',
@@ -20,12 +19,9 @@ const configMultiPage: Config = {
         size: 236_152,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixtureMultiPage = new TestFixture(configMultiPage);
-describe(fixtureMultiPage.Name, async () => (await fixtureMultiPage.Connect()).AssertWebsite());
-
-const configSinglePage: Config = {
+new TestFixture({
     plugin: {
         id: 'mangatown',
         title: 'MangaTown',
@@ -44,7 +40,4 @@ const configSinglePage: Config = {
         size: 205_356,
         type: 'image/jpeg'
     }
-};
-
-const fixtureSinglePage = new TestFixture(configSinglePage);
-describe(fixtureSinglePage.Name, async () => (await fixtureSinglePage.Connect()).AssertWebsite());
+}).AssertWebsite();

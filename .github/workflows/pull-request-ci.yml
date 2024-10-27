@@ -3,12 +3,35 @@ name: Pull Request (CI)
 on: [ pull_request, workflow_dispatch ]
 
 jobs:
-  pull-request:
+  inspect:
+    name: Code Validation
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Install NPM Packages
+        id: packages
+        run: npm install
+      - name: Code Inspection
+        if: steps.packages.outcome == 'success' && (success() || failure())
+        run: npm run check
+      - name: Unit & Component Tests
+        if: steps.packages.outcome == 'success' && (success() || failure())
+        run: npm run test
+  test:
+    needs: inspect
+    if: success() || contains(github.event.pull_request.title, 'Crowdin')
     strategy:
       fail-fast: false
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-    name: ${{ matrix.os }}
+    name: System Tests - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Starting X Virtual Frame Buffer (Port 99)
@@ -27,16 +50,15 @@ jobs:
         with:
           node-version: 20.x
       - name: Install NPM Packages
+        id: packages
         run: npm install
-      - name: Code Inspection
-        run: npm run check
-      - name: Unit & Component Tests
-        run: npm run test
       - name: End-To-End Tests
+        if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
         run: npm run test:e2e
       - name: Website Tests (Selection)
+        if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
         run: npm run test:websites -- MangaDex
