@@ -1,39 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './YuraManga.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import * as ZManga from './templates/ZManga';
 
-type RSS = {
-    feed: {
-        entry: {
-            link: {
-                rel: string
-                title: string,
-                href: string
-            }[]
-        }[]
-    }
-}
-
-const chapterScript = `
-    new Promise ( resolve =>
-        resolve (clwd.arr.filter(chapter => chapter.link != window.location.href)
-            .map(chapter => {
-                return {
-                    id: new URL(chapter.link).pathname,
-                    title : chapter.title.trim()
-                };
-            })
-        )
-    );
-`;
-
-const pagesScript = `[...document.querySelectorAll('div.isi_chapter div.bx_dl img')].map(img => img.dataset.src ?? img.src);`;
-
-@Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'meta[name="description"]')
-@Common.ChaptersSinglePageJS(chapterScript, 500)
-@Common.PagesSinglePageJS(pagesScript, 1500)
+@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, ZManga.queryMangaTitle)
+@Common.MangasSinglePageCSS(ZManga.queryMangaPath, ZManga.queryManga)
+@Common.ChaptersSinglePageCSS(ZManga.queryChapters, Common.AnchorInfoExtractor(false, 'span.date'))
+@Common.PagesSinglePageCSS(ZManga.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -43,14 +17,6 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { feed: { entry } } = await FetchJSON<RSS>(new Request(new URL('/feeds/posts/default/-/Series?orderby=published&alt=json&max-results=999', this.URI)));
-        return entry.map(manga => {
-            const goodLink = manga.link.find(link => link.rel === 'alternate');
-            return new Manga(this, provider, new URL(goodLink.href).pathname, goodLink.title);
-        });
     }
 
 }
