@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configOndisk: Config = {
+// CASE: On Disk
+new TestFixture({
     plugin: {
         id: 'earlymanga',
         title: 'EarlyManga'
@@ -26,12 +26,10 @@ const configOndisk: Config = {
         size: 141_396,
         type: 'image/webp'
     }
-};
+}).AssertWebsite();
 
-const fixtureOnDisk = new TestFixture(configOndisk);
-describe(fixtureOnDisk.Name, async () => (await fixtureOnDisk.Connect()).AssertWebsite());
-
-const configNOTOndisk: Config = {
+// CASE: Not on Disk
+new TestFixture({
     plugin: {
         id: 'earlymanga',
         title: 'EarlyManga'
@@ -56,7 +54,4 @@ const configNOTOndisk: Config = {
         size: 18_504,
         type: 'image/png'
     }
-};
-
-const fixtureNotOnDisk = new TestFixture(configNOTOndisk);
-describe(fixtureNotOnDisk.Name, async () => (await fixtureNotOnDisk.Connect()).AssertWebsite());
+}).AssertWebsite();

@@ -8,11 +8,11 @@ export default class extends ManhwaHentaiMe {
         super('manytooncom', 'ManyToon', 'https://manytoon.org', [Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Rating.Pornographic, Tags.Source.Aggregator]);
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+\/$`).test(url);
-    }
-
     public override get Icon() {
         return icon;
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+\/$`).test(url);
     }
 }
