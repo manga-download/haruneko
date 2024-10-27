@@ -45,5 +45,4 @@ const NoSpeedBinbConfig: Config = {
     }
 };
 
-const NoSpeedBinbfixture = new TestFixture(NoSpeedBinbConfig);
-describe(NoSpeedBinbfixture.Name, async () => (await NoSpeedBinbfixture.Connect()).AssertWebsite());
+new TestFixture(NoSpeedBinbConfig).AssertWebsite();
