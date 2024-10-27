@@ -139,9 +139,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const { contentsCdnUrl, token } = await this.GetLzConfig();
-        this.token = token;
-        this.cdnURI = contentsCdnUrl ? contentsCdnUrl : 'https://rcdn.lezhin.com';
+        await this.InitializeAccount();
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -291,9 +289,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async InitializeAccount() {
+        const { contentsCdnUrl, token } = await this.GetLzConfig();
 
         //refresh token, in any case
-        this.token = (await this.GetLzConfig()).token;
+        this.token = token;
+        this.cdnURI = contentsCdnUrl;
 
         //if token is defined , or we miss credential infos there is nothing to do.
         if (this.token || !this.Settings.username.Value || !this.Settings.password.Value) {
