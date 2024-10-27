@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
@@ -7,20 +6,19 @@ const config = {
         title: 'Aurora Scan'
     }, /* CloudFlare
     container: {
-        url: 'https://aurorascan.net/a-estranha-historia-de-banwoldang/',
-        id: '/a-estranha-historia-de-banwoldang/',
-        title: 'A Estranha História de Banwoldang'
+        url: 'https://aurorascan.net/a-boneca-do-quarto-da-princesa/',
+        id: '/a-boneca-do-quarto-da-princesa/',
+        title: 'A Boneca do Quarto da Princesa'
     },
     child: {
-        id: '/a-estranha-historia-de-banwoldang/01/',
-        title: 'Capítulo 01',
+        id: '/a-boneca-do-quarto-da-princesa/00/',
+        title: 'CapÃ­tulo 00',
     },
     entry: {
-        index: 3,
-        size: 543_195,
+        index: 0,
+        size: 807_089,
         type: 'image/avif'
     }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();
