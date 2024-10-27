@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixtureChapter = new TestFixture({
+// CASE: Provided in Volumes
+new TestFixture({
     plugin: {
         id: 'cycomi',
         title: 'CyComi'
@@ -20,10 +20,10 @@ const fixtureChapter = new TestFixture({
         size: 219_613,
         type: 'image/jpeg'
     }
-});
-describe(fixtureChapter.Name, async () => (await fixtureChapter.Connect()).AssertWebsite());
+}).AssertWebsite();
 
-const fixtureVolume = new TestFixture({
+// CASE: Provided in Chapters
+new TestFixture({
     plugin: {
         id: 'cycomi',
         title: 'CyComi'
@@ -42,5 +42,4 @@ const fixtureVolume = new TestFixture({
         size: 9_928,
         type: 'image/jpeg'
     }
-});
-describe(fixtureVolume.Name, async () => (await fixtureVolume.Connect()).AssertWebsite());
+}).AssertWebsite();

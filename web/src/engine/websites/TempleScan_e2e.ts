@@ -1,7 +1,6 @@
-import { describe } from 'vitest';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const ComicConfig = {
+const config = {
     plugin: {
         id: 'templescan',
         title: 'TempleScan'
@@ -22,5 +21,4 @@ const ComicConfig = {
     }
 };
 
-const ComicFixture = new TestFixture(ComicConfig);
-describe(ComicFixture.Name, async () => (await ComicFixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

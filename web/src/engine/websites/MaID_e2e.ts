@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -12,15 +11,14 @@ const config: Config = {
         title: 'Maria no Danzai'
     },
     child: {
-        id: '/maria-no-danzai-chapter-01-bahasa-indonesia/',
-        title: 'Chapter 01'
+        id: '/maria-no-danzai-chapter-27-bahasa-indonesia/',
+        title: 'Chapter 27'
     },
     entry: {
         index: 2,
-        size: 295_836,
+        size: 212_887,
         type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();
