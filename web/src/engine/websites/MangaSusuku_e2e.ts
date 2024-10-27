@@ -1,5 +1,4 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -7,7 +6,7 @@ const config = {
         title: 'MangaSusuku'
     },
     container: {
-        url: 'https://mangasusuku.xyz/komik/strawberry-market/',
+        url: 'https://mangasusuku.com/komik/strawberry-market/',
         id: '/komik/strawberry-market/',
         title: 'Strawberry Market'
     },
@@ -22,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

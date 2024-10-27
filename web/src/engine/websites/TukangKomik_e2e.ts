@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
 const config: Config = {
@@ -7,21 +6,19 @@ const config: Config = {
         title: 'TukangKomik'
     },
     container: {
-        url: 'https://tukangkomik.id/manga/nano-m/',
-        id: '/manga/nano-m/',
-        title: 'Nano Machine',
-        timeout: 10000
+        url: 'https://tukangkomik.co/manga/nano-list/',
+        id: '/manga/nano-list/',
+        title: 'Nano List',
     },
     child: {
-        id: '/nano-m-chapter-1/',
-        title: 'Chapter 1'
+        id: '/nano-list-chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 1,
-        size: 316_840,
+        index: 3,
+        size: 38_047,
         type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

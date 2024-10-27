@@ -1,10 +1,9 @@
-﻿import { describe } from 'vitest';
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
         id: 'komikindoinfo',
-        title: 'KomikindoInfo'
+        title: 'KomikindoInfo',
     },
     container: {
         url: 'https://komikindo.info/series/beauty-in-a-click/',
@@ -22,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, async () => (await fixture.Connect()).AssertWebsite());
+new TestFixture(config).AssertWebsite();

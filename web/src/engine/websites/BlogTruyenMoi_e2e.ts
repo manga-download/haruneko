@@ -1,7 +1,7 @@
-﻿import { describe } from 'vitest';
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configRawFetch: Config = {
+// CASE: Fetch XHR
+new TestFixture({
     plugin: {
         id: 'blogtruyenmoi',
         title: 'BlogTruyenMoi',
@@ -23,12 +23,10 @@ const configRawFetch: Config = {
         size: 331_954,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixtureRawFetch = new TestFixture(configRawFetch);
-describe(fixtureRawFetch.Name, async () => (await fixtureRawFetch.Connect()).AssertWebsite());
-
-const configWithScript: Config = {
+// CASE: Fetch JS
+new TestFixture({
     plugin: {
         id: 'blogtruyenmoi',
         title: 'BlogTruyenMoi',
@@ -50,7 +48,4 @@ const configWithScript: Config = {
         size: 110_406,
         type: 'image/jpeg'
     }
-};
-
-const fixtureWithScript = new TestFixture(configWithScript);
-describe(fixtureWithScript.Name, async () => (await fixtureWithScript.Connect()).AssertWebsite());
+}).AssertWebsite();

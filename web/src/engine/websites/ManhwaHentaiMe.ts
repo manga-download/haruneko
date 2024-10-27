@@ -13,7 +13,7 @@ type MangaID = {
 const AnchorInfoExtractor = Common.AnchorInfoExtractor(false, 'span');
 
 function CleanTitle(title: string): string {
-    return title.replace(/Webtoon Manhwa Hentai$/, '').trim();
+    return title.replace(/(-)?\s*Webtoon Manhwa Hentai$/, '').trim();
 }
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
@@ -46,10 +46,9 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(url);
         const data = await FetchHTML(new Request(uri));
         const post = data.querySelector<HTMLElement>('div#star[data-id]')?.dataset?.id;
-        const slug = uri.pathname;
         const element = data.querySelector<HTMLElement>('div.post-title h1');
         const title = CleanTitle(AnchorInfoExtractor.call(this, element).title);
-        return new Manga(this, provider, JSON.stringify({ post, slug }), title);
+        return new Manga(this, provider, JSON.stringify({ post, slug: uri.pathname }), title);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
