@@ -6,7 +6,7 @@ const config: Config = {
         title: 'MangaTR (.Net)'
     },
     container: {
-        url: 'https://mangatr.net/manga/king-of-apocalypse/',
+        url: 'https://mangatr.me/manga/king-of-apocalypse/',
         id: JSON.stringify({ post: '1121', slug: '/manga/king-of-apocalypse/'}),
         title: 'King of Apocalypse'
     },
