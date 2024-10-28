@@ -6,17 +6,17 @@ const config = {
         title: 'Manga Gezgini'
     },
     container: {
-        url: 'https://mangagezgini.com/manga/i-became-a-knight-with-a-time-limit/',
-        id: JSON.stringify({ post: '22449', slug: '/manga/i-became-a-knight-with-a-time-limit/' }),
-        title: 'I Became a Knight With a Time Limit'
+        url: 'https://mangagezgini.dev/manga/limit-breaker/',
+        id: JSON.stringify({ post: '873', slug: '/manga/limit-breaker/' }),
+        title: 'Limit Breaker'
     },
     child: {
-        id: '/manga/i-became-a-knight-with-a-time-limit/bolum-0/',
-        title: 'Bölüm 0'
+        id: '/manga/limit-breaker/limit-breaker-blm-79978c98a1f18c581632860ef90900709a/',
+        title: 'Bölüm 79'
     },
     entry: {
         index: 1,
-        size: 2_719_158,
+        size: 748_849,
         type: 'image/jpeg'
     }
 };

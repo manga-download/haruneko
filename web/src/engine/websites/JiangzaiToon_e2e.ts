@@ -6,7 +6,7 @@ const config = {
         title: 'JiangzaiToon'
     },
     container: {
-        url: 'https://jiangzaitoon.pro/manga/19-gun/',
+        url: 'https://jiangzaitoon.gay/manga/19-gun/',
         id: JSON.stringify({ post: '6872', slug: '/manga/19-gun/' }),
         title: '19 Days'
     },
