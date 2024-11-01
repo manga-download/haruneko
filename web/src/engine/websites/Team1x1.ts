@@ -16,7 +16,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('team1x1', `Team X`, 'https://teamoney.site', Tags.Language.Arabic, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('team1x1', `Team X`, 'https://olympustaff.com', Tags.Language.Arabic, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
         //this.Settings.url = new Text('urloverride', R.Plugin_Settings_UrlOverride, R.Plugin_Settings_UrlOverrideInfo, this.URI.origin);
         //(this.Settings.url as Text).Subscribe(value => this.URI.href = value);
         //this.URI.href = this.Settings.url.Value as string;
