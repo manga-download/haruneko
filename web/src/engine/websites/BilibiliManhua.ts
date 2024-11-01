@@ -6,6 +6,7 @@ import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../i18n/ILoc
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIResult<T> = {
     code: number,
@@ -40,7 +41,8 @@ type APIPages = {
 
 type APIImageToken = {
     url: string,
-    token: string
+    token: string,
+    complete_url: string,
 }
 
 type APICredential = {
@@ -65,7 +67,6 @@ const auhTokenScript = `
     });
 `;
 
-@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly areacode = { 1: 'us-user', 2: 'sg-user' };
@@ -99,14 +100,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { data: { id, title} } = await this.FetchTwirp<APIResult<APIChapters>>('ComicDetail', {
+        const { data: { id, title } } = await this.FetchTwirp<APIResult<APIChapters>>('ComicDetail', {
             comic_id: parseInt(url.match(/\/mc(\d+)/)[1])
         });
         return new Manga(this, provider, id.toString(), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[]= [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -165,8 +166,42 @@ export default class extends DecoratableMangaScraper {
         const { data } = await this.FetchTwirp<APIResult<APIImageToken[]>>('ImageToken', {
             urls: JSON.stringify(pictures)
         });
-        return data.map(image => new Page(this, chapter, new URL(image.url + '?token=' + image.token)));
 
+        return data.map(image => new Page(this, chapter, new URL(image.complete_url ?? `${image.url}?token=${image.token}`)));
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return blob.type.startsWith('image/') ? blob : this.DecryptImage(blob, page.Link);
+    }
+
+    private async DecryptImage(blob: Blob, link : URL): Promise<Blob> {
+
+        const buffer = new Uint8Array(await blob.arrayBuffer());
+        const dataView = new DataView(buffer.slice(1, 5).buffer).getInt32(0, false);
+        const imageData = buffer.slice(5, dataView + 5);
+        const key = buffer.slice(dataView + 5);
+
+        const cryptoParameters = { al: 'AES-CBC', an: [60, 76], at: [0, 20] };
+        const decodedCpx = new Uint8Array(window.atob(decodeURIComponent(link.searchParams.get('cpx'))).split('').map(char => char.charCodeAt(0)));
+        const iv = new Uint8Array(decodedCpx.buffer.slice(cryptoParameters.an[0], cryptoParameters.an[1]));
+
+        const cryptedData = new Uint8Array(imageData.slice(cryptoParameters.at[0], cryptoParameters.at[1] * 1024 + 16));
+        const rawData = imageData.slice(cryptoParameters.at[1] * 1024 + 16);
+
+        const cryptoKey = await crypto.subtle.importKey('raw', key, {
+            name: cryptoParameters.al,
+        }, true, ['encrypt', 'decrypt']);
+
+        const decrypted = new Uint8Array(await crypto.subtle.decrypt({
+            name: cryptoParameters.al,
+            iv: iv
+        }, cryptoKey, cryptedData));
+
+        const finalData = new Uint8Array(decrypted.length + rawData.length);
+        finalData.set(decrypted, 0);
+        finalData.set(rawData, decrypted.length);
+        return Common.GetTypedData(finalData);
     }
 
     private GetImageSizeByQuality(imgWidth: number): number {
