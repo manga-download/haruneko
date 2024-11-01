@@ -6,7 +6,7 @@ const config = {
         title: 'Tecno Scan'
     },
     container: {
-        url: 'https://oleros-scans.xyz/manga/absolute-sword-sense/',
+        url: 'https://teroly-scans.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },
