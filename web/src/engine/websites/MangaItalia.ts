@@ -5,28 +5,24 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-function MangaExtractor(element: HTMLElement) {
-    return {
-        id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.querySelector('p.item-title').textContent.trim()
-    };
-}
-
 function ChapterExtractor(element: HTMLElement) {
     return {
         id: element.querySelector<HTMLAnchorElement>('a').pathname,
         title: element.querySelector('h5').textContent.trim().split('\n')[0]
     };
 }
+function MangaLabelExtractor(element: HTMLTitleElement) {
+    return element.text.split('-').at(0).trim();
+}
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, '.col > h1')
-@Common.MangasMultiPageCSS('/manga?page={page}', '.grid-item-series', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('.col-chapter', ChapterExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'title', MangaLabelExtractor)
+@Common.MangasMultiPageCSS('/manga?page={page}', 'div.series-paginated a.link-series')
+@Common.ChaptersSinglePageCSS('div.chapters-list div.col-chapter', ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manga-italia', 'Manga Italia', 'https://manga-italia.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Italian, Tags.Source.Scanlator);
+        super('manga-italia', 'Manga Italia', 'https://mangaita.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Italian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
