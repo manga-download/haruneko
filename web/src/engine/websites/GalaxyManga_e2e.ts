@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Galaxy Manga'
     },
     container: {
-        url: 'https://snowscans.com/series/53488-850-berserk',
+        url: 'https://galaxymanga.net/series/53488-850-berserk',
         id: '/series/53488-850-berserk',
         title: 'Berserk'
     },
