@@ -17,7 +17,7 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-    import VirtualList from '../lib/virtualList.svelte';
+	import { VirtualList } from 'svelte-virtuallists';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
@@ -37,7 +37,7 @@
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
     import { resizeBar } from '../lib/actions';
-    import { onMount } from 'svelte';
+    import type { MediaContainer2 } from '../Types';
 
     let ref:HTMLElement = $state();
 
@@ -249,21 +249,16 @@
                 <div>... medias</div>
             </div>
         {:then}
-            <VirtualList {container} items={filteredmedias} itemHeight={20}  {containerHeight} let:item let:dummy let:y>
-                {#if dummy}
-                    <div class="empty" class:dummy style="position: relative; top:{y}px;"></div>
-                {:else}
-                    {#key item}
-                        <Media 
-                            media={item}
-                            style="position: relative; top:{y}px;"
-                            on:select={(e) => {
-                                $selectedMedia = e.detail;
-                            }}
-                        />
-                    {/key}
-                {/if}
-            </VirtualList>
+        <VirtualList style='height:100%' items={filteredmedias}>
+            {#snippet vl_slot({ index, item })}
+            <Media 
+                media={item as MediaContainer2}
+                on:select={(e) => {
+                    $selectedMedia = e.detail;
+                }}
+            />
+            {/snippet}
+        </VirtualList>
         {:catch error}
             <div class="error">
                 <InlineNotification
@@ -369,9 +364,5 @@
     }
     .resize:hover {
             background-color:var(--cds-ui-02); 
-    }
-    .empty {
-        height: 24px;
-        line-height: 24px;
     }
 </style>
