@@ -609,6 +609,7 @@ export { default as SundayWebry } from './SundayWebry';
 export { default as SushiScans } from './SushiScans';
 export { default as SweetTimeScan } from './SweetTimeScan';
 export { default as Tapas } from './Tapas';
+export { default as TappyToon } from './TappyToon';
 export { default as Tapread } from './Tapread';
 export { default as TarotScans } from './TarotScans';
 export { default as TatakaeScan } from './TatakaeScan';
