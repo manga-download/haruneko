@@ -42,6 +42,7 @@ export { default as Batoto } from './Batoto';
 export { default as BlogTruyenMoi } from './BlogTruyenMoi';
 export { default as Bokugents } from './Bokugents';
 export { default as Bomtoon } from './Bomtoon';
+export { default as BomtoonCN } from './BomtoonCN';
 export { default as Bontoon } from './Bontoon';
 export { default as Boomtoon } from './Boomtoon';
 export { default as CartelDeManhwas } from './CartelDeManhwas';
