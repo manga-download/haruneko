@@ -62,7 +62,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api-global.tappytoon.com';
 
     public constructor() {
-        super('tappytoon', 'TappyToon', 'https://www.tappytoon.com', Tags.Media.Manhwa, Tags.Language.Multilingual, Tags.Source.Official);
+        super('tappytoon', 'TappyToon', 'https://www.tappytoon.com', Tags.Media.Manhwa, Tags.Language.English, Tags.Language.French, Tags.Language.German, Tags.Source.Official);
     }
 
     public override get Icon() {
@@ -87,7 +87,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
-        for (const [language] of mangaLanguageMap) {
+        for (const language of mangaLanguageMap.keys()) {
             const mangas = await FetchJSON<APIManga[]>(this.CreateRequest(new URL(`/comics?locale=${language}`, this.apiUrl), language));
             mangaList.push(...mangas.map(manga => {
                 const id = JSON.stringify({ id: manga.id.toString(), language });
