@@ -594,7 +594,6 @@ export { default as SixParkbbsWeb } from './SixParkbbsWeb';
 export { default as SkyManga } from './SkyManga';
 export { default as SkyMangas } from './SkyMangas';
 export { default as SoftKomik } from './SoftKomik';
-export { default as SouDongMan } from './SouDongMan';
 export { default as SoulScans } from './SoulScans';
 export { default as SpiderScans } from './SpiderScans';
 export { default as SpoilerPlus } from './SpoilerPlus';
