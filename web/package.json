@@ -6,8 +6,8 @@
         "npm": ">=10.2.4"
     },
     "dependencies": {
-        "jspdf": "^2.5.2",
         "jszip": "^3.10.1",
+        "pdfkit": "github:manga-download/pdfkit#v0.15.1",
         "protobufjs": "^7.4.0"
     },
     "devDependencies": {
