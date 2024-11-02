@@ -11,12 +11,12 @@ const config = {
         title: '隠れ才女は全然めげない'
     },
     child: {
-        id: '/viewer/e/257',
-        title: '第7話②'
+        id: '/viewer/e/123',
+        title: '第1話①'
     },
     entry: {
-        index: 0,
-        size: 1_698_814,
+        index: 4,
+        size: 1_796_783,
         type: 'image/png'
     }
 };

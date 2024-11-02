@@ -187,16 +187,12 @@ export async function FetchImageAjax(this: MangaScraper, page: Page<PageData>, p
 
                                     if (!(scrambleArray.length < numCols * numRow || part.image.width < 8 * numCols || part.image.height < 8 * numRow)) {
                                         for (let scrambleIndex = 0; scrambleIndex < scrambleArray.length; scrambleIndex++) {
-                                            let p: number;
-                                            let pieceX = scrambleIndex % numCols;
-                                            let pieceY = Math.floor(scrambleIndex / numCols);
-                                            pieceX *= pieceWidth;
-                                            pieceY *= pieceHeight;
-                                            let sourceX = (p = scrambleArray[scrambleIndex]) % numCols;
-                                            let sourceY = Math.floor(p / numCols);
-                                            sourceX *= pieceWidth;
-                                            sourceY *= pieceHeight;
-                                            ctx.clearRect(pieceX, pieceY, pieceWidth, pieceHeight);//
+                                            const pieceX = scrambleIndex % numCols * pieceWidth;
+                                            const pieceY = Math.floor(scrambleIndex / numCols) * pieceHeight;
+                                            const p = scrambleArray[scrambleIndex];
+                                            const sourceX = p % numCols * pieceWidth;
+                                            const sourceY = Math.floor(p / numCols) * pieceHeight;
+                                            ctx.clearRect(pieceX, pieceY, pieceWidth, pieceHeight);
                                             ctx.drawImage(part.image, sourceX, sourceY, pieceWidth, pieceHeight, pieceX, pieceY, pieceWidth, pieceHeight);
                                         }
                                         part.image = null;

@@ -6,17 +6,17 @@ const config = {
         title: 'コミックフェスタ | ComicFesta'
     },
     container: {
-        url: 'https://comic.iowl.jp/titles/205598/volumes',
-        id: '/titles/205598/volumes',
-        title: 'ノン･シュガー 分冊版'
+        url: 'https://comic.iowl.jp/titles/171482',
+        id: '/titles/171482',
+        title: '悪役令嬢の発情期【タテヨミ】【フルカラー】',
     },
     child: {
-        id: '/volumes/871005/trial_download',
-        title: '1巻'
+        id: '/volumes/605060/free_download',
+        title: '1'
     },
     entry: {
-        index: 4,
-        size: 513_165,
+        index: 0,
+        size: 315_948,
         type: 'image/png'
     }
 };
