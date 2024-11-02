@@ -11,12 +11,12 @@ const config = {
         title: 'DARK MOON: 月之神坛'
     },
     child: {
-        id: '/FANTASY/dark-moon-the-blood-altar/57-%E6%AD%A3%E9%9D%A2%E7%AA%81%E5%87%BB/viewer?title_no=1970&episode_no=57',
-        title: '#57 - 57. 正面突击'
+        id: '/FANTASY/dark-moon-the-blood-altar/1-%E5%88%9D%E6%AC%A1%E8%A7%81%E9%9D%A2/viewer?title_no=1970&episode_no=1',
+        title: '#1 - 1. 初次见面'
     },
     entry: {
         index: 0,
-        size: 171_097,
+        size: 79_988,
         type: 'image/jpeg'
     }
 };

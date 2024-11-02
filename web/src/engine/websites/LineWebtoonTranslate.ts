@@ -1,9 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './LineWebtoonTranslate.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as LineW from './decorators/LineWebtoon';
 import { FetchWindowScript } from '../platform/FetchProvider';
+import LineWebtoon from './LineWebtoon';
 
 const pageScript = `
        new Promise(resolve => {
@@ -38,14 +37,13 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@LineW.MangaCSS(/^{origin}\/webtoonVersion\?webtoonNo=\d+&language=[^/]+&teamVersion=\d+$/, LineW.queryMangaTitleURI, /language=(\w{3})/)
 @Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a', 1, 1, 0, MangaExtractor)
-@LineW.ChaptersMultiPageCSS()
-@LineW.PagesSinglePageJS(pageScript)
-@LineW.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends LineWebtoon {
     public constructor() {
-        super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
+        super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com', [Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official]);
+        this.languageRegexp = /language=(\w{3})/;
+        this.mangaRegexp = /\/webtoonVersion\?webtoonNo=\d+&language=[^/]+&teamVersion=\d+$/;
+        this.pageScript = pageScript;
     }
     public override get Icon() {
         return icon;

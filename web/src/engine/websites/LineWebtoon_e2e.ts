@@ -6,20 +6,20 @@ const config = {
         title: 'Line Webtoon',
     },
     container: {
-        url: 'https://www.webtoons.com/en/romance/lore-olympus/list?title_no=1320',
-        id: '/en/romance/lore-olympus/list?title_no=1320',
-        title: 'Lore Olympus',
+        url: 'https://www.webtoons.com/id/horror/guidao/list?title_no=874',
+        id: '/id/horror/guidao/list?title_no=874',
+        title: 'Ghost Path',
         timeout: 15000
     },
     child: {
-        id: '/en/romance/lore-olympus/s3-episode-250/viewer?title_no=1320&episode_no=255',
-        title: '#255 - (S3) Episode 250',
+        id: '/id/horror/guidao/prolog/viewer?title_no=874&episode_no=1',
+        title: '#1 - Prolog',
         timeout: 20000
     },
     entry: {
-        index: 1,
-        size: 39_553,
-        type: 'image/jpeg',
+        index: 2,
+        size: 282_499,
+        type: 'image/png',
     }
 };
 
