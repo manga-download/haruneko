@@ -1,7 +1,7 @@
-import Lezhin from './templates/Lezhin';
+import LezhinBase from './templates/LezhinBase';
 import { Tags } from '../Tags';
 
-export default class LezhinEN extends Lezhin {
+export default class LezhinEN extends LezhinBase {
     public constructor() {
         super('lezhin-ko', 'Lezhin (Korean)', 'https://www.lezhin.com', 'ko-KR', 'ko', [Tags.Media.Manga, Tags.Language.Korean, Tags.Source.Official]);
     }
