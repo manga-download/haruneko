@@ -86,7 +86,11 @@
     let medias: MediaContainer<MediaChild>[] = $state([]);
     let mediaNameFilter = $state('');
 
-    let filteredmedias: MediaContainer<MediaChild>[] = $derived(mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter));
+    let filteredmedias: MediaContainer<MediaChild>[] = $state([]);
+    $effect(() => {
+        medias;
+        filteredmedias = filterMedia(mediaNameFilter);
+    });
     let fuse = new Fuse([]);
 
     loadPlugin = loadMedias($selectedPlugin);
@@ -118,6 +122,7 @@
     }
 
     function filterMedia(mediaNameFilter: string) {
+        if (mediaNameFilter === '') return medias;
         if ($FuzzySearch)
             return fuse.search(mediaNameFilter).map((item) => item.item);
         else
@@ -253,12 +258,9 @@
         {:then}
         <VirtualList style='height:100%' items={filteredmedias}>
             {#snippet vl_slot({ index, item })}
-            <Media 
-                media={item as MediaContainer2}
-                on:select={(e) => {
-                    $selectedMedia = e.detail;
-                }}
-            />
+                <Media 
+                    media={item as MediaContainer2}
+                />
             {/snippet}
         </VirtualList>
         {:catch error}
