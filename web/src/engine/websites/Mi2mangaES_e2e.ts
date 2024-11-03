@@ -6,8 +6,8 @@ const config = {
         title: 'Mi2mangaES'
     },
     container: {
-        url: 'https://es.mi2manga.com/manga/la-tirana-quiere-vivir-honestamente/',
-        id: JSON.stringify({ post: '942', slug: '/manga/la-tirana-quiere-vivir-honestamente/' }),
+        url: 'https://mi2manga.lat/manga/la-tirana-quiere-vivir-honestamente/',
+        id: JSON.stringify({ slug: '/manga/la-tirana-quiere-vivir-honestamente/' }),
         title: 'La Tirana Quiere Vivir Honestamente'
     },
     child: {
@@ -15,8 +15,8 @@ const config = {
         title: 'Capítulo 59'
     },
     entry: {
-        index: 0,
-        size: 84_386,
+        index: 2,
+        size: 456_838,
         type: 'image/jpeg'
     }
 };
