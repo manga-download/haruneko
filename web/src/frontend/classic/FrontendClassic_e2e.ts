@@ -1,5 +1,5 @@
 import { describe, it/*, expect*/ } from 'vitest';
-import { TestFixture } from './FrontEnd_fixture';
+import { TestFixture } from './FrontendClassic_fixture';
 
 describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
 
