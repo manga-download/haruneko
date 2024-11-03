@@ -116,7 +116,7 @@ type TDimensions = {
 }
 
 @Common.ChaptersSinglePageCSS('ul[class*=style_episodeListContents__list] li a', ChapterExtractor)
-export default class extends DecoratableMangaScraper {
+export class LezhinBase extends DecoratableMangaScraper {
     private readonly locale: string;
     private readonly apiUrl = 'https://www.lezhinus.com/lz-api/v2/';
     private cdnURI: string;
