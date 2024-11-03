@@ -32,4 +32,4 @@ const manifest = {
 };
 
 await fs.writeFile(targetFile, JSON.stringify(manifest, null, 4));
-await run('npm install --only=production', dirBuild);
+await run('npm install --omit=dev', dirBuild);
