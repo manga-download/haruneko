@@ -6,7 +6,7 @@ const config = {
         title: 'LxHentai (Hentai LXX)'
     },
     container: {
-        url: 'https://lxmanga.ink/truyen/nu-than-ke-ben',
+        url: 'https://lxmanga.site/truyen/nu-than-ke-ben',
         id: '/truyen/nu-than-ke-ben',
         title: 'Nữ thần kế bên'
     },
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 814_382,
+        size: 751_307,
         type: 'image/jpeg',
         timeout: 10000
     }
