@@ -383,7 +383,6 @@ export { default as MangaTitan } from './MangaTitan';
 export { default as MangaTown } from './MangaTown';
 export { default as MangaTRNet } from './MangaTRNet';
 export { default as MangaTube } from './MangaTube';
-export { default as MangaTX } from './MangaTX';
 export { default as MangaUpGlobal } from './MangaUpGlobal';
 export { default as MangaWorld } from './MangaWorld';
 export { default as MangaWorldAdult } from './MangaWorldAdult';
