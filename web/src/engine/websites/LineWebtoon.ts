@@ -12,34 +12,30 @@ const defaultPageScript = `
         try {
             // Process motion webtoon
             if (document.querySelector('div#ozViewer div.oz-pages')) {
-                let templateURLs = window.__motiontoonViewerState__.motiontoonParam.pathRuleParam;
-                let uri = window.__motiontoonViewerState__.motiontoonParam.viewerOptions.documentURL;
-                let response = await fetch(uri);
-                let data = await response.json();
-                for (let page of data.pages) {
-                    console.log('PAGE:', page.id);
-                    for (let layer of page.layers) {
-                        let layerAsset = layer.asset.split('/');
-                        let layerAssetFile = data.assets[layerAsset[0]][layerAsset[1]];
-                        let layerAssetExtension = layerAssetFile.split('.').pop();
+                const templateURLs = window.__motiontoonViewerState__.motiontoonParam.pathRuleParam;
+                const uri = window.__motiontoonViewerState__.motiontoonParam.viewerOptions.documentURL;
+                const response = await fetch(uri);
+                const data = await response.json();
+                for (const page of data.pages) {
+                    for (const layer of page.layers) {
+                        const layerAsset = layer.asset.split('/');
+                        const layerAssetFile = data.assets[layerAsset[0]][layerAsset[1]];
+                        const layerAssetExtension = layerAssetFile.split('.').pop();
                         if (layer.type === 'image') {
                             layer.asset = templateURLs['image'][layerAssetExtension].replace('{=filename}', layerAssetFile);
                         }
-                        console.log('  LAYER:', layer.type, '=>', layer.asset);
-                        for (let keyframe in layer.effects) {
-                            let effect = layer.effects[keyframe]['sprite'];
+                        for (const keyframe in layer.effects) {
+                            const effect = layer.effects[keyframe]['sprite'];
                             if (effect && effect.type === 'sprite') {
-                                let effectAsset = effect.asset.split('/');
-                                let effectAssetFile = data.assets[effectAsset[0]][effectAsset[1]];
-                                let effectAssetExtension = effectAssetFile.split('.').pop();
+                                const effectAsset = effect.asset.split('/');
+                                const effectAssetFile = data.assets[effectAsset[0]][effectAsset[1]];
+                                const effectAssetExtension = effectAssetFile.split('.').pop();
                                 effect.asset = templateURLs['image'][effectAssetExtension].replace('{=filename}', effectAssetFile);
-                                console.log('    EFFECT:', effect.type, '=>', effect.asset);
-                                for (let index in effect.collection) {
-                                    let collectionAsset = effect.collection[index].split('/');
-                                    let collectionAssetFile = data.assets[collectionAsset[0]][collectionAsset[1]];
-                                    let collectionAssetExtension = collectionAssetFile.split('.').pop();
+                                for (const index in effect.collection) {
+                                    const collectionAsset = effect.collection[index].split('/');
+                                    const collectionAssetFile = data.assets[collectionAsset[0]][collectionAsset[1]];
+                                    const collectionAssetExtension = collectionAssetFile.split('.').pop();
                                     effect.collection[index] = templateURLs['image'][collectionAssetExtension].replace('{=filename}', collectionAssetFile);
-                                    console.log('      COLLECTION:', index, '=>', effect.collection[index]);
                                 }
                             }
                         }
@@ -48,17 +44,18 @@ const defaultPageScript = `
                 resolve(data.pages);
             } else {
             // Process hard-sub webtoon (default)
-                let images = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img img[data-url]')];
-                let links = images.map(element => new URL(element.dataset.url, window.location).href);
+                const images = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img img[data-url]')];
+                const links = images.map(element => new URL(element.dataset.url, window.location).href);
                 resolve(links);
             }
 
         } catch (error) {
             reject(error);
         }
-
     });
-`; const mangasLanguageMap = {
+`;
+
+const mangasLanguageMap = {
     zh: Tags.Language.Chinese,
     en: Tags.Language.English,
     fr: Tags.Language.French,
@@ -143,13 +140,15 @@ export default class extends DecoratableMangaScraper {
 
     public constructor(id = 'linewebtoon', label = 'Line Webtoon', url = 'https://www.webtoons.com', tags = [Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official]) {
         super(id, label, url, ...tags);
+
     }
+
     public override get Icon() {
         return icon;
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return this.mangaRegexp.test(url);
+        return this.mangaRegexp.test(url) && url.startsWith(this.URI.origin);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -181,7 +180,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const data = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), this.pageScript, 1500);
         if (!Array.isArray(data)) return [];
-        return typeof data[0] === 'string' ? (data as Array<string>).map(page => new Page(this, chapter, new URL(page))) : this.CreatePagesfromData(chapter, data as PageData[]);
+        return typeof data[0] === 'string' ? (data as Array<string>).map(page => {
+            const pageUrl = new URL(page);
+            pageUrl.searchParams.delete('type');
+            return new Page(this, chapter, pageUrl);
+        }) : this.CreatePagesfromData(chapter, data as PageData[]);
     }
 
     private CreatePagesfromData(chapter: Chapter, data: PageData[]): Page<PageData>[] {
@@ -189,7 +192,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        if (!page.Parameters?.width) return await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        if (!page.Parameters?.layers) return await Common.FetchImageAjax.call(this, page, priority, signal, true);
         const payload = page.Parameters;
         return this.imageTaskPool.Add(async () => {
             return DeScramble(new ImageData(payload.width, payload.height,), async (_, ctx) => {
@@ -211,7 +214,7 @@ export default class extends DecoratableMangaScraper {
                     if (type[0] === 'image') {
                         const image = await LoadImage(layer.asset);
                         if (type[1] === 'text') {
-                            AdjustTextLayerVisibility(layer, image, ctx.canvas);
+                            AdjustTextLayerVisibility(layer, image.width, image.height, ctx.canvas.width, ctx.canvas.height);
                         }
                         // TODO: process layer.keyframes in case top/left/width/height is animated?
                         ctx.drawImage(image, layer.left, layer.top, layer.width || image.width, layer.height || image.height);
@@ -222,26 +225,26 @@ export default class extends DecoratableMangaScraper {
     }
 }
 
-function AdjustTextLayerVisibility(layer: ImageLayer, textLayer: HTMLImageElement, canvas: OffscreenCanvas) {
-    if (textLayer.height > canvas.height) {
+function AdjustTextLayerVisibility(layer: ImageLayer, textLayerWidth: number, textLayerHeight: number, canvasWidth: number, canvasHeight: number) {
+    if (textLayerHeight > canvasHeight) {
         layer.top = 0;
-        layer.height = canvas.height;
-        layer.width = layer.width * canvas.height / textLayer.height;
+        layer.height = canvasHeight;
+        layer.width = layer.width * canvasHeight / textLayerHeight;
     } else {
-        if (layer.top + textLayer.height > canvas.height) {
-            layer.top = canvas.height - textLayer.height;
+        if (layer.top + textLayerHeight > canvasHeight) {
+            layer.top = canvasHeight - textLayerHeight;
         }
         if (layer.top < 0) {
             layer.top = 0;
         }
     }
-    if (textLayer.width > canvas.width) {
+    if (textLayerWidth > canvasWidth) {
         layer.left = 0;
-        layer.width = canvas.width;
-        layer.height = layer.height * canvas.width / textLayer.width;
+        layer.width = canvasWidth;
+        layer.height = layer.height * canvasWidth / textLayerWidth;
     } else {
-        if (layer.left + textLayer.width > canvas.width) {
-            layer.left = canvas.width - textLayer.width;
+        if (layer.left + textLayerWidth > canvasWidth) {
+            layer.left = canvasWidth - textLayerWidth;
         }
         if (layer.left < 0) {
             layer.left = 0;
