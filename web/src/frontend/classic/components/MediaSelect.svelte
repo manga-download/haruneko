@@ -208,6 +208,7 @@
     </div>
     <div id="Plugin">
         <ComboBox
+            id="PluginSelect"
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
             on:clear={() => ($selectedPlugin = undefined)}
@@ -229,6 +230,7 @@
             {/if}
         </ComboBox> 
         <Button
+            id="MediaUpdateButton"
             icon={UpdateNow}
             size="small"
             tooltipPosition="top"
@@ -240,7 +242,7 @@
     </div>
 
     <div id="MediaFilter">
-        <Search size="sm" bind:value={mediaNameFilter} />
+        <Search id="MediaFilterSearch" size="sm" bind:value={mediaNameFilter} />
     </div>
     <div id="MediaList" class="list" bind:this={container} bind:clientHeight={containerHeight}>
         {#await loadPlugin}
