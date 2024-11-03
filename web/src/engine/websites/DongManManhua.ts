@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './DongManManhua.webp';
 import * as Common from './decorators/Common';
-import LineWebtoon from './LineWebtoon';
+import { LineWebtoonBase } from './templates/LineWebtoonBase';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -11,7 +11,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangasSinglePageCSS('/dailySchedule', 'div.daily_lst ul.daily_card li a.daily_card_item', MangaExtractor)
-export default class extends LineWebtoon {
+export default class extends LineWebtoonBase {
     public constructor() {
         super('dongmanmanhua', `咚漫 (DongMan Manhua)`, 'https://www.dongmanmanhua.cn', [Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Official]);
         this.mangaRegexp = /[^/]+\/[^/]+\/list\?title_no=\d+$/;

@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './LineWebtoonTranslate.webp';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import LineWebtoon from './LineWebtoon';
+import { LineWebtoonBase } from './templates/LineWebtoonBase';
 
 const pageScript = `
        new Promise(resolve => {
@@ -38,7 +38,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a', 1, 1, 0, MangaExtractor)
-export default class extends LineWebtoon {
+export default class extends LineWebtoonBase {
     public constructor() {
         super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com', [Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official]);
         this.languageRegexp = /language=(\w{3})/;
