@@ -56,6 +56,8 @@ function ChapterExtractor(element: HTMLAnchorElement) {
             element.href = action.match(/href='([^']+)'/)[1];
         } else if (action.includes('showMandatoryShare')) {
             element.href = action.match(/showMandatoryShare\s*\(\s*'([^']+)'/)[1];
+        } else if (action.includes('collectEpisodeModal')) {
+            element.href = action.match(/collectEpisodeModal\s*\(\s*'\d+'\s*,\s*'\d+'\s*,\s*'([^']+)'/)[1];
         } else {
             element.href = action.match(/popup\s*\(\s*'[^']+'\s*,\s*'[^']*'\s*,\s*'([^']+)'/)[1];
         }
