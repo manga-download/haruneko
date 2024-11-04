@@ -608,6 +608,8 @@ export { default as SumManga } from './SumManga';
 export { default as Summertoon } from './Summertoon';
 export { default as SundayWebry } from './SundayWebry';
 export { default as SushiScans } from './SushiScans';
+export { default as SushiScansCOM } from './SushiScansCOM';
+export { default as SushiScansFR } from './SushiScansFR';
 export { default as SweetTimeScan } from './SweetTimeScan';
 export { default as Tapas } from './Tapas';
 export { default as TappyToon } from './TappyToon';
