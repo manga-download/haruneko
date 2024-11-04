@@ -312,7 +312,7 @@
         />
     </div>
     <div id="ItemFilter">
-        <Search size="sm" bind:value={itemNameFilter} />
+        <Search id="ItemFilterSearch" size="sm" bind:value={itemNameFilter} />
     </div>
     <div id="ItemList" class="list" bind:this={itemsdiv}>
         {#await loadItem}
