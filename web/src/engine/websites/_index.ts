@@ -329,6 +329,7 @@ export { default as MangaKawaii } from './MangaKawaii';
 export { default as MangaKings } from './MangaKings';
 export { default as MangaKiss } from './MangaKiss';
 export { default as MangaKita } from './MangaKita';
+export { default as MangaKoleji } from './MangaKoleji';
 export { default as MangaKomi } from './MangaKomi';
 export { default as Mangakyo } from './Mangakyo';
 export { default as Mangalek } from './Mangalek';
