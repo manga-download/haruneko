@@ -11,7 +11,7 @@ const config = {
         title: '推し変しやがれ!!'
     },
     child: {
-        id: '/episodes/93e16b054f108/',
+        id: '/episodes/a742481ce1e89/',
         title: '第零話'
     },
     entry: {
