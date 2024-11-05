@@ -1,4 +1,4 @@
-import { type Tag, Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
