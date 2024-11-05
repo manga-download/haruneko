@@ -6,14 +6,16 @@ export class PuppeteerFixture {
     static #browser = puppeteer.connect({ browserWSEndpoint: process.env.browserWS });
     static #page = this.#browser.then(browser => browser.pages()).then(pages => pages.find(page => page.url() === AppURL));
 
-    protected async Reload(): Promise<void> {
-        const page = await PuppeteerFixture.#page;
-        await page.reload({ timeout: 5000 });
-        await page.waitForSelector(AppSelector, { timeout: 7500 });
+    private GetBrowser() {
+        return PuppeteerFixture.#browser;
     }
 
-    protected async OpenPage(url : string): Promise<puppeteer.Page> {
-        const page = await (await PuppeteerFixture.#browser).newPage();
+    public GetPage() {
+        return PuppeteerFixture.#page;
+    }
+
+    protected async OpenPage(url: string): Promise<puppeteer.Page> {
+        const page = await (await this.GetBrowser()).newPage();
         await page.goto(url);
         return page;
     }
