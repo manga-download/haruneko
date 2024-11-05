@@ -1,4 +1,3 @@
-import type { Tag } from '../../Tags';
 import { DecoratableMangaScraper, type Chapter, type Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
@@ -15,15 +14,11 @@ export function PageExtractor(element: HTMLImageElement): string {
 @Common.MangasMultiPageCSS(path, queryMangas)
 @Common.ChaptersSinglePageCSS(queryChapter)
 @Common.ImageAjax(true)
-export default class extends DecoratableMangaScraper {
+export class MojoPortalComic extends DecoratableMangaScraper {
     protected pagesExcludePatterns: RegExp[] = [];
     protected queryPages = queryPages;
     protected queryChapter = queryChapter;
     protected pageExtractor = PageExtractor;
-
-    public constructor(id: string, label: string, url: string, tags: Tag[]) {
-        super(id, label, url, ...tags);
-    }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, this.queryPages, this.pageExtractor);
