@@ -117,17 +117,15 @@ type TDimensions = {
 
 @Common.ChaptersSinglePageCSS('ul[class*=style_episodeListContents__list] li a', ChapterExtractor)
 export class LezhinBase extends DecoratableMangaScraper {
-    private readonly locale: string;
+    protected locale: string;
     private readonly apiUrl = 'https://www.lezhinus.com/lz-api/v2/';
     private cdnURI: string;
     private token?: string;
-    private languagePath: string;
+    protected languagePath: string;
 
-    public constructor(identifier: string, name: string, url: string, locale: string, languagePath: string, tags: Tag[]) {
+    public constructor(identifier: string, name: string, url: string, tags: Tag[]) {
         super(identifier, name, url, ...tags);
-        this.locale = locale;
         this.token = undefined;
-        this.languagePath = languagePath;
 
         this.Settings.username = new Text('username', W.Plugin_Lezhin_Settings_Username, W.Plugin_Lezhin_Settings_UsernameInfo, '');
         this.Settings.password = new Secret('password', W.Plugin_Lezhin_Settings_Password, W.Plugin_Lezhin_Settings_PasswordInfo, '');
@@ -319,7 +317,7 @@ export class LezhinBase extends DecoratableMangaScraper {
             'x-lz-locale': this.locale,
             ...additionalHeaders,
         };
-        if (this.token) headers['authorization'] = ' Bearer ' + this.token;
+        if (this.token) headers['authorization'] = ` Bearer ${this.token}`;
         return new Request(url, {
             method: 'GET',
             headers: headers

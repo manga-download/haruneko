@@ -3,6 +3,8 @@ import { LezhinBase } from './templates/LezhinBase';
 
 export default class LezhinEN extends LezhinBase {
     public constructor() {
-        super('lezhin-ko', 'Lezhin (Korean)', 'https://www.lezhin.com', 'ko-KR', 'ko', [Tags.Media.Manga, Tags.Language.Korean, Tags.Source.Official]);
+        super('lezhin-ko', 'Lezhin (Korean)', 'https://www.lezhin.com', [Tags.Media.Manga, Tags.Language.Korean, Tags.Source.Official]);
+        this.locale = 'ko-KR';
+        this.languagePath = 'ko';
     }
 }
