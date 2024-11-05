@@ -40,7 +40,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a', 1, 1, 0, MangaExtractor)
 export default class extends LineWebtoonBase {
     public constructor() {
-        super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com', [Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official]);
+        super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
         this.languageRegexp = /language=(\w{3})/;
         this.mangaRegexp = /\/webtoonVersion\?webtoonNo=\d+&language=[^/]+&teamVersion=\d+$/;
         this.pageScript = pageScript;

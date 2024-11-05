@@ -137,10 +137,6 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     protected queryChapters = 'div.detail_body div.detail_lst ul li > a';
     protected pageScript = defaultPageScript;
 
-    public constructor(id: string, label: string, url: string, tags: Tag[]) {
-        super(id, label, url, ...tags);
-    }
-
     public override ValidateMangaURL(url: string): boolean {
         return this.mangaRegexp.test(url) && url.startsWith(this.URI.origin);
     }
