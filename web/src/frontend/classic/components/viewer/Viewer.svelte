@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Loading } from 'carbon-components-svelte';
+    import { InlineNotification, Loading } from 'carbon-components-svelte';
     import type { MediaContainer, MediaItem } from '../../../../engine/providers/MediaPlugin';
     import ImageViewer from './ImageViewer.svelte';
     import VideoViewer from './VideoViewer.svelte';
@@ -19,6 +19,9 @@
     $: refresh(item);
     async function refresh(item: MediaContainer<MediaItem>) {
         updating = item.Update();
+        updating.catch(() => {
+            displayedItem=undefined;
+        });
         await updating;
         displayedItem = item;
     }
@@ -46,7 +49,11 @@
             <div class="center">... items</div>
         </div>
     {:catch error}
-        <p class="info error">Unable to load item : {error.detail}</p>
+        <InlineNotification
+        title="Error:"
+        subtitle="Unable to load item : {error.message}"
+        class="info error"
+        />
     {/await}
     {#if displayedItem}
         {#key displayedItem}
