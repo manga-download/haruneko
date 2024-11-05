@@ -29,6 +29,13 @@ const VersionUpgrades = [
     function V5(db: IDBDatabase) {
         db.createObjectStore(Store.Itemflags);
     },
+    // V5 => V6
+    /*
+    function V6(db: IDBDatabase) {
+        console.log('Migrate Bookmarks to Annotations ...');
+        //db.deleteObjectStore(Store.Bookmarks);
+    }
+    */
 ];
 
 const Version = VersionUpgrades.length;
