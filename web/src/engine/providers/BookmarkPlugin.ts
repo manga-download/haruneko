@@ -27,6 +27,7 @@ const defaultBookmarkFileType: FilePickerAcceptType = {
     }
 };
 
+// TODO: Rewrite business logic to work with annotations?
 export class BookmarkPlugin extends MediaContainer<Bookmark> {
 
     constructor(private readonly storage: StorageController, private readonly plugins: PluginController, private readonly fileIO: InteractiveFileContentProvider) {

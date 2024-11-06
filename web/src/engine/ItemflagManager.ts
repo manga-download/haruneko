@@ -18,6 +18,7 @@ export type EntryFlagEventData = {
     readonly Kind?: FlagType;
 };
 
+// TODO: Rewrite business logic to work with annotations, or remove this completely and replace with annotation manager?
 // TODO: Revise how flags can be handled in a more effcient/optimized and reactive way
 // See: Proposalfor managing generic annotation data => https://github.com/manga-download/haruneko/tree/decouple-bookmarks-itemflags-dependency
 export class ItemflagManager {

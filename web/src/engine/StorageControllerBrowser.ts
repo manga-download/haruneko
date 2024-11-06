@@ -8,6 +8,11 @@ const enum InternalStore {
 
 type UnitedStore = Store | InternalStore;
 
+export const enum ObsoleteStore {
+    Bookmarks = 'Bookmarks',
+    Itemflags = 'Itemflags',
+}
+
 const VersionUpgrades = [
     // V0 => V1
     function V1(db: IDBDatabase) {
@@ -15,7 +20,7 @@ const VersionUpgrades = [
     },
     // V1 => V2
     function V2(db: IDBDatabase) {
-        db.createObjectStore(Store.Bookmarks);
+        db.createObjectStore(ObsoleteStore.Bookmarks);
     },
     // V2 => V3
     function V3(db: IDBDatabase) {
@@ -27,13 +32,15 @@ const VersionUpgrades = [
     },
     // V4 => V5
     function V5(db: IDBDatabase) {
-        db.createObjectStore(Store.Itemflags);
+        db.createObjectStore(ObsoleteStore.Itemflags);
     },
     // V5 => V6
     /*
     function V6(db: IDBDatabase) {
+        db.createObjectStore(Store.Annotations);
         console.log('Migrate Bookmarks to Annotations ...');
-        //db.deleteObjectStore(Store.Bookmarks);
+        //db.deleteObjectStore(ObsoleteStore.Bookmarks);
+        //db.deleteObjectStore(ObsoleteStore.Itemflags);
     }
     */
 ];
