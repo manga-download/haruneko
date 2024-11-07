@@ -9,7 +9,14 @@ const scriptPages = `
             const dir = $('#load_dir').val();
             const id = $('#load_id').val();
             const images = Object.values(g_th).map((item, index) => {
-                const file = (index + 1) + (item.startsWith('j') ? '.jpg' : '.png');
+                let extension = '.jpg';
+                switch (item[0]) {
+                    case 'p': extension = '.png'; break;
+                    case 'b': extension = '.bmp'; break;
+                    case 'g': extension = '.gif'; break;
+                    case 'w': extension = '.webp'; break;
+                }
+                const file = (index + 1) + extension;
                 return [ 'https://i.hentaifox.com', dir, id, file ].join('/');
             });
             resolve(images);
@@ -19,7 +26,7 @@ const scriptPages = `
     });
 `;
 
-@Common.MangaCSS(/^{origin}\//, 'div.gallery_right div.info h1')
+@Common.MangaCSS(/^{origin}\/gallery\/\d+\/$/, 'div.gallery_right div.info h1')
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageJS(scriptPages, 3500)
