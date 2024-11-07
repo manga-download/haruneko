@@ -6,18 +6,18 @@ const config: Config = {
         title: 'Maid Scan'
     },
     container: {
-        url: 'https://maidscans.com/manga/avatar-o-ultimo-mestre-do-ar/',
-        id: JSON.stringify({ post: '3965', slug: '/manga/avatar-o-ultimo-mestre-do-ar/'}),
-        title: 'Avatar: O Último Mestre do Ar'
+        url: 'https://empreguetes.site/manga/deus-tigre-de-jangsan/',
+        id: JSON.stringify({ post: '1243', slug: '/manga/deus-tigre-de-jangsan/'}),
+        title: 'Deus tigre de Jangsan'
     },
     child: {
-        id: '/manga/avatar-o-ultimo-mestre-do-ar/capitulo-03/',
-        title: 'Capítulo 03'
+        id: '/manga/deus-tigre-de-jangsan/capitulo-37/',
+        title: 'Capítulo 37'
     },
     entry: {
         index: 0,
-        size: 660_000,
-        type: 'image/jpeg'
+        size: 507_912,
+        type: 'image/webp'
     }
 };
 
