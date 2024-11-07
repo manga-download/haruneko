@@ -58,9 +58,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const [data] = await FetchCSS(new Request(url), 'h1.title');
-        const id: string = url.match(/(\d+)\/$/)[1];
-        const title = data.textContent.trim();
-        return new Manga(this, provider, id, title);
+        return new Manga(this, provider, url.match(/(\d+)\/$/)[1], data.textContent.trim());
     }
     public override ValidateMangaURL(url: string): boolean {
         return new RegExp(`^${this.URI.origin}/[^/]+/$`).test(url);
@@ -74,8 +72,8 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = this.CreateCustomerURI('/getComicInfoBody/');
         uri.searchParams.set('comic_id', manga.Identifier);
-        const { data } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
-        return data.comic_chapter.map(chapter => new Chapter(this, manga, chapter.chapter_newid, chapter.chapter_name.trim()));
+        const { data: { comic_chapter } } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
+        return comic_chapter.map(chapter => new Chapter(this, manga, chapter.chapter_newid, chapter.chapter_name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -89,8 +87,8 @@ export default class extends DecoratableMangaScraper {
             isWebp: this.Settings.format.Value as string,
             quality: this.Settings.quality.Value as string
         }).toString();
-        const { data } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
-        return data.current_chapter.chapter_img_list.map(page => new Page(this, chapter, new URL(page)));
+        const { data: { current_chapter: { chapter_img_list } } } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
+        return chapter_img_list.map(page => new Page(this, chapter, new URL(page)));
     }
 
     private CreateCustomerURI(endpoint: string) {
