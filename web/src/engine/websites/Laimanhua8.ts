@@ -18,7 +18,7 @@ const pageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('laimanhua8', 'Laimanhua8', 'https://www.laimanhua8.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
+        super('laimanhua8', 'Laimanhua8', 'https://www.laimanhua88.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
