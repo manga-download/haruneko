@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './NicoNicoSeiga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type APIManga = {
@@ -10,12 +10,14 @@ type APIManga = {
     title: string
 }
 
-type APIChapters = APIResult<{
+type APIMedia = {
     id: number,
     meta: {
         title: string
     }
-}[]>;
+}
+
+type APIChapters = APIResult<APIMedia[]>;
 
 type APIPages = APIResult<{
     meta: {
@@ -33,12 +35,16 @@ type APIResult<T> = {
     }
 }
 
+type PageData = {
+    drm_hash: string
+}
+
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.nicomanga.jp/api/v1/app/manga/';
 
     public constructor() {
-        super('niconicoseiga', `ニコニコ静画 (niconico seiga)`, 'https://sp.manga.nicovideo.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('niconicoseiga', `ニコニコ静画 (niconico seiga)`, 'https://manga.nicovideo.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
@@ -46,12 +52,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/comic/\\d+$`).test(url);
+        return new RegExpSafe(`^https://(sp.)?manga.nicovideo.jp/comic/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const title = (await FetchCSS<HTMLHeadingElement>(new Request(url), 'main h1')).at(0).textContent.trim();
-        return new Manga(this, provider, url.split('/').at(-1), title);
+        const { data: { result: { id, meta: { title } } } } = await FetchJSON<APIResult<APIMedia>>(new Request(new URL(`contents/${url.split('/').at(-1)}`, this.apiUrl)));
+        return new Manga(this, provider, id.toString(), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -73,16 +79,15 @@ export default class extends DecoratableMangaScraper {
         return meta.status === 200 ? result.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.meta.title.trim())) : [];
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
         const { meta, data: { result } } = await FetchJSON<APIPages>(new Request(new URL(`episodes/${chapter.Identifier}/frames`, this.apiUrl)));
-        return meta.status === 200 ? result.map(page => new Page(this, chapter, new URL(page.meta.source_url), { drm_hash: page.meta.drm_hash })) : [];
+        return meta.status === 200 ? result.map(page => new Page<PageData>(this, chapter, new URL(page.meta.source_url), { drm_hash: page.meta.drm_hash })) : [];
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
         const encrypted = await data.arrayBuffer();
-        const key = page.Parameters['drm_hash'] as string;
-        const decrypted = this.Decrypt(new Uint8Array(encrypted), key);
+        const decrypted = this.Decrypt(new Uint8Array(encrypted), page.Parameters.drm_hash);
         return Common.GetTypedData(decrypted);
     }
 
