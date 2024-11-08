@@ -17,8 +17,6 @@ type APIMedia = {
     }
 }
 
-type APIChapters = APIResult<APIMedia[]>;
-
 type APIPages = APIResult<{
     meta: {
         source_url: string,
@@ -75,7 +73,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { meta, data: { result } } = await FetchJSON<APIChapters>(new Request(new URL(`contents/${manga.Identifier}/episodes`, this.apiUrl)));
+        const { meta, data: { result } } = await FetchJSON<APIResult<APIMedia[]>>(new Request(new URL(`contents/${manga.Identifier}/episodes`, this.apiUrl)));
         return meta.status === 200 ? result.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.meta.title.trim())) : [];
     }
 
