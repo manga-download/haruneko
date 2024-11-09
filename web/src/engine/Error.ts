@@ -14,7 +14,11 @@ export class InternalError extends Error {
 /**
  * An error indicating that a certain programming logic is intentionally missing.
  */
-export /* sealed */ class NotImplementedError extends InternalError {}
+export /* sealed */ class NotImplementedError extends InternalError {
+    public override get name(): string {
+        return "NotImplementedError";
+    }
+}
 
 /**
  * An exception should be raised when a problem appears during runtime and should be properly handled at some point.
