@@ -5,7 +5,7 @@ import { Check, Choice} from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
 import { CreateCountStore, CreateSettingStore, CreateExistingSettingStore } from './storesHelpers';
 
-const scope = 'frontend.classic';
+export const Scope = 'frontend.classic';
 
 /**
  * Pre-defined identifiers which are used as values for persistant storage,
@@ -38,7 +38,7 @@ export const enum Key {
 }
 
 export async function Initialize(): Promise<void> {
-    const settings = HakuNeko.SettingsManager.OpenScope(scope);
+    const settings = HakuNeko.SettingsManager.OpenScope(Scope);
     await settings.Initialize(Theme.setting, ContentPanel.setting, ViewerMode.setting, ViewerReverseDirection.setting, ViewerDoublePage.setting);
     HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => Locale.set(GetLocale()));
 }
