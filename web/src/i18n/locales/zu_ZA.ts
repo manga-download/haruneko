@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: "crwdns1275:0crwdne1275:0",
   Frontend_Classic_Sidenav_Settings_Interface: "crwdns1277:0crwdne1277:0",
   Frontend_Classic_Sidenav_Settings_Trackers: "crwdns1279:0crwdne1279:0",
-  Frontend_Classic_Sidenav_Settings_Network: "crwdns1281:0crwdne1281:0",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: "crwdns1283:0crwdne1283:0",
   Frontend_FluentCore_Description: "crwdns1285:0crwdne1285:0",
