@@ -2,8 +2,10 @@ import { Tags } from '../../Tags';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
-import type { Priority } from '../../taskpool/DeferredTask';
+import { Priority } from '../../taskpool/DeferredTask';
 import DeScramble from '../../transformers/ImageDescrambler';
+import { TaskPool } from '../../taskpool/TaskPool';
+import { RateLimit } from '../../taskpool/RateLimit';
 
 const defaultPageScript = `
     new Promise(async (resolve, reject) => {
@@ -136,13 +138,14 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     protected mangaLabelExtractor = Common.ElementLabelExtractor();
     protected queryChapters = 'div.detail_body div.detail_lst ul li > a';
     protected pageScript = defaultPageScript;
+    private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
 
     public override ValidateMangaURL(url: string): boolean {
         return this.mangaRegexp.test(url) && url.startsWith(this.URI.origin);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const manga = await Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, this.mangaLabelExtractor, true, false);
+        const manga = await this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, this.mangaLabelExtractor, true, false), Priority.Normal);
         try {
             const languageCode = url.match(this.languageRegexp)[1];
             manga.Tags.Value.concat([mangasLanguageMap[languageCode]]);
@@ -160,7 +163,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     }
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}&page=${page}`, this.URI)), this.queryChapters);
+        const data = await this.interactionTaskPool.Add(async () => FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}&page=${page}`, this.URI)), this.queryChapters), Priority.Normal);
         return data.map(element => {
             const { id, title } = ChapterExtractor.call(this, element);
             return new Chapter(this, manga, id, title);
@@ -168,7 +171,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), this.pageScript, 1500);
+        const data = await this.interactionTaskPool.Add(async () => FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), this.pageScript, 1500), Priority.Normal);
         if (!Array.isArray(data)) return [];
         return typeof data[0] === 'string' ? (data as Array<string>).map(page => {
             const pageUrl = new URL(page);
@@ -182,7 +185,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        if (!page.Parameters?.layers) return await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        if (!page.Parameters?.layers) return await this.interactionTaskPool.Add(async () => Common.FetchImageAjax.call(this, page, priority, signal, true), Priority.Normal);
         const payload = page.Parameters;
         return this.imageTaskPool.Add(async () => {
             return DeScramble(new ImageData(payload.width, payload.height,), async (_, ctx) => {
