@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: "Genel",
   Frontend_Classic_Sidenav_Settings_Interface: "Arayüz",
   Frontend_Classic_Sidenav_Settings_Trackers: "İzleyiciler",
-  Frontend_Classic_Sidenav_Settings_Network: "Ağ",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: 'Fluent Core',
   Frontend_FluentCore_Description: "Geliştiricilerin temel işlevleri hızlı bir şekilde doğrulamaları için gösterişsiz ve basit bir arayüz",

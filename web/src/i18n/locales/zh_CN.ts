@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: "概述",
   Frontend_Classic_Sidenav_Settings_Interface: "接口",
   Frontend_Classic_Sidenav_Settings_Trackers: "追踪器",
-  Frontend_Classic_Sidenav_Settings_Network: "网络",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: "流核线",
   Frontend_FluentCore_Description: "一个简单的前端，没有铃声和告密，尤其是为开发人员快速验证基本功能",

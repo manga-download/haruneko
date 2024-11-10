@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: "عام",
   Frontend_Classic_Sidenav_Settings_Interface: "الواجهة",
   Frontend_Classic_Sidenav_Settings_Trackers: "المتتبعون",
-  Frontend_Classic_Sidenav_Settings_Network: "الشبكة",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: "نواة فلورية",
   Frontend_FluentCore_Description: "واجهة بسيطة بدون أجراس أو مصفوفات، خاصة للمطورين للتحقق بسرعة من الوظائف الأساسية",
