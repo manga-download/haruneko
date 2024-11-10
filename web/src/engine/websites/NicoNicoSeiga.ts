@@ -20,7 +20,7 @@ type APIMedia = {
 type APIPages = APIResult<{
     meta: {
         source_url: string,
-        drm_hash: string
+        drm_hash: string | null
     }
 }[]>
 
@@ -69,12 +69,12 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const data = await FetchJSON<APIManga[] | null>(new Request(new URL(`/manga/ajax/ranking?span=hourly&category=all&page=${page}`, this.URI)));
-        return (Array.isArray(data) ? data : []).map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
+        return (Array.isArray(data) ? data : []).map(manga => new Manga(this, provider, manga.id.toString(), manga.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { meta, data: { result } } = await FetchJSON<APIResult<APIMedia[]>>(new Request(new URL(`contents/${manga.Identifier}/episodes`, this.apiUrl)));
-        return meta.status === 200 ? result.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.meta.title.trim())) : [];
+        return meta.status === 200 ? result.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.meta.title.replace(manga.Title, '') ?? chapter.meta.title )) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
@@ -84,16 +84,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const encrypted = await data.arrayBuffer();
-        const decrypted = this.Decrypt(new Uint8Array(encrypted), page.Parameters.drm_hash);
-        return Common.GetTypedData(decrypted);
+        return !page.Parameters.drm_hash ? data : this.DecryptImage(data, page.Parameters.drm_hash);
     }
 
-    private Decrypt(buffer: Uint8Array, key: string): Uint8Array {
+    private async DecryptImage(blob: Blob, key: string): Promise<Blob> {
+        const buffer = new Uint8Array(await blob.arrayBuffer());
         const xorkey = new Uint8Array(key.slice(0, 16).match(/.{1,2}/g).map(e => parseInt(e, 16)));
-        const result = new Uint8Array(buffer);
         for (let n = 0; n < buffer.length; n++)
-            result[n] = result[n] ^ xorkey[n % 8];
-        return result;
+            buffer[n] = buffer[n] ^ xorkey[n % 8];
+        return Common.GetTypedData(buffer);
     }
 }
