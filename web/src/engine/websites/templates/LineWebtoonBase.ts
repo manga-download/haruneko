@@ -56,50 +56,50 @@ const defaultPageScript = `
     });
 `;
 
-const mangasLanguageMap = {
-    zh: Tags.Language.Chinese,
-    en: Tags.Language.English,
-    fr: Tags.Language.French,
-    de: Tags.Language.German,
-    id: Tags.Language.Indonesian,
-    it: Tags.Language.Italian,
-    ja: Tags.Language.Japanese,
-    ko: Tags.Language.Korean,
-    es: Tags.Language.Spanish,
-    th: Tags.Language.Thai,
-    tr: Tags.Language.Turkish,
+const mangasLanguageMap = new Map([
+    ['zh', Tags.Language.Chinese],
+    ['en', Tags.Language.English],
+    ['fr', Tags.Language.French],
+    ['de', Tags.Language.German],
+    ['id', Tags.Language.Indonesian],
+    ['it', Tags.Language.Italian],
+    ['ja', Tags.Language.Japanese],
+    ['ko', Tags.Language.Korean],
+    ['es', Tags.Language.Spanish],
+    ['th', Tags.Language.Thai],
+    ['tr', Tags.Language.Turkish],
 
-    ARA: Tags.Language.Arabic,
-    //BEN: Bengali,
-    //BUL: Bulgarian,
-    CMN: Tags.Language.Chinese,
-    CMT: Tags.Language.Chinese,
-    //CES: Czech,
-    //DAN: Danish,
-    //NLD: Dutch,
-    ENG: Tags.Language.English,
-    //FIL: Filipino,
-    DEU: Tags.Language.German,
-    //GRE: Greek,
-    //HIN: Hindi,
-    IND: Tags.Language.Indonesian,
-    ITA: Tags.Language.Italian,
-    JPN: Tags.Language.Japanese,
-    //LIT: Lithuanian,
-    //MAY: Malay,
-    //MON: Mongolian,
-    //PER: Persian,
-    POL: Tags.Language.Polish,
-    POR: Tags.Language.Portuguese,
-    POT: Tags.Language.Portuguese,
-    //RON: Romanian,
-    RUS: Tags.Language.Russian,
-    //SWE: Swedish,
-    THA: Tags.Language.Thai,
-    TUR: Tags.Language.Turkish,
-    //UKR: Ukrainian,
-    VIE: Tags.Language.Vietnamese,
-};
+    ['ARA', Tags.Language.Arabic],
+    //BEN, Bengali,
+    //BUL, Bulgarian,
+    ['CMN', Tags.Language.Chinese],
+    ['CMT', Tags.Language.Chinese],
+    //CES, Czech],
+    //DAN, Danish],
+    //NLD, Dutch],
+    ['ENG', Tags.Language.English],
+    //FIL, Filipino],
+    ['DEU', Tags.Language.German],
+    //GRE, Greek],
+    //HIN, Hindi],
+    ['IND', Tags.Language.Indonesian],
+    ['ITA', Tags.Language.Italian],
+    ['JPN', Tags.Language.Japanese],
+    //LIT, Lithuanian,
+    //MAY, Malay,
+    //MON, Mongolian,
+    //PER, Persian,
+    ['POL', Tags.Language.Polish],
+    ['POR', Tags.Language.Portuguese],
+    ['POT', Tags.Language.Portuguese],
+    //RON, Romanian,
+    ['RUS', Tags.Language.Russian],
+    //SWE, Swedish,
+    ['THA', Tags.Language.Thai],
+    ['TUR', Tags.Language.Turkish],
+    //UKR, Ukrainian,
+    ['VIE', Tags.Language.Vietnamese],
+]);
 
 type PageData = {
     width: number,
@@ -146,10 +146,8 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const manga = await this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, this.mangaLabelExtractor, true, false), Priority.Normal);
-        try {
-            const languageCode = url.match(this.languageRegexp)[1];
-            manga.Tags.Value.concat([mangasLanguageMap[languageCode]]);
-        } catch { }
+        const languageCode = url.match(this.languageRegexp)[1];
+        if (mangasLanguageMap.has(languageCode)) manga.Tags.Value.concat([mangasLanguageMap[languageCode]]);
         return manga;
     }
 
