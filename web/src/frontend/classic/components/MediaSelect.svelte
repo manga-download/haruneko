@@ -95,6 +95,7 @@
 
     selectedPlugin.subscribe((newplugin) => {
         const previousPlugin = currentPlugin;
+        loadPlugin = Promise.resolve(newplugin);
         currentPlugin = newplugin;
         pluginDropdownSelected = currentPlugin?.Identifier;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
