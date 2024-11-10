@@ -39,8 +39,6 @@
     import { resizeBar } from '../lib/actions';
     import type { MediaContainer2 } from '../Types';
 
-    let ref:HTMLElement = $state();
-
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild> = $state();
     let loadPlugin: Promise<MediaContainer<MediaChild>> = $state();
@@ -198,7 +196,7 @@
         />
     </div>
 {/if}
-<div id="Media" transition:fade bind:this={ref}>
+<div id="Media" transition:fade>
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
@@ -280,7 +278,7 @@
         role="separator"
         aria-orientation="vertical"
         class="resize"
-        use:resizeBar={{target: ref, orientation:'vertical'}}
+        use:resizeBar={{orientation:'vertical'}}
     > </div>
     
 </div>
