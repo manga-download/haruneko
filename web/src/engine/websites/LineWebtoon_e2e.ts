@@ -36,6 +36,7 @@ const configRegular = {
         url: 'https://www.webtoons.com/en/comedy/do-you-like-tomboys/list?title_no=6595',
         id: '/en/comedy/do-you-like-tomboys/list?title_no=6595',
         title: 'Do You Like Tomboys?',
+        timeout: 15000
     },
     child: {
         id: '/en/comedy/do-you-like-tomboys/episode-1/viewer?title_no=6595&episode_no=1',

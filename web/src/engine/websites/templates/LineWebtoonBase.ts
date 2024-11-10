@@ -146,7 +146,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const manga = await this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, this.mangaLabelExtractor, true, false), Priority.Normal);
-        const languageCode = url.match(this.languageRegexp)[1];
+        const languageCode = this.languageRegexp ? url.match(this.languageRegexp)[1]: '';
         if (mangasLanguageMap.has(languageCode)) manga.Tags.Value.concat([mangasLanguageMap[languageCode]]);
         return manga;
     }
