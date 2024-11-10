@@ -6,9 +6,9 @@ const config = {
         title: 'MMFenix'
     },
     container: {
-        url: 'https://mmfenix.com/manga/el-renacimiento-del-dios-supremo-del-fisico/',
-        id: JSON.stringify({ post: '1861', slug: '/manga/el-renacimiento-del-dios-supremo-del-fisico/' }),
-        title: 'El Renacimiento Del Dios Supremo Del Físico'
+        url: 'https://mmdaos.com/manga/el-renacimiento-del-dios-supremo-del-fisico/',
+        id: JSON.stringify({ post: '1863', slug: '/manga/el-renacimiento-del-dios-supremo-del-fisico/' }),
+        title: 'El renacimiento del dios supremo del fisico'
     },
     child: {
         id: '/manga/el-renacimiento-del-dios-supremo-del-fisico/capitulo-500/',
