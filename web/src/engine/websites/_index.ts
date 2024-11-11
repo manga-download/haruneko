@@ -195,6 +195,7 @@ export { default as HniScanTrad } from './HniScanTrad';
 export { default as HoiFansub } from './HoiFansub';
 export { default as HorrorFC } from './HorrorFC';
 export { default as HqNow } from './HqNow';
+export { default as HunterScan } from './HunterScan';
 export { default as HwagoID } from './HwagoID';
 export { default as IchijinPlus } from './IchijinPlus';
 export { default as Ikanmh } from './Ikanmh';
