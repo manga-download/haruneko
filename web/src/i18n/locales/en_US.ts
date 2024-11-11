@@ -82,7 +82,6 @@ const translations: VariantResource = {
   Frontend_Classic_Sidenav_Settings_General: 'General',
   Frontend_Classic_Sidenav_Settings_Interface: 'Interface',
   Frontend_Classic_Sidenav_Settings_Trackers: 'Trackers',
-  Frontend_Classic_Sidenav_Settings_Network: 'Network',
 
   // [SECTION]: Frontend FluentCore
 
