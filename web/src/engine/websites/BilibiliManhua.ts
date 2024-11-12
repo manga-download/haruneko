@@ -191,7 +191,7 @@ export default class extends DecoratableMangaScraper {
 
         const cryptoKey = await crypto.subtle.importKey('raw', key, {
             name: cryptoParameters.al,
-        }, true, ['encrypt', 'decrypt']);
+        }, true, ['decrypt']);
 
         const decrypted = new Uint8Array(await crypto.subtle.decrypt({
             name: cryptoParameters.al,
