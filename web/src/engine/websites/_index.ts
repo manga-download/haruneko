@@ -204,6 +204,7 @@ export { default as Ikiru } from './Ikiru';
 export { default as IllusionScan } from './IllusionScan';
 export { default as Imgur } from './Imgur';
 export { default as IMHentai } from './IMHentai';
+export { default as ImperioDaBritannia } from './ImperioDaBritannia';
 export { default as InfraFandub } from './InfraFandub';
 export { default as InManga } from './InManga';
 export { default as InmortalScan } from './InmortalScan';
