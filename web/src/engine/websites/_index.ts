@@ -526,6 +526,7 @@ export { default as RavensScansES } from './RavensScansES';
 export { default as RawDevart } from './RawDevart';
 export { default as Rawkuma } from './Rawkuma';
 export { default as RawLazy } from './RawLazy';
+export { default as RawMangaSU } from './RawMangaSU';
 export { default as RawMangatop } from './RawMangatop';
 export { default as RawOtaku } from './RawOtaku';
 export { default as RawSenManga } from './RawSenManga';
