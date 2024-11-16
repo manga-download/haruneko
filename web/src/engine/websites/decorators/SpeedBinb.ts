@@ -97,7 +97,7 @@ const JsonFetchScript = `
         }
     });
 `;
-export enum SpeedBinbVersion { v016113 = 1, v016201, v016452, v016130, _default_v016061, vUnknown }
+//export enum SpeedBinbVersion { v016113 = 1, v016201, v016452, v016130, _default_v016061, vUnknown }
 
 function getSanitizedURL(base: string, append: string): URL {
     const baseURI = new URL(append, base + '/');
