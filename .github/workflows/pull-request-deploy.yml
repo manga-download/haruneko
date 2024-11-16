@@ -42,5 +42,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '# Preview Deployment\nRun the command below to preview this PR directly in HaruNeko\n```sh\nhakuneko --origin=${{ steps.deploy.outputs.deployment-url }}\n```'
+              body: '## 🚀 Preview Deployment\nRun the command below to preview this pull-request directly in HaruNeko\n```sh\nhakuneko.exe --origin=${{ steps.deploy.outputs.deployment-url }}\n```'
             })
