@@ -32,7 +32,7 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy ./web/build --project-name=haruneko
+          command: pages deploy ./web/build --project-name=haruneko --commit-dirty=true
       - name: Comment Deployment
         uses: actions/github-script@v7
         with:
