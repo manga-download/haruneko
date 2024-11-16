@@ -6,17 +6,17 @@ const config: Config = {
         title: 'Sany'
     },
     container: {
-        url: 'https://boylovewithsany.com/manga/rung-minh-chua-chat-ngot-ngao/',
-        id: '/manga/rung-minh-chua-chat-ngot-ngao/',
-        title: 'Rùng mình!? Chua chát, ngọt ngào!',
+        url: 'https://boylovewithsany.xyz/manga/khong-khoang-cach/',
+        id: '/manga/khong-khoang-cach/',
+        title: 'Không Khoảng Cách',
     },
     child: {
-        id: '/rung-minh-chua-chat-ngot-ngao-chap-1-h/',
-        title: 'chap 1 (H)'
+        id: '/khong-khoang-cach-chap-21/',
+        title: 'Chap 21'
     },
     entry: {
-        index: 0,
-        size: 286_708,
+        index: 1,
+        size: 746_834,
         type: 'image/jpeg'
     }
 };

@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Team X'
     },
     container: {
-        url: 'https://teamoney.site/series/villain-is-here',
+        url: 'https://olympustaff.com/series/villain-is-here',
         id: '/series/villain-is-here',
         title: 'Villain Is Here'
     },

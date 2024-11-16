@@ -6,7 +6,7 @@ const config: Config = {
         title: 'KomikIndoId'
     },
     container: {
-        url: 'https://komikindo.my/komik/50kg-cinderella/',
+        url: 'https://komikindo.dev/komik/50kg-cinderella/',
         id: '/komik/50kg-cinderella/',
         title: '-50kg Cinderella'
     },
