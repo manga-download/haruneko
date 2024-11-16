@@ -2,7 +2,7 @@ name: Pull Request (Deployment)
 
 on:
   pull_request:
-    types: [ labeled ]
+    types: [ synchronize, labeled ]
 
 permissions:
   contents: read
@@ -27,10 +27,9 @@ jobs:
       - name: Build Web-Application
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
-        uses: cloudflare/pages-action@v1
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
         with:
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          projectName: haruneko
-          directory: ./web/build
+          command: pages deploy ./web/build --project-name=haruneko
