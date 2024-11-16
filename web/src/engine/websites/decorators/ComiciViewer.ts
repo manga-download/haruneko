@@ -140,17 +140,17 @@ export function PagesSinglePageAJAX() {
 
 async function FetchCoordInfo(this: MangaScraper, viewerId: string, userId : string, chapter : Chapter): Promise<APIResult<APIPage[]>> {
     //first request get page count
-    const { totalPages } = await FetchJSON<APIResult<APIPage[]>>(CreateRequest.call(this, '1', viewerId, userId, chapter));
+    const { totalPages } = await FetchJSON<APIResult<APIPage[]>>(CreateChapterRequest.call(this, '1', viewerId, userId, chapter));
 
     //second request fetch actual pages data
-    return FetchJSON<APIResult<APIPage[]>>(CreateRequest.call(this, totalPages.toString(), viewerId, userId, chapter));
+    return FetchJSON<APIResult<APIPage[]>>(CreateChapterRequest.call(this, totalPages.toString(), viewerId, userId, chapter));
 }
 
-function CreateRequest(this: MangaScraper, pageTo: string, viewerId: string, userId: string, chapter): Request {
+function CreateChapterRequest(this: MangaScraper, pageTo: string, viewerId: string, userId: string, chapter: Chapter): Request {
     return new Request(new URL(`/book/contentsInfo?comici-viewer-id=${viewerId}&user-id=${userId}&page-from=0&page-to=${pageTo}`, this.URI), {
         headers: {
             Origin: this.URI.origin,
-            Referer: new URL(chapter.id, this.URI).href
+            Referer: new URL(chapter.Identifier, this.URI).href
         }
     });
 }
