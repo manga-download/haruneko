@@ -5,8 +5,7 @@ on:
     types: [ synchronize, labeled ]
 
 permissions:
-  contents: read
-  issues: write
+  contents: write
 
 jobs:
   pull-request-deploy:
