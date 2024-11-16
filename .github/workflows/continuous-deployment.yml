@@ -22,7 +22,7 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Install NPM Packages
         run: npm install
       - name: Code Inspection
@@ -32,20 +32,16 @@ jobs:
       - name: Build Web-Application
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          projectName: haruneko
-          directory: ./web/build
+          command: pages deploy ./web/build --project-name=haruneko
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          projectName: haruneko-docs
-          directory: ./docs/.vitepress/dist
+          command: pages deploy ./docs/.vitepress/dist --project-name=haruneko-docs
