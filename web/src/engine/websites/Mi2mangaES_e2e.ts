@@ -6,7 +6,7 @@ const config = {
         title: 'Mi2mangaES'
     },
     container: {
-        url: 'https://mi2manga.lat/manga/la-tirana-quiere-vivir-honestamente/',
+        url: 'https://es.mi2manga.com/manga/la-tirana-quiere-vivir-honestamente/',
         id: JSON.stringify({ slug: '/manga/la-tirana-quiere-vivir-honestamente/' }),
         title: 'La Tirana Quiere Vivir Honestamente'
     },
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 2,
-        size: 456_838,
+        size: 491_456,
         type: 'image/jpeg'
     }
 };

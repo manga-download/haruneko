@@ -6,7 +6,7 @@ const config = {
         title: 'UmeTruyen'
     },
     container: {
-        url: 'https://umetruyenhay.net/truyen-vet-do.html',
+        url: 'https://umetruyenhay.com/truyen-vet-do.html',
         id: '/truyen-vet-do.html',
         title: 'Vết Đỏ'
     },

@@ -3,7 +3,6 @@ import * as Common from '../decorators/Common';
 import { FetchJSON } from '../../platform/FetchProvider';
 import { Exception } from '../../Error';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
-import type { Tag } from '../../Tags';
 
 export type APIResult<T> = {
     result: string,
@@ -52,16 +51,12 @@ export class DelitoonBase extends DecoratableMangaScraper {
     protected readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
     protected BalconyID: string = 'DELITOON_COM';
 
-    public constructor(id: string, label: string, url: string, tags: Tag[]) {
-        super(id, label, url, ...tags);
-    }
-
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/detail/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaid = new URL(url).href.match(/\/detail\/([^/]+)/)[1];
+        const mangaid = new URL(url).pathname.split('/').at(-1);
         const endpointUrl = new URL(`contents/${mangaid}`, this.apiUrl);
         endpointUrl.searchParams.set('isNotLoginAdult', 'true');
         const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(endpointUrl));

@@ -50,7 +50,7 @@
         </div>
     {:catch error}
         <InlineNotification
-        title="Error:"
+        title="{error.name}"
         subtitle="Unable to load item : {error.message}"
         class="info error"
         />
