@@ -43,4 +43,4 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy ./docs/.vitepress/dist --project-name=haruneko-docs
+          command: pages deploy ./docs/.vitepress/dist --project-name=haruneko-docs --commit-dirty=true
