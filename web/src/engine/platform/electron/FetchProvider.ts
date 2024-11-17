@@ -11,7 +11,8 @@ const fetchApiForbiddenHeaders = [
     'Cookie',
     'Origin',
     'Host',
-    'Sec-Fetch-Dest'
+    'Sec-Fetch-Mode',
+    'Sec-Fetch-Dest',
 ];
 
 function ConcealHeaders(init: HeadersInit): Headers {

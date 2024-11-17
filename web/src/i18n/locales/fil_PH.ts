@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: "Pangkalahatan",
   Frontend_Classic_Sidenav_Settings_Interface: "Interpeys",
   Frontend_Classic_Sidenav_Settings_Trackers: 'Trackers',
-  Frontend_Classic_Sidenav_Settings_Network: 'Network',
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: 'Fluent Core',
   Frontend_FluentCore_Description: 'A simple frontend with no bells and whistles, especially for developers to quickly verify essential functionality',

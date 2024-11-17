@@ -2,14 +2,15 @@ name: Pull Request (Deployment)
 
 on:
   pull_request:
-    types: [ labeled ]
+    types: [ synchronize, labeled ]
 
 permissions:
   contents: read
-  deployments: write
+  pull-requests: write
 
 jobs:
   pull-request-deploy:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'Deploy PR') }}
     name: Publish Web-Application (Preview)
     runs-on: ubuntu-latest
     steps:
@@ -20,17 +21,26 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Install NPM Packages
         run: npm install
       - name: Build Web-Application
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'Deploy PR') }}
-        uses: cloudflare/pages-action@v1
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
         with:
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          projectName: haruneko
-          directory: ./web/build
+          command: pages deploy ./web/build --project-name=haruneko --commit-dirty=true
+      - name: Comment Deployment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## 🔥 Preview Deployment\nRun the command below to preview this pull-request directly in HaruNeko\n```sh\nhakuneko.exe --origin=${{ steps.deploy.outputs.deployment-url }}\n```'
+            })
