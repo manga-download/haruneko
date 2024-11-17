@@ -2,18 +2,17 @@ import { Tags } from '../Tags';
 import icon from './AllHentai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as ReadM from './decorators/ReadMangaLive';
+import * as Grouple from './decorators/Grouple';
 //import { Text } from '../SettingsManager';
 //import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
-//To see pictures we need to be logged
-// TODO: Add a login button? Well login works for now anyway, using the button in fluent core UI
+// TODO: add url setting
 
-@Common.MangaCSS(/^{origin}\/[^/]+$/, ReadM.queryMangaTitle)
-@Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, ReadM.pageMangaOffset, 1000, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageJS(ReadM.chapterScript, 500)
-@ReadM.PagesSinglePageJS()
-@ReadM.ImageAjax()
+@Common.MangaCSS(/^{origin}\/[^/]+$/, Grouple.queryMangaTitle)
+@Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, Grouple.pageMangaOffset, 1000, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)
+@Grouple.PagesSinglePageJS()
+@Grouple.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('allhentai', `AllHentai`, 'https://20.allhen.online', Tags.Language.Russian, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);

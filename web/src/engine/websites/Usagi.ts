@@ -2,13 +2,13 @@ import { Tags } from '../Tags';
 import icon from './Usagi.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as ReadM from './decorators/ReadMangaLive';
+import * as Grouple from './decorators/Grouple';
 
-@Common.MangaCSS(/^{origin}/, ReadM.queryMangaTitle)
-@Common.MangasMultiPageCSS(ReadM.pathMangas, ReadM.queryMangas, 0, 50, 0)
-@Common.ChaptersSinglePageJS(ReadM.chapterScript, 500)
-@ReadM.PagesSinglePageJS()
-@ReadM.ImageAjax()
+@Common.MangaCSS(/^{origin}/, Grouple.queryMangaTitle)
+@Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, 50, 0)
+@Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)
+@Grouple.PagesSinglePageJS()
+@Grouple.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
