@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer-core';
-import { AppURL, AppSelector } from './PuppeteerGlobal';
+import { AppURL } from './PuppeteerGlobal';
 
 export class PuppeteerFixture {
 
@@ -21,6 +21,6 @@ export class PuppeteerFixture {
     }
 
     protected EvaluateHandle: typeof puppeteer.Page.prototype.evaluateHandle = async (pageFunction, ...args) => {
-        return (await PuppeteerFixture.#page).evaluateHandle(pageFunction, ...args);
+        return (await PuppeteerFixture.#page)!.evaluateHandle(pageFunction, ...args);
     }
 }

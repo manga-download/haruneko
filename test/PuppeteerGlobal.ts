@@ -3,6 +3,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { exec, spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
+import { SetupBlinkEvasions } from './AutomationEvasions';
 
 export const AppURL = 'http://localhost:5000/';
 export const AppSelector = 'body #app main#hakunekoapp';
@@ -72,6 +73,7 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
+    SetupBlinkEvasions(browser);
 
     const start = Date.now();
     while(Date.now() - start < 7500) {
