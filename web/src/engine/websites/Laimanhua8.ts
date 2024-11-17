@@ -3,18 +3,12 @@ import icon from './Laimanhua8.webp';
 import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-const pageScript = `
-    new Promise( resolve => {
-        resolve(
-            getUrlpics().map(element => getrealurl(element))
-        );
-    });
-`;
+const pageScript = `getUrlpics().map(segment => getrealurl(segment))`;
 
 @Common.MangaCSS(/^{origin}\/kanmanhua\/[^/]+\/$/, 'div.title h1')
 @Common.ChaptersSinglePageCSS('div.plist ul li a')
 @Common.PagesSinglePageJS(pageScript, 500)
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -33,5 +27,4 @@ export default class extends DecoratableMangaScraper {
         }
         return mangalist.distinct();
     }
-
 }
