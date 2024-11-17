@@ -1,5 +1,6 @@
 import * as puppeteer from 'puppeteer-core';
 import { AppURL } from './PuppeteerGlobal';
+import type { Evasion } from './AutomationEvasions';
 
 export class PuppeteerFixture {
 
@@ -14,8 +15,9 @@ export class PuppeteerFixture {
         return PuppeteerFixture.#page;
     }
 
-    protected async OpenPage(url: string): Promise<puppeteer.Page> {
+    protected async OpenPage(url: string, ...evasions: Evasion[]): Promise<puppeteer.Page> {
         const page = await (await this.GetBrowser()).newPage();
+        await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
         await page.goto(url);
         return page;
     }

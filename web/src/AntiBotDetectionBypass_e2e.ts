@@ -1,18 +1,22 @@
 /**
- * Check the bot-detection bypass capabilities of HakuNeko's underlying Blink browser engine (NW.js, Electron)
+ * Check the bot-detection bypass capabilities of HakuNeko's underlying Blink-based browser engine (NW.js, Electron)
  */
 
 import { describe, it, expect } from 'vitest';
 import type { Page } from 'puppeteer-core';
 import { PuppeteerFixture } from '../../test/PuppeteerFixture';
+import {
+    type Evasion,
+    EvadeChromeDevToolProtocolDetection,
+} from '../../test/AutomationEvasions';
 
-export class TestFixture extends PuppeteerFixture {
+class TestFixture extends PuppeteerFixture {
 
     private page: Page;
 
-    public async WithPage(url: string): Promise<TestFixture> {
+    public async SetupPage(url: string, ...evasions: Evasion[]): Promise<TestFixture> {
         await this.ClosePage();
-        this.page = await this.OpenPage(url);
+        this.page = await this.OpenPage(url, ...evasions);
         console.log('WebDriver:', await this.page.evaluate(() => window.navigator.webdriver));
         console.log('User-Agent:', await this.page.evaluate(() => window.navigator.userAgent));
         console.log('Console:', await this.page.evaluate(() => console.debug.toString()));
@@ -44,7 +48,7 @@ export class TestFixture extends PuppeteerFixture {
 describe('BrowserScan', { timeout: 10_000 }, () => {
 
     it('Should pass Bot Detection Test', async () => {
-        const fixture = await new TestFixture().WithPage('https://www.browserscan.net/bot-detection');
+        const fixture = await new TestFixture().SetupPage('https://www.browserscan.net/bot-detection', EvadeChromeDevToolProtocolDetection);
         try {
             await fixture.AssertElementText(`div._5h5tql svg use[*|href="#status_success"]`, undefined);
         } finally {
@@ -56,7 +60,7 @@ describe('BrowserScan', { timeout: 10_000 }, () => {
 describe('CloudFlare', { timeout: 10_000 }, () => {
 
     it('Should bypass JavaScript Challenge', async () => {
-        const fixture = await new TestFixture().WithPage('https://cloudflare.bot-check.ovh/automatic');
+        const fixture = await new TestFixture().SetupPage('https://cloudflare.bot-check.ovh/automatic');
         try {
             await fixture.AssertElementText('#hash', '801BE7B2C3621A7DE738CF77BD4EF264');
         } finally {
@@ -65,7 +69,7 @@ describe('CloudFlare', { timeout: 10_000 }, () => {
     });
 
     it.skip('Should bypass Turnstile Non-Interactive Challenge', async () => {
-        const fixture = await new TestFixture().WithPage('https://cloudflare.bot-check.ovh/turnstile-automatic');
+        const fixture = await new TestFixture().SetupPage('https://cloudflare.bot-check.ovh/turnstile-automatic');
         try {
             await fixture.AssertElementText('#hash', 'A9B6FA3DD8842CD8E2D6070784D92434');
         } finally {
@@ -74,7 +78,7 @@ describe('CloudFlare', { timeout: 10_000 }, () => {
     });
 
     it.skip('Should bypass Turnstile Invisible Challenge', async () => {
-        const fixture = await new TestFixture().WithPage('https://cloudflare.bot-check.ovh/turnstile-invisible');
+        const fixture = await new TestFixture().SetupPage('https://cloudflare.bot-check.ovh/turnstile-invisible');
         try {
             await fixture.AssertElementText('#hash', 'A9B6FA3DD8842CD8E2D6070784D92434');
         } finally {
@@ -86,7 +90,7 @@ describe('CloudFlare', { timeout: 10_000 }, () => {
 describe('Vercel', { timeout: 10_000 }, () => {
 
     it.skip('Should bypass Attack Challenge Mode', async () => {
-        const fixture = await new TestFixture().WithPage('https://vercel.bot-check.ovh');
+        const fixture = await new TestFixture().SetupPage('https://vercel.bot-check.ovh', EvadeChromeDevToolProtocolDetection);
         try {
             await fixture.AssertElementText('#hash', 'FDF049D4B2312945BB7AA2158F041278');
         } finally {

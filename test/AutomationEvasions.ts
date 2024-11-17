@@ -7,7 +7,9 @@
  * - https://github.com/rebrowser/rebrowser-patches?tab=readme-ov-file
  */
 
-import type { Browser, Target, Page } from 'puppeteer-core';
+import { type Browser, type Target, TargetType, type Page } from 'puppeteer-core';
+
+export type Evasion = (page: Page) => Promise<void>;
 
 const conceal = `
     function conceal(obj, key, intercept) {
@@ -33,25 +35,25 @@ const conceal = `
     }
 `;
 
+/*
 function EvadeWebDriverDetection(page: Page) {
-    //page.evaluateOnNewDocument(`delete navigator.__proto__.webdriver`);
-    //page.evaluateOnNewDocument(`navigator.__proto__.webdriver = false`);
+    //await page.evaluateOnNewDocument(`delete navigator.__proto__.webdriver`);
+    await page.evaluateOnNewDocument(`navigator.__proto__.webdriver = false`);
 }
+*/
 
 /**
  * When dumping an object with the console functions, the properties of the object will be evaluated.
  * This evaluation only happens when the Developer Tools are opened, or a client is connected via CDP.
  * A proxy object could be used to detect access to getters of the object when it is dumped.
  */
-function EvadeChromeDevToolProtocolDetection(page: Page) {
-    page.evaluateOnNewDocument(`
+export async function EvadeChromeDevToolProtocolDetection(page: Page) {
+    await page.evaluateOnNewDocument(`
         ${conceal}
         conceal(console, 'log', () => {});
         conceal(console, 'warn', () => {});
         conceal(console, 'error', () => {});
         conceal(console, 'debug', () => {});
-        conceal(console, 'count', () => {});
-        conceal(console, 'clear', () => {});
     `);
 }
 
@@ -59,19 +61,13 @@ function EvadeChromeDevToolProtocolDetection(page: Page) {
  * Avoid automation detection for Blink-based browsers when used with Puppeteer.
  * This will only hide changes applied by Puppeteer to access the capabilities of the underlying Blink browser (e.g., Electron or NW.js).
  */
-export function SetupBlinkEvasions(browser: Browser) {
-
-    const activeBlinkEvasions = [
-        //EvadeWebDriverDetection,
-        EvadeChromeDevToolProtocolDetection,
-    ];
-
+export function SetupBlinkEvasions(browser: Browser, ...evasions: Evasion[]) {
+    // TODO: This doesn't work yet due to injection being too slow
+    //       => https://github.com/puppeteer/puppeteer/issues/3667
     browser.on('targetcreated', async (target: Target) => {
-        const page = await target.page();
-        if(page) {
-            for(const setupEvasion of activeBlinkEvasions) {
-                setupEvasion(page);
-            }
+        if(target.type() === TargetType.PAGE) {
+            const page = await target.page();
+            await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
         }
     });
 }
