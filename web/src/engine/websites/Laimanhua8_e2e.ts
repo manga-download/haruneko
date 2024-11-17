@@ -6,7 +6,7 @@ const config = {
         title: 'Laimanhua8'
     },
     container: {
-        url: 'https://www.laimanhua8.com/kanmanhua/jiandieguojiajia/',
+        url: 'https://www.laimanhua88.com/kanmanhua/jiandieguojiajia/',
         id: '/kanmanhua/jiandieguojiajia/',
         title: '间谍过家家'
     },
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 255_291,
+        size: 252_049, // Polished image size may vary => https://developers.cloudflare.com/images/polish/
         type: 'image/jpeg'
     }
 };

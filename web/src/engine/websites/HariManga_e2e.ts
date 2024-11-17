@@ -6,7 +6,7 @@ const config: Config = {
         title: 'HariManga'
     },
     container: {
-        url: 'https://harimanga.com/manga/solo-max-level-newbie/',
+        url: 'https://harimanga.me/manga/solo-max-level-newbie/',
         id: JSON.stringify({ post: '12521', slug: '/manga/solo-max-level-newbie/'}),
         title: 'Solo Max-Level Newbie'
     },

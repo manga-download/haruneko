@@ -1,7 +1,7 @@
 import path from 'path';
-import yargs from 'yargs';
 import fs from 'fs/promises';
 import { app } from 'electron';
+import { Command } from 'commander';
 import { IPC } from './ipc/InterProcessCommunication';
 import { ApplicationWindow } from './ipc/ApplicationWindow';
 import { FetchProvider } from './ipc/FetchProvider';
@@ -13,6 +13,22 @@ import { RemoteProcedureCallManager } from './ipc/RemoteProcedureCallManager';
 import { RemoteProcedureCallContract } from './ipc/RemoteProcedureCallContract';
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
+type CLIOptions = {
+    origin?: string;
+}
+
+function ParseCLI(): CLIOptions {
+    try {
+        const argv = new Command()
+            .allowUnknownOption(true)
+            .option('--origin [url]', 'custom location from which the web-app shall be loaded')
+            .parse(process.argv, { from: 'electron' });
+        return argv.opts<CLIOptions>();
+    } catch {
+        return {};
+    }
+}
+
 type Manifest = {
     url: string;
     'user-agent': undefined | string;
@@ -23,15 +39,6 @@ async function LoadManifest(): Promise<Manifest> {
     const file = path.resolve(app.getAppPath(), 'package.json');
     const content = await fs.readFile(path.normalize(file), { encoding: 'utf-8' });
     return JSON.parse(content) as Manifest;
-}
-
-async function GetArgumentURL(): Promise<string | undefined> {
-    try {
-        const argv = await yargs(process.argv).argv;
-        return argv.origin as string;
-    } catch {
-        return undefined;
-    }
 }
 
 async function SetupUserDataDirectory(manifest: Manifest): Promise<void> {
@@ -69,6 +76,7 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
 
 async function OpenWindow(): Promise<void> {
     InitializeMenu();
+    const argv = ParseCLI();
     const manifest = await LoadManifest();
     await SetupUserDataDirectory(manifest);
     app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
@@ -81,7 +89,7 @@ async function OpenWindow(): Promise<void> {
     new RemoteBrowserWindowController(ipc);
     new BloatGuard(ipc, win.webContents);
     win.RegisterChannels(ipc);
-    return win.loadURL(await GetArgumentURL() ?? manifest.url);
+    return win.loadURL(argv.origin ?? manifest.url ?? 'about:blank');
 }
 
 OpenWindow();

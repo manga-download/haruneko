@@ -36,8 +36,7 @@ export class RemoteBrowserWindowController {
             windowOptions.webPreferences.preload = await this.CreatePreloadScriptFile(windowOptions.webPreferences.preload);
         }
         const win = new BrowserWindow(windowOptions);
-        win.removeMenu();
-        win.setMenu(null);
+        win.autoHideMenuBar = true;
         win.setMenuBarVisibility(false);
         win.webContents.debugger.attach('1.3');
         win.webContents.setWindowOpenHandler(() => { return { action: 'deny' }; });

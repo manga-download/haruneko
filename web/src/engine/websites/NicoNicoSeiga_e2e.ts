@@ -6,7 +6,7 @@ const config = {
         title: 'ニコニコ静画 (niconico seiga)'
     },
     container: {
-        url: 'https://sp.manga.nicovideo.jp/comic/62094',
+        url: 'https://manga.nicovideo.jp/comic/62094',
         id: '62094',
         title: '寿司ガキ'
     },
