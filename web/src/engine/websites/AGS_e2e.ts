@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://agrcomics.com/series/a4126222129/',
-        id: '/series/a4126222129',
+        id: '/series/a4126222129/',
         title: 'Reincarnated as the Mastermind of the Story'
     },
     child: {
