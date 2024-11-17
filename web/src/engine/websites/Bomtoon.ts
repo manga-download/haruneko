@@ -31,7 +31,7 @@ type ScrambleParams = {
 export default class extends DelitoonBase {
 
     public constructor() {
-        super('bomtoon', `Bomtoon`, 'https://www.bomtoon.com', [Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official]);
+        super('bomtoon', `Bomtoon`, 'https://www.bomtoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
         this.BalconyID = 'BOMTOON_COM';
     }
 
@@ -83,7 +83,6 @@ export default class extends DelitoonBase {
             });
             return Promise.all(promises);
         } else return images.map(element => new Page(this, chapter, new URL(element.imagePath)));
-
     }
 
     private async Decrypt(encrypted: string, scramblekey: string): Promise<number[]> {
