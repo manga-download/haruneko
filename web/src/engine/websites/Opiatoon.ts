@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('opiatoon', 'Opiatoon (Opia&Shipperland)', 'https://opiatoon.biz', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish);
+        super('opiatoon', 'Opiatoon (Opia&Shipperland)', 'https://opiatoon.pro', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish);
     }
 
     public override get Icon() {

@@ -34,8 +34,6 @@
     import { FlagType } from '../../../engine/ItemflagManager';
     import { resizeBar } from '../lib/actions';
 
-    let ref:HTMLElement;
-
     let items: MediaContainer<MediaItem>[] = [];
     let filteredItems: MediaContainer<MediaItem>[] = [];
     let selectedItems: MediaContainer<MediaItem>[] = [];
@@ -290,7 +288,7 @@
     </ContextMenu>
 {/if}
 
-<div id="Item" transition:fade bind:this={ref}>
+<div id="Item" transition:fade>
     <div id="ItemTitle">
         <h5>Item List</h5>
     </div>
@@ -312,7 +310,7 @@
         />
     </div>
     <div id="ItemFilter">
-        <Search size="sm" bind:value={itemNameFilter} />
+        <Search id="ItemFilterSearch" size="sm" bind:value={itemNameFilter} />
     </div>
     <div id="ItemList" class="list" bind:this={itemsdiv}>
         {#await loadItem}
@@ -337,7 +335,7 @@
             <div class="error">
                 <InlineNotification
                     lowContrast
-                    title={error}
+                    title={error.name}
                     subtitle={error.message}
                 />
             </div>
@@ -350,7 +348,7 @@
         role="separator"
         aria-orientation="vertical"
         class="resize"
-        use:resizeBar={{target: ref, orientation:'vertical'}}
+        use:resizeBar={{orientation:'vertical'}}
     ></div>
 </div>
 

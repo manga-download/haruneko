@@ -17,7 +17,7 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-    import VirtualList from '../lib/virtualList.svelte';
+	import { VirtualList } from 'svelte-virtuallists';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
@@ -37,9 +37,7 @@
     import { Exception } from '../../../engine/Error';
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
     import { resizeBar } from '../lib/actions';
-    import { onMount } from 'svelte';
-
-    let ref:HTMLElement = $state();
+    import type { MediaContainer2 } from '../Types';
 
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild> = $state();
@@ -86,13 +84,18 @@
     let medias: MediaContainer<MediaChild>[] = $state([]);
     let mediaNameFilter = $state('');
 
-    let filteredmedias: MediaContainer<MediaChild>[] = $derived(mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter));
+    let filteredmedias: MediaContainer<MediaChild>[] = $state([]);
+    $effect(() => {
+        medias;
+        filteredmedias = filterMedia(mediaNameFilter);
+    });
     let fuse = new Fuse([]);
 
     loadPlugin = loadMedias($selectedPlugin);
 
     selectedPlugin.subscribe((newplugin) => {
         const previousPlugin = currentPlugin;
+        loadPlugin = Promise.resolve(newplugin);
         currentPlugin = newplugin;
         pluginDropdownSelected = currentPlugin?.Identifier;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
@@ -118,6 +121,7 @@
     }
 
     function filterMedia(mediaNameFilter: string) {
+        if (mediaNameFilter === '') return medias;
         if ($FuzzySearch)
             return fuse.search(mediaNameFilter).map((item) => item.item);
         else
@@ -193,7 +197,7 @@
         />
     </div>
 {/if}
-<div id="Media" transition:fade bind:this={ref}>
+<div id="Media" transition:fade>
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
@@ -208,6 +212,7 @@
     </div>
     <div id="Plugin">
         <ComboBox
+            id="PluginSelect"
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
             on:clear={() => ($selectedPlugin = undefined)}
@@ -229,6 +234,7 @@
             {/if}
         </ComboBox> 
         <Button
+            id="MediaUpdateButton"
             icon={UpdateNow}
             size="small"
             tooltipPosition="top"
@@ -240,7 +246,7 @@
     </div>
 
     <div id="MediaFilter">
-        <Search size="sm" bind:value={mediaNameFilter} />
+        <Search id="MediaFilterSearch" size="sm" bind:value={mediaNameFilter} />
     </div>
     <div id="MediaList" class="list" bind:this={container} bind:clientHeight={containerHeight}>
         {#await loadPlugin}
@@ -249,26 +255,18 @@
                 <div>... medias</div>
             </div>
         {:then}
-            <VirtualList {container} items={filteredmedias} itemHeight={20}  {containerHeight} let:item let:dummy let:y>
-                {#if dummy}
-                    <div class="empty" class:dummy style="position: relative; top:{y}px;"></div>
-                {:else}
-                    {#key item}
-                        <Media 
-                            media={item}
-                            style="position: relative; top:{y}px;"
-                            on:select={(e) => {
-                                $selectedMedia = e.detail;
-                            }}
-                        />
-                    {/key}
-                {/if}
-            </VirtualList>
+        <VirtualList style='height:100%' items={filteredmedias}>
+            {#snippet vl_slot({ index, item })}
+                <Media 
+                    media={item as MediaContainer2}
+                />
+            {/snippet}
+        </VirtualList>
         {:catch error}
             <div class="error">
                 <InlineNotification
                     lowContrast
-                    title={error}
+                    title={error.name}
                     subtitle={error.message}
                 />
             </div>
@@ -281,7 +279,7 @@
         role="separator"
         aria-orientation="vertical"
         class="resize"
-        use:resizeBar={{target: ref, orientation:'vertical'}}
+        use:resizeBar={{orientation:'vertical'}}
     > </div>
     
 </div>
@@ -369,9 +367,5 @@
     }
     .resize:hover {
             background-color:var(--cds-ui-02); 
-    }
-    .empty {
-        height: 24px;
-        line-height: 24px;
     }
 </style>
