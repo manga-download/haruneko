@@ -5,7 +5,6 @@ import { Page } from "../../providers/MangaPlugin";
 import * as Common from './Common';
 
 AddAntiScrapingDetection(async (invoke) => {
-
     const result = await invoke<boolean>(`document.documentElement.innerHTML.includes('ct_anti_ddos_key')`);// Sample => Mangagun, NicoManga, Rawinu, Weloma, WeloveManga
     if (result) {
         await new Promise(resolve => setTimeout(resolve, 3000));
@@ -15,24 +14,22 @@ AddAntiScrapingDetection(async (invoke) => {
 });
 
 export function MangaLabelExtractor(element: HTMLElement) {
-    let title = element.getAttribute('text') ? element.getAttribute('text') : element.textContent;
-    return CleanTitle(title);
+    return CleanTitle(element.getAttribute('text') ? element.getAttribute('text') : element.textContent);
 }
 export function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    let title = anchor.getAttribute('text') ? anchor.getAttribute('text') : anchor.textContent;
-    return { id, title: CleanTitle(title) };
+    return {
+        id: anchor.pathname,
+        title: CleanTitle(anchor.getAttribute('text') ? anchor.getAttribute('text') : anchor.textContent)
+    };
 }
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     if (anchor.dataset?.href) {
         anchor.setAttribute('href', anchor.dataset.href + anchor.getAttribute('href'));
     }
-    const id = anchor.pathname;
-    const titleElement = anchor.querySelector('div.chapter-name');
-    const title = titleElement ? titleElement.textContent.trim() : anchor.text.trim();
     return {
-        id, title
+        id: anchor.pathname,
+        title: anchor.querySelector('div.chapter-name') ? anchor.querySelector('div.chapter-name').textContent.trim() : anchor.text.trim()
     };
 }
 
@@ -44,7 +41,6 @@ export function CleanTitle(title: string): string {
 }
 
 export function PageLinkExtractor<E extends HTMLImageElement>(this: MangaScraper, element: E): string {
-
     let page = element.dataset.aload || element.dataset.src || element.dataset.srcset || element.dataset.original || element.dataset.pagespeedLazySrc || element.src;
     try {
         page = window.atob(page);
@@ -167,8 +163,7 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(chapter => {
         const { id, title } = extractor.call(this, chapter);
-        let finaltitle = title.replace(manga.Title, '').trim() ?? title;
-        return new Chapter(this, manga, id, CleanTitle(finaltitle));
+        return new Chapter(this, manga, id, CleanTitle(title.replace(manga.Title, '').trim() ?? title));
     });
 }
 
