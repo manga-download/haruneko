@@ -6,7 +6,7 @@ const config = {
         title: 'Manga Crab'
     },
     container: {
-        url: 'https://wikicrab.xyz/series/mi-sistema-es-muy-serio/',
+        url: 'https://toonscrab.com/series/mi-sistema-es-muy-serio/',
         id: JSON.stringify({ post: '30840', slug: '/series/mi-sistema-es-muy-serio/' }),
         title: 'Mi Sistema Es Muy serio'
     },

@@ -1,3 +1,4 @@
+import '../AGS_e2e';
 import '../ArvenScans_e2e';
 import '../GenzToon_e2e';
 import '../LuaScans_e2e';

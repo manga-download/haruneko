@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf';
+import PDFDocument from 'pdfkit';
 import { MangaExporter } from './MangaExporter';
 import { SanitizeFileName } from '../StorageController';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
@@ -16,10 +16,12 @@ export class PortableDocumentFormatExporter extends MangaExporter {
             const { data } = await super.ReadTempImageData(sourceFileList.get(index), index, digits);
             const bitmap = await createImageBitmap(data);
             try {
-                const { width, height } = bitmap;
-                // Conversion of unsupported images via jsPDF is slow and produces a large PDF => Using own implementation of image conversion
-                const blob = pdfImageFormats.includes(data.type) ? data : await ConvertBitmap(bitmap, 'image/jpeg', 0.95);
-                return { width, height, data: new Uint8Array(await blob.arrayBuffer()) };
+                return {
+                    width: bitmap.width,
+                    height: bitmap.height,
+                    // Conversion of unsupported images via jsPDF is slow and produces a large PDF => Using own implementation of image conversion
+                    data: pdfImageFormats.includes(data.type) ? data : await ConvertBitmap(bitmap, 'image/jpeg', 0.95)
+                };
             } finally {
                 bitmap.close();
             }
@@ -28,18 +30,30 @@ export class PortableDocumentFormatExporter extends MangaExporter {
     }
 
     public async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, targetBaseName: string): Promise<void> {
-        const pdf = new jsPDF({ unit: 'px' });
-        pdf.deletePage(1);
+        const file = await targetDirectory.getFileHandle(SanitizeFileName(targetBaseName + '.pdf'), { create: true });
+        const stream = await file.createWritable();
+        const pdf = new PDFDocument({
+            autoFirstPage: false,
+            compress: false,
+            margin: 0,
+        });
+        pdf.on('data', (bytes: Uint8Array) => stream.write(bytes));
+        pdf.once('error', () => stream.close());
+        pdf.once('end', () => stream.close());
 
         for(const { width, height, data } of await this.PrepareImages(sourceFileList)) {
             const pageHeight = height * pageWidth / width;
-            pdf.addPage([ pageWidth, pageHeight ], pageWidth < pageHeight ? 'portrait': 'landscape');
-            pdf.addImage(data, 0, 0, pageWidth, pageHeight);
+            pdf.addPage({
+                layout: pageWidth < pageHeight ? 'portrait': 'landscape',
+                size: [ pageWidth, pageHeight ],
+                margin: 0,
+            }).image(await data.arrayBuffer(), {
+                fit: [ pageWidth, pageHeight ],
+                valign: 'center',
+                align: 'center',
+            });
         }
 
-        const file = await targetDirectory.getFileHandle(SanitizeFileName(targetBaseName + '.pdf'), { create: true });
-        const stream = await file.createWritable();
-        await stream.write(pdf.output('blob'));
-        await stream.close();
+        pdf.end();
     }
 }
