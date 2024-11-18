@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as ZManga from './templates/ZManga';
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, ZManga.queryMangaTitle)
-@Common.MangasSinglePageCSS(ZManga.queryMangaPath, ZManga.queryManga)
+@Common.MangasMultiPageCSS('/page/{page}/', 'div.flexbox4 div.flexbox4-item div.flexbox4-content > a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS(ZManga.queryChapters, Common.AnchorInfoExtractor(false, 'span.date'))
 @Common.PagesSinglePageCSS(ZManga.queryPages)
 @Common.ImageAjax()

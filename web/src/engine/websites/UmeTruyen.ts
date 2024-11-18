@@ -12,7 +12,7 @@ import * as Madara from './decorators/WordPressMadara';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('umetruyen', 'UmeTruyen', 'https://umetruyenhay.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('umetruyen', 'UmeTruyen', 'https://umetruyenhay.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
