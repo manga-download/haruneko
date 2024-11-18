@@ -59,12 +59,6 @@ export class FetchProvider {
         for (const originalHeaderName in details.requestHeaders) {
             const normalizedHeaderName = originalHeaderName.toLowerCase();
             const originalHeaderValue = details.requestHeaders[originalHeaderName];
-            if(normalizedHeaderName === 'origin' && this.IsMatchingAppHost(originalHeaderValue)) {
-                updatedHeaders[normalizedHeaderName] = uri.origin;
-            }
-            if(normalizedHeaderName === 'referer' && this.IsMatchingAppHost(originalHeaderValue)) {
-                updatedHeaders[normalizedHeaderName] = uri.href;
-            }
             if (normalizedHeaderName.startsWith(this.fetchApiSupportedPrefix)) {
                 const revealedHeaderName = normalizedHeaderName.replace(this.fetchApiSupportedPrefix, '');
                 updatedHeaders[revealedHeaderName] = originalHeaderValue;
@@ -72,6 +66,13 @@ export class FetchProvider {
                 updatedHeaders[normalizedHeaderName] = updatedHeaders[normalizedHeaderName] ?? originalHeaderValue;
             }
         }
+
+        // Prevent leaking HakuNeko's host in certain headers
+        [ 'origin', 'referer' ].forEach(key => {
+            if(key in updatedHeaders && this.IsMatchingAppHost(updatedHeaders[key])) {
+                updatedHeaders[key] = uri.origin;
+            }
+        });
 
         return {
             cancel: false,
