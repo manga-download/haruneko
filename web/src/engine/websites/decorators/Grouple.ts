@@ -5,10 +5,17 @@ import * as Common from './Common';
 
 const pagesWithServersScript = `
     new Promise(resolve => {
-        resolve({
-            pics: rm_h.pics.map(pic => rm_h.reader.preparePicUrl(pic.url)),
-            servers: rm_h.servers.map(server => server.path)
+        const pics = rm_h.pics.map(pic => {
+            const picUrl = new URL(rm_h.reader.preparePicUrl(pic.url.replace(/^\\/\\//, 'https://')));
+            return picUrl.pathname + picUrl.search;
         });
+        const servers =  rm_h.servers.map(server => server.path.replace(/^\\/\\//, 'https://'));
+        const mainserver = servers.shift();
+        resolve( pics.map( picture => {
+            const mirrors = servers.map(server => new URL(picture, server).href);
+            return { url : new URL(picture, mainserver).href, mirrors };
+        }));
+       resolve(pics);
     });
 `;
 
@@ -33,8 +40,8 @@ export const queryPages = [
 ].join(',');
 
 type ImagesData = {
-    pics: string[],
-    servers: string[];
+    url: string,
+    mirrors: string[];
 }
 
 type PageParameters = {
@@ -51,24 +58,11 @@ type PageParameters = {
  * @param chapter - A reference to the {@link Chapter} which contains the pages
  * @param script - A script to extract the pages as \{ pics : string[], servers: string[] \}
  */
-async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay: number = 0): Promise<Page[]> {
+async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay: number = 1500): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     uri.searchParams.set('mtr', '1');
-    const images = await FetchWindowScript<ImagesData>(new Request(uri), script, delay);
-
-    images.pics = images.pics.map(pic => pic.replace(/^\/\//, 'https://'));
-    images.servers = images.servers
-        .map(server => server.replace(/^\/\//, 'https://'))
-        .filter((server, index) => index === images.servers.findIndex(s => s === server));
-
-    return images.pics.map(url => {
-        const imageUrl = new URL(url, this.URI);
-        const mirrors = images.servers.map(server => new URL(imageUrl.pathname + imageUrl.search, server).href)
-            .filter(altUrl => altUrl != imageUrl.href);
-        return new Page<PageParameters>(this, chapter, imageUrl, {
-            mirrors
-        });
-    });
+    const images = await FetchWindowScript<ImagesData[]>(new Request(uri), script, delay);
+    return images.map(image => new Page<PageParameters>(this, chapter, new URL(image.url), { mirrors: image.mirrors }));
 }
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter using the given JS {@link script}.

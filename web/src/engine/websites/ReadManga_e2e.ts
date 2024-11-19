@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Всеведущий читатель'
     },
     child: {
-        id: '/omniscient_reader_s_viewpoint/vol1/100',
+        id: '/vseveduchii_chitatel__A5664/vol1/100',
         title: '1 - 100 То, что невозможно изменить - часть 2'
     },
     entry: {
@@ -32,7 +32,7 @@ new TestFixture({
         title: 'Ван Пис'
     },
     child: {
-        id: '/van_pis/vol100/1010',
+        id: '/van_pis__A5664/vol100/1010',
         title: '100 - 1010 Королевская воля'
     },
     entry: {

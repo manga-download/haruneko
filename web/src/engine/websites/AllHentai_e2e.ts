@@ -14,12 +14,12 @@ const config = {
 
     child: {
         id: '/nochiu_ona_nimfomanka/vol1/4',
-        title: '2 - 4',
+        title: '1 - 1',
     },
     entry: {
         index: 0,
-        size: 291_243,
-        type: 'image/jpeg'
+        size: 155_934,
+        type: 'image/png'
     }*/
 };
 
