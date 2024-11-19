@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
         this.nextBuild = await FetchWindowScript(new Request(new URL(this.URI)), `__NEXT_DATA__.buildId`, 2500) ?? this.nextBuild;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return new RegExpSafe(`^${this.URI.origin}/works/\\d+$`).test(url);
     }
 

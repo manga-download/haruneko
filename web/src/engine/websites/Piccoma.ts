@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return new RegExp('^https://(jp\\.)?piccoma.com/web/product/\\d+').test(url);
     }
 

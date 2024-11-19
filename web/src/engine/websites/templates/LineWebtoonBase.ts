@@ -140,7 +140,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     protected pageScript = defaultPageScript;
     private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return this.mangaRegexp.test(url) && url.startsWith(this.URI.origin);
     }
 

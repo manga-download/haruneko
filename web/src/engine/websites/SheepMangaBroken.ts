@@ -18,7 +18,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return /\/sheep-scanlations-broken\/\d+\.json/.test(url);
     }
 

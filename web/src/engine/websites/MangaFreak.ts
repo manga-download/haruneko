@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return /https?:\/\/w+\d*.mangafreak.me\/Manga\/[^/]+$/.test(url);
     }
 

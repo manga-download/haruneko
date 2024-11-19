@@ -5,7 +5,7 @@ export default class extends DecoratableMangaScraper {
     constructor();
     get Icon(): string;
     Initialize(): Promise<void>;
-    ValidateMangaURL(url: string): boolean;
+    ValidateMangaURL(url: string): Promise<boolean>;
     FetchManga(provider: MangaPlugin, url: string): Promise<Manga>;
     FetchMangas(provider: MangaPlugin): Promise<Manga[]>;
     FetchChapters(manga: Manga): Promise<Chapter[]>;

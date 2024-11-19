@@ -51,7 +51,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
     protected readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
     protected BalconyID: string = 'DELITOON_COM';
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return new RegExpSafe(`^${this.URI.origin}/detail/[^/]+$`).test(url);
     }
 

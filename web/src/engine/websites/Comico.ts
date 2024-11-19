@@ -87,7 +87,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return new RegExpSafe(`^${this.URI.origin}/\\S+/\\d+$`).test(url);
     }
 

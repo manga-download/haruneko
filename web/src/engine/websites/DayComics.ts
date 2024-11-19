@@ -99,7 +99,7 @@ export default class extends DecoratableMangaScraper {
         return FetchWindowScript(new Request(this.URI), matureCookieScript, 500);
     }
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return new RegExpSafe(`^${this.URI.origin}/content/\\d+$`).test(url);
     }
 

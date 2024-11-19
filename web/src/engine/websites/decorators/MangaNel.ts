@@ -55,7 +55,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public ValidateMangaURL(this: MangaScraper, url: string): boolean {
+            public async ValidateMangaURL(url: string): Promise<boolean> {
                 const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
                 return new RegExpSafe(source, pattern.flags).test(url);
             }

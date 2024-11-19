@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return new RegExp(`^${this.URI.origin}/obra/\\d+/[^/]+$`).test(url);
     }
 

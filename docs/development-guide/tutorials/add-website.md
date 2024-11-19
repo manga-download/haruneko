@@ -101,7 +101,7 @@ export default class extends DecoratableMangaScraper {
 
     /* Other Implementations */
 
-    public override ValidateMangaURL(url: string): boolean {
+    public override async ValidateMangaURL(url: string): Promise<boolean> {
         return url.startsWith(this.URI + '/manga/');
     }
 

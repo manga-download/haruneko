@@ -25,7 +25,7 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
         return new MangaPlugin(storageController, settingsManager, this);
     }
 
-    public abstract ValidateMangaURL(url: string): boolean;
+    public abstract ValidateMangaURL(url: string): Promise<boolean>;
     public abstract FetchManga(provider: MangaPlugin, url: string): Promise<Manga>;
     public abstract FetchMangas(provider: MangaPlugin): Promise<Manga[]>;
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
@@ -39,8 +39,8 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
  */
 export class DecoratableMangaScraper extends MangaScraper {
 
-    public ValidateMangaURL(_url: string): boolean {
-        return false;
+    public ValidateMangaURL(_url: string): Promise<boolean> {
+        return Promise.resolve(false);
     }
 
     public FetchManga(_provider: MangaPlugin, _url: string): Promise<Manga> {
@@ -103,7 +103,7 @@ export class MangaPlugin extends MediaContainer<Manga> {
     }
 
     public override async TryGetEntry(url: string): Promise<Manga> {
-        if(this.scraper.ValidateMangaURL(url)) {
+        if(await this.scraper.ValidateMangaURL(url)) {
             await this.Initialize();
             const manga = await this.scraper.FetchManga(this, url);
             return this.Entries.Value.find((entry) => entry.IsSameAs(manga)) ?? manga;

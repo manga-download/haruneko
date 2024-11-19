@@ -126,7 +126,7 @@ export function MangaCSS(pattern: RegExp, query: string, extract = DefaultLabelE
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public ValidateMangaURL(this: MangaScraper, url: string): boolean {
+            public async ValidateMangaURL(this: MangaScraper, url: string): Promise<boolean> {
                 const source = pattern.source.replaceAll('{origin}', this.URI.origin).replaceAll('{hostname}', this.URI.hostname);
                 return new RegExpSafe(source, pattern.flags).test(url);
             }
