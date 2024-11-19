@@ -6,13 +6,12 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type GraphQLResult<T> = {
-    data: T;
+    data: T
 };
 
 type APIMangas = {
     mangas: {
         edges: APIManga[],
-
     }
 }
 
@@ -94,8 +93,8 @@ export default class extends DecoratableMangaScraper {
             }
         };
 
-        const { mangas: { edges } } = await this.FetchGraphQL<APIMangas>(jsonVariables, jsonExtensions);
-        return edges.map(manga => new Manga(this, provider, manga._id, manga.englishName ?? manga.name));
+        const data = await this.FetchGraphQL<APIMangas>(jsonVariables, jsonExtensions);
+        return data?.mangas?.edges ? data.mangas.edges.map(manga => new Manga(this, provider, manga._id, manga.englishName ?? manga.name)) : [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
