@@ -1,4 +1,4 @@
-import yargs from 'yargs';
+import { Command } from 'commander';
 import { IPC } from './ipc/InterProcessCommunication';
 import { RPCServer } from '../../src/rpc/Server';
 import { RemoteProcedureCallContract } from './ipc/RemoteProcedureCallContract';
@@ -10,21 +10,23 @@ type Manifest = {
     //'chromium-args': undefined | string;
 };
 
-async function GetArgumentURL(): Promise<string|undefined> {
+type CLIOptions = {
+    origin?: string;
+}
+
+function ParseCLI(): CLIOptions {
     try {
-        /*
-        type Arguments = {
-            origin?: string;
-        }
-        */
-        const argv/*: Arguments*/ = await yargs(nw.App.argv).argv;
-        return argv.origin as string;
+        const argv = new Command()
+            .allowUnknownOption(true)
+            .option('--origin [url]', 'custom location from which the web-app shall be loaded')
+            .parse(nw.App.argv, { from: 'user' });
+        return argv.opts<CLIOptions>();
     } catch {
-        return undefined;
+        return {};
     }
 }
 
-async function GetDefaultURL(): Promise<string|undefined> {
+function GetDefaultURL(): string | undefined {
     try {
         return (nw.App.manifest as Manifest).url;
     } catch {
@@ -33,12 +35,13 @@ async function GetDefaultURL(): Promise<string|undefined> {
 }
 
 async function OpenWindow() {
+    const argv = ParseCLI();
     const ipc = new IPC();
     const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc));
     new RemoteProcedureCallManager(rpc, ipc);
 
-    const url = await GetArgumentURL() ?? await GetDefaultURL();
-    const win = await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(url ?? 'about:blank', {
+    const url = argv.origin ?? GetDefaultURL() ?? 'about:blank';
+    const win = await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(url, {
         id: 'hakuneko',
         show: url ? false : true,
         frame: url ? false : true,

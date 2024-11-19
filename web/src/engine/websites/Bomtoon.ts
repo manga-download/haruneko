@@ -3,11 +3,11 @@ import { Tags } from '../Tags';
 import { FetchJSON } from '../platform/FetchProvider';
 import {type MangaPlugin, Manga, type Chapter, Page } from '../providers/MangaPlugin';
 import icon from './Bomtoon.webp';
-import Delitoon, { type APIManga, type APIResult } from './Delitoon';
 import * as Common from './decorators/Common';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
+import { DelitoonBase, type APIManga, type APIResult } from './templates/DelitoonBase';
 
 type APIMangas = {
     content: APIManga[]
@@ -28,10 +28,10 @@ type ScrambleParams = {
     defaultHeight: number,
 }
 
-export default class extends Delitoon {
+export default class extends DelitoonBase {
 
     public constructor() {
-        super('bomtoon', `Bomtoon`, 'https://www.bomtoon.com', [Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official]);
+        super('bomtoon', `Bomtoon`, 'https://www.bomtoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
         this.BalconyID = 'BOMTOON_COM';
     }
 
@@ -83,7 +83,6 @@ export default class extends Delitoon {
             });
             return Promise.all(promises);
         } else return images.map(element => new Page(this, chapter, new URL(element.imagePath)));
-
     }
 
     private async Decrypt(encrypted: string, scramblekey: string): Promise<number[]> {

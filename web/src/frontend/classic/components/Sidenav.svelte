@@ -134,14 +134,6 @@
                         isSettingsModalOpen = true;
                     }}
                 />
-                <SideNavLink
-                    text={$Locale.Frontend_Classic_Sidenav_Settings_Network()}
-                    icon={NetworkOverlay}
-                    onclick={() => {
-                        settingsSelectedTabs = 4;
-                        isSettingsModalOpen = true;
-                    }}
-                />
             </SideNavMenu>
             <SideNavMenu text={$Locale.Frontend_Help()} icon={Document}>
                 <SideNavLink

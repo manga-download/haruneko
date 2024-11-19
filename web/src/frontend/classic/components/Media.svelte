@@ -49,20 +49,22 @@
 
 
     async function findMediaUnFlaggedContent(updatedmedia:MediaContainer<MediaChild>) {
-        if (updatedmedia.IsSameAs(media)) { 
+        unFlaggedItems = [];
+        const delay = $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
+        delayedContentCheck = setTimeout(
+        async () => {
             unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
                 media,
             )) as MediaContainer<MediaChild>[];
-        } 
-    }
-
-    onMount(() => {
-        const delay = $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 1500;
-        delayedContentCheck = setTimeout(
-        () => {
-            findMediaUnFlaggedContent(media);
-            HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
         },delay);
+    }
+    $:findMediaUnFlaggedContent(media);
+    onMount(() => {
+        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(
+            async(updatedmedia:MediaContainer<MediaChild>) => {
+                if (updatedmedia.IsSameAs(media)) findMediaUnFlaggedContent(media);
+            }
+        );
     });
 
     onDestroy(() => {
