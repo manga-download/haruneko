@@ -6,12 +6,12 @@ const config = {
         title: 'LikeManga'
     },
     container: {
-        url: 'https://likemanga.in/manga/my-eternal-reign/',
-        id: JSON.stringify({ post: '30075', slug: '/manga/my-eternal-reign/' }),
+        url: 'https://likemanga.ink/my-eternal-reign-4250/',
+        id: '/my-eternal-reign-4250/',
         title: 'My Eternal Reign'
     },
     child: {
-        id: '/manga/my-eternal-reign/chapter-9/',
+        id: '/my-eternal-reign-4250/chapter-9-314555/',
         title: 'Chapter 9'
     },
     entry: {
