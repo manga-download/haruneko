@@ -4,44 +4,32 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { Exception } from '../Error';
-import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-
-type JSONMangas = {
-    weekdays: Record<string, JSONManga[]>;
-}
 
 type JSONManga = {
-    id: number,
-    name: string
+    id: number;
+    name: string;
 }
 
-type JSONChapters = {
-    chapters: {
-        earlyChapters: JSONChapter[],
-        omittedMiddleChapters: JSONChapter[],
-        latestChapters: JSONChapter[]
-    }
-}
+type JSONMangas = Record<string, JSONManga[]>;
 
 type JSONChapter = {
-    id: number,
-    title: string
+    id: number;
+    title: string;
 }
 
+type JSONChapters = Record<string, JSONChapter[]>;
+
 type JSONPages = {
-    viewerSection: {
-        pages: {
-            src: string,
-            crypto: CryptoParams
-        }[]
-    }
+    pages: {
+        src: string;
+        crypto: CryptoParams;
+    }[];
 }
 
 type CryptoParams = {
-    iv: string,
-    key: string,
-    method: string
+    iv: string;
+    key: string;
+    method: string;
 }
 
 @Common.MangaCSS(/^{origin}\/title\/\d+$/, 'main > div > div > section > div.grid > h1.font-bold')
@@ -58,31 +46,26 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('/rensai', this.URI)), 'script:not([src])');
-        const { weekdays } = this.FindJSONObject<JSONMangas>(scripts, /totalChapterLikes/, 'weekdays');
-        return Object.values(weekdays).reduce((accumulator: Manga[], day) => {
-            const mangas = day.map(manga => new Manga(this, provider, `/title/${manga.id}`, manga.name));
-            accumulator.push(...mangas);
-            return accumulator;
+        const mangaCollection = this.ExtractData<JSONMangas>(scripts, 'totalChapterLikes', 'weekdays');
+        return Object.values(mangaCollection).reduce((accumulator: Manga[], collection) => {
+            const mangas = collection.map(manga => new Manga(this, provider, `/title/${manga.id}`, manga.name));
+            return [...accumulator, ...mangas];
         }, []);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${manga.Identifier}`, this.URI)), 'script:not([src])');
-        const { chapters: { earlyChapters, omittedMiddleChapters, latestChapters } } = this.FindJSONObject<JSONChapters>(scripts, /omittedMiddleChapters/, 'chapters');
-        return [earlyChapters, omittedMiddleChapters, latestChapters].reduce((accumulator: Chapter[], category) => {
-            const chapters = category.map(chapter => new Chapter(this, manga, `/chapter/${chapter.id}`, chapter.title));
-            accumulator.push(...chapters);
-            return accumulator;
+        const chapterCollection = this.ExtractData<JSONChapters>(scripts, 'omittedMiddleChapters', 'chapters');
+        return Object.values(chapterCollection).reduce((accumulator: Chapter[], collection) => {
+            const chapters = collection.map(chapter => new Chapter(this, manga, `/chapter/${chapter.id}`, chapter.title));
+            return [...accumulator, ...chapters];
         }, []);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<CryptoParams>[]> {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${chapter.Identifier}`, this.URI)), 'script:not([src])');
-        const jsonPages = this.FindJSONObject<JSONPages>(scripts, /viewerSection/, 'viewerSection');
-        if (!jsonPages) {
-            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-        }
-        return jsonPages.viewerSection.pages.map(page => new Page<CryptoParams>(this, chapter, new URL(page.src), page.crypto));
+        const viewerSection = this.ExtractData<JSONPages>(scripts, 'viewerSection', 'viewerSection');
+        return viewerSection.pages.map(page => new Page<CryptoParams>(this, chapter, new URL(page.src), page.crypto));
     }
 
     public override async FetchImage(page: Page<CryptoParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -100,27 +83,22 @@ export default class extends DecoratableMangaScraper {
         }
     }
 
-    private FindJSONObject<T>(scripts: HTMLScriptElement[], scriptRegex: RegExp, keyName: string, currentElement = undefined): T {
+    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
+        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
+        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
+        let record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
 
-        if (scripts && scriptRegex) {
-            const script = scripts.find(script => scriptRegex.test(script.text))?.text;
-            if (!script) return undefined;
-            //script are like self.__next_f.push([1,"
-            const json = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2));// to remove trailing )]
-            currentElement = JSON.parse(json.substring(json.indexOf(':') + 1));
-            return this.FindJSONObject<T>(undefined, undefined, keyName, currentElement);
-        }
-
-        if (!currentElement) return undefined;
-        if (currentElement[keyName]) {
-            return currentElement;
-        }
-        let result = undefined;
-        for (let i in currentElement) {
-            if (result) break;
-            if (typeof currentElement[i] === 'object')
-                result = result ?? this.FindJSONObject<T>(undefined, undefined, keyName, currentElement[i]);
-        }
-        return result as T;
+        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
+            if (parent[keyName]) {
+                return parent[keyName];
+            }
+            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
+                const result = FindValueForKeyName(child);
+                if (result) {
+                    return result;
+                }
+            }
+            return undefined;
+        })(record) as T;
     }
 }
