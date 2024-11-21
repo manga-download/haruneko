@@ -88,7 +88,7 @@ type APIPages = {
         extra: {
             subscribed: boolean
             comic: {
-                metadata: {
+                metadata?: {
                     imageShuffle: boolean
                 }
             }
@@ -215,7 +215,7 @@ export class LezhinBase extends DecoratableMangaScraper {
         parameters.episodeID = episode.id;
         parameters.comicID = episode.idComic;
         parameters.updatedAt = episode.updatedAt;
-        parameters.shuffled = !!comic.metadata.imageShuffle;
+        parameters.shuffled = !!comic.metadata?.imageShuffle;
         parameters.subscribed= subscribed;
 
         const extension = this.Settings.forceJPEG.Value ? '.jpg' : '.webp';
