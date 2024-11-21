@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './AsuraScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
@@ -20,9 +20,16 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
+type JSONChapter = {
+    name: number
+}
+
+type JSONPage = {
+    url: string;
+}
+
 @Common.MangasMultiPageCSS('/series?page={page}', 'div.grid a', 1, 1, 0, MangaInfoExtractor)
-@MangaStream.PagesSinglePageCSS(excludes, 'img[alt*="chapter"]')
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -47,8 +54,35 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div.scrollbar-thumb-themecolor a.block');
-        return chapters.map(chapter => new Chapter(this, manga, [manga.Identifier, 'chapter', chapter.pathname.match(/(\d+)+$/)[1]].join('/'), chapter.textContent.trim()));
+        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${manga.Identifier}`, this.URI)), 'script:not([src])');
+        const chapters = this.ExtractData<JSONChapter[]>(scripts, 'is_early_access', 'chapters');
+        return chapters.map(chapter => new Chapter(this, manga, [manga.Identifier, 'chapter', chapter.name.toString()].join('/'), `Chapter ${chapter.name}`));
     }
 
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${chapter.Identifier}`, this.URI)), 'script:not([src])');
+        const pages = this.ExtractData<JSONPage[]>(scripts, 'chapterName', 'pages');
+        return pages
+            .filter(page => excludes.none(pattern => pattern.test(page.url)))
+            .map(page => new Page(this, chapter, new URL(page.url)));
+    }
+
+    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
+        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
+        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
+        let record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
+
+        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
+            if (parent[keyName]) {
+                return parent[keyName];
+            }
+            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
+                const result = FindValueForKeyName(child);
+                if (result) {
+                    return result;
+                }
+            }
+            return undefined;
+        })(record) as T;
+    }
 }
