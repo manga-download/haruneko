@@ -8,7 +8,7 @@ import * as Grouple from './decorators/Grouple';
 @Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, 50, 0)
 @Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)
 @Grouple.PagesSinglePageJS()
-@Grouple.ImageAjax()
+@Grouple.ImageAjaxWithMirrors()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

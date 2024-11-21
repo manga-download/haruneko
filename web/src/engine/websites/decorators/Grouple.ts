@@ -56,7 +56,7 @@ type PageParameters = {
  * Extracts the pages from the HTML page of the given {@link chapter}.
  * @param this - A reference to the {@link MangaScraper}
  * @param chapter - A reference to the {@link Chapter} which contains the pages
- * @param script - A script to extract the pages as \{ pics : string[], servers: string[] \}
+ * @param script - A script to extract the pages as \{ url : string, mirrors: string[] \}
  */
 async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string = pagesWithServersScript, delay: number = 1500): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
@@ -67,7 +67,7 @@ async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, scri
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter using the given JS {@link script}.
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
- * @param script - A script to extract the pages as \{ pics : string[], servers: string[] \}
+ * @param script - A script to extract the pages as \{ url : string, mirrors: string[] \}
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
 export function PagesSinglePageJS(script = pagesWithServersScript, delay = 0) {
@@ -84,20 +84,20 @@ export function PagesSinglePageJS(script = pagesWithServersScript, delay = 0) {
 
 /**
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
- * This method fetch pages by trying different urls. Page must have "alternativeUrls: url,url, url, etc..." in Parameters.
+ * This method fetch pages by trying different urls. Page must have "mirrors: url,url, url, etc..." in Parameters.
  */
-export function ImageAjax() {
+export function ImageAjaxWithMirrors() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchImage.call(this, page, priority, signal);
+                return FetchMirroredImage.call(this, page, priority, signal);
             }
         };
     };
 }
 
-async function FetchImage(this: MangaScraper, page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+async function FetchMirroredImage(this: MangaScraper, page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         for (const uri of [page.Link, ...page.Parameters.mirrors]) {
             try {

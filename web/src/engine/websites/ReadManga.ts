@@ -8,7 +8,7 @@ import * as Grouple from './decorators/Grouple';
 @Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, 50, 0)
 @Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)// TODO: Randomly redirects to Usagi
 @Grouple.PagesSinglePageJS()
-@Grouple.ImageAjax()
+@Grouple.ImageAjaxWithMirrors()
 export default class extends DecoratableMangaScraper {
     public constructor() {
         super('readmanga', `ReadManga`, 'https://zz.readmanga.io', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
