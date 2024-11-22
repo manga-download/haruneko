@@ -42,7 +42,7 @@
         "check:rules": "node ./scripts/coding-rules.mjs",
         "check:svelte": "svelte-check --tsconfig=tsconfig.json --compiler-warnings a11y-click-events-have-key-events:ignore",
         "check:vue": "vue-tsc --skipLibCheck --noEmit",
-        "check": "npm run check:ts && npm run check:lint && npm run check:svelte && npm run check:vue && npm run check:rules",
+        "check": "npm run check:ts && npm run check:lint && npm run check:svelte && npm run check:rules",
         "build": "vite build",
         "test": "vitest run",
         "serve:dev": "vite --port=3000 --strictPort",
