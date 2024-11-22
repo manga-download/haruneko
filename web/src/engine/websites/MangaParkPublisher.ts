@@ -71,6 +71,6 @@ export default class extends DecoratableMangaScraper {
 
         for (let a = 0; a < r; a += 1)
             o[a] = sourceArray[a] ^ e[a % i];
-        return o;
+        return o.buffer;
     }
 }
