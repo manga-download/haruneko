@@ -22,11 +22,9 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 function ChapterExtractor(element: HTMLElement) {
-    const num = element.querySelector('div.chapterNumber span').textContent.trim();
-    const title = element.querySelector('div.chapterNumber p.chapterTitle').textContent.trim();
     return {
         id: element.dataset.chapterId,
-        title: (num + ' - ' + title).trim(),
+        title: element.querySelector('.chapterTitle').textContent.trim(),
     };
 }
 
