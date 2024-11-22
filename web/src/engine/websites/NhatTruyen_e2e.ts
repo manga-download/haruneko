@@ -6,7 +6,7 @@ const config = {
         title: 'NhatTruyen'
     },
     container: {
-        url: 'https://nhattruyenvn.com/truyen-tranh/shy',
+        url: 'https://nhattruyenv.com/truyen-tranh/shy',
         id: '/truyen-tranh/shy',
         title: 'Shy'
     },
