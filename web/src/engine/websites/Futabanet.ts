@@ -6,7 +6,7 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
-@Common.MangaCSS(/^https:\/\/gaugau\.futabane(t|x)\.jp\/list\/work\/[^/]+$/, 'div.works__grid div.list__text div.mbOff h1')
+@Common.MangaCSS(/^https:\/\/gaugau\.futabane(t|x)\.jp\/list\/work\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
 @Common.MangasMultiPageCSS('/list/works?page={page}', 'div.works__grid div.list__box h4 a')
 
 export default class extends DecoratableMangaScraper {
@@ -29,13 +29,13 @@ export default class extends DecoratableMangaScraper {
             });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> { //Not sure if needed anymore
         let pages: Page[] = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div.works_tateyomi__img img');
         pages = pages?.map(page => new Page(this, chapter, page.Link, { useCommon: true }));
         return pages?.length > 0 ? pages : await SpeedBinb.FetchPagesSinglePageAjaxv016130.call(this, chapter);
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> { //Not sure if needed anymore
         return page.Parameters?.useCommon ? Common.FetchImageAjax.call(this, page, priority, signal) : SpeedBinb.FetchImageAjax.call(this, page, priority, signal);
     }
 }
