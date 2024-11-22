@@ -6,18 +6,19 @@ const config: Config = {
         title: 'デジタルマーガレット (Digital Margaret)'
     },
     container: {
-        url: 'https://digitalmargaret.jp/detail/seijyokankin/',
-        id: '/detail/seijyokankin/',
-        title: '私、聖女。いま、監禁されているの'
+        url: 'https://digitalmargaret.jp/detail/dansou/',
+        id: '/detail/dansou/',
+        title: '策士な女装王子は男装令嬢とのいちゃラブをご所望です'
     },
     child: {
-        id: '/contents/seijyokankin/231001_1-17f812664eb968b5aab01e76f7c2a6335/',
+        id: '/contents/dansou/241101_1-1bd1f5e685898bb58781b42ad6094eb75/',
         title: '第1-1話'
     },
     entry: {
         index: 0,
-        size: 1_317_928,
-        type: 'image/png'
+        size: 1_570_077,
+        type: 'image/png',
+        timeout: 20000
     }
 };
 

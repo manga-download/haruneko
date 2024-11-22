@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -14,7 +15,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div#contents div.h2_area_comic h2.h2ttl_comic')
 @Common.MangasMultiPageCSS('/wp-admin/admin-ajax.php?action=get_flex_titles_for_toppage&get_num=64&page={page}', 'div.update_work_size div.update_work_info_img a', 1, 1, 0, MangaExtractor)
-@SpeedBinb.PagesSinglePageAjaxV016061()
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016061)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

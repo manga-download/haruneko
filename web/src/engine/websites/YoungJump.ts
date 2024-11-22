@@ -1,9 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './YoungJump.webp';
-import { DecoratableMangaScraper, Manga, type Page, type MangaPlugin, type Chapter } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
 
 type APIMagazine = {
     url: string,
@@ -12,7 +13,7 @@ type APIMagazine = {
 }
 
 @Common.ChaptersUniqueFromManga()
-//@SpeedBinb.PagesSinglePageAjaxv016201()
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016201, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -39,10 +40,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchJSON<APIMagazine[]>(new Request(new URL('/yj-rest-apis/getBookInfo.php', this.URI)));
         return data.map(magazine => new Manga(this, provider, magazine.url, `${magazine.issue} - ${magazine.number}`.trim()));
     }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), 'true', 2000); //set cookies
-        return SpeedBinb.FetchPagesSinglePageAjaxv016201.call(this, chapter);
-    }
-
 }

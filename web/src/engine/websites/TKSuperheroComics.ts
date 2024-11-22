@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS} from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -13,7 +14,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/{origin}\/rensai\/[^/]+\/$/, 'div.manga-overview-top-wrapper h2.manga-heading')
 @Common.MangasSinglePageCSS('/rensai', 'li.rensai-episode-list a', MangaExtractor)
-@SpeedBinb.PagesSinglePageAjaxV016061()
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016061)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

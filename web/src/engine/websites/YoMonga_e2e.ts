@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '/titles/306/?episode=1',
-        title: 'Chapter.1',
+        title: 'Chapter.1_1巻',
         timeout: 20000
     },
     entry: {

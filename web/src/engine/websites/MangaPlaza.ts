@@ -1,9 +1,10 @@
 ﻿import { Tags } from '../Tags';
 import icon from './MangaPlaza.webp';
-import { Chapter, DecoratableMangaScraper, type Page, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
 
 type APIChapterResult = {
     data: {
@@ -13,6 +14,7 @@ type APIChapterResult = {
 }
 
 @Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.mainTitle h1.titleTxt')
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -63,10 +65,4 @@ export default class extends DecoratableMangaScraper {
 
         return chapters.distinct();
     }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI), { headers: { Referer: this.URI.origin } }), 'true', 3000);//set necessary cookies
-        return SpeedBinb.FetchPagesSinglePageAjaxv016130.call(this, chapter);
-    }
-
 }

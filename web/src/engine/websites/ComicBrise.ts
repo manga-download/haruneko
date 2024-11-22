@@ -4,10 +4,11 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
 
 @Common.MangaCSS(/^{origin}\/contents\/[^/]+\/$/, '.post-title')
 @Common.MangasSinglePageCSS('/titlelist', '.list-works a')
-@SpeedBinb.PagesSinglePageAjaxV016061()
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016061)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

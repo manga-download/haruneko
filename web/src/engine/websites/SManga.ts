@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../pr
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchWindowScript } from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
 
 type SSD = {
     datas?: [{
@@ -22,7 +23,7 @@ type SSD = {
 }
 
 @Common.MangasNotSupported()
-@SpeedBinb.PagesSinglePageAjaxv016130()
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
@@ -47,7 +48,7 @@ export default class extends DecoratableMangaScraper {
         return item_datas.map(chapter => new Chapter(this, manga, `/reader/main.php?cid=${this.IsbnToCid(chapter.isbn)}`, chapter.item_name.replace(manga.Title, '').trim().replace(/^／/, '').trim()));
     }
 
-    IsbnToCid(isbn: string): string {
+    private IsbnToCid(isbn: string): string {
         return isbn.replaceAll('-', '');
     }
 }

@@ -1,8 +1,9 @@
 ﻿import { Tags } from '../Tags';
-import icon from './BookHodai.webp';
+import icon from './ComicPorta.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
+import { SBVersion } from './decorators/SpeedBinb';
 
 function ChapterExtractor(element: HTMLElement) {
     return {
@@ -14,7 +15,7 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangaCSS(/^{origin}\/series\/\d+\/$/, 'div#breadcrumb li:last-of-type')
 @Common.MangasSinglePageCSS('/series/', 'div.series-list ul li h3.title a')
 @Common.ChaptersSinglePageCSS('ul.episode-list li.episode div.inner div.wrap p.episode-btn', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjaxV016061()
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016061)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

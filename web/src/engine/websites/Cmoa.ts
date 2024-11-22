@@ -4,9 +4,10 @@ import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
 
 @Common.MangasNotSupported()
-@SpeedBinb.PagesSinglePageAjaxv016452()
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016452)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

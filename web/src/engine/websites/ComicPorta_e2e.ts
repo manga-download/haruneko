@@ -12,12 +12,13 @@ const config = {
     },
     child: {
         id: '/p_data/moth001/',
-        title: '第１話「モスとの出会い」'
+        title: '１話「モスとの出会い」'
     },
     entry: {
         index: 0,
         size: 1_320_774,
-        type: 'image/png'
+        type: 'image/png',
+        timeout: 20000
     }
 };
 

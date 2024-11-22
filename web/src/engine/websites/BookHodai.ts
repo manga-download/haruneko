@@ -4,12 +4,14 @@ import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchHTML } from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
+
 function MangaLabelExtractor(element: HTMLElement): string {
     return element.textContent.split('＞').pop().trim() || element.textContent.trim();
 }
 
-@Common.MangaCSS(/^{origin}\/[^/]+\/backnumber\/\d+$/, 'section.breadcrumb div.bread-text', MangaLabelExtractor)
-@SpeedBinb.PagesSinglePageAjaxv016130()
+@Common.MangaCSS(/^{origin}\/[^/]+\/backnumber\/\d+$/, 'ol.c-breadcrumb li:last-of-type a, div.p-book-overview__detail h2.p-book-overview__detail-bookname', MangaLabelExtractor)
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -37,16 +39,16 @@ export default class extends DecoratableMangaScraper {
 
         //get first "chapter" (book) details
         const bookdetails = dom.querySelector<HTMLDivElement>('section.p-book-overview');
-        let title = bookdetails.querySelector('.p-book-overview__detail-volnumber').textContent.trim();
+        let title = (bookdetails.querySelector('span.p-book-overview__detail-volnumber') ?? bookdetails.querySelector('h2.p-book-overview__detail-vol')).textContent.replaceAll('\n', '').trim();
         title = title.replace(manga.Title, '').trim() != '' ? title.replace(manga.Title, '').trim() : title;
         const chapterlinkNode = bookdetails.querySelector<HTMLAnchorElement>('a[href*="viewer"');
-        chapters.push(new Chapter(this, manga, chapterlinkNode.pathname + chapterlinkNode.search, title));
+        if (chapterlinkNode) chapters.push(new Chapter(this, manga, chapterlinkNode.pathname + chapterlinkNode.search, title));
 
         const chaptersNodes = [...dom.querySelectorAll<HTMLElement>('div.p-book-backnumber-series__item')];
         for (const chapter of chaptersNodes) {
-            const title = chapter.querySelector('.p-book-backnumber-series__volnumber').textContent.trim();
+            const title = (chapter.querySelector('.p-book-backnumber-series__volnumber') ?? chapter.querySelector('.p-book-backnumber-series__book-nm')).textContent.trim();
             const link = chapter.querySelector<HTMLAnchorElement>('a[href*="viewer"]');
-            chapters.push(new Chapter(this, manga, link.pathname + link.search, title.replace(manga.Title, '')));
+            chapters.push(new Chapter(this, manga, link.pathname + link.search, title.replace(manga.Title, '').trim()));
         }
         return chapters.distinct();
     }

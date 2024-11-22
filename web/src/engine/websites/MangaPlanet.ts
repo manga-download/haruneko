@@ -4,16 +4,18 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { SBVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLElement) {
-    const id = element.querySelector('a').pathname;
-    const title = element.querySelector('h3').innerText.trim();
-    return {id, title};
+    return {
+        id: element.querySelector('a').pathname,
+        title: element.querySelector('h3').innerText.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.card-body.book-detail h3')
 @Common.MangasMultiPageCSS('/browse/title?ttlpage={page}', 'div#Title .row.book-list', 1, 1, 0, MangaExtractor)
-@SpeedBinb.PagesSinglePageAjax()
+@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
@@ -52,10 +54,5 @@ export default class extends DecoratableMangaScraper {
         }
         return chapters;
     }
-    /*
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI), { headers: { Referer: this.URI.origin } }), 'true', 10000);//set necessary cookies
-        return SpeedBinb.FetchPagesSinglePageAjaxv016130.call(this, chapter);
-    }*/
 
 }

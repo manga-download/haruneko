@@ -12,11 +12,11 @@ const config: Config = {
     },
     child: {
         id: '/bviewer/s/?cid=20063601_001',
-        title: '001'
+        title: '1'
     },
     entry: {
         index: 0,
-        size: 2_218_525,
+        size: 2_219_447,
         type: 'image/png'
     }
 };
