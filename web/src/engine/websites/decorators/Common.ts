@@ -559,8 +559,8 @@ export function ImageAjaxFromHTML(queryImage: string, detectMimeType = false, de
 /**
  * A helper function to detect and get the mime typed image data of a buffer.
  */
-export async function GetTypedData(buffer: ArrayBuffer): Promise<Blob> {
-    const bytes = new Uint8Array(buffer);
+export async function GetTypedData(buffer: ArrayBuffer | Uint8Array): Promise<Blob> {
+    const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
     // WEBP [52 49 46 46 . . . . 57 45 42 50]
     if (bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) {
         return new Blob([bytes], { type: 'image/webp' });
