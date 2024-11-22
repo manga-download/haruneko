@@ -45,7 +45,7 @@ class TestFixture extends PuppeteerFixture {
     }
 }
 
-describe('BrowserScan', { timeout: 10_000 }, () => {
+describe('BrowserScan', { timeout: 15_000 }, () => {
 
     it('Should pass Bot Detection Test', async () => {
         const fixture = await new TestFixture().SetupPage('https://www.browserscan.net/bot-detection', EvadeChromeDevToolProtocolDetection);
@@ -57,7 +57,7 @@ describe('BrowserScan', { timeout: 10_000 }, () => {
     });
 });
 
-describe('CloudFlare', { timeout: 10_000 }, () => {
+describe('CloudFlare', { timeout: 15_000 }, () => {
 
     it('Should bypass JavaScript Challenge', async () => {
         const fixture = await new TestFixture().SetupPage('https://cloudflare.bot-check.ovh/automatic');
@@ -87,7 +87,7 @@ describe('CloudFlare', { timeout: 10_000 }, () => {
     });
 });
 
-describe('Vercel', { timeout: 10_000 }, () => {
+describe('Vercel', { timeout: 15_000 }, () => {
 
     it.skip('Should bypass Attack Challenge Mode', async () => {
         const fixture = await new TestFixture().SetupPage('https://vercel.bot-check.ovh', EvadeChromeDevToolProtocolDetection);
