@@ -457,7 +457,6 @@ export { default as MiniTwoScan } from './MiniTwoScan';
 export { default as mkzhan } from './mkzhan';
 export { default as MMFenix } from './MMFenix';
 export { default as MonochromeScans } from './MonochromeScans';
-export { default as MonoManga } from './MonoManga';
 export { default as MonzeeKomik } from './MonzeeKomik';
 export { default as MrYaoi } from './MrYaoi';
 export { default as MultPorn } from './MultPorn';
