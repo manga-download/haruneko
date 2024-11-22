@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: "Allgemein",
   Frontend_Classic_Sidenav_Settings_Interface: "Benutzeroberfläche",
   Frontend_Classic_Sidenav_Settings_Trackers: "Tracking Platform",
-  Frontend_Classic_Sidenav_Settings_Network: "Netzwerk",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: 'Fluent Core',
   Frontend_FluentCore_Description: "Eine einfache Benutzeroberfläche mit reduzierter Ausstattung, vor allem für Entwickler, um wichtige Funktionalität schnell zu überprüfen",

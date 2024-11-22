@@ -19,9 +19,9 @@ export class RemoteFixture extends PuppeteerFixture {
     }
 }
 
-describe('PluginController', () => {
+describe('PluginController', { concurrent: true }, () => {
 
-    describe('Website Icons', { concurrent: true }, async () => {
+    describe('Website Icons', async () => {
 
         const fixture = new RemoteFixture();
         const plugins = await fixture.GetRemoteWebsitePlugins();
