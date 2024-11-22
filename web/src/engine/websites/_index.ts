@@ -656,7 +656,6 @@ export { default as TruyenTranhDammy } from './TruyenTranhDammy';
 export { default as TruyenTranhOnline } from './TruyenTranhOnline';
 export { default as TruyenTranhtuan } from './TruyenTranhtuan';
 export { default as TRWebtoon } from './TRWebtoon';
-export { default as TsukiMangas } from './TsukiMangas';
 export { default as Tsumino } from './Tsumino';
 export { default as TukangKomik } from './TukangKomik';
 export { default as TuMangaNet } from './TuMangaNet';
