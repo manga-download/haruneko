@@ -246,6 +246,7 @@ export { default as KSGroupScans } from './KSGroupScans';
 export { default as Kuaikanmanhua } from './Kuaikanmanhua';
 export { default as kuimh } from './kuimh';
 export { default as KuManga } from './KuManga';
+export { default as KumaPage } from './KumaPage';
 export { default as KumoTran } from './KumoTran';
 export { default as KunManga } from './KunManga';
 export { default as KurageBunch } from './KurageBunch';
