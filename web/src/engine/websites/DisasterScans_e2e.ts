@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://disasterscans.com/comics/17993-yuan-zun',
-        id: '17993',
+        id: '/comics/17993-yuan-zun',
         title: 'Yuan Zun'
     },
     child: {
