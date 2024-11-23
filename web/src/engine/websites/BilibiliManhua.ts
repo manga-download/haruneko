@@ -178,9 +178,9 @@ export default class extends DecoratableMangaScraper {
     private async DecryptImage(blob: Blob, link : URL): Promise<Blob> {
 
         const buffer = new Uint8Array(await blob.arrayBuffer());
-        const dataView = new DataView(buffer.slice(1, 5).buffer).getInt32(0, false);
-        const imageData = buffer.slice(5, dataView + 5);
-        const key = buffer.slice(dataView + 5);
+        const dataLength = new DataView(buffer.slice(1, 5).buffer).getInt32(0, false);
+        const imageData = buffer.slice(5, dataLength + 5);
+        const key = buffer.slice(dataLength + 5);
 
         const cryptoParameters = { al: 'AES-CBC', an: [60, 76], at: [0, 20] };
         const decodedCpx = new Uint8Array(window.atob(decodeURIComponent(link.searchParams.get('cpx'))).split('').map(char => char.charCodeAt(0)));
