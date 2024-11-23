@@ -62,3 +62,8 @@ jobs:
         env:
           DISPLAY: ':99'
         run: npm run test:websites -- MangaDex
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test Results (${{ matrix.os }})
+          path: ./**/screenshot_*.png
