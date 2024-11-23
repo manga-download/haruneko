@@ -201,7 +201,7 @@ export default class extends DecoratableMangaScraper {
         const finalData = new Uint8Array(decrypted.length + rawData.length);
         finalData.set(decrypted, 0);
         finalData.set(rawData, decrypted.length);
-        return Common.GetTypedData(finalData);
+        return Common.GetTypedData(finalData.buffer);
     }
 
     private GetImageSizeByQuality(imgWidth: number): number {
