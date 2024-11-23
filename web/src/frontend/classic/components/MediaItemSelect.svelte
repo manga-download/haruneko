@@ -1,16 +1,16 @@
 <script lang="ts">
     import {
         Button,
-        Search,
-        Dropdown,
         ContextMenu,
         ContextMenuDivider,
         ContextMenuGroup,
         ContextMenuOption,
+        Dropdown,
         InlineNotification,
         Loading,
+        Search,
     } from 'carbon-components-svelte';
-    import { EarthFilled } from 'carbon-icons-svelte';
+    import { ChevronSort, EarthFilled } from 'carbon-icons-svelte';
 
     import { fade } from 'svelte/transition';
 
@@ -34,13 +34,15 @@
     import { FlagType } from '../../../engine/ItemflagManager';
     import { resizeBar } from '../lib/actions';
 
-    let items: MediaContainer<MediaItem>[] = [];
-    let filteredItems: MediaContainer<MediaItem>[] = [];
-    let selectedItems: MediaContainer<MediaItem>[] = [];
+    let items: MediaContainer<MediaItem>[] = $state([]);
+    let filteredItems: MediaContainer<MediaItem>[] = $state([]);
+    let selectedItems: MediaContainer<MediaItem>[] = $state([]);
+    let reverseSortOrder: boolean = $state(false);
 
-    let loadItem: Promise<MediaContainer<MediaChild>>;
+    let loadItem: Promise<MediaContainer<MediaChild>> = $state();
+    loadItem = updateMedia($selectedMedia);
+    selectedMedia.subscribe(() => loadItem = updateMedia($selectedMedia)) ;
 
-    $: loadItem = updateMedia($selectedMedia);
     async function updateMedia(
         media: MediaContainer<MediaChild>,
     ): Promise<MediaContainer<MediaChild>> {
@@ -64,42 +66,48 @@
         $selectedItem = item;
     };
 
-    let itemNameFilter = '';
-    $: filteredItems = items?.filter((item) => {
-        let conditions: boolean[] = [];
-        if (itemNameFilter)
-            conditions.push(
-                item.Title.toLowerCase().indexOf(
-                    itemNameFilter.toLowerCase(),
-                ) !== -1,
-            );
-        if (langFilter) conditions.push(item.Tags.Value.includes(langFilter));
-        return conditions.every((condition) => condition);
+    let itemNameFilter = $state('');
+    
+    $effect(() => {
+        filteredItems = items?.filter((item) => {
+            let conditions: boolean[] = [];
+            if (itemNameFilter)
+                conditions.push(
+                    item.Title.toLowerCase().indexOf(
+                        itemNameFilter.toLowerCase(),
+                    ) !== -1,
+                );
+            if (langFilter) conditions.push(item.Tags.Value.includes(langFilter));
+            return conditions.every((condition) => condition);
+        });
     });
+    let showItems = $derived(reverseSortOrder ? filteredItems.toReversed() : filteredItems);
 
-    let itemsdiv: HTMLElement;
+    let itemsdiv: HTMLElement = $state();
 
-    let MediaLanguages: Tag[] = [];
-    $: MediaLanguages = items.reduce((detectedLangaugeTags: Tag[], item) => {
-        const undetectedLangaugeTags = item.Tags.Value.filter(
-            (tag) =>
-                !detectedLangaugeTags.includes(tag) &&
-                availableLanguageTags.includes(tag),
-        );
-        return [...detectedLangaugeTags, ...undetectedLangaugeTags];
-    }, []);
-    $: langComboboxItems =
-        MediaLanguages.length > 0
+    let MediaLanguages: Tag[] = $derived(
+        items.reduce((detectedLangaugeTags: Tag[], item) => {
+            const undetectedLangaugeTags = item.Tags.Value.filter(
+                (tag) =>
+                    !detectedLangaugeTags.includes(tag) &&
+                    availableLanguageTags.includes(tag),
+            );
+            return [...detectedLangaugeTags, ...undetectedLangaugeTags];
+        }, [])
+    );
+    let langComboboxItems =
+        $derived(MediaLanguages.length > 0
             ? [
                   { id: '*', text: '*' },
                   ...MediaLanguages.map((lang) => {
                       return { id: lang, text: $Locale[lang.Title]() };
                   }),
               ]
-            : [{ id: '*', text: '*' }];
+            : [{ id: '*', text: '*' }]);
 
-    let langFilterID: '*' | Tag = '*';
-    $: langFilter = langFilterID === '*' ? null : langFilterID;
+    let langFilterID: '*' | Tag = $state('*');
+    let langFilter = $derived(langFilterID === '*' ? null : langFilterID);
+
     /*
      * Multi Item Selection
      * CTRL + click = individual add to selected list
@@ -113,10 +121,11 @@
     let multipleSelectionDragFrom: number = -1;
     let multipleSelectionDragTo: number = -1;
     let selectedDragItems: MediaContainer<MediaItem>[] = [];
-    let contextItem: MediaContainer<MediaItem>;
-    let contextMenuOpen;
-
-    $: if (!contextMenuOpen) contextItem = null;
+    let contextItem: MediaContainer<MediaItem> = $state();
+    let contextMenuOpen = $state(false);
+    $effect(() => {
+        if (!contextMenuOpen) contextItem = null;
+    });
 
     const mouseHandler = (item: MediaContainer<MediaItem>) => (event: any) => {
         if (event.button === 2) {
@@ -211,6 +220,10 @@
                 item as StoreableMediaContainer<MediaItem>,
             );
         });
+    }
+
+    function reverseSort() {
+        reverseSortOrder = !reverseSortOrder;
     }
 </script>
 
@@ -319,7 +332,7 @@
                 <div>... items</div>
             </div>
         {:then}
-            {#each filteredItems as item (item)}
+            {#each showItems as item (item)}
                 <MediaComponent
                     {item}
                     multilang={!langFilter && MediaLanguages.length > 1}
@@ -341,8 +354,16 @@
             </div>
         {/await}
     </div>
-    <div id="ItemCount">
+    <div id="ItemBottom">
         Items: {filteredItems.length}/{items.length}
+        <Button
+            size="small"
+            kind="ghost"
+            icon={ChevronSort}
+            iconDescription="Reverse items sorting"
+            onclick={reverseSort}
+            style="float:right; padding:0; height:1.5em; min-height:1.5em">
+        </Button>
     </div>
     <div 
         role="separator"
@@ -365,7 +386,7 @@
             'LanguageFilter Resize'
             'ItemFilter Resize'
             'ItemList Resize'
-            'ItemCount Resize';
+            'ItemBottom Resize';
         grid-area: Item;
         min-width: 22em;
     }
@@ -389,8 +410,8 @@
     #ItemTitle {
         padding-top: 0.3em;
     }
-    #ItemCount {
-        grid-area: ItemCount;
+    #ItemBottom {
+        grid-area: ItemBottom;
         margin: 0.25em;
     }
     :global(#ItemList .list) {
