@@ -54,7 +54,7 @@ export default class extends DecoratableMangaScraper {
     private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
         const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
         const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
-        let record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
+        const record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
 
         return (function FindValueForKeyName(parent: JSONElement): JSONElement {
             if (parent[keyName]) {
