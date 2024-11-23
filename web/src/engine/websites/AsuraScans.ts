@@ -18,7 +18,7 @@ const chapterScript = `
         resolve( [...document.querySelectorAll('div h3 a[href*="/chapter/"]')].map(chapter => {
             return {
                 id: chapter.pathname.replace(/(-[^-]+\\/chapter)/, '-/chapter'),
-                title : chapter.textContent.trim()
+                title : chapter.innerText.replace('\\n', ' ').trim()
             };
         }));
     });

@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '606536',
-        title: '1 - 第1話①'
+        title: '第1話①'
     },
     entry: {
         index: 0,
