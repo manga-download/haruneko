@@ -4,9 +4,6 @@
     import {
         Key,
         Locale,
-        FuzzySearch,
-        SidenavTrail,
-        SidenavIconsOnTop,
         ViewerDoublePage,
         ViewerMode,
         ViewerReverseDirection,
@@ -39,24 +36,3 @@
         <Toggle bind:toggled={$ViewerDoublePage} />
     </SettingItem>
 {/if}
-
-<SettingItem
-    labelText={$Locale[FuzzySearch.setting.Label]()}
-    helperText={$Locale[FuzzySearch.setting.Description]()}
->
-    <Toggle bind:toggled={$FuzzySearch} />
-</SettingItem>
-
-<SettingItem
-    labelText={$Locale[SidenavTrail.setting.Label]()}
-    helperText={$Locale[SidenavTrail.setting.Description]()}
->
-    <Toggle bind:toggled={$SidenavTrail} />
-</SettingItem>
-
-<SettingItem
-    labelText={$Locale[SidenavIconsOnTop.setting.Label]()}
-    helperText={$Locale[SidenavIconsOnTop.setting.Description]()}
->
-    <Toggle bind:toggled={$SidenavIconsOnTop} />
-</SettingItem>

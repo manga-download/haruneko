@@ -39,8 +39,6 @@
     import { resizeBar } from '../lib/actions';
     import type { MediaContainer2 } from '../Types';
 
-    let ref:HTMLElement = $state();
-
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild> = $state();
     let loadPlugin: Promise<MediaContainer<MediaChild>> = $state();
@@ -89,7 +87,9 @@
     let filteredmedias: MediaContainer<MediaChild>[] = $state([]);
     $effect(() => {
         medias;
-        filteredmedias = filterMedia(mediaNameFilter);
+        filteredmedias = filterMedia(mediaNameFilter).sort((a, b) => 
+            a.Title.localeCompare(b.Title)
+        );
     });
     let fuse = new Fuse([]);
 
@@ -97,6 +97,7 @@
 
     selectedPlugin.subscribe((newplugin) => {
         const previousPlugin = currentPlugin;
+        loadPlugin = Promise.resolve(newplugin);
         currentPlugin = newplugin;
         pluginDropdownSelected = currentPlugin?.Identifier;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
@@ -198,7 +199,7 @@
         />
     </div>
 {/if}
-<div id="Media" transition:fade bind:this={ref}>
+<div id="Media" transition:fade>
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
@@ -257,7 +258,7 @@
             </div>
         {:then}
         <VirtualList style='height:100%' items={filteredmedias}>
-            {#snippet vl_slot({ index, item })}
+            {#snippet vl_slot({ item })}
                 <Media 
                     media={item as MediaContainer2}
                 />
@@ -267,7 +268,7 @@
             <div class="error">
                 <InlineNotification
                     lowContrast
-                    title={error}
+                    title={error.name}
                     subtitle={error.message}
                 />
             </div>
@@ -280,7 +281,7 @@
         role="separator"
         aria-orientation="vertical"
         class="resize"
-        use:resizeBar={{target: ref, orientation:'vertical'}}
+        use:resizeBar={{orientation:'vertical'}}
     > </div>
     
 </div>

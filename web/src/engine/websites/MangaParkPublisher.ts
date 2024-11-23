@@ -22,11 +22,9 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 function ChapterExtractor(element: HTMLElement) {
-    const num = element.querySelector('div.chapterNumber span').textContent.trim();
-    const title = element.querySelector('div.chapterNumber p.chapterTitle').textContent.trim();
     return {
         id: element.dataset.chapterId,
-        title: (num + ' - ' + title).trim(),
+        title: element.querySelector('.chapterTitle').textContent.trim(),
     };
 }
 
@@ -73,6 +71,6 @@ export default class extends DecoratableMangaScraper {
 
         for (let a = 0; a < r; a += 1)
             o[a] = sourceArray[a] ^ e[a % i];
-        return o;
+        return o.buffer;
     }
 }

@@ -6,17 +6,11 @@ import * as Common from './decorators/Common';
 const scriptPages = `
     new Promise((resolve, reject) => {
         try {
+            const extensions = { p: '.png', b: '.bmp', g: '.gif', w: '.webp' };
             const dir = $('#load_dir').val();
             const id = $('#load_id').val();
             const images = Object.values(g_th).map((item, index) => {
-                let extension = '.jpg';
-                switch (item[0]) {
-                    case 'p': extension = '.png'; break;
-                    case 'b': extension = '.bmp'; break;
-                    case 'g': extension = '.gif'; break;
-                    case 'w': extension = '.webp'; break;
-                }
-                const file = (index + 1) + extension;
+                const file = (index + 1) + (extensions[item[0]] ?? '.jpg');
                 return [ 'https://i.hentaifox.com', dir, id, file ].join('/');
             });
             resolve(images);

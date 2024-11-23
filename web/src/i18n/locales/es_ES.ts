@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: 'General',
   Frontend_Classic_Sidenav_Settings_Interface: "Interfaz",
   Frontend_Classic_Sidenav_Settings_Trackers: "Rastreadores",
-  Frontend_Classic_Sidenav_Settings_Network: "Red",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: "Núcleo fluido",
   Frontend_FluentCore_Description: "Una interfaz simple sin campanas ni silbidos, especialmente para los desarrolladores para verificar rápidamente la funcionalidad esencial",
