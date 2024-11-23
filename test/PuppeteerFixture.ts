@@ -15,6 +15,15 @@ export class PuppeteerFixture {
         return PuppeteerFixture.#page;
     }
 
+    public async Screenshot(page: puppeteer.Page) {
+        await page.screenshot({
+            type: 'png',
+            fullPage: true,
+            captureBeyondViewport: true,
+            path: `./screenshot_${Date.now().toString(36)}.png`,
+        });
+    }
+
     protected async OpenPage(url: string, ...evasions: Evasion[]): Promise<puppeteer.Page> {
         const page = await (await this.GetBrowser()).newPage();
         await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
