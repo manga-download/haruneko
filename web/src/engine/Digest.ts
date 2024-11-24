@@ -24,7 +24,7 @@ export function FNV1A(text: string, seed = 2166136261): number {
 }
 
 /**
- * @param text Customized checksum calculation base on concatenated DJB2 algorithm to reduce probability of hash collisions.
+ * Customized 64-Bit checksum calculation based on two concatenated DJB2 algorithms to reduce the probability of hash collisions.
  */
 export function DJB64(text: string, seed = 5381): string {
     let high = seed;
