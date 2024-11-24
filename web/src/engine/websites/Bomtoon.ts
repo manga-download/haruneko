@@ -28,6 +28,9 @@ type ScrambleParams = {
     defaultHeight: number,
 }
 
+const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
+const GetBytesB64 = (encoded: string) => Uint8Array.from(window.atob(encoded), c => c.charCodeAt(0));
+
 export default class extends DelitoonBase {
 
     public constructor() {
@@ -86,9 +89,9 @@ export default class extends DelitoonBase {
     }
 
     private async Decrypt(encrypted: string, scramblekey: string): Promise<number[]> {
-        const cipher = { name: 'AES-CBC', iv: Buffer.from(scramblekey.slice(0, 16)) };
-        const key = await crypto.subtle.importKey('raw', Buffer.from(scramblekey), { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(cipher, key, Buffer.from(encrypted, 'base64'));
+        const cipher = { name: 'AES-CBC', iv: GetBytesUTF8(scramblekey.slice(0, 16)) };
+        const key = await crypto.subtle.importKey('raw', GetBytesUTF8(scramblekey), { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(cipher, key, GetBytesB64(encrypted));
         return JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
     }
 
