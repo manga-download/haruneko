@@ -10,7 +10,6 @@ import * as Grouple from './decorators/Grouple';
 @Grouple.PagesSinglePageJS()
 @Grouple.ImageAjaxWithMirrors()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
         super('usagi', 'Usagi', 'https://web.usagi.one', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Russian, Tags.Source.Aggregator);
     }

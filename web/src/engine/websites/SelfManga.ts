@@ -13,6 +13,7 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('selfmanga', `SelfManga`, 'https://selfmanga.live', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
+
     public override get Icon() {
         return icon;
     }

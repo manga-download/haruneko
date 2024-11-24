@@ -11,7 +11,7 @@ const config: Config = {
         title: 'Sword Art Online: Прогрессив - Скерцо глубокой ночи',
     },
     child: {
-        id: '/sword_art_online__progressiv___skerco_glubokoi_nochi/vol3/19',
+        id: '/sword_art_online__progressiv___skerco_glubokoi_nochi/vol3/19?mtr=1',
         title: '3 - 19 Эпилог',
     },
     entry: {
