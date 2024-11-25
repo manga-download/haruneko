@@ -1,3 +1,4 @@
+import type { Priority } from '../taskpool/TaskPool';
 import type { Chapter, Page } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {

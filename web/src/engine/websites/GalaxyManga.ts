@@ -10,18 +10,37 @@ function ChapterInfoExtractor(element: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/series\/\d+-\d+-[^/]+$/, 'main section > div > div.font-semibold')
+// List of composed references from their discord server
+const origins = [
+    //'ayoub-zrr.xyz', // => currently dead
+    //'flixscans.com', // => currently dead
+    'https://galaxymanga.net',
+    'https://galaxymanga.org',
+    'https://gxcomic.xyz',
+    'https://josephbent.com',
+    //'snowscans.com', // => re-branded as affiliate website
+];
+
+@Common.MangaCSS(new RegExp(`^({origin}|${origins.join('|')})/series/\\d+-\\d+-[^/]+$`), 'main section > div > div.font-semibold')
 @Common.ChaptersSinglePageCSS('main section div.overflow-y-auto div.grid > a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('main > section > div > img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('galaxymanga', 'Galaxy Manga', 'https://josephbent.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
+        super('galaxymanga', 'Galaxy Manga', 'https://galaxymanga.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        await Promise.allSettled(origins.map(async origin => {
+            const uri = new URL((await fetch(origin, { redirect: 'follow' })).url);
+            this.URI.href = uri.origin === origin && uri.pathname !== '/' ? origin : this.URI.href;
+        }));
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {

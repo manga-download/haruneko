@@ -8,10 +8,12 @@ import { type StorageController, Store } from './StorageController';
 import { Key } from './SettingsGlobal';
 
 window.atob = function(encoded: string): string {
+    /* eslint-disable-next-line no-restricted-properties */ //=> This is supposed to run in NodeJS runtime where Buffer is available
     return Buffer.from(encoded, 'base64').toString('utf-8');
 };
 
 window.btoa = function(decoded: string): string {
+    /* eslint-disable-next-line no-restricted-properties */ //=> This is supposed to run in NodeJS runtime where Buffer is available
     return Buffer.from(decoded, 'utf-8').toString('base64');
 };
 
