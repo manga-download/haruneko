@@ -6,7 +6,7 @@ const config = {
         title: 'LikeManga'
     },
     container: {
-        url: 'https://likemanga.io/my-eternal-reign-4250/',
+        url: 'https://likemanga.ink/my-eternal-reign-4250/',
         id: '/my-eternal-reign-4250/',
         title: 'My Eternal Reign'
     },
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 997_542,
+        size: 515_036,
         type: 'image/jpeg'
     }
 };

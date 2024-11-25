@@ -1,10 +1,10 @@
-import { Tags } from '../Tags';
-import icon from './MonoManga.webp';
+﻿import { Tags } from '../Tags';
+import icon from './ImperioDaBritannia.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div#manga-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('monomanga', 'MonoManga', 'https://monomanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish);
+        super('imperiodabritania', 'Imperio Da Britannia', 'https://imperiodabritannia.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

@@ -14,7 +14,7 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Install NPM Packages
         id: packages
         run: npm install
@@ -48,7 +48,7 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Install NPM Packages
         id: packages
         run: npm install
@@ -62,3 +62,9 @@ jobs:
         env:
           DISPLAY: ':99'
         run: npm run test:websites -- MangaDex
+      - name: Upload Test Results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test Results (${{ matrix.os }})
+          path: ./**/screenshot_*.png

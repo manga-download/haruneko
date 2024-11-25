@@ -10,8 +10,8 @@
         "npm": ">=10.2.4"
     },
     "dependencies": {
-        "websocket-rpc": "github:manga-download/websocket-rpc#v1.2.6",
-        "yargs": "17.7.2"
+        "commander": "^12.1.0",
+        "websocket-rpc": "github:manga-download/websocket-rpc#v1.2.6"
     },
     "devDependencies": {
         "@types/ws": "8.5.13",

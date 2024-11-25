@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-function MangaExtractor( anchor: HTMLAnchorElement) {
+export function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
         title: anchor.text.replace(/Bahasa Indonesia$/i, '')
