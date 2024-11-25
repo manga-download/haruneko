@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers
 import * as Common from './decorators/Common';
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { FromHexString } from '../BufferEncoder';
 
 type ContentData = {
     images: Record<string, ImageData[]>;
@@ -17,8 +18,6 @@ type ImageData = {
 type CryptoKey = {
     cryptoKey : string
 }
-
-const FromHexString = (hexString) => Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
 @Common.MangasMultiPageCSS('/free/list?page={page}', 'div.p-book_detail dt.p-book_title a')

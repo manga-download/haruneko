@@ -6,6 +6,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
+import { BufferToHexString, GetBytesUTF8 } from '../BufferEncoder';
 
 type APIMangas = {
     title_list: {
@@ -32,9 +33,6 @@ type TDimension = {
     width: number,
     height: number
 }
-
-const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
-const BufferToHexString = (buffer: ArrayBuffer) => new Uint8Array(buffer).reduce((result, x) => result + x.toString(16).padStart(2, '0'), '');
 
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {

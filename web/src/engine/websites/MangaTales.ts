@@ -3,6 +3,7 @@ import icon from './MangaTales.webp';
 import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesB64, GetBytesUTF8 } from '../BufferEncoder';
 
 type EncryptedData = {
     iv: boolean,
@@ -90,9 +91,6 @@ type APIPages = {
         }
     }
 };
-
-const GetBytesB64 = (encoded: string) => Uint8Array.from(window.atob(encoded), c => c.charCodeAt(0));
-const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
 
 export default class extends DecoratableMangaScraper {
 

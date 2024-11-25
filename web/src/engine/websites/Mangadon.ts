@@ -6,6 +6,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { BufferToHexString } from '../BufferEncoder';
 
 type APIResult = {
     data: APIItem[] | APIItem,
@@ -36,8 +37,6 @@ const auhTokenScript = `
             .then(cookie => !cookie ? resolve(cookie) : resolve(decodeURIComponent(cookie.value))) ;
     });
 `;
-
-const BufferToHexString = (buffer: ArrayBuffer) => new Uint8Array(buffer).reduce((result, x) => result + x.toString(16).padStart(2, '0'), '');
 
 export default class extends DecoratableMangaScraper {
     private readonly imgCDN = 'https://contents.mangadon.me';

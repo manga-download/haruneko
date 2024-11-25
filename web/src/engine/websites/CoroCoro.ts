@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { FromHexString } from '../BufferEncoder';
 
 type JSONManga = {
     id: number;
@@ -31,8 +32,6 @@ type CryptoParams = {
     key: string;
     method: string;
 }
-
-const FromHexString = (hexString) => Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
 
 @Common.MangaCSS(/^{origin}\/title\/\d+$/, 'main > div > div > section > div.grid > h1.font-bold')
 

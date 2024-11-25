@@ -14,12 +14,11 @@ const config: Config = {
         id: '1',
         title: '第1話「傷物令嬢になりました」'
     },
-    /*
     entry: {
         index: 0,
         size: 232_401, //232_406
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 new TestFixture(config).AssertWebsite();

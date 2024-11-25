@@ -3,6 +3,7 @@ import icon from './CopyManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FromHexString, GetBytesUTF8 } from '../BufferEncoder';
 
 type APIResponse<T> = {
     code: number,
@@ -37,9 +38,6 @@ type APIChapters = {
 type APIPage = {
     url :string
 }
-
-const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
-const FromHexString = (hexString) => Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

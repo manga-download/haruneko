@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
+import { BufferToHexString } from '../BufferEncoder';
 
 type APIMangaPage = {
     data: {
@@ -64,7 +65,6 @@ type APIPage = {
     height: number
 }
 
-const BufferToHexString = (buffer: ArrayBuffer) => new Uint8Array(buffer).reduce((result, x) => result + x.toString(16).padStart(2, '0'), '');
 export default class extends DecoratableMangaScraper {
     private readonly apiURL = 'https://comic.pixiv.net/api/app/';
     private nextBuild = 'qLzb8dhGOIox-xYNKI0tH';

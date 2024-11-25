@@ -8,6 +8,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import protobuf from 'protobufjs';
+import { FromHexString } from '../BufferEncoder';
 
 type MangaDetailResponse = {
     manga: ApiManga,
@@ -50,8 +51,6 @@ type ApiImage = {
 type MangasByDayOfWeekResponse = {
     mangas: ApiManga[]
 }
-
-const FromHexString = (hexString) => Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
 
 export default class extends DecoratableMangaScraper {
 

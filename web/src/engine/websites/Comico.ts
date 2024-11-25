@@ -3,6 +3,7 @@ import icon from './Comico.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
+import { BufferToHexString, GetBytesB64, GetBytesUTF8 } from '../BufferEncoder';
 
 export type APIResult<T> = {
     result: {
@@ -70,10 +71,6 @@ type MangaID = {
     id: string,
     lang: string
 }
-
-const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
-const GetBytesB64 = (encoded: string) => Uint8Array.from(window.atob(encoded), c => c.charCodeAt(0));
-const BufferToHexString = (buffer: ArrayBuffer) => new Uint8Array(buffer).reduce((result, x) => result + x.toString(16).padStart(2, '0'), '');
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
