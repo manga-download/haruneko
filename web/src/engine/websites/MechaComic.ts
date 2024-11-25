@@ -18,6 +18,8 @@ type CryptoKey = {
     cryptoKey : string
 }
 
+const FromHexString = (hexString) => Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
 @Common.MangasMultiPageCSS('/free/list?page={page}', 'div.p-book_detail dt.p-book_title a')
 export default class extends DecoratableMangaScraper {
@@ -86,7 +88,7 @@ async function DecryptImage(blob: Blob, cryptoKey: string): Promise<Blob> {
     const data = new Uint8Array(await blob.arrayBuffer());
     const cipherText = data.slice(16);
     const iv = data.slice(0, 16);
-    const aesKey = await crypto.subtle.importKey('raw', Buffer.from(cryptoKey, 'hex'), 'AES-CBC', false, ['decrypt']);
+    const aesKey = await crypto.subtle.importKey('raw', FromHexString(cryptoKey), 'AES-CBC', false, ['decrypt']);
     const decrypted = await crypto.subtle.decrypt({
         name: 'AES-CBC',
         iv: iv

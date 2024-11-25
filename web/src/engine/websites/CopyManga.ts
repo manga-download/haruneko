@@ -38,6 +38,9 @@ type APIPage = {
     url :string
 }
 
+const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
+const FromHexString = (hexString) => Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -61,8 +64,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').at(-1);
-        const request = this.CreateApiRequest(`/api/v3/comic2/${id}`);
-        const { results: { comic } } = await FetchJSON<APIResponse<APISingleComic>>(request);
+        const { results: { comic } } = await FetchJSON<APIResponse<APISingleComic>>(this.CreateApiRequest(`/api/v3/comic2/${id}`));
         return new Manga(this, provider, comic.path_word, comic.name.trim());
     }
 
@@ -86,15 +88,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-
-        const request = this.CreateApiRequest(`/comicdetail/${manga.Identifier}/chapters`);
-        const { results } = await FetchJSON<APIResponse<string>>(request);
+        const { results } = await FetchJSON<APIResponse<string>>(this.CreateApiRequest(`/comicdetail/${manga.Identifier}/chapters`));
         const { groups: { default: { chapters } } } = await this.Decrypt<APIChapters>(results);
         return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-
         const [dataElement] = await FetchCSS<HTMLDivElement>(new Request(new URL(`/comic/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI)), '.imageData');
         const imageData = dataElement.getAttribute('contentKey');
         const images = await this.Decrypt<APIPage[]>(imageData);
@@ -102,10 +101,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async Decrypt<T>(encryptedData: string): Promise<T> {
-
-        const key = Buffer.from(this.defaultKey, 'utf-8');
-        const iv = Buffer.from(encryptedData.substring(0, 16), 'utf-8');
-        const cipher = Buffer.from(encryptedData.substring(16, encryptedData.length), 'hex');
+        const key = GetBytesUTF8(this.defaultKey);
+        const iv = GetBytesUTF8(encryptedData.substring(0, 16));
+        const cipher = FromHexString(encryptedData.substring(16, encryptedData.length));
         const secretKey = await crypto.subtle.importKey('raw', key, {
             name: 'AES-CBC',
             length: 128
@@ -116,7 +114,7 @@ export default class extends DecoratableMangaScraper {
             iv: iv
         }, secretKey, cipher);
 
-        return JSON.parse(Buffer.from(data).toString('utf-8')) as T;
+        return JSON.parse(new TextDecoder().decode(data)) as T;
     }
 
     private CreateApiRequest(pathname: string): Request {

@@ -37,6 +37,8 @@ const auhTokenScript = `
     });
 `;
 
+const BufferToHexString = (buffer: ArrayBuffer) => new Uint8Array(buffer).reduce((result, x) => result + x.toString(16).padStart(2, '0'), '');
+
 export default class extends DecoratableMangaScraper {
     private readonly imgCDN = 'https://contents.mangadon.me';
     private readonly partsWidth = 240;
@@ -57,21 +59,18 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = new URL(url).searchParams.get('tb');
-        const request = new Request(new URL(`/api/v1/comics/${mangaid}`, this.URI));
-        const { data } = await FetchJSON<APIResult>(request);
+        const { data } = await FetchJSON<APIResult>(new Request(new URL(`/api/v1/comics/${mangaid}`, this.URI)));
         const title = (data as APIItem).attributes.name.trim();
         return new Manga(this, provider, mangaid, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL(`/api/v1/comics`, this.URI));
-        const { data } = await FetchJSON<APIResult>(request);
+        const { data } = await FetchJSON<APIResult>(new Request(new URL(`/api/v1/comics`, this.URI)));
         return (data as APIItem[]).map(manga => new Manga(this, provider, manga.id, manga.attributes.name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`/api/v1/comics/${manga.Identifier}?includes%5B%5D=episodes`, this.URI));
-        const { included } = await FetchJSON<APIResult>(request);
+        const { included } = await FetchJSON<APIResult>(new Request(new URL(`/api/v1/comics/${manga.Identifier}?includes%5B%5D=episodes`, this.URI)));
         return included.map(chapter => new Chapter(this, manga, chapter.id, chapter.attributes.name.trim()));
     }
 
@@ -118,7 +117,7 @@ export default class extends DecoratableMangaScraper {
             const m: string[] = [];
 
             async function sha256(text: string): Promise<string> {
-                return Buffer.from(await crypto.subtle.digest('SHA-256', Buffer.from(text))).toString('hex');
+                return BufferToHexString(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
             }
 
             for (let i = 0; i <= numPieces - 1; i++) {
@@ -132,11 +131,11 @@ export default class extends DecoratableMangaScraper {
 
             for (let index = 0; index <= numPieces - 1; index++) {
                 const value = f[index];
-                const r = this.partsWidth * (index % numCols);
-                const l = this.partsHeight * Math.floor(index / numCols);
-                const d = this.partsWidth * (value % numCols);
-                const m = this.partsHeight * Math.floor(value / numCols);
-                ctx.drawImage(image, r, l, this.partsWidth, this.partsHeight, d, m, this.partsWidth, this.partsHeight);
+                const sourceX = this.partsWidth * (index % numCols);
+                const sourceY = this.partsHeight * Math.floor(index / numCols);
+                const destX = this.partsWidth * (value % numCols);
+                const destY = this.partsHeight * Math.floor(value / numCols);
+                ctx.drawImage(image, sourceX, sourceY, this.partsWidth, this.partsHeight, destX, destY, this.partsWidth, this.partsHeight);
             }
         });
     }

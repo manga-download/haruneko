@@ -51,6 +51,8 @@ type MangasByDayOfWeekResponse = {
     mangas: ApiManga[]
 }
 
+const FromHexString = (hexString) => Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.comic-fuz.com';
@@ -150,8 +152,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptPicture(encrypted: Uint8Array, page: ApiImage): Promise<ArrayBuffer> {
-        const iv = Buffer.from(page.iv, 'hex');
-        const key = Buffer.from(page.encryptionKey, 'hex');
+        const iv = FromHexString(page.iv);
+        const key = FromHexString(page.encryptionKey);
 
         const secretKey = await crypto.subtle.importKey(
             'raw',

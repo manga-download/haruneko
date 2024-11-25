@@ -91,6 +91,9 @@ type APIPages = {
     }
 };
 
+const GetBytesB64 = (encoded: string) => Uint8Array.from(window.atob(encoded), c => c.charCodeAt(0));
+const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
+
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://mangatales.com/api/mangas/';
@@ -232,10 +235,10 @@ async function TryDecrypt<T>(data: EncryptedData | T): Promise<T> {
 
 async function Decrypt(serialized: string): Promise<string> {
     const encrypted = serialized.split('|');
-    const data = Buffer.from(encrypted[0], 'base64');
-    const cipher = { name: 'AES-CBC', iv: Buffer.from(encrypted[2], 'base64') };
-    const hash = await crypto.subtle.digest('SHA-256', Buffer.from(encrypted[3]));
-    const key = await crypto.subtle.importKey('raw', Buffer.from(hash), { name: 'AES-CBC', length: 128 }, true, [ 'decrypt' ]);
+    const data = GetBytesB64(encrypted[0]);
+    const cipher = { name: 'AES-CBC', iv: GetBytesB64(encrypted[2]) };
+    const hash = await crypto.subtle.digest('SHA-256', GetBytesUTF8(encrypted[3]));
+    const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-CBC', length: 128 }, true, [ 'decrypt' ]);
     const decrypted = await crypto.subtle.decrypt(cipher, key, data);
     return new TextDecoder('utf-8').decode(decrypted);
 }

@@ -71,6 +71,10 @@ type MangaID = {
     lang: string
 }
 
+const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
+const GetBytesB64 = (encoded: string) => Uint8Array.from(window.atob(encoded), c => c.charCodeAt(0));
+const BufferToHexString = (buffer: ArrayBuffer) => new Uint8Array(buffer).reduce((result, x) => result + x.toString(16).padStart(2, '0'), '');
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -137,27 +141,26 @@ export default class extends DecoratableMangaScraper {
     private async DecryptPictureUrl(page: ApiImage): Promise<string> {
         const secretKey = await crypto.subtle.importKey(
             'raw',
-            Buffer.from('a7fc9dc89f2c873d79397f8a0028a4cd', 'utf-8'),
+            GetBytesUTF8('a7fc9dc89f2c873d79397f8a0028a4cd'),
             { name: 'AES-CBC', length: 128 },
             true,
-            [ 'encrypt', 'decrypt' ]
+            [ 'decrypt' ]
         );
 
         const decrypted = await crypto.subtle.decrypt({
             name: 'AES-CBC',
             iv: new Uint8Array(16).buffer,
-        }, secretKey, Buffer.from(page.url, 'base64'));
+        }, secretKey, GetBytesB64(page.url));
 
         return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
     }
 
     protected async FetchPOST<T>(path: string, language: string): Promise<T> {
         const timestamp = Math.round(new Date().getTime() / 1000);
-        const seed = new TextEncoder().encode('9241d2f090d01716feac20ae08ba791a' + '0.0.0.0' + String(timestamp));
+        const seed = GetBytesUTF8('9241d2f090d01716feac20ae08ba791a' + '0.0.0.0' + timestamp.toString());
         const hash = await crypto.subtle.digest('SHA-256', seed);
-        const checksum = Buffer.from(hash).toString('hex');
-        const uri = new URL(path, this.api);
-        const request = new Request(uri.href, {
+        const checksum = BufferToHexString(hash);
+        const request = new Request(new URL(path, this.api), {
             method: 'GET',
             headers: {
                 'x-referer': this.URI.origin,
@@ -166,7 +169,7 @@ export default class extends DecoratableMangaScraper {
                 'Accept-Language': language,
                 'X-comico-client-os': 'other',
                 'X-comico-client-store': 'other',
-                'X-comico-request-time': String(timestamp),
+                'X-comico-request-time': timestamp.toString(),
                 'X-comico-check-sum': checksum,
                 'X-comico-timezone-id': 'Europe/Paris',
                 'X-comico-client-immutable-uid': '0.0.0.0',

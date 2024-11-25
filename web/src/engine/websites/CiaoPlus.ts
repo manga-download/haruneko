@@ -33,6 +33,9 @@ type TDimension = {
     height: number
 }
 
+const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
+const BufferToHexString = (buffer: ArrayBuffer) => new Uint8Array(buffer).reduce((result, x) => result + x.toString(16).padStart(2, '0'), '');
+
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
@@ -203,6 +206,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async SHA(text: string, cipher: string): Promise<string> {
-        return Buffer.from(await crypto.subtle.digest(cipher, Buffer.from(text))).toString('hex');
+        return BufferToHexString(await crypto.subtle.digest(cipher, GetBytesUTF8(text)));
     }
 }
