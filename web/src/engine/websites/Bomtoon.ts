@@ -8,6 +8,7 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { DelitoonBase, type APIManga, type APIResult } from './templates/DelitoonBase';
+import { GetBytesB64, GetBytesUTF8 } from '../BufferEncoder';
 
 type APIMangas = {
     content: APIManga[]
@@ -27,9 +28,6 @@ type ScrambleParams = {
     scrambleIndex: number[],
     defaultHeight: number,
 }
-
-const GetBytesUTF8 = (text: string) => new TextEncoder().encode(text);
-const GetBytesB64 = (encoded: string) => Uint8Array.from(window.atob(encoded), c => c.charCodeAt(0));
 
 export default class extends DelitoonBase {
 
