@@ -1,8 +1,10 @@
 //Glouple.co russian website family : AllHentai, SelfManga, Seimanga, Usagi, ReadManga
+import { Exception } from '../../Error';
 import { Fetch, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
+import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 
 const pagesWithServersScript = `
     new Promise(resolve => {
@@ -91,13 +93,17 @@ export function ImageAjaxWithMirrors() {
 
 async function FetchMirroredImage(this: MangaScraper, page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
+        const cumulatedExceptionsMessages: string[]= [];
         for (const uri of [page.Link, ...page.Parameters.mirrors]) {
             try {
                 const request = new Request(uri, { signal: signal, headers: { Referer: this.URI.href } });
                 const response = await Fetch(request);
                 const blob = await response.blob();
                 if (blob.type.startsWith('image/')) return blob;
-            } catch { }
+            } catch (error) {
+                cumulatedExceptionsMessages.push(error.message);
+            }
         }
+        throw new Exception(R.Plugin_Common_Image_MirroredDownloadError, cumulatedExceptionsMessages.toString());
     }, priority, signal);
 }
