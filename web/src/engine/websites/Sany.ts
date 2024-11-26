@@ -15,7 +15,7 @@ function PageExtractor(image: HTMLImageElement): string {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sany', 'Sany', 'https://boylovewithsany.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Rating.Erotica, Tags.Source.Aggregator);
+        super('sany', 'Sany', 'https://sanyteam.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Rating.Erotica, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
