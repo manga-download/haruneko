@@ -91,43 +91,58 @@ export class TestFixture<TWebsitePlugin extends MediaContainer<MediaChild>, TCon
 
             let remotePlugin: JSHandle<TWebsitePlugin>;
 
-            (this.config.plugin ? it : it.skip)('Should get initialized website plugin', async () => {
+            it('Should get initialized website plugin', {
+                skip: this.config.plugin ? false : true,
+                timeout: this.config.plugin?.timeout ?? 25_000,
+            }, async () => {
                 remotePlugin = await this.GetRemotePlugin(this.config.plugin.id, this.config.plugin.settings);
                 expect(await remotePlugin.evaluate(plugin => plugin?.Identifier || 'Website plugin not found!')).toEqual(this.config.plugin.id);
                 expect(await remotePlugin.evaluate(plugin => plugin.Title)).toEqual(this.config.plugin.title);
-            }, this.config.plugin.timeout ?? 25_000);
+            });
 
             let remoteContainer: JSHandle<TContainer>;
 
-            (this.config.container ? it : it.skip)('Should get specific manga', async () => {
+            it('Should get specific manga', {
+                skip: this.config.container ? false : true,
+                timeout: this.config.container?.timeout ?? 7500,
+            }, async () => {
                 remoteContainer = await this.GetRemoteContainer(remotePlugin, this.config.container.url);
                 expect(await remoteContainer.evaluate(container => container?.Identifier || 'Manga not found!')).toEqual(this.config.container.id);
                 expect(await remoteContainer.evaluate(container => container.Title)).toEqual(this.config.container.title);
-            }, this.config.container?.timeout ?? 7500);
+            });
 
             let remoteChild: JSHandle<TChild>;
 
-            (this.config.child ? it : it.skip)('Should get specific chapter', async () => {
+            it('Should get specific chapter', {
+                skip: this.config.child ? false : true,
+                timeout: this.config.child?.timeout ?? 7500,
+            }, async () => {
                 remoteChild = await this.GetRemoteChild(remoteContainer, this.config.child.id);
                 expect(await remoteChild.evaluate(child => child?.Identifier || 'Chapter not found!')).toEqual(this.config.child.id);
                 expect(await remoteChild.evaluate(child => child.Title)).toEqual(this.config.child.title);
-            }, this.config.child?.timeout ?? 7500);
+            });
 
             let remoteEntry: JSHandle<TEntry>;
 
-            (this.config.entry ? it : it.skip)('Should get specific page', async () => {
+            it('Should get specific page', {
+                skip: this.config.entry ? false : true,
+                timeout: this.config.entry?.timeout ?? 7500,
+            }, async () => {
                 remoteEntry = await this.GetRemoteEntry(remoteChild, this.config.entry.index);
                 expect(await remoteEntry.evaluate(page => page?.Parent?.Identifier || 'Page not found!')).toEqual(this.config.child.id);
                 expect(await remoteEntry.evaluate(page => page.Parent.Title)).toEqual(this.config.child.title);
-            }, this.config.entry?.timeout ?? 7500);
+            });
 
             let remoteData: JSHandle<Blob>;
 
-            (this.config.entry ? it : it.skip)('Should fetch valid blob', async () => {
+            it('Should fetch valid blob', {
+                skip: this.config.entry ? false : true,
+                timeout: this.config.entry?.timeout ?? 7500,
+            }, async () => {
                 remoteData = await this.GetRemoteData(remoteEntry);
                 expect(await remoteData.evaluate(data => data.type)).toEqual(this.config.entry.type);
                 expect(await remoteData.evaluate(data => data.size)).toEqual(this.config.entry.size);
-            }, this.config.entry?.timeout ?? 7500);
+            });
         });
     }
 }

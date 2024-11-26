@@ -88,10 +88,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(blob: Blob, key: string): Promise<Blob> {
-        const buffer = new Uint8Array(await blob.arrayBuffer());
+        const bytes = new Uint8Array(await blob.arrayBuffer());
         const xorkey = new Uint8Array(key.slice(0, 16).match(/.{1,2}/g).map(e => parseInt(e, 16)));
-        for (let n = 0; n < buffer.length; n++)
-            buffer[n] = buffer[n] ^ xorkey[n % 8];
-        return Common.GetTypedData(buffer);
+        for (let n = 0; n < bytes.length; n++)
+            bytes[n] = bytes[n] ^ xorkey[n % 8];
+        return Common.GetTypedData(bytes.buffer);
     }
 }

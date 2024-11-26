@@ -5,7 +5,7 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 function PageExtractor(img: HTMLImageElement) {
-    return img.dataset.src.trim().replace(/^http:/, 'https:');
+    return (img.dataset.src ?? img.src).trim().replace(/^http:/, 'https:');
 }
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Raijin Scans"])')
@@ -16,7 +16,7 @@ function PageExtractor(img: HTMLImageElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('raijinscans', 'RaijinScans', 'https://raijinscans.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
+        super('raijinscans', 'RaijinScans', 'https://raijinscans.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

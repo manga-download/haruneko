@@ -88,7 +88,7 @@ export const FuzzySearch= CreateSettingStore<boolean, Check>(new Check(
     Key.FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearchInfo,
-    true
+    false
 ));
 
 export const ViewerMode = CreateSettingStore<string, Choice>(new Choice(

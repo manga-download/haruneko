@@ -6,7 +6,7 @@ const config = {
         title: 'JManga'
     },
     container: {
-        url: encodeURI('https://jmanga.is/read/からかい上手-？-の西片さん-raw/'),
+        url: encodeURI('https://jmanga.ac/read/からかい上手-？-の西片さん-raw/'),
         id: encodeURI('/read/からかい上手-？-の西片さん-raw/'),
         title: 'からかい上手(？)の西片さん'
     },
