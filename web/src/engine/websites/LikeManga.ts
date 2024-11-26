@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type ChapterData = {
-    list_chap : string
+    list_chap: string
 }
 
 const pagescript = `
@@ -28,7 +28,7 @@ const pagescript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('likemanga', 'LikeManga', 'https://likemanga.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('likemanga', 'LikeManga', 'https://likemanga.ink', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -42,16 +42,13 @@ export default class extends DecoratableMangaScraper {
             chapters.length > 0 ? chapterslist.push(...chapters) : run = false;
         }
         return chapterslist;
-
     }
 
     private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const mangaid = manga.Identifier.match(/-(\d+)\/$/)[1];
-        const uri = new URL(`?act=ajax&code=load_list_chapter&manga_id=${mangaid}&page_num=${page}`, this.URI);
-        const request = new Request(uri.href);
-        const response: ChapterData = await FetchJSON(request);
-        const data = new DOMParser().parseFromString(response.list_chap, 'text/html');
-        const nodes = [...data.querySelectorAll<HTMLAnchorElement>('li.wp-manga-chapter a')];
+        const request = new Request(new URL(`?act=ajax&code=load_list_chapter&manga_id=${mangaid}&page_num=${page}`, this.URI));
+        const { list_chap } = await FetchJSON<ChapterData>(request);
+        const nodes = [...new DOMParser().parseFromString(list_chap, 'text/html').querySelectorAll<HTMLAnchorElement>('li.wp-manga-chapter a')];
         return nodes.map(element => new Chapter(this, manga, new URL(element.href, request.url).pathname, element.text.trim()));
     }
 }

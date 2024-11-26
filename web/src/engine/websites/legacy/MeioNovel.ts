@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('meionovel', `Meio Novel`, 'https://meionovel.id' /*, Tags.Language.English, Tags ... */);
+        super('meionovel', `Meio Novel`, 'https://meionovels.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
