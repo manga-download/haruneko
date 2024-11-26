@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
+import { BufferToHexString } from '../BufferEncoder';
 
 type APIMangaPage = {
     data: {
@@ -86,15 +87,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
-        const request = this.PrepareRequest(new URL('works/v5/' + uri.pathname.match(/\d+$/)[0], this.apiURL).href);
+        const request = this.PrepareRequest(new URL('works/v5/' + uri.pathname.match(/\d+$/)[0], this.apiURL));
         const { data: { official_work: { id, name } } } = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, id.toString(), name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
-        const uri = new URL('magazines', this.apiURL);
-        const request = this.PrepareRequest(uri.href);
+        const request = this.PrepareRequest(new URL('magazines', this.apiURL));
         const { data: { magazines } } = await FetchJSON<APIMangaPage>(request);
         const pages = magazines.map(item => item.id);
         for (const page of pages) {
@@ -105,8 +105,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const uri = new URL(`magazines/v2/${page}/works`, this.apiURL);
-        const request = this.PrepareRequest(uri.href);
+        const request = this.PrepareRequest(new URL(`magazines/v2/${page}/works`, this.apiURL));
         const { data: { official_works } } = await FetchJSON<APIMangas>(request);
         return official_works.map(({ id, title }) => new Manga(this, provider, id.toString(), title));
     }
@@ -121,8 +120,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const uri = new URL(`works/${manga.Identifier}/episodes?page=${page}`, this.apiURL);
-        const request = this.PrepareRequest(uri.href);
+        const request = this.PrepareRequest(new URL(`works/${manga.Identifier}/episodes?page=${page}`, this.apiURL));
         const { data: { episodes } } = await FetchJSON<APIChapters>(request);
         return episodes
             .filter(item => item.readable)
@@ -136,7 +134,7 @@ export default class extends DecoratableMangaScraper {
 
         const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
         const plaintext = new TextEncoder().encode(timestamp + salt);
-        const hash = Buffer.from(await crypto.subtle.digest('SHA-256', plaintext)).toString('hex');
+        const hash = BufferToHexString(await crypto.subtle.digest('SHA-256', plaintext));
         const uri = new URL(`episodes/${chapter.Identifier}/read_v4`, this.apiURL);
         const request = new Request(uri, {
             headers: {
@@ -153,7 +151,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<APIPage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const payload = page.Parameters;
         const data = await this.imageTaskPool.Add(async () => {
-            const request = new Request(page.Link.href, {
+            const request = new Request(page.Link, {
                 method: 'GET',
                 headers: {
                     Referer: this.URI.href,
@@ -174,57 +172,55 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private async DescrambleData(e, t, i, r, n, s, a, l, o): Promise<Uint8ClampedArray> {
-        const d = Math.ceil(r / s),
-            c = Math.floor(i / n),
+    private async DescrambleData(scrambledData: Uint8ClampedArray, t: number, width: number, height: number, colSize: number, rowSize: number, salt: string, key: string, reverse: boolean): Promise<Uint8ClampedArray> {
+        const d = Math.ceil(height / rowSize),
+            c = Math.floor(width / colSize),
             u = Array(d).fill(null).map(() => Array.from(Array(c).keys()));
         {
-            const e = new TextEncoder().encode(a + l);
-            const t = await crypto.subtle.digest('SHA-256', e);
-            const i = new Uint32Array(t, 0, 4);
-            const r = new PixivShuffler(i);
+            const keyBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + key));
+            const shuffler = new PixivShuffler(new Uint32Array(keyBuffer, 0, 4));
 
-            for (let e = 0; e < 100; e++) r.Next();
+            for (let e = 0; e < 100; e++) shuffler.Next();
             for (let e = 0; e < d; e++) {
                 const t = u[e];
                 for (let e = c - 1; e >= 1; e--) {
-                    const i = r.Next() % (e + 1),
+                    const i = shuffler.Next() % (e + 1),
                         n = t[e];
                     t[e] = t[i],
                     t[i] = n;
                 }
             }
         }
-        if (o) for (let e = 0; e < d; e++) {
+        if (reverse) for (let e = 0; e < d; e++) {
             const t = u[e],
                 i = t.map((e, i) => t.indexOf(i));
             if (i.some(e => e < 0)) throw Error('Failed to reverse shuffle table');
             u[e] = i;
         }
-        const h = new Uint8ClampedArray(e.length);
-        for (let a = 0; a < r; a++) {
-            const r = Math.floor(a / s),
+        const h = new Uint8ClampedArray(scrambledData.length);
+        for (let a = 0; a < height; a++) {
+            const r = Math.floor(a / rowSize),
                 l = u[r];
             for (let r = 0; r < c; r++) {
                 const s = l[r],
-                    o = r * n,
-                    d = (a * i + o) * t,
-                    c = s * n,
-                    u = (a * i + c) * t,
-                    p = n * t;
-                for (let t = 0; t < p; t++) h[d + t] = e[u + t];
+                    o = r * colSize,
+                    d = (a * width + o) * t,
+                    c = s * colSize,
+                    u = (a * width + c) * t,
+                    p = colSize * t;
+                for (let t = 0; t < p; t++) h[d + t] = scrambledData[u + t];
             }
             {
-                const r = c * n,
-                    s = (a * i + r) * t,
-                    l = (a * i + i) * t;
-                for (let t = s; t < l; t++) h[t] = e[t];
+                const r = c * colSize,
+                    s = (a * width + r) * t,
+                    l = (a * width + width) * t;
+                for (let t = s; t < l; t++) h[t] = scrambledData[t];
             }
         }
         return h;
     }
 
-    private PrepareRequest(url: string): Request {
+    private PrepareRequest(url: URL): Request {
         return new Request(url, {
             headers: {
                 'X-Requested-With': 'pixivcomic',

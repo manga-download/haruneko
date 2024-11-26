@@ -4,6 +4,7 @@ import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers
 import * as Common from './decorators/Common';
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { FromHexString } from '../BufferEncoder';
 
 type ContentData = {
     images: Record<string, ImageData[]>;
@@ -86,7 +87,7 @@ async function DecryptImage(blob: Blob, cryptoKey: string): Promise<Blob> {
     const data = new Uint8Array(await blob.arrayBuffer());
     const cipherText = data.slice(16);
     const iv = data.slice(0, 16);
-    const aesKey = await crypto.subtle.importKey('raw', Buffer.from(cryptoKey, 'hex'), 'AES-CBC', false, ['decrypt']);
+    const aesKey = await crypto.subtle.importKey('raw', FromHexString(cryptoKey), 'AES-CBC', false, ['decrypt']);
     const decrypted = await crypto.subtle.decrypt({
         name: 'AES-CBC',
         iv: iv
