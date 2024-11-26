@@ -54,6 +54,8 @@
 
 
     async function findMediaUnFlaggedContent(updatedmedia:MediaContainer<MediaChild>) {
+        if (!updatedmedia.IsSameAs(media)) return;
+        
         unFlaggedItems = [];
         const delay = $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
         delayedContentCheck = setTimeout(
@@ -66,11 +68,7 @@
     findMediaUnFlaggedContent(media);
 
     onMount(() => {
-        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(
-            async(updatedmedia:MediaContainer<MediaChild>) => {
-                if (updatedmedia.IsSameAs(media)) findMediaUnFlaggedContent(media);
-            }
-        );
+        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
        
     });
 
