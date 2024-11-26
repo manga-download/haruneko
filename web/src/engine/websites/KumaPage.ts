@@ -3,12 +3,17 @@ import icon from './KumaPage.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { MangaExtractor } from './Noromax';
 
 function ChapterExtractor(row: HTMLTableRowElement) {
     return {
         id: row.querySelector<HTMLAnchorElement>('a').pathname,
         title: row.querySelector<HTMLTableCellElement>('td:nth-of-type(2)').textContent.trim()
+    };
+}
+function MangaExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: anchor.title.replace(/\s+Bahasa\s+Indonesia\s*$/i, '').trim()
     };
 }
 

@@ -13,7 +13,8 @@
         "noEmit": true,
         "strictBindCallApply": true,
         "experimentalDecorators": true,
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false,
+        "types": [ "chrome", "nw.js", "wicg-file-system-access" ]
     },
     "include": [
         "src/**/*.d.ts",
