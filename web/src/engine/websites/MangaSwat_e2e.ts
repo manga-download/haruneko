@@ -6,7 +6,7 @@ const config: Config = {
         title: 'MangaSwat'
     }, /* CloudFlare
     container: {
-        url: 'https://swatscans.com/manga/emperor-and-the-female-knight',
+        url: 'https://healteer.com/manga/emperor-and-the-female-knight',
         id: '/manga/emperor-and-the-female-knight',
         title: 'Emperor And The Female Knight'
     },
