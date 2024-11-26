@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Sany'
     },
     container: {
-        url: 'https://boylovewithsany.xyz/manga/khong-khoang-cach/',
+        url: 'https://sanyteam.com/manga/khong-khoang-cach/',
         id: '/manga/khong-khoang-cach/',
         title: 'Không Khoảng Cách',
     },

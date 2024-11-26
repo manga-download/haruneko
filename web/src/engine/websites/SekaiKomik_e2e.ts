@@ -6,18 +6,18 @@ const config: Config = {
         title: 'SekaiKomik'
     },
     container: {
-        url: 'https://sekaikomik.guru/manga/circles/',
+        url: 'https://sekaikomik.mom/manga/circles/',
         id: '/manga/circles/',
         title: 'Circles'
     },
     child: {
-        id: '/circles-chapter-01/',
-        title: 'Chapter 01',
+        id: '/circles-chapter-1/',
+        title: 'Chapter 1',
         timeout: 15000
     },
     entry: {
-        index: 0,
-        size: 106_232,
+        index: 2,
+        size: 259_614,
         type: 'image/jpeg'
     }
 };

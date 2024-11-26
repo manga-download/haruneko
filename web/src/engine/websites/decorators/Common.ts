@@ -483,14 +483,12 @@ export async function FetchImageElement(this: MangaScraper, page: Page, priority
         const request = new Request(imageLink.href, {
             signal: signal,
             headers: {
+                'Referer': includeRefererHeader ? page.Parameters?.Referer ?? imageLink.origin : undefined,
                 'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-                //'Sec-Fetch-Mode': 'no-cors',
+                'Sec-Fetch-Mode': 'no-cors',
                 'Sec-Fetch-Dest': 'image',
             }
         });
-        if (includeRefererHeader) {
-            request.headers.set('Referer', page.Parameters?.Referer ?? imageLink.origin);
-        }
         const response = await Fetch(request);
         return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
     }, priority, signal);

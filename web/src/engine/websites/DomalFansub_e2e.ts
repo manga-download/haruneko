@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Domal Fansub'
     },
     container: {
-        url: 'https://domalfansub.com.tr/manga/code-of-silence/',
+        url: 'https://domalfansb.online/manga/code-of-silence/',
         id: JSON.stringify({ post: '5675', slug: '/manga/code-of-silence/'}),
         title: 'Code of Silence'
     },

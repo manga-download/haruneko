@@ -4,15 +4,21 @@
 import { Tags } from '../../Tags';
 import icon from './Manatoki.webp';
 import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { FetchCSS } from '../../platform/FetchProvider';
 
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manatoki', `Manatoki`, 'https://manatoki465.net', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('manatoki', `Manatoki`, 'https://manatoki0.net', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = (await FetchCSS<HTMLAnchorElement>(new Request('https://t.me/s/newtoki5'), 'a[href^="https://manatoki"]')).at(-1)?.origin ?? this.URI.href;
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
 
