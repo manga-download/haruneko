@@ -110,7 +110,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<DrmData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return !page.Parameters.drmData ? blob : DeScramble(blob, async (image, ctx) => {
-            const decryptedDrmData = decodeXorCipher(Buffer.from(page.Parameters.drmData, 'base64').toString(), '3141592653589793');
+            const decryptedDrmData = decodeXorCipher(atob(page.Parameters.drmData), '3141592653589793');
             let sy = 0;
             for (const piece of decryptedDrmData.split('|').slice(1)) {
                 const [dy, height] = piece.split('-', 2).map(Number);

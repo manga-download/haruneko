@@ -17,9 +17,9 @@ class TestFixture extends PuppeteerFixture {
     public async SetupPage(url: string, ...evasions: Evasion[]): Promise<TestFixture> {
         await this.ClosePage();
         this.page = await this.OpenPage(url, ...evasions);
-        console.log('WebDriver:', await this.page.evaluate(() => window.navigator.webdriver));
-        console.log('User-Agent:', await this.page.evaluate(() => window.navigator.userAgent));
-        console.log('Console:', await this.page.evaluate(() => console.debug.toString()));
+        //console.log('WebDriver:', await this.page.evaluate(() => window.navigator.webdriver));
+        //console.log('User-Agent:', await this.page.evaluate(() => window.navigator.userAgent));
+        //console.log('Console:', await this.page.evaluate(() => console.debug.toString()));
         return this;
     }
 
@@ -29,17 +29,11 @@ class TestFixture extends PuppeteerFixture {
 
     public async AssertElementText(selector: string, expected: string): Promise<void> {
         try {
-            await this.page.waitForSelector(selector, { timeout: 5000 });
+            await this.page.waitForSelector(selector, { timeout: 7500 });
             const actual = await this.page.$eval(selector, (element: HTMLElement) => element.innerText);
             expect(actual).toBe(expected);
         } catch(error) {
-            await this.page.screenshot({
-                type: 'png',
-                fullPage: true,
-                captureBeyondViewport: true,
-                path: `./screenshot_${Date.now().toString(16)}.png`
-            });
-            await new Promise(resolve => setTimeout(resolve, 5_000));
+            await this.Screenshot(this.page);
             throw error;
         }
     }
@@ -68,7 +62,7 @@ describe('CloudFlare', { timeout: 15_000 }, () => {
         }
     });
 
-    it.skip('Should bypass Turnstile Non-Interactive Challenge', async () => {
+    it('Should bypass Turnstile Non-Interactive Challenge', { todo: true }, async () => {
         const fixture = await new TestFixture().SetupPage('https://cloudflare.bot-check.ovh/turnstile-automatic');
         try {
             await fixture.AssertElementText('#hash', 'A9B6FA3DD8842CD8E2D6070784D92434');
@@ -77,7 +71,7 @@ describe('CloudFlare', { timeout: 15_000 }, () => {
         }
     });
 
-    it.skip('Should bypass Turnstile Invisible Challenge', async () => {
+    it('Should bypass Turnstile Invisible Challenge', { todo: true }, async () => {
         const fixture = await new TestFixture().SetupPage('https://cloudflare.bot-check.ovh/turnstile-invisible');
         try {
             await fixture.AssertElementText('#hash', 'A9B6FA3DD8842CD8E2D6070784D92434');
@@ -89,7 +83,7 @@ describe('CloudFlare', { timeout: 15_000 }, () => {
 
 describe('Vercel', { timeout: 15_000 }, () => {
 
-    it.skip('Should bypass Attack Challenge Mode', async () => {
+    it('Should bypass Attack Challenge Mode', { todo: true }, async () => {
         const fixture = await new TestFixture().SetupPage('https://vercel.bot-check.ovh', EvadeChromeDevToolProtocolDetection);
         try {
             await fixture.AssertElementText('#hash', 'FDF049D4B2312945BB7AA2158F041278');

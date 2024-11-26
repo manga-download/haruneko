@@ -4,21 +4,20 @@ const config: Config = {
     plugin: {
         id: 'flamecomics',
         title: 'Flame Comics',
-        timeout: 30000
     },
     container: {
-        url: 'https://flamecomics.xyz/series/solo-necromancy/',
-        id: '/series/solo-necromancy/',
+        url: 'https://flamecomics.xyz/series/44',
+        id: '44',
         title: 'Solo Necromancy'
     },
     child: {
-        id: '/solo-necromancy-chapter-1/',
-        title: 'Chapter 1'
+        id: '503e0f7071083096',
+        title: 'Chapter 1.0'
     },
     entry: {
-        index: 1,
-        size: 3_653_029,
-        type: 'image/png'
+        index: 2,
+        size: 947_020,
+        type: 'image/jpeg'
     }
 };
 
