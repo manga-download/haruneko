@@ -87,7 +87,9 @@
     let filteredmedias: MediaContainer<MediaChild>[] = $state([]);
     $effect(() => {
         medias;
-        filteredmedias = filterMedia(mediaNameFilter);
+        filteredmedias = filterMedia(mediaNameFilter).sort((a, b) => 
+            a.Title.localeCompare(b.Title)
+        );
     });
     let fuse = new Fuse([]);
 
@@ -256,7 +258,7 @@
             </div>
         {:then}
         <VirtualList style='height:100%' items={filteredmedias}>
-            {#snippet vl_slot({ index, item })}
+            {#snippet vl_slot({ item })}
                 <Media 
                     media={item as MediaContainer2}
                 />
