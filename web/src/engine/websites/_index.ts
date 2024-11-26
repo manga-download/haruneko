@@ -6,6 +6,7 @@ export { default as AGS } from './AGS';
 export { default as Ainzscans } from './Ainzscans';
 export { default as Akuma } from './Akuma';
 export { default as AllHentai } from './AllHentai';
+export { default as AllMangaTo } from './AllMangaTo';
 export { default as AllPornComic } from './AllPornComic';
 export { default as Alphapolis } from './Alphapolis';
 export { default as AmuyScan } from './AmuyScan';
