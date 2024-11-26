@@ -1,12 +1,9 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import { fade } from 'svelte/transition';
     import {
         Button,
         ClickableTile,
         ContextMenu,
-        ContextMenuDivider,
         ContextMenuOption,
     } from 'carbon-components-svelte';
     import {
@@ -23,7 +20,7 @@
         MediaChild,
     } from '../../../engine/providers/MediaPlugin';
     import { Bookmark } from '../../../engine/providers/Bookmark';
-    import { mount, onDestroy, onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import type { MediaContainer2 } from '../Types';
 
 
