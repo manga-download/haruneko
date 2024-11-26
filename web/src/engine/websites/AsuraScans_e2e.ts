@@ -6,17 +6,17 @@ const config: Config = {
         title: 'Asura Scans',
     },
     container: {
-        url: 'https://asuracomic.net/series/dragon-devouring-mage-f4dac81c',
-        id: '/series/dragon-devouring-mage-',
-        title: 'Dragon-Devouring Mage',
+        url: 'https://asuracomic.net/series/nano-machine-b755c1b9',
+        id: '/series/nano-machine-',
+        title: 'Nano Machine',
     },
     child: {
-        id: '/series/dragon-devouring-mage-/chapter/1',
-        title: 'Chapter 1',
+        id: '/series/nano-machine-/chapter/222',
+        title: 'Chapter 222 76. Level (1)',
     },
     entry: {
         index: 1,
-        size: 697_616,
+        size: 781_272,
         type: 'image/webp'
     }
 };
