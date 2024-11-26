@@ -3,6 +3,7 @@ import icon from './MangaTales.webp';
 import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesB64, GetBytesUTF8 } from '../BufferEncoder';
 
 type EncryptedData = {
     iv: boolean,
@@ -232,10 +233,10 @@ async function TryDecrypt<T>(data: EncryptedData | T): Promise<T> {
 
 async function Decrypt(serialized: string): Promise<string> {
     const encrypted = serialized.split('|');
-    const data = Buffer.from(encrypted[0], 'base64');
-    const cipher = { name: 'AES-CBC', iv: Buffer.from(encrypted[2], 'base64') };
-    const hash = await crypto.subtle.digest('SHA-256', Buffer.from(encrypted[3]));
-    const key = await crypto.subtle.importKey('raw', Buffer.from(hash), { name: 'AES-CBC', length: 128 }, true, [ 'decrypt' ]);
+    const data = GetBytesB64(encrypted[0]);
+    const cipher = { name: 'AES-CBC', iv: GetBytesB64(encrypted[2]) };
+    const hash = await crypto.subtle.digest('SHA-256', GetBytesUTF8(encrypted[3]));
+    const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-CBC', length: 128 }, true, [ 'decrypt' ]);
     const decrypted = await crypto.subtle.decrypt(cipher, key, data);
     return new TextDecoder('utf-8').decode(decrypted);
 }
