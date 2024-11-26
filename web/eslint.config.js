@@ -35,6 +35,16 @@ export default tseslint.config({
         'no-multi-spaces': 'error',
         'no-throw-literal': 'error',
         'tsdoc/syntax': 'warn',
+        /**
+         * Use restricted properties as workaround to address a flaw in the typescript system of global declarations.
+         * Globally declared modules (such as @types/node::Buffer) should be declared for e.g., tests but must not be declared for the web-application (browsers do not have `Buffer`).
+         * Unfortunately, once included these are available everywhere in the workspace without exception.
+         * See also: https://github.com/microsoft/TypeScript/issues/50424
+         */
+        'no-restricted-properties': [ 'error', {
+            "object": "Buffer",
+            "property": "from"
+        } ],
         '@typescript-eslint/naming-convention': [ 'error', // See: https://typescript-eslint.io/rules/naming-convention/#options
             /*
             {

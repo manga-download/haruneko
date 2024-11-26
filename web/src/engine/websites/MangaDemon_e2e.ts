@@ -6,7 +6,7 @@ const config = {
         title: 'MangaDemon'
     },
     container: {
-        url: 'https://ciorti.online/manga/Martial-Peak',
+        url: 'https://demonicscans.org/manga/Martial-Peak',
         id: '/manga/Martial-Peak',
         title: 'Martial Peak'
     },
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 328_479,
+        size: 138_422,
         type: 'image/jpeg'
     }
 };
