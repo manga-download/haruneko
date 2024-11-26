@@ -13,7 +13,7 @@ const config = {
 /*   Need to be logged, and chapter link change with user id anyway
 
     child: {
-        id: '/nochiu_ona_nimfomanka/vol1/4',
+        id: '/nochiu_ona_nimfomanka/vol1/4?mtr=1',
         title: '1 - 1',
     },
     entry: {

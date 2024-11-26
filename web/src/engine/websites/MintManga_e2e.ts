@@ -11,7 +11,7 @@ const config: Config = {
         title: 'Благословение небожителей',
     }, /* Need to be logged, and chapter link change with user id anyway
     child: {
-        id: '/blagoslovenie_nebojitelei__A3b0f67/vol8/98',
+        id: '/blagoslovenie_nebojitelei__A3b0f67/vol8/98?mtr=1',
         title: '8 - 98 Кто прав, кто виноват',
         timeout: 50000
 
