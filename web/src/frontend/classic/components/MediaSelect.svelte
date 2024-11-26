@@ -17,7 +17,7 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-	import { VirtualList } from 'svelte-virtuallists';
+	import { VirtualList, type VLSlotSignature } from 'svelte-virtuallists';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
@@ -257,13 +257,13 @@
                 <div>... medias</div>
             </div>
         {:then}
-        <VirtualList style='height:100%' items={filteredmedias}>
-            {#snippet vl_slot({ item })}
-                <Media 
-                    media={item as MediaContainer2}
-                />
-            {/snippet}
-        </VirtualList>
+            <VirtualList style='height:100%' items={filteredmedias}>
+                {#snippet vl_slot({ item } : VLSlotSignature<MediaContainer2>)}
+                    <Media 
+                        media={item}
+                    />
+                {/snippet}
+            </VirtualList>
         {:catch error}
             <div class="error">
                 <InlineNotification
