@@ -124,8 +124,9 @@ describe('TaskPool', () => {
             expect(actual.map(r => r.Value)).toEqual([ '③' ]);
         });
 
-        (process.platform === 'win32' ? it.skip : it)('Should utilize workers for concurrent processing', {
-            retry: process.platform === 'win32' ? 50 : 5
+        it('Should utilize workers for concurrent processing', {
+            todo: process.platform === 'win32',
+            retry: process.platform === 'win32' ? 50 : 5,
         }, async () => {
             const testee = new TaskPool(3, Unlimited);
             const start = performance.now();

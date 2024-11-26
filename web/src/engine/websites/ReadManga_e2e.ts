@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Всеведущий читатель'
     },
     child: {
-        id: '/vseveduchii_chitatel__A5664/vol1/100',
+        id: '/vseveduchii_chitatel__A5664/vol1/100?mtr=1',
         title: '1 - 100 То, что невозможно изменить - часть 2'
     },
     entry: {
@@ -27,12 +27,12 @@ new TestFixture({
         title: 'ReadManga'
     },
     container: {
-        url: 'https://zz.readmanga.io/van_pis__A5664', // Randomly redirects to 'https://web.usagi.one/one_piece'
+        url: 'https://zz.readmanga.io/van_pis__A5664', // Randomly redirects to 'https://web.usagi.one/van_pis'
         id: '/van_pis__A5664',
         title: 'Ван Пис'
     },
     child: {
-        id: '/van_pis__A5664/vol100/1010',
+        id: '/van_pis__A5664/vol100/1010?mtr=1',
         title: '100 - 1010 Королевская воля'
     },
     entry: {

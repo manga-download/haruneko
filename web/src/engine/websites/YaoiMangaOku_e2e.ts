@@ -6,7 +6,7 @@ const config: Config = {
         title: 'YaoiMangaOku'
     },
     container: {
-        url: 'https://yaoimangaoku.com/manga/she-is-still-cute-today/',
+        url: 'https://yaoimangaoku.net/manga/she-is-still-cute-today/',
         id: JSON.stringify({ post: '681', slug: '/manga/she-is-still-cute-today/'}),
         title: 'She Is Still Cute Today'
     },

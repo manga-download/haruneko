@@ -5,7 +5,8 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "skipLibCheck": true,
-        "noEmit": true
+        "noEmit": true,
+        "types": [ "chrome", "nw.js" ]
     },
     "include": [
         "src/**/*.ts",
