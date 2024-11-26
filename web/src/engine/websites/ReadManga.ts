@@ -1,18 +1,17 @@
-// Related Websites: ReadManga, Usagi
 import { Tags } from '../Tags';
 import icon from './ReadManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import * as Grouple from './decorators/Grouple';
 
-@Common.MangaCSS(/^https:\/\/(1|zz)\.readmanga\.io\/[^/]+$/, '#mangaBox meta[itemprop="name"]')
-@Common.MangasMultiPageCSS('/list?offset={page}', 'div.tile div.desc h3 a', 0, 50, 0)
-@Common.ChaptersSinglePageCSS('tr.item-row a.chapter-link') // TODO: Randomly redirects to Usagi
-@Common.PagesSinglePageJS(`rm_h.pics.map(pic => pic.url);`, 500)
-@Common.ImageAjax()
+@Common.MangaCSS(/^https:\/\/(1|zz)\.readmanga\.io\/[^/]+$/, Grouple.queryMangaTitle)
+@Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, 50, 0)
+@Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)// TODO: Randomly redirects to Usagi
+@Grouple.PagesSinglePageJS()
+@Grouple.ImageAjaxWithMirrors()
 export default class extends DecoratableMangaScraper {
-
     public constructor() {
-        super('readmanga', 'ReadManga', 'https://zz.readmanga.io', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('readmanga', `ReadManga`, 'https://zz.readmanga.io', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
