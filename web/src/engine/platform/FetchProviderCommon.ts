@@ -60,7 +60,7 @@ export abstract class FetchProvider {
             ?? response.headers?.get('Content-Type')?.match(charsetPattern)?.at(1)
             ?? 'UTF-8';
 
-        document = /UTF-?8/i.test(charset) ? document : new DOMParser().parseFromString(new TextDecoder(charset).decode(data), mime);
+        document = /UTF-?8/i.test(charset) || !charset ? document : new DOMParser().parseFromString(new TextDecoder(charset).decode(data), mime);
 
         // NOTE: Monkey patching the `innerText` property, stripping whitespaces as it would be rendered when attached to window DOM
         const selectors = [ 'h1', 'h2', 'h3', 'h4', 'div', 'span', 'a', 'li' ].join(', ');
