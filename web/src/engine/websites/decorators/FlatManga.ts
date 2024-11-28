@@ -23,13 +23,13 @@ export function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
+export function ChapterExtractor(anchor: HTMLAnchorElement) {
     if (anchor.dataset?.href) {
         anchor.setAttribute('href', anchor.dataset.href + anchor.getAttribute('href'));
     }
     return {
         id: anchor.pathname,
-        title: anchor.querySelector('div.chapter-name') ? anchor.querySelector('div.chapter-name').textContent.trim() : anchor.text.trim()
+        title: CleanTitle(anchor.querySelector('div.chapter-name') ? anchor.querySelector('div.chapter-name').textContent.trim() : anchor.text.trim())
     };
 }
 
@@ -83,39 +83,6 @@ export const queryPages = [
 /**********************************************
  ******** Chapters List Extraction Methods ******
  **********************************************/
-
-/**
- * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
- * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
- * @param extractor - A function to extract chapter info from an HTML node
- */
-export function ChaptersSinglePageCSS(query: string = queryChapters, extractor = ChapterExtractor) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        Common.ThrowOnUnsupportedDecoratorContext(context);
-
-        return class extends ctor {
-            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageCSS.call(this, manga, query, extractor);
-            }
-        };
-    };
-}
-
-/**
- * An extension method for extracting all chapters for the given {@link manga} using the given CSS {@link query}.
- * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
- * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
- * @param extractor - A function to extract chapter info from an HTML node
-  */
-export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
-    const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), query);
-    return data.map(anchor => {
-        const { id, title } = extractor.call(this, anchor);
-        let finaltitle = title.replace(manga.Title, '').trim() ?? title;
-        return new Chapter(this, manga, id, CleanTitle(finaltitle));
-    }).distinct();
-}
 
 /**
  * A class decorator that adds the ability to extract all chapters for a given manga from this website using FlatManga AJAX call.

@@ -6,7 +6,7 @@ import * as FlatManga from './decorators/FlatManga';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\.html$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
-@FlatManga.ChaptersSinglePageCSS()
+@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, FlatManga.ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

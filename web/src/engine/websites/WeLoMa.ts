@@ -7,7 +7,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
-@FlatManga.ChaptersSinglePageCSS()
+@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, FlatManga.ChapterExtractor)
 @Common.PagesSinglePageCSS(FlatManga.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
