@@ -9,14 +9,14 @@ const allowedImageOrigins = [
     'https://cdn-2.webtoonhatti.com',
 ];
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@Madara.MangaCSS(/^{origin}\/webtoon\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('webtoonhatti', 'Webtoon Hatti', 'https://webtoonhatti.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('webtoonhatti', 'Webtoon Hatti', 'https://webtoonhatti.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
