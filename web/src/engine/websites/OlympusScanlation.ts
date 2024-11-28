@@ -46,9 +46,9 @@ const mangaClipboardScript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://dashboard.zonaolympus.com';
+    private readonly apiUrl = 'https://dashboard.olympuscomic.com';
     public constructor() {
-        super('olympusscanlation', 'Olympus Scanlation', 'https://zonaolympus.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('olympusscanlation', 'Olympus Scanlation', 'https://olympuscomic.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
