@@ -3,7 +3,7 @@ import icon from './BilibiliManhua.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { Choice } from '../SettingsManager';
 import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../i18n/ILocale';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON, } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 import type { Priority } from '../taskpool/DeferredTask';
@@ -45,39 +45,7 @@ type APIImageToken = {
     complete_url: string,
 }
 
-type APICredential = {
-    credential: string
-}
-
-type APIGetAccessToken = {
-    access_token: string,
-    refresh_token: string
-}
-
-type AuthData = {
-    area: number,
-    accessToken: string,
-    refreshToken: string
-}
-
-const auhTokenScript = `
-    new Promise(resolve => {
-        window.cookieStore.get('access_token')
-            .then(cookie => !cookie ? resolve(cookie) : resolve(decodeURIComponent(cookie.value))) ;
-    });
-`;
-
 export default class extends DecoratableMangaScraper {
-
-    private readonly areacode = { 1: 'us-user', 2: 'sg-user' };
-    private readonly credentialsServer = 'https://%AREA%.bilibilicomics.com';
-    private auth: AuthData = {
-        accessToken: '',
-        refreshToken: '',
-        area: 1,
-    };
-    private token_expires_at: number = -1;
-
     public constructor() {
         super('bilibilimanhua', `哔哩哔哩 漫画 (Bilibili Manhua)`, 'https://manga.bilibili.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Official);
 
@@ -101,7 +69,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { data: { id, title } } = await this.FetchTwirp<APIResult<APIChapters>>('ComicDetail', {
-            comic_id: parseInt(url.match(/\/mc(\d+)/)[1])
+            comic_id: url.match(/\/mc(\d+)/)[1]
         });
         return new Manga(this, provider, id.toString(), title);
     }
@@ -129,7 +97,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        await this.GetToken();
         const { data: { ep_list } } = await this.FetchTwirp<APIResult<APIChapters>>('ComicDetail', {
             comic_id: manga.Identifier
         });
@@ -139,26 +106,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await this.GetToken();
-
-        /*
-        //Using access_token from cookies, try to get credential for unlocked chapters
-        let credentials: APIResult<APICredential> = null;
-        if (this.auth.accessToken) {
-            credentials = await this.FetchWithAccessToken<APIResult<APICredential>>('GetCredential', {
-                ep_id: chapter.Identifier,
-                comic_id: chapter.Parent.Identifier,
-                type: 1
-            });
-        }
-        */
-
-        //Fetch image data with or without credential
-        const body: JSONObject =// credentials?.data?.credential ? {
-        //  ep_id: chapter.Identifier,
-            //credential: credentials.data.credential
-            //} :
-            { ep_id: chapter.Identifier };
+        const body = {
+            ep_id: chapter.Identifier
+        };
         const { data: { images } } = await this.FetchTwirp<APIResult<APIPages>>('GetImageIndex', body);
 
         const pictures = images.map(image => {
@@ -178,7 +128,7 @@ export default class extends DecoratableMangaScraper {
         return blob.type.startsWith('image/') ? blob : this.DecryptImage(blob, page.Link);
     }
 
-    private async DecryptImage(blob: Blob, link : URL): Promise<Blob> {
+    private async DecryptImage(blob: Blob, link: URL): Promise<Blob> {
 
         const buffer = new Uint8Array(await blob.arrayBuffer());
         const dataLength = new DataView(buffer.slice(1, 5).buffer).getInt32(0, false);
@@ -224,84 +174,19 @@ export default class extends DecoratableMangaScraper {
         uri.search = new URLSearchParams({
             device: 'pc',
             platform: 'web',
-            lang: 'cn',
-            sys_lang: 'cn'
+            nov: '25'
         }).toString();
 
         const request = new Request(uri, {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
+                Accept: 'application/json, text/plain, */*',
                 Origin: this.URI.origin,
                 'Content-Type': 'application/json;charset=UTF-8',
-                Referer: uri.href
-            }
-        });
-        if (this.auth.accessToken) request.headers.set('Authorization', ' Bearer ' + this.auth.accessToken);
-        return FetchJSON<T>(request);
-    }
-
-    private async FetchWithAccessToken<T extends JSONObject>(path: string, body: JSONObject): Promise<T> {
-        const server = this.credentialsServer.replace('%AREA%', this.areacode[this.auth.area]);
-        const uri = new URL('/twirp/global.v1.User' + path, server);
-        uri.search = new URLSearchParams({
-            device: 'pc',
-            platform: 'web',
-            lang: 'cn',
-            sys_lang: 'cn'
-        }).toString();
-
-        const request = new Request(uri, {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-                Origin: this.URI.origin,
-                'Content-Type': 'application/json;charset=utf-8',
                 Referer: uri.href,
-                Authorization: ' Bearer ' + this.auth.accessToken
             }
         });
         return FetchJSON<T>(request);
-    }
-
-    private async GetToken() {
-        try {
-            const now = Math.floor(Date.now() / 1000);
-            const result = await FetchWindowScript<string>(new Request(this.URI), auhTokenScript, 500);
-
-            //if there is no cookie user is disconnected, force cleanup
-            if (!result) throw new Error();
-
-            //if token is not defined, get it from cookies
-            if (!this.auth.accessToken) {
-                const authJson: AuthData = JSON.parse(decodeURIComponent(result));
-                this.auth.area = authJson.area;
-                this.auth.accessToken = authJson.accessToken;
-                this.auth.refreshToken = authJson.refreshToken;
-                this.token_expires_at = now + 60 * 10; //expires in 10 minutes
-                return;
-            }
-
-            //if token exists check if expired and refresh it if needed
-            if (this.auth.accessToken && this.token_expires_at < now) {
-                await this.RefreshToken();
-                return;
-            }
-        } catch {
-            this.auth.accessToken = '';
-            this.auth.refreshToken = '';
-            this.auth.area = 1;
-            this.token_expires_at = -1;
-        }
-    }
-
-    private async RefreshToken() {
-        try {
-            const now = Math.floor(Date.now() / 1000);
-            const { data } = await this.FetchWithAccessToken<APIResult<APIGetAccessToken>>('RefreshToken', { refresh_token: this.auth.refreshToken });
-            this.auth.accessToken = data.access_token;
-            this.auth.refreshToken = data.refresh_token;
-            this.token_expires_at = now + 60 * 10;//expires in 10 minutes
-        } catch { }
     }
 }
