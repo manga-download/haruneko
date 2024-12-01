@@ -103,6 +103,7 @@ export { default as DemoneCeleste } from './DemoneCeleste';
 export { default as DemonSect } from './DemonSect';
 export { default as DennoMavo } from './DennoMavo';
 export { default as Desu } from './Desu';
+export { default as DEXHentai } from './DEXHentai';
 export { default as DiamondFansub } from './DiamondFansub';
 export { default as DianxiaTrads } from './DianxiaTrads';
 export { default as Digimon } from './Digimon';
