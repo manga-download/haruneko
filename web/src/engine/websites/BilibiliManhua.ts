@@ -141,6 +141,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         await this.GetToken();
 
+        /*
         //Using access_token from cookies, try to get credential for unlocked chapters
         let credentials: APIResult<APICredential> = null;
         if (this.auth.accessToken) {
@@ -150,12 +151,14 @@ export default class extends DecoratableMangaScraper {
                 type: 1
             });
         }
+        */
 
         //Fetch image data with or without credential
-        const body: JSONObject = credentials?.data?.credential ? {
-            ep_id: chapter.Identifier,
-            credential: credentials.data.credential
-        } : { ep_id: chapter.Identifier };
+        const body: JSONObject =// credentials?.data?.credential ? {
+        //  ep_id: chapter.Identifier,
+            //credential: credentials.data.credential
+            //} :
+            { ep_id: chapter.Identifier };
         const { data: { images } } = await this.FetchTwirp<APIResult<APIPages>>('GetImageIndex', body);
 
         const pictures = images.map(image => {
