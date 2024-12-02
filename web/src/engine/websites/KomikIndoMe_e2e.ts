@@ -6,7 +6,7 @@ const config: Config = {
         title: 'KomikIndoMe'
     },
     container: {
-        url: 'https://komikindo.nl/manga/secret-class/',
+        url: 'https://komikindo.asia/manga/secret-class/',
         id: '/manga/secret-class/',
         title: 'Secret Class'
     },

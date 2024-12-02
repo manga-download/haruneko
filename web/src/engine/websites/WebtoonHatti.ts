@@ -7,6 +7,7 @@ import * as Common from './decorators/Common';
 
 const allowedImageOrigins = [
     'https://cdn-2.webtoonhatti.com',
+    'https://cdn-2.webtoon-oku.net'
 ];
 
 @Madara.MangaCSS(/^{origin}\/webtoon\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
@@ -16,7 +17,7 @@ const allowedImageOrigins = [
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('webtoonhatti', 'Webtoon Hatti', 'https://webtoonhatti.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('webtoonhatti', 'Webtoon Hatti', 'https://webtoonhatti.dev', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
