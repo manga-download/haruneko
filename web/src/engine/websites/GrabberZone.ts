@@ -1,5 +1,5 @@
 ﻿import { Tags } from '../Tags';
-import icon from './Grabber.webp';
+import icon from './GrabberZone.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('grabber', 'Grabber', 'https://grabber.zone', Tags.Media.Comic, Tags.Language.Multilingual, Tags.Source.Aggregator);
+        super('grabberzone', 'Grabber Zone', 'https://grabber.zone', Tags.Media.Comic, Tags.Language.Multilingual, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

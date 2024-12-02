@@ -2,8 +2,8 @@
 
 const config = {
     plugin: {
-        id: 'grabber',
-        title: 'Grabber'
+        id: 'grabberzone',
+        title: 'Grabber Zone'
     },
     container: {
         url: 'https://grabber.zone/comics/songs-of-silver/',
@@ -16,7 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 1_333_429,
+        size: 1_330_429,
         type: 'image/jpeg'
     }
 };
