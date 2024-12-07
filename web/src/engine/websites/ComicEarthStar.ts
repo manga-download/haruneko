@@ -75,7 +75,7 @@ type APISeries = {
 }
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.ChaptersSinglePageCSS()
+@CoreView.ChaptersMultiPageAJAXV1()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
