@@ -6,7 +6,7 @@ const config: Config = {
         title: 'SeiManga'
     },
     container: {
-        url: 'https://seimanga.me/sword_art_online__progressiv___skerco_glubokoi_nochi/',
+        url: 'https://1.seimanga.me/sword_art_online__progressiv___skerco_glubokoi_nochi/',
         id: '/sword_art_online__progressiv___skerco_glubokoi_nochi/',
         title: 'Sword Art Online: Прогрессив - Скерцо глубокой ночи',
     },
