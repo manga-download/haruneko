@@ -116,7 +116,7 @@ export function MangasMultiPageCSS(paths: string[], query: string, extractor = M
  * @param query - A CSS selector used to extract chapters from the api answer (html from json)
  * @param extractor - A function to extract id and title from queried elements
  */
-export function ChaptersMultiPageAJAXV1(query = queryChapters, extractor = ChapterExtractor) {
+export function ChaptersMultiPageAJAXV1(query: string = queryChapters, extractor = ChapterExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
