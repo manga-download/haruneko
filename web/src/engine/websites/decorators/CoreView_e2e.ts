@@ -1,0 +1,17 @@
+import '../ComicAction_e2e';
+import '../ComicBorder_e2e';
+import '../ComicDays_e2e';
+import '../ComicEarthStar_e2e';
+import '../ComicGardo_e2e';
+import '../ComicGrowl_e2e';
+import '../ComicTrail_e2e';
+import '../ComicZenon_e2e';
+import '../FeelWeb_e2e';
+import '../HerosWeb_e2e';
+import '../KurageBunch_e2e';
+import '../MagComi_e2e';
+import '../OurFeel_e2e';
+import '../ShonenJumpPlus_e2e';
+import '../ShonenMagazine_e2e';
+import '../SundayWebry_e2e';
+import '../TonariNoYoungJump_e2e';
