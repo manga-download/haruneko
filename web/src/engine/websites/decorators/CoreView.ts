@@ -5,7 +5,6 @@ import { type MangaScraper, type MangaPlugin, type Manga, Chapter, Page } from '
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
 import DeScramble from '../../transformers/ImageDescrambler';
-import { queryChapters } from './MangaReaderCMS';
 
 export const queryMangaTitleFromURI = '.series-header-title';
 export const queryMangaTitle = [
@@ -48,6 +47,10 @@ type APIChaptersHTML = {
 type APIChapter = {
     title: string,
     viewer_uri: string
+}
+
+type PageParams = {
+    scrambled : boolean
 }
 
 export function MangaExtractor(element: HTMLElement) {
@@ -116,7 +119,7 @@ export function MangasMultiPageCSS(paths: string[], query: string, extractor = M
  * @param query - A CSS selector used to extract chapters from the api answer (html from json)
  * @param extractor - A function to extract id and title from queried elements
  */
-export function ChaptersMultiPageAJAXV1(query: string = queryChapters, extractor = ChapterExtractor) {
+export function ChaptersMultiPageAJAXV1(query: string = DefaultQueryChapters, extractor = ChapterExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
@@ -193,8 +196,8 @@ export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Ma
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param query - A CSS query to locate the JSON from which the page information shall be extracted
  */
-async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, query = queryEpisodeJSON): Promise<Page[]> {
-    const request = new Request(new URL(chapter.Identifier, this.URI).href);
+async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, query = queryEpisodeJSON): Promise<Page<PageParams>[]> {
+    const request = new Request(new URL(chapter.Identifier, this.URI));
     const dataElement = await FetchCSS(request, query);
     const { readableProduct }: ChapterJSON = JSON.parse(dataElement[0].dataset.value);
     if (!readableProduct.isPublic && !readableProduct.hasPurchased) {
@@ -203,7 +206,7 @@ async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, qu
     return readableProduct.pageStructure.pages.filter(page => page.type === 'main').map(page => {
         // NOTE: 'usagi' is not scrambled
         const parameters = { Referer: this.URI.href, scrambled: readableProduct.pageStructure.choJuGiga === 'baku' };
-        return new Page(this, chapter, new URL(page.src, request.url), parameters);
+        return new Page<PageParams>(this, chapter, new URL(page.src, request.url), parameters);
     });
 }
 
@@ -216,7 +219,7 @@ export function PagesSinglePageJSON(query = queryEpisodeJSON) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page<PageParams>[]> {
                 return FetchPagesSinglePageJSON.call(this, chapter, query);
             }
         };
@@ -235,7 +238,7 @@ export function PagesSinglePageJSON(query = queryEpisodeJSON) {
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+async function FetchImage(this: MangaScraper, page: Page<PageParams>, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     const data: Blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
     return page.Parameters.scrambled ? DeScramble(data, descramble) : data;
 }
@@ -269,7 +272,7 @@ export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+            public async FetchImage(this: MangaScraper, page: Page<PageParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImage.call(this, page, priority, signal, detectMimeType);
             }
         };
