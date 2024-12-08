@@ -6,7 +6,7 @@ const config: Config = {
         title: 'ManhwaIndo'
     },
     container: {
-        url: 'https://www.manhwaindo.st/series/9th-class-sword-master/',
+        url: 'https://manhwaindo.one/series/9th-class-sword-master/',
         id: '/series/9th-class-sword-master/',
         title: '9th Class Sword Master'
     },
@@ -16,7 +16,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 65_237,
+        size: 84_843,
         type: 'image/jpeg'
     }
 };

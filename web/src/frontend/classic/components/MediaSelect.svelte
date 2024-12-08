@@ -17,7 +17,7 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-	import { VirtualList } from 'svelte-virtuallists';
+	import { VirtualList, type VLSlotSignature } from 'svelte-virtuallists';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
@@ -38,8 +38,6 @@
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
     import { resizeBar } from '../lib/actions';
     import type { MediaContainer2 } from '../Types';
-
-    let ref:HTMLElement = $state();
 
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild> = $state();
@@ -86,13 +84,20 @@
     let medias: MediaContainer<MediaChild>[] = $state([]);
     let mediaNameFilter = $state('');
 
-    let filteredmedias: MediaContainer<MediaChild>[] = $derived(mediaNameFilter === '' ? medias : filterMedia(mediaNameFilter));
+    let filteredmedias: MediaContainer<MediaChild>[] = $state([]);
+    $effect(() => {
+        medias;
+        filteredmedias = filterMedia(mediaNameFilter).sort((a, b) => 
+            a.Title.localeCompare(b.Title)
+        );
+    });
     let fuse = new Fuse([]);
 
     loadPlugin = loadMedias($selectedPlugin);
 
     selectedPlugin.subscribe((newplugin) => {
         const previousPlugin = currentPlugin;
+        loadPlugin = Promise.resolve(newplugin);
         currentPlugin = newplugin;
         pluginDropdownSelected = currentPlugin?.Identifier;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
@@ -118,6 +123,7 @@
     }
 
     function filterMedia(mediaNameFilter: string) {
+        if (mediaNameFilter === '') return medias;
         if ($FuzzySearch)
             return fuse.search(mediaNameFilter).map((item) => item.item);
         else
@@ -135,6 +141,7 @@
     }
 
     async function onUpdateMediaEntriesClick() {
+        filteredmedias = []
         $selectedMedia = undefined;
         $selectedItem = undefined;
         loadPlugin = updatePlugin($selectedPlugin);
@@ -178,9 +185,6 @@
         );
     }
 
-    // VirtualList
-    let container:HTMLElement = $state();
-    let containerHeight = $state(0);
 </script>
 
 {#if isTrackerModalOpen}
@@ -193,7 +197,7 @@
         />
     </div>
 {/if}
-<div id="Media" transition:fade bind:this={ref}>
+<div id="Media" transition:fade>
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
@@ -208,6 +212,7 @@
     </div>
     <div id="Plugin">
         <ComboBox
+            id="PluginSelect"
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
             on:clear={() => ($selectedPlugin = undefined)}
@@ -229,6 +234,7 @@
             {/if}
         </ComboBox> 
         <Button
+            id="MediaUpdateButton"
             icon={UpdateNow}
             size="small"
             tooltipPosition="top"
@@ -240,34 +246,30 @@
     </div>
 
     <div id="MediaFilter">
-        <Search size="sm" bind:value={mediaNameFilter} />
+        <Search id="MediaFilterSearch" size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list" bind:this={container} bind:clientHeight={containerHeight}>
+    <div id="MediaList" class="list">
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
                 <div>... medias</div>
             </div>
-        {:then}
-        <VirtualList style='height:100%' items={filteredmedias}>
-            {#snippet vl_slot({ index, item })}
-            <Media 
-                media={item as MediaContainer2}
-                on:select={(e) => {
-                    $selectedMedia = e.detail;
-                }}
-            />
-            {/snippet}
-        </VirtualList>
         {:catch error}
             <div class="error">
                 <InlineNotification
                     lowContrast
-                    title={error}
+                    title={error.name}
                     subtitle={error.message}
                 />
             </div>
         {/await}
+        <VirtualList class="items" items={filteredmedias}>
+            {#snippet vl_slot({ item } : VLSlotSignature<MediaContainer2>)}
+                <Media 
+                    media={item}
+                />
+            {/snippet}
+        </VirtualList>
     </div>
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
@@ -276,7 +278,7 @@
         role="separator"
         aria-orientation="vertical"
         class="resize"
-        use:resizeBar={{target: ref, orientation:'vertical'}}
+        use:resizeBar={{orientation:'vertical'}}
     > </div>
     
 </div>
@@ -339,11 +341,16 @@
         background-color: var(--cds-field-01);
         overflow: hidden;
         user-select: none;
-        overflow: auto;
+        display:flex;
+        flex-direction: column;
     }
     #MediaList .loading {
         width: 100%;
         height: 100%;
+    }
+    #MediaList :global(.items) {
+        flex: 1;
+        overflow-x: hidden !important;
     }
     #MediaCount {
         grid-area: MediaCount;

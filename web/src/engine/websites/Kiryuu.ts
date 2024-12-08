@@ -8,11 +8,11 @@ import * as Common from './decorators/Common';
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kiryuu', 'Kiryuu', 'https://kiryuu.org', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('kiryuu', 'Kiryuu', 'https://kiryuu.one', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

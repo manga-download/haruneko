@@ -15,13 +15,15 @@ type APIChapter = {
     name: string
 }
 
-@Common.PagesSinglePageJS('__NEXT_DATA__.props.pageProps.chapterData.url', 1000)
+const pageScript = `__NEXT_DATA__.props.pageProps.chapterData.url.map(image => new URL(image, 'https://storage.yurineko.my/').href);`;
+
+@Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.yurineko.net';
+    private readonly apiUrl = 'https://api.yurineko.my';
 
     public constructor() {
-        super('yurineko', 'Yurineko', 'https://yurineko.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('yurineko', 'Yurineko', 'https://yurineko.my', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -34,20 +36,17 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = new URL(url).href.match(/manga\/([\d]+)/)[1];
-        const request = new Request(new URL(`/manga/${mangaid}`, this.apiUrl).href);
-        const data = await FetchJSON<APIManga>(request);
-        return new Manga(this, provider, data.id.toString(), data.originalName.trim());
+        const { id, originalName } = await FetchJSON<APIManga>(new Request(new URL(`/manga/${mangaid}`, this.apiUrl)));
+        return new Manga(this, provider, id.toString(), originalName.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL('/directory/general', this.apiUrl).href);
-        const data = await FetchJSON<APIManga[]>(request);
+        const data = await FetchJSON<APIManga[]>(new Request(new URL('/directory/general', this.apiUrl)));
         return data.map(manga => new Manga(this, provider, manga.id.toString(), manga.originalName.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`/manga/${manga.Identifier}`, this.apiUrl).href);
-        const data = await FetchJSON<APIManga>(request);
-        return data.chapters.map(element => new Chapter(this, manga, `/read/${manga.Identifier}/${element.id}`, element.name.trim()));
+        const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`/manga/${manga.Identifier}`, this.apiUrl)));
+        return chapters.map(element => new Chapter(this, manga, `/read/${manga.Identifier}/${element.id}`, element.name.trim()));
     }
 }

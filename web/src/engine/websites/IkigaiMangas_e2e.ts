@@ -6,17 +6,17 @@ const config = {
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://lectorikigai.acamu.net/series/el-sacerdote-ji-soon-es-un-santo/',
-        id: '/series/el-sacerdote-ji-soon-es-un-santo/',
-        title: 'El sacerdote Ji Soon es un Santo'
+        url: 'https://visorikigai.guyec.net/series/corrompi-al-sacerdote/',
+        id: '/series/corrompi-al-sacerdote/',
+        title: 'Corrompi al sacerdote'
     },
     child: {
-        id: '/capitulo/993135822339538947/',
-        title: 'Capítulo 19'
+        id: '/capitulo/977227421232791555/',
+        title: 'Capítulo 27'
     },
     entry: {
-        index: 1,
-        size: 3_363_253,
+        index: 0,
+        size: 1_567_474,
         type: 'image/jpeg'
     }
 };

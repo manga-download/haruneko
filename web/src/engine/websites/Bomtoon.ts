@@ -3,11 +3,12 @@ import { Tags } from '../Tags';
 import { FetchJSON } from '../platform/FetchProvider';
 import {type MangaPlugin, Manga, type Chapter, Page } from '../providers/MangaPlugin';
 import icon from './Bomtoon.webp';
-import Delitoon, { type APIManga, type APIResult } from './Delitoon';
 import * as Common from './decorators/Common';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
+import { DelitoonBase, type APIManga, type APIResult } from './templates/DelitoonBase';
+import { GetBytesFromB64, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIMangas = {
     content: APIManga[]
@@ -28,10 +29,10 @@ type ScrambleParams = {
     defaultHeight: number,
 }
 
-export default class extends Delitoon {
+export default class extends DelitoonBase {
 
     public constructor() {
-        super('bomtoon', `Bomtoon`, 'https://www.bomtoon.com', [Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official]);
+        super('bomtoon', `Bomtoon`, 'https://www.bomtoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
         this.BalconyID = 'BOMTOON_COM';
     }
 
@@ -83,13 +84,12 @@ export default class extends Delitoon {
             });
             return Promise.all(promises);
         } else return images.map(element => new Page(this, chapter, new URL(element.imagePath)));
-
     }
 
     private async Decrypt(encrypted: string, scramblekey: string): Promise<number[]> {
-        const cipher = { name: 'AES-CBC', iv: Buffer.from(scramblekey.slice(0, 16)) };
-        const key = await crypto.subtle.importKey('raw', Buffer.from(scramblekey), { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(cipher, key, Buffer.from(encrypted, 'base64'));
+        const cipher = { name: 'AES-CBC', iv: GetBytesFromUTF8(scramblekey.slice(0, 16)) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(scramblekey), { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(cipher, key, GetBytesFromB64(encrypted));
         return JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
     }
 

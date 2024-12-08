@@ -171,7 +171,6 @@ export enum FrontendResourceKey {
     Frontend_Classic_Sidenav_Settings_General = 'Frontend_Classic_Sidenav_Settings_General',
     Frontend_Classic_Sidenav_Settings_Interface = 'Frontend_Classic_Sidenav_Settings_Interface',
     Frontend_Classic_Sidenav_Settings_Trackers = 'Frontend_Classic_Sidenav_Settings_Trackers',
-    Frontend_Classic_Sidenav_Settings_Network = 'Frontend_Classic_Sidenav_Settings_Network',
 }
 
 // [SECTION]: Frontend: FluentCore
@@ -328,6 +327,7 @@ export enum WebsiteResourceKey {
     Plugin_Common_MangaIndex_NotSupported = 'Plugin_Common_MangaIndex_NotSupported',
     Plugin_Common_Chapter_InvalidError = 'Plugin_Common_Chapter_InvalidError',
     Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',
+    Plugin_Common_Image_MirroredDownloadError = 'Plugin_Common_Image_MirroredDownloadError',
     Plugin_Common_Preferred_Language = 'Plugin_Common_Preferred_Language',
     Plugin_Common_Preferred_LanguageInfo = 'Plugin_Common_Preferred_LanguageInfo',
     Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
