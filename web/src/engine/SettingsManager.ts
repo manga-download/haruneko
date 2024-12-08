@@ -8,12 +8,12 @@ import { Exception } from './Error';
 
 function Encrypt(decrypted: string) {
     // TODO: Use some real encryption 😉
-    return window.btoa(decrypted);
+    return btoa(decrypted);
 }
 
 function Decrypt(encrypted: string) {
     // TODO: Use some real decryption 😉
-    return window.atob(encrypted);
+    return atob(encrypted);
 }
 
 export type IValue = string | boolean | number | FileSystemDirectoryHandle;

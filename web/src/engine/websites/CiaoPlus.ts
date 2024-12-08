@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
-import { BufferToHexString, GetBytesUTF8 } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIMangas = {
     title_list: {
@@ -203,7 +203,8 @@ export default class extends DecoratableMangaScraper {
 
     }
 
-    private async SHA(text: string, cipher: string): Promise<string> {
-        return BufferToHexString(await crypto.subtle.digest(cipher, GetBytesUTF8(text)));
+    private async SHA(text: string, algorithm: AlgorithmIdentifier): Promise<string> {
+        const hash = await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text));
+        return GetHexFromBytes(new Uint8Array(hash));
     }
 }
