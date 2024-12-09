@@ -27,6 +27,7 @@ type APIChapter = {
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
+    private readonly apiUrl = 'https://www.kanman.com/api/';
     private readonly product = {
         id: '1',
         name: 'kmh',
@@ -65,19 +66,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(this.CreateCustomerURI('/getComicList/')));
+        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('getComicList', this.apiUrl)));
         return data.map(manga => new Manga(this, provider, manga.comic_id.toString(), manga.comic_name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = this.CreateCustomerURI('/getComicInfoBody/');
-        uri.searchParams.set('comic_id', manga.Identifier);
+        const uri = new URL(`getComicInfoBody?comic_id=${manga.Identifier}`, this.apiUrl);
         const { data: { comic_chapter } } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
         return comic_chapter.map(chapter => new Chapter(this, manga, chapter.chapter_newid, chapter.chapter_name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = this.CreateCustomerURI('/getchapterinfov2');
+        const uri = new URL('getchapterinfov2', this.apiUrl);
         uri.search = new URLSearchParams({
             product_id: this.product.id,
             productname: this.product.name,
@@ -89,9 +89,5 @@ export default class extends DecoratableMangaScraper {
         }).toString();
         const { data: { current_chapter: { chapter_img_list } } } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
         return chapter_img_list.map(page => new Page(this, chapter, new URL(page)));
-    }
-
-    private CreateCustomerURI(endpoint: string) {
-        return new URL('/api' + endpoint, this.URI);
     }
 }
