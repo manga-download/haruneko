@@ -7,7 +7,7 @@ import { Exception } from '../Error';
 import { WebsiteResourceKey as W } from '../../i18n/ILocale';
 import protoTypes from './MangaUpGlobal.proto?raw';
 import type { Priority } from '../taskpool/DeferredTask';
-import { FromHexString } from '../BufferEncoder';
+import { GetBytesFromHex } from '../BufferEncoder';
 
 type APIMangaDetailView = {
     titleName: string,
@@ -39,10 +39,9 @@ type APIPages = {
     }[]
 }
 
-type CryptoParams = {
-    method: string | undefined,
+type CryptoParams = null | {
     key: string,
-    iv: string | undefined
+    iv: string
 }
 
 export default class extends DecoratableMangaScraper {
@@ -62,35 +61,34 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = url.split('/').at(-1);
-        const request = new Request(new URL(`manga/detail_v2?title_id=${mangaid}`, this.apiUrl));
-        const data = await FetchProto<APIMangaDetailView>(request, protoTypes, 'MangaUpGlobal.MangaDetailView');
-        return new Manga(this, provider, mangaid, data.titleName);
+        const request = new Request(new URL(`./manga/detail_v2?title_id=${mangaid}`, this.apiUrl));
+        const { titleName } = await FetchProto<APIMangaDetailView>(request, protoTypes, 'MangaUpGlobal.MangaDetailView');
+        return new Manga(this, provider, mangaid, titleName);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL(`search`, this.apiUrl));
+        const request = new Request(new URL(`./search`, this.apiUrl));
         const { titles } = await FetchProto<APISearch>(request, protoTypes, 'MangaUpGlobal.SearchView');
         return titles.map(manga => new Manga(this, provider, manga.titleId.toString(), manga.titleName.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`manga/detail_v2?title_id=${manga.Identifier}`, this.apiUrl));
+        const request = new Request(new URL(`./manga/detail_v2?title_id=${manga.Identifier}`, this.apiUrl));
         const { chapters } = await FetchProto<APIMangaDetailView>(request, protoTypes, 'MangaUpGlobal.MangaDetailView');
         return chapters.map(chapter => new Chapter(this, manga, chapter.id.toString(), [chapter.titleName, chapter.subName].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<CryptoParams>[]> {
-        const request = new Request(new URL(`manga/viewer_v2?chapter_id=${chapter.Identifier}&quality=high`, this.apiUrl), { method: 'POST' });
+        const request = new Request(new URL(`./manga/viewer_v2?chapter_id=${chapter.Identifier}&quality=high`, this.apiUrl), { method: 'POST' });
         const data = await FetchProto<APIPages>(request, protoTypes, 'MangaUpGlobal.MangaViewerV2View');
 
         if (!data.pageblocks) throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
 
         return data.pageblocks.shift().pages.map(page => {
-            const params: CryptoParams = {
-                method: page.iv ? 'aes-cbc' : undefined,
+            const params: CryptoParams = page.iv ?{
                 key: page.encryptionKey,
                 iv: page.iv
-            };
+            }: null;
             return new Page<CryptoParams>(this, chapter, new URL(page.imageUrl, this.imagesCDN), params);
         });
     }
@@ -98,15 +96,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<CryptoParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         const cryptoParams = page.Parameters;
-        switch (cryptoParams.method) {
-            case 'aes-cbc': {
-                const encrypted = await blob.arrayBuffer();
-                const cipher = { name: 'AES-CBC', iv: FromHexString(cryptoParams.iv) };
-                const cryptoKey = await crypto.subtle.importKey('raw', FromHexString(cryptoParams.key), cipher, false, ['decrypt']);
-                const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
-                return Common.GetTypedData(decrypted);
-            }
-            default: return blob;
-        }
+        if (cryptoParams?.iv) {
+            const encrypted = await blob.arrayBuffer();
+            const cipher = { name: 'AES-CBC', iv: GetBytesFromHex(cryptoParams.iv) };
+            const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoParams.key), cipher, false, ['decrypt']);
+            const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
+            return Common.GetTypedData(decrypted);
+        } else return blob;
     }
 }
