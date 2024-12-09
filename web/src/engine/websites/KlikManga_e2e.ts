@@ -6,7 +6,7 @@ const config = {
         title: 'KlikManga'
     },
     container: {
-        url: 'https://klikmanga.id/manga/yuusha-yamemasu/',
+        url: 'https://klikmanga.com/manga/yuusha-yamemasu/',
         id: JSON.stringify({ post: '1851', slug: '/manga/yuusha-yamemasu/' }),
         title: 'Yuusha, Yamemasu'
     },

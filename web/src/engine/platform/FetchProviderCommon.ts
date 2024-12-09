@@ -56,9 +56,9 @@ export abstract class FetchProvider {
         let document = new DOMParser().parseFromString(new TextDecoder().decode(data), mime);
 
         const charset = document.head?.querySelector<HTMLMetaElement>('meta[charset]')?.getAttribute('charset')
-            ?? document.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
-            ?? response.headers?.get('Content-Type')?.match(charsetPattern)?.at(1)
-            ?? 'UTF-8';
+            || document.head?.querySelector<HTMLMetaElement>('meta[http-equiv="Content-Type"]')?.content?.match(charsetPattern)?.at(1)
+            || response.headers?.get('Content-Type')?.match(charsetPattern)?.at(1)
+            || 'UTF-8';
 
         document = /UTF-?8/i.test(charset) ? document : new DOMParser().parseFromString(new TextDecoder(charset).decode(data), mime);
 
