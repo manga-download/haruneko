@@ -28,7 +28,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const series = await this.GetMangaListFromPages(provider, '/series', 'section.daily ul.daily-series > li.daily-series-item a.link[href*="/episode/"]', 'img');
         const magazines = await this.GetMangaListFromPages(provider, '/magazine', 'a.barayomi-magazine-list-link-latest', 'img.barayomi-magazine-series-image');
-        const mangas = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/oneshot', '/newcomer', '/daysneo'], 'div.yomikiri-container ul.yomikiri-items > li.yomikiri-item-box > a.yomikiri-link', MangaExtractor);
+        const mangas = await CoreView.FetchMangasSinglePageCSS.call(this, provider, ['/oneshot', '/newcomer', '/daysneo'], 'div.yomikiri-container ul.yomikiri-items > li.yomikiri-item-box > a.yomikiri-link', MangaExtractor);
         const mangaList = [...series, ...magazines, ...mangas];
         // remove mangas with same title but different ID
         return mangaList.filter(manga => manga === mangaList.find(m => m.Title === manga.Title));
@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
             const [data] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.episode-header-title');
             return [new Chapter(this, manga, manga.Identifier, data.textContent.replace(manga.Title, '').trim())];
         } else {
-            return CoreView.FetchChaptersMultiPageAJAXV1.call(this, manga);
+            return CoreView.FetchChaptersSinglePageAJAXV1.call(this, manga);
         }
     }
 }
