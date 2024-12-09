@@ -7,15 +7,10 @@ import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type 
 import { type StorageController, Store } from './StorageController';
 import { Key } from './SettingsGlobal';
 
-window.atob = function(encoded: string): string {
-    /* eslint-disable-next-line no-restricted-properties */ //=> This is supposed to run in NodeJS runtime where Buffer is available
-    return Buffer.from(encoded, 'base64').toString('utf-8');
-};
-
-window.btoa = function(decoded: string): string {
-    /* eslint-disable-next-line no-restricted-properties */ //=> This is supposed to run in NodeJS runtime where Buffer is available
-    return Buffer.from(decoded, 'utf-8').toString('base64');
-};
+/* eslint-disable-next-line no-restricted-properties */ //=> This test is supposed to run in NodeJS environment where Buffer is available
+global.atob = (encoded: string) => Buffer.from(encoded, 'base64').toString('utf-8');
+/* eslint-disable-next-line no-restricted-properties */ //=> This test is supposed to run in NodeJS environment where Buffer is available
+global.btoa = (decoded: string) => Buffer.from(decoded, 'utf-8').toString('base64');
 
 // Mocking globals
 {

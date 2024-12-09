@@ -3,6 +3,7 @@ import icon from './CypherScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
@@ -17,5 +18,10 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin`, 1500);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
