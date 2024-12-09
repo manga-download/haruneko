@@ -1,19 +1,20 @@
 import { Tags } from '../Tags';
-import icon from './Mangacim.webp';
+import icon from './DEXHentai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/mangacim\.com\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
+@MangaStream.MangaCSS(/^{origin}\/title\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS(undefined, '/title/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangacim', 'Mangacim', 'https://mangacim.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
+        super('dexhentai', 'DEXHentai', 'https://dexhentai.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
+
     public override get Icon() {
         return icon;
     }

@@ -6,7 +6,7 @@ const config = {
         title: 'Truyện Nhà Meo'
     },
     container: {
-        url: 'https://truyennhameo.com/manga/du-dich-tham-nhap/',
+        url: 'https://truyentranhdammyy.site/manga/du-dich-tham-nhap/',
         id: JSON.stringify({ post: '10506', slug: '/manga/du-dich-tham-nhap/' }),
         title: 'Dụ Địch Thâm Nhập'
     },

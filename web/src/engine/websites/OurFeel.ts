@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @Common.MangasNotSupported()
-@CoreView.ChaptersSinglePageCSS()
+@CoreView.ChaptersMultiPageAJAXV2()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
