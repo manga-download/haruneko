@@ -280,6 +280,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "Bu web sitesi için içerik dizini oluşturulamıyor. Belirli bir URL'nin içeriğine doğrudan erişmek için Kopyala ve Yapıştır özelliğini kullanın!",
   Plugin_Common_Chapter_UnavailableError: "Bölüm mevcut değil (satın alınmadı/kilidi açılmadı/halka açık değil)!",
   Plugin_Common_Chapter_InvalidError: "Sayfalar bölüm içeriğinden ayıklanamadı!",
+  Plugin_Common_Image_MirroredDownloadError: 'Unable to download image from multiple servers : {0}',
   Plugin_Common_Preferred_Language: "Web Sitesi için Tercih Edilen Dil",
   Plugin_Common_Preferred_LanguageInfo: "Web site içeriği için tercih edilen dil.",
   Plugin_MissingWebsite_UpdateError: "Var olmayan bir web sitesi için içerik dizini güncellenemedi!",

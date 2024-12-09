@@ -6,7 +6,7 @@ const config = {
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://visorikigai.ayotu.net/series/corrompi-al-sacerdote/',
+        url: 'https://visorikigai.guyec.net/series/corrompi-al-sacerdote/',
         id: '/series/corrompi-al-sacerdote/',
         title: 'Corrompi al sacerdote'
     },
