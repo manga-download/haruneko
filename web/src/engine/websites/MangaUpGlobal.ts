@@ -85,10 +85,10 @@ export default class extends DecoratableMangaScraper {
         if (!data.pageblocks) throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
 
         return data.pageblocks.shift().pages.map(page => {
-            const params: CryptoParams = page.iv ?{
+            const params: CryptoParams = page.iv ? {
                 key: page.encryptionKey,
                 iv: page.iv
-            }: null;
+            } : null;
             return new Page<CryptoParams>(this, chapter, new URL(page.imageUrl, this.imagesCDN), params);
         });
     }
