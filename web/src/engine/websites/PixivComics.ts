@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
-import { BufferToHexString } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIMangaPage = {
     data: {
@@ -131,16 +131,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { pageProps: { salt } } = await FetchJSON<APISalt>(new Request(new URL(`/_next/data/${this.nextBuild}/viewer/stories/${chapter.Identifier}.json?id=${chapter.Identifier}`, this.URI)));
-
         const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-        const plaintext = new TextEncoder().encode(timestamp + salt);
-        const hash = BufferToHexString(await crypto.subtle.digest('SHA-256', plaintext));
+        const hash = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(timestamp + salt));
         const uri = new URL(`episodes/${chapter.Identifier}/read_v4`, this.apiURL);
         const request = new Request(uri, {
             headers: {
                 'x-requested-with': 'pixivcomic',
                 'x-client-time': timestamp,
-                'x-client-hash': hash
+                'x-client-hash': GetHexFromBytes(new Uint8Array(hash)),
             }
         });
 
@@ -177,7 +175,7 @@ export default class extends DecoratableMangaScraper {
             c = Math.floor(width / colSize),
             u = Array(d).fill(null).map(() => Array.from(Array(c).keys()));
         {
-            const keyBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + key));
+            const keyBuffer = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(salt + key));
             const shuffler = new PixivShuffler(new Uint32Array(keyBuffer, 0, 4));
 
             for (let e = 0; e < 100; e++) shuffler.Next();

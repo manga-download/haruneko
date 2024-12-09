@@ -14,7 +14,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kolnovel', 'Kol Novel (ملوك الروايات)', 'https://kolnovel.online', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Novel, Tags.Language.Arabic, Tags.Source.Aggregator);
+        super('kolnovel', 'Kol Novel (ملوك الروايات)', 'https://kolnovel.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Novel, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
