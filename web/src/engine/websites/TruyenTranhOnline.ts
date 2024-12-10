@@ -1,39 +1,20 @@
-// Auto-Generated export from HakuNeko Legacy
 import { Tags } from '../Tags';
 import icon from './TruyenTranhOnline.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import { MojoPortalComic, queryMangaTitle } from './templates/MojoPortalComic';
 
-@Madara.MangaCSS(/^{origin}\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+@Common.MangaCSS(/^{origin}\/truyen-[^.]+\.html$/, queryMangaTitle)
+
+export default class extends MojoPortalComic {
 
     public constructor() {
         // TODO: Is tutientruyen5.xyz the correct new domain?
-        super('truyentranhaudioonline', 'Truyện tranh online', 'https://protruyen5.xyz', Tags.Media.Manhwa, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('truyentranhaudioonline', 'Truyện tranh online', 'https://protruyen4.xyz', Tags.Media.Manhwa, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        this.pagesExcludePatterns = [/pro5xyz\.jpg$/, /\/123.jpg$/];
+        this.queryPages = 'div.reading-detail img';
     }
 
     public override get Icon() {
         return icon;
     }
 }
-
-// Original Source
-/*
-class TruyenTranhAudioOnline extends WordPressMadara {
-
-    constructor() {
-        super();
-        super.id = 'truyentranhaudioonline';
-        super.label = 'Truyện tranh audio';
-        this.tags = [ 'webtoon', 'vietnamese' ];
-        this.url = 'https://truyentranhaudio.online';
-
-        this.queryPages = 'div.reading-content source';
-    }
-}
-*/
