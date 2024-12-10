@@ -20,13 +20,11 @@ export default class extends DelitoonBase {
         await this.UpdateToken();
         const url = new URL(`contents/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const { result, error, data } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
-        if (result == 'ERROR') {
-            switch (error.code) {
-                case 'NOT_LOGIN_USER':
-                case 'UNAUTHORIZED_CONTENTS':
-                    throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-            }
+        const { error, data } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
+        switch (error?.code) {
+            case 'NOT_LOGIN_USER':
+            case 'UNAUTHORIZED_CONTENTS':
+                throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return data.images.map(element => new Page(this, chapter, new URL(element.imagePath)));
     }
