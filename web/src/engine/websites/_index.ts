@@ -96,6 +96,7 @@ export { default as Daysneo } from './Daysneo';
 export { default as DeathTollScans } from './DeathTollScans';
 export { default as DecadenceScans } from './DecadenceScans';
 export { default as Delitoon } from './Delitoon';
+export { default as DelitoonBDE } from './DelitoonBDE';
 export { default as DelitoonDE } from './DelitoonDE';
 export { default as DelitoonX } from './DelitoonX';
 export { default as DemoneCeleste } from './DemoneCeleste';
