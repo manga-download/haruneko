@@ -26,6 +26,7 @@ export { default as AresManga } from './AresManga';
 export { default as ArgosScan } from './ArgosScan';
 export { default as ArthurScan } from './ArthurScan';
 export { default as ArvenScans } from './ArvenScans';
+export { default as AryaScans } from './AryaScans';
 export { default as AsmHentai } from './AsmHentai';
 export { default as AstralManga } from './AstralManga';
 export { default as AstraScans } from './AstraScans';
