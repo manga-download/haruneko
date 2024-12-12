@@ -1,0 +1,29 @@
+
+message Chapter {
+    optional uint32 id = 1;
+    optional string mainName = 2;
+    optional string subName = 3;
+}
+
+message Image {
+    optional string src = 1;
+    optional uint32 height = 2;
+    optional uint32 width = 3;
+    optional string url = 5;
+}
+
+message Title {
+    optional uint32 id = 1;
+    optional string name = 3;
+}
+
+message TitleDetailView {
+    optional Title title = 2;
+    repeated Chapter chapters = 8;
+}
+
+message ViewerView {
+    repeated Image pages = 2;
+    optional string aesKey = 19;
+    optional string aesIv = 20;
+}
