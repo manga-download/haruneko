@@ -7,9 +7,6 @@ message Chapter {
 
 message Image {
     optional string src = 1;
-    optional uint32 height = 2;
-    optional uint32 width = 3;
-    optional string url = 5;
 }
 
 message Title {
