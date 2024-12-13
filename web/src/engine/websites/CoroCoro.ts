@@ -75,8 +75,8 @@ export default class extends DecoratableMangaScraper {
             url.searchParams.set('rq', 'title/list/update_day');
             url.searchParams.set('day', day);
             const { titles: { titles } } = await FetchProto<TitleListView>(new Request(url), prototypes, 'TitleListView');
-            const manga = titles.map(manga => new Manga(this, provider, manga.id.toString(), manga.name));
-            mangaList.push(...manga);
+            const mangas = titles.map(manga => new Manga(this, provider, manga.id.toString(), manga.name));
+            mangaList.push(...mangas);
         }
         return mangaList.distinct();
     }
