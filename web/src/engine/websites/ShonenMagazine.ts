@@ -5,7 +5,7 @@ import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.ChaptersSinglePageCSS(CoreView.queryChapters)
+@CoreView.ChaptersSinglePageAJAXV1()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -20,12 +20,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas1 = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/series'], 'div.series-items ul.daily-series > li.daily-series-item > a');
+        const mangas1 = await CoreView.FetchMangasSinglePageCSS.call(this, provider, ['/series'], 'div.series-items ul.daily-series > li.daily-series-item > a');
         let mangas2 = [];
         try {
             // TODO: Do not change a read-only property, this may cause problems for concurrent operations!
             this.URI.hostname = 'shonenmagazine.com';
-            mangas2 = await CoreView.FetchMangasMultiPageCSS.call(this, provider, ['/series/smaga', '/series/bmaga', '/series/others'], 'article.serial-series-contents ul.serial-series-list > li.serial-series-item > a');
+            mangas2 = await CoreView.FetchMangasSinglePageCSS.call(this, provider, ['/series/smaga', '/series/bmaga', '/series/others'], 'article.serial-series-contents ul.serial-series-list > li.serial-series-item > a');
         } catch { // Do not supress generic errors
             //
         }
