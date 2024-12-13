@@ -2,17 +2,16 @@ import { Tags } from '../Tags';
 import icon from './CoroCoro.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchProto } from '../platform/FetchProvider';
+import { FetchProto } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
 import prototypes from './CoroCoro.proto?raw';
 
-type JSONManga = {
-    id: number;
-    name: string;
+type TitleListView = {
+    titles: {
+        titles: APITitle[]
+    }
 }
-
-type JSONMangas = Record<string, JSONManga[]>;
 
 type TitleDetailView = {
     title: APITitle,
@@ -70,12 +69,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('/rensai', this.URI)), 'script:not([src])');
-        const mangaCollection = this.ExtractData<JSONMangas>(scripts, 'totalChapterLikes', 'weekdays');
-        return Object.values(mangaCollection).reduce((accumulator: Manga[], collection) => {
-            const mangas = collection.map(manga => new Manga(this, provider, manga.id.toString(), manga.name));
-            return [...accumulator, ...mangas];
-        }, []);
+        const mangaList: Manga[] = [];
+        for (const day of ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']) {
+            const url = new URL(this.apiUrl);
+            url.searchParams.set('rq', 'title/list/update_day');
+            url.searchParams.set('day', day);
+            const { titles: { titles } } = await FetchProto<TitleListView>(new Request(url), prototypes, 'TitleListView');
+            const manga = titles.map(manga => new Manga(this, provider, manga.id.toString(), manga.name));
+            mangaList.push(...manga);
+        }
+        return mangaList.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -108,24 +111,5 @@ export default class extends DecoratableMangaScraper {
             const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
             return Common.GetTypedData(decrypted);
         } else return blob;
-    }
-
-    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
-        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
-        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
-        let record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
-
-        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
-            if (parent[keyName]) {
-                return parent[keyName];
-            }
-            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
-                const result = FindValueForKeyName(child);
-                if (result) {
-                    return result;
-                }
-            }
-            return undefined;
-        })(record) as T;
     }
 }

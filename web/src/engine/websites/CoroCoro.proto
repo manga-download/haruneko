@@ -1,3 +1,5 @@
+package CoroCoro;
+syntax = "proto3";
 
 message Chapter {
     optional uint32 id = 1;
@@ -12,6 +14,14 @@ message Image {
 message Title {
     optional uint32 id = 1;
     optional string name = 3;
+}
+
+message TitleListView {
+    optional TitleList titles = 1;
+}
+
+message TitleList {
+    repeated Title titles = 2;
 }
 
 message TitleDetailView {
