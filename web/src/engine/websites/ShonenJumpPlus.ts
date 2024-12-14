@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/(episode|magazine)\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.MangasSinglePageCSS(['/series', '/series/oneshot', '/series/finished'], 'article.series-list-wrapper ul.series-list > li.series-list-item > a')
+@Common.MangasFromPathsCSS(['/series', '/series/oneshot', '/series/finished'], 'article.series-list-wrapper ul.series-list > li.series-list-item > a', undefined, CoreView.DefaultMangaExtractor)
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {

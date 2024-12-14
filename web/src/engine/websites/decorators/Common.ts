@@ -185,6 +185,46 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
 }
 
 /**
+ * A class decorator that adds the ability to extract multiple mangas from a list of {@link paths} using the given CSS {@link query}.
+ * Use this when paths are not paginated.
+ * @param paths - An array of path pattern relative to the scraper's base url from which the mangas shall be extracted
+ * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
+ */
+export function MangasFromPathsCSS<E extends HTMLElement>(paths: string[], query: string, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
+                return FetchMangasFromPathsCSS.call(this, provider, paths, query, throttle, extract as InfoExtractor<HTMLElement>);
+            }
+        };
+    };
+}
+
+/**
+ * An extension method for extracting multiple mangas from a list of {@link paths} using the given CSS {@link query}.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
+ * @param paths - An array of path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted
+ * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
+ */
+export async function FetchMangasFromPathsCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, paths: string[], query: string, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
+    const mangaList: Manga[] = [];
+    let reducer = Promise.resolve();
+    for (const path of paths) {
+        await reducer;
+        reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
+        const mangas = await FetchMangasSinglePageCSS.call(this, provider, path, query, extract);
+        mangaList.push(...mangas);
+    }
+    return mangaList.distinct();
+}
+
+/**
  * A class decorator that adds the ability to extract multiple mangas from the given relative {@link path} using the given CSS {@link query}.
  * @param path - The path relative to the scraper's base url from which the mangas shall be extracted
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
