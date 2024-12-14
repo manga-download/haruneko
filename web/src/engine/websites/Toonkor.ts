@@ -2,7 +2,6 @@
 import icon from './Toonkor.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as CoreView from './decorators/CoreView';
 
 function ChapterExtractor(element: HTMLElement) {
     return {
@@ -19,7 +18,7 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/https:\/\/toonkor\d+\.com\/[^/]+$/, 'table.bt_view1 td.bt_title')
-@CoreView.MangasSinglePageCSS(['/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목'], 'div.section-item-title a#title', Common.AnchorInfoExtractor())
+@Common.MangasFromPathsCSS(['/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목'], 'div.section-item-title a#title')
 @Common.ChaptersSinglePageCSS('td.content__title', ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
