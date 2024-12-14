@@ -1,14 +1,19 @@
 <script lang="ts">
     import { Modal, InlineLoading, Tag } from 'carbon-components-svelte';
-    import { type BookmarkImportResult } from '.././../../engine/providers/BookmarkPlugin';
+    import { type BookmarkImportResult, type BookmarkExportResult } from '.././../../engine/providers/BookmarkPlugin';
 
     export let isModalOpen = false;
     let importResult: Promise<BookmarkImportResult>;
+    let exportResult: Promise<BookmarkExportResult>;
     let action: undefined | 'import' | 'export';
 
     async function importBookmarks() {
         action = 'import';
         importResult = window.HakuNeko.BookmarkPlugin.Import();
+    }
+    async function exportBookmarks() {
+        action = 'export';
+        exportResult = window.HakuNeko.BookmarkPlugin.Export();
     }
 </script>
 
@@ -27,7 +32,14 @@
         isModalOpen = false;
     }}
     on:click:button--secondary={(e) => {
-        if (e.detail.text === 'Import') importBookmarks();
+        switch (e.detail.text) {
+            case 'Import':
+                importBookmarks();
+                break;
+            case 'Export':
+                exportBookmarks();
+                break;
+        }
     }}
 >
     {#if !action}
@@ -77,7 +89,29 @@
         {/await}
     {/if}
     {#if action === 'export'}
-        <div></div>
+        {#await exportResult}
+            <InlineLoading
+                status="active"
+                description="Export in progress ..."
+            />
+        {:then results}
+            {#if results.cancelled}
+                <InlineLoading status="error" description="User canceled" />
+            {:else}
+                <InlineLoading
+                    status="finished"
+                    description="Export completed"
+                />
+                <div>
+                    <Tag type="green">
+                        ({results.exported})
+                    </Tag> exported
+                </div>
+            {/if}
+        {:catch error}
+            <InlineLoading status="error" description="Error: {error}"
+            ></InlineLoading>
+        {/await}
     {/if}
 </Modal>
 
