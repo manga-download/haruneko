@@ -34,7 +34,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        //this.URI.href = (await FetchCSS<HTMLAnchorElement>(new Request('https://t.me/s/new_toonkor'), 'a[href^="https://toonkor"]')).at(-1)?.origin ?? this.URI.href;
         const response = await fetch('https://itset.co/link/webtoon/toonkor');
         this.URI.href = new URL(response.url).origin;
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
