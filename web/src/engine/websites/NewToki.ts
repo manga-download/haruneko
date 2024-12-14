@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './NewToki.webp';
 import * as Common from './decorators/Common';
-import Manatoki, { queryManga, queryMangaTitle } from './Manatoki';
+import Manatoki from './Manatoki';
 
-@Common.MangaCSS(/^https:\/\/newtoki\d+\.com\/webtoon\/\d+\/[^/]+$/, queryMangaTitle)
-@Common.MangasMultiPageCSS('/webtoon/p{page}', queryManga)
+@Common.MangaCSS(/^https:\/\/newtoki\d+\.com\/webtoon\/\d+\/[^/]+$/, 'div.page-title span.page-desc')
+@Common.MangasMultiPageCSS('/webtoon/p{page}', 'ul#webtoon-list-all div.list-item a:has(span.title)')
 
 export default class extends Manatoki {
 

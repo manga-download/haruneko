@@ -3,26 +3,29 @@ import icon from './Manatoki.webp';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
-import { AddAntiScrapingDetection, FetchRedirection } from './../platform/AntiScrapingDetection';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
 AddAntiScrapingDetection(async (invoke) => {
-    const result = await invoke<boolean>(`document.querySelector('form[name="fcaptcha"]') && true || false`);
+    const result = await invoke<boolean>(`
+        function CleanPage() {
+            document.querySelector('[style="margin-bottom: 20px;"].row.row-15')?.style.setProperty('display', 'none');
+            [...document.querySelectorAll('.board-tail-banner')].map(element=> element.style = 'display: none !important');
+            return true;
+        }
+        const result = document.querySelector('div.form-box form[name="fcaptcha"][action*="/bbs/captcha_check.php"') && true || false;
+        result ? CleanPage() : false;
+    `);
     return result ? FetchRedirection.Interactive : undefined;
 });
-
-export const queryMangaTitle = 'div.page-title span.page-desc';
-export const queryManga = 'ul#webtoon-list-all div.list-item a:has(span.title)';
 
 export const pageScript = `
     new Promise( resolve => {
         html_encoder(html_data);
-        resolve([...document.querySelectorAll('img[src*="/img/loading-image.gif"]')].map(image => {
-            return Object.values(image.dataset).at(0);
-        }))
+        resolve([...document.querySelectorAll('img[src*="/img/loading-image.gif"]')].map(image => Object.values(image.dataset).at(0) ));
     });
 `;
 
-@Common.MangaCSS(/^https:\/\/manatoki\d+\.net\/(webtoon\/\d+\/[^/]+|comic\/\d+)$/, queryMangaTitle)
+@Common.MangaCSS(/^https:\/\/manatoki\d+\.net\/(webtoon\/\d+\/[^/]+|comic\/\d+)$/, 'div.page-title span.page-desc')
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -41,12 +44,14 @@ export default class extends DecoratableMangaScraper {
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
 
         //trigger Cloudflare turnstile
-        await FetchWindowScript(new Request(new URL('/webtoon', this.URI)), 'true');
+        await FetchWindowScript(new Request(new URL('/webtoon', this.URI)), '');
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const webtoons = await Common.FetchMangasMultiPageCSS.call(this, provider, '/webtoon/p{page}', queryManga);
-        return webtoons.concat(... await Common.FetchMangasMultiPageCSS.call(this, provider, '/comic/p{page}', queryManga));
+        return [
+            ... await Common.FetchMangasMultiPageCSS.call(this, provider, '/webtoon/p{page}', 'ul#webtoon-list-all div.list-item a:has(span.title)'),
+            ... await Common.FetchMangasMultiPageCSS.call(this, provider, '/comic/p{page}', 'ul#webtoon-list-all div.list-item a:has(span.title)')
+        ];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
