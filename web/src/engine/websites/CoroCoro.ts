@@ -61,20 +61,16 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaId = url.split('/').at(-1);
-        const requestUrl = new URL(this.apiUrl);
-        requestUrl.searchParams.set('rq', 'title/detail');
-        requestUrl.searchParams.set('title_id', mangaId);
-        const { title: { id, name } } = await FetchProto<TitleDetailView>(new Request(requestUrl), prototypes, 'TitleDetailView');
+        const request = this.CreateProtoRequest('title/detail', { title_id: mangaId });
+        const { title: { id, name } } = await FetchProto<TitleDetailView>(request, prototypes, 'TitleDetailView');
         return new Manga(this, provider, id.toString(), name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         for (const day of ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']) {
-            const url = new URL(this.apiUrl);
-            url.searchParams.set('rq', 'title/list/update_day');
-            url.searchParams.set('day', day);
-            const { titles: { titles } } = await FetchProto<TitleListView>(new Request(url), prototypes, 'TitleListView');
+            const request = this.CreateProtoRequest('title/list/update_day', { day: day });
+            const { titles: { titles } } = await FetchProto<TitleListView>(request, prototypes, 'TitleDetailView');
             const mangas = titles.map(manga => new Manga(this, provider, manga.id.toString(), manga.name));
             mangaList.push(...mangas);
         }
@@ -82,18 +78,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL(this.apiUrl);
-        url.searchParams.set('rq', 'title/detail');
-        url.searchParams.set('title_id', manga.Identifier);
-        const { chapters } = await FetchProto<TitleDetailView>(new Request(url), prototypes, 'TitleDetailView');
+        const request = this.CreateProtoRequest('title/detail', { title_id: manga.Identifier });
+        const { chapters } = await FetchProto<TitleDetailView>(request, prototypes, 'TitleDetailView');
         return chapters.map(chapter => new Chapter(this, manga, chapter.id.toString(), [chapter.mainName, chapter.subName].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<CryptoParams>[]> {
-        const url = new URL(this.apiUrl);
-        url.searchParams.set('rq', 'chapter/viewer');
-        url.searchParams.set('chapter_id', chapter.Identifier);
-        const { pages, aesIv, aesKey } = await FetchProto<ViewerView>(new Request(url, { method: 'PUT' }), prototypes, 'ViewerView');
+        const request = this.CreateProtoRequest('chapter/viewer', { chapter_id: chapter.Identifier }, 'PUT');
+        const { pages, aesIv, aesKey } = await FetchProto<ViewerView>(request, prototypes, 'ViewerView');
         const params: CryptoParams = aesIv ? {
             key: aesKey,
             iv: aesIv
@@ -106,10 +98,18 @@ export default class extends DecoratableMangaScraper {
         const cryptoParams = page.Parameters;
         if (cryptoParams?.iv) {
             const encrypted = await blob.arrayBuffer();
-            const cipher = { name: 'AES-CBC', iv: GetBytesFromHex(cryptoParams.iv) };
-            const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoParams.key), cipher, false, ['decrypt']);
-            const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
+            const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(cryptoParams.iv) };
+            const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoParams.key), algorithm, false, ['decrypt']);
+            const decrypted = await crypto.subtle.decrypt(algorithm, cryptoKey, encrypted);
             return Common.GetTypedData(decrypted);
         } else return blob;
     }
+
+    private CreateProtoRequest(endpoint: string, params: Record<string, string>, method: string = 'GET'): Request {
+        const uri = new URL(this.apiUrl);
+        Object.keys(params).forEach(key => uri.searchParams.set(key, params[key]));
+        uri.searchParams.set('rq', endpoint);
+        return new Request(uri, { method });
+    }
+
 }
