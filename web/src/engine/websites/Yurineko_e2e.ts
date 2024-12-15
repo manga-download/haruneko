@@ -6,7 +6,7 @@ const config = {
         title: 'Yurineko'
     },
     container: {
-        url: 'https://yurineko.moe/manga/3553',
+        url: 'https://yurineko.my/manga/3553',
         id: '3553',
         title: 'Ma Pháp Thiếu Nữ 201'
     },

@@ -3,7 +3,8 @@ import { Exception, InternalError } from '../../Error';
 import { Fetch, FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { MediaChild, MediaContainer } from '../../providers/MediaPlugin';
-import type { Priority } from '../../taskpool/TaskPool';
+import { RateLimit } from '../../taskpool/RateLimit';
+import { TaskPool, Priority } from '../../taskpool/TaskPool';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 
 export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContext) {
@@ -163,16 +164,15 @@ export function MangasNotSupported() {
 }
 
 /**
- * An extension method for extracting multiple mangas from the given relative {@link path} using the given CSS {@link query}.
+ * An extension method for extracting multiple mangas from the given relative {@link endpoint} using the given CSS {@link query}.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
- * @param path - The path relative to {@link this} scraper's base url from which the mangas shall be extracted
+ * @param endpoint - The endpoint relative to {@link this} scraper's base url from which the mangas shall be extracted
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
-    const uri = new URL(path, this.URI);
-    const request = new Request(uri.href, {
+async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, endpoint: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+    const request = new Request(new URL(endpoint, this.URI), {
         headers: {
             Referer: this.URI.href
         }
@@ -181,21 +181,40 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
     return data.map(element => {
         const { id, title } = extract.call(this, element);
         return new Manga(this, provider, id, title);
-    }).distinct();
+    });
 }
 
 /**
- * A class decorator that adds the ability to extract multiple mangas from the given relative {@link path} using the given CSS {@link query}.
- * @param path - The path relative to the scraper's base url from which the mangas shall be extracted
+ * An extension method for extracting multiple mangas from the given relative {@link endpoints} using the given CSS {@link query}.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
+ * @param endpoints - The endpoints relative to {@link this} scraper's base url from which the mangas shall be extracted
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export function MangasSinglePageCSS<E extends HTMLElement>(path: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export async function FetchMangasSinglePagesCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, endpoints: string[], query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
+    const cancellator = new AbortController();
+    const mangaTaskPool: TaskPool = new TaskPool(4, new RateLimit(0, 0));
+    const promises = endpoints.map(endpoint => mangaTaskPool.Add(() => FetchMangasSinglePageCSS.call(this, provider, endpoint, query, extract), Priority.Normal, cancellator.signal));
+    try {
+        return (await Promise.all(promises)).flat().distinct();
+    } finally {
+        cancellator.abort();
+    }
+}
+
+/**
+ * A class decorator that adds the ability to extract multiple mangas from the given relative {@link endpoints} using the given CSS {@link query}.
+ * @param endpoints - The endpoints relative to the scraper's base url from which the mangas shall be extracted
+ * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
+ * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
+ */
+export function MangasSinglePagesCSS<E extends HTMLElement>(endpoints: string[], query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasSinglePageCSS.call(this, provider, path, query, extract as InfoExtractor<HTMLElement>);
+                return FetchMangasSinglePagesCSS.call(this, provider, endpoints, query, extract as InfoExtractor<HTMLElement>);
             }
         };
     };

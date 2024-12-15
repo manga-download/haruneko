@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './UraSunday.webp';
-import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 const pageScript = `
@@ -31,6 +31,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/title\/\d+$/, 'div.title div.detail div.info h1')
+@Common.MangasSinglePagesCSS([ '/serial_title', '/complete_title' ], 'div.title-all-list ul li a', MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.title div.detail div.chapter ul li:not([class]) a', ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
@@ -42,14 +43,5 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (const page of ['/serial_title', '/complete_title']) {
-            const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, page, 'div.title-all-list ul li a', MangaExtractor);
-            mangaList.push(...mangas);
-        }
-        return mangaList;
     }
 }

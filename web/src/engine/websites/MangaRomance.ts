@@ -23,7 +23,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangasSinglePageCSS('', 'div.sidebar div#Label1 div.list-label-widget-content ul li a', MangaInfoExtractor)
+@Common.MangasSinglePagesCSS([ '' ], 'div.sidebar div#Label1 div.list-label-widget-content ul li a', MangaInfoExtractor)
 @Common.PagesSinglePageCSS('article div.entry-content img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
