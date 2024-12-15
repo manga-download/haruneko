@@ -19,7 +19,7 @@ function MangaInfosExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('komikindome', 'KomikIndoMe', 'https://komikindo.nl', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('komikindome', 'KomikIndoMe', 'https://komikindo.im', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

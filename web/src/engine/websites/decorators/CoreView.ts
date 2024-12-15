@@ -1,29 +1,14 @@
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
-import { FetchCSS } from '../../platform/FetchProvider';
-import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
 import DeScramble from '../../transformers/ImageDescrambler';
 
-export const mangaPaths = ['/series', '/series/oneshot', '/series/finished'];
 export const queryMangaTitleFromURI = '.series-header-title';
-
-// The query to select *all* required data for *one* manga
-export const queryMangas = 'article.series-list-wrapper ul.series-list > li.series-list-item > a';
-
-const queryMangaURI: string = undefined;
-// The query to retrieve the single manga title from inside of this.queryManga
-export const queryMangaTitle = [
-    '.series-list-title',
-    '.series-title',
-    'h4.daily-series-title',
-    '.item-series-title'
-].join(',');
-
-const queryChaptersAtomFeed = 'head link[type*="atom+xml"]';
-export const queryChapters = 'feed entry';
-export const queryEpisodeJSON = '#episode-json';
+const defaultQueryChapters = 'a.series-episode-list-container';
+const queryEpisodeJSON = '#episode-json';
 
 type ChapterJSON = {
     readableProduct: {
@@ -31,75 +16,60 @@ type ChapterJSON = {
         hasPurchased: boolean,
         pageStructure: {
             choJuGiga: string,
-            pages : {
+            pages: {
                 type: string,
                 src: string
             }[]
         }
     }
 }
-function MangaExtractor(element: HTMLElement, queryURI: string, queryTitle: string) {
-    const id = (element.querySelector<HTMLAnchorElement>(queryURI) || element as HTMLAnchorElement).pathname;
-    const title = (element.querySelector<HTMLElement>(queryTitle) || element).textContent.trim();
-    return { id, title };
-}
 
-function ChapterExtractor(element: HTMLElement, manga: Manga) {
-    const title = element.querySelector('title').textContent.replace(manga.Title, '').trim() || manga.Title;
-    const id = new URL(element.querySelector<HTMLLinkElement>('link').href, this.URI).pathname;
-    return { id, title };
-}
-
-/***************************************************
- ******** Manga from URL Extraction Methods ********
- ***************************************************/
-//use COMMON.MangaCSS(queryMangaTitleFromURI)
-
-/***********************************************
- ******** Manga List Extraction Methods ********
- ***********************************************/
-
-/**
- * An extension method for extracting multiple mangas from the given relative {@link path} using the given CSS {@link query}.
- * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
- * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
- * @param paths - A collection of path relative to {@link this} scraper's base url from which the mangas shall be extracted
- * @param queryURI - Optional query to pinpoint the URI inside of {@link query} . Most sites don't need this
- * @param queryTitle - The query to retrieve the single manga title from inside of {@link query}
- * @param extractor - An Extractor to get manga infos
-
- */
-export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, paths = mangaPaths, query = queryMangas, queryURI = queryMangaURI, queryTitle = queryMangaTitle, extractor = MangaExtractor): Promise<Manga[]> {
-    const mangaList: Manga[] = [];
-    for (const page of paths) {
-        const data = await FetchCSS(new Request(new URL(page, this.URI)), query);
-        const mangas= data.map(element => {
-            const { id, title } = extractor.call(this, element, queryURI, queryTitle);
-            return new Manga(this, provider, id, title);
-        });
-
-        mangaList.push(...mangas);
+type JSONSerie = {
+    readableProduct: {
+        series: {
+            id: string;
+        }
     }
-    return mangaList;
+}
+
+type APIChaptersHTML = {
+    html: string
+}
+
+type APIChapter = {
+    title: string,
+    viewer_uri: string
+}
+
+type PageParams = {
+    scrambled: boolean
 }
 
 /**
- * A class decorator that adds the ability to extract multiple mangas from a range of pages using the given CSS {@link query}.
- * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
- * @param paths - A collection of path relative to {@link this} scraper's base url from which the mangas shall be extracted
- * @param queryURI - Optional query to pinpoint the URI inside of {@link query} . Most sites don't need this
- * @param queryTitle - The query to retrieve the single manga title from inside of {@link query}
- * @param extractor - An Extractor to get manga infos
-  */
-export function MangasMultiPageCSS(paths = mangaPaths, query = queryMangas, queryURI = queryMangaURI, queryTitle = queryMangaTitle, extractor = MangaExtractor) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        Common.ThrowOnUnsupportedDecoratorContext(context);
-        return class extends ctor {
-            public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasMultiPageCSS.call(this, provider, paths, query, queryURI, queryTitle, extractor);
-            }
-        };
+ * Creates an info extractor that will parse the media id from the first found {@link HTMLAnchorElement}
+ * and the media title from the first element found via {@link queryTitle} (or from the {@link HTMLAnchorElement} in case none was found).
+ * @param queryTitle - An optional CSS query which can be used to remove all matching child elements before extracting the media title
+ */
+function CreateMangaExtractor(queryTitle: string) {
+    return function (element: HTMLElement) {
+        const id = element instanceof HTMLAnchorElement ? element.pathname : element.querySelector<HTMLAnchorElement>('a').pathname;
+        const title = (element.querySelector<HTMLElement>(queryTitle) || element).textContent.trim();
+        return { id, title };
+    };
+}
+
+export const DefaultMangaExtractor = CreateMangaExtractor([
+    '.series-list-title',
+    '.series-title',
+    'h4.daily-series-title',
+    '.item-series-title',
+    'h4.title'
+].join(','));
+
+function ChapterExtractor(element: HTMLAnchorElement) {
+    return {
+        id: element.pathname,
+        title: element.querySelector<HTMLElement>('.series-episode-list-title').textContent.trim()
     };
 }
 
@@ -108,40 +78,91 @@ export function MangasMultiPageCSS(paths = mangaPaths, query = queryMangas, quer
  *************************************************/
 
 /**
- * An extension method for extracting all chapters for the given {@link manga} using the given CSS {@link query}.
- * The chapters are extracted from the composed url based on the `Identifier` of the {@link manga} and the `URI` of the website.
+ * An extension method for extracting chapters using Coreview API. Use this when website uses endpoint 'readable_products'.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
- * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
- * @param extractor - An Extractor to get chapter infos
+ * @param query - A CSS selector used to extract chapters from the api answer (html from json)
+ * @param extractor - A function to extract id and title from queried elements
  */
-export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
-    const request = new Request(new URL(manga.Identifier, this.URI));
-    let data = await FetchCSS<HTMLLinkElement>(request, queryChaptersAtomFeed);
-    const uri = new URL(data[0].href, this.URI);
-    uri.searchParams.set('free_only', '0'); // 0: include non-free, 1: exclude non-free
-    data = await FetchCSS(new Request(uri), query);
-    return data.map(element => {
-        const { id, title } = extractor.call(this, element, manga);
-        return new Chapter(this, manga, id, title);
-    });
-}
-
-/**
- * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
- * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
- * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
- * @param extractor - An Extractor to get chapter infos
- */
-export function ChaptersSinglePageCSS(query: string = queryChapters, extractor = ChapterExtractor) {
+export function ChaptersSinglePageAJAXV1(query: string = defaultQueryChapters, extractor = ChapterExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageCSS.call(this, manga, query, extractor);
+                return FetchChaptersSinglePageAJAXV1.call(this, manga, query, extractor);
             }
         };
     };
+}
+
+/**
+ * A class decorator for extracting chapters using Coreview API. Use this when website uses endpoint 'readable_products'.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param query - A CSS selector used to extract chapters from the api answer (html from json)
+ * @param extractor - A function to extract id and title from queried elements
+ */
+export async function FetchChaptersSinglePageAJAXV1(this: MangaScraper, manga: Manga, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
+    const jsonData = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'script#episode-json')).shift().dataset.value;
+    const { readableProduct: { series: { id } } } = JSON.parse(jsonData) as JSONSerie;
+
+    const url = new URL(`/api/viewer/readable_products`, this.URI);
+    url.search = new URLSearchParams({
+        aggregate_id: id,
+        number_since: '99999',
+        number_until: '0',
+        read_more_num: '150',
+        type: 'episode'
+    }).toString();
+
+    const { html } = await FetchJSON<APIChaptersHTML>(new Request(url));
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return [...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
+        const { id, title } = extractor(chapter);
+        return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
+    });
+}
+
+/**
+ * An extension method for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
+ */
+export function ChaptersMultiPageAJAXV2() {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+                return FetchChaptersMultiPageAJAXV2.call(this, manga);
+            }
+        };
+    };
+}
+
+/**
+ * A class deocrator for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
+ */
+export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+    const jsonData = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'script#episode-json')).shift().dataset.value;
+    const { readableProduct: { series: { id } } } = JSON.parse(jsonData) as JSONSerie;
+    const chapterList: Chapter[] = [];
+
+    for (let offset = 0, run = true; run;) {
+        const url = new URL(`/api/viewer/pagination_readable_products`, this.URI);
+        url.search = new URLSearchParams({
+            aggregate_id: id,
+            type: 'episode',
+            sort_order: 'desc',
+            offset: offset.toString()
+        }).toString();
+
+        const data = await FetchJSON<APIChapter[]>(new Request(url));
+        const chapters = data.map(chapter => {
+            const title = chapter.title.replace(manga.Title, '').trim() || chapter.title;
+            return new Chapter(this, manga, new URL(chapter.viewer_uri).pathname, title);
+        });
+        chapters.length > 0 ? chapterList.push(...chapters) : run = false;
+        offset += chapters.length;
+    }
+    return chapterList;
 }
 
 /**********************************************
@@ -155,17 +176,17 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param query - A CSS query to locate the JSON from which the page information shall be extracted
  */
-async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, query = queryEpisodeJSON): Promise<Page[]> {
-    const request = new Request(new URL(chapter.Identifier, this.URI).href);
+async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, query = queryEpisodeJSON): Promise<Page<PageParams>[]> {
+    const request = new Request(new URL(chapter.Identifier, this.URI));
     const dataElement = await FetchCSS(request, query);
-    const { readableProduct } : ChapterJSON = JSON.parse(dataElement[0].dataset.value);
+    const { readableProduct }: ChapterJSON = JSON.parse(dataElement[0].dataset.value);
     if (!readableProduct.isPublic && !readableProduct.hasPurchased) {
         throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
     }
     return readableProduct.pageStructure.pages.filter(page => page.type === 'main').map(page => {
         // NOTE: 'usagi' is not scrambled
         const parameters = { Referer: this.URI.href, scrambled: readableProduct.pageStructure.choJuGiga === 'baku' };
-        return new Page(this, chapter, new URL(page.src, request.url), parameters);
+        return new Page<PageParams>(this, chapter, new URL(page.src, request.url), parameters);
     });
 }
 
@@ -178,7 +199,7 @@ export function PagesSinglePageJSON(query = queryEpisodeJSON) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page<PageParams>[]> {
                 return FetchPagesSinglePageJSON.call(this, chapter, query);
             }
         };
@@ -197,7 +218,7 @@ export function PagesSinglePageJSON(query = queryEpisodeJSON) {
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
  */
-async function FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
+async function FetchImage(this: MangaScraper, page: Page<PageParams>, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     const data: Blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
     return page.Parameters.scrambled ? DeScramble(data, descramble) : data;
 }
@@ -231,7 +252,7 @@ export function ImageAjax(detectMimeType = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+            public async FetchImage(this: MangaScraper, page: Page<PageParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImage.call(this, page, priority, signal, detectMimeType);
             }
         };
