@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../pr
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 type SSD = {
     datas?: [{
@@ -23,7 +23,7 @@ type SSD = {
 }
 
 @Common.MangasNotSupported()
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

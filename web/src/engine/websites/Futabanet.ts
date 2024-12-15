@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 @Common.MangaCSS(/^https:\/\/gaugau\.futabane(t|x)\.jp\/list\/work\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
 @Common.MangasMultiPageCSS('/list/works?page={page}', 'div.works__grid div.list__box h4 a')
@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> { //Not sure if needed anymore
         let pages: Page[] = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div.works_tateyomi__img img');
         pages = pages?.map(page => new Page(this, chapter, page.Link, { useCommon: true }));
-        return pages?.length > 0 ? pages : await SpeedBinb.FetchPagesSinglePageAjax.call(this, chapter, SBVersion.v016130);
+        return pages?.length > 0 ? pages : await SpeedBinb.FetchPagesSinglePageAjax.call(this, chapter, SpeedBindVersion.v016130);
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> { //Not sure if needed anymore

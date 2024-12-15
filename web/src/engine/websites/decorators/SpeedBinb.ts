@@ -90,7 +90,7 @@ const JsonFetchScript = `
     });
 `;
 
-export enum SBVersion { v016061, v016452, v016201, v016130 };
+export enum SpeedBindVersion { v016061, v016452, v016201, v016130 };
 
 function getSanitizedURL(base: string, append: string): URL {
     const baseURI = new URL(append, base + '/');
@@ -167,9 +167,9 @@ async function CreatePtBinbRequestData(viewerUrl: URL, sbHtmlElement: HTMLElemen
  * @param version - SpeedBinb version used by the website
  * @param needCookies - Use browser window to perform first JSON request to get access cookies properly
  */
-export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, version: SBVersion, needCookies = false): Promise<Page[]> {
+export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, version: SpeedBindVersion, needCookies = false): Promise<Page[]> {
     const { viewerUrl, SBHtmlElement } = await GetViewerData.call(this, chapter);
-    if (version == SBVersion.v016061) {
+    if (version == SpeedBindVersion.v016061) {
         //ComicBrise, ComicMeteor, ComicPorta, ComicValKyrie, DigitalMargaret, MichiKusa, OneTwoThreeHon, TKSuperheroComics
         const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
         return imageConfigurations.map(element => new Page(this, chapter, getSanitizedURL(viewerUrl.href, element.dataset.ptimg)));
@@ -185,7 +185,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
  * @param needCookies - Use browser window to perform first JSON request to get access cookies properly
  */
 
-export function PagesSinglePageAjax(version: SBVersion, needCookies = false) {
+export function PagesSinglePageAjax(version: SpeedBindVersion, needCookies = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
@@ -196,8 +196,8 @@ export function PagesSinglePageAjax(version: SBVersion, needCookies = false) {
         };
     };
 }
-async function getPagesLinks(this: MangaScraper, configuration: ContentConfiguration, params: RequestData, chapter: Chapter, version: SBVersion): Promise<Page[]> {
-    const cid = version === SBVersion.v016452 ? params.cid : configuration.ContentID;
+async function getPagesLinks(this: MangaScraper, configuration: ContentConfiguration, params: RequestData, chapter: Chapter, version: SpeedBindVersion): Promise<Page[]> {
+    const cid = version === SpeedBindVersion.v016452 ? params.cid : configuration.ContentID;
     configuration.ctbl = _pt(cid, params.sharingKey, configuration.ctbl as string);
     configuration.ptbl = _pt(cid, params.sharingKey, configuration.ptbl as string);
     try {
@@ -211,7 +211,7 @@ async function getPagesLinks(this: MangaScraper, configuration: ContentConfigura
             uri.searchParams.set('dmytime', configuration.ContentDate);
             uri.searchParams.set('p', configuration.p);
             uri.searchParams.set('vm', configuration.ViewMode.toString());
-            if (version === SBVersion.v016452) { //CMOA
+            if (version === SpeedBindVersion.v016452) { //CMOA
                 uri.searchParams.set('q', '1');
                 uri.searchParams.set('u0', params.u0);
                 uri.searchParams.set('u1', params.u1);
@@ -227,7 +227,7 @@ async function getPagesLinks(this: MangaScraper, configuration: ContentConfigura
         case 2: {//v016130 MangaPlanet, MangaPlaza, Yanmaga, Yomonga
             const uri = getSanitizedURL(configuration.ContentsServer, 'content');
             if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
-            if (version === SBVersion.v016201) uri.searchParams.set('u1', params.u1); //YOUNGJUMP
+            if (version === SpeedBindVersion.v016201) uri.searchParams.set('u1', params.u1); //YOUNGJUMP
             return await ExtractPages.call(this, uri, '/content', '/img/{src}', configuration, chapter);
         }
     }

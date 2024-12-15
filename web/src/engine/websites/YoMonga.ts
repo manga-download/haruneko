@@ -3,7 +3,7 @@ import icon from './YoMonga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLElement) {
     return {
@@ -23,7 +23,7 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangaCSS(/^{origin}\/titles\/\d+\//, 'div.intr-title')
 @Common.MangasMultiPageCSS('/titles/?page_num={page}', 'div.book-box4', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.episode-list', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

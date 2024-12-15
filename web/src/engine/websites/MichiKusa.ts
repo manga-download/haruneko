@@ -3,7 +3,7 @@ import icon from './MichiKusa.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaInfoExtractor(element: HTMLElement) {
     return {
@@ -21,7 +21,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/product\/[^/]+$/, 'header.entry-header h1.page-title')
 @Common.MangasMultiPageCSS('/product/page/{page}', 'div.entry-content', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.released_episodes div.items div.item a', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016061)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016061)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

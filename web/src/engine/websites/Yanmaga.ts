@@ -3,7 +3,7 @@ import icon from './Yanmaga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -32,9 +32,9 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'h1.detail-header-title, h1.detailv2-outline-title')
-@Common.MangasSinglePageCSS('/comics', 'a.ga-comics-book-item', MangaExtractor)
+@Common.MangasSinglePagesCSS(['/comics'], 'a.ga-comics-book-item', MangaExtractor)
 @Common.ChaptersSinglePageJS(chapterScript, 200)
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130, true)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

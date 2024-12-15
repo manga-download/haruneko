@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLElement) {
     return {
@@ -15,7 +15,7 @@ function MangaExtractor(element: HTMLElement) {
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.card-body.book-detail h3')
 @Common.MangasMultiPageCSS('/browse/title?ttlpage={page}', 'div#Title .row.book-list', 1, 1, 0, MangaExtractor)
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130, true)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 
 export default class extends DecoratableMangaScraper {

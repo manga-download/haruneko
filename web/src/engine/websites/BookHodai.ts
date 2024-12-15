@@ -4,14 +4,14 @@ import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchHTML } from '../platform/FetchProvider';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaLabelExtractor(element: HTMLElement): string {
     return element.textContent.split('＞').pop().trim() || element.textContent.trim();
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/backnumber\/\d+$/, 'ol.c-breadcrumb li:last-of-type a, div.p-book-overview__detail h2.p-book-overview__detail-bookname', MangaLabelExtractor)
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

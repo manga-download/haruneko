@@ -4,11 +4,11 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLElement) {
     return {
-        id: new URL(element.querySelector('a').href).pathname.replace('/new.html', '/'),
+        id: new URL(element.querySelector<HTMLAnchorElement>('a').href).pathname.replace('/new.html', '/'),
         title: element.querySelector('.title').textContent.replace(/\s*THE COMIC\s*/i, '').trim()
     };
 }
@@ -19,9 +19,9 @@ function ChapterExtractor(element: HTMLElement) {
     };
 }
 
-@Common.MangasSinglePageCSS('/list', '.box_wrap .box', MangaExtractor)
+@Common.MangasSinglePagesCSS(['/list'], '.box_wrap .box', MangaExtractor)
 @Common.ChaptersSinglePageCSS('#new_story .title, #back_number .title', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016061)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016061)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

@@ -3,25 +3,25 @@ import icon from './DigitalMargaret.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.querySelector('img').getAttribute('alt').trim()
+        title: anchor.querySelector<HTMLImageElement>('img').getAttribute('alt').trim()
     };
 }
 function ChapterExtractor(element: HTMLElement) {
     return {
-        id: element.querySelector('a').pathname,
-        title: element.querySelector('p').textContent.trim()
+        id: element.querySelector<HTMLAnchorElement>('a').pathname,
+        title: element.querySelector<HTMLParagraphElement>('p').textContent.trim()
     };
 }
 
 @Common.MangaCSS(/^{origin}\/detail\/[^/]+\/$/, 'section#product div.content h3')
-@Common.MangasSinglePageCSS('/', 'section#serial ul.serial-list li a', MangaExtractor)
+@Common.MangasSinglePagesCSS(['/'], 'section#serial ul.serial-list li a', MangaExtractor)
 @Common.ChaptersSinglePageCSS('section#product div.list div.box div.number', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016061)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016061)
 @SpeedBinb.ImageAjax()
 
 export default class extends DecoratableMangaScraper {

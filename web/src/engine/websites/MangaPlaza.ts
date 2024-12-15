@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { SBVersion } from './decorators/SpeedBinb';
+import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 type APIChapterResult = {
     data: {
@@ -14,7 +14,7 @@ type APIChapterResult = {
 }
 
 @Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.mainTitle h1.titleTxt')
-@SpeedBinb.PagesSinglePageAjax(SBVersion.v016130, true)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
