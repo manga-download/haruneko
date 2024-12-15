@@ -15,10 +15,10 @@ const excludes = [
 
 const chapterScript = `
     new Promise( resolve => {
-        resolve( [...document.querySelectorAll('div h3 a[href*="/chapter/"]')].map(chapter => {
+        resolve( [...document.querySelectorAll('a[href*="/chapter/"]:has(h3.text-xs)')].map(chapter => {
             return {
                 id: chapter.pathname.replace(/(-[^-]+\\/chapter)/, '-/chapter'),
-                title : chapter.innerText.replace('\\n', ' ').trim()
+                title : chapter.querySelector('h3').innerText.replace('\\n', ' ').trim()
             };
         }));
     });
