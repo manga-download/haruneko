@@ -13,7 +13,7 @@ function MangaInfoExtractor(element: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/[a-z]+\/[^/]+\/[^/]+\.html$/, 'div.title_content h2.episode-title')
-@Common.MangasSinglePageCSS('/en/weekly', 'ul.allday li a', MangaInfoExtractor)
+@Common.MangasSinglePagesCSS(['/en/weekly'], 'ul.allday li a', MangaInfoExtractor)
 @Toomics.ChaptersSinglePageCSS()
 @Common.PagesSinglePageCSS(Toomics.queryPages, Toomics.PageExtractor)
 @Common.ImageAjax()
