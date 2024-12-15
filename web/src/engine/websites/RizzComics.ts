@@ -11,7 +11,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @MangaStream.MangaCSS(/^{origin}\/series\/[^/]+$/)
-@Common.MangasSinglePageCSS('/series', 'div.bsx a', MangaExtractor)
+@Common.MangasSinglePagesCSS([ '/series' ], 'div.bsx a', MangaExtractor)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS([/discord\.webp$/])
 @Common.ImageAjax()
