@@ -12,7 +12,7 @@ import { Exception } from '../../Error';
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.querySelector('div[class*=style_episodeListContentsItem__title]').textContent.trim()
+        title: anchor.querySelector('div[class*=episodeListContentsItem__title]').textContent.trim()
     };
 }
 
@@ -115,7 +115,7 @@ type TDimensions = {
     height: number,
 }
 
-@Common.ChaptersSinglePageCSS('ul[class*=style_episodeListContents__list] li a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('ul[class*=episodeListContents__list] li a', ChapterExtractor)
 export class LezhinBase extends DecoratableMangaScraper {
     protected locale: string;
     private readonly apiUrl = 'https://www.lezhinus.com/lz-api/v2/';
@@ -145,7 +145,7 @@ export class LezhinBase extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        return Common.FetchMangaCSS.call(this, provider, url, 'h2[class*="style_episodeListDetail__title__"]');
+        return Common.FetchMangaCSS.call(this, provider, url, 'h2[class*="episodeListDetail__title__"]');
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
