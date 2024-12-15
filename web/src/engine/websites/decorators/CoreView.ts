@@ -1,20 +1,12 @@
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
 import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
-import { type MangaScraper, type MangaPlugin, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
 import DeScramble from '../../transformers/ImageDescrambler';
 
 export const queryMangaTitleFromURI = '.series-header-title';
-const queryMangaTitle = [
-    '.series-list-title',
-    '.series-title',
-    'h4.daily-series-title',
-    '.item-series-title',
-    'h4.title'
-].join(',');
-
 const defaultQueryChapters = 'a.series-episode-list-container';
 const queryEpisodeJSON = '#episode-json';
 
@@ -53,59 +45,31 @@ type PageParams = {
     scrambled: boolean
 }
 
-export function MangaExtractor(element: HTMLElement) {
-    const id = element instanceof HTMLAnchorElement ? (element as HTMLAnchorElement).pathname : element.querySelector<HTMLAnchorElement>('a').pathname;
-    const title = (element.querySelector<HTMLElement>(queryMangaTitle) || element).textContent.trim();
-    return { id, title };
-}
-
-function ChapterExtractor(element: HTMLElement) {
-    return {
-        id: (element as HTMLAnchorElement).pathname,
-        title: element.querySelector('.series-episode-list-title').textContent.trim()
+/**
+ * Creates an info extractor that will parse the media id from the first found {@link HTMLAnchorElement}
+ * and the media title from the first element found via {@link queryTitle} (or from the {@link HTMLAnchorElement} in case none was found).
+ * @param queryTitle - An optional CSS query which can be used to remove all matching child elements before extracting the media title
+ */
+function CreateMangaExtractor(queryTitle: string) {
+    return function (element: HTMLElement) {
+        const id = element instanceof HTMLAnchorElement ? element.pathname : element.querySelector<HTMLAnchorElement>('a').pathname;
+        const title = (element.querySelector<HTMLElement>(queryTitle) || element).textContent.trim();
+        return { id, title };
     };
 }
 
-/***************************************************
- ******** Manga from URL Extraction Methods ********
- ***************************************************/
-//use COMMON.MangaCSS(queryMangaTitleFromURI)
+export const DefaultMangaExtractor = CreateMangaExtractor([
+    '.series-list-title',
+    '.series-title',
+    'h4.daily-series-title',
+    '.item-series-title',
+    'h4.title'
+].join(','));
 
-/***********************************************
- ******** Manga List Extraction Methods ********
- ***********************************************/
-
-/**
- * An extension method for extracting multiple mangas from multiple {@link paths} using the given CSS {@link query}.
- * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
- * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
- * @param paths - A collection of path relative to {@link this} scraper's base url from which the mangas shall be extracted
- * @param extractor - An Extractor to get manga infos
- */
-export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, paths: string[], query: string, extractor = MangaExtractor): Promise<Manga[]> {
-    const mangaList: Manga[] = [];
-    for (const path of paths) {
-        const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, path, query, extractor);
-        mangaList.push(...mangas);
-    }
-    return mangaList.distinct();
-}
-
-/**
- * A class decorator for extracting multiple mangas from multiple {@link paths} using the given CSS {@link query}.
- * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
- * @param paths - A collection of path relative to {@link this} scraper's base url from which the mangas shall be extracted
- * @param extractor - An Extractor to get manga infos
-  */
-export function MangasSinglePageCSS(paths: string[], query: string, extractor = MangaExtractor) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        Common.ThrowOnUnsupportedDecoratorContext(context);
-        return class extends ctor {
-            public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasSinglePageCSS.call(this, provider, paths, query, extractor);
-            }
-        };
+function ChapterExtractor(element: HTMLAnchorElement) {
+    return {
+        id: element.pathname,
+        title: element.querySelector<HTMLElement>('.series-episode-list-title').textContent.trim()
     };
 }
 
@@ -151,7 +115,7 @@ export async function FetchChaptersSinglePageAJAXV1(this: MangaScraper, manga: M
 
     const { html } = await FetchJSON<APIChaptersHTML>(new Request(url));
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    return [...doc.querySelectorAll<HTMLElement>(queryChapters)].map(chapter => {
+    return [...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
         const { id, title } = extractor(chapter);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
     });

@@ -16,7 +16,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, '.nomeserie span', Common.ElementLabelExtractor(), true)
-@Common.MangasSinglePageCSS('/serie.php', 'div.containerprogetti > div.manga > a', MangaInfoExtractor)
+@Common.MangasSinglePagesCSS([ '/serie.php' ], 'div.containerprogetti > div.manga > a', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.capitoli_cont > a', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('div.centrailcorrente > img')
 @Common.ImageAjax()
