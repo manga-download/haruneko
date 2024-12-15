@@ -6,7 +6,7 @@ const config = {
         title: 'Knight no Fansub'
     },
     container: {
-        url: 'https://kns.topmanhuas.org/sr/solo-subo-de-nivel/',
+        url: 'https://kns.cookni.net/sr/solo-subo-de-nivel/',
         id: JSON.stringify({ post: '1876', slug: '/sr/solo-subo-de-nivel/' }),
         title: 'Solo Level'
     },

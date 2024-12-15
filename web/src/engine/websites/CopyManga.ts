@@ -3,7 +3,7 @@ import icon from './CopyManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
-import { FromHexString, GetBytesUTF8 } from '../BufferEncoder';
+import { GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIResponse<T> = {
     code: number,
@@ -99,9 +99,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async Decrypt<T>(encryptedData: string): Promise<T> {
-        const key = GetBytesUTF8(this.defaultKey);
-        const iv = GetBytesUTF8(encryptedData.substring(0, 16));
-        const cipher = FromHexString(encryptedData.substring(16, encryptedData.length));
+        const key = GetBytesFromUTF8(this.defaultKey);
+        const iv = GetBytesFromUTF8(encryptedData.substring(0, 16));
+        const cipher = GetBytesFromHex(encryptedData.substring(16, encryptedData.length));
         const secretKey = await crypto.subtle.importKey('raw', key, {
             name: 'AES-CBC',
             length: 128

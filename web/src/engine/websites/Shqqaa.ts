@@ -8,7 +8,7 @@ function MangaInfoExtractor(element: HTMLTitleElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\//, 'head title', MangaInfoExtractor)
-@Common.MangasSinglePageCSS('/manga/', 'div.card div.card-body h6.card-title a')
+@Common.MangasSinglePagesCSS([ '/manga/' ], 'div.card div.card-body h6.card-title a')
 @Common.ChaptersSinglePageCSS('div.card.card-body div.text-center a[role="button"]')
 @Common.PagesSinglePageCSS('div.img-manga img')
 @Common.ImageAjax()
