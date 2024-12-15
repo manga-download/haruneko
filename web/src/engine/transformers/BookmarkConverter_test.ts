@@ -9,8 +9,9 @@ import { Key } from '../SettingsGlobal';
 import { GetLocale } from '../../i18n/Localization';
 
 const legacyWebsiteIdentifierMapTestCases = [
-    { sourceID: 'aresnov', targetID: 'scarmanga' },
+    { sourceID: 'allanimesite', targetID: 'allmangato' },
     { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
+    { sourceID: 'aresnov', targetID: 'scarmanga' },
     { sourceID: 'azoramanga', targetID: 'azoraworld' },
     { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
     { sourceID: 'bananascan', targetID: 'harmonyscan' },
