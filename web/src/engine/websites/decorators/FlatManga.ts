@@ -118,8 +118,8 @@ export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Man
             'Referer': this.URI.origin
         }
     });
-    const mangaRegexp = new RegExpSafe(`var ${mangaIdVariable}\\s*=\\s*['"]([^'"]+)['"]`);
-    const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(mangaRegexp)[1];
+    const mangaRegexp = new RegExp(`var ${mangaIdVariable}\\s*=\\s*['"]([^'"]+)['"]`);
+    const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(mangaRegexp).at(1);
     const apiUrl = new URL(`${endpoint}${mangaSlug}`, this.URI);
 
     request = new Request(apiUrl, {

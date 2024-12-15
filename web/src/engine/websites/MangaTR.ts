@@ -26,7 +26,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return (await Common.FetchMangasSinglePageCSS.call(this, provider, '/manga-list.html', FlatManga.queryMangas)).filter(manga => manga.Title);
+        return (await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/manga-list.html'], FlatManga.queryMangas)).filter(manga => manga.Title);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
