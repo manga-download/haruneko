@@ -6,7 +6,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/reader\/[^/]+\/$/, '#series-title')
-@Common.MangasSinglePageCSS('/reader/', 'section.series h2.series-title a')
+@Common.MangasSinglePagesCSS([ '/reader/' ], 'section.series h2.series-title a')
 @Common.ChaptersSinglePageCSS('div.chapter > a')
 @Common.PagesSinglePageCSS<HTMLAnchorElement>('li.dropdown-element.page-details a', a => a.pathname)
 @Common.ImageAjaxFromHTML('#page-image', false, true)
