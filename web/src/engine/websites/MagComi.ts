@@ -4,9 +4,16 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 
+function MangaExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: anchor.dataset.seriesName.trim()
+    };
+}
+
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.MangasMultiPageCSS(['/series'], 'ul.magcomi-series-list > li.series-item > a')
-@CoreView.ChaptersSinglePageCSS()
+@Common.MangasSinglePagesCSS([ '/series' ], 'ul[class*="SeriesSection_series_list"] > li[class*="SeriesItem_series_item"] > a', MangaExtractor)
+@CoreView.ChaptersSinglePageAJAXV1()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {

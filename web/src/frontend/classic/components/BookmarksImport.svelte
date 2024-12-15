@@ -1,14 +1,25 @@
 <script lang="ts">
     import { Modal, InlineLoading, Tag } from 'carbon-components-svelte';
-    import { type BookmarkImportResult } from '.././../../engine/providers/BookmarkPlugin';
+    import { type BookmarkImportResult, type BookmarkExportResult } from '.././../../engine/providers/BookmarkPlugin';
 
     export let isModalOpen = false;
     let importResult: Promise<BookmarkImportResult>;
-    let action: undefined | 'import' | 'export';
+    let exportResult: Promise<BookmarkExportResult>;
+    const importButtonInfo = { text: 'Import' };
+    const exportButtonInfo = { text: 'Export' };
+    let pressedButton: undefined | { text: string } = undefined;
 
-    async function importBookmarks() {
-        action = 'import';
-        importResult = window.HakuNeko.BookmarkPlugin.Import();
+    function OnSecondaryButtonClick(event: CustomEvent<{ text: string }>) {
+        switch (event.detail.text) {
+            case importButtonInfo.text:
+                pressedButton = importButtonInfo;
+                importResult = window.HakuNeko.BookmarkPlugin.Import();
+                return;
+            case exportButtonInfo.text:
+                pressedButton = exportButtonInfo;
+                exportResult = window.HakuNeko.BookmarkPlugin.Export();
+                return;
+        }
     }
 </script>
 
@@ -22,21 +33,17 @@
     modalHeading="Import/Export bookmarks"
     preventCloseOnClickOutside
     primaryButtonText="Close"
-    secondaryButtons={[{ text: 'Import' }, { text: 'Export' }]}
-    on:click:button--primary={(e) => {
-        isModalOpen = false;
-    }}
-    on:click:button--secondary={(e) => {
-        if (e.detail.text === 'Import') importBookmarks();
-    }}
+    secondaryButtons={[importButtonInfo, exportButtonInfo]}
+    on:click:button--primary={() => isModalOpen = false}
+    on:click:button--secondary={OnSecondaryButtonClick}
 >
-    {#if !action}
+    {#if !pressedButton}
         <InlineLoading
             status="inactive"
             description="Import Hakuneko's bookmarks from previous version"
         />
     {/if}
-    {#if action === 'import'}
+    {#if pressedButton === importButtonInfo}
         {#await importResult}
             <InlineLoading
                 status="active"
@@ -76,8 +83,30 @@
             ></InlineLoading>
         {/await}
     {/if}
-    {#if action === 'export'}
-        <div></div>
+    {#if pressedButton === exportButtonInfo}
+        {#await exportResult}
+            <InlineLoading
+                status="active"
+                description="Export in progress ..."
+            />
+        {:then results}
+            {#if results.cancelled}
+                <InlineLoading status="error" description="User canceled" />
+            {:else}
+                <InlineLoading
+                    status="finished"
+                    description="Export completed"
+                />
+                <div>
+                    <Tag type="green">
+                        ({results.exported})
+                    </Tag> exported
+                </div>
+            {/if}
+        {:catch error}
+            <InlineLoading status="error" description="Error: {error}"
+            ></InlineLoading>
+        {/await}
     {/if}
 </Modal>
 

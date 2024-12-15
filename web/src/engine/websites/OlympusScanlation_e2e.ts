@@ -6,7 +6,7 @@ const config = {
         title: 'Olympus Scanlation'
     },
     container: {
-        url: 'https://zonaolympus.com/series/comic-el-mago-devorador-de-talentos13424',
+        url: 'https://olympuscomic.com/series/comic-el-mago-devorador-de-talentos13424',
         id: JSON.stringify({ slug: 'el-mago-devorador-de-talentos13424', type: 'comic' }),
         title: 'El Mago Devorador de Talentos'
     },
