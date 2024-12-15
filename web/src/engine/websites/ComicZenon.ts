@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
-import icon from './ComicZenon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as CoreView from './decorators/CoreView';
+import icon from './ComicZenon.webp';
 import * as Common from './decorators/Common';
+import * as CoreView from './decorators/CoreView';
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.MangasSinglePageCSS(['/series/zenon', '/series/zenyon', '/series/tatan', '/series/oneshot'], 'div.serial-contents section div.series-item h4 > a')
+@Common.MangasSinglePagesCSS([ '/series/zenon', '/series/zenyon', '/series/tatan', '/series/oneshot' ], 'div.serial-contents section div.series-item h4 > a', CoreView.DefaultMangaExtractor)
 @CoreView.ChaptersMultiPageAJAXV2()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()

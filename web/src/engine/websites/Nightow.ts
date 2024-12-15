@@ -11,7 +11,7 @@ function InfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/online\//, 'div.theList h3.title', Common.ElementLabelExtractor(), true)
-@Common.MangasSinglePageCSS('/online/', 'div.selector2 div.options a', InfoExtractor)
+@Common.MangasSinglePagesCSS([ '/online/' ], 'div.selector2 div.options a', InfoExtractor)
 @Common.ChaptersSinglePageCSS('div.theList div.chapter b a', InfoExtractor)
 @Common.PagesSinglePageJS('imageArray.map(image => window.location.origin +"/online/"+ image);', 1000)
 @Common.ImageAjax()
