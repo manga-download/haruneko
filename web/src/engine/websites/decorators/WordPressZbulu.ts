@@ -55,7 +55,7 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
     for (let page = start, run = true; run; page += step) {
         await reducer;
         reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
-        const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract);
+        const mangas = await Common.FetchMangasSinglePagesCSS.call(this, provider, [ path.replace('{page}', `${page}`)], query, extract);
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
     }
