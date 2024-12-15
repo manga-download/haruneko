@@ -16,7 +16,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 464_508,
+        size: 464_547,
         type: 'image/png'
     }
 };

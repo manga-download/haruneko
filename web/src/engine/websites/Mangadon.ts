@@ -6,7 +6,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { BufferToHexString } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIResult = {
     data: APIItem[] | APIItem,
@@ -116,7 +116,8 @@ export default class extends DecoratableMangaScraper {
             const m: string[] = [];
 
             async function sha256(text: string): Promise<string> {
-                return BufferToHexString(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
+                const buffer = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(text));
+                return GetHexFromBytes(new Uint8Array(buffer));
             }
 
             for (let i = 0; i <= numPieces - 1; i++) {

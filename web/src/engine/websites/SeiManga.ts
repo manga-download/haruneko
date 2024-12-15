@@ -11,7 +11,7 @@ import * as Grouple from './decorators/Grouple';
 @Grouple.ImageAjaxWithMirrors()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('seimanga', `SeiManga`, 'https://seimanga.me', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('seimanga', `SeiManga`, 'https://1.seimanga.me', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
