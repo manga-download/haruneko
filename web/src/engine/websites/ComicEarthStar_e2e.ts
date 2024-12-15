@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '/episode/14079602755509015085',
-        title: '第1話'
+        title: '第1話-①'
     },
     entry: {
         index: 9,

@@ -26,7 +26,7 @@ function PageLinkExtractor(this: MangaScraper, image: HTMLImageElement): string 
 }
 
 @Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'meta[property="og:title"]', MangaExtractor)
-@Common.MangasSinglePageCSS('/comics', 'div.grid > a[href*="/comics/"]', MangaInfoExtractor)
+@Common.MangasSinglePagesCSS([ '/comics' ], 'div.grid > a[href*="/comics/"]', MangaInfoExtractor)
 @Common.PagesSinglePageCSS('section.container div img', PageLinkExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
