@@ -22,7 +22,7 @@ function MangaExtractor(element: HTMLAnchorElement) {
 
 }
 
-@Common.MangasSinglePageCSS('/ranking', 'div.ranking a.parent', MangaExtractor)
+@Common.MangasSinglePagesCSS([ '/ranking' ], 'div.ranking a.parent', MangaExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

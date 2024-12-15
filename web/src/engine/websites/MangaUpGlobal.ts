@@ -2,41 +2,51 @@ import { Tags } from '../Tags';
 import icon from './MangaUpGlobal.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
+import { FetchProto } from '../platform/FetchProvider';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as W } from '../../i18n/ILocale';
+import protoTypes from './MangaUpGlobal.proto?raw';
+import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromHex } from '../BufferEncoder';
 
-type NEXTDATA<T> = {
-    props: {
-        pageProps: {
-            data: T
-        }
-    }
+type APIMangaDetailView = {
+    titleName: string,
+    chapters: APIChapter[]
 }
 
-type APIMangas = {
+type APISearch = {
     titles: APIManga[]
 }
 
 type APIManga = {
-    titleId: string,
-    titleName: string,
-    chapters?: APIChapter[]
+    titleId: number,
+    titleName: string
 }
 
 type APIChapter = {
     id: number,
-    mainName: string
+    titleName: string,
+    subName: string;
 }
 
 type APIPages = {
-    pages: {
-        imageUrl: string
+    pageblocks: {
+        pages: {
+            imageUrl: string,
+            encryptionKey: string,
+            iv: string | undefined
+        }[]
     }[]
 }
 
-@Common.ImageAjax()
+type CryptoParams = null | {
+    key: string,
+    iv: string
+}
+
 export default class extends DecoratableMangaScraper {
+    private readonly apiUrl = 'https://global-api.manga-up.com/api/';
+    private readonly imagesCDN = 'https://global-img.manga-up.com/';
 
     public constructor() {
         super('mangaupglobal', `MangaUp (Global)`, `https://global.manga-up.com`, Tags.Language.English, Tags.Media.Manga, Tags.Source.Official);
@@ -51,29 +61,47 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = url.split('/').at(-1);
-        const data = await this.FetchNextData<APIManga>(new URL(`/manga/${mangaid}`, this.URI));
-        return new Manga(this, provider, mangaid, data.titleName.trim());
+        const request = new Request(new URL(`./manga/detail_v2?title_id=${mangaid}`, this.apiUrl));
+        const { titleName } = await FetchProto<APIMangaDetailView>(request, protoTypes, 'MangaUpGlobal.MangaDetailView');
+        return new Manga(this, provider, mangaid, titleName);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const data = await this.FetchNextData<APIMangas>(new URL('/search', this.URI));
-        return data.titles.map(manga => new Manga(this, provider, manga.titleId, manga.titleName.trim()));
+        const request = new Request(new URL(`./search`, this.apiUrl));
+        const { titles } = await FetchProto<APISearch>(request, protoTypes, 'MangaUpGlobal.SearchView');
+        return titles.map(manga => new Manga(this, provider, manga.titleId.toString(), manga.titleName.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await this.FetchNextData<APIManga>(new URL(`/manga/${manga.Identifier}`, this.URI));
-        return data.chapters.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.mainName.trim()));
+        const request = new Request(new URL(`./manga/detail_v2?title_id=${manga.Identifier}`, this.apiUrl));
+        const { chapters } = await FetchProto<APIMangaDetailView>(request, protoTypes, 'MangaUpGlobal.MangaDetailView');
+        return chapters.map(chapter => new Chapter(this, manga, chapter.id.toString(), [chapter.titleName, chapter.subName].join(' ').trim()));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await this.FetchNextData<APIPages>(new URL(`/manga/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI));
-        if (!data)
-            throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
-        return data.pages.map(image => new Page(this, chapter, new URL(image.imageUrl)));
+    public override async FetchPages(chapter: Chapter): Promise<Page<CryptoParams>[]> {
+        const request = new Request(new URL(`./manga/viewer_v2?chapter_id=${chapter.Identifier}&quality=high`, this.apiUrl), { method: 'POST' });
+        const data = await FetchProto<APIPages>(request, protoTypes, 'MangaUpGlobal.MangaViewerV2View');
+
+        if (!data.pageblocks) throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
+
+        return data.pageblocks.shift().pages.map(page => {
+            const params: CryptoParams = page.iv ? {
+                key: page.encryptionKey,
+                iv: page.iv
+            } : null;
+            return new Page<CryptoParams>(this, chapter, new URL(page.imageUrl, this.imagesCDN), params);
+        });
     }
 
-    private async FetchNextData<T extends JSONElement>(url: URL): Promise<T> {
-        const data = await FetchWindowScript<NEXTDATA<T>>(new Request(url), '__NEXT_DATA__', 2000);
-        return data.props.pageProps.data as T;
+    public override async FetchImage(page: Page<CryptoParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        const cryptoParams = page.Parameters;
+        if (cryptoParams?.iv) {
+            const encrypted = await blob.arrayBuffer();
+            const cipher = { name: 'AES-CBC', iv: GetBytesFromHex(cryptoParams.iv) };
+            const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoParams.key), cipher, false, ['decrypt']);
+            const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
+            return Common.GetTypedData(decrypted);
+        } else return blob;
     }
 }
