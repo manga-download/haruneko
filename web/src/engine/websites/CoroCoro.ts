@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { FromHexString } from '../BufferEncoder';
+import { GetBytesFromHex } from '../BufferEncoder';
 
 type JSONManga = {
     id: number;
@@ -75,8 +75,8 @@ export default class extends DecoratableMangaScraper {
         switch (cryptoParams.method) {
             case 'aes-cbc': {
                 const encrypted = await blob.arrayBuffer();
-                const cipher = { name: 'AES-CBC', iv: FromHexString(cryptoParams.iv) };
-                const cryptoKey = await crypto.subtle.importKey('raw', FromHexString(cryptoParams.key), cipher, false, ['decrypt']);
+                const cipher = { name: 'AES-CBC', iv: GetBytesFromHex(cryptoParams.iv) };
+                const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoParams.key), cipher, false, ['decrypt']);
                 const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
                 return Common.GetTypedData(decrypted);
             }

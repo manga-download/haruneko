@@ -17,7 +17,7 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-	import { VirtualList } from 'svelte-virtuallists';
+	import { VirtualList, type VLSlotSignature } from 'svelte-virtuallists';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
@@ -141,6 +141,7 @@
     }
 
     async function onUpdateMediaEntriesClick() {
+        filteredmedias = []
         $selectedMedia = undefined;
         $selectedItem = undefined;
         loadPlugin = updatePlugin($selectedPlugin);
@@ -184,9 +185,6 @@
         );
     }
 
-    // VirtualList
-    let container:HTMLElement = $state();
-    let containerHeight = $state(0);
 </script>
 
 {#if isTrackerModalOpen}
@@ -250,20 +248,12 @@
     <div id="MediaFilter">
         <Search id="MediaFilterSearch" size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list" bind:this={container} bind:clientHeight={containerHeight}>
+    <div id="MediaList" class="list">
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
                 <div>... medias</div>
             </div>
-        {:then}
-        <VirtualList style='height:100%' items={filteredmedias}>
-            {#snippet vl_slot({ item })}
-                <Media 
-                    media={item as MediaContainer2}
-                />
-            {/snippet}
-        </VirtualList>
         {:catch error}
             <div class="error">
                 <InlineNotification
@@ -273,6 +263,13 @@
                 />
             </div>
         {/await}
+        <VirtualList class="items" items={filteredmedias}>
+            {#snippet vl_slot({ item } : VLSlotSignature<MediaContainer2>)}
+                <Media 
+                    media={item}
+                />
+            {/snippet}
+        </VirtualList>
     </div>
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
@@ -344,11 +341,16 @@
         background-color: var(--cds-field-01);
         overflow: hidden;
         user-select: none;
-        overflow: auto;
+        display:flex;
+        flex-direction: column;
     }
     #MediaList .loading {
         width: 100%;
         height: 100%;
+    }
+    #MediaList :global(.items) {
+        flex: 1;
+        overflow-x: hidden !important;
     }
     #MediaCount {
         grid-area: MediaCount;
