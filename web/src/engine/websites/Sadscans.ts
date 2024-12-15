@@ -11,7 +11,7 @@ function MangaInfoExtractor(element: HTMLDivElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'div.title h2')
-@Common.MangasSinglePageCSS('/series', 'div.series-list', MangaInfoExtractor)
+@Common.MangasSinglePagesCSS([ '/series' ], 'div.series-list', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.chap-link div.link a', Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div.swiper-slide img')
 @Common.ImageAjax()

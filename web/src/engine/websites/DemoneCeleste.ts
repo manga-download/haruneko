@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\//, 'div.col-md-8.text-center h3 strong')
-@Common.MangasSinglePageCSS('/manga/', 'div#myTabContent h4 > a')
+@Common.MangasSinglePagesCSS([ '/manga/' ], 'div#myTabContent h4 > a')
 @Common.ChaptersSinglePageCSS('div.col-md-8.text-center > div a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

@@ -19,7 +19,7 @@ function PageExtractor(element: HTMLSpanElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/product\/[^/]+$/, 'p.cover img', MangaLabelExtractor)
-@Common.MangasSinglePageCSS('/product', 'div.cards_wrap article a', MangaInfoExtractor)
+@Common.MangasSinglePagesCSS([ '/product' ], 'div.cards_wrap article a', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.episode ul li a')
 @Common.PagesSinglePageCSS('#viewer.manga div.manga_page:not(.info_page) span.manga_page_image', PageExtractor)
 @Common.ImageAjax()

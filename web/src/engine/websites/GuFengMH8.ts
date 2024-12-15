@@ -12,7 +12,7 @@ import * as SinMH from './decorators/SinMH';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('gufengmh8', `古风漫画网 (GuFengMH8)`, 'https://www.gufengmh9.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('gufengmh8', `古风漫画网 (GuFengMH8)`, 'https://www.gufengmh.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

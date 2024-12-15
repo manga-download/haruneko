@@ -6,7 +6,7 @@ const config = {
         title: 'Lua Scans'
     },
     container: {
-        url: 'https://luacomic.net/series/18012433589/',
+        url: 'https://luacomics.com/series/18012433589/',
         id: '/series/18012433589/',
         title: 'The Archvillain’s Daughter in Law'
     },
