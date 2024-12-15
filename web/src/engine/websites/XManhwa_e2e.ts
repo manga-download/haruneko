@@ -6,17 +6,17 @@ const config = {
         title: 'XManhwa'
     },
     container: {
-        url: 'https://www.xmanhwa.me/manga/cold-hot/',
-        id: JSON.stringify({ post: '25936', slug: '/manga/cold-hot/' }),
-        title: 'Cold? Hot!'
+        url: 'https://www.manhwaden.com/manga/someone-stop-her/',
+        id: JSON.stringify({ post: '28394', slug: '/manga/someone-stop-her/' }),
+        title: 'Someone Stop Her!'
     },
     child: {
-        id: '/manga/cold-hot/chapter-1/',
+        id: '/manga/someone-stop-her/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 193_651,
+        size: 52_837,
         type: 'image/jpeg'
     }
 };

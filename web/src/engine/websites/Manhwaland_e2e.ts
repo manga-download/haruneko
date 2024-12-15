@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Manhwaland'
     },
     container: {
-        url: 'https://manhwaland.host/manga/got-a-room-uncensored/',
+        url: 'https://ww1.manhwaland01.xyz/manga/got-a-room-uncensored/',
         id: '/manga/got-a-room-uncensored/',
         title: 'Got a Room? UNCENSORED'
     },
@@ -15,8 +15,8 @@ const config: Config = {
         title: 'Chapter 1.1'
     },
     entry: {
-        index: 0,
-        size: 143_057,
+        index: 1,
+        size: 480_076,
         type: 'image/jpeg'
     }
 };
