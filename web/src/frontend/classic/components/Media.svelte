@@ -1,12 +1,9 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import { fade } from 'svelte/transition';
     import {
         Button,
         ClickableTile,
         ContextMenu,
-        ContextMenuDivider,
         ContextMenuOption,
     } from 'carbon-components-svelte';
     import {
@@ -23,7 +20,7 @@
         MediaChild,
     } from '../../../engine/providers/MediaPlugin';
     import { Bookmark } from '../../../engine/providers/Bookmark';
-    import { mount, onDestroy, onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import type { MediaContainer2 } from '../Types';
 
 
@@ -57,6 +54,8 @@
 
 
     async function findMediaUnFlaggedContent(updatedmedia:MediaContainer<MediaChild>) {
+        if (!updatedmedia.IsSameAs(media)) return;
+        
         unFlaggedItems = [];
         const delay = $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
         delayedContentCheck = setTimeout(
@@ -69,11 +68,7 @@
     findMediaUnFlaggedContent(media);
 
     onMount(() => {
-        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(
-            async(updatedmedia:MediaContainer<MediaChild>) => {
-                if (updatedmedia.IsSameAs(media)) findMediaUnFlaggedContent(media);
-            }
-        );
+        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
        
     });
 
@@ -99,29 +94,18 @@
 
 </script>
 
-<ContextMenu target={[mediadiv]} bind:open={menuOpen} on:open={menuOpens}>
-    <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" 
-        onclick={() => {$selectedMedia = media;}}
-    />
-    <ContextMenuOption
-        indented
-        labelText={isBookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'}
-        shortcutText="⌘F"
-        onclick={toggleBookmark}
-    />
-    <!--
-    <ContextMenuDivider />
-    <ContextMenuOption indented labelText="Trackers">
-    {#each window.HakuNeko.PluginController.InfoTrackers as tracker}
-    <ContextMenuOption labelText="{tracker.Title}" onclick={() => {selectedTracker=tracker; isTrackerModalOpen=true;}} />
-    {/each}
-    </ContextMenuOption>
-    <ContextMenuDivider />
-            -->
-
-</ContextMenu>
-
 <div bind:this={mediadiv} class="media" {style} in:fade class:selected>
+    <ContextMenu target={[mediadiv]} bind:open={menuOpen} on:open={menuOpens}>
+        <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" 
+            onclick={() => {$selectedMedia = media;}}
+        />
+        <ContextMenuOption
+            indented
+            labelText={isBookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'}
+            shortcutText="⌘F"
+            onclick={toggleBookmark}
+        />
+    </ContextMenu>
     {#if isOrphaned}
         <span in:coinflip={{ duration: 200 }}>
             <Button
@@ -189,7 +173,9 @@
             icon={PlayFilled}
             kind="ghost"
             size="small"
-            onclick={(e) => {
+            iconDescription="Unflagged items ({unFlaggedItems.length})"
+            tooltipPosition="left"
+            onclick={(e:MouseEvent) => {
                 e.preventDefault();
                 $selectedMedia = media;
             }}
