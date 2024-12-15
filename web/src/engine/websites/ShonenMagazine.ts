@@ -27,15 +27,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas1 = await Common.FetchMangasSinglePageCSS.call(this, provider, '/series', 'div.series-items ul.daily-series > li.daily-series-item > a', CoreView.DefaultMangaExtractor);
+        const mangas1 = await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/series' ], 'div.series-items ul.daily-series > li.daily-series-item > a', CoreView.DefaultMangaExtractor);
         let mangas2 = [];
         try {
             // TODO: Do not change a read-only property, this may cause problems for concurrent operations!
             this.URI.hostname = 'shonenmagazine.com';
-            mangas2 = await Common.FetchMangasFromPathsCSS.call(this, provider, ['/series/smaga', '/series/bmaga', '/series/mpoke'], 'li.has-buttons:has(a[href*="/episode/"])', 0, MangaExtractor);
-        } catch { // Do not supress generic errors
-            //
-        }
+            mangas2 = await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/series/smaga', '/series/bmaga', '/series/mpoke' ], 'li.has-buttons:has(a[href*="/episode/"])', MangaExtractor);
+        } catch { /* TODO: Only suppress expected errors, but not generic errors such as out of memory */ }
         // TODO: Do not change a read-only property, this may cause problems for concurrent operations!
         this.URI.hostname = 'pocket.shonenmagazine.com';
         return [...mangas1, ...mangas2];

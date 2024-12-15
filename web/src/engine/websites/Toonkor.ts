@@ -18,7 +18,7 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/https:\/\/toonkor\d+\.com\/[^/]+$/, 'table.bt_view1 td.bt_title')
-@Common.MangasFromPathsCSS(['/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목'], 'div.section-item-title a#title')
+@Common.MangasSinglePagesCSS([ '/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목'], 'div.section-item-title a#title')
 @Common.ChaptersSinglePageCSS('td.content__title', ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
