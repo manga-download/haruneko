@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as PeachScan from './decorators/PeachScan';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, PeachScan.queryMangaTitleFromURI)
-@Common.MangasSinglePageCSS(PeachScan.mangaPath, PeachScan.queryMangas)
+@Common.MangasSinglePagesCSS([PeachScan.mangaPath], PeachScan.queryMangas)
 @Common.ChaptersSinglePageCSS(PeachScan.queryChapters, PeachScan.ChapterExtractor)
 @PeachScan.PagesFromZips()
 @PeachScan.ImageFromZip()
