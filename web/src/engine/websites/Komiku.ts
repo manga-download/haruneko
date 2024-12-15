@@ -1,13 +1,16 @@
 import { Tags } from '../Tags';
 import icon from './Komiku.webp';
-import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+
+const endpoints = ['manga', 'manhua', 'manhwa'].map(genre => `/daftar-komik/?tipe=${genre}`);
 
 function MangaLabelExtractor(element: HTMLElement) {
     return element.textContent.replace(/^komik/i, '').trim();
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'article div#Judul h1 span[itemprop="name"]', MangaLabelExtractor)
+@Common.MangasSinglePagesCSS(endpoints, 'div.ls4 div.ls4j h4 a')
 @Common.ChaptersSinglePageCSS('table#Daftar_Chapter td.judulseries a')
 @Common.PagesSinglePageCSS('div#Baca_Komik img')
 @Common.ImageAjax()
@@ -20,15 +23,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList : Manga[] = [];
-        for (const genre of ['manga', 'manhua', 'manhwa']) {
-
-            const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, `/daftar-komik/?tipe=${genre}`, 'div.ls4 div.ls4j h4 a');
-            mangaList.push(...mangas);
-        }
-        return mangaList;
-    }
-
 }

@@ -18,18 +18,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-
         const request = new Request(`${this.URI.origin}/browse-comics/?results=1`);
-        const [data] = await FetchCSS<HTMLSpanElement>(request, 'span.mg-pagination-last');
-        const pageMax = parseInt(data.textContent.match(/\d+/)[0]);
-        const mangaList: Manga[] = [];
-
-        for (let page = 1; page <= pageMax; page++) {
-            await new Promise(resolve => setTimeout(resolve, 250));
-            const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, `/browse-comics/?results=${page}`, 'li.novel-item a', Common.AnchorInfoExtractor(true));
-            mangaList.push(...mangas);
-        }
-        return mangaList.distinct();
+        const [ data ] = await FetchCSS<HTMLSpanElement>(request, 'span.mg-pagination-last');
+        const lastPageNumber = parseInt(data.textContent.match(/\d+/)[0]);
+        const endpoints = new Array(lastPageNumber).fill(0).map((_, index) => index + 1).map(page => `/browse-comics/?results=${page}`);
+        return Common.FetchMangasSinglePagesCSS.call(this, provider, endpoints, 'li.novel-item a', Common.AnchorInfoExtractor(true));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -40,5 +33,4 @@ export default class extends DecoratableMangaScraper {
             return new Chapter(this, manga, element.pathname, title.replace(/-([a-z]+)-li/, ' ($1)').trim());
         }).distinct();
     }
-
 }

@@ -6,7 +6,7 @@ const config = {
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://rspro.xyz/manga/stuck-in-the-tower/',
+        url: 'https://reset-scans.co/manga/stuck-in-the-tower/',
         id: JSON.stringify({ post: '6418', slug: '/manga/stuck-in-the-tower/' }),
         title: 'Stuck in the Tower'
     },
