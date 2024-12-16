@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
         const mangaList: Manga[] = [];
         for (const day of ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']) {
             const request = this.CreateProtoRequest('title/list/update_day', { day: day });
-            const { titles: { titles } } = await FetchProto<TitleListView>(request, prototypes, 'TitleDetailView');
+            const { titles: { titles } } = await FetchProto<TitleListView>(request, prototypes, 'TitleListView');
             const mangas = titles.map(manga => new Manga(this, provider, manga.id.toString(), manga.name));
             mangaList.push(...mangas);
         }
