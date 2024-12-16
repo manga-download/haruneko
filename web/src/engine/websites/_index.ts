@@ -281,6 +281,7 @@ export { default as LunarScans } from './LunarScans';
 export { default as LunaScans } from './LunaScans';
 export { default as LupiTeam } from './LupiTeam';
 export { default as Luscious } from './Luscious';
+export { default as LxHentai } from './LxHentai';
 export { default as LynxScans } from './LynxScans';
 export { default as MadaraDex } from './MadaraDex';
 export { default as MagComi } from './MagComi';
