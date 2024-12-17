@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './CeriseScans.webp';
+import icon from './AuroraScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as PeachScan from './decorators/PeachScan';
@@ -12,7 +12,7 @@ import * as PeachScan from './decorators/PeachScan';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('cerisescans', 'Cerise Scans', 'https://cerise.leitorweb.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('aurorascan', 'Aurora Scan', 'https://aurorascan.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

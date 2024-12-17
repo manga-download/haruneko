@@ -4,21 +4,21 @@ const config = {
     plugin: {
         id: 'cerisescans',
         title: 'Cerise Scans'
-    },
+    }, /* CloudFlare
     container: {
-        url: 'https://cerisescan.net/manga/45/',
-        id: JSON.stringify({ post: '45', slug: '/manga/45/' }),
+        url: 'https://cerise.leitorweb.com/apenas-me-deixe-em-paz/',
+        id: '/apenas-me-deixe-em-paz/',
         title: 'Apenas Me Deixe em Paz'
     },
     child: {
-        id: '/manga/45/cap-01/',
-        title: 'Cap. 01',
+        id: '/apenas-me-deixe-em-paz/01/',
+        title: 'Capítulo 01',
     },
     entry: {
         index: 0,
-        size: 1_424_016,
-        type: 'image/jpeg'
-    }
+        size: 171_740,
+        type: 'image/avif'
+    }*/
 };
 
 new TestFixture(config).AssertWebsite();
