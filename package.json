@@ -27,6 +27,11 @@
         "vitest": "^2.1.8",
         "vitest-mock-extended": "^2.0.2"
     },
+    "overrides": {
+        "svelte": {
+            "esrap": "1.2.3"
+        }
+    },
     "scripts": {
         "check": "npm run check --workspaces",
         "test": "npm run test --workspaces",
