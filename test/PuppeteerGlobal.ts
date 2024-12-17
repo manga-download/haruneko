@@ -29,46 +29,41 @@ async function CloseSplashScreen(target: puppeteer.Target) {
     }
 }
 
-async function DetectNW(): Promise<string> {
+async function DetectElectron(): Promise<string> {
     const executables = [
-        'nw',
-        'nw.exe',
-        path.join('nwjs.app', 'Contents', 'MacOS', 'nwjs'),
+        'electron',
+        'electron.exe',
+        path.join('Electron.app', 'Contents', 'MacOS', 'Electron'),
     ];
-    const rootModule = path.normalize(path.resolve('node_modules', 'nw'));
-    const appModule = path.normalize(path.resolve('app', 'nw', 'node_modules', 'nw'));
+    const rootModule = path.normalize(path.resolve('node_modules', 'electron'));
+    const appModule = path.normalize(path.resolve('app', 'electron', 'node_modules', 'electron'));
 
-    let search: string[] = [];
-    try {
-        const folder = (await fs.readdir(rootModule)).filter(entry => entry.startsWith('nwjs-')).at(0) ?? 'nwjs';
-        search = executables.map(segment => path.resolve(rootModule, folder, segment));
-    } catch {}
-    try {
-        const folder = (await fs.readdir(appModule)).filter(entry => entry.startsWith('nwjs-')).at(0) ?? 'nwjs';
-        search = executables.map(segment => path.resolve(appModule, folder, segment));
-    } catch {}
+    const search: string[] = [
+        ... executables.map(segment => path.resolve(rootModule, 'dist', segment)),
+        ... executables.map(segment => path.resolve(appModule, 'dist', segment)),
+    ];
 
-    for(const nw of search) {
+    for(const electron of search) {
         try {
-            if((await fs.stat(path.normalize(nw))).isFile()) {
-                console.log(new Date().toISOString(), '=>', 'Detected NW:', nw);
-                return nw;
+            if((await fs.stat(path.normalize(electron))).isFile()) {
+                console.log(new Date().toISOString(), '=>', 'Detected Electron:', electron);
+                return electron;
             }
         } catch {}
     }
 
-    throw new Error('Failed to detect location of nw executable!');
+    throw new Error('Failed to detect location of Electron executable!');
 }
 
-async function LaunchNW(): Promise<puppeteer.Browser> {
-    const nwApp = path.resolve('app', 'nw', 'build');
+async function LaunchElectron(): Promise<puppeteer.Browser> {
+    const electronApp = path.resolve('app', 'electron', 'build');
 
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
         ignoreDefaultArgs: true,
-        executablePath: await DetectNW(),
-        args: [ nwApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL ],
+        executablePath: await DetectElectron(),
+        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
@@ -104,7 +99,7 @@ export async function setup() {
         shell : process.platform === 'win32',
     });
     try {
-        browser = await LaunchNW();
+        browser = await LaunchElectron();
         process.env.browserWS = browser.wsEndpoint();
     } catch(error) {
         server.kill('SIGINT') || server.kill('SIGTERM') || server.kill('SIGKILL');
