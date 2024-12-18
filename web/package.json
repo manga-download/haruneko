@@ -29,7 +29,7 @@
         "lit": "^3.2.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "svelte": "^5.14.2",
+        "svelte": "^5.14.4",
         "svelte-check": "^4.1.1",
         "svelte-virtuallists": "^1.4.0",
         "vue": "^3.5.13",
