@@ -85,7 +85,7 @@ export default class extends DecoratableMangaScraper {
      */
     protected static readonly InstanceParameters = {
         identifier: 'comico',
-        title: `Comico (コミコ)`,
+        title: 'Comico (コミコ)',
         url: 'https://www.comico.jp',
         tags: [ Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official ],
     };
