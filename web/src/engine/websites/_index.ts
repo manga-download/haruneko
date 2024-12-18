@@ -522,6 +522,7 @@ export { default as PornComix } from './PornComix';
 export { default as PornComixOnline } from './PornComixOnline';
 export { default as PortalYaoi } from './PortalYaoi';
 export { default as ProjectSuki } from './ProjectSuki';
+export { default as Pururin } from './Pururin';
 export { default as Pzykosis666HFansub } from './Pzykosis666HFansub';
 export { default as Qimeitj } from './Qimeitj';
 export { default as QuantumScans } from './QuantumScans';

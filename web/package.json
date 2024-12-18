@@ -7,11 +7,11 @@
     },
     "dependencies": {
         "jszip": "^3.10.1",
-        "pdfkit": "github:manga-download/pdfkit#v0.15.1",
+        "pdfkit": "github:manga-download/pdfkit#v0.15.2",
         "protobufjs": "^7.4.0"
     },
     "devDependencies": {
-        "@fluentui/svg-icons": "^1.1.268",
+        "@fluentui/svg-icons": "^1.1.269",
         "@fluentui/web-components": "^2.6.1",
         "@microsoft/fast-element": "^1.14.0",
         "@svelte-put/dragscroll": "^4.0.0",
@@ -29,7 +29,7 @@
         "lit": "^3.2.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "svelte": "^5.12.0",
+        "svelte": "^5.14.2",
         "svelte-check": "^4.1.1",
         "svelte-virtuallists": "^1.4.0",
         "vue": "^3.5.13",
