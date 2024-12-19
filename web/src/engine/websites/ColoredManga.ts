@@ -36,7 +36,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangasSinglePageCSS('/manga', 'div#themes_outside__WCut6 a:not([id])', MangaInfoExtractor)
+@Common.MangasSinglePagesCSS([ '/manga' ], 'div#themes_outside__WCut6 a:not([id])', MangaInfoExtractor)
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = `${this.URI.origin}/api/`;

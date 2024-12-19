@@ -4,6 +4,13 @@ import { DecoratableMangaScraper, type MangaPlugin, type Manga } from '../provid
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 
+function MangaExtractor(element: HTMLLIElement) {
+    return {
+        id: element.querySelector<HTMLAnchorElement>('div.button a[href*="/episode/"]').pathname,
+        title: element.querySelector<HTMLDivElement>('div.title').textContent.trim()
+    };
+}
+
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.ChaptersSinglePageAJAXV1()
 @CoreView.PagesSinglePageJSON()
@@ -20,15 +27,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas1 = await CoreView.FetchMangasSinglePageCSS.call(this, provider, ['/series'], 'div.series-items ul.daily-series > li.daily-series-item > a');
+        const mangas1 = await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/series' ], 'div.series-items ul.daily-series > li.daily-series-item > a', CoreView.DefaultMangaExtractor);
         let mangas2 = [];
         try {
             // TODO: Do not change a read-only property, this may cause problems for concurrent operations!
             this.URI.hostname = 'shonenmagazine.com';
-            mangas2 = await CoreView.FetchMangasSinglePageCSS.call(this, provider, ['/series/smaga', '/series/bmaga', '/series/others'], 'article.serial-series-contents ul.serial-series-list > li.serial-series-item > a');
-        } catch { // Do not supress generic errors
-            //
-        }
+            mangas2 = await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/series/smaga', '/series/bmaga', '/series/mpoke' ], 'li.has-buttons:has(a[href*="/episode/"])', MangaExtractor);
+        } catch { /* TODO: Only suppress expected errors, but not generic errors such as out of memory */ }
         // TODO: Do not change a read-only property, this may cause problems for concurrent operations!
         this.URI.hostname = 'pocket.shonenmagazine.com';
         return [...mangas1, ...mangas2];

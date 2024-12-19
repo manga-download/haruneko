@@ -27,7 +27,7 @@ type APIPages = {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]/, 'h2.super-title')
-@Common.MangasSinglePageCSS('/mangas', 'div.listing a.no-select', Common.AnchorInfoExtractor(true))
+@Common.MangasSinglePagesCSS([ '/mangas' ], 'div.listing a.no-select', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
