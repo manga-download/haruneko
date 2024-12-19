@@ -15,7 +15,7 @@ export function GetBytesFromHex(encoded: string): Uint8Array {
  */
 export function GetHexFromBytes(bytes: Uint8Array): string {
     if(bytes instanceof Uint8Array === false) throw new TypeError();
-    return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    return Array.from(bytes).map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 /**
@@ -29,8 +29,16 @@ export function GetBytesFromUTF8(encoded: string): Uint8Array {
 /**
  * Get the bytes from a Base64 (not {@link https://base64.guru/standards/base64url | Base64URL}) encoded string.
  */
-export function GetBytesFromB64(encoded: string): Uint8Array {
+export function GetBytesFromBase64(encoded: string): Uint8Array {
     if(typeof encoded !== 'string') throw new TypeError();
     if(encoded.length % 4 !== 0 || !/^[+/a-zA-Z0-9]*={0,3}$/i.test(encoded)) throw new RangeError();
     return Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
+}
+
+/**
+ * Get the Base64 (not {@link https://base64.guru/standards/base64url | Base64URL}) encoded string from bytes.
+ */
+export function GetBase64FromBytes(bytes: Uint8Array): string {
+    if(bytes instanceof Uint8Array === false) throw new TypeError();
+    return btoa(String.fromCharCode.apply(null, Array.from(bytes)));
 }
