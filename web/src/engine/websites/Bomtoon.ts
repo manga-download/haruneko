@@ -8,7 +8,7 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { DelitoonBase, type APIManga, type APIResult } from './templates/DelitoonBase';
-import { GetBytesFromB64, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIMangas = {
     content: APIManga[]
@@ -89,7 +89,7 @@ export default class extends DelitoonBase {
     private async Decrypt(encrypted: string, scramblekey: string): Promise<number[]> {
         const cipher = { name: 'AES-CBC', iv: GetBytesFromUTF8(scramblekey.slice(0, 16)) };
         const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(scramblekey), { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(cipher, key, GetBytesFromB64(encrypted));
+        const decrypted = await crypto.subtle.decrypt(cipher, key, GetBytesFromBase64(encrypted));
         return JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
     }
 
