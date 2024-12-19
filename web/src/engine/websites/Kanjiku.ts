@@ -17,7 +17,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}/, 'h1.manga_page_title')
-@Common.MangasSinglePageCSS('/mangas/', 'a.manga_box', MangaInfoExtractor)
+@Common.MangasSinglePagesCSS([ '/mangas/' ], 'a.manga_box', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.tab1 div.manga_overview_box a.latest_ch_number', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.container img')
 @Common.ImageAjax()

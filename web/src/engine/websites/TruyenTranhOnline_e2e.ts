@@ -1,24 +1,31 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
-    plugin: {
-        id: 'truyentranhaudioonline',
-        title: 'Truyện tranh audio'
-    }/*,
-    container: {
-        url: 'https://truyentranhaudio.online/manga/.../',
-        id: JSON.stringify({ post: '0', slug: '/manga/.../' }),
-        title: 'Manga ?'
-    },
-    child: {
-        id: '/manga/.../.../',
-        title: 'Chapter ?'
-    },
-    entry: {
-        index: 0,
-        size: -1,
-        type: 'image/jpeg'
-    }*/
-};
+function config(domain: string): Config {
+    return {
+        plugin: {
+            id: 'truyentranhaudioonline',
+            title: 'Truyện Audio',
+        },
+        container: {
+            url: `https://${domain}/truyen-ta-co-90-ty-tien-liem-cau.html`,
+            id: '/truyen-ta-co-90-ty-tien-liem-cau.html',
+            title: 'Ta Có 90 Tỷ Tiền Liếm Cẩu!',
+        },
+        child: {
+            id: '/doc-ta-co-90-ty-tien-liem-cau-chuong-200.html',
+            title: 'Chapter 200',
+        },
+        entry: {
+            index: 0,
+            size: 389_471,
+            type: 'image/jpeg',
+        }
+    };
+}
 
-new TestFixture(config).AssertWebsite();
+new TestFixture(config('truyentutien.site')).AssertWebsite();
+new TestFixture(config('truyentutien.fun')).AssertWebsite();
+//new TestFixture(config('truyentutien.xyz')).AssertWebsite(); // CloudFlare
+new TestFixture(config('tutientruyen4.fun')).AssertWebsite();
+new TestFixture(config('tutientruyen6.xyz')).AssertWebsite();
+new TestFixture(config('protruyen4.xyz')).AssertWebsite();
