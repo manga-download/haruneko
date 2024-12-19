@@ -1,6 +1,6 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const config: Config = {
     plugin: {
         id: 'mangabtt',
         title: 'MangaBTT'

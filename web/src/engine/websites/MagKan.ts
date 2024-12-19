@@ -12,7 +12,7 @@ function MangaExtractor(element: HTMLElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+/, 'h1.ttl')
-@Common.MangasSinglePageCSS('/', 'div#main div.panel div.box div.inner', MangaExtractor)
+@Common.MangasSinglePagesCSS([ '/' ], 'div#main div.panel div.box div.inner', MangaExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
