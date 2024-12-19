@@ -80,8 +80,19 @@ export default class extends DecoratableMangaScraper {
     protected api = 'https://api.comico.jp';
     protected mangaLanguages = [ this.languageOption ];
 
-    public constructor(id = 'comico', label = `Comico (コミコ)`, url = 'https://www.comico.jp', tags = [ Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official ]) {
-        super(id, label, url, ...tags);
+    /**
+     * Override these base class parameters in a derived class to customize its construction properties.
+     */
+    protected static readonly InstanceParameters = {
+        identifier: 'comico',
+        title: 'Comico (コミコ)',
+        url: 'https://www.comico.jp',
+        tags: [ Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official ],
+    };
+
+    public constructor() {
+        const { identifier, title, url, tags } = new.target.InstanceParameters;
+        super(identifier, title, url, ...tags);
     }
 
     public override get Icon() {
