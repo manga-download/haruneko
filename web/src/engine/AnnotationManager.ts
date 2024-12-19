@@ -11,7 +11,7 @@ myMedia.Annotations.filter(a => a.Key === GlobalAnnotationKeys.Bookmark)
 
 // Use Case 02: Get all media with specific annotations
 
-// Use Case 03: Use Anotations for Bookmarks
+// Use Case 03: Use Annotations for Bookmarks
 
 // Use Case 04: Use Annotations for (Download) Status
 
@@ -42,28 +42,15 @@ console.log('Annotation:', dbg.Value);
 
 // ++++++++++++++++++++++++++++++++
 
-class Annotations {
-    private readonly annotations = new Map<string, JSONObject>();
-
-    public Get<T extends JSONObject>(key: string): T {
-        return this.annotations.get(key) as T;
-    }
-
-    public Set<T extends JSONObject>(key: string, value: T): void {
-        this.annotations.set(key, value);
-    }
-}
-
-export type { Annotations };
-
 export class AnnotationManager {
 
-    private readonly annotations: Map<string, Record<string, Annotation<string, JSONElement>>>;
+    private readonly lookupAnnotationsByMediaChecksum = new Map<string, Record<string, Annotation<string, JSONElement>>>();
+    private readonly lookupAnnotationsByCategory = new Map<string, Record<string, Annotation<string, JSONElement>>>();
 
     constructor(private readonly storage: StorageController) {}
 
     public async Load() {
-        //const dbg = this.storage.LoadPersistent<>(Store.Annotations);
+        const dbg = this.storage.LoadPersistent<>(Store.Annotations);
     }
 
     /*
@@ -73,18 +60,29 @@ export class AnnotationManager {
     }
     */
 
-    public async Get<C extends string, V extends JSONElement>(checksum: MediaChecksum, category: C): Promise<V> {
+    public async Get<C extends string, V extends JSONElement>(checksum: MediaChecksum, category: C): Promise<V | undefined> {
         console.log('AnnotationManager::Get', checksum, category);
-        return this.annotations.get(checksum.Identifier)?.[category]?.Value as V;
+        return this.lookupAnnotationsByMediaChecksum.get(checksum.Identifier)?.[category]?.Value as V;
     }
 
     public async Set<C extends string, V extends JSONElement>(value: V, checksum: MediaChecksum, category: C): Promise<void> {
         console.log('AnnotationManager::Set', checksum, category, value);
-        //await this.storage.SavePersistent(value, Store.Annotations, checksum.Identifier);
-        // TODO: Update in this.annotations
-        if(!this.annotations.has(checksum.Identifier)) {
-            this.annotations.set(checksum.Identifier, {});
+        const annotation = new Annotation(checksum, category, value);
+        await this.storage.SavePersistent(annotation.Value, Store.Annotations, checksum.Identifier);
+
+        if(this.lookupAnnotationsByMediaChecksum.has(checksum.Identifier)) {
+            this.lookupAnnotationsByMediaChecksum.get(checksum.Identifier)[category] = annotation;
+        } else {
+            this.lookupAnnotationsByMediaChecksum.set(checksum.Identifier, { [category]: annotation });
         }
+
+        if(!this.lookupAnnotationsByCategory.has(category)) {
+            this.lookupAnnotationsByCategory.get(category)[checksum.Identifier] = annotation;
+        } else {
+            this.lookupAnnotationsByCategory.set(category, { [checksum.Identifier]: annotation });
+        }
+
+        // TODO: Notify subscribers
     }
 
     public async Remove(checksum: MediaChecksum, category: string): Promise<void> {

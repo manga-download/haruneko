@@ -1,6 +1,7 @@
 import { Initialize as InitGlobalSettings, Key as GlobalKey } from './SettingsGlobal';
 import { Tags } from './Tags';
 import { PluginController } from './PluginController';
+import { AnnotationManager } from './AnnotationManager';
 import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
@@ -21,6 +22,7 @@ export class HakuNeko {
     readonly #settingsManager: SettingsManager;
     readonly #featureFlags: FeatureFlags;
     readonly #pluginController: PluginController;
+    readonly #annotationManager: AnnotationManager;
     readonly #bookmarkPlugin: BookmarkPlugin;
     readonly #itemflagManager: ItemflagManager;
     readonly #downloadManager: DownloadManager;
@@ -31,6 +33,7 @@ export class HakuNeko {
         this.#settingsManager = new SettingsManager(this.#storageController);
         this.#featureFlags = new FeatureFlags(this.#settingsManager);
         this.#pluginController = new PluginController(this.#storageController, this.#settingsManager);
+        this.#annotationManager = new AnnotationManager(this.#storageController);
         this.#bookmarkPlugin = new BookmarkPlugin(this.#storageController, this.#pluginController, new InteractiveFileContentProvider());
         this.#itemflagManager = new ItemflagManager(this.#storageController);
         this.#downloadManager = new DownloadManager(this.#storageController);
@@ -63,6 +66,10 @@ export class HakuNeko {
 
     public get SettingsManager(): SettingsManager {
         return this.#settingsManager;
+    }
+
+    public get AnnotationManager(): AnnotationManager {
+        return this.#annotationManager;
     }
 
     public get BookmarkPlugin(): BookmarkPlugin {

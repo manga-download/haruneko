@@ -35,10 +35,18 @@ const VersionUpgrades = [
         db.createObjectStore(ObsoleteStore.Itemflags);
     },
     // V5 => V6
-    /*
     function V6(db: IDBDatabase) {
         db.createObjectStore(Store.Annotations);
+    },
+    // V6 => V7
+    /*
+    function V7(db: IDBDatabase) {
         console.log('Migrate Bookmarks to Annotations ...');
+    }
+    */
+    // V7 => V8
+    /*
+    function V8(db: IDBDatabase) {
         //db.deleteObjectStore(ObsoleteStore.Bookmarks);
         //db.deleteObjectStore(ObsoleteStore.Itemflags);
     }
