@@ -17,7 +17,8 @@ const config = {
     entry: {
         index: 0,
         size: 3_298_112,
-        type: 'image/png'
+        type: 'image/png',
+        timeout: 10000
     }
 };
 
