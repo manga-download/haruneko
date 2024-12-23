@@ -1,12 +1,15 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
+/*
+
+//CloudFlare
 
 const config = {
     plugin: {
-        id: 'luascans',
-        title: 'Lua Scans'
+        id: 'casacomic',
+        title: 'Casa Comic'
     },
     container: {
-        url: 'https://luascans.xyz/series/18012433589/',
+        url: 'https://casacomic.com/series/18012433589/',
         id: '/series/18012433589/',
         title: 'The Archvillain’s Daughter in Law'
     },
@@ -22,3 +25,5 @@ const config = {
 };
 
 new TestFixture(config).AssertWebsite();
+
+*/
