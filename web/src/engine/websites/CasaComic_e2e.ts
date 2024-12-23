@@ -1,8 +1,7 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
-/*
+﻿/*
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 //CloudFlare
-
 const config = {
     plugin: {
         id: 'casacomic',
