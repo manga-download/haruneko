@@ -4,8 +4,21 @@ import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'article.sakuhin-article h1.sakuhin-article-title')
-@Common.ChaptersSinglePageCSS('a.sakuhin-episode-link')
+function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.href,
+        title: anchor.querySelector<HTMLHeadingElement>('h1.sakuhin-article-title').textContent.trim()
+    };
+}
+function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.href,
+        title: anchor.querySelector<HTMLHeadingElement>('h1.sakuhin-episode-title').textContent.trim()
+    };
+}
+
+@Common.MangasSinglePagesCSS(['シリーズ一覧-連載中', '完結作品', 'https://unicorn.comic-ryu.jp/シリーズ一覧-連載中/'], 'ul.m-series-list li a.m-list-sakuhin-list-item-link', MangaInfoExtractor)
+@Common.ChaptersSinglePageCSS('a.sakuhin-episode-link', ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('figure.wp-block-image img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -18,13 +31,12 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const categories = ['シリーズ一覧-連載中', '完結作品'];
-        const mangasList: Manga[] = [];
-        for (const category of categories) {
-            const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(category, this.URI)), 'ul.m-series-list li a.m-list-sakuhin-list-item-link');
-            mangasList.push(...data.map(element => new Manga(this, provider, element.pathname, element.querySelector('h1.sakuhin-article-title').textContent.trim())));
-        }
-        return mangasList.distinct();
+    public override ValidateMangaURL(url: string): boolean {
+        return /^https:\/\/(www|unicorn)\.comic-ryu\.jp\/series\/[^/]+\/$/.test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const title = (await FetchCSS<HTMLHeadingElement>(new Request(new URL(url)), 'article.sakuhin-article h1.sakuhin-article-title')).shift().textContent.trim();
+        return new Manga(this, provider, url, title);
     }
 }
