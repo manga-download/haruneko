@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './LuaScans.webp';
+import icon from './CasaComic.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as KeyoApp from './templates/KeyoApp';
