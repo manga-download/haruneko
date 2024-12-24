@@ -25,10 +25,27 @@ export class PuppeteerFixture {
     }
 
     protected async OpenPage(url: string, ...evasions: Evasion[]): Promise<puppeteer.Page> {
-        const page = await (await this.GetBrowser()).newPage();
+        // TODO: Introduce a condition to distinguish between Electron and non-Electron
+        const page = await (false ? this.CreatePage() : this.CreatePageElectron());
         await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
         await page.goto(url);
         return page;
+    }
+
+    private async CreatePage(): Promise<puppeteer.Page> {
+        return (await this.GetBrowser()).newPage();
+    }
+
+    private async CreatePageElectron(): Promise<puppeteer.Page> {
+        const browser = await this.GetBrowser();
+        const pageApp = await this.GetPage();
+        await pageApp.evaluate(() => window.open('about:blank'));
+        const start = Date.now();
+        while(Date.now() - start < 7500) {
+            const page = (await browser.pages()).find(page => page.url() === 'about:blank');
+            if(page) return page;
+        }
+        throw new Error(`Could not open new page within the given timeout!`);
     }
 
     protected EvaluateHandle: typeof puppeteer.Page.prototype.evaluateHandle = async (pageFunction, ...args) => {
