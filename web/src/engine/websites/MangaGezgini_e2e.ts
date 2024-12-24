@@ -6,7 +6,7 @@ const config = {
         title: 'Manga Gezgini'
     },
     container: {
-        url: 'https://mangagezgini.co/manga/limit-breaker/',
+        url: 'https://mangagezgini.me/manga/limit-breaker/',
         id: JSON.stringify({ post: '873', slug: '/manga/limit-breaker/' }),
         title: 'Limit Breaker'
     },

@@ -3,7 +3,7 @@ import icon from './Comico.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
-import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromB64 } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64 } from '../BufferEncoder';
 
 export type APIResult<T> = {
     result: {
@@ -158,7 +158,7 @@ export default class extends DecoratableMangaScraper {
         const decrypted = await crypto.subtle.decrypt({
             name: 'AES-CBC',
             iv: new Uint8Array(16).buffer,
-        }, secretKey, GetBytesFromB64(page.url));
+        }, secretKey, GetBytesFromBase64(page.url));
 
         return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
     }

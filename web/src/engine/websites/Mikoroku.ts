@@ -4,16 +4,11 @@ import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
-const pagesScript = `
-    new Promise(resolve =>  resolve([...document.querySelectorAll('article#reader img')].map(img => img.src)));
-`;
+const pagesScript = `[...document.querySelectorAll('article#reader img')].map(img => img.src);`;
 
 type RSS = {
     feed: {
         entry: {
-            title: {
-                $t : string
-            },
             link: {
                 rel: string
                 title: string,
@@ -37,13 +32,13 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'header h1[itemprop="name"]')
-@Common.ChaptersSinglePageJS(chapterScript, 500)
-@Common.PagesSinglePageJS(pagesScript, 500)
+@Common.ChaptersSinglePageJS(chapterScript, 1500)
+@Common.PagesSinglePageJS(pagesScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mikoroku', 'Mikoroku', 'https://www.mikoroku.web.id', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('mikoroku', 'Mikoroku', 'https://www.mikoroku.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
