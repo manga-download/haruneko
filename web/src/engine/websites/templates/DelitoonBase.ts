@@ -3,6 +3,9 @@ import * as Common from '../decorators/Common';
 import { FetchJSON } from '../../platform/FetchProvider';
 import { Exception } from '../../Error';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
+import { GetBytesFromBase64, GetBytesFromUTF8 } from '../../BufferEncoder';
+import DeScramble from '../../transformers/ImageDescrambler';
+import type { Priority } from '../../taskpool/DeferredTask';
 
 export type APIResult<T> = {
     result: string,
@@ -12,8 +15,7 @@ export type APIResult<T> = {
     data: T
 }
 
-export type APIManga = {deli
-
+export type APIManga = {
     id: number,
     alias: string,
     title: string
@@ -27,9 +29,13 @@ type APIChapter = {
     subTitle: string
 }
 
-export type APIPages = {
+type APIPages = {
+    isScramble: boolean,
     images: {
-        imagePath: string
+        imagePath: string,
+        line: string,
+        point: string,
+        defaultHeight: number,
     }[]
 }
 
@@ -44,12 +50,17 @@ type APIToken = {
     expiredAt: number,
 };
 
-@Common.ImageAjax(true)
+type ScrambleParams = {
+    scrambleIndex: number[],
+    defaultHeight: number,
+}
+
 export class DelitoonBase extends DecoratableMangaScraper {
     private readonly Platform: string = 'WEB';
     private authorization: APIToken = undefined;
     protected readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
     protected BalconyID: string = 'DELITOON_COM';
+    protected pagesEndpoint = 'contents/viewer/';
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/detail/[^/]+$`).test(url);
@@ -97,19 +108,34 @@ export class DelitoonBase extends DecoratableMangaScraper {
         });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleParams>[]> {
         await this.UpdateToken();
-        const url = new URL(`contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
+        const url = new URL(`${this.pagesEndpoint}${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const { result, error, data } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
-        if (result == 'ERROR') {
-            switch (error.code) {
-                case 'NOT_LOGIN_USER':
-                case 'UNAUTHORIZED_CONTENTS':
-                    throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-            }
+        const { error, data: { images, isScramble } } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
+        switch (error?.code) {
+            case 'NOT_LOGIN_USER':
+            case 'UNAUTHORIZED_CONTENTS':
+                throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        return data.images.map(element => new Page(this, chapter, new URL(element.imagePath)));
+
+        if (isScramble) {
+            const endpoint = new URL(`contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
+            const body = JSON.stringify({ line: images[0].line });
+            const { data } = await FetchJSON<APIResult<string>>(this.CreateRequest(endpoint, true, body));
+            const promises = images.map(async image => {
+                const scrambleIndex = await this.Decrypt(image.point, data);
+                return new Page<ScrambleParams>(this, chapter, new URL(image.imagePath), { scrambleIndex, defaultHeight: image.defaultHeight });
+            });
+            return Promise.all(promises);
+        } else return images.map(element => new Page(this, chapter, new URL(element.imagePath)));
+    }
+
+    private async Decrypt(encrypted: string, scramblekey: string): Promise<number[]> {
+        const cipher = { name: 'AES-CBC', iv: GetBytesFromUTF8(scramblekey.slice(0, 16)) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(scramblekey), { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(cipher, key, GetBytesFromBase64(encrypted));
+        return JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
     }
 
     protected CreateRequest(url: URL, includeAuthorization = true, body: string = undefined): Request {
@@ -136,4 +162,21 @@ export class DelitoonBase extends DecoratableMangaScraper {
             this.authorization = user?.accessToken;
         }
     }
+
+    public override async FetchImage(page: Page<ScrambleParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        const scrambledata = page.Parameters;
+        return !scrambledata?.scrambleIndex ? blob : DeScramble(blob, async (image, ctx) => {
+            scrambledata.scrambleIndex.forEach((scramblevalue, index) => {
+                const pieceWidth = image.width / 4;
+                const pieceHeight = scrambledata.defaultHeight / 4;
+                const sourceX = index % 4 * pieceWidth;
+                const sourceY = Math.floor(index / 4) * pieceHeight;
+                const destinationX = scramblevalue % 4 * pieceWidth;
+                const destinationY = Math.floor(scramblevalue / 4) * pieceHeight;
+                ctx.drawImage(image, sourceX, sourceY, pieceWidth, pieceHeight, destinationX, destinationY, pieceWidth, pieceHeight);
+            });
+        });
+    }
+
 }
