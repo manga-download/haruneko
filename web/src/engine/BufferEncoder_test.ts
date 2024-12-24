@@ -95,14 +95,14 @@ describe('BufferEncoder', () => {
         });
     });
 
-    describe('GetBytesFromB64()', () => {
+    describe('GetBytesFromBase64()', () => {
 
         it.each([
             [ '', [] ],
             [ 'LQ==', [ 0x2D ] ],
             [ 'PDw/Pz8+Pg==', [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ] ],
         ])('Should get bytes from valid input', (input: string, expected: number[]) => {
-            const actual = testee.GetBytesFromB64(input);
+            const actual = testee.GetBytesFromBase64(input);
             expect(actual).toStrictEqual(new Uint8Array(expected));
         });
 
@@ -116,7 +116,31 @@ describe('BufferEncoder', () => {
             ['-'],
             3,
         ])('Should throw on invalid input', (input: unknown) => {
-            expect(() => testee.GetBytesFromB64(input as string)).toThrow();
+            expect(() => testee.GetBytesFromBase64(input as string)).toThrow();
+        });
+    });
+
+    describe('GetBase64FromBytes', () => {
+
+        it.each([
+            [ [], '' ],
+            [ [ 0x2D ], 'LQ==' ],
+            [ [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ], 'PDw/Pz8+Pg==' ],
+        ])('Should get base64 from valid input', (input: number[], expected: string) => {
+            const actual = testee.GetBase64FromBytes(new Uint8Array(input));
+            expect(actual).toStrictEqual(expected);
+        });
+
+        it.each([
+            undefined,
+            null,
+            true,
+            '-',
+            {},
+            ['-'],
+            3,
+        ])('Should throw on invalid input', (input: unknown) => {
+            expect(() => testee.GetBase64FromBytes(input as Uint8Array)).toThrow();
         });
     });
 });

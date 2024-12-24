@@ -6,18 +6,18 @@ const config = {
         title: 'ZinManga(.net)'
     },
     container: {
-        url: 'https://zinmanga.net/manga/meet-in-the-middle/',
-        id: JSON.stringify({ post: '47362', slug: '/manga/meet-in-the-middle/' }),
-        title: 'Meet in The Middle'
+        url: 'https://www.zinmanga.net/manga/meet-in-the-middle',
+        id: JSON.stringify({ post: '3914', slug: '/manga/meet-in-the-middle' }),
+        title: 'Meet In The Middle'
     },
     child: {
-        id: '/manga/meet-in-the-middle/chapter-50/',
+        id: '/manga/meet-in-the-middle/chapter-50',
         title: 'Chapter 50'
     },
     entry: {
         index: 0,
-        size: 485_720,
-        type: 'image/webp'
+        size: 779_490,
+        type: 'image/jpeg'
     }
 };
 
