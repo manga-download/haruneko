@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './LuaScans.webp';
+import icon from './CasaComic.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as KeyoApp from './templates/KeyoApp';
@@ -12,7 +12,7 @@ import * as KeyoApp from './templates/KeyoApp';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('luascans', 'Lua Scans', 'https://luacomics.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('casacomic', 'Casa Comic', 'https://casacomic.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
