@@ -29,11 +29,11 @@
         "lit": "^3.2.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "svelte": "^5.15.0",
+        "svelte": "^5.16.0",
         "svelte-check": "^4.1.1",
         "svelte-virtuallists": "^1.4.0",
         "vue": "^3.5.13",
-        "vue-tsc": "^2.1.10"
+        "vue-tsc": "^2.2.0"
     },
     "scripts": {
         "update-website-index": "node ./scripts/website-index.mjs",
@@ -42,7 +42,7 @@
         "check:rules": "node ./scripts/coding-rules.mjs",
         "check:svelte": "svelte-check --tsconfig=tsconfig.json --compiler-warnings a11y-click-events-have-key-events:ignore",
         "check:vue": "vue-tsc --skipLibCheck --noEmit",
-        "check": "npm run check:ts && npm run check:lint && npm run check:svelte && npm run check:rules",
+        "check": "npm run check:ts && npm run check:lint && npm run check:svelte && npm run check:vue && npm run check:rules",
         "build": "vite build",
         "test": "vitest run",
         "serve:dev": "vite --port=3000 --strictPort",
