@@ -3,7 +3,7 @@
 new TestFixture({
     plugin: {
         id: 'acgn',
-        title: 'ACGN'
+        title: 'Animation Comic Game Novel'
     },
     container: {
         url: 'https://comic.acgn.cc/manhua-haiziwang.htm',
