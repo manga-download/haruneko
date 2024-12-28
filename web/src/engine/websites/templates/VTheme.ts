@@ -32,7 +32,7 @@ type MangaID = {
     slug: string,
 }
 
-const pageScript = `[...document.querySelectorAll('section img[loading]')].map(image => new URL(image.src, window.location.origin).href);`;
+const pageScript = `[...document.querySelectorAll('section img[loading]')].map(image => image.src);`;
 
 @Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
