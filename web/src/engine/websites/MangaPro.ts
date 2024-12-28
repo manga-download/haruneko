@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './MangaPro.webp';
-import { Iken } from './templates/Iken';
+import { VTheme } from './templates/VTheme';
 
-export default class extends Iken {
+export default class extends VTheme {
 
     public constructor() {
         super('mangapro', 'Manga Pro', 'https://promanga.pro', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);

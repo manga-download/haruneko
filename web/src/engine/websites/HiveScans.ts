@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './HiveScans.webp';
-import { Iken } from './templates/Iken';
+import { VTheme } from './templates/VTheme';
 
-export default class extends Iken {
+export default class extends VTheme {
 
     public constructor() {
         super('hivescans', 'Hive Scans', 'https://hivetoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);

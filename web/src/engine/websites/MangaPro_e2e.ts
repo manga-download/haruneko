@@ -1,13 +1,13 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangapro',
         title: 'Manga Pro'
     },
     container: {
         url: 'https://promanga.pro/series/i-eat-soft-rice-in-another-world',
-        id: JSON.stringify({ slug: 'i-eat-soft-rice-in-another-world', id: '327' }),
+        id: JSON.stringify({ slug: 'i-eat-soft-rice-in-another-world', id: 327 }),
         title: 'I Eat Soft Rice In Another World'
     },
     child: {
@@ -19,6 +19,4 @@ const config = {
         size: 1_345_428,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

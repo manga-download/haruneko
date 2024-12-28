@@ -1,13 +1,13 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'hivescans',
         title: 'Hive Scans'
     },
     container: {
         url: 'https://hivetoon.com/series/maybe-meant-to-be-gjd9cwk3',
-        id: JSON.stringify({ slug: 'maybe-meant-to-be-gjd9cwk3', id: '27' }),
+        id: JSON.stringify({ slug: 'maybe-meant-to-be-gjd9cwk3', id: 27 }),
         title: 'Maybe Meant to Be'
     },
     child: {
@@ -19,6 +19,4 @@ const config = {
         size: 501_034,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
