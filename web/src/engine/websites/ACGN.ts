@@ -14,7 +14,7 @@ function PageExtractor(element: HTMLDivElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('acgn', 'ACGN', 'https://comic.acgn.cc', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
+        super('acgn', 'Animation Comic Game Novel', 'https://comic.acgn.cc', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
