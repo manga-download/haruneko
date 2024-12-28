@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
-import icon from './KaliScan.webp';
+import icon from './MgJinx.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import * as MadTheme from './decorators/MadTheme';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.name.box h1')
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a', 1)
@@ -12,7 +12,7 @@ import * as MadTheme from './decorators/MadTheme';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kaliscan', `KaliScan`, 'https://kaliscan.io', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mgjinx', 'MGJINX', 'https://mgjinx.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

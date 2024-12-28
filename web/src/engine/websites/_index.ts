@@ -448,6 +448,7 @@ export { default as MechaComic } from './MechaComic';
 export { default as MenudoFansub } from './MenudoFansub';
 export { default as MeowSubs } from './MeowSubs';
 export { default as MerlinScans } from './MerlinScans';
+export { default as MgJinx } from './MgJinx';
 export { default as Mgkomik } from './Mgkomik';
 export { default as MHScans } from './MHScans';
 export { default as Mi2mangaES } from './Mi2mangaES';
