@@ -34,17 +34,15 @@
 
     //Bookmarks
     let isBookmarked=$state(false);
+    let isOrphaned=$state(true);
     $effect(() => {
-        isBookmarked = media
-            ? HakuNeko.BookmarkPlugin.IsBookmarked(media)
-            : false;
+        if(!media) return;
+        isBookmarked = HakuNeko.BookmarkPlugin.IsBookmarked(media);
+        isOrphaned =  isBookmarked && (media as Bookmark).IsOrphaned;
     });
     async function toggleBookmark() {
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
     }
-    let isOrphaned =
-        $derived(isBookmarked && (media as Bookmark).IsOrphaned ? true : false);
-
     //Context menu
     let mediadiv: HTMLElement = $state();
 
@@ -145,25 +143,27 @@
             />
         </span>
     {/if}
-    <button 
-        class="website"
-        onclick={() => {
-            window.open(media.Parent.URI.href, '_blank');
-        }}
-        title="Open {media.Parent.URI.href}"
-        aria-label="Open {media.Parent.URI.href}"
-    >
-        <img
-            class="pluginIcon"
-            src={media.Parent.Icon}
-            alt="Media Plugin Icon"
-        />
-    </button>
+    {#if !isOrphaned }
+        <button 
+            class="website"
+            onclick={() => {
+                window.open(media.Parent.URI.href, '_blank');
+            }}
+            title="Open {media.Parent.URI.href}"
+            aria-label="Open {media.Parent.URI.href}"
+        >
+            <img
+                class="pluginIcon"
+                src={media.Parent.Icon}
+                alt="Media Plugin Icon"
+            />
+        </button>
+    {/if}
     <ClickableTile
         class="title"
         onclick={(e) => {
             e.preventDefault();
-            $selectedMedia = media;
+            if(!isOrphaned) $selectedMedia = media;
         }}
     >
         <span title={media.Title}>{media.Title}</span>
