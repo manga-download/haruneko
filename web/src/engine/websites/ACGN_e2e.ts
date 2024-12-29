@@ -3,7 +3,7 @@
 new TestFixture({
     plugin: {
         id: 'acgn',
-        title: 'Animation Comic Game Novel'
+        title: '動漫戲說(ACGN.cc) - 免費線上漫畫,遊戲',
     },
     container: {
         url: 'https://comic.acgn.cc/manhua-haiziwang.htm',
