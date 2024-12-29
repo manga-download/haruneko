@@ -213,7 +213,8 @@
         border: none;
         background: none;
         background-color: unset;
-        margin-right: 0.4em;
+        margin-right: 0.4em; 
+        cursor: pointer;
     }
     .media .pluginIcon {
         width: 1.4em;
