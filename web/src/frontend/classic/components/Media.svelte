@@ -26,22 +26,23 @@
 
     interface Props {
         style?: string;
-        media: MediaContainer2;
+        // TODO: Instead of conditional pollution, split component into one for showing containers and one for showing bookmarks
+        media: MediaContainer2 | Bookmark;
     }
 
     let { style = '', media }: Props = $props();
     let selected: boolean = $derived($selectedMedia?.IsSameAs(media));
 
-    //Bookmarks
+    // Bookmarks
     let isBookmarked=$state(false);
-    let isOrphaned=$state(true);
+    let isMediaOrphanedBookmark = $state(true);
     $effect(() => {
         if(!media) return;
         isBookmarked = HakuNeko.BookmarkPlugin.IsBookmarked(media);
-        isOrphaned =  isBookmarked && (media as Bookmark).IsOrphaned;
+        isMediaOrphanedBookmark = media instanceof Bookmark && media.IsOrphaned;
     });
     async function toggleBookmark() {
-        isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
+        isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media as MediaContainer2);
     }
     //Context menu
     let mediadiv: HTMLElement = $state();
@@ -59,7 +60,7 @@
         delayedContentCheck = setTimeout(
         async () => {
             unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
-                media,
+                media as MediaContainer2,
             )) as MediaContainer<MediaChild>[];
         },delay);
     }
@@ -104,7 +105,7 @@
             onclick={toggleBookmark}
         />
     </ContextMenu>
-    {#if isOrphaned}
+    {#if isMediaOrphanedBookmark}
         <span in:coinflip={{ duration: 200 }}>
             <Button
                 class="orphaned"
@@ -143,12 +144,10 @@
             />
         </span>
     {/if}
-    {#if !isOrphaned }
+    {#if !isMediaOrphanedBookmark}
         <button 
             class="website"
-            onclick={() => {
-                window.open(media.Parent.URI.href, '_blank');
-            }}
+            onclick={() => window.open(media.Parent.URI.href, '_blank')}
             title="Open {media.Parent.URI.href}"
             aria-label="Open {media.Parent.URI.href}"
         >
@@ -161,9 +160,9 @@
     {/if}
     <ClickableTile
         class="title"
-        onclick={(e) => {
+        onclick={(e: MouseEvent) => {
             e.preventDefault();
-            if(!isOrphaned) $selectedMedia = media;
+            if(!isMediaOrphanedBookmark) $selectedMedia = media;
         }}
     >
         <span title={media.Title}>{media.Title}</span>
