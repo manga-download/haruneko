@@ -8,20 +8,21 @@ import { Numeric } from '../SettingsManager';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { FetchJSON } from '../platform/FetchProvider';
 
-type APIResult<T> ={
-    data : T
+type APIResult<T> = {
+    data: T
 }
 
 type APIManga = {
-    id: number
-    title: string,
+    id: number,
+    title: string
 }
 
 type APIChapter = {
     chapter_slug: string,
-    chapter_name: string
+    chapter_name: string,
+    chapter_title: string | null,
     series: {
-        series_slug : string
+        series_slug: string
     }
 }
 
@@ -89,7 +90,7 @@ export default class extends DecoratableMangaScraper {
     private async GetChaptersFromPage(uri: URL, manga: Manga, page: number): Promise<Chapter[]> {
         uri.searchParams.set('page', page.toString());
         const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(uri));
-        return data.map(item => new Chapter(this, manga, `/series/${item.series.series_slug}/${item.chapter_slug}`, item.chapter_name.trim()));
+        return data.map(item => new Chapter(this, manga, `/series/${item.series.series_slug}/${item.chapter_slug}`, `${ item.chapter_title ? [item.chapter_name, item.chapter_title].join(' ') : item.chapter_name }`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
