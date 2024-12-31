@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangagezgini',
         title: 'Manga Gezgini'
     },
     container: {
-        url: 'https://mangagezgini.me/manga/limit-breaker/',
+        url: 'https://mangagezgini.vip/manga/limit-breaker/',
         id: JSON.stringify({ post: '873', slug: '/manga/limit-breaker/' }),
         title: 'Limit Breaker'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 748_849,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
