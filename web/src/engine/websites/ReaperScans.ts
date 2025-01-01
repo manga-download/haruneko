@@ -87,10 +87,11 @@ export default class extends DecoratableMangaScraper {
         return chapterList;
 
     }
+
     private async GetChaptersFromPage(uri: URL, manga: Manga, page: number): Promise<Chapter[]> {
         uri.searchParams.set('page', page.toString());
         const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(uri));
-        return data.map(item => new Chapter(this, manga, `/series/${item.series.series_slug}/${item.chapter_slug}`, `${ item.chapter_title ? [item.chapter_name, item.chapter_title].join(' ') : item.chapter_name }`));
+        return data.map(item => new Chapter(this, manga, `/series/${item.series.series_slug}/${item.chapter_slug}`, [ item.chapter_name, item.chapter_title || '' ].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
