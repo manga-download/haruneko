@@ -17,10 +17,10 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-	import { VirtualList, type VLSlotSignature } from 'svelte-virtuallists';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
+    import IntersectionObserverDisplay from '../lib/IntersectionObserver.svelte';
     // UI : Stores
     import {
         selectedPlugin,
@@ -38,6 +38,7 @@
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
     import { resizeBar } from '../lib/actions';
     import type { MediaContainer2 } from '../Types';
+    import { SvelteMap } from 'svelte/reactivity';
 
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild> = $state();
@@ -184,6 +185,25 @@
             (plugin) => plugin.Identifier === id,
         );
     }
+    const visiblesMedia : SvelteMap<string,boolean> = new SvelteMap();
+    let medialistref : HTMLElement;
+    //medialistref.addEventListener('scroll', this.LoadNext);
+    
+    const mediaListObserver = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                var mediaid = entry.target.getAttribute('data-id');
+                if (entry.isIntersecting)
+                    visiblesMedia.set(mediaid,true);
+                else visiblesMedia.delete(mediaid);
+            });
+        },
+        {
+            root: medialistref, // The element used as the viewport for checking visibility
+            rootMargin: '400px', // Margin around the root. Can have values similar to the CSS
+            threshold: 0  // what percentage of the target is visible
+        }
+    );
 
 </script>
 
@@ -248,7 +268,7 @@
     <div id="MediaFilter">
         <Search id="MediaFilterSearch" size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list">
+    <div id="MediaList" class="list" bind:this={medialistref}>
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
@@ -263,13 +283,18 @@
                 />
             </div>
         {/await}
-        <VirtualList class="items" items={filteredmedias}>
-            {#snippet vl_slot({ item } : VLSlotSignature<MediaContainer2>)}
-                <Media 
-                    media={item}
-                />
-            {/snippet}
-        </VirtualList>
+        {#each filteredmedias as media (media) }
+            <IntersectionObserverDisplay observer={mediaListObserver} dataid={media.Identifier} display={visiblesMedia.get(media.Identifier)}  >
+                {#snippet children()}
+                    <Media 
+                        media={media as MediaContainer2}
+                    /> 
+                {/snippet}
+                {#snippet placeholder()}
+                    <div style="height:2em; width:100%;"></div>
+                {/snippet}
+            </IntersectionObserverDisplay>
+        {/each}
     </div>
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
@@ -339,10 +364,11 @@
     #MediaList {
         grid-area: MediaList;
         background-color: var(--cds-field-01);
-        overflow: hidden;
+        overflow-x: hidden;
         user-select: none;
         display:flex;
         flex-direction: column;
+        height:100%;
     }
     #MediaList .loading {
         width: 100%;
