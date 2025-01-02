@@ -57,6 +57,6 @@ const patterns = [
     '*://pickupfaxmultitude.com/*',
     '*://t7cp4fldl.com/*',
     '*://tumultmarten.com/*',
-    '*://*.facebook.com/*',
-    '*://*.facebook.net/*',
+    '*://www.facebook.com/*/plugins/comments.php*',
+    '*://www.facebook.net/*/plugins/comments.php*',
 ];
