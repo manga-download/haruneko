@@ -187,7 +187,6 @@
     }
     const visiblesMedia : SvelteMap<string,boolean> = new SvelteMap();
     let medialistref : HTMLElement;
-    //medialistref.addEventListener('scroll', this.LoadNext);
     
     const mediaListObserver = new IntersectionObserver(
         entries => {
@@ -199,9 +198,9 @@
             });
         },
         {
-            root: medialistref, // The element used as the viewport for checking visibility
-            rootMargin: '400px', // Margin around the root. Can have values similar to the CSS
-            threshold: 0  // what percentage of the target is visible
+            root: medialistref,
+            rootMargin: '400px',
+            threshold: 0
         }
     );
 
@@ -291,7 +290,7 @@
                     /> 
                 {/snippet}
                 {#snippet placeholder()}
-                    <div style="height:2em; width:100%;"></div>
+                    <div style="height:1.6em; width:100%;"></div>
                 {/snippet}
             </IntersectionObserverDisplay>
         {/each}
