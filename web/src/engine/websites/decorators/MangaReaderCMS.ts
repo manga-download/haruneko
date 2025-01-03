@@ -1,6 +1,10 @@
+// https://themesia.com/mangareader-wordpress-theme/
+
 import { FetchCSS } from '../../platform/FetchProvider';
 import { type MangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from './Common';
+
+const MangaInfoExtractor = Common.AnchorInfoExtractor(false);
 
 export function ChapterInfoExtractor(element: HTMLElement) {
     const anchor: HTMLAnchorElement = element instanceof HTMLAnchorElement ? element : element.querySelector('a');
@@ -9,37 +13,30 @@ export function ChapterInfoExtractor(element: HTMLElement) {
     return { id, title };
 }
 
-export const queryMangas = [
-    'ul.manga-list li a',
-    'ul.manga-list-text li a.alpha-link',
-    'ul.price-list li a'
-].join(',');
+export const patternMangas = '/changeMangaList?type=text';
+export const queryMangas = 'ul.manga-list li a';
+//'ul.manga-list-text li a.alpha-link',
+//'ul.price-list li a'
 
-export const queryChapters = [
-    'ul.chapters li h3.chapter-title-rtl a',
-    'ul.chapters li h5.chapter-title-rtl a',
-    'ul.chapter-list li a',
-    'div.chapters h3.chapter-title a',
-    'div.chapter-wrapper table td.chapter a',
-    'div.capitulos-list table tr td:first-of-type a',
-    'ul li div.item a.chapter_num',
-    'table.table--manga tbody td.table__chapter a',
-    'ul.chapterszozo li a',
-].join(',');
+export const queryChapters = 'ul.chapter-list li a';
+//'ul.chapters li h3.chapter-title-rtl a',
+//'ul.chapters li h5.chapter-title-rtl a',
+//'div.chapters h3.chapter-title a',
+//'div.chapter-wrapper table td.chapter a',
+//'div.capitulos-list table tr td:first-of-type a',
+//'ul li div.item a.chapter_num',
+//'table.table--manga tbody td.table__chapter a',
+//'ul.chapterszozo li a',
 
-export const queryPages = [
-    'div#all img.img-responsive',
-    'div.text-center img[loading="lazy"]',
-].join(',');
+export const queryPages = 'div#all img.img-responsive';
+//'div.text-center img[loading="lazy"]',
 
-export const queryMangaTitle = [
-    'h1.widget-title',
-    'h2.widget-title',
-    'h2.listmanga-header'
-].join(',');
+// TODO: Cleanup CSS selectors (remove website specific)
+export const queryManga = 'h2.widget-title'; // ':is(h1, h2).widget-title'
+export const queryMangaTitle = 'h2.widget-title';
+//'h2.listmanga-header',
 
 const pathname = '/';
-const DefaultInfoExtractor = Common.AnchorInfoExtractor(false);
 
 /***********************************************
  ******** Manga List Extraction Methods ********
@@ -53,7 +50,7 @@ const DefaultInfoExtractor = Common.AnchorInfoExtractor(false);
  * @param path - The path relative to {@link this} scraper's base url from which the mangas shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, query = queryMangas, path = pathname, extract = DefaultInfoExtractor): Promise<Manga[]> {
+async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, query = queryMangas, path = pathname, extract = MangaInfoExtractor): Promise<Manga[]> {
     const request = new Request(new URL(path + 'changeMangaList?type=text', this.URI), {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -72,9 +69,9 @@ async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScrape
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param path - An additional prefix for the ajax endpoint relative to the scraper's base url
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
-
+ * @deprecated Use {@link Common.MangasSinglePagesCSS} instead
  */
-export function MangasSinglePageCSS(query = queryMangas, path = pathname, extract = DefaultInfoExtractor) {
+export function MangasSinglePageCSS(query = queryMangas, path = pathname, extract = MangaInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
@@ -89,6 +86,9 @@ export function MangasSinglePageCSS(query = queryMangas, path = pathname, extrac
  ******** Page List Extraction Methods ********
  **********************************************/
 
+/**
+ * ...
+ */
 export function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement): string {
     try {
         const src = image.dataset['src'].split('://').at(-1);
@@ -98,7 +98,3 @@ export function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement
         return new URL(src, this.URI).href;
     }
 }
-
-/***********************************************
- ******** Image Data Extraction Methods ********
- ***********************************************/
