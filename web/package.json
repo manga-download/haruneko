@@ -7,7 +7,7 @@
     },
     "dependencies": {
         "jszip": "^3.10.1",
-        "pdfkit": "github:manga-download/pdfkit#v0.15.2",
+        "pdfkit": "github:manga-download/pdfkit#v0.16.0",
         "protobufjs": "^7.4.0"
     },
     "devDependencies": {
@@ -29,7 +29,7 @@
         "lit": "^3.2.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "svelte": "^5.16.0",
+        "svelte": "^5.16.1",
         "svelte-check": "^4.1.1",
         "svelte-virtuallists": "^1.4.0",
         "vue": "^3.5.13",
