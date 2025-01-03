@@ -57,7 +57,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        let nextCursor : string | undefined = undefined;
+        let hasNextPage: boolean = false;
+        let nextCursor: string | undefined = undefined;
         const chapterList: Chapter[] = [];
 
         const gql = `
@@ -111,7 +112,7 @@ export default class extends DecoratableMangaScraper {
             const chapters = edges.map(chapter => new Chapter(this, manga, chapter.node.single.productId.toString(), chapter.node.single.title.replace(manga.Title, '').trim()));
             nextCursor = hasNextPage ? endCursor : undefined;
             chapterList.push(...chapters);
-        } while (nextCursor);
+        } while (hasNextPage);
 
         return chapterList;
     }
