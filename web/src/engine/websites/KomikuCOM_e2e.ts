@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'komikucom',
         title: 'Komiku.COM'
     },
     container: {
-        url: 'https://komiku.com/manga/my-wife-and-i-dominate-the-three-realms/',
+        url: 'https://komiku.one/manga/my-wife-and-i-dominate-the-three-realms/',
         id: '/manga/my-wife-and-i-dominate-the-three-realms/',
         title: 'My Wife and I Dominate the Three Realms'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 21_669,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

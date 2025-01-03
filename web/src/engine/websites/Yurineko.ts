@@ -20,10 +20,10 @@ const pageScript = `__NEXT_DATA__.props.pageProps.chapterData.url.map(image => n
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.yurineko.my';
+    private readonly apiUrl = 'https://api.yurineko.click';
 
     public constructor() {
-        super('yurineko', 'Yurineko', 'https://yurineko.my', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('yurineko', 'Yurineko', 'https://yurineko.click', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

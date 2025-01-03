@@ -1,13 +1,12 @@
-/* NW.js crash on website initialize => CloudFlare
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'nettruyen#A4F21DC2',
         title: 'NetTruyen OK',
     },
     container: {
-        url: 'https://nettruyenok.com/manga/ta-co-90-ty-tien-liem-cau',
+        url: 'https://nettruyendex.com/manga/ta-co-90-ty-tien-liem-cau',
         id: '/manga/ta-co-90-ty-tien-liem-cau',
         title: 'Ta Có 90 Tỷ Tiền Liếm Cẩu!',
     },
@@ -20,7 +19,4 @@ const config: Config = {
         size: 193_514,
         type: 'image/jpeg',
     }
-};
-
-new TestFixture(config).AssertWebsite();
-*/
+}).AssertWebsite();
