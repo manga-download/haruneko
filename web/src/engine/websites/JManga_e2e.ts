@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'jmanga',
         title: 'JManga'
     },
     container: {
-        url: encodeURI('https://jmanga.so/read/からかい上手-？-の西片さん-raw/'),
+        url: 'https://jmanga.sh/read/からかい上手-？-の西片さん-raw/',
         id: encodeURI('/read/からかい上手-？-の西片さん-raw/'),
         title: 'からかい上手(？)の西片さん'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 144_913,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
