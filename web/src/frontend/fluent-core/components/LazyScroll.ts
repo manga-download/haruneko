@@ -18,7 +18,7 @@ export class LazyScroll extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
-        this.addEventListener('scroll', this.LoadNext);
+        this.addEventListener('scroll', this.LoadNext, { passive: true });
     }
 
     override disconnectedCallback(): void {
