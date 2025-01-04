@@ -1,4 +1,3 @@
-// https://themesia.com/category/wordpress-themes/
 // https://themesia.com/mangastream-wordpress-theme/
 
 import type { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
