@@ -11,12 +11,12 @@ const config = {
         title: '血と灰の女王'
     },
     child: {
-        id: '/manga/xueto-huino-nu-wang/di148hua',
-        title: '# 第148話'
+        id: '222515',
+        title: '第200話'
     },
     entry: {
         index: 0,
-        size: 511_986,
+        size: 185_526,
         type: 'image/webp'
     }
 };
