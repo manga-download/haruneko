@@ -1,3 +1,4 @@
+/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
@@ -20,3 +21,4 @@ new TestFixture({
         type: 'image/jpeg',
     }
 }).AssertWebsite();
+*/
