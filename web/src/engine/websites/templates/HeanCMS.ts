@@ -59,7 +59,7 @@ export class HeanCMS extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = new URL(url).pathname.split('/').at(-1);
-        const { title, series_slug, id } = await FetchJSON<APIManga>(new Request(new URL(`${this.apiUrl}/series/${slug}`)));
+        const { title, series_slug, id } = await FetchJSON<APIManga>(this.CreateRequest(new URL(`${this.apiUrl}/series/${slug}`)));
         return new Manga(this, provider, JSON.stringify({
             id: id.toString(),
             slug: series_slug
@@ -78,14 +78,14 @@ export class HeanCMS extends DecoratableMangaScraper {
     }
 
     private async GetMangaFromPage(provider: MangaPlugin, page: number, adult: boolean): Promise<Manga[]> {
-        const request = new Request(new URL(`${this.apiUrl}/query?perPage=100&page=${page}&adult=${adult}`));
+        const request = this.CreateRequest(new URL(`${this.apiUrl}/query?perPage=100&page=${page}&adult=${adult}`));
         const { data } = await FetchJSON<APIResult<APIManga[]>>(request);
         return !data.length ? [] : data.map((manga) => new Manga(this, provider, JSON.stringify({ id: manga.id.toString(), slug: manga.series_slug }), manga.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaid: APIMediaID = JSON.parse(manga.Identifier);
-        const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`${this.apiUrl}/chapter/query?series_id=${mangaid.id}&perPage=9999&page=1`)));
+        const { data } = await FetchJSON<APIResult<APIChapter[]>>(this.CreateRequest(new URL(`${this.apiUrl}/chapter/query?series_id=${mangaid.id}&perPage=9999&page=1`)));
         return data.map(chapter => new Chapter(this, manga, JSON.stringify({
             id: chapter.id.toString(),
             slug: chapter.chapter_slug,
@@ -95,7 +95,7 @@ export class HeanCMS extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<PageType>[]> {
         const chapterid: APIMediaID = JSON.parse(chapter.Identifier);
         const mangaid: APIMediaID = JSON.parse(chapter.Parent.Identifier);
-        const data = await FetchJSON<APIPages>(new Request(new URL(`${this.apiUrl}/chapter/${mangaid.slug}/${chapterid.slug}`)));
+        const data = await FetchJSON<APIPages>(this.CreateRequest(new URL(`${this.apiUrl}/chapter/${mangaid.slug}/${chapterid.slug}`)));
 
         if (data.paywall) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
@@ -120,6 +120,12 @@ export class HeanCMS extends DecoratableMangaScraper {
         if (page.Parameters?.type === 'Comic') {
             return Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType, deProxifyLink);
         } else throw new Exception(R.Plugin_HeanCMS_ErrorNovelsNotSupported);
+    }
+
+    private CreateRequest(endpoint: URL): Request {
+        return new Request(endpoint, {headers: {
+            Referer: this.URI.href
+        }});
     }
 
 }

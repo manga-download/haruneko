@@ -279,6 +279,7 @@ export { default as LineWebtoon } from './LineWebtoon';
 export { default as LineWebtoonTranslate } from './LineWebtoonTranslate';
 export { default as LittleGarden } from './LittleGarden';
 export { default as LowerWorld } from './LowerWorld';
+export { default as LuaScans } from './LuaScans';
 export { default as LumosKomik } from './LumosKomik';
 export { default as LunarScans } from './LunarScans';
 export { default as LunaScans } from './LunaScans';
