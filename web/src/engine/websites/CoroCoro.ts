@@ -2,104 +2,105 @@ import { Tags } from '../Tags';
 import icon from './CoroCoro.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchProto } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
+import prototypes from './CoroCoro.proto?raw';
 
-type JSONManga = {
-    id: number;
-    name: string;
+type TitleListView = {
+    titles: {
+        titles: APITitle[]
+    }
 }
 
-type JSONMangas = Record<string, JSONManga[]>;
-
-type JSONChapter = {
-    id: number;
-    title: string;
+type TitleDetailView = {
+    title: APITitle,
+    chapters: APIChapter[]
 }
 
-type JSONChapters = Record<string, JSONChapter[]>;
-
-type JSONPages = {
-    pages: {
-        src: string;
-        crypto: CryptoParams;
-    }[];
+type APITitle = {
+    id: number,
+    name: string
 }
 
-type CryptoParams = {
-    iv: string;
-    key: string;
-    method: string;
+type APIChapter = {
+    id: number,
+    mainName: string,
+    subName: string
 }
 
-@Common.MangaCSS(/^{origin}\/title\/\d+$/, 'main > div > div > section > div.grid > h1.font-bold')
+type ViewerView = {
+    pages?: APIImage[],
+    aesKey: string,
+    aesIv: string
+}
+
+type APIImage = {
+    src: string
+}
+
+type CryptoParams = null | {
+    iv: string,
+    key: string,
+}
 
 export default class extends DecoratableMangaScraper {
 
+    private readonly apiUrl = `${this.URI.origin}/api/csr`;
+
     public constructor() {
-        super('corocoro', `CoroCoro Online (コロコロオンライン)`, 'https://www.corocoro.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('corocoro', 'CoroCoro Online (コロコロオンライン)', 'https://www.corocoro.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
     }
 
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/title/\\d+$`).test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const request = this.CreateProtoRequest('title/detail', { title_id: url.split('/').at(-1) });
+        const { title: { id, name } } = await FetchProto<TitleDetailView>(request, prototypes, 'TitleDetailView');
+        return new Manga(this, provider, id.toString(), name);
+    }
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('/rensai', this.URI)), 'script:not([src])');
-        const mangaCollection = this.ExtractData<JSONMangas>(scripts, 'totalChapterLikes', 'weekdays');
-        return Object.values(mangaCollection).reduce((accumulator: Manga[], collection) => {
-            const mangas = collection.map(manga => new Manga(this, provider, `/title/${manga.id}`, manga.name));
-            return [...accumulator, ...mangas];
-        }, []);
+        const mangaList: Manga[] = [];
+        for (const day of [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ]) {
+            const request = this.CreateProtoRequest('title/list/update_day', { day });
+            const { titles: { titles } } = await FetchProto<TitleListView>(request, prototypes, 'TitleListView');
+            const mangas = titles.map(manga => new Manga(this, provider, manga.id.toString(), manga.name));
+            mangaList.push(...mangas);
+        }
+        return mangaList.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${manga.Identifier}`, this.URI)), 'script:not([src])');
-        const chapterCollection = this.ExtractData<JSONChapters>(scripts, 'omittedMiddleChapters', 'chapters');
-        return Object.values(chapterCollection).reduce((accumulator: Chapter[], collection) => {
-            const chapters = collection.map(chapter => new Chapter(this, manga, `/chapter/${chapter.id}`, chapter.title));
-            return [...accumulator, ...chapters];
-        }, []);
+        const request = this.CreateProtoRequest('title/detail', { title_id: manga.Identifier });
+        const { chapters } = await FetchProto<TitleDetailView>(request, prototypes, 'TitleDetailView');
+        return chapters.map(chapter => new Chapter(this, manga, chapter.id.toString(), [ chapter.mainName, chapter.subName ].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<CryptoParams>[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${chapter.Identifier}`, this.URI)), 'script:not([src])');
-        const viewerSection = this.ExtractData<JSONPages>(scripts, 'viewerSection', 'viewerSection');
-        return viewerSection.pages.map(page => new Page<CryptoParams>(this, chapter, new URL(page.src), page.crypto));
+        const request = this.CreateProtoRequest('chapter/viewer', { chapter_id: chapter.Identifier }, 'PUT');
+        const { pages, aesIv, aesKey } = await FetchProto<ViewerView>(request, prototypes, 'ViewerView');
+        const params: CryptoParams = aesIv && aesKey ? { key: aesKey, iv: aesIv } : null;
+        return pages.map(page => new Page(this, chapter, new URL(page.src), params));
     }
 
     public override async FetchImage(page: Page<CryptoParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        const cryptoParams = page.Parameters;
-        switch (cryptoParams.method) {
-            case 'aes-cbc': {
-                const encrypted = await blob.arrayBuffer();
-                const cipher = { name: 'AES-CBC', iv: GetBytesFromHex(cryptoParams.iv) };
-                const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoParams.key), cipher, false, ['decrypt']);
-                const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
-                return Common.GetTypedData(decrypted);
-            }
-            default: return blob;
-        }
+        const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.Parameters.iv) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.Parameters.key), algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, await data.arrayBuffer());
+        return Common.GetTypedData(decrypted);
     }
 
-    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
-        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
-        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
-        let record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
-
-        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
-            if (parent[keyName]) {
-                return parent[keyName];
-            }
-            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
-                const result = FindValueForKeyName(child);
-                if (result) {
-                    return result;
-                }
-            }
-            return undefined;
-        })(record) as T;
+    private CreateProtoRequest(endpoint: string, params: Record<string, string>, method: string = 'GET'): Request {
+        const uri = new URL(this.apiUrl);
+        uri.search = new URLSearchParams({ rq: endpoint, ...params }).toString();
+        return new Request(uri, { method });
     }
 }

@@ -6,18 +6,18 @@ const config = {
         title: 'Spider Scans'
     },
     container: {
-        url: 'https://spiderscans.xyz/manga/demonic-sword-immortal/',
-        id: '/manga/demonic-sword-immortal/',
-        title: 'Demonic Sword Immortal'
+        url: 'https://spidyscans.xyz/manga/my-god-tier-leveling-system/',
+        id: JSON.stringify({ post: '1911', slug: '/manga/my-god-tier-leveling-system/' }),
+        title: 'My God Tier Leveling System'
     },
     child: {
-        id: '/demonic-sword-immortal-chapter-01/',
-        title: 'Chapter 01'
+        id: '/manga/my-god-tier-leveling-system/chapter-133/',
+        title: 'Chapter 133'
     },
     entry: {
-        index: 8,
-        size: 774_918,
-        type: 'image/jpeg'
+        index: 2,
+        size: 120_648,
+        type: 'image/webp'
     }
 };
 

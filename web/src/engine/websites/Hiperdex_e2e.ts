@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'hiperdex',
         title: 'Hiperdex'
     },
     container: {
-        url: 'https://hipertoon.com/manga/b-chiku/',
+        url: 'https://hiperdex.com/manga/b-chiku/',
         id: JSON.stringify({ post: '2529', slug: '/manga/b-chiku/' }),
         title: 'B-Chiku'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 183_996,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
