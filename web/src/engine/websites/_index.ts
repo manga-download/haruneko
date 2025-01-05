@@ -590,6 +590,7 @@ export { default as SelfManga } from './SelfManga';
 export { default as SenManga } from './SenManga';
 export { default as SenpaiEdiciones } from './SenpaiEdiciones';
 export { default as SeraphManga } from './SeraphManga';
+export { default as SerenityScans } from './SerenityScans';
 export { default as SeriManga } from './SeriManga';
 export { default as SetsuScans } from './SetsuScans';
 export { default as Seven8te } from './Seven8te';

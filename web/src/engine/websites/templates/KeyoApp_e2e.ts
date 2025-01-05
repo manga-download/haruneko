@@ -7,4 +7,5 @@ import '../NecroScans_e2e';
 import '../ReaperScansFR_e2e';
 import '../RezoScans_e2e';
 import '../StarboundScans_e2e';
+import '../SerenityScans_e2e';
 import '../QuantumScans_e2e';
