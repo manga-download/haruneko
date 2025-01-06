@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'corocoro',
         title: 'CoroCoro Online (コロコロオンライン)'
@@ -18,7 +18,5 @@ const config = {
         index: 0,
         size: 169_646,
         type: 'image/webp'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    },
+}).AssertWebsite();
