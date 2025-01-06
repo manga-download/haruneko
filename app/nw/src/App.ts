@@ -18,6 +18,7 @@ function ParseCLI(): CLIOptions {
     try {
         const argv = new Command()
             .allowUnknownOption(true)
+            .allowExcessArguments(true)
             .option('--origin [url]', 'custom location from which the web-app shall be loaded')
             .parse(nw.App.argv, { from: 'user' });
         return argv.opts<CLIOptions>();

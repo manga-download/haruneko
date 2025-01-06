@@ -1,13 +1,13 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'vortexscans',
         title: 'Vortex Scans'
     },
     container: {
         url: 'https://vortexscans.org/series/regenerate-top-players-0cn52tcd',
-        id: JSON.stringify({ slug: 'regenerate-top-players-0cn52tcd', id: '8'}),
+        id: JSON.stringify({ slug: 'regenerate-top-players-0cn52tcd', id: 8}),
         title: 'Regenerate Top Players'
     },
     child: {
@@ -19,6 +19,4 @@ const config = {
         size: 1_167_128,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

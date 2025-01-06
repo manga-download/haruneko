@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'webtoonhatti',
         title: 'Webtoon Hatti'
     },
     container: {
-        url: 'https://webtoonhatti.dev/webtoon/suikascinin-kanunlari/',
+        url: 'https://webtoonhatti.me/webtoon/suikascinin-kanunlari/',
         id: JSON.stringify({ post: '22986', slug: '/webtoon/suikascinin-kanunlari/' }),
         title: 'Suikasçının Kanunları'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 1_082_948,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
