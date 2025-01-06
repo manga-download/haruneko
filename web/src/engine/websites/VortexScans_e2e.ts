@@ -15,8 +15,8 @@ new TestFixture({
         title: '5 : Crushing Desperation'
     },
     entry: {
-        index: 0,
-        size: 1_167_128,
+        index: 9,
+        size: 629_248,
         type: 'image/webp'
     }
 }).AssertWebsite();
