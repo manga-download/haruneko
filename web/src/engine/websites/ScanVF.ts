@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
 import icon from './ScanVF.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as MangaReader from './templates/MangaReaderCMS';
 import * as Common from './decorators/Common';
-import * as MangaReader from './decorators/MangaReaderCMS';
 
-@Common.MangaCSS(/^{origin}\/[^/]+$/, MangaReader.queryMangaTitle)
-@MangaReader.MangasSinglePageCSS()
+@Common.MangaCSS(/^{origin}\/[^/]+$/, MangaReader.queryManga)
+@Common.MangasSinglePagesCSS([ MangaReader.patternMangas ], MangaReader.queryMangas)
 @Common.ChaptersSinglePageCSS(MangaReader.queryChapters, MangaReader.ChapterInfoExtractor)
-@Common.PagesSinglePageCSS(MangaReader.queryPages, MangaReader.ChapterPageExtractor)
+@Common.PagesSinglePageCSS(MangaReader.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('scanvf', `Scan VF`, 'https://www.scan-vf.net', Tags.Language.French, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('scanvf', 'Scan VF', 'https://www.scan-vf.net', Tags.Language.French, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

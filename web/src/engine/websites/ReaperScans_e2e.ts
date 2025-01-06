@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'reaperscans',
         title: 'Reaper Scans'
@@ -19,9 +19,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 349_888,
+        size: 432_585,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
