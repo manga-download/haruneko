@@ -696,6 +696,7 @@ export { default as VerManhwa } from './VerManhwa';
 export { default as ViewComics } from './ViewComics';
 export { default as VNSharing } from './VNSharing';
 export { default as VortexScans } from './VortexScans';
+export { default as VortexScansFree } from './VortexScansFree';
 export { default as VyManga } from './VyManga';
 export { default as WebAce } from './WebAce';
 export { default as WebComicsApp } from './WebComicsApp';
