@@ -7,12 +7,12 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/(mgraw-)?\d+\/$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
-@FlatManga.ChaptersSinglePageAJAX('/app/manga/controllers/cont.Listchapter.php?mid=', 'mIds')
+@FlatManga.ChaptersSinglePageJS(`'/app/manga/controllers/cont.Listchapter.php?mid=' + mIds`)
 @FlatManga.PagesSinglePageAJAX('/app/manga/controllers/cont.listImg.php?cid=', 'img.chapter-img:not([alt*="nicoscan"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('welovemanga', `WeloveManga`, 'https://welovemanga.one', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('welovemanga', 'WeloveManga', 'https://welovemanga.one', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

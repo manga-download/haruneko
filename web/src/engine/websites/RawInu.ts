@@ -5,14 +5,16 @@ import * as Common from './decorators/Common';
 import * as FlatManga from './decorators/FlatManga';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
+const chapterScript = `[...document.querySelectorAll('ul.list-chapters > a')].map(chapter => { return {id: chapter.pathname, title : chapter.title.trim()};})`;
+
 @Common.MangaCSS(/^{origin}\/[^.]+\.html$/, 'li.breadcrumb-item.active', FlatManga.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
-@FlatManga.ChaptersSinglePageAJAX('/app/manga/controllers/cont.Listchapter.php?slug=', 'sLugs')
+@Common.ChaptersSinglePageJS(chapterScript, 2500)
 @FlatManga.PagesSinglePageAJAX('/app/manga/controllers/cont.imagesChap.php?cid=')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('rawinu', `RawInu`, 'https://rawinu.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawinu', 'RawInu', 'https://rawinu.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

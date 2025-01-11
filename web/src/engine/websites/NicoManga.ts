@@ -16,13 +16,13 @@ type APIMangas = {
 }
 
 @Common.MangaCSS(/^{origin}\/manga[^/]+\.html$/, FlatManga.queryMangaTitle)
-@FlatManga.ChaptersSinglePageAJAX('/app/manga/controllers/cont.Listchapterapi.php?slug=', 'sLugs', 'ul > a', Common.AnchorInfoExtractor(true))
+@FlatManga.ChaptersSinglePageJS(`'/app/manga/controllers/cont.Listchapterapi.php?slug='+ sLugs`, 'ul > a')
 @FlatManga.PagesSinglePageAJAX('/app/manga/controllers/cont.imgsList.php?cid=', 'img.chapter-img:not([alt*="nicoscan"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nicomanga', `NicoManga`, 'https://nicomanga.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('nicomanga', 'NicoManga', 'https://nicomanga.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

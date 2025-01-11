@@ -1,6 +1,6 @@
 ﻿import { AddAntiScrapingDetection, FetchRedirection } from "../../platform/AntiScrapingDetection";
-import { FetchCSS, FetchHTML, FetchWindowScript } from "../../platform/FetchProvider";
-import { Chapter, type Manga, type MangaScraper} from "../../providers/MangaPlugin";
+import { FetchWindowScript } from "../../platform/FetchProvider";
+import { type Chapter, type MangaScraper} from "../../providers/MangaPlugin";
 import { Page } from "../../providers/MangaPlugin";
 import * as Common from './Common';
 
@@ -19,7 +19,7 @@ export function MangaLabelExtractor(element: HTMLElement) {
 export function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: CleanTitle(anchor.getAttribute('text') ? anchor.getAttribute('text') : anchor.textContent)
+        title: CleanTitle(anchor.getAttribute('text') ? anchor.text : anchor.textContent)
     };
 }
 
@@ -72,8 +72,6 @@ export const queryChapters = [
     'div#tab-chapper div#list-chapters span.title a.chapter'
 ].join(',');
 
-const queryChaptersAjax = 'a';
-
 export const queryPages = [
     'img.chapter-img',
     'div#chapter-content img',
@@ -85,53 +83,27 @@ export const queryPages = [
  **********************************************/
 
 /**
- * A class decorator that adds the ability to extract all chapters for a given manga from this website using FlatManga AJAX call.
- * @param endpoint - the api endpoint used to query chapters list. I.e /app/controller/listchapters.php?slug= . Must end with ?<something>=
- * @param mangaIdVariable - the name of the javascript variable containing the mangaid value. The value be appended to {@link endpoint}
- * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted (from the api call)
- * @param extractor - A function to extract chapter info from an HTML node
- */
-export function ChaptersSinglePageAJAX(endpoint: string, mangaIdVariable: string, query = queryChapters, extractor = ChapterExtractor) {
-    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
-        Common.ThrowOnUnsupportedDecoratorContext(context);
-
-        return class extends ctor {
-            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageAJAX.call(this, manga, endpoint, mangaIdVariable, query, extractor);
+* A class decorator that adds the ability to extract all chapters for a given manga using a pre-defined JS script.
+* The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
+* @param path - A JS script snippet to get the relative URL for fetching the HTML fragment containing the chapters
+* @param query - A CSS query to locate the elements from which the chapters information shall be extracted
+* @param extract - A JS arrow function to extract the pathname and title from the html element
+* @param delay - An initial delay [ms] before the pre-defined script is executed
+*/
+export function ChaptersSinglePageJS(path = `'/app/manga/controllers/cont.Listchapter.php?slug=' + sLugs`, query = 'a', extract = `anchor => { return { id: anchor.pathname, title: anchor.title.trim() }}`, delay = 500) {
+    return Common.ChaptersSinglePageJS(`
+        new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch(${path});
+                const html = await response.text();
+                const chapters = [ ...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('${query}') ]
+                    .map(${extract});
+                resolve(chapters);
+            } catch(error) {
+                reject(error);
             }
-        };
-    };
-
-}
-/** Extract all chapters for a given manga from this website using FlatManga AJAX call.
- * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
- * @param endpoint - the api endpoint used to query chapters list. I.e "/app/controller/listchapters.php?slug=". Must end with a query string ?<something>=.
- * @param mangaIdVariable - the name of the javascript variable containing the mangaid value. The value will be appended to {@link endpoint}
- * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted (from the api call)
- * @param extractor - A function to extract chapter info from an HTML node
- * @returns
- */
-export async function FetchChaptersSinglePageAJAX(this: MangaScraper, manga: Manga, endpoint: string, mangaIdVariable: string, query = queryChaptersAjax, extractor = ChapterExtractor): Promise<Chapter[]> {
-    let request = new Request(new URL(manga.Identifier, this.URI), {
-        headers: {
-            'Referer': this.URI.origin
-        }
-    });
-    const mangaRegexp = new RegExpSafe(`var ${mangaIdVariable}\\s*=\\s*['"]([^'"]+)['"]`);
-    const mangaSlug = (await FetchHTML(request)).documentElement.innerHTML.match(mangaRegexp).at(1);
-    const apiUrl = new URL(`${endpoint}${mangaSlug}`, this.URI);
-
-    request = new Request(apiUrl, {
-        headers: {
-            'Referer': this.URI.origin
-        }
-    });
-    const data = await FetchCSS<HTMLAnchorElement>(request, query);
-    return data.map(chapter => {
-        const { id, title } = extractor.call(this, chapter);
-        return new Chapter(this, manga, id, CleanTitle(title.replace(manga.Title, '').trim() ?? title));
-    });
+        });
+    `, delay);
 }
 
 /**********************************************
@@ -171,48 +143,56 @@ export function PagesSinglePageCSS(query: string = queryPages, excludes: RegExp[
     };
 }
 
+function PageScript(path: string, query: string): string {
+    return `
+        new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('${path}' + document.querySelector('input#chapter').value );
+                const html = await response.text();
+                const images = [ ...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('${query}') ]
+                    .map(element => {
+                        const page = element.dataset.aload || element.dataset.src || element.dataset.srcset || element.dataset.original || element.dataset.pagespeedLazySrc || element.src;
+                        try {
+                            page = window.atob(page);
+                        } catch { }
+                        return page.replace(/\\n/g, '');
+                    });
+                resolve(images);
+            } catch(error) {
+                reject(error);
+            }
+        });
+    `;
+}
+
 /**
  * An extension method for extracting all pages for extracting all pages for the given {@link chapter} using the FlatManga AJAX API.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param endpoint - the api endpoint used to query pages list. I.e "/app/controller/cont.listimg.php?cid=". Must end with a query string ?<something>=.
+ * @param path - the api endpoint used to query pages list.
  * @param query - CSS query to get page link
  * @param exclude - a Regexp array to exclude page pattern
- * @param extractor - A function to extract page link from an HTML node
+ * @param delay - An initial delay [ms] before the pre-defined script is executed
  */
-export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, endpoint: string, query: string = 'img', exclude: RegExp[] = DefaultExcludes, extractor = PageLinkExtractor): Promise<Page[]> {
-    let request = new Request(new URL(chapter.Identifier, this.URI), {
-        headers: {
-            'Referer': this.URI.origin,
-        }
-    });
-
-    const chapterId = await FetchWindowScript<string>(request, `document.querySelector('input#chapter').value`, 3000);//use script in case of antiDdoSS/PageSpeed
-    request = new Request(new URL(`${endpoint}${chapterId}`, this.URI), {
-        headers: {
-            'Referer': this.URI.origin,
-        }
-    });
-
-    const data = await FetchCSS<HTMLImageElement>(request, query);
-    const pages = data.map(page => extractor.call(this, page));
+export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter, path: string, query: string = 'img', exclude: RegExp[] = DefaultExcludes, delay = 500 ): Promise<Page[]> {
+    const pages = await FetchWindowScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), PageScript(path, query), delay);
     return pages.filter(url => !exclude.some(pattern => pattern.test(url))).map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.origin }));
 }
 
 /**
  * A class decorator that adds the ability to extract all pages for the given {@link chapter} using the FlatManga AJAX API.
- * @param endpoint - the api endpoint used to query pages list. I.e "/app/controller/cont.listimg.php?cid=". Must end with a query string ?<something>=.
+ * @param path - the api endpoint used to query pages list.
  * @param query - CSS query to get page link
  * @param exclude - a Regexp array to exclude page pattern
- * @param extractor - A function to extract page link from an HTML node
+ * @param delay - An initial delay [ms] before the pre-defined script is executed
  */
-export function PagesSinglePageAJAX(endpoint: string, query: string = queryPages, excludes: RegExp[] = DefaultExcludes, extractor = PageLinkExtractor) {
+export function PagesSinglePageAJAX(path: string, query: string = queryPages, excludes: RegExp[] = DefaultExcludes, delay = 500) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageAJAX.call(this, chapter, endpoint, query, excludes, extractor);
+                return FetchPagesSinglePageAJAX.call(this, chapter, path, query, excludes, delay);
             }
         };
     };
