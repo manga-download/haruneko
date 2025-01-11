@@ -13,7 +13,6 @@ type APIMangas = {
     lang: {
         manga_slug: string
     }
-
 }
 
 @Common.MangaCSS(/^{origin}\/manga[^/]+\.html$/, FlatManga.queryMangaTitle)
@@ -41,7 +40,7 @@ export default class extends DecoratableMangaScraper {
     private async GetMangasFromPageAJAX(provider: MangaPlugin, page: number): Promise<Manga[]> {
         const request = new Request(new URL(`/app/manga/controllers/cont.display.homeTopday.php?page=${page}`, this.URI), {
             headers: {
-                'Referer': new URL('/manga-list.html', this.URI.origin).href,
+                Referer: new URL('/manga-list.html', this.URI.origin).href,
                 'X-Requested-With': 'XMLHttpRequest'
             }
         });

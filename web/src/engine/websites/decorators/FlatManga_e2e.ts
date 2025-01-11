@@ -2,6 +2,7 @@
 import '../KLManga_e2e';
 import '../MangaGun_e2e';
 import '../MangaTR_e2e';
+import '../ManhwaFullNet_e2e';
 import '../NicoManga_e2e';
 import '../OlimpoScans_e2e';
 import '../RawInu_e2e';

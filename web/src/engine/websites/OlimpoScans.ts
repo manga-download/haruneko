@@ -22,7 +22,7 @@ export default class extends DecoratableMangaScraper {
         return pages.map(page => new Page(this, chapter, this.StripSearch(page.Link)));
     }
 
-    StripSearch(link: URL): URL {
+    private StripSearch(link: URL): URL {
         link.pathname = link.pathname.replace(/&.*/g, '');
         return link;
 
