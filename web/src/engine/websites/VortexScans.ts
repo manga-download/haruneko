@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
-import { FetchHTML } from '../platform/FetchProvider';
-import { Page, type Chapter } from '../providers/MangaPlugin';
 import icon from './VortexScans.webp';
+import { FetchRegex } from '../platform/FetchProvider';
+import { Page, type Chapter } from '../providers/MangaPlugin';
 import { VTheme } from './templates/VTheme';
 
 type JSONImage = {
@@ -19,8 +19,8 @@ export default class extends VTheme {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const doc = await FetchHTML(new Request(new URL(chapter.Identifier, this.URI)));
-        const images: JSONImage[] = JSON.parse(doc.documentElement.innerHTML.match(/\\"images\\":(\[.*]),\\"nextChapter/)[1].replaceAll('\\', ''));
+        const [ data ] = await FetchRegex(new Request(new URL(chapter.Identifier, this.URI)), /\\"images\\":(\[.*]),\\"nextChapter/g);
+        const images: JSONImage[] = JSON.parse(data.replaceAll('\\', ''));
         return images.map(image => new Page(this, chapter, new URL(image.url), { Referer: this.URI.href }));
     }
 }
