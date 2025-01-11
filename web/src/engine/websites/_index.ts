@@ -756,7 +756,6 @@ export { default as EpikManga } from './legacy/EpikManga';
 export { default as Futabanet } from './legacy/Futabanet';
 export { default as GammaPlus } from './legacy/GammaPlus';
 export { default as Guoman8 } from './legacy/Guoman8';
-export { default as HeavenManga } from './legacy/HeavenManga';
 export { default as HolyManga } from './legacy/HolyManga';
 export { default as KanMan } from './legacy/KanMan';
 export { default as KissAway } from './legacy/KissAway';
