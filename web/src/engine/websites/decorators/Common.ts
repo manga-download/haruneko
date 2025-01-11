@@ -454,18 +454,20 @@ export function PagesSinglePageJS(script: string, delay = 0) {
  * @param priority - The importance level for ordering the request for the image data within the internal task pool
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
- * @param deProxifyLink - Remove common image proxies (default false)
+ * @param deProxifyLink - Remove common image proxies and try to bypass {@link https://developers.cloudflare.com/images/polish/ | CF Image Polish} (default false)
  */
 export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const imageLink = deProxifyLink ? DeProxify(page.Link) : page.Link;
-        const request = new Request(imageLink.href, {
-            signal: signal,
-            headers: {
-                Referer: page.Parameters?.Referer ?? imageLink.origin,
-            }
-        });
-        const response = await Fetch(request);
+        const headers = {
+            'Referer': page.Parameters?.Referer ?? imageLink.origin,
+        };
+        const request = new Request(imageLink, { signal, headers });
+        let response = await Fetch(request);
+        if(deProxifyLink && response.headers.has('Cf-Polished')) {
+            headers['Origin'] = imageLink.protocol + '//' + Date.now().toString(36) + Math.random().toString(36);
+            response = await Fetch(new Request(imageLink, { signal, headers }));
+        }
         return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
     }, priority, signal);
 }
@@ -473,7 +475,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 /**
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
- * @param deProxifyLink - Remove common image proxies (default false)
+ * @param deProxifyLink - Remove common image proxies and try to bypass {@link https://developers.cloudflare.com/images/polish/ | CF Image Polish} (default false)
  */
 export function ImageAjax(detectMimeType = false, deProxifyLink = false) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
@@ -494,21 +496,22 @@ export function ImageAjax(detectMimeType = false, deProxifyLink = false) {
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param includeRefererHeader - Corresponds to the `referrerpolicy` attribute of the `<img>` tag, to determine if the Referer header shall be included
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
- * @param deProxifyLink - Remove common image proxies (default false)
+ * @param deProxifyLink - Remove common image proxies and try to bypass {@link https://developers.cloudflare.com/images/polish/ | CF Image Polish} (default false)
  */
 export async function FetchImageElement(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, includeRefererHeader = true, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const imageLink = deProxifyLink ? DeProxify(page.Link) : page.Link;
-        const request = new Request(imageLink.href, {
-            signal: signal,
-            headers: {
-                'Referer': includeRefererHeader ? page.Parameters?.Referer ?? imageLink.origin : undefined,
-                'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-                'Sec-Fetch-Mode': 'no-cors',
-                'Sec-Fetch-Dest': 'image',
-            }
-        });
-        const response = await Fetch(request);
+        const headers = {
+            'Referer': includeRefererHeader ? page.Parameters?.Referer ?? imageLink.origin : undefined,
+            'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+            'Sec-Fetch-Mode': 'no-cors',
+            'Sec-Fetch-Dest': 'image',
+        };
+        let response = await Fetch(new Request(imageLink, { signal, headers }));
+        if(deProxifyLink && response.headers.has('Cf-Polished')) {
+            headers['Origin'] = imageLink.protocol + '//' + Date.now().toString(36) + Math.random().toString(36);
+            response = await Fetch(new Request(imageLink, { signal, headers }));
+        }
         return detectMimeType ? GetTypedData(await response.arrayBuffer()) : response.blob();
     }, priority, signal);
 }
@@ -517,7 +520,7 @@ export async function FetchImageElement(this: MangaScraper, page: Page, priority
  * A class decorator that adds the ability to get the image data for a given page by pretending to load the source via an `<IMG>` tag.
  * @param includeRefererHeader - Corresponds to the `referrerpolicy` attribute of the `<img>` tag, to determine if the Referer header shall be included
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
- * @param deProxifyLink - Remove common image proxies (default false)
+ * @param deProxifyLink - Remove common image proxies and try to bypass {@link https://developers.cloudflare.com/images/polish/ | CF Image Polish} (default false)
  */
 export function ImageElement(includeRefererHeader = true, detectMimeType = false, deProxifyLink = false) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
@@ -539,7 +542,7 @@ export function ImageElement(includeRefererHeader = true, detectMimeType = false
  * @param signal - An abort signal that can be used to cancel the request for the image data
  * @param queryImage - a query to get the image in the html page Page
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
- * @param deProxifyLink - Remove common image proxies (default false)
+ * @param deProxifyLink - Remove common image proxies and try to bypass {@link https://developers.cloudflare.com/images/polish/ | CF Image Polish} (default false)
  */
 export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, queryImage: string, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     const image = await this.imageTaskPool.Add(async () => {
@@ -562,7 +565,7 @@ export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, pri
  * Use this when Chapter are composed of multiple html Page and each page hold an image
  * @param queryImage - a query to get the image in the html page Page
  * @param detectMimeType - Force a fingerprint check of the image data to detect its mime-type (instead of relying on the Content-Type header)
- * @param deProxifyLink - Remove common image proxies (default false)
+ * @param deProxifyLink - Remove common image proxies and try to bypass {@link https://developers.cloudflare.com/images/polish/ | CF Image Polish} (default false)
  */
 export function ImageAjaxFromHTML(queryImage: string, detectMimeType = false, deProxifyLink = false) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
@@ -574,6 +577,10 @@ export function ImageAjaxFromHTML(queryImage: string, detectMimeType = false, de
         };
     };
 }
+
+/********************************
+ ******** Helper Methods ********
+ ********************************/
 
 /**
  * A helper function to detect and get the mime typed image data of a buffer.

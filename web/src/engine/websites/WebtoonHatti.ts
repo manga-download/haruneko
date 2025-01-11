@@ -17,7 +17,7 @@ const allowedImageOrigins = [
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('webtoonhatti', 'Webtoon Hatti', 'https://webtoonhatti.dev', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('webtoonhatti', 'Webtoon Hatti', 'https://webtoonhatti.me', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

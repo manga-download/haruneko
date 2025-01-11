@@ -6,8 +6,8 @@ const config = {
         title: 'Mikoroku'
     },
     container: {
-        url: 'https://www.mikoroku.web.id/2024/07/harem-ou-no-isekai-press-manyuuki.html',
-        id: '/2024/07/harem-ou-no-isekai-press-manyuuki.html',
+        url: 'https://www.mikoroku.com/2024/12/harem-ou-no-isekai-press-manyuuki.html',
+        id: '/2024/12/harem-ou-no-isekai-press-manyuuki.html',
         title: 'Harem Ou no Isekai Press Manyuuki'
     },
     child: {

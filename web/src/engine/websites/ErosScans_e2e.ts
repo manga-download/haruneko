@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'erosscans',
         title: 'Eros Scans'
     },
     container: {
-        url: 'https://eroscomic.xyz/manga/absolute-sword-sense/',
+        url: 'https://eros-v-scans.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 994_822,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
