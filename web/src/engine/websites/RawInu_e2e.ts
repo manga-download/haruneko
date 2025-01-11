@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'rawinu',
         title: 'RawInu'
@@ -11,7 +11,7 @@ const config: Config = {
         title: 'TATARI (WATARI)'
     },
     child: {
-        id: '/chapter-44-cthide-tatari-watari.html',
+        id: '/manga/tatari-watari/chapter-44.html',
         title: 'Chapter 44'
     },
     entry: {
@@ -19,6 +19,4 @@ const config: Config = {
         size: 548_603,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
