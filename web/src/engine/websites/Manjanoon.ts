@@ -4,9 +4,9 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 const pageScripts = `
-    new Promise ( resolve => {
-        const realUrl = document.documentElement.innerHTML.match(/realUrl\\s*=\\s*\`([^$]+)/)[1];
-        resolve( [...document.querySelectorAll('.myImage')].map(image => new URL(image.getAttribute('uid'), realUrl).href));
+    [ ...document.querySelectorAll('.myImage') ].map(img => {
+        Object.defineProperty(Image.prototype, 'src', { set: link => img = link });
+        return loadImagesInSequence([ img ], 0), img;
     });
 `;
 
