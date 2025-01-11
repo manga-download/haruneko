@@ -5,29 +5,22 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(element: HTMLAnchorElement) {
-    const id = element.pathname;
-    const title = element.querySelector('img').alt.trim();
-    return { id, title };
+    return {
+        id: element.pathname,
+        title: element.querySelector('img').alt.trim()
+    };
 }
 
 type APIChapter = {
     data: {
         slug: string
-        id : number
-        }[]
+        id: number
+    }[]
 }
 
-const scriptPages = `
-    new Promise((resolve, reject) => {
-        try {
-            resolve(window.pUrl.map(page => page.imgURL));
-        } catch (error) {
-            reject(error);
-        }
-    });
-`;
+const scriptPages = `window.pUrl.map(page => page.imgURL);`;
 
-@Common.MangaCSS(/^{origin}\//, 'div.site-content div.post-title h3')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.site-content div.post-title h3')
 @Common.MangasMultiPageCSS('/top?page={page}', 'div.page-item-detail div.photo a.thumbnail', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageJS(scriptPages, 500)
 @Common.ImageAjax()
@@ -42,10 +35,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL(manga.Identifier, this.URI);
-        const request = new Request(url.href);
-        request.headers.set('X-Requested-With', 'XMLHttpRequest');
-        const data = await FetchJSON<APIChapter>(request);
-        return data.data.map(page => new Chapter(this, manga, '/manga/leer/' + page.id, "Chapter " + page.slug));
+        const request = new Request(new URL(manga.Identifier, this.URI), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        const { data } = await FetchJSON<APIChapter>(request);
+        return data.map(page => new Chapter(this, manga, `/manga/leer/${page.id}`, `Chapter ${page.slug}`));
     }
 }
