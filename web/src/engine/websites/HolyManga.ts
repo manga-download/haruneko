@@ -5,7 +5,6 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 import { FlatManga, MangaLabelExtractor, queryMangaTitle } from './templates/FlatManga';
 
 @Common.MangaCSS(/^https:\/\/w\d+\.holymanga\.net\/[^/]+\.html$/, queryMangaTitle, MangaLabelExtractor)
-
 export default class extends FlatManga {
 
     public constructor() {

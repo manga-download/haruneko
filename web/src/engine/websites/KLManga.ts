@@ -6,7 +6,6 @@ import { FlatManga, MangaExtractor, pageScript, pathSinglePageManga, queryMangas
 @Common.MangasSinglePagesCSS([pathSinglePageManga], queryMangas, MangaExtractor)
 @Common.ChaptersSinglePageJS(`[...document.querySelectorAll('ul a.chapter')].map(chapter => { return {id: chapter.pathname, title : chapter.title.trim()};})`, 1500)
 @Common.PagesSinglePageJS(pageScript, 1500)
-
 export default class extends FlatManga {
 
     public constructor() {
