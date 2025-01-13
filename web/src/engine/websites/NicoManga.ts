@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './NicoManga.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as FlatManga from './decorators/FlatManga';
 import { FetchJSON } from '../platform/FetchProvider';
+import { CleanTitle, FlatManga, chapterScript, pageScript } from './templates/FlatManga';
 
 type APIMangas = {
     manga_list: {
@@ -15,11 +15,9 @@ type APIMangas = {
     }
 }
 
-@Common.MangaCSS(/^{origin}\/manga[^/]+\.html$/, FlatManga.queryMangaTitle)
-@FlatManga.ChaptersSinglePageJS(`'/app/manga/controllers/cont.Listchapterapi.php?slug='+ sLugs`, 'ul > a')
-@FlatManga.PagesSinglePageAJAX('/app/manga/controllers/cont.imgsList.php?cid=', 'img.chapter-img:not([alt*="nicoscan"])')
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+@Common.ChaptersSinglePageJS(chapterScript, 500)
+@Common.PagesSinglePageJS(pageScript, 1500)
+export default class extends FlatManga {
 
     public constructor() {
         super('nicomanga', 'NicoManga', 'https://nicomanga.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
@@ -45,7 +43,7 @@ export default class extends DecoratableMangaScraper {
             }
         });
         const { manga_list, lang: { manga_slug } } = await FetchJSON<APIMangas>(request);
-        return manga_list.map(manga => new Manga(this, provider, `/${manga_slug}-${manga.slug}.html`, FlatManga.CleanTitle(manga.name.trim())));
+        return manga_list.map(manga => new Manga(this, provider, `/${manga_slug}-${manga.slug}.html`, CleanTitle(manga.name.trim())));
     }
 
 }

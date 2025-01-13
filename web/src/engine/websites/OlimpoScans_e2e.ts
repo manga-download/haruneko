@@ -6,17 +6,17 @@ new TestFixture({
         title: 'OlimpoScans'
     },
     container: {
-        url: 'https://leerolimpo.com/comic-bjorn-el-barbaro.html',
-        id: '/comic-bjorn-el-barbaro.html',
-        title: 'BJORN EL BARBARO'
+        url: 'https://leerolimpo.com/comic-la-venganza-del-sabueso-de-sangre-de-hierro.html',
+        id: '/comic-la-venganza-del-sabueso-de-sangre-de-hierro.html',
+        title: 'LA VENGANZA DEL SABUESO DE SANGRE DE HIERRO'
     },
     child: {
-        id: '/leer-bjorn-el-barbaro-capitulo-50.html',
-        title: 'Capítulo 50',
+        id: '/leer-la-venganza-del-sabueso-de-sangre-de-hierro-capitulo-94.html',
+        title: 'Capítulo 94',
     },
     entry: {
         index: 1,
-        size: 273_422,
+        size: 225_908,
         type: 'image/webp'
     }
 }).AssertWebsite();

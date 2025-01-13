@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://nicomanga.com/manga-kage-no-jitsuryokusha-ni-naritakute-raw.html',
         id: '/manga-kage-no-jitsuryokusha-ni-naritakute-raw.html',
-        title: 'TO BE A POWER IN THE SHADOWS! (MANGA)'
+        title: 'TO BE A POWER IN THE SHADOWS!'
     },
     child: {
         id: '/read-kage-no-jitsuryokusha-ni-naritakute-raw-chapter-60.2.html',

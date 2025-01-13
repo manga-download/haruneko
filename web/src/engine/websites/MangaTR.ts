@@ -1,18 +1,17 @@
 import { Tags } from '../Tags';
 import icon from './MangaTR.webp';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
+import { Chapter, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
-import * as FlatManga from './decorators/FlatManga';
+import { CleanTitle, FlatManga, PageLinkExtractor, queryMangas, queryPages } from './templates/FlatManga';
 
 function MangaLabelExtractor(element: HTMLTitleElement) {
     return element.text.split(' - ')[0].trim();
 }
 
 @Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, 'body title', MangaLabelExtractor)
-@FlatManga.PagesSinglePageCSS('img.chapter-img')
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+@Common.PagesSinglePageCSS(queryPages, PageLinkExtractor)
+export default class extends FlatManga {
     public constructor() {
         super('mangatr', `Manga-TR`, 'https://manga-tr.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Source.Aggregator);
     }
@@ -26,7 +25,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return (await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/manga-list.html'], FlatManga.queryMangas)).filter(manga => manga.Title);
+        return (await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/manga-list.html'], queryMangas)).filter(manga => manga.Title);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -51,7 +50,7 @@ export default class extends DecoratableMangaScraper {
 
         const data = await FetchCSS<HTMLAnchorElement>(request, 'table.table tr td.table-bordered:first-of-type > a');
         return data.map(chapter => {
-            const title = FlatManga.CleanTitle(chapter.text.replace(manga.Title, '')) || chapter.text.trim();
+            const title = CleanTitle(chapter.text.replace(manga.Title, '')) || chapter.text.trim();
             return new Chapter(this, manga, chapter.pathname, title);
         });
     }

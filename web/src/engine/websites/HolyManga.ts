@@ -1,17 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './HolyManga.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as FlatManga from './decorators/FlatManga';
 import { FetchWindowScript } from '../platform/FetchProvider';
+import { FlatManga, MangaLabelExtractor, queryMangaTitle } from './templates/FlatManga';
 
-@Common.MangaCSS(/^https:\/\/w\d+\.holymanga\.net\/[^/]+\.html$/, FlatManga.queryMangaTitle, FlatManga.MangaLabelExtractor)
-@Common.MangasMultiPageCSS(FlatManga.pathMultiPageManga, FlatManga.queryMangas, 1, 1, 0, FlatManga.MangaExtractor)
-@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageCSS(FlatManga.queryPages, FlatManga.PageLinkExtractor)
-@Common.ImageAjax()
+@Common.MangaCSS(/^https:\/\/w\d+\.holymanga\.net\/[^/]+\.html$/, queryMangaTitle, MangaLabelExtractor)
 
-export default class extends DecoratableMangaScraper {
+export default class extends FlatManga {
 
     public constructor() {
         super('holymanga', 'Holy Manga', 'https://w34.holymanga.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Accessibility.DomainRotation);
