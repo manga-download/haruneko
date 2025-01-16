@@ -40,7 +40,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/views/ajax`;
 
     public constructor() {
-        super('multporn', 'MultPorn', 'https://multporn.net', Tags.Media.Comic, Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('multporn', 'MultPorn', 'https://multporn.com', Tags.Media.Comic, Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

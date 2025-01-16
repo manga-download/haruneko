@@ -1,14 +1,14 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'vymanga',
         title: 'VyManga'
     },
     container: {
-        url: 'https://vyvymanga.net/manga/soul-land-iv',
-        id: '/manga/soul-land-iv',
-        title: 'Soul Land IV'
+        url: 'https://vymanga.com/manga/soul-land-iv--the-ultimate-combat',
+        id: '/manga/soul-land-iv--the-ultimate-combat',
+        title: 'Soul Land IV - The Ultimate Combat'
     },
     /* Chapter id is random, cant make a proper test
     child: {
@@ -20,6 +20,4 @@ const config = {
         size: -1,
         type: 'image/jpeg'
     }*/
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

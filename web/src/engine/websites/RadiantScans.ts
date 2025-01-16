@@ -21,11 +21,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         try {
-            return await MangaStream.FetchPagesSinglePageJS.call(this, chapter, [], 'ts_reader.params.sources.shift().images', 500);
+            return await Common.FetchPagesSinglePageJS.call(this, chapter, 'ts_reader.params.sources.shift().images;', 500);
         } catch {
             const nodes = await FetchCSS<HTMLDivElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div#readerarea div[style*="background-image"]');
             return nodes.map(page => new Page(this, chapter, new URL(page.style.backgroundImage.match(/["'](http(s)?:\/\/[^'"]+)/)[1])));
         }
     }
-
 }
