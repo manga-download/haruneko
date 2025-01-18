@@ -29,7 +29,7 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('herotruyen', 'Hero Truyen', 'https://truyenti.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('herotruyen', 'Hero Truyen', 'https://samtruyen.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

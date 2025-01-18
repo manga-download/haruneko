@@ -7,17 +7,17 @@ new TestFixture({
         title: 'Batoto (by AnyACG)'
     },
     container: {
-        url: 'https://bato.to/series/105860/your-talent-is-mine',
-        id: '/series/105860/your-talent-is-mine',
-        title: 'Your Talent is Mine'
+        url: 'https://xbato.org/series/173640/villainesses-have-more-fun',
+        id: '/series/173640/villainesses-have-more-fun',
+        title: 'Villainesses Have More Fun'
     },
     child: {
-        id: '/chapter/1959345',
-        title: 'Chapter 0'
+        id: '/chapter/3116336',
+        title: 'Chapter 101'
     },
     entry: {
-        index: 0,
-        size: 126_808,
+        index: 2,
+        size: 882_364,
         type: 'image/webp'
     }
 }).AssertWebsite();
@@ -29,7 +29,7 @@ new TestFixture({
         title: 'Batoto (by AnyACG)'
     },
     container: {
-        url: 'https://bato.to/series/102127/wind-breaker',
+        url: 'https://xbato.org/series/102127/wind-breaker',
         id: '/series/102127/wind-breaker',
         title: 'Wind Breaker [hu]'
     },

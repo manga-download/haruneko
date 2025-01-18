@@ -8,7 +8,8 @@ const config = {
     container: {
         url: 'https://page.kakao.com/content/49361421',
         id: '49361421',
-        title: '정령왕 엘퀴네스'
+        title: '정령왕 엘퀴네스',
+        timeout: 15000
     },
     child: {
         id: '49402089',

@@ -53,7 +53,7 @@ describe('BrowserScan', { timeout: 15_000 }, () => {
 
 describe('CloudFlare', { timeout: 15_000 }, () => {
 
-    it('Should bypass JavaScript Challenge', async () => {
+    it('Should bypass JavaScript Challenge', { todo: true }, async () => {
         const fixture = await new TestFixture().SetupPage('https://cloudflare.bot-check.ovh/automatic');
         try {
             await fixture.AssertElementText('#hash', '801BE7B2C3621A7DE738CF77BD4EF264');

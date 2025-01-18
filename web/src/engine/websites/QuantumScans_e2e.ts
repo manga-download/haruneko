@@ -1,4 +1,6 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/*import { TestFixture } from '../../../test/WebsitesFixture';
+
+// CloudFlare
 
 const config = {
     plugin: {
@@ -6,19 +8,20 @@ const config = {
         title: 'Quantum Scans'
     },
     container: {
-        url: 'https://qscomics.org/series/master-of-the-martial-arts-library/',
-        id: '/series/master-of-the-martial-arts-library/',
-        title: 'Master of the Martial Arts Library'
+        url: 'https://quantumscans.org/series/628e2319b4b/',
+        id: '/series/628e2319b4b/',
+        title: 'Celestial Phase'
     },
     child: {
-        id: '/master-of-the-martial-arts-library-chapter-1/',
-        title: 'Chapter 1'
+        id: '/chapter/628e2319b4b-628e242ce6f/',
+        title: 'Chapter 47'
     },
     entry: {
         index: 0,
-        size: 2_670_186,
+        size: 775_821,
         type: 'image/jpeg'
     }
 };
 
 new TestFixture(config).AssertWebsite();
+*/
