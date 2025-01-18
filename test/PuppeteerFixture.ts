@@ -5,7 +5,11 @@ import type { Evasion } from './AutomationEvasions';
 export class PuppeteerFixture {
 
     static #browser = puppeteer.connect({ browserWSEndpoint: process.env.browserWS });
-    static #page = this.#browser.then(browser => browser.pages()).then(pages => pages.find(page => page.url() === AppURL));
+    static #page = this.#browser.then(browser => browser.pages()).then(async pages => {
+        const page = pages.find(page => page.url() === AppURL);
+        await page.setCacheEnabled(false);
+        return page;
+    });
 
     private GetBrowser() {
         return PuppeteerFixture.#browser;
@@ -27,6 +31,7 @@ export class PuppeteerFixture {
     protected async OpenPage(url: string, ...evasions: Evasion[]): Promise<puppeteer.Page> {
         const page = await (await this.GetBrowser()).newPage();
         await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
+        await page.setCacheEnabled(false);
         await page.goto(url);
         return page;
     }

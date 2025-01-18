@@ -5,21 +5,20 @@ const config: Config = {
         id: 'bacakomik',
         title: 'BacaKomik'
     },
-    /* Region locked : indonesia
     container: {
-        url: 'https://bacakomik.net/komik/tokyo-revengers/',
-        id: '/komik/tokyo-revengers/',
+        url: 'https://bacakomik.one/komik/tokyo卍revengers/',
+        id: encodeURI('/komik/tokyo卍revengers/'),
         title: 'Tokyo卍Revengers'
     },
     child: {
-        id: encodeURI('/chapter/tokyo卍revengers-chapter-1-bahasa-indonesia').toLocaleLowerCase(),
+        id: encodeURI('/tokyo卍revengers-chapter-1/').toLowerCase(),
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
         size: 243_154,
         type: 'image/jpeg'
-    }*/
+    }
 };
 
 new TestFixture(config).AssertWebsite();

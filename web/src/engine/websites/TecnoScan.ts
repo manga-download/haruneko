@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^https:\/\/(tenco-toons|terco-olyes)\.xyz\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
@@ -13,7 +13,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tecnoscan', 'Tecno Scan', 'https://eroxscans.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+        super('tecnoscan', 'Tecno Scan', 'https://tenco-toons.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
