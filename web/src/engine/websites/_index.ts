@@ -510,7 +510,6 @@ export { default as PCNet } from './PCNet';
 export { default as PeanuToon } from './PeanuToon';
 export { default as PelaTeam } from './PelaTeam';
 export { default as Penlab } from './Penlab';
-export { default as PerfScan } from './PerfScan';
 export { default as PhenixScans } from './PhenixScans';
 export { default as PhiliaScans } from './PhiliaScans';
 export { default as PhoenixScansIT } from './PhoenixScansIT';
