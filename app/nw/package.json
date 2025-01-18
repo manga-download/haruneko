@@ -6,8 +6,8 @@
     "main": "app.js",
     "url": "https://haruneko.pages.dev",
     "engines": {
-        "node": ">=20.11.0",
-        "npm": ">=10.2.4"
+        "node": ">=22.13.0",
+        "npm": ">=10.9.2"
     },
     "dependencies": {
         "commander": "^13.0.0",
