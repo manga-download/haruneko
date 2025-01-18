@@ -2,6 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ComicVn.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 const chapterScript = `
     new Promise ( resolve => {
@@ -17,7 +18,7 @@ const chapterScript = `
     });
 `;
 
-@Common.MangaCSS(/^{origin}\/[^/]+\.html$/, 'div.detailComic div.preface div.detail h1')
+@Common.MangaCSS(/^https:\/\/comicvn\d+\.net\/[^/]+\.html$/, 'div.detailComic div.preface div.detail h1')
 @Common.MangasMultiPageCSS('/danh-muc/truyen-moi?page={page}', 'div.listComic ul li div.detail h3 a')
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Common.PagesSinglePageCSS('div.readComic div#lightgallery2 img')
@@ -25,10 +26,15 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicvn', 'ComicVn', 'https://comicvn7.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('comicvn', 'ComicVn', 'https://comicvn8.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin`, 1500);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
