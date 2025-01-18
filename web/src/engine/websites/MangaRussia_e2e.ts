@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangarussia',
         title: 'MangaRussia'
@@ -19,6 +19,4 @@ const config = {
         size: 819_587, // 752_216 or 819_587
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

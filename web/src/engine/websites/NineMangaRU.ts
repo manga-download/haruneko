@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './NineMangaRU.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
-import * as TAADD from './decorators/TAADD';
+import * as TAADD from './decorators/TAADDBase';
 import * as Common from './decorators/Common';
 import { Fetch } from '../platform/FetchProvider';
 

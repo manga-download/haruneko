@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './TenManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as TAADD from './decorators/TAADD';
+import * as TAADD from './decorators/TAADDBase';
 import * as Common from './decorators/Common';
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {

@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './NineMangaIT.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as TAADD from './decorators/TAADD';
+import * as TAADD from './decorators/TAADDBase';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', TAADD.MangaLabelExtractor)
