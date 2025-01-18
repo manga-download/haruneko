@@ -1,0 +1,36 @@
+package CoroCoro;
+syntax = "proto3";
+
+message Chapter {
+    optional uint32 id = 1;
+    optional string mainName = 2;
+    optional string subName = 3;
+}
+
+message Image {
+    optional string src = 1;
+}
+
+message Title {
+    optional uint32 id = 1;
+    optional string name = 3;
+}
+
+message TitleListView {
+    optional TitleList titles = 1;
+}
+
+message TitleList {
+    repeated Title titles = 2;
+}
+
+message TitleDetailView {
+    optional Title title = 2;
+    repeated Chapter chapters = 8;
+}
+
+message ViewerView {
+    repeated Image pages = 2;
+    optional string aesKey = 19;
+    optional string aesIv = 20;
+}

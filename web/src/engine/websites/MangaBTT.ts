@@ -1,24 +1,18 @@
 import { Tags } from '../Tags';
 import icon from './MangaBTT.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
+import * as MojoPortalComic from './templates/MojoPortalComic';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-function MangaInfoExtractor(element: HTMLImageElement) {
-    return {
-        id: element.closest('a').pathname,
-        title: element.getAttribute('alt').trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article#item-detail h1.title-detail')
-@Common.MangasMultiPageCSS('/?page={page}', 'div.row div.ModuleContent div.item figure a img', 1, 1, 0, MangaInfoExtractor)
-@Common.PagesSinglePageCSS('div.page-chapter img[data-index]')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MojoPortalComic.queryManga)
+@Common.MangasMultiPageCSS(MojoPortalComic.patternMangas, MojoPortalComic.queryMangas)
+@Common.PagesSinglePageCSS('div.page-chapter img[data-index]:not([src$="/top.jpg"]):not([src$=".gif"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangabtt', 'MangaBTT', 'https://manhwabtt.cc', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('mangabtt', 'MangaBTT', 'https://manhwabtt.cc', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -26,19 +20,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL('/Story/ListChapterByStoryID', this.URI), {
-            method: 'POST',
-            body: new URLSearchParams({ StoryID: manga.Identifier.split('-').at(-1) }).toString(),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                Referer: new URL(manga.Identifier, this.URI).href,
-                Origin: this.URI.origin,
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            }
-        });
-
-        const chapters = await FetchCSS<HTMLAnchorElement>(request, 'a[data-id]');
+        const request = new Request(new URL(`/Story/ListChapterByStoryID?StoryID=${manga.Identifier.split('-').at(-1)}`, this.URI));
+        const chapters = await FetchCSS<HTMLAnchorElement>(request, MojoPortalComic.queryChapters);
         return chapters.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.text.trim()));
     }
-
 }

@@ -21,6 +21,7 @@ function ParseCLI(): CLIOptions {
     try {
         const argv = new Command()
             .allowUnknownOption(true)
+            .allowExcessArguments(true)
             .option('--origin [url]', 'custom location from which the web-app shall be loaded')
             .parse(process.argv, { from: 'electron' });
         return argv.opts<CLIOptions>();

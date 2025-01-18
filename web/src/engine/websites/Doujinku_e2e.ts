@@ -1,4 +1,8 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/*
+
+CloudFlare crashes nwjs
+
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 const config = {
     plugin: {
@@ -6,7 +10,7 @@ const config = {
         title: 'Doujinku'
     },
     container: {
-        url: 'https://doujinku.xyz/manga/no-mans-land/',
+        url: 'https://doujinku.org/manga/no-mans-land/',
         id: '/manga/no-mans-land/',
         title: 'No Man’s Land'
     },
@@ -22,3 +26,4 @@ const config = {
 };
 
 new TestFixture(config).AssertWebsite();
+*/
