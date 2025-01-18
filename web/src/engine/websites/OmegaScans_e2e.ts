@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const ComicConfig = {
+new TestFixture({
     plugin: {
         id: 'omegascans',
         title: 'OmegaScans'
@@ -19,6 +19,4 @@ const ComicConfig = {
         size: 1_577_008,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(ComicConfig).AssertWebsite();
+}).AssertWebsite();

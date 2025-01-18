@@ -10,7 +10,7 @@ import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 type APIManga = {
     title: string
     id: number,
-    series_type: 'Comic' | 'Novel',
+    series_type: string,
     series_slug: string,
 }
 
@@ -27,31 +27,35 @@ type APIChapter = {
 }
 
 type APIPages = {
-    chapter_type: 'Comic' | 'Novel',
+    chapter_type: string,
     paywall: boolean,
     data: string[] | string
     chapter: {
-        chapter_type: 'Comic' | 'Novel',
+        chapter_type: string,
         storage: string,
         chapter_data?: {
-            images: string[]
-        }
+            images?: string[],
+            files: {
+                url: string
+            }[]
 
+        }
     }
 }
 
-type APIMediaID = {
+export type APIMediaID = {
     id: string,
     slug: string
 }
 
-type PageType = {
-    type: 'Comic' | 'Novel'
+export type PageType = {
+    type: string;
 }
 
 export class HeanCMS extends DecoratableMangaScraper {
 
     protected apiUrl = this.URI.origin.replace('://', '://api.');
+    protected mediaUrl = this.apiUrl;
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
@@ -105,14 +109,14 @@ export class HeanCMS extends DecoratableMangaScraper {
             throw new Exception(R.Plugin_HeanCMS_ErrorNovelsNotSupported);
         }
         //old API vs new
-        const listImages = data.data && Array.isArray(data.data) ? data.data as string[] : data.chapter.chapter_data.images;
+        const listImages = Array.isArray(data.data) ? data.data as string[] : data.chapter.chapter_data.images ? data.chapter.chapter_data.images : data.chapter.chapter_data.files.map(file => file.url);
         return listImages.map(image => new Page<PageType>(this, chapter, this.ComputePageUrl(image, data.chapter.storage), { type: data.chapter.chapter_type }));
     }
 
-    private ComputePageUrl(image: string, storage: string): URL {
+    protected ComputePageUrl(image: string, storage: string): URL {
         switch (storage) {
             case "s3": return new URL(image);
-            case "local": return new URL(`${this.apiUrl}/${image}`);
+            case "local": return new URL(`${this.mediaUrl}/${image}`);
         }
     }
 
