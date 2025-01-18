@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'lezhin-ja',
         title: 'Lezhin (Japanese)'
@@ -20,6 +20,4 @@ const config = {
         size: 45_290,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
