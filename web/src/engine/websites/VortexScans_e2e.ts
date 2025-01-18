@@ -1,13 +1,13 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'vortexscans',
         title: 'Vortex Scans'
     },
     container: {
         url: 'https://vortexscans.org/series/regenerate-top-players-0cn52tcd',
-        id: JSON.stringify({ slug: 'regenerate-top-players-0cn52tcd', id: '8'}),
+        id: JSON.stringify({ slug: 'regenerate-top-players-0cn52tcd', id: 8}),
         title: 'Regenerate Top Players'
     },
     child: {
@@ -15,10 +15,8 @@ const config = {
         title: '5 : Crushing Desperation'
     },
     entry: {
-        index: 0,
-        size: 1_167_128,
+        index: 9,
+        size: 629_248,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

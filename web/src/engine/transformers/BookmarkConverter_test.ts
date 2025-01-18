@@ -19,7 +19,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'cocomanhua', targetID: 'colamanga' },
     { sourceID: 'comicbushi', targetID: 'comicgrowl' },
     { sourceID: 'comicwalker', targetID: 'kadocomi' },
-    { sourceID: 'dalsei', targetID: 'viyafansub' },
     { sourceID: 'evascans', targetID: 'manwe' },
     { sourceID: 'firescans', targetID: 'firecomics' },
     { sourceID: 'firstkiss', targetID: 'likemanga' },
