@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'allmangato',
         title: 'AllManga.to'
     },
     container: {
-        url: 'https://allmanga.to/manga/kFvrdRcbubPjrhr63/yuan-zun',
+        url: 'https://allmanga.to/manga/kFvrdRcbubPjrhr63',
         id: 'kFvrdRcbubPjrhr63',
         title: 'Yuan Zun'
     },
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 714_974,
+        size: 714_974, // 715_757
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
