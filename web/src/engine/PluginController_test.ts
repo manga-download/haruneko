@@ -72,7 +72,7 @@ describe('PluginController', () => {
             expect(missing).toEqual([]);
         });
 
-        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', { concurrent: true }, (plugin) => {
+        describe.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title', plugin => {
 
             it('Should have mandatory tags', async () => {
                 const expected = {
