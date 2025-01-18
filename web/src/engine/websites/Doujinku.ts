@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('doujinku', 'Doujinku', 'https://doujinku.xyz', Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('doujinku', 'Doujinku', 'https://doujinku.org', Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
