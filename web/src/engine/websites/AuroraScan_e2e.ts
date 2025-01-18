@@ -1,6 +1,7 @@
+/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'aurorascan',
         title: 'Aurora Scan'
@@ -18,7 +19,6 @@ const config = {
         index: 0,
         size: 807_089,
         type: 'image/avif'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();
+*/

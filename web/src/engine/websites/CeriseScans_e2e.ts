@@ -1,10 +1,11 @@
+/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'cerisescans',
         title: 'Cerise Scans'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://cerise.leitorweb.com/apenas-me-deixe-em-paz/',
         id: '/apenas-me-deixe-em-paz/',
@@ -18,7 +19,6 @@ const config = {
         index: 0,
         size: 171_740,
         type: 'image/avif'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();
+*/

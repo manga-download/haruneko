@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'dangoscan',
         title: 'Dango Scan',
@@ -20,6 +20,4 @@ const config = {
         size: 89_928,
         type: 'image/avif'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

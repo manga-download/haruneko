@@ -1,11 +1,12 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'sinensisscan',
         title: 'Sinensis Scans',
         timeout: 35000, //warning : WEBSITE IS SLOW IN BROWSER
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://sinensis.leitorweb.com/a-vida-de-um-passarinho/',
         id: '/a-vida-de-um-passarinho/',
@@ -19,7 +20,6 @@ const config = {
         index: 0,
         size: 148_236,
         type: 'image/avif'
-    } */
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();
+*/
