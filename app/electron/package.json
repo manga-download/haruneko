@@ -4,7 +4,7 @@
     "description": "Manga, Anime & Novel Downloader (Electron based desktop client)",
     "type": "module",
     "main": "main.js",
-    "url": "https://haruneko.pages.dev",
+    "url": "https://app.hakuneko.download",
     "engines": {
         "node": ">=22.13.0",
         "npm": ">=10.9.2"
