@@ -2,6 +2,7 @@
 import { DecoratableMangaScraper, type Chapter, type MangaScraper } from "../../providers/MangaPlugin";
 import { Page } from "../../providers/MangaPlugin";
 import * as Common from '../decorators/Common';
+
 export function MangaLabelExtractor(element: HTMLElement) {
     return CleanTitle(element.getAttribute('text') ? element.getAttribute('text') : element.textContent);
 }
