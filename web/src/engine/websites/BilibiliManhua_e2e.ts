@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'bilibilimanhua',
         title: '哔哩哔哩 漫画 (Bilibili Manhua)'
@@ -19,6 +19,4 @@ const config = {
         size: 151_321,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
