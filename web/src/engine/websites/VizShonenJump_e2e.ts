@@ -1,6 +1,7 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configShonenJump = {
+//ShonenJump
+new TestFixture({
     plugin: {
         id: 'vizshonenjump',
         title: 'Viz - Shonen Jump'
@@ -19,11 +20,10 @@ const configShonenJump = {
         size: 942_107,
         type: 'image/png'
     }
-};
+}).AssertWebsite();
 
-new TestFixture(configShonenJump).AssertWebsite();
-
-const configViz = {
+//VIZ
+new TestFixture({
     plugin: {
         id: 'vizshonenjump',
         title: 'Viz - Shonen Jump'
@@ -42,6 +42,4 @@ const configViz = {
         size: 730_205,
         type: 'image/png'
     }
-};
-
-new TestFixture(configViz).AssertWebsite();
+}).AssertWebsite();
