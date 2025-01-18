@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'youngchampion',
         title: 'Young Champion'
@@ -20,6 +20,4 @@ const config = {
         type: 'image/png',
         timeout: 10000
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

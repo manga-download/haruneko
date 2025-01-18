@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'comicmedu',
         title: 'COMIC MeDu (こみっくめづ)'
@@ -19,6 +19,4 @@ const config = {
         size: 760_096,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

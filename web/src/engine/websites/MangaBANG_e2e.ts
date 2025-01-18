@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangabang',
         title: 'MangaBANG Comics (マンガBANG コミックス)'
@@ -19,6 +19,4 @@ const config = {
         size: 940_071,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
