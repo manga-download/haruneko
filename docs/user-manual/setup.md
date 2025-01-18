@@ -20,8 +20,19 @@ In case the binary file is missing, ensure it was not removed by your anti-virus
 
 1. Download the latest DMG image matching your architecture
 2. Mount and open the DMG image with Finder
-3. Copy the _HaruNeko.app_ application to your local Applications folder
-4. Open Launchpad and start _HaruNeko_
+3. Copy the _HakuNeko.app_ application to your local Applications folder
+4. Open Launchpad and start _HakuNeko_
+
+::: warning IMPORTANT
+When MacOS complains that the application is damaged, launch a terminal alongside the _HakuNeko.app_ folder and remove the extended attributes
+```zsh
+xattr -r -c ./HakuNeko.app
+```
+When MacOS complains that the application can't be opened, launch a terminal alongside the _HakuNeko.app_ folder and add the executable permission
+```zsh
+chmod -R +X ./HakuNeko.app
+```
+:::
 
 ::: warning IMPORTANT
 Ignore MacOS hints about unknown developers and continue, eventually make sure to unblock HakuNeko in _Settings » Privacy & Security_

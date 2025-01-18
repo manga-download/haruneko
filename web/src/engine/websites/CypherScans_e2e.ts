@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'cypherscans',
         title: 'CypherScans'
     },
     container: {
-        url: 'https://cypho-scans.xyz/manga/solo-max-level-newbie/',
+        url: 'https://cypheroscans.xyz/manga/solo-max-level-newbie/',
         id: '/manga/solo-max-level-newbie/',
         title: 'Solo Max-Level Newbie'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 823_040,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
