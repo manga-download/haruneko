@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'digimoncard',
         title: 'DigimonCard'
@@ -20,6 +20,4 @@ const config: Config = {
         size: 550_521,
         type: 'image/png'
     }*/
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

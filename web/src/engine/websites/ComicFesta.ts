@@ -41,7 +41,7 @@ export default class extends DecoratableMangaScraper {
         const { packages } = this.FindJSONObject<JSONChapters>(scripts, /isDisplayVolumeNumber/, 'isDisplayVolumeNumber');
         return packages
             .map(chapter => {
-                const suffix = chapter.fairInfo.free ? '/free_download' : chapter.fairInfo.trial ? '/trial_download' : '';
+                const suffix = chapter.fairInfo.trial ? '/trial_download' : '/free_download';
                 return new Chapter(this, manga, `/volumes/${chapter.id}${suffix}`, chapter.number.toString());
             });
     }
