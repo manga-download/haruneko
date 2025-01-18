@@ -762,7 +762,6 @@ export { default as Futabanet } from './legacy/Futabanet';
 export { default as GammaPlus } from './legacy/GammaPlus';
 export { default as Guoman8 } from './legacy/Guoman8';
 export { default as KanMan } from './legacy/KanMan';
-export { default as KissAway } from './legacy/KissAway';
 export { default as kuman5 } from './legacy/kuman5';
 export { default as LectorManga } from './legacy/LectorManga';
 export { default as LezhinEN } from './legacy/LezhinEN';
