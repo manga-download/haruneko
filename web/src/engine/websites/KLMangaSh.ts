@@ -19,9 +19,10 @@ function CleanTitle(title: string): string {
     return title.replace(/\(Raw.*Free\)/i, '').trim();
 }
 
-function MangaLabelExtractor(element: HTMLElement) : string{
+function MangaLabelExtractor(element: HTMLHeadingElement): string {
     return CleanTitle(element.textContent);
 }
+
 function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -58,16 +59,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pages: Page[] = [];
         const doc = await FetchHTML(new Request(new URL(chapter.Identifier, this.URI)));
-        const p = doc.documentElement.innerHTML.match(/\sp:\s*(\d+),/).at(1);
-        const chapter_id = doc.documentElement.innerHTML.match(/chapter_id\s*:\s*['"]([^'"]+)/).at(1);
-
         const params = new URLSearchParams({
             nonce_a: this.zingParams.nonce,
             action: 'z_do_ajax',
             _action: 'decode_images_100',
-            p,
+            p: doc.documentElement.innerHTML.match(/\sp:\s*(\d+),/).at(1),
             img_index: '0',
-            chapter_id,
+            chapter_id: doc.documentElement.innerHTML.match(/chapter_id\s*:\s*['"]([^'"]+)/).at(1),
             content: ''
         });
 
