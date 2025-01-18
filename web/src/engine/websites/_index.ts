@@ -237,7 +237,6 @@ export { default as KingOfShojo } from './KingOfShojo';
 export { default as Kiryuu } from './Kiryuu';
 export { default as KissmangaIN } from './KissmangaIN';
 export { default as KlikManga } from './KlikManga';
-export { default as KLMangash } from './KLMangash';
 export { default as KnightNoFansub } from './KnightNoFansub';
 export { default as KolNovel } from './KolNovel';
 export { default as KomBatch } from './KomBatch';
