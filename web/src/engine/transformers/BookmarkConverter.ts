@@ -8,9 +8,8 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
  */
 export const legacyWebsiteIdentifierMap = new Map([
     [ 'allanimesite', 'allmangato' ],
-    [ 'apolltoons', 'mundomanhwa' ],
-    [ 'aresnov', 'scarmanga' ],
     [ 'azoramanga', 'azoraworld' ],
+    [ 'apolltoons', 'mundomanhwa' ],
     [ 'bacamangaorg', 'bacamanga' ],
     [ 'bananascan', 'harmonyscan' ],
     [ 'blogtruyen', 'blogtruyenmoi' ],

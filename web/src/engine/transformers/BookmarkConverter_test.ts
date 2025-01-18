@@ -11,7 +11,6 @@ import { GetLocale } from '../../i18n/Localization';
 const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'allanimesite', targetID: 'allmangato' },
     { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
-    { sourceID: 'aresnov', targetID: 'scarmanga' },
     { sourceID: 'azoramanga', targetID: 'azoraworld' },
     { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
     { sourceID: 'bananascan', targetID: 'harmonyscan' },
