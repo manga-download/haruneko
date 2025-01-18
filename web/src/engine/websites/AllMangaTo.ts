@@ -104,7 +104,7 @@ export default class extends DecoratableMangaScraper {
         const jsonExtensions = {
             persistedQuery: {
                 version: 1,
-                sha256Hash: 'a42e1106694628f5e4eaecd8d7ce0c73895a22a3c905c29836e2c220cf26e55f'
+                sha256Hash: '529b0770601c7e04c98566c7b7bb3f75178930ae18b3084592d8af2b591a009f'
             }
         };
         const { manga: { availableChaptersDetail } } = await this.FetchGraphQL<APIChapters>(jsonVariables, jsonExtensions);
