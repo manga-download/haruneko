@@ -1,40 +1,33 @@
 import { Tags } from '../Tags';
 import icon from './MangAs.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as MangaReader from './templates/MangaReaderCMS';
 import * as Common from './decorators/Common';
-import * as MangaReader from './decorators/MangaReaderCMS';
 
 const chapterScript = `
-    new Promise((resolve, reject) => {
-        const path = window.location.pathname +'/';
-        resolve(jschaptertemp.map(chapter =>  { 
+    new Promise(resolve => {
+        const path = window.location.pathname + (window.location.pathname.endsWith('/') ? '' : '/');
+        resolve(jschaptertemp.map(chapter => {
+            const subtitle = chapter.name.trim();
             return {
-                id : path + chapter.slug,
-                title : chapter.number + ' : ' + chapter.name.trim() 
+                id: path + chapter.slug,
+                title: '#' + chapter.number + (subtitle ? ' ⠇' + subtitle : ''),
             }}));
     });
 `;
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('img').getAttribute('title').trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryMangaTitle)
-@Common.MangasMultiPageCSS('/filterList?page={page}&sortBy=name', 'div.media a.thumbnail', 1, 1, 500, MangaExtractor )
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryManga)
+@Common.MangasMultiPageCSS('/filterList?sortBy=name&page={page}', 'h5.media-heading a.chart-title', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageJS(chapterScript, 500)
-@Common.PagesSinglePageCSS(MangaReader.queryPages, MangaReader.ChapterPageExtractor)
+@Common.PagesSinglePageCSS(MangaReader.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangas', `MangAs`, 'https://m440.in', Tags.Language.Spanish, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangas', 'MangAs', 'https://m440.in', Tags.Language.Spanish, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

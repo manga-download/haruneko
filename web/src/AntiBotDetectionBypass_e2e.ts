@@ -44,7 +44,7 @@ describe('BrowserScan', { timeout: 15_000 }, () => {
     it('Should pass Bot Detection Test', async () => {
         const fixture = await new TestFixture().SetupPage('https://www.browserscan.net/bot-detection', EvadeChromeDevToolProtocolDetection);
         try {
-            await fixture.AssertElementText(`div._5h5tql svg use[*|href="#status_success"]`, undefined);
+            await fixture.AssertElementText(`main div svg use[*|href="#status_success"]`, undefined);
         } finally {
             fixture.ClosePage();
         }
