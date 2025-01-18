@@ -14,9 +14,15 @@ export default class extends Comico {
         { key: 'zh-TW', label: T.Tags_Language_Chinese },
     ];
 
-    public constructor() {
-        super('pocketcomics', `Pocket-Comics (コミコ)`, 'https://www.pocketcomics.com', [Tags.Language.French, Tags.Language.English, Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Official]);
+    protected static readonly InstanceParameters = {
+        identifier: 'pocketcomics',
+        title: 'Pocket-Comics (コミコ)',
+        url: 'https://www.pocketcomics.com',
+        tags: [ Tags.Language.French, Tags.Language.English, Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Official ],
+    };
 
+    public constructor() {
+        super();
         this.api = 'https://api.pocketcomics.com';
         this.mangaLanguages = this.languageOptions.map(option => option.key);
         this.Settings.language = new Choice('language',

@@ -6,7 +6,7 @@ const config: Config = {
         title: 'SiiManga'
     },
     container: {
-        url: 'https://siikomik.lat/manga/i-have-90-billion-licking-gold/',
+        url: 'https://siikomik.cc/manga/i-have-90-billion-licking-gold/',
         id: '/manga/i-have-90-billion-licking-gold/',
         title: 'I Have 90 Billion Licking Gold'
     },

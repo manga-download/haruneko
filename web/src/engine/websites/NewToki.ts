@@ -9,7 +9,7 @@ import Manatoki from './Manatoki';
 export default class extends Manatoki {
 
     public constructor() {
-        super('newtoki', `NewToki`, 'https://newtoki466.com', [Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]);
+        super('newtoki', `NewToki`, 'https://newtoki467.com', [Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]);
         this.urlPrefix = 'https://newtoki';
     }
 

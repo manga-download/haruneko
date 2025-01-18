@@ -6,7 +6,7 @@ const config = {
         title: 'Hero Truyen'
     },
     container: {
-        url: 'https://truyenti.com/chung-cuc-dau-la',
+        url: 'https://samtruyen.com/chung-cuc-dau-la',
         id: '/chung-cuc-dau-la',
         title: 'Chung Cực Đấu La'
     },
