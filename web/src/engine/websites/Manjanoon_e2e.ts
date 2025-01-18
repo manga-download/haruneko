@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'manjanoon',
         title: 'Manjanoon'
     },
     container: {
-        url: 'https://vrnoin.site/manga/nn-holding-you-captive/',
-        id: '/manga/nn-holding-you-captive/',
-        title: 'Holding You Captive'
+        url: 'https://manjanoon.art/series/76e12b14-016f-498b-b28f-95965c50747c',
+        id: '/series/76e12b14-016f-498b-b28f-95965c50747c',
+        title: 'Put Me to Sleep'
     },
     child: {
-        id: '/nn-holding-you-captive-%d8%a7%d9%84%d9%81%d8%b5%d9%84-22/',
-        title: 'الفصل 22'
+        id: '/read/a64f046f-0244-4008-bc88-eccd6f96f21d',
+        title: 'فصل 26'
     },
     entry: {
         index: 0,
-        size: 1_244_612,
-        type: 'image/webp'
+        size: 756_503,
+        type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

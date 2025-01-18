@@ -1,13 +1,13 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
         id: 'manatoki',
         title: 'Manatoki'
     },
-    /* CloudFlare
     container: {
-        url: 'https://manatoki466.net/comic/122227',
+        url: 'https://manatoki467.net/comic/122227',
         id: '/comic/122227',
         title: '원피스(ONE PIECE)'
     },
@@ -19,7 +19,7 @@ new TestFixture({
         index: 0,
         size: 351_586,
         type: 'image/jpeg'
-    }*/
+    }
 }).AssertWebsite();
 
 new TestFixture({
@@ -27,9 +27,8 @@ new TestFixture({
         id: 'manatoki',
         title: 'Manatoki'
     },
-    /* CloudFlare
     container: {
-        url: 'https://manatoki466.net/webtoon/1095458/템빨',
+        url: 'https://manatoki467.net/webtoon/1095458/템빨',
         id: encodeURI('/webtoon/1095458/템빨'),
         title: '템빨'
     },
@@ -41,5 +40,6 @@ new TestFixture({
         index: 0,
         size: 121_760,
         type: 'image/jpeg'
-    }*/
+    }
 }).AssertWebsite();
+*/

@@ -1,13 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './MangaSect.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import * as Liliana from './templates/Liliana';
+import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article header h1')
-@Common.MangasMultiPageCSS('/all-manga/{page}/', 'div.grid div.text-center > a')
+@Common.MangasMultiPageCSS(Liliana.mangaPath, 'div.grid div.text-center > a')
 @Common.ChaptersSinglePageCSS(Liliana.queryChapters)
-@Common.PagesSinglePageJS(Liliana.queryPagesScript, 500)
+@Liliana.PagesSinglePageJS()
 @Common.ImageAjax(true, true)
 export default class extends DecoratableMangaScraper {
 

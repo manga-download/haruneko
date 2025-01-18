@@ -1,6 +1,7 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'doujindesu',
         title: 'DoujinDesu'
@@ -19,6 +20,5 @@ const config: Config = {
         size: 1_115_560,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
+*/
