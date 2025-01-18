@@ -7,7 +7,7 @@ new TestFixture({
         title: 'MultPorn'
     },
     container: {
-        url: 'https://multporn.net/hentai_manga/azur_lane',
+        url: 'https://multporn.com/hentai_manga/azur_lane',
         id: '/hentai_manga/azur_lane',
         title: 'Azur Lane',
         timeout: 15000
@@ -30,7 +30,7 @@ new TestFixture({
         title: 'MultPorn'
     },
     container: {
-        url: 'https://multporn.net/hentai_manga/a_maids_duty',
+        url: 'https://multporn.com/hentai_manga/a_maids_duty',
         id: '/hentai_manga/azur_lane',
         title: 'Azur Lane',
         timeout: 15000
