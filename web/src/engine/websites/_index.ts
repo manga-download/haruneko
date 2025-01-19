@@ -487,6 +487,7 @@ export { default as Ngomik } from './Ngomik';
 export { default as NHentai } from './NHentai';
 export { default as NHentaiCom } from './NHentaiCom';
 export { default as NiceOppai } from './NiceOppai';
+export { default as NicoManga } from './NicoManga';
 export { default as NicoNicoSeiga } from './NicoNicoSeiga';
 export { default as Nightow } from './Nightow';
 export { default as NightScans } from './NightScans';
