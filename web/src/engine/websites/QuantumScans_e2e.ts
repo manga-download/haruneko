@@ -1,27 +1,22 @@
-﻿/*import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-// CloudFlare
-
-const config = {
+new TestFixture({
     plugin: {
         id: 'quantumscans',
         title: 'Quantum Scans'
     },
     container: {
-        url: 'https://quantumscans.org/series/628e2319b4b/',
-        id: '/series/628e2319b4b/',
-        title: 'Celestial Phase'
+        url: 'https://quantumscans.org/series/Celestial-Phenomenon',
+        id: JSON.stringify({ id: '5', slug: 'Celestial-Phenomenon' }),
+        title: 'Celestial Phenomenon'
     },
     child: {
-        id: '/chapter/628e2319b4b-628e242ce6f/',
+        id: JSON.stringify({ id: '435', slug: 'chapter-47' }),
         title: 'Chapter 47'
     },
     entry: {
-        index: 0,
+        index: 1,
         size: 775_821,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
-*/
+}).AssertWebsite();
