@@ -19,8 +19,7 @@ export default class extends FlatManga {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new Request(new URL('/manga-list.html', this.URI));
-        return FetchWindowScript(request, `window.cookieStore.set('read_type', '1')`, 0, 30000);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('read_type', '1')`, 2500);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
