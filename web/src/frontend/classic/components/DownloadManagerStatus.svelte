@@ -98,7 +98,7 @@
 
     async function retryTasks(statusFilter?:Status) {
         downloadTasks.forEach((task) => {
-            if(!statusFilter || statusFilter === task.Status.Value) task.Run;
+            if(!statusFilter || statusFilter === task.Status.Value) task.Run();
         });
         refreshStatus();
     }
