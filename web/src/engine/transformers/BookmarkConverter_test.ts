@@ -40,6 +40,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'manhuascan', targetID: 'kaliscan' },
     { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
     { sourceID: 'nitroscans', targetID: 'nitromanga' },
+    { sourceID: 'neteasecomic', targetID: 'bilibilimanhua'},
     { sourceID: 'nonbiri', targetID: 'comic21' },
     { sourceID: 'oxapk', targetID: 'manjanoon' },
     { sourceID: 'ozulscans', targetID: 'kingofmanga' },

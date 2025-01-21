@@ -45,6 +45,7 @@ export { default as BakaMH } from './BakaMH';
 export { default as Baozimh } from './Baozimh';
 export { default as BarManga } from './BarManga';
 export { default as Batoto } from './Batoto';
+export { default as BilibiliManhua } from './BilibiliManhua';
 export { default as BlogTruyenMoi } from './BlogTruyenMoi';
 export { default as Bokugents } from './Bokugents';
 export { default as Bomtoon } from './Bomtoon';
@@ -747,7 +748,6 @@ export { default as ZinMangaNet } from './ZinMangaNet';
 // Legacy Websites
 export { default as AnimePahe } from './legacy/AnimePahe';
 export { default as ArazNovel } from './legacy/ArazNovel';
-export { default as BilibiliManhua } from './legacy/BilibiliManhua';
 export { default as BookLive } from './legacy/BookLive';
 export { default as ComicBoost } from './legacy/ComicBoost';
 export { default as ComicBrise } from './legacy/ComicBrise';
