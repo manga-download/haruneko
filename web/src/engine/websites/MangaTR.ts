@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './MangaTR.webp';
-import { Chapter, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
+import { Chapter, type Manga } from '../providers/MangaPlugin';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import { CleanTitle, FlatManga } from './templates/FlatManga';
@@ -10,20 +10,17 @@ function MangaLabelExtractor(element: HTMLTitleElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, 'body title', MangaLabelExtractor)
+@Common.MangasSinglePagesCSS(['/manga-list.html'], 'div.container a[data-toggle="mangapop"]:not([data-original-title=""])')
 export default class extends FlatManga {
     public constructor() {
-        super('mangatr', `Manga-TR`, 'https://manga-tr.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('mangatr', `Manga-TR`, 'https://manga-tr.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
     public override get Icon() {
         return icon;
     }
 
     public override async Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('read_type', '1')`, 2500);
-    }
-
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return (await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/manga-list.html'], 'div.container a[data-toggle="mangapop"]')).filter(manga => manga.Title);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('read_type', '1')`);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
