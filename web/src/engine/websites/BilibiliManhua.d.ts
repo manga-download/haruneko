@@ -10,7 +10,6 @@ export default class extends DecoratableMangaScraper {
     private GetMangasFromPage;
     FetchChapters(manga: Manga): Promise<Chapter[]>;
     FetchPages(chapter: Chapter): Promise<Page[]>;
-    private GenerateKeyPair;
     FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
     private DecryptImage;
     private GetImageSizeByQuality;
