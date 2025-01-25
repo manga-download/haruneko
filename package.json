@@ -16,7 +16,7 @@
         "@types/chrome": "^0.0.299",
         "@types/jsdom": "^21.1.7",
         "@types/nw.js": "^0.92.0",
-        "eslint": "^9.18.0",
+        "eslint": "^9.19.0",
         "eslint-plugin-tsdoc": "^0.4.0",
         "jsdom": "^26.0.0",
         "puppeteer-core": "^24.1.1",
