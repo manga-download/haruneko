@@ -502,6 +502,7 @@ export { default as NoraNoFansub } from './NoraNoFansub';
 export { default as Noromax } from './Noromax';
 export { default as NovelMic } from './NovelMic';
 export { default as NoxScans } from './NoxScans';
+export { default as NyxScans } from './NyxScans';
 export { default as OlimpoScans } from './OlimpoScans';
 export { default as OlympusScanlation } from './OlympusScanlation';
 export { default as OnMangaMe } from './OnMangaMe';
