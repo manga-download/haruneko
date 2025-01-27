@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'comicvn',
         title: 'ComicVn'
     },
     container: {
-        url: 'https://comicvn7.net/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
+        url: 'https://comicvn9.net/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
         id: '/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
         title: 'Hỏa Võ Cố Sự'
     },
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 1,
-        size: 728_133,
+        size: 836_999,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

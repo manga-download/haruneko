@@ -1,8 +1,7 @@
-import './DongManManhua_e2e';
-import './LineWebtoonTranslate_e2e';
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configLayered = {
+// CASE: Multi-Layered Images
+new TestFixture({
     plugin: {
         id: 'linewebtoon',
         title: 'Line Webtoon',
@@ -11,42 +10,36 @@ const configLayered = {
         url: 'https://www.webtoons.com/id/horror/guidao/list?title_no=874',
         id: '/id/horror/guidao/list?title_no=874',
         title: 'Ghost Path',
-        timeout: 15000
     },
     child: {
         id: '/id/horror/guidao/prolog/viewer?title_no=874&episode_no=1',
         title: '#1 - Prolog',
-        timeout: 20000
     },
     entry: {
         index: 2,
         size: 282_499,
         type: 'image/png',
     }
-};
+}).AssertWebsite();
 
-new TestFixture(configLayered).AssertWebsite();
-
-const configRegular = {
+// CASE: Standard Images
+new TestFixture({
     plugin: {
         id: 'linewebtoon',
         title: 'Line Webtoon',
     },
     container: {
-        url: 'https://www.webtoons.com/en/comedy/do-you-like-tomboys/list?title_no=6595',
-        id: '/en/comedy/do-you-like-tomboys/list?title_no=6595',
-        title: 'Do You Like Tomboys?',
-        timeout: 15000
+        url: 'https://www.webtoons.com/en/mystery/dr-frost/list?title_no=371',
+        id: '/en/mystery/dr-frost/list?title_no=371',
+        title: 'Dr. Frost',
     },
     child: {
-        id: '/en/comedy/do-you-like-tomboys/episode-1/viewer?title_no=6595&episode_no=1',
-        title: '#1 - Episode 1',
+        id: '/en/mystery/dr-frost/ep-0-prologue/viewer?title_no=371&episode_no=1',
+        title: '#1 - Ep. 0 - Prologue',
     },
     entry: {
         index: 0,
-        size: 523_307,
+        size: 104_680,
         type: 'image/jpeg',
     }
-};
-
-new TestFixture(configRegular).AssertWebsite();
+}).AssertWebsite();

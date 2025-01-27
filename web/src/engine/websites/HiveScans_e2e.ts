@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Hive Scans'
     },
     container: {
-        url: 'https://hivetoon.com/series/maybe-meant-to-be-gjd9cwk3',
-        id: JSON.stringify({ slug: 'maybe-meant-to-be-gjd9cwk3', id: 27 }),
+        url: 'https://hivetoon.com/series/maybe-meant-to-be',
+        id: JSON.stringify({ slug: 'maybe-meant-to-be', id: 27 }),
         title: 'Maybe Meant to Be'
     },
     child: {
-        id: '/series/maybe-meant-to-be-gjd9cwk3/chapter-93',
+        id: '/series/maybe-meant-to-be/chapter-93',
         title: '93'
     },
     entry: {

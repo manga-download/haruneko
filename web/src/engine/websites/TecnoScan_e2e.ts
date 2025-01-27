@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Tecno Scan'
     },
     container: {
-        url: 'https://terco-olyes.xyz/manga/absolute-sword-sense/',
+        url: 'https://tenco-fable.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },

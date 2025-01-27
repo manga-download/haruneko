@@ -1,8 +1,7 @@
-﻿/*
+﻿/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-//CloudFlare
-const config = {
+new TestFixture({
     plugin: {
         id: 'casacomic',
         title: 'Casa Comic'
@@ -21,8 +20,5 @@ const config = {
         size: 749_437,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
-
+}).AssertWebsite();
 */

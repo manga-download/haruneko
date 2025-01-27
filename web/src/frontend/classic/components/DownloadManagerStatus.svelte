@@ -6,7 +6,7 @@
         Modal,
         ProgressBar,
     } from 'carbon-components-svelte';
-    import { CloudDownload, TrashCan } from 'carbon-icons-svelte';
+    import { Clean, CloudDownload, RetryFailed, TrashCan } from 'carbon-icons-svelte';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
     import DownloadManager from './DownloadManager.svelte';
 
@@ -60,7 +60,7 @@
         refreshCounts();
     });
 
-    function refreshStatus() {
+    async function refreshStatus() {
         const nowDownloading = downloadTasks.filter((job) =>
             [Status.Downloading, Status.Processing].includes(job.Status.Value),
         )[0];
@@ -88,6 +88,21 @@
         [Status.Completed]: 'finished',
         [Status.Failed]: 'error',
     };
+
+    async function deleteTasks(statusFilter?:Status) {
+        downloadTasks.forEach((task) => {
+            if(!statusFilter || statusFilter === task.Status.Value) window.HakuNeko.DownloadManager.Dequeue(task);
+        });
+        refreshStatus();
+    }
+
+    async function retryTasks(statusFilter?:Status) {
+        downloadTasks.forEach((task) => {
+            if(!statusFilter || statusFilter === task.Status.Value) task.Run();
+        });
+        refreshStatus();
+    }
+
 </script>
 
 {#if isModalOpen}
@@ -96,14 +111,24 @@
         <div slot="heading">
             Download Tasks
             <Button
+                kind="secondary"
+                size="small"
+                icon={Clean}
+                iconDescription="Clear finished tasks"
+                on:click={() => deleteTasks(Status.Completed)}
+            />
+            <Button
+                size="small"
+                icon={RetryFailed}
+                iconDescription="Retry failed tasks"
+                on:click={() => retryTasks(Status.Failed)}
+            />
+            <Button
                 kind="danger-tertiary"
                 size="small"
                 icon={TrashCan}
                 iconDescription="Delete all tasks"
-                on:click={() =>
-                    downloadTasks.forEach((task) =>
-                        window.HakuNeko.DownloadManager.Dequeue(task),
-                    )}
+                on:click={() => deleteTasks()}
             />
         </div>
     </Modal>
