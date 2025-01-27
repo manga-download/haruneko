@@ -20,7 +20,7 @@
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
-    import IntersectionObserverDisplay from '../lib/IntersectionObserver.svelte';
+    import VirtualList from '../lib/Virtuallist.svelte';
     // UI : Stores
     import {
         selectedPlugin,
@@ -38,7 +38,6 @@
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
     import { resizeBar } from '../lib/actions';
     import type { MediaContainer2 } from '../Types';
-    import { SvelteMap } from 'svelte/reactivity';
 
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild> = $state();
@@ -185,25 +184,9 @@
             (plugin) => plugin.Identifier === id,
         );
     }
-    const visiblesMedia : SvelteMap<string,boolean> = new SvelteMap();
-    let medialistref : HTMLElement;
-    
-    const mediaListObserver = new IntersectionObserver(
-        entries => {
-            entries.forEach(entry => {
-                var mediaid = entry.target.getAttribute('data-id');
-                if (entry.isIntersecting)
-                    visiblesMedia.set(mediaid,true);
-                else visiblesMedia.delete(mediaid);
-            });
-        },
-        {
-            root: medialistref,
-            rootMargin: '400px',
-            threshold: 0
-        }
-    );
 
+    let medialistref : HTMLElement=$state();
+    let medialistrefHeight = $state(0);
 </script>
 
 {#if isTrackerModalOpen}
@@ -234,8 +217,8 @@
             id="PluginSelect"
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
-            on:clear={() => ($selectedPlugin = undefined)}
-            on:select={(event) => selectPlugin(event.detail.selectedId)}
+            on:clear={async() => ($selectedPlugin = undefined)}
+            on:select={async(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
             items={pluginsCombo}
             shouldFilterItem={shouldFilterPlugin}
@@ -267,7 +250,7 @@
     <div id="MediaFilter">
         <Search id="MediaFilterSearch" size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list" bind:this={medialistref}>
+    <div id="MediaList" class="list" bind:this={medialistref} bind:clientHeight={medialistrefHeight}>
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
@@ -282,18 +265,15 @@
                 />
             </div>
         {/await}
-        {#each filteredmedias as media (media) }
-            <IntersectionObserverDisplay observer={mediaListObserver} dataid={media.Identifier} display={visiblesMedia.get(media.Identifier)}  >
-                {#snippet children()}
-                    <Media 
-                        media={media as MediaContainer2}
-                    /> 
-                {/snippet}
-                {#snippet placeholder()}
-                    <div style="height:1.6em; width:100%;"></div>
-                {/snippet}
-            </IntersectionObserverDisplay>
-        {/each}
+        <VirtualList items={filteredmedias} itemHeight={24} container={medialistref} containerHeight={medialistrefHeight}>
+            {#snippet children(item)}
+                <div class="media">
+                        <Media 
+                        media={item as MediaContainer2}
+                        /> 
+                </div>
+            {/snippet}
+        </VirtualList>
     </div>
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
@@ -362,12 +342,11 @@
     }
     #MediaList {
         grid-area: MediaList;
-        background-color: var(--cds-field-01);
+        box-sizing: border-box;
+        width: 100%;
         overflow-x: hidden;
+        background-color: var(--cds-field-01);
         user-select: none;
-        display:flex;
-        flex-direction: column;
-        height:100%;
     }
     #MediaList .loading {
         width: 100%;
