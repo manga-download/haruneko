@@ -265,11 +265,11 @@
                 />
             </div>
         {/await}
-        <VirtualList items={filteredmedias} itemHeight={24} container={medialistref} containerHeight={medialistrefHeight}>
+        <VirtualList items={filteredmedias as MediaContainer2[]} itemHeight={24} container={medialistref} containerHeight={medialistrefHeight}>
             {#snippet children(item)}
                 <div class="media">
                         <Media 
-                        media={item as MediaContainer2}
+                        media={item}
                         /> 
                 </div>
             {/snippet}

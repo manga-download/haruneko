@@ -1,12 +1,12 @@
-<script lang="ts">
+<script lang="ts" generics="T">
   import { onDestroy, onMount,type Snippet } from 'svelte';
  
-  interface Props {
-    items: any;
+  interface Props<T> {
+    items: T[];
     container: HTMLElement;
     containerHeight: number;
     itemHeight: number;
-    children?: Snippet<[any]>;
+    children?: Snippet<[T]>;
   }
 
   let {
@@ -15,7 +15,7 @@
     containerHeight,
     itemHeight,
     children
-  }: Props = $props();
+  }: Props<T> = $props();
   
   let frame : number;
   let scrollTop = $state(0)
