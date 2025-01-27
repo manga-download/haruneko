@@ -42,25 +42,27 @@
     scrollTop=0;
   });
 
+  const extraItemsOffset=10;
   let spacerHeight = $derived(Math.max(containerHeight, items.length * itemHeight));
   let itemsPerFrame = $derived(Math.ceil(containerHeight / itemHeight) + 1);
   let firstItem = $derived(Math.floor(scrollTop / itemHeight));
   let lastItem = $derived(firstItem + itemsPerFrame);
-  let firstDisplay = $derived(Math.max(0,firstItem - 10))
-  let lastDisplay = $derived(lastItem + 10)
+  let firstDisplay = $derived(Math.max(0,firstItem - extraItemsOffset))
+  let lastDisplay = $derived(lastItem + extraItemsOffset)
   let emptySpaceHeight = $derived(firstDisplay * itemHeight);
   let slice = $derived(items.slice(firstDisplay, lastDisplay));
 </script>
-  <div class="spacer" style="height: {spacerHeight}px; padding-top:{emptySpaceHeight}px" tabindex="-1">
-    {#each slice as item (item) }
-      {@render children?.(item)}
-    {/each}
-  </div>
-  
-  <style>
-    .spacer {
-      width: 100%; 
-      /* Prevent the items from bleeding through, causing more scrolling */
-      overflow: hidden;
-    }
-  </style>
+
+<div class="spacer" style="height: {spacerHeight}px; padding-top:{emptySpaceHeight}px" tabindex="-1">
+  {#each slice as item (item) }
+    {@render children?.(item)}
+  {/each}
+</div>
+
+<style>
+  .spacer {
+    width: 100%; 
+    /* Prevent the items from bleeding through, causing more scrolling */
+    overflow: hidden;
+  }
+</style>
