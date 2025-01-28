@@ -20,7 +20,7 @@
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
-    import VirtualList from '../lib/Virtuallist.svelte';
+    import VirtualList from '../lib/VirtualList.svelte';
     // UI : Stores
     import {
         selectedPlugin,
@@ -185,7 +185,7 @@
         );
     }
 
-    let medialistref : HTMLElement=$state();
+    let medialistref : HTMLElement = $state();
     let medialistrefHeight = $state(0);
 </script>
 

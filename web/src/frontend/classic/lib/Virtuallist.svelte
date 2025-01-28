@@ -1,5 +1,5 @@
 <script lang="ts" generics="T">
-  import { onDestroy, onMount,type Snippet } from 'svelte';
+  import { onDestroy, onMount, type Snippet } from 'svelte';
  
   interface Props<T> {
     items: T[];
