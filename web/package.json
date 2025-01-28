@@ -31,7 +31,6 @@
         "react-dom": "^19.0.0",
         "svelte": "^5.19.4",
         "svelte-check": "^4.1.4",
-        "svelte-virtuallists": "^1.4.0",
         "vue": "^3.5.13",
         "vue-tsc": "^2.2.0"
     },
