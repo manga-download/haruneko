@@ -6,12 +6,10 @@
         ContextMenu,
         ContextMenuOption,
     } from 'carbon-components-svelte';
-    import {
-        Star,
-        StarFilled,
-        PlayFilled,
-        WarningAltInverted,
-    } from 'carbon-icons-svelte';
+    import Star from 'carbon-icons-svelte/lib/Star.svelte';
+    import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
+    import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
+    import WarningAltInverted from 'carbon-icons-svelte/lib/WarningAltInverted.svelte';
     import { selectedMedia } from '../stores/Stores';
     import { coinflip } from '../lib/transitions';
 

@@ -8,7 +8,9 @@
         InlineNotification,
     } from 'carbon-components-svelte';
 
-    import { BookmarkFilled , UpdateNow, CopyLink } from 'carbon-icons-svelte';
+    import BookmarkFilled from 'carbon-icons-svelte/lib/BookmarkFilled.svelte';
+    import UpdateNow from 'carbon-icons-svelte/lib/UpdateNow.svelte';
+    import CopyLink from 'carbon-icons-svelte/lib/CopyLink.svelte';
     import type {
         ComboBoxItem,
         ComboBoxItemId,

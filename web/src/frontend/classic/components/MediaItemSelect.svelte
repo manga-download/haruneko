@@ -10,7 +10,8 @@
         Loading,
         Search,
     } from 'carbon-components-svelte';
-    import { ChevronSort, EarthFilled } from 'carbon-icons-svelte';
+    import ChevronSort from 'carbon-icons-svelte/lib/ChevronSort.svelte';
+    import EarthFilled from 'carbon-icons-svelte/lib/EarthFilled.svelte';
 
     import { fade } from 'svelte/transition';
 
