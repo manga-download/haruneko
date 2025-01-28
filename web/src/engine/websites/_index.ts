@@ -155,6 +155,7 @@ export { default as GaiaToon } from './GaiaToon';
 export { default as GalaxyManga } from './GalaxyManga';
 export { default as GanGanOnline } from './GanGanOnline';
 export { default as Ganma } from './Ganma';
+export { default as GarciaManga } from './GarciaManga';
 export { default as GateManga } from './GateManga';
 export { default as GDScans } from './GDScans';
 export { default as GenzToon } from './GenzToon';
