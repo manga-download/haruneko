@@ -471,6 +471,7 @@ export { default as MonzeeKomik } from './MonzeeKomik';
 export { default as MrYaoi } from './MrYaoi';
 export { default as MultPorn } from './MultPorn';
 export { default as MundoManhwa } from './MundoManhwa';
+export { default as MyComic } from './MyComic';
 export { default as MyComicList } from './MyComicList';
 export { default as MyHentaiGallery } from './MyHentaiGallery';
 export { default as NamiComi } from './NamiComi';
