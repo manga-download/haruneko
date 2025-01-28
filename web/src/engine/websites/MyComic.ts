@@ -32,8 +32,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const result: Chapter[] = [];
-        const matches = await FetchRegex(new Request(new URL(manga.Identifier, this.URI)), /chapters\s*:\s*(\[.*\])/g);
-        for (const match of matches) {
+        const matchedStringsArray = await FetchRegex(new Request(new URL(manga.Identifier, this.URI)), /chapters\s*:\s*(\[.*\])/g);
+        for (const match of matchedStringsArray) {
             const chapters: JSONChapter[] = JSON.parse(match);
             result.push(...chapters.map(chapter => new Chapter(this, manga, `/chapters/${chapter.id}`, chapter.title.trim())));
         }
