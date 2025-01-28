@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './AdonisFansub.webp';
+import icon from './MyComic.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchRegex } from '../platform/FetchProvider';
