@@ -1,24 +1,23 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'siimanga',
         title: 'SiiManga'
     },
     container: {
-        url: 'https://siikomik.cc/manga/i-have-90-billion-licking-gold/',
+        url: 'https://siikomik.art/manga/i-have-90-billion-licking-gold/',
         id: '/manga/i-have-90-billion-licking-gold/',
-        title: 'I Have 90 Billion Licking Gold'
+        title: 'I Have 90 Billion Licking Gold',
+        timeout: 10000
     },
     child: {
-        id: '/i-have-90-billion-licking-gold-chapter-365/',
-        title: 'Chapter 365'
+        id: '/i-have-90-billion-licking-gold-chapter-465/',
+        title: 'Chapter 365',
     },
     entry: {
-        index: 2,
+        index: 1,
         size: 268_110,
-        type: 'image/jpeg'
+        type: 'image/jpeg',
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
