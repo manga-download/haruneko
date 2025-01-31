@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './Baozimh.webp';
-import { DecoratableMangaScraper, type MangaPlugin, Manga, Page, type Chapter } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchHTML, FetchJSON } from '../platform/FetchProvider';
 
