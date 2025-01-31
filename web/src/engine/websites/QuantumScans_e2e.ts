@@ -6,8 +6,8 @@ new TestFixture({
         title: 'Quantum Scans'
     },
     container: {
-        url: 'https://quantumscans.org/series/Celestial-Phenomenon',
-        id: JSON.stringify({ id: '5', slug: 'Celestial-Phenomenon' }),
+        url: 'https://quantumscans.org/series/celestial-phenomenon',
+        id: JSON.stringify({ id: '5', slug: 'celestial-phenomenon' }),
         title: 'Celestial Phenomenon'
     },
     child: {
