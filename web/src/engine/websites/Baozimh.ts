@@ -47,15 +47,15 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pagesList: Page[] = [];
-        let uri = new URL(chapter.Identifier, this.URI);
-        const sectionSlot = uri.searchParams.get('section_slot');
-        const chapterSlot = uri.searchParams.get('chapter_slot');
-        for (let run = true, pageIndex = 2; run; pageIndex++) {
-            const doc = await FetchHTML(new Request(uri));
-            const pages = [...doc.querySelectorAll<HTMLElement>('.comic-contain amp-img')];
-            pagesList.push(...pages.map(element => new Page(this, chapter, new URL(this.ReplaceCDN(element.dataset.src)))));
-            uri = new URL([...doc.querySelectorAll<HTMLAnchorElement>('div.comic-chapter div.next_chapter a')].at(-1)?.pathname, this.URI);
-            run = new RegExpSafe(`/${sectionSlot}_${chapterSlot}_${pageIndex}\\.html?$`, 'i').test(uri.href);
+        let chapterPageUri = new URL(chapter.Identifier, this.URI);
+        const sectionSlot = chapterPageUri.searchParams.get('section_slot');
+        const chapterSlot = chapterPageUri.searchParams.get('chapter_slot');
+        for (let hasNextPage = true, pageIndex = 2; hasNextPage; pageIndex++) {
+            const doc = await FetchHTML(new Request(chapterPageUri));
+            pagesList.push(...[...doc.querySelectorAll<HTMLElement>('.comic-contain amp-img')]
+                .map(element => new Page(this, chapter, new URL(this.ReplaceCDN(element.dataset.src)))));
+            chapterPageUri = new URL([...doc.querySelectorAll<HTMLAnchorElement>('div.comic-chapter div.next_chapter a')].at(-1)?.pathname, this.URI);
+            hasNextPage = new RegExpSafe(`/${sectionSlot}_${chapterSlot}_${pageIndex}\\.html?$`, 'i').test(chapterPageUri.href);
         }
         return pagesList;
     }
