@@ -12,7 +12,7 @@ new TestFixture({
         timeout: 10000
     },
     child: {
-        id: '/i-have-90-billion-licking-gold-chapter-465/',
+        id: '/i-have-90-billion-licking-gold-chapter-365/',
         title: 'Chapter 365',
     },
     entry: {
