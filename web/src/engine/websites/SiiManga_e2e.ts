@@ -8,16 +8,15 @@ new TestFixture({
     container: {
         url: 'https://siikomik.art/manga/i-have-90-billion-licking-gold/',
         id: '/manga/i-have-90-billion-licking-gold/',
-        title: 'I Have 90 Billion Licking Gold',
-        timeout: 10000
+        title: 'I Have 90 Billion Licking Gold'
     },
     child: {
         id: '/i-have-90-billion-licking-gold-chapter-365/',
-        title: 'Chapter 365',
+        title: 'Chapter 365'
     },
     entry: {
         index: 1,
         size: 268_110,
-        type: 'image/jpeg',
+        type: 'image/jpeg'
     }
 }).AssertWebsite();
