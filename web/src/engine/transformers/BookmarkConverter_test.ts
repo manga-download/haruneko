@@ -44,7 +44,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'oxapk', targetID: 'manjanoon' },
     { sourceID: 'ozulscans', targetID: 'kingofmanga' },
     { sourceID: 'prismascans', targetID: 'demonsect' },
-    { sourceID: 'realmscans', targetID: 'rizzcomics' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
     { sourceID: 'secretscans', targetID: 'lynxscans' },
