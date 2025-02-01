@@ -316,6 +316,7 @@ export { default as MangaEclipse } from './MangaEclipse';
 export { default as MangaEfendisi } from './MangaEfendisi';
 export { default as MangaEighteenClub } from './MangaEighteenClub';
 export { default as MangaEighteenUS } from './MangaEighteenUS';
+export { default as MangaEsp } from './MangaEsp';
 export { default as MangaFire } from './MangaFire';
 export { default as MangaForest } from './MangaForest';
 export { default as MangaForFree } from './MangaForFree';
