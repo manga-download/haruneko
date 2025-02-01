@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './SSSScanlator.webp';
+import icon from './SuryaScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sssscanlator', 'SSS Scanlator', 'https://sssscanlator.com.br', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('suryascans', 'Surya Scans', 'https://suryascans.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

@@ -5,30 +5,27 @@
         SideNavMenu,
         SideNavLink,
     } from 'carbon-components-svelte';
-    import {
-        App,
-        Bookmark,
-        CopyLink,
-        Debug,
-        Doc,
-        Document,
-        Events,
-        EventsAlt,
-        Home,
-        Image,
-        ImportExport,
-        Information,
-        Location,
-        LogoDiscord,
-        LogoGithub,
-        NetworkOverlay,
-        PlugFilled,
-        ScreenMap,
-        Settings,
-        SettingsAdjust,
-        SettingsView,
-        TaskSettings,
-    } from 'carbon-icons-svelte';
+    import App from 'carbon-icons-svelte/lib/App.svelte';
+    import Bookmark from 'carbon-icons-svelte/lib/Bookmark.svelte';
+    import CopyLink from 'carbon-icons-svelte/lib/CopyLink.svelte';
+    import Debug from 'carbon-icons-svelte/lib/Debug.svelte';
+    import Doc from 'carbon-icons-svelte/lib/Doc.svelte';
+    import Document from 'carbon-icons-svelte/lib/Document.svelte';
+    import Events from 'carbon-icons-svelte/lib/Events.svelte';
+    import EventsAlt from 'carbon-icons-svelte/lib/EventsAlt.svelte';
+    import Home from 'carbon-icons-svelte/lib/Home.svelte';
+    import Image from 'carbon-icons-svelte/lib/Image.svelte';
+    import ImportExport from 'carbon-icons-svelte/lib/ImportExport.svelte';
+    import Information from 'carbon-icons-svelte/lib/Information.svelte';
+    import Location from 'carbon-icons-svelte/lib/Location.svelte';
+    import LogoDiscord from 'carbon-icons-svelte/lib/LogoDiscord.svelte';
+    import LogoGithub from 'carbon-icons-svelte/lib/LogoGithub.svelte';
+    import PlugFilled from 'carbon-icons-svelte/lib/PlugFilled.svelte';
+    import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
+    import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
+    import SettingsAdjust from 'carbon-icons-svelte/lib/SettingsAdjust.svelte';
+    import SettingsView from 'carbon-icons-svelte/lib/SettingsView.svelte';
+    import TaskSettings from 'carbon-icons-svelte/lib/TaskSettings.svelte';
     import { Locale } from '../stores/Settings';
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';

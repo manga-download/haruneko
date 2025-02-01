@@ -8,7 +8,9 @@
         InlineNotification,
     } from 'carbon-components-svelte';
 
-    import { BookmarkFilled , UpdateNow, CopyLink } from 'carbon-icons-svelte';
+    import BookmarkFilled from 'carbon-icons-svelte/lib/BookmarkFilled.svelte';
+    import UpdateNow from 'carbon-icons-svelte/lib/UpdateNow.svelte';
+    import CopyLink from 'carbon-icons-svelte/lib/CopyLink.svelte';
     import type {
         ComboBoxItem,
         ComboBoxItemId,
@@ -17,10 +19,10 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-	import { VirtualList, type VLSlotSignature } from 'svelte-virtuallists';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
+    import VirtualList from '../lib/VirtualList.svelte';
     // UI : Stores
     import {
         selectedPlugin,
@@ -185,6 +187,8 @@
         );
     }
 
+    let medialistref : HTMLElement = $state();
+    let medialistrefHeight = $state(0);
 </script>
 
 {#if isTrackerModalOpen}
@@ -215,8 +219,8 @@
             id="PluginSelect"
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
-            on:clear={() => ($selectedPlugin = undefined)}
-            on:select={(event) => selectPlugin(event.detail.selectedId)}
+            on:clear={async() => ($selectedPlugin = undefined)}
+            on:select={async(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
             items={pluginsCombo}
             shouldFilterItem={shouldFilterPlugin}
@@ -248,7 +252,7 @@
     <div id="MediaFilter">
         <Search id="MediaFilterSearch" size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list">
+    <div id="MediaList" class="list" bind:this={medialistref} bind:clientHeight={medialistrefHeight}>
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
@@ -263,11 +267,13 @@
                 />
             </div>
         {/await}
-        <VirtualList class="items" items={filteredmedias}>
-            {#snippet vl_slot({ item } : VLSlotSignature<MediaContainer2>)}
-                <Media 
-                    media={item}
-                />
+        <VirtualList items={filteredmedias as MediaContainer2[]} itemHeight={24} container={medialistref} containerHeight={medialistrefHeight}>
+            {#snippet children(item)}
+                <div class="media">
+                        <Media 
+                        media={item}
+                        /> 
+                </div>
             {/snippet}
         </VirtualList>
     </div>
@@ -338,11 +344,11 @@
     }
     #MediaList {
         grid-area: MediaList;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden;
         background-color: var(--cds-field-01);
-        overflow: hidden;
         user-select: none;
-        display:flex;
-        flex-direction: column;
     }
     #MediaList .loading {
         width: 100%;

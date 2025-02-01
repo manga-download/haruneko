@@ -29,6 +29,7 @@ const pageScript = `
            resolve(pages);
        })
 `;
+
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const id = anchor.pathname + anchor.search;
     let title = anchor.querySelector('div.info_area p.subj').textContent.trim();
@@ -39,18 +40,18 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a', 1, 1, 0, MangaExtractor)
 export default class extends LineWebtoonBase {
+
     public constructor() {
         super('linewebtoon-translate', `Line Webtoon (Translate)`, 'https://translate.webtoons.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
-        this.languageRegexp = /language=(\w{3})/;
         this.mangaRegexp = /\/webtoonVersion\?webtoonNo=\d+&language=[^/]+&teamVersion=\d+$/;
         this.pageScript = pageScript;
     }
+
     public override get Icon() {
         return icon;
     }
 
     public override async Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('needCCPA', 'false');window.cookieStore.set('pagGDPR', 'true');`);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('needCCPA', 'false'); window.cookieStore.set('pagGDPR', 'true');`);
     }
-
 }
