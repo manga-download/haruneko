@@ -71,6 +71,9 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
 
     win.setMenuBarVisibility(false);
     win.on('closed', () => app.quit());
+    // TODO: May remove workaround when https://github.com/electron/electron/issues/41957 is solved
+    win.webContents.session.on('file-system-access-restricted', (event, details, callback) => callback('allow'));
+    win.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => callback(permission === 'fileSystem')); // webContents.getURL().startsWith(argv.origin ?? manifest.url) ? callback(true) : callback(false);
 
     return win;
 }
