@@ -3,13 +3,12 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
-        id: 'sinensisscan',
-        title: 'Sinensis Scans',
-        timeout: 35000, //warning : WEBSITE IS SLOW IN BROWSER
+        id: 'sctoon',
+        title: 'SCtoon',
     },
     container: {
-        url: 'https://sinensis.leitorweb.com/a-vida-de-um-passarinho/',
-        id: '/a-vida-de-um-passarinho/',
+        url: 'https://sctoon.net/a-vida-de-um-passarinho0/',
+        id: '/a-vida-de-um-passarinho0/',
         title: 'A Vida de Um Passarinho',
     },
     child: {

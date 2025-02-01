@@ -1,4 +1,5 @@
 //Portuguese? template using JSZIP to extract chapter pages from zip files
+//they have Anti ablock integrated that we need to bypass
 
 import JSZip from 'jszip';
 import { Fetch, FetchWindowPreloadScript } from '../../platform/FetchProvider';
