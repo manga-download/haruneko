@@ -130,7 +130,7 @@
             return fuse.search(mediaNameFilter).map((item) => item.item);
         else
             return medias.filter((item) =>
-                item.Title.includes(mediaNameFilter),
+                item.Title.toLowerCase().includes(mediaNameFilter.toLowerCase()),
             );
     }
 
