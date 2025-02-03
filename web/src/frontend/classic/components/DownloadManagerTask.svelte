@@ -1,7 +1,8 @@
 <script lang="ts">
     // TODO: text-overflow not working
     import { Button, ProgressBar } from 'carbon-components-svelte';
-    import { TrashCan, WarningHexFilled } from 'carbon-icons-svelte';
+    import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+    import WarningHexFilled from 'carbon-icons-svelte/lib/WarningHexFilled.svelte';
 
     import { onMount, onDestroy } from 'svelte';
 

@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'raijinscans',
         title: 'RaijinScans'
-    }, /* CloudFlare
+    },
     container: {
-        url: 'https://raijinscans.net/manga/legendary-blacksmiths-vengeance/',
+        url: 'https://raijinscan.fr/manga/legendary-blacksmiths-vengeance/',
         id: JSON.stringify({post: '13549', slug: '/manga/legendary-blacksmiths-vengeance/' }),
         title: 'Legendary Blacksmith’s Vengeance'
     },
@@ -19,7 +19,4 @@ const config = {
         size: 1_348_547,
         type: 'image/jpeg'
     }
-    */
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
