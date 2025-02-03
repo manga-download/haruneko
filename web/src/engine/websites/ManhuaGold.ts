@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article header h1')
 @Common.MangasMultiPageCSS(Liliana.mangaPath, 'div.grid div.text-center a.clamp')
 @Common.ChaptersSinglePageCSS(Liliana.queryChapters)
-@Common.PagesSinglePageJS(Liliana.queryPagesScript, 500)
+@Liliana.PagesSinglePageJS()
 @Common.ImageElement(false, true, true)
 export default class extends DecoratableMangaScraper {
 

@@ -4,16 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-const pageScript = `
-    new Promise(resolve => {
-        resolve (imageLinks.map( image => atob(image)));
-    });
-`;
-
 @Madara.MangaCSS(/^{origin}\/lermanga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(pageScript)
+@Madara.ChaptersSinglePageCSS()
+@Common.PagesSinglePageJS('imageLinks.map( image => atob(image));')
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 

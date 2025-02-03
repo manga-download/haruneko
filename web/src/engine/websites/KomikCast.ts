@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('komikcast', 'KomikCast', 'https://komikcast.bz', Tags.Media.Manga, Tags.Language.Indonesian);
+        super('komikcast', 'KomikCast', 'https://komikcast01.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

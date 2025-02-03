@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'tecnoscan',
         title: 'Tecno Scan'
     },
     container: {
-        url: 'https://eroxscans.xyz/manga/absolute-sword-sense/',
+        url: 'https://tenco-fable.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },
     child: {
-        id: '/absolute-sword-sense-chapter-105-4/',
-        title: 'Chapter 105.4'
+        id: '/absolute-sword-sense-chapter-115-4/',
+        title: 'Chapter 115.4'
     },
     entry: {
         index: 0,
-        size: 1_240_942,
+        size: 1_153_018,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

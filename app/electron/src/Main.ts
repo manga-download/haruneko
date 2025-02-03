@@ -21,6 +21,7 @@ function ParseCLI(): CLIOptions {
     try {
         const argv = new Command()
             .allowUnknownOption(true)
+            .allowExcessArguments(true)
             .option('--origin [url]', 'custom location from which the web-app shall be loaded')
             .parse(process.argv, { from: 'electron' });
         return argv.opts<CLIOptions>();
@@ -74,6 +75,13 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
     return win;
 }
 
+function UpdatePermissions(session: Electron.Session, appURI: URL) {
+    session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => new URL(requestingOrigin).hostname === appURI.hostname);
+    session.setPermissionRequestHandler((webContents, permission, callback, details) => callback(new URL(details.requestingUrl).hostname === appURI.hostname));
+    // TODO: May remove the following workaround when https://github.com/electron/electron/issues/41957 is solved
+    session.on('file-system-access-restricted', (event, details, callback) => callback(new URL(details.origin).hostname === appURI.hostname ? 'allow' : 'deny'));
+}
+
 async function OpenWindow(): Promise<void> {
     InitializeMenu();
     const argv = ParseCLI();
@@ -84,12 +92,14 @@ async function OpenWindow(): Promise<void> {
     const win = await CreateApplicationWindow();
     const ipc = new IPC(win.webContents);
     const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
+    const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
+    UpdatePermissions(win.webContents.session, uri);
     new RemoteProcedureCallManager(rpc, ipc);
     new FetchProvider(ipc, win.webContents);
     new RemoteBrowserWindowController(ipc);
     new BloatGuard(ipc, win.webContents);
     win.RegisterChannels(ipc);
-    return win.loadURL(argv.origin ?? manifest.url ?? 'about:blank');
+    return win.loadURL(uri.href);
 }
 
 OpenWindow();

@@ -6,12 +6,10 @@
         ContextMenu,
         ContextMenuOption,
     } from 'carbon-components-svelte';
-    import {
-        Star,
-        StarFilled,
-        PlayFilled,
-        WarningAltInverted,
-    } from 'carbon-icons-svelte';
+    import Star from 'carbon-icons-svelte/lib/Star.svelte';
+    import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
+    import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
+    import WarningAltInverted from 'carbon-icons-svelte/lib/WarningAltInverted.svelte';
     import { selectedMedia } from '../stores/Stores';
     import { coinflip } from '../lib/transitions';
 
@@ -26,25 +24,24 @@
 
     interface Props {
         style?: string;
-        media: MediaContainer2;
+        // TODO: Instead of conditional pollution, split component into one for showing containers and one for showing bookmarks
+        media: MediaContainer2 | Bookmark;
     }
 
     let { style = '', media }: Props = $props();
     let selected: boolean = $derived($selectedMedia?.IsSameAs(media));
 
-    //Bookmarks
+    // Bookmarks
     let isBookmarked=$state(false);
+    let isMediaOrphanedBookmark = $state(true);
     $effect(() => {
-        isBookmarked = media
-            ? HakuNeko.BookmarkPlugin.IsBookmarked(media)
-            : false;
+        if(!media) return;
+        isBookmarked = HakuNeko.BookmarkPlugin.IsBookmarked(media);
+        isMediaOrphanedBookmark = media instanceof Bookmark && media.IsOrphaned;
     });
     async function toggleBookmark() {
-        isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media);
+        isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media as MediaContainer2);
     }
-    let isOrphaned =
-        $derived(isBookmarked && (media as Bookmark).IsOrphaned ? true : false);
-
     //Context menu
     let mediadiv: HTMLElement = $state();
 
@@ -57,11 +54,11 @@
         if (!updatedmedia.IsSameAs(media)) return;
         
         unFlaggedItems = [];
-        const delay = $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
+        const delay = !$selectedMedia || $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
         delayedContentCheck = setTimeout(
         async () => {
             unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
-                media,
+                media as MediaContainer2,
             )) as MediaContainer<MediaChild>[];
         },delay);
     }
@@ -94,7 +91,7 @@
 
 </script>
 
-<div bind:this={mediadiv} class="media" {style} in:fade class:selected>
+<div bind:this={mediadiv} class="media" {style} class:selected>
     <ContextMenu target={[mediadiv]} bind:open={menuOpen} on:open={menuOpens}>
         <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" 
             onclick={() => {$selectedMedia = media;}}
@@ -106,7 +103,7 @@
             onclick={toggleBookmark}
         />
     </ContextMenu>
-    {#if isOrphaned}
+    {#if isMediaOrphanedBookmark}
         <span in:coinflip={{ duration: 200 }}>
             <Button
                 class="orphaned"
@@ -145,25 +142,25 @@
             />
         </span>
     {/if}
-    <button 
-        class="website"
-        onclick={() => {
-            window.open(media.Parent.URI.href, '_blank');
-        }}
-        title="Open {media.Parent.URI.href}"
-        aria-label="Open {media.Parent.URI.href}"
-    >
-        <img
-            class="pluginIcon"
-            src={media.Parent.Icon}
-            alt="Media Plugin Icon"
-        />
-    </button>
+    {#if !isMediaOrphanedBookmark}
+        <button 
+            class="website"
+            onclick={() => window.open(media.Parent.URI.href, '_blank')}
+            title="Open {media.Parent.URI.href}"
+            aria-label="Open {media.Parent.URI.href}"
+        >
+            <img
+                class="pluginIcon"
+                src={media.Parent.Icon}
+                alt="Media Plugin Icon"
+            />
+        </button>
+    {/if}
     <ClickableTile
         class="title"
-        onclick={(e) => {
+        onclick={(e: MouseEvent) => {
             e.preventDefault();
-            $selectedMedia = media;
+            if(!isMediaOrphanedBookmark) $selectedMedia = media;
         }}
     >
         <span title={media.Title}>{media.Title}</span>
@@ -187,6 +184,7 @@
     .media {
         display: flex;
         user-select: none;
+        height:1.6em;
     }
     .media:hover {
         background-color: var(--cds-hover-row);
@@ -213,7 +211,8 @@
         border: none;
         background: none;
         background-color: unset;
-        margin-right: 0.4em;
+        margin-right: 0.4em; 
+        cursor: pointer;
     }
     .media .pluginIcon {
         width: 1.4em;

@@ -164,7 +164,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
         if(!directory) {
             throw new Exception(R.Settings_Global_MediaDirectory_UnsetError);
         }
-        if(await directory.requestPermission() !== 'granted') {
+        if(await directory.queryPermission({ mode: 'readwrite' }) !== 'granted' && await directory.requestPermission({ mode: 'readwrite' }) !== 'granted') {
             throw new Exception(R.Settings_Global_MediaDirectory_PermissionError);
         }
         if(settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {

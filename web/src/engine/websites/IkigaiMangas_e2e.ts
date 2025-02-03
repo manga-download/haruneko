@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ikigaimangas',
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://visorikigai.guyec.net/series/corrompi-al-sacerdote/',
-        id: '/series/corrompi-al-sacerdote/',
-        title: 'Corrompi al sacerdote'
+        url: 'https://ikigaitoon.sectordetiro.com/series/el-sacerdote-sanador-del-sol/',
+        id: '/series/el-sacerdote-sanador-del-sol/',
+        title: 'El Sacerdote Sanador del Sol'
     },
     child: {
-        id: '/capitulo/977227421232791555/',
-        title: 'Capítulo 27'
+        id: '/capitulo/917826995654492162/',
+        title: 'Capítulo 68'
     },
     entry: {
         index: 0,
-        size: 1_567_474,
-        type: 'image/jpeg'
+        size: 689_586,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
