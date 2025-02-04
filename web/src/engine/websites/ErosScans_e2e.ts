@@ -2,11 +2,11 @@
 
 new TestFixture({
     plugin: {
-        id: 'doomicscans',
-        title: 'Doomic Scans'
+        id: 'erosscans',
+        title: 'Eros Scans'
     },
     container: {
-        url: 'https://doomcomic.xyz/manga/absolute-sword-sense/',
+        url: 'https://erosmanga.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 1_395_498,
-        type: 'image/jpeg'
+        size: 994_822,
+        type: 'image/webp'
     }
 }).AssertWebsite();
