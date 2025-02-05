@@ -17,7 +17,6 @@ worker.addEventListener('message', event => {
 });
 
 function TickTimeout(timerID: number): void {
-    console.log(new Date().toISOString(), 'TickTimeout', timerID, timeoutCallbacks.get(timerID));
     if(timeoutCallbacks.has(timerID)) {
         timeoutCallbacks.get(timerID).call(undefined);
         timeoutCallbacks.delete(timerID);
@@ -25,7 +24,6 @@ function TickTimeout(timerID: number): void {
 }
 
 function TickInterval(timerID: number): void {
-    console.log(new Date().toISOString(), 'TickInterval', timerID, intervalCallbacks.get(timerID));
     if(intervalCallbacks.has(timerID)) {
         intervalCallbacks.get(timerID).call(undefined);
     }
@@ -35,7 +33,6 @@ export function SetTimeout(callback: Action, ms: number): Promise<number> {
     return new Promise<number>(resolve => {
         const _uid = GenerateUID();
         function responseListener(event: MessageEvent<Payload>) {
-            console.log(new Date().toISOString(), event.data);
             if(event.data.action === _uid) {
                 worker.removeEventListener('message', responseListener);
                 timeoutCallbacks.set(event.data.timerID, callback);
@@ -56,7 +53,6 @@ export function SetInterval(callback: Action, ms: number): Promise<number> {
     return new Promise<number>(resolve => {
         const _uid = GenerateUID();
         function responseListener(event: MessageEvent<Payload>) {
-            console.log(new Date().toISOString(), event.data);
             if(event.data.action === _uid) {
                 worker.removeEventListener('message', responseListener);
                 intervalCallbacks.set(event.data.timerID, callback);

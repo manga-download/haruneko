@@ -13,23 +13,19 @@ addEventListener('message', (event: MessageEvent<Payload>) => {
 });
 
 function SetTimeout(uid: string, ms: number): void {
-    console.log(new Date().toISOString(), 'SetTimeout', uid, ms);
     const timerID = setTimeout(() => postMessage({ action: 'BackgroundTimers::TickTimeout', timerID }), ms);
     postMessage({ action: uid, timerID });
 }
 
 function ClearTimeout(timerID: number): void {
-    console.log(new Date().toISOString(), 'ClearTimeout', timerID);
     clearTimeout(timerID);
 }
 
 function SetInterval(uid: string, ms: number): void {
-    console.log(new Date().toISOString(), 'SetInterval', uid, ms);
     const timerID = setInterval(() => postMessage({ action: 'BackgroundTimers::TickInterval', timerID }), ms);
     postMessage({ action: uid, timerID });
 }
 
 function ClearInterval(timerID: number): void {
-    console.log(new Date().toISOString(), 'ClearInterval', timerID);
     clearInterval(timerID);
 }
