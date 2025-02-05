@@ -103,7 +103,8 @@ type PageParam = {
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiURL = 'https://api.zebrack-comic.com';
+    private readonly apiURL = 'https://api2.zebrack-comic.com';
+    private readonly oldApiUrl = 'https://api.zebrack-comic.com';
     private readonly responseRootType = 'Zebrack.Response';
 
     public constructor() {
@@ -139,7 +140,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchMagazineDetail(magazineId: string, magazineIssueId: string): Promise<MagazineDetailViewV3> {
-        const uri = new URL('/api/v3/magazine_issue_detail', this.apiURL);
+        const uri = new URL('/api/v3/magazine_issue_detail', this.oldApiUrl);
         uri.searchParams.set('os', 'browser');
         uri.searchParams.set('magazine_id', magazineId);
         uri.searchParams.set('magazine_issue_id', magazineIssueId);
@@ -229,9 +230,9 @@ export default class extends DecoratableMangaScraper {
         }
 
         if (type === 'magazine') {
-            const { magazineViewerView: { images } } = await this.FetchMagazineViewer(titleId, chapterId, secretKey);
-            if (images) {
-                return images
+            const { magazineViewerView } = await this.FetchMagazineViewer(titleId, chapterId, secretKey);
+            if (magazineViewerView) {
+                return magazineViewerView.images
                     .filter(image => image && image.imageUrl)
                     .map(image => new Page<PageParam>(this, chapter, new URL(image.imageUrl), { encryptionKey: image.encryptionKey }));
             }
@@ -265,7 +266,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchMagazineViewer(magazineId: string, magazineIssueId: string, secretKey: string): Promise<ZebrackResponse> {
-        const uri = new URL('/api/browser/magazine_viewer', this.apiURL);
+        const uri = new URL('/api/browser/magazine_viewer', this.oldApiUrl);
         uri.searchParams.set('secret', secretKey);
         uri.searchParams.set('is_trial', '0');
         uri.searchParams.set('os', 'browser');
