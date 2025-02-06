@@ -2,19 +2,13 @@ import { DownloadTask, Status } from './DownloadTask';
 import { ObservableArray, type IObservable } from './Observable';
 import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
-import { SetTimeout } from './BackgroundTimers';
-
-//window['sTimeout'] = X.SetTimeout;
-//window['cTimeout'] = X.ClearTimeout;
-//window['sInterval'] = X.SetInterval;
-//window['cInterval'] = X.ClearInterval;
+import { Delay, SetTimeout } from './BackgroundTimers';
 
 export class DownloadManager {
 
     private processing = false;
     private queue = new ObservableArray<DownloadTask, DownloadManager>([], this);
     private queueTransactionLock = false;
-    private queueTransactionMutex = Promise.resolve();
 
     constructor(private readonly storageController: StorageController) {}
 
@@ -23,14 +17,11 @@ export class DownloadManager {
     }
 
     /**
-     * Perform a thread/concurrency safe operation on {@link queue}
+     * Perform an (almost) thread/concurrency safe operation on {@link queue}
      */
     private async InvokeQueueTransaction<R>(transaction: () => R): Promise<R> {
         try {
-            // TODO: Use a better locking mechanism?
-            while(this.queueTransactionLock) {
-                await new Promise(resolve => setTimeout(resolve, 5));
-            }
+            while(this.queueTransactionLock) await Delay(5);
             this.queueTransactionLock = true;
             return transaction();
         } finally {
