@@ -2,12 +2,19 @@ import { DownloadTask, Status } from './DownloadTask';
 import { ObservableArray, type IObservable } from './Observable';
 import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
+import { SetTimeout } from './BackgroundTimers';
+
+//window['sTimeout'] = X.SetTimeout;
+//window['cTimeout'] = X.ClearTimeout;
+//window['sInterval'] = X.SetInterval;
+//window['cInterval'] = X.ClearInterval;
 
 export class DownloadManager {
 
     private processing = false;
     private queue = new ObservableArray<DownloadTask, DownloadManager>([], this);
     private queueTransactionLock = false;
+    private queueTransactionMutex = Promise.resolve();
 
     constructor(private readonly storageController: StorageController) {}
 
@@ -74,7 +81,7 @@ export class DownloadManager {
                 if(task) {
                     await task.Run();
                 } else {
-                    await new Promise(resolve => setTimeout(resolve, 750));
+                    await new Promise<void>(resolve => SetTimeout(resolve, 750));
                 }
             } catch { /* IGNORE */ }
         }
