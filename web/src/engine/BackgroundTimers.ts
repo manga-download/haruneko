@@ -1,3 +1,8 @@
+/**
+ * This module provides various timing methods which will not hibernate when the application is in the background.
+ * @see {@link https://developer.chrome.com/blog/timer-throttling-in-chrome-88}
+ */
+
 type Action = () => void;
 type Payload = { action: string } & Record<string, any>;
 
@@ -40,7 +45,7 @@ export async function Delay(ms: number, variance = 0): Promise<void> {
 
 /**
  * {@inheritDoc setTimeout}
- * @see {@link  setTimeout}
+ * @see {@link setTimeout}
  */
 export function SetTimeout(callback: Action, ms: number): Promise<number> {
     return new Promise<number>(resolve => {
@@ -59,7 +64,7 @@ export function SetTimeout(callback: Action, ms: number): Promise<number> {
 
 /**
  * {@inheritDoc clearTimeout}
- * @see {@link  clearTimeout}
+ * @see {@link clearTimeout}
  */
 export function ClearTimeout(timerID: number): void {
     timeoutCallbacks.delete(timerID);
@@ -68,7 +73,7 @@ export function ClearTimeout(timerID: number): void {
 
 /**
  * {@inheritDoc setInterval}
- * @see {@link  setInterval}
+ * @see {@link setInterval}
  */
 export function SetInterval(callback: Action, ms: number): Promise<number> {
     return new Promise<number>(resolve => {
@@ -87,7 +92,7 @@ export function SetInterval(callback: Action, ms: number): Promise<number> {
 
 /**
  * {@inheritDoc clearInterval}
- * @see {@link  clearInterval}
+ * @see {@link clearInterval}
  */
 export function ClearInterval(timerID: number): void {
     intervalCallbacks.delete(timerID);
