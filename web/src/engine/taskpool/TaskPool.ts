@@ -1,5 +1,6 @@
-import { DeferredTask, type Priority } from './DeferredTask';
 import { Delay } from '../BackgroundTimers';
+import { DeferredTask, type Priority } from './DeferredTask';
+export { Priority } from './DeferredTask';
 import { Unlimited } from './RateLimit';
 
 export class TaskPool {
