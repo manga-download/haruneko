@@ -768,7 +768,6 @@ export { default as GammaPlus } from './legacy/GammaPlus';
 export { default as Guoman8 } from './legacy/Guoman8';
 export { default as KanMan } from './legacy/KanMan';
 export { default as kuman5 } from './legacy/kuman5';
-export { default as LectorManga } from './legacy/LectorManga';
 export { default as LezhinEN } from './legacy/LezhinEN';
 export { default as LezhinJA } from './legacy/LezhinJA';
 export { default as LezhinKO } from './legacy/LezhinKO';
