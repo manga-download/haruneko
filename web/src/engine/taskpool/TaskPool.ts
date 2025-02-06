@@ -1,5 +1,5 @@
 import { DeferredTask, type Priority } from './DeferredTask';
-export { Priority } from './DeferredTask';
+import { Delay } from '../BackgroundTimers';
 import { Unlimited } from './RateLimit';
 
 export class TaskPool {
@@ -15,9 +15,7 @@ export class TaskPool {
      * @param Workers - The number of workers for processing tasks (maximum number of tasks processed at the same time). Default: 4
      * @param RateLimit - The maximum throughput for processing tasks. Default: infinite
      */
-    constructor(public Workers: number = 4, public RateLimit = Unlimited) {
-        //setInterval(this.Process.bind(this), 750);
-    }
+    constructor(public Workers: number = 4, public RateLimit = Unlimited) {}
 
     /**
      * Add a new (awaitable) {@link action} to this task pool and start processing the task pool (if not already started).
@@ -39,10 +37,7 @@ export class TaskPool {
      */
     private async InvokeQueueTransaction<R>(transaction: (queue: DeferredTask<unknown>[]) => R): Promise<R> {
         try {
-            // TODO: Use a better locking mechanism?
-            while(this.queueTransactionLock) {
-                await new Promise(resolve => setTimeout(resolve, 5));
-            }
+            while(this.queueTransactionLock) await Delay(5);
             this.queueTransactionLock = true;
             return transaction(this.queue);
         } finally {
@@ -73,12 +68,12 @@ export class TaskPool {
 
     private async Throttle() {
         await this.delay;
-        this.delay = new Promise(resolve => setTimeout(resolve, this.RateLimit.Throttle));
+        this.delay = Delay(this.RateLimit.Throttle);
     }
 
     private async ConcurrencySlotAvailable() {
         while(this.activeWorkersCount >= this.Workers) {
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await Delay(50);
         }
     }
 
