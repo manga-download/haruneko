@@ -29,6 +29,19 @@ function TickInterval(timerID: number): void {
     }
 }
 
+/**
+ * Return a promise that resolves after the given {@link ms}.
+ * When a {@link variance} is provided, the promise will resolve randomly between {@link ms} ± {@link variance}.
+ */
+export async function Delay(ms: number, variance = 0): Promise<void> {
+    const delay = variance > 0 && variance < ms ? ms - variance + 2 * variance * Math.random() : ms;
+    return new Promise<void>(resolve=> SetTimeout(resolve, delay));
+}
+
+/**
+ * {@inheritDoc setTimeout}
+ * @see {@link  setTimeout}
+ */
 export function SetTimeout(callback: Action, ms: number): Promise<number> {
     return new Promise<number>(resolve => {
         const _uid = GenerateUID();
@@ -44,11 +57,19 @@ export function SetTimeout(callback: Action, ms: number): Promise<number> {
     });
 }
 
+/**
+ * {@inheritDoc clearTimeout}
+ * @see {@link  clearTimeout}
+ */
 export function ClearTimeout(timerID: number): void {
     timeoutCallbacks.delete(timerID);
     worker.postMessage({ action: 'Worker::ClearTimeout', timerID });
 }
 
+/**
+ * {@inheritDoc setInterval}
+ * @see {@link  setInterval}
+ */
 export function SetInterval(callback: Action, ms: number): Promise<number> {
     return new Promise<number>(resolve => {
         const _uid = GenerateUID();
@@ -64,6 +85,10 @@ export function SetInterval(callback: Action, ms: number): Promise<number> {
     });
 }
 
+/**
+ * {@inheritDoc clearInterval}
+ * @see {@link  clearInterval}
+ */
 export function ClearInterval(timerID: number): void {
     intervalCallbacks.delete(timerID);
     worker.postMessage({ action: 'Worker::ClearInterval', timerID });
