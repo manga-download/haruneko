@@ -52,8 +52,9 @@ export default class extends DecoratableMangaScraper {
         const chapterSlot = chapterPageUri.searchParams.get('chapter_slot');
         for (let hasNextPage = true, pageIndex = 2; hasNextPage; pageIndex++) {
             const doc = await FetchHTML(new Request(chapterPageUri));
-            pagesList.push(...[...doc.querySelectorAll<HTMLElement>('.comic-contain amp-img')]
-                .map(element => new Page(this, chapter, new URL(this.ReplaceCDN(element.dataset.src)))));
+            const pages = [...doc.querySelectorAll<HTMLElement>('.comic-contain amp-img')]
+                .map(element => new Page(this, chapter, new URL(this.ReplaceCDN(element.dataset.src))));
+            pagesList.push(...pages);
             chapterPageUri = new URL([...doc.querySelectorAll<HTMLAnchorElement>('div.comic-chapter div.next_chapter a')].at(-1)?.pathname, this.URI);
             hasNextPage = new RegExpSafe(`/${sectionSlot}_${chapterSlot}_${pageIndex}\\.html?$`, 'i').test(chapterPageUri.href);
         }
