@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'mangatrnet',
         title: 'MangaTR (.Net)'
     },
     container: {
-        url: 'https://mangatr.me/manga/king-of-apocalypse/',
-        id: JSON.stringify({ post: '1121', slug: '/manga/king-of-apocalypse/'}),
-        title: 'King of Apocalypse'
+        url: 'https://mangatr.app/manga/king-of-the-mound',
+        id: JSON.stringify({ post: '1804', slug: '/manga/king-of-the-mound' }),
+        title: 'King of the Mound'
     },
     child: {
-        id: '/manga/king-of-apocalypse/bolum-323/',
-        title: 'Bölüm: 323'
+        id: '/manga/king-of-the-mound/bolum-59',
+        title: 'Bölüm 59'
     },
     entry: {
-        index: 2,
-        size: 345_058,
+        index: 0,
+        size: 354_298,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

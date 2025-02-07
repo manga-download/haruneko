@@ -21,7 +21,7 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 22.13.x
       - name: Install NPM Packages
         run: npm install
       - name: Code Inspection
@@ -35,7 +35,9 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy ./web/build --project-name=haruneko --commit-dirty=true
+          command: |
+            pages deploy ./web/build --project-name=hakuneko --commit-dirty=true
+            pages deploy ./web/build --project-name=haruneko --commit-dirty=true
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
@@ -43,4 +45,6 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy ./docs/.vitepress/dist --project-name=haruneko-docs --commit-dirty=true
+          command: |
+            pages deploy ./docs/.vitepress/dist --project-name=hakuneko-docs --commit-dirty=true
+            pages deploy ./docs/.vitepress/dist --project-name=haruneko-docs --commit-dirty=true

@@ -1,11 +1,11 @@
+/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'toongod',
         title: 'ToonGod'
     },
-    /* CloudFlare
     container: {
         url: 'https://www.toongod.org/webtoon/i-stole-the-number-one-rankers-soul/',
         id: JSON.stringify({ post: '9019', slug: '/webtoon/i-stole-the-number-one-rankers-soul/' }),
@@ -20,7 +20,5 @@ const config = {
         size: 704_355,
         type: 'image/jpeg'
     }
-    */
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
+*/

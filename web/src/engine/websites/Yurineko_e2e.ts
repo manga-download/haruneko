@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Yurineko'
     },
     container: {
-        url: 'https://yurineko.click/manga/3553',
+        url: 'https://yurineko.site/manga/3553',
         id: '3553',
         title: 'Ma Pháp Thiếu Nữ 201'
     },

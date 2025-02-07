@@ -1,12 +1,12 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'komikcast',
         title: 'KomikCast'
     },
     container: {
-        url: 'https://komikcast.bz/komik/swordmasters-youngest-son/',
+        url: 'https://komikcast01.com/komik/swordmasters-youngest-son/',
         id: '/komik/swordmasters-youngest-son/',
         title: 'Swordmaster’s Youngest Son'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 342_909,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
