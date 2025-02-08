@@ -10,14 +10,13 @@ new TestFixture({
         id: '/manga/soul-land-iv--the-ultimate-combat',
         title: 'Soul Land IV - The Ultimate Combat'
     },
-    /* Chapter id is random, cant make a proper test
     child: {
-        id: 'https://aovheroes.com/rds/br/rdsd?data=s4sdqf5qs4df5qs4fvsd54fsd53f43s5d4f135sdf',
-        title: 'Chapter 464.5'
+        id: '/read/soul-land-iv--the-ultimate-combat/2487071',
+        title: 'Chapter 500'
     },
     entry: {
         index: 0,
-        size: -1,
+        size: 202_301,
         type: 'image/jpeg'
-    }*/
+    }
 }).AssertWebsite();
