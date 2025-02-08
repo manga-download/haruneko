@@ -22,7 +22,6 @@
         "@types/wicg-file-system-access": "^2023.10.5",
         "@vitejs/plugin-react": "^4.3.4",
         "@vitejs/plugin-vue": "^5.2.1",
-        "@vitest/web-worker": "3.0.5",
         "@vscode/codicons": "^0.0.36",
         "carbon-components-svelte": "^0.87.5",
         "carbon-icons-svelte": "^13.1.0",
