@@ -40,7 +40,7 @@ function TickInterval(timerID: number): void {
  */
 export async function Delay(ms: number, variance = 0): Promise<void> {
     const delay = variance > 0 && variance < ms ? ms - variance + 2 * variance * Math.random() : ms;
-    return new Promise<void>(resolve=> SetTimeout(resolve, delay));
+    return new Promise<void>(resolve => SetTimeout(resolve, delay));
 }
 
 /**
