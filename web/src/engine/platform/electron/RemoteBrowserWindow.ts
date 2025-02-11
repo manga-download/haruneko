@@ -55,7 +55,6 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             webPreferences: {
                 sandbox: true,
                 webSecurity: true,
-                backgroundThrottling: false,
                 contextIsolation: false, // Disabled for sharing `window` instance in pre-load script: https://www.electronjs.org/docs/latest/tutorial/context-isolation#what-is-it
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
