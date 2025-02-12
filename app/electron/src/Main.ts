@@ -76,19 +76,19 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
     return win;
 }
 
-function CheckHostPermission(url: string, hostname: string) {
+function CheckHostPermission(url: string, appURI: URL) {
     try {
-        return new URL(url).hostname === hostname;
+        return new URL(url).hostname === appURI.hostname;
     } catch {
         return false;
     }
 }
 
 function UpdatePermissions(session: Electron.Session, appURI: URL) {
-    session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => CheckHostPermission(requestingOrigin, appURI.hostname));
-    session.setPermissionRequestHandler((webContents, permission, callback, details) => callback(CheckHostPermission(details.requestingUrl, appURI.hostname)));
+    session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => CheckHostPermission(requestingOrigin, appURI));
+    session.setPermissionRequestHandler((webContents, permission, callback, details) => callback(CheckHostPermission(details.requestingUrl, appURI)));
     // TODO: May remove the following workaround when https://github.com/electron/electron/issues/41957 is solved
-    session.on('file-system-access-restricted', (event, details, callback) => callback(CheckHostPermission(details.origin, appURI.hostname) ? 'allow' : 'deny'));
+    session.on('file-system-access-restricted', (event, details, callback) => callback(CheckHostPermission(details.origin, appURI) ? 'allow' : 'deny'));
 }
 
 async function OpenWindow(): Promise<void> {
