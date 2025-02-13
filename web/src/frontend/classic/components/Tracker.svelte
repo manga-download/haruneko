@@ -6,7 +6,7 @@
         Button,
         Modal,
     } from 'carbon-components-svelte';
-    import { CheckmarkOutline } from 'carbon-icons-svelte';
+    import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
     import { fade } from 'svelte/transition';
 
     import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';

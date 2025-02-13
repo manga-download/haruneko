@@ -26,7 +26,7 @@ const manifest = {
         'https://app.hakuneko.download/*',
         `${new URL(pkgConfig.url).origin}/*`,
     ],
-    'chromium-args': null,
+    'chromium-args': '--disable-background-timer-throttling',
     'user-agent': targetConfig['user-agent'] ?? null,
     dependencies: pkgConfig.dependencies
 };

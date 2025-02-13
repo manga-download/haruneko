@@ -4,13 +4,13 @@ import { Page } from "../../providers/MangaPlugin";
 import * as Common from '../decorators/Common';
 
 export function MangaLabelExtractor(element: HTMLElement) {
-    return CleanTitle(element.getAttribute('text') ? element.getAttribute('text') : element.textContent);
+    return CleanTitle(element.getAttribute('text') ?? element.textContent);
 }
 
 export function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: CleanTitle(anchor.getAttribute('text') ? anchor.text : anchor.textContent)
+        title: CleanTitle(anchor.text ?? anchor.textContent)
     };
 }
 
@@ -32,11 +32,7 @@ export function PageLinkExtractor<E extends HTMLImageElement>(this: MangaScraper
 export const pathSinglePageManga = '/manga-list.html?listType=allABC';
 const pathMultiPageManga = '/manga-list.html?page={page}';
 
-export const queryMangaTitle = [
-    'ul.manga-info h3',
-    'ul.manga-info h1',
-].join(',');
-
+export const queryMangaTitle = 'ul.manga-info :is(h1, h3)';
 export const queryMangas = 'div.series-title a';
 const queryChapters = 'ul.list-chapters > a';
 export const queryPages = 'img.chapter-img';
@@ -73,7 +69,6 @@ export function PageScript(query: string = queryPages): string {
 @Common.MangasMultiPageCSS(pathMultiPageManga, queryMangas, 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS(queryChapters, Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
-
 export class FlatManga extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
