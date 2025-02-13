@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Philia Scans'
     },
     container: {
-        url: 'https://philiascans.org/series/beayal5-of-dign7ity-gfilpscyhjn12',
-        id: JSON.stringify({ slug: 'beayal5-of-dign7ity-gfilpscyhjn12', id: 29}),
-        title: 'Betrayal of Dignity'
+        url: 'https://philiascans.org/series/how-i-became-king-by-eating-monsters/',
+        id: JSON.stringify({ post: '568', slug: '/series/how-i-became-king-by-eating-monsters/' }),
+        title: 'How I Became King by Eating Monsters'
     },
     child: {
-        id: '/series/beayal5-of-dign7ity-gfilpscyhjn12/chapter-71',
-        title: '71'
+        id: '/series/how-i-became-king-by-eating-monsters/01/',
+        title: '01'
     },
     entry: {
-        index: 0,
-        size: 97_338,
+        index: 1,
+        size: 174_298,
         type: 'image/webp'
     }
 }).AssertWebsite();

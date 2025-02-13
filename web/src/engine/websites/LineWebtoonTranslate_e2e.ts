@@ -1,26 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'linewebtoon-translate',
         title: 'Line Webtoon (Translate)',
     },
     container: {
-        url: 'https://translate.webtoons.com/webtoonVersion?webtoonNo=3140&language=SWE&teamVersion=0',
-        id: '/webtoonVersion?webtoonNo=3140&language=SWE&teamVersion=0',
-        title: 'I want to be a cute anime girl',
-        timeout: 20000
+        url: 'https://translate.webtoons.com/webtoonVersion?webtoonNo=229&language=SWE&teamVersion=0',
+        id: '/webtoonVersion?webtoonNo=229&language=SWE&teamVersion=0',
+        title: 'Dr. Frost',
     },
     child: {
-        id: '/viewer?webtoonNo=3140&episodeNo=133&language=SWE&teamVersion=0',
-        title: '130 - A great deal',
-        timeout: 20000
+        id: '/viewer?webtoonNo=229&episodeNo=1&language=SWE&teamVersion=0',
+        title: 'Ep. 0 - Prologue',
     },
     entry: {
         index: 0,
-        size: 869_052,
+        size: 2_115_971,
         type: 'image/png',
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

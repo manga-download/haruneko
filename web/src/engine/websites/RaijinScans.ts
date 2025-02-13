@@ -16,7 +16,7 @@ function PageExtractor(img: HTMLImageElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('raijinscans', 'RaijinScans', 'https://raijinscans.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
+        super('raijinscans', 'RaijinScans', 'https://raijinscan.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

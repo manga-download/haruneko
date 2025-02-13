@@ -15,17 +15,6 @@ export default class implements IAppWindow {
 
     constructor(private readonly nwWindow: NWJS_Helpers.win, private readonly splashURL: string) {
         // TODO: Confirm really want to close => nwWindow.on('beforunload', ...)
-        this.RegisterKeyboardShortcuts();
-    }
-
-    private RegisterKeyboardShortcuts() {
-        nw.App.registerGlobalHotKey(new nw.Shortcut({
-            key: 'F11',
-            active: function () {
-                this.nwWindow.toggleFullscreen();
-            },
-            failed: () => { console.log('F11 failed'); }
-        }));
     }
 
     private async InitializeSplash(): Promise<void> {
