@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mycomiclist',
         title: 'MyComicList'
@@ -11,14 +11,12 @@ const config = {
         title: 'Avengers United Infinity Comic'
     },
     child: {
-        id: '/avengers-united-infinity-comic/issue-45/all',
-        title: '#45'
+        id: '/avengers-united-infinity-comic/issue-63/all',
+        title: '#63'
     },
     entry: {
         index: 0,
-        size: 299_036,
+        size: 384_838,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

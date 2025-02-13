@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'yurineko',
         title: 'Yurineko'
     },
     container: {
-        url: 'https://yurineko.my/manga/3553',
+        url: 'https://yurineko.site/manga/3553',
         id: '3553',
         title: 'Ma Pháp Thiếu Nữ 201'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 475_199,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

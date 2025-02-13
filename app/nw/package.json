@@ -4,19 +4,18 @@
     "description": "Manga, Anime & Novel Downloader (NodeWebkit based desktop client)",
     "type": "module",
     "main": "app.js",
-    "url": "https://haruneko.pages.dev",
+    "url": "https://app.hakuneko.download",
     "engines": {
-        "node": ">=20.11.0",
-        "npm": ">=10.2.4"
+        "node": ">=22.13.0",
+        "npm": ">=10.9.2"
     },
     "dependencies": {
-        "commander": "^12.1.0",
-        "websocket-rpc": "github:manga-download/websocket-rpc#v1.2.6"
+        "commander": "^13.1.0",
+        "websocket-rpc": "github:manga-download/websocket-rpc#v1.2.7"
     },
     "devDependencies": {
-        "@types/ws": "8.5.13",
         "extract-zip": "2.0.1",
-        "nw": "0.94.0-sdk",
+        "nw": "0.95.0-sdk",
         "plist": "3.1.0"
     },
     "scripts": {

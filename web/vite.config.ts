@@ -18,7 +18,8 @@ export default defineConfig({
     ],
     publicDir: 'static',
     build: {
-        sourcemap: true,
+        minify: 'esbuild',
+        sourcemap: false,
         outDir: 'build',
         chunkSizeWarningLimit: 2 * 1024,
         rollupOptions: {
@@ -30,15 +31,19 @@ export default defineConfig({
                     if (/\/web\/src\/engine\/websites\//.test(id) && /\/[a-zA-Z0-9_-]+\.webp$/.test(id)) {
                         return 'WebsiteIcons';
                     }
-                }
-            }
-        }
+                },
+            },
+        },
+    },
+    esbuild: {
+        minifySyntax: true,
+        minifyWhitespace: true,
+        minifyIdentifiers: false,
+        keepNames: true,
     },
     optimizeDeps: {
         // TODO: once carbon-componenets-svelte v1 is released, check if svelte optimize has been improved
         // carbon-components-svelte is large, prebundle
         include: ['carbon-components-svelte'],
-        // carbon-icons-svelte is huge and takes 12s to prebundle, better use deep imports for the icons you need
-        exclude: ['carbon-icons-svelte']
     }
 });

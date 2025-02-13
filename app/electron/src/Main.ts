@@ -21,6 +21,7 @@ function ParseCLI(): CLIOptions {
     try {
         const argv = new Command()
             .allowUnknownOption(true)
+            .allowExcessArguments(true)
             .option('--origin [url]', 'custom location from which the web-app shall be loaded')
             .parse(process.argv, { from: 'electron' });
         return argv.opts<CLIOptions>();
@@ -58,6 +59,7 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
         transparent: true,
         //icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
+            backgroundThrottling: false,
             webSecurity: false, // Bypass CORS checks
             contextIsolation: true,
             nodeIntegration: false,
@@ -74,6 +76,21 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
     return win;
 }
 
+function CheckHostPermission(url: string, appURI: URL) {
+    try {
+        return new URL(url).hostname === appURI.hostname;
+    } catch {
+        return false;
+    }
+}
+
+function UpdatePermissions(session: Electron.Session, appURI: URL) {
+    session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => CheckHostPermission(requestingOrigin, appURI));
+    session.setPermissionRequestHandler((webContents, permission, callback, details) => callback(CheckHostPermission(details.requestingUrl, appURI)));
+    // TODO: May remove the following workaround when https://github.com/electron/electron/issues/41957 is solved
+    session.on('file-system-access-restricted', (event, details, callback) => callback(CheckHostPermission(details.origin, appURI) ? 'allow' : 'deny'));
+}
+
 async function OpenWindow(): Promise<void> {
     InitializeMenu();
     const argv = ParseCLI();
@@ -84,12 +101,14 @@ async function OpenWindow(): Promise<void> {
     const win = await CreateApplicationWindow();
     const ipc = new IPC(win.webContents);
     const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
+    const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
+    UpdatePermissions(win.webContents.session, uri);
     new RemoteProcedureCallManager(rpc, ipc);
     new FetchProvider(ipc, win.webContents);
     new RemoteBrowserWindowController(ipc);
     new BloatGuard(ipc, win.webContents);
     win.RegisterChannels(ipc);
-    return win.loadURL(argv.origin ?? manifest.url ?? 'about:blank');
+    return win.loadURL(uri.href);
 }
 
 OpenWindow();
