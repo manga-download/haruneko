@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Tile, ClickableTile, Tag } from 'carbon-components-svelte';
-    import { CaretRight } from 'carbon-icons-svelte';
+    import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
     import { fade } from 'svelte/transition';
     import {
         selectedPlugin,

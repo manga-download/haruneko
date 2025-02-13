@@ -1,4 +1,3 @@
-import { Tags } from '../../Tags';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
@@ -9,7 +8,6 @@ import { RateLimit } from '../../taskpool/RateLimit';
 
 const defaultPageScript = `
     new Promise(async (resolve, reject) => {
-
         try {
             // Process motion webtoon
             if (document.querySelector('div#ozViewer div.oz-pages')) {
@@ -49,57 +47,11 @@ const defaultPageScript = `
                 const links = images.map(element => new URL(element.dataset.url, window.location).href);
                 resolve(links);
             }
-
         } catch (error) {
             reject(error);
         }
     });
 `;
-
-const mangasLanguageMap = new Map([
-    ['zh', Tags.Language.Chinese],
-    ['en', Tags.Language.English],
-    ['fr', Tags.Language.French],
-    ['de', Tags.Language.German],
-    ['id', Tags.Language.Indonesian],
-    ['it', Tags.Language.Italian],
-    ['ja', Tags.Language.Japanese],
-    ['ko', Tags.Language.Korean],
-    ['es', Tags.Language.Spanish],
-    ['th', Tags.Language.Thai],
-    ['tr', Tags.Language.Turkish],
-
-    ['ARA', Tags.Language.Arabic],
-    //BEN, Bengali,
-    //BUL, Bulgarian,
-    ['CMN', Tags.Language.Chinese],
-    ['CMT', Tags.Language.Chinese],
-    //CES, Czech],
-    //DAN, Danish],
-    //NLD, Dutch],
-    ['ENG', Tags.Language.English],
-    //FIL, Filipino],
-    ['DEU', Tags.Language.German],
-    //GRE, Greek],
-    //HIN, Hindi],
-    ['IND', Tags.Language.Indonesian],
-    ['ITA', Tags.Language.Italian],
-    ['JPN', Tags.Language.Japanese],
-    //LIT, Lithuanian,
-    //MAY, Malay,
-    //MON, Mongolian,
-    //PER, Persian,
-    ['POL', Tags.Language.Polish],
-    ['POR', Tags.Language.Portuguese],
-    ['POT', Tags.Language.Portuguese],
-    //RON, Romanian,
-    ['RUS', Tags.Language.Russian],
-    //SWE, Swedish,
-    ['THA', Tags.Language.Thai],
-    ['TUR', Tags.Language.Turkish],
-    //UKR, Ukrainian,
-    ['VIE', Tags.Language.Vietnamese],
-]);
 
 type PageData = {
     width: number,
@@ -132,7 +84,6 @@ function ChapterExtractor(element: HTMLAnchorElement) {
 
 @Common.MangasNotSupported()
 export class LineWebtoonBase extends DecoratableMangaScraper {
-    protected languageRegexp = /\/([a-z]{2})\//;
     protected mangaRegexp = /[a-z]{2}\/[^/]+\/[^/]+\/list\?title_no=\d+$/;
     protected queryMangaTitleURI = 'div.info .subj';
     protected mangaLabelExtractor = Common.ElementLabelExtractor();
@@ -145,10 +96,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const manga = await this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, this.mangaLabelExtractor, true, false), Priority.Normal);
-        const languageCode = this.languageRegexp ? url.match(this.languageRegexp)[1]: '';
-        if (mangasLanguageMap.has(languageCode)) manga.Tags.Value.concat([mangasLanguageMap[languageCode]]);
-        return manga;
+        return this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, this.mangaLabelExtractor, true, false), Priority.Normal);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -183,9 +131,8 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        if (!page.Parameters?.layers) return await this.interactionTaskPool.Add(async () => Common.FetchImageAjax.call(this, page, priority, signal, true), Priority.Normal);
-        const payload = page.Parameters;
-        return this.imageTaskPool.Add(async () => {
+        return page.Parameters?.layers ? this.imageTaskPool.Add(async () => {
+            const payload = page.Parameters;
             return DeScramble(new ImageData(payload.width, payload.height,), async (_, ctx) => {
                 ctx.canvas.width = payload.width;
                 ctx.canvas.height = payload.height;
@@ -212,7 +159,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
                     }
                 }
             });
-        }, priority, signal);
+        }, priority, signal) : this.interactionTaskPool.Add(async () => Common.FetchImageAjax.call(this, page, priority, signal, true), Priority.Normal);
     }
 }
 
