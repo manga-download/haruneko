@@ -59,6 +59,7 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
         transparent: true,
         //icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
+            backgroundThrottling: false,
             webSecurity: false, // Bypass CORS checks
             contextIsolation: true,
             nodeIntegration: false,
@@ -71,11 +72,23 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
 
     win.setMenuBarVisibility(false);
     win.on('closed', () => app.quit());
-    // TODO: May remove workaround when https://github.com/electron/electron/issues/41957 is solved
-    win.webContents.session.on('file-system-access-restricted', (event, details, callback) => callback('allow'));
-    win.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => callback(permission === 'fileSystem')); // webContents.getURL().startsWith(argv.origin ?? manifest.url) ? callback(true) : callback(false);
 
     return win;
+}
+
+function CheckHostPermission(url: string, appURI: URL) {
+    try {
+        return new URL(url).hostname === appURI.hostname;
+    } catch {
+        return false;
+    }
+}
+
+function UpdatePermissions(session: Electron.Session, appURI: URL) {
+    session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => CheckHostPermission(requestingOrigin, appURI));
+    session.setPermissionRequestHandler((webContents, permission, callback, details) => callback(CheckHostPermission(details.requestingUrl, appURI)));
+    // TODO: May remove the following workaround when https://github.com/electron/electron/issues/41957 is solved
+    session.on('file-system-access-restricted', (event, details, callback) => callback(CheckHostPermission(details.origin, appURI) ? 'allow' : 'deny'));
 }
 
 async function OpenWindow(): Promise<void> {
@@ -88,12 +101,14 @@ async function OpenWindow(): Promise<void> {
     const win = await CreateApplicationWindow();
     const ipc = new IPC(win.webContents);
     const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
+    const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
+    UpdatePermissions(win.webContents.session, uri);
     new RemoteProcedureCallManager(rpc, ipc);
     new FetchProvider(ipc, win.webContents);
     new RemoteBrowserWindowController(ipc);
     new BloatGuard(ipc, win.webContents);
     win.RegisterChannels(ipc);
-    return win.loadURL(argv.origin ?? manifest.url ?? 'about:blank');
+    return win.loadURL(uri.href);
 }
 
 OpenWindow();

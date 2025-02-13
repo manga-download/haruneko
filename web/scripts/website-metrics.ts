@@ -35,7 +35,7 @@ type Result = {
 
 const expectedRedirectPatterns = new Map([
     [ 'https://erosxcomic.xyz/', [ // REASON: The website uses redirects to rotating (top-level) domains (probably to avoid scraping or DMCA)
-        /^https:\/\/(erosxcomic|erosmanga)\.xyz\/$/,
+        /^https:\/\/(erosxcomic|erosmanga|doomcomic)\.xyz\/$/,
     ] ],
     [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/w+\d*\.holymanga\.net\/$/,

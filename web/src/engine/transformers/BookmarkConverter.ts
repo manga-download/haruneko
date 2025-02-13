@@ -42,7 +42,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'oxapk', 'manjanoon' ],
     [ 'ozulscans', 'kingofmanga' ],
     [ 'prismascans', 'demonsect' ],
-    [ 'realmscans', 'rizzcomics' ],
     [ 'reaperscansid', 'shinigamiid' ],
     [ 'scanhentaimenu', 'xmanga' ],
     [ 'secretscans', 'lynxscans' ],
