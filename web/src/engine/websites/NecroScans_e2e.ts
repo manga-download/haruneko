@@ -1,6 +1,7 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'necroscans',
         title: 'Necro Scans'
@@ -19,6 +20,5 @@ const config = {
         size: 739_042,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
+*/
