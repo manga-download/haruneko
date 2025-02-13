@@ -6,7 +6,7 @@ new TestFixture({
         title: 'JiangzaiToon'
     },
     container: {
-        url: 'https://jiangzaitoon.one/manga/19-gun/',
+        url: 'https://jiangzaitoon.kim/manga/19-gun/',
         id: JSON.stringify({ post: '6872', slug: '/manga/19-gun/' }),
         title: '19 Days'
     },
