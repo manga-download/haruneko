@@ -6,12 +6,10 @@
         ContextMenu,
         ContextMenuOption,
     } from 'carbon-components-svelte';
-    import {
-        Star,
-        StarFilled,
-        PlayFilled,
-        WarningAltInverted,
-    } from 'carbon-icons-svelte';
+    import Star from 'carbon-icons-svelte/lib/Star.svelte';
+    import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
+    import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
+    import WarningAltInverted from 'carbon-icons-svelte/lib/WarningAltInverted.svelte';
     import { selectedMedia } from '../stores/Stores';
     import { coinflip } from '../lib/transitions';
 
@@ -56,7 +54,7 @@
         if (!updatedmedia.IsSameAs(media)) return;
         
         unFlaggedItems = [];
-        const delay = $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
+        const delay = !$selectedMedia || $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
         delayedContentCheck = setTimeout(
         async () => {
             unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
@@ -93,7 +91,7 @@
 
 </script>
 
-<div bind:this={mediadiv} class="media" {style} in:fade class:selected>
+<div bind:this={mediadiv} class="media" {style} class:selected>
     <ContextMenu target={[mediadiv]} bind:open={menuOpen} on:open={menuOpens}>
         <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" 
             onclick={() => {$selectedMedia = media;}}
@@ -186,6 +184,7 @@
     .media {
         display: flex;
         user-select: none;
+        height:1.6em;
     }
     .media:hover {
         background-color: var(--cds-hover-row);

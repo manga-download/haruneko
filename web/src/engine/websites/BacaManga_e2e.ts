@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'bacamanga',
         title: 'BacaManga'
     },
     container: {
-        url: 'https://bacamanga.cc/komik/martial-peak/',
+        url: 'https://komikindo2.com/komik/martial-peak/',
         id: '/komik/martial-peak/',
         title: 'Martial Peak'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 224_158,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

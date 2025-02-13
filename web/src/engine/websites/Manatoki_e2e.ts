@@ -7,7 +7,7 @@ new TestFixture({
         title: 'Manatoki'
     },
     container: {
-        url: 'https://manatoki467.net/comic/122227',
+        url: 'https://manatoki468.net/comic/122227',
         id: '/comic/122227',
         title: '원피스(ONE PIECE)'
     },
@@ -28,7 +28,7 @@ new TestFixture({
         title: 'Manatoki'
     },
     container: {
-        url: 'https://manatoki467.net/webtoon/1095458/템빨',
+        url: 'https://manatoki468.net/webtoon/1095458/템빨',
         id: encodeURI('/webtoon/1095458/템빨'),
         title: '템빨'
     },

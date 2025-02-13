@@ -46,18 +46,22 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pagesList : Page[] = [];
-        let uri = new URL(chapter.Identifier, this.URI);
-        const sectionSlot = uri.searchParams.get('section_slot');
-        const chapterSlot = uri.searchParams.get('chapter_slot');
-        const linkRegex = new RegExpSafe(`/${sectionSlot}_${chapterSlot}_\\d+\\.html?$`, 'i');
-        for (let run = true; run;) {
-            const data = await FetchHTML(new Request(uri));
-            const pages = [...data.querySelectorAll('.comic-contain amp-img.comic-contain__item')];
-            pagesList.push(...pages.map(element => new Page(this, chapter, new URL(element.getAttribute('src'), this.URI))));
-            uri = new URL([...data.querySelectorAll<HTMLAnchorElement>('div.comic-chapter div.next_chapter a')].at(-1)?.pathname, this.URI);
-            run = linkRegex.test(uri.href);
+        const pagesList: Page[] = [];
+        let chapterPageUri = new URL(chapter.Identifier, this.URI);
+        const sectionSlot = chapterPageUri.searchParams.get('section_slot');
+        const chapterSlot = chapterPageUri.searchParams.get('chapter_slot');
+        for (let hasNextPage = true, pageIndex = 2; hasNextPage; pageIndex++) {
+            const doc = await FetchHTML(new Request(chapterPageUri));
+            const pages = [...doc.querySelectorAll<HTMLElement>('.comic-contain amp-img')]
+                .map(element => new Page(this, chapter, new URL(this.ReplaceCDN(element.dataset.src))));
+            pagesList.push(...pages);
+            chapterPageUri = new URL([...doc.querySelectorAll<HTMLAnchorElement>('div.comic-chapter div.next_chapter a')].at(-1)?.pathname, this.URI);
+            hasNextPage = new RegExpSafe(`/${sectionSlot}_${chapterSlot}_${pageIndex}\\.html?$`, 'i').test(chapterPageUri.href);
         }
         return pagesList;
+    }
+
+    private ReplaceCDN(pageUrl: string): string {
+        return pageUrl.replace(/^https?:\/\/(?:[\ww-]+).baozicdn.com\/(.+)$/, 'https://static-tw.baozimh.com/$1');
     }
 }
