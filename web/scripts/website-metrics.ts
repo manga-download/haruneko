@@ -35,7 +35,7 @@ type Result = {
 
 const expectedRedirectPatterns = new Map([
     [ 'https://erosxcomic.xyz/', [ // REASON: The website uses redirects to rotating (top-level) domains (probably to avoid scraping or DMCA)
-        /^https:\/\/(erosxcomic|erosmanga)\.xyz\/$/,
+        /^https:\/\/(erosxcomic|erosmanga|doomcomic)\.xyz\/$/,
     ] ],
     [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/w+\d*\.holymanga\.net\/$/,
@@ -55,8 +55,8 @@ const expectedRedirectPatterns = new Map([
     [ 'https://pijamalikoi.com/', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
         /^https:\/\/www\.pijamalikoi\.com\/$/,
     ] ],
-    [ 'https://tenco-toons.xyz/', [ // REASON: The website uses redirects to rotating (top-level) domains (probably to avoid scraping or DMCA)
-        /^https:\/\/(tenco-toons|terco-olyes)\.xyz\/$/,
+    [ 'https://tenco-fable.xyz/', [ // REASON: The website uses redirects to rotating (top-level) domains (probably to avoid scraping or DMCA)
+        /^https:\/\/(tecno|tenco|terco)-?[a-z]+\.xyz\/$/,
     ] ],
     [ 'https://www.toomics.com/', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
         /^https:\/\/global\.toomics\.com\/en$/,

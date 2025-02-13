@@ -60,6 +60,10 @@ if (process.platform === 'win32') {
     await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
     //dirTemp = await redist(electronVersion, process.platform, 'x64');
     //await setup.bundle(dirApp, dirTemp);
+    dirTemp = await redist(electronVersion, process.platform, 'arm64');
+    await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
+    //dirTemp = await redist(electronVersion, process.platform, 'arm64');
+    //await setup.bundle(dirApp, dirTemp);
 }
 
 if (process.platform === 'linux') {

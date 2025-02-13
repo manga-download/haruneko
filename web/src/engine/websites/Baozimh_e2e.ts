@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'baozimh',
         title: '包子漫書 (baozimh)'
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 5,
-        size: 164_832,
+        size: 151_930,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

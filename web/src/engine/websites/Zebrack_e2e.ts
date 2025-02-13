@@ -78,11 +78,11 @@ new TestFixture({
     container: {
         url: 'https://zebrack-comic.shueisha.co.jp/title/46119/volume/178046',
         id: '/title/46119/volume/178046',
-        title: ''
+        title: 'テンマクキネマ'
     },
     child: {
         id: 'volume/46119/178046',
-        title: 'テンマクキネマ 1'
+        title: '1'
     },
     entry: {
         index: 0,
