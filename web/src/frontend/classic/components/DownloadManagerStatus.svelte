@@ -6,7 +6,10 @@
         Modal,
         ProgressBar,
     } from 'carbon-components-svelte';
-    import { Clean, CloudDownload, RetryFailed, TrashCan } from 'carbon-icons-svelte';
+    import Clean from 'carbon-icons-svelte/lib/Clean.svelte';
+    import CloudDownload from 'carbon-icons-svelte/lib/CloudDownload.svelte';
+    import RetryFailed from 'carbon-icons-svelte/lib/RetryFailed.svelte';
+    import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
     import DownloadManager from './DownloadManager.svelte';
 

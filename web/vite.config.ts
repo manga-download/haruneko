@@ -45,7 +45,5 @@ export default defineConfig({
         // TODO: once carbon-componenets-svelte v1 is released, check if svelte optimize has been improved
         // carbon-components-svelte is large, prebundle
         include: ['carbon-components-svelte'],
-        // carbon-icons-svelte is huge and takes 12s to prebundle, better use deep imports for the icons you need
-        exclude: ['carbon-icons-svelte'],
     }
 });

@@ -5,7 +5,7 @@
         StructuredListCell,
         StructuredListBody,
     } from 'carbon-components-svelte';
-    import { Image } from 'carbon-icons-svelte';
+    import Image from 'carbon-icons-svelte/lib/Image.svelte';
 
     interface Request {
         type: string;

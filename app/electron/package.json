@@ -11,12 +11,11 @@
     },
     "dependencies": {
         "commander": "^13.1.0",
-        "websocket-rpc": "github:manga-download/websocket-rpc#v1.2.6"
+        "websocket-rpc": "github:manga-download/websocket-rpc#v1.2.7"
     },
     "devDependencies": {
-        "@types/ws": "8.5.14",
         "extract-zip": "2.0.1",
-        "electron": "34.0.1",
+        "electron": "34.1.1",
         "plist": "3.1.0"
     },
     "scripts": {
