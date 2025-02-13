@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'hadesnofansub',
         title: 'Hades No Fansub'
     },
     container: {
-        url: 'https://hadesnofansub.com/manga/dark-star-emperor/',
+        url: 'https://ww2.hadesnofansub.com/manga/dark-star-emperor/',
         id: JSON.stringify({ post: '117', slug: '/manga/dark-star-emperor/' }),
         title: 'Dark Star Emperor'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 604_438,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

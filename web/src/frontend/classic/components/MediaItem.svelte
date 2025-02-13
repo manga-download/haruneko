@@ -252,8 +252,8 @@
         min-height: unset;
         width: unset;
         min-width: unset;
-        padding-left: 0;
-        padding-right: 0;
+        padding-left: 0.3em;
+        padding-right:0;
     }
     .listitem :global(button:hover) {
         --cds-icon-01: var(--cds-hover-secondary);
