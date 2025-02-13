@@ -8,7 +8,7 @@ class MediaContainerMock extends MediaContainer<MediaItem> {
     }
 }
 
-describe('Array<MediaContainer<MediaItem>>', () => {
+describe('ArrayExtensions<T>', () => {
 
     describe('none()', () => {
 
@@ -90,6 +90,33 @@ describe('Array<MediaContainer<MediaItem>>', () => {
         it('Should be false when last item in source array is equivalent to last item in batch array', async () => {
             const actual = [ null, new MediaContainerMock('001', 'A') ].isMissingLastItemFrom([ null, new MediaContainerMock('001', 'A') ]);
             expect(actual).toBe(false);
+        });
+    });
+
+    describe('takeUntil()', () => {
+
+        it.each([
+            [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 1 ] ],
+            [ [ 1, 2, 0, 0, 0, 0, 0, 0 ], [ 1, 2 ] ],
+            [ [ 1, 2, 3, 0, 0, 0, 0, 0 ], [ 1, 2, 3 ] ],
+            [ [ 1, 2, 3, 4, 0, 0, 0, 0 ], [ 1, 2, 3, 4 ] ],
+            [ [ 1, 2, 3, 4, 5, 0, 0, 0 ], [ 1, 2, 3, 4, 5 ] ],
+            [ [ 1, 2, 3, 4, 5, 6, 0, 0 ], [ 1, 2, 3, 4, 5, 6 ] ],
+            [ [ 1, 2, 3, 4, 5, 6, 7, 0 ], [ 1, 2, 3, 4, 5, 6, 7 ] ],
+            [ [ 1, 2, 3, 4, 5, 6, 7, 8 ], [ 1, 2, 3, 4, 5, 6, 7, 8 ] ],
+        ])('Should take items from array based on predicate', async (testee, expected) => {
+            const actual = await testee.takeUntil(async item => item > 0);
+            expect(actual).toStrictEqual(expected);
+        });
+
+        it.each([
+            [ [ 1, 2, 3 ] ],
+            [ [ 1, 2, 3, 4, 5 ] ],
+            [ [ 1, 2, 3, 4, 5, 6 ] ],
+            [ [ 1, 2, 3, 4, 5, 6, 7 ] ],
+            [ [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ] ],
+        ])('Should throw for invalid array length', async testee => {
+            await expect(testee.takeUntil(async () => true)).rejects.toThrow(RangeError);
         });
     });
 });

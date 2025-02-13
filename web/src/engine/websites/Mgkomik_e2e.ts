@@ -1,12 +1,13 @@
+/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mgkomik',
         title: 'MGKOMIK'
     },
     container: {
-        url: 'https://mgkomik.id/komik/the-life-after-god-of-martial-lived-in-seclusion/',
+        url: 'https://mgkomik.org/komik/the-life-after-god-of-martial-lived-in-seclusion/',
         id: JSON.stringify({ post: '7180', slug: '/komik/the-life-after-god-of-martial-lived-in-seclusion/' }),
         title: 'The Life After God Of Martial Lived In Seclusion'
     },
@@ -19,6 +20,5 @@ const config = {
         size: 251_852,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
+*/

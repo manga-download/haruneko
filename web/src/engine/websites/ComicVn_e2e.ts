@@ -6,7 +6,7 @@ new TestFixture({
         title: 'ComicVn'
     },
     container: {
-        url: 'https://comicvn8.net/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
+        url: 'https://comicvn9.net/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
         id: '/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
         title: 'Hỏa Võ Cố Sự'
     },
