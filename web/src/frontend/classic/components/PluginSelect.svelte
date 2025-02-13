@@ -11,12 +11,10 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import {
-        Settings,
-        Star,
-        StarFilled,
-        ContentDeliveryNetwork,
-    } from 'carbon-icons-svelte';
+    import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
+    import Star from 'carbon-icons-svelte/lib/Star.svelte';
+    import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
+    import ContentDeliveryNetwork from 'carbon-icons-svelte/lib/ContentDeliveryNetwork.svelte';
     // Svelte
     import { fade } from 'svelte/transition';
     // UI: Components

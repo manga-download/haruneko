@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Desu'
     },
     container: {
-        url: 'https://x.desu.win/manga/wondance.3628/',
+        url: 'https://desu.store/manga/wondance.3628/',
         id: '/manga/wondance.3628/',
         title: 'WonDance'
     },
