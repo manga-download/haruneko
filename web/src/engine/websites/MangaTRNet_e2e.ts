@@ -6,12 +6,12 @@ new TestFixture({
         title: 'MangaTR (.Net)'
     },
     container: {
-        url: 'https://mangatr.io/manga/king-of-the-mound/',
-        id: JSON.stringify({ slug: '/manga/king-of-the-mound/'}),
-        title: 'King Of The Mound'
+        url: 'https://mangatr.app/manga/king-of-the-mound',
+        id: JSON.stringify({ post: '1804', slug: '/manga/king-of-the-mound' }),
+        title: 'King of the Mound'
     },
     child: {
-        id: '/manga/king-of-the-mound/bolum-59/',
+        id: '/manga/king-of-the-mound/bolum-59',
         title: 'Bölüm 59'
     },
     entry: {

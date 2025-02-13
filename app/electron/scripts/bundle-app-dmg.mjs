@@ -57,8 +57,9 @@ async function cleanup(blinkDeploymentTemporaryDirectory) {
         await fs.unlink(blinkDeploymentTemporaryDirectory + '.dmg');
     } catch(error) {/**/}
     await fs.rename(path.join(blinkDeploymentTemporaryDirectory, 'Electron.app'), path.join(blinkDeploymentTemporaryDirectory, product + '.app'));
-    // HACK: ...
-    //await run(`xattr -cr '${path.join(blinkDeploymentTemporaryDirectory, product + '.app')}'`);
+    // NOTE: Unfortunately the following commands will probably not affect the distributed disk image
+    await run(`xattr -r -c '${path.join(blinkDeploymentTemporaryDirectory, product + '.app')}'`);
+    await run(`chmod -R +X  '${path.join(blinkDeploymentTemporaryDirectory, product + '.app')}'`);
 }
 
 async function createDiskImage(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {

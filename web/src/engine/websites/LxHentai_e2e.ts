@@ -6,7 +6,7 @@ new TestFixture({
         title: 'LxHentai (Hentai LXX)',
     },
     container: {
-        url: 'https://lxmanga.info/truyen/nu-than-ke-ben',
+        url: 'https://lxmanga.cloud/truyen/nu-than-ke-ben',
         id: '/truyen/nu-than-ke-ben',
         title: 'Nữ thần kế bên',
     },
