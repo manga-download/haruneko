@@ -59,6 +59,7 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
         transparent: true,
         //icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
+            backgroundThrottling: false,
             webSecurity: false, // Bypass CORS checks
             contextIsolation: true,
             nodeIntegration: false,
@@ -75,11 +76,19 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
     return win;
 }
 
+function CheckHostPermission(url: string, appURI: URL) {
+    try {
+        return new URL(url).hostname === appURI.hostname;
+    } catch {
+        return false;
+    }
+}
+
 function UpdatePermissions(session: Electron.Session, appURI: URL) {
-    session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => new URL(requestingOrigin).hostname === appURI.hostname);
-    session.setPermissionRequestHandler((webContents, permission, callback, details) => callback(new URL(details.requestingUrl).hostname === appURI.hostname));
+    session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => CheckHostPermission(requestingOrigin, appURI));
+    session.setPermissionRequestHandler((webContents, permission, callback, details) => callback(CheckHostPermission(details.requestingUrl, appURI)));
     // TODO: May remove the following workaround when https://github.com/electron/electron/issues/41957 is solved
-    session.on('file-system-access-restricted', (event, details, callback) => callback(new URL(details.origin).hostname === appURI.hostname ? 'allow' : 'deny'));
+    session.on('file-system-access-restricted', (event, details, callback) => callback(CheckHostPermission(details.origin, appURI) ? 'allow' : 'deny'));
 }
 
 async function OpenWindow(): Promise<void> {
