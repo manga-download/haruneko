@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://manhwabuddy.com/manhwa/hitomi-chan-is-shy-with-strangers/',
-        id: '/manhwa/hitomi-chan-is-shy-with-strangers',
+        id: '/manhwa/hitomi-chan-is-shy-with-strangers/',
         title: 'Hitomi-Chan Is Shy With Strangers'
     },
     child: {
