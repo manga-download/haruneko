@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Holy Manga'
     },
     container: {
-        url: 'https://w34.holymanga.net/manga-grand-metal-organs.html',
-        id: '/manga-grand-metal-organs.html',
-        title: 'Grand Metal Organs'
+        url: 'https://w34.holymanga.net/manga-nano-machine.html',
+        id: '/manga-nano-machine.html',
+        title: 'Nano Machine'
     },
     child: {
-        id: '/read-grand-metal-organs-chapter-3.1.html',
-        title: 'Vol.1 Chapter 3.1'
+        id: '/read-nano-machine-chapter-90.html',
+        title: 'Chapter 90: Qualifications Of A Vice-Lord (4)'
     },
     entry: {
-        index: 0,
-        size: 382_318,
+        index: 1,
+        size: 267_752,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
