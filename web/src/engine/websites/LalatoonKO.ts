@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './Toomics.webp';
+import icon from './Lalatoon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Toomics from './decorators/ToomicsBase';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Toomics.MangaCSS(/^{origin}\/[a-z]+\/webtoon\/episode\/toon\/\d+$/, 'title')
-@Toomics.MangasSinglePageCSS(['en', 'es', 'de', 'fr', 'it', 'jp', 'mx', 'por', 'sc', 'tc'], 'div.section_ongoing div.list_wrap ul li > div.visual > a')
-@Toomics.ChaptersSinglePageCSS('ol.list-ep li.normal_ep a')
+@Toomics.MangaCSS(/^{origin}\/kr\/webtoon\/episode\/toon\/\d+$/, 'h3[class*="episode-top__tit"]', false)
+@Toomics.MangasSinglePageCSS(['kr'], 'a[href*="/webtoon/episode/toon/"]', undefined, false)
+@Toomics.ChaptersSinglePageCSS('ul.ep__list li a')
 @Common.PagesSinglePageCSS(Toomics.queryPages, Toomics.PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('toomics', `Toomics (Global)`, 'https://global.toomics.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
+        super('lalatoonko', `Lalatoon (KO)`, 'https://www.lalatoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
     }
 
     public override get Icon() {

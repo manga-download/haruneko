@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'hotcomics',
         title: 'HotComics'
@@ -8,7 +8,7 @@ const config = {
     container: {
         url: 'https://hotcomics.me/jp/unquenchable-thirst/V1aiwbI5.html',
         id: '/jp/unquenchable-thirst/V1aiwbI5.html',
-        title: 'Unquenchable Thirst'
+        title: 'Unquenchable Thirst [jp]'
     },
     child: {
         id: '/en/unquenchable-thirst/episode-1-OjPmORio.html',
@@ -19,6 +19,4 @@ const config = {
         size: 12_961,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

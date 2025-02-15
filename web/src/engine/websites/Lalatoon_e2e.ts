@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'lalatoon',
         title: 'Lalatoon'
     },
     container: {
-        url: 'https://www.lalatoon.com/en/webtoon/episode/toon/7574',
+        url: 'https://global.lalatoon.com/en/webtoon/episode/toon/7574',
         id: '/en/webtoon/episode/toon/7574',
         title: 'Cooking Sorcerer [en]'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 50_990,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

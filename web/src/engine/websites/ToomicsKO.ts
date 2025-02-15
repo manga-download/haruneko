@@ -1,15 +1,25 @@
 import { Tags } from '../Tags';
 import icon from './ToomicsKO.webp';
-import { Chapter, type MangaPlugin } from '../providers/MangaPlugin';
+import { type MangaPlugin } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
 import { Fetch, FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
-import * as Toomics from './decorators/Toomics';
+import * as Toomics from './decorators/ToomicsBase';
 import * as Common from './decorators/Common';
 
 type TPagingData = {
     iInsertIdx: string
 }
+function ChapterExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: [
+            anchor.querySelector<HTMLDivElement>('div.ep__episode').textContent.trim(),
+            anchor.querySelector<HTMLElement>('strong.ep__title').textContent.trim()
+        ].join(' ').trim()
+    };
+}
 
+@Common.ChaptersSinglePageCSS('div.episode__body ul.eps li#eps_not_selected a', ChapterExtractor)
 @Common.PagesSinglePageCSS('div.viewer__img img', Toomics.PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -28,7 +38,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // NOTE: Open the korean URL to set the 'content_lang' cookie, otherwise 'www.toomics.com' will keep redirecting to 'global.toomics.com'
-        return FetchWindowScript(new Request('https://toomics.com/ko'), '');
+        return FetchWindowScript(new Request('https://www.toomics.com/ko'), '');
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -46,19 +56,17 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
-        for (const path of ['/webtoon/weekly', '/webtoon/finish/ord/latest', '/popular/popular_list/cut_type/P/ord/update']) {
+        for (const path of ['/webtoon/weekly', '/webtoon/finish/ord/latest']) {
             for (let page = 1, run = true; run; page++) {
                 const mangas: Manga[] = await this.GetMangasFromPage(path, page, provider);
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             }
         }
-        // the popular list contains many duplicates (not detectable by ID) which needs to be removed
-        return mangaList.filter((manga, index) => index === mangaList.findIndex(m => m.Title === manga.Title));
+        return mangaList.distinct();
     }
 
     async GetMangasFromPage(path: string, page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const uri = new URL(path, this.URI);
-        const request = new Request(uri, {
+        const request = new Request(new URL(path, this.URI), {
             method: 'POST',
             body: new URLSearchParams({
                 page: page.toString(),
@@ -70,53 +78,40 @@ export default class extends DecoratableMangaScraper {
         });
         const data = await FetchCSS<HTMLAnchorElement>(request, 'li[class*="__li"] > a[class*="toon"]');
         return data.map(element => {
-            const id = element.dataset.toggle === 'modal' ? `#${element.id.match(/idx(\d+)$/)[1]}` : element.pathname.replace(/bridge\/type\/\d+/, 'episode');
-            const title = element.querySelector('div.toon-dcard__caption strong.toon-dcard__title, div.toon__caption span.toon__subtitle').textContent.replace(/\u005B[^\u005B\u005D]+\u005D$/, '').trim();
+            const id = element.pathname.replace(/bridge\/type\/\d+/, 'episode');
+            const title = element.querySelector('.toon__link, .toon__title').textContent.replace(/\u005B[^\u005B\u005D]+\u005D$/, '').trim();
             return new Manga(this, provider, id, title);
         });
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        if (/#\d+$/.test(manga.Identifier)) {
-            const realMangaId = await this.FetchRealMangaId(manga.Identifier.split('#')[1]);
-            const fakemanga = new Manga(this, manga.Parent as MangaPlugin, realMangaId, manga.Title);
-            const chapters = await Toomics.FetchChaptersSinglePageCSS.call(this, fakemanga, 'div.episode__body ul.eps li.eps__li:not(.chk_ep) a');
-            return chapters.map(chapter => new Chapter(this, manga, chapter.Identifier, chapter.Title));
-
-        } else return Toomics.FetchChaptersSinglePageCSS.call(this, manga, 'div.episode__body ul.eps li.eps__li:not(.chk_ep) a');
-
-    }
-
-    async FetchRealMangaId(idx: string): Promise<string> {
+    private async FetchRealMangaId(idx: string): Promise<string> {
         //get real toon id
         let result = await this.FetchPOST('/popular/getCutPaging', new URLSearchParams({
             cut_idx: idx,
             cut_gender: '',
             cut_type: 'P',
             ord: 'update'
-        }));
+        }).toString());
         const pagingData: TPagingData = JSON.parse(result);
 
         result = await this.FetchPOST('/popular/getCutItem', new URLSearchParams({
             cut_idx: idx,
             history_idx: pagingData.iInsertIdx,
             ord: 'update'
-        }));
-        return '/webtoon/episode/toon/' + result.match(/toon_idx\/(\d+)/)[1];
+        }).toString());
+        return '/webtoon/episode/toon/' + result.match(/toon_idx\/(\d+)/).at(1);
     }
 
-    async FetchPOST(path: string, data: URLSearchParams): Promise<string> {
-        const uri = new URL(path, this.URI);
-        const request = new Request(uri, {
+    private async FetchPOST(path: string, params: string): Promise<string> {
+        const request = new Request(new URL(path, this.URI), {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: data.toString()
+            body: params
         });
         const response = await Fetch(request);
         return response.text();
     }
-
 }

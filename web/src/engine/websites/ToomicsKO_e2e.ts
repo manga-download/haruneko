@@ -1,7 +1,7 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 //As we coded the handling
-const configShortened = {
+new TestFixture({
     plugin: {
         id: 'toomics-ko',
         title: 'Toomics (Korean)'
@@ -20,12 +20,10 @@ const configShortened = {
         size: 474_869,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(configShortened).AssertWebsite();
+}).AssertWebsite();
 
 //the special way, when manga id is not in url
-const configIDX = {
+new TestFixture({
     plugin: {
         id: 'toomics-ko',
         title: 'Toomics (Korean)'
@@ -44,12 +42,10 @@ const configIDX = {
         size: 474_869,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(configIDX).AssertWebsite();
+}).AssertWebsite();
 
 //The link that the users will most likely paste
-const configExpected = {
+new TestFixture({
     plugin: {
         id: 'toomics-ko',
         title: 'Toomics (Korean)'
@@ -68,6 +64,4 @@ const configExpected = {
         size: 474_869,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(configExpected).AssertWebsite();
+}).AssertWebsite();

@@ -263,6 +263,7 @@ export { default as KunManga } from './KunManga';
 export { default as KurageBunch } from './KurageBunch';
 export { default as Laimanhua8 } from './Laimanhua8';
 export { default as Lalatoon } from './Lalatoon';
+export { default as LalatoonKO } from './LalatoonKO';
 export { default as LamiManga } from './LamiManga';
 export { default as LaviniaFansub } from './LaviniaFansub';
 export { default as LectorMangaLat } from './LectorMangaLat';
