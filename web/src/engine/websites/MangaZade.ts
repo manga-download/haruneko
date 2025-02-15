@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './HentaiVN.webp';
+import icon from './MangaZade.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/truyen-hentai\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS('div.page-break img.wp-manga-chapter-img')
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hentaivn', 'HentaiVN', 'https://hentaivn.men', Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('mangazade', 'MangaZade', 'https://mangazade.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Turkish);
     }
 
     public override get Icon() {

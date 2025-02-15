@@ -1,4 +1,3 @@
-import './ArrayExtensions';
 import { mock } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import { DownloadManager } from './DownloadManager';
