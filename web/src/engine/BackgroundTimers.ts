@@ -3,10 +3,12 @@
  * @see {@link https://developer.chrome.com/blog/timer-throttling-in-chrome-88}
  */
 
+import BackgroundTimersWorker from './BackgroundTimersWorker.ts?worker&inline';
+
 type Action = () => void;
 type Payload = { action: string } & Record<string, any>;
 
-const worker = new Worker(new URL('./BackgroundTimersWorker.ts', import.meta.url), { type: 'module' });
+const worker = new BackgroundTimersWorker();
 const timeoutCallbacks = new Map<number, Action>();
 const intervalCallbacks = new Map<number, Action>();
 
