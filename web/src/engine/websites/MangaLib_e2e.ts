@@ -1,6 +1,7 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configWithBranches = {
+//This manga has different version (branches) of same chapter
+new TestFixture({
     plugin: {
         id: 'mangalib',
         title: 'MangaLib'
@@ -11,7 +12,7 @@ const configWithBranches = {
         title: 'Человек-бензопила'
     },
     child: {
-        id: JSON.stringify({ branch_id: '4667', number: '1', volume: '1' }),
+        id: '/api/manga/7965--chainsaw-man/chapter?number=1&volume=1&branch_id=4667',
         title: 'Том 1 Глава 1 - Пёс и бензопила [Nippa Team]'
     },
     entry: {
@@ -19,11 +20,10 @@ const configWithBranches = {
         size: 314_272,
         type: 'image/webp'
     }
-};
+}).AssertWebsite();
 
-new TestFixture(configWithBranches).AssertWebsite();
-
-const configWithoutBranches = {
+//This manga has only one version (branch) of each chapter
+new TestFixture({
     plugin: {
         id: 'mangalib',
         title: 'MangaLib'
@@ -34,7 +34,7 @@ const configWithoutBranches = {
         title: 'Злыдень Арлокк'
     },
     child: {
-        id: JSON.stringify({ branch_id: '', number: '1', volume: '1' }),
+        id: '/api/manga/210908--arlokk-the-atrocious/chapter?number=1&volume=1',
         title: 'Том 1 Глава 1 - Встреча со злодеем'
     },
     entry: {
@@ -42,6 +42,4 @@ const configWithoutBranches = {
         size: 126_508,
         type: 'image/webp'
     }
-};
-
-new TestFixture(configWithoutBranches).AssertWebsite();
+}).AssertWebsite();
