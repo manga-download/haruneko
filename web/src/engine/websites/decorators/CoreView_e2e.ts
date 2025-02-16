@@ -5,6 +5,7 @@ import '../ComicEarthStar_e2e';
 import '../ComicGardo_e2e';
 import '../ComicGrowl_e2e';
 import '../ComicTrail_e2e';
+import '../ComicSeasons_e2e';
 import '../ComicZenon_e2e';
 import '../FeelWeb_e2e';
 import '../HerosWeb_e2e';
