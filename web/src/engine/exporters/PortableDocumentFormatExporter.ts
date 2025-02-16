@@ -44,7 +44,6 @@ export class PortableDocumentFormatExporter extends MangaExporter {
         for(const { width, height, data } of await this.PrepareImages(sourceFileList)) {
             const pageHeight = height * pageWidth / width;
             pdf.addPage({
-                layout: pageWidth < pageHeight ? 'portrait': 'landscape',
                 size: [ pageWidth, pageHeight ],
                 margin: 0,
             }).image(await data.arrayBuffer(), {
