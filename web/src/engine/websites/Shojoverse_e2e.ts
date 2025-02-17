@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://shojoverse.com/manga/reality-quest/',
         id: '/manga/reality-quest/',
-        title: 'The Tale of the Tiger Girl',
+        title: 'Reality Quest',
     },
     child: {
         id: '/reality-quest-chapter-152/',
