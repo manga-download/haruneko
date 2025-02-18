@@ -75,30 +75,22 @@ export default class extends DecoratableMangaScraper {
         return undefined;
     }
 
-    private async GetJSONManga(uri: URL): Promise<JSONManga> {
-        return await this.ExtractJSONData<JSONManga>(uri, '"chapters":[', /,({"titleName":.*?}})\],/);
-    }
-
-    private async GetJSONPages(uri: URL): Promise<JSONPage[]> {
-        return await this.ExtractJSONData<JSONPage[]>(uri, '[{"content":', /(\[{"content":.*?}}}\]),/);
-    }
-
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/titles/\\d+(?:/chapters/\\d+)?$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/titles/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { titleName, titleId } = await this.GetJSONManga(new URL(url));
-        return new Manga(this, provider, titleId.toString(), titleName);
+        const { titleName, titleId } = await this.ExtractJSONData<JSONManga>(new URL(url), '"chapters":[', /,({"titleName":.*?}})\],/);
+        return new Manga(this, provider, titleId.toString(), titleName.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.GetJSONManga(new URL(`/titles/${manga.Identifier}`, this.URI));
-        return chapters.map(({ id, name, subName }) => new Chapter(this, manga, id.toString(), `${subName} ${name}`.trimStart()));
+        const { chapters } = await this.ExtractJSONData<JSONManga>(new URL(`/titles/${manga.Identifier}`, this.URI), '"chapters":[', /,({"titleName":.*?}})\],/);
+        return chapters.map(({ id, name, subName }) => new Chapter(this, manga, id.toString(), `${subName} ${name}`.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages = await this.GetJSONPages(new URL(`/titles/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`, this.URI));
+        const pages = await this.ExtractJSONData<JSONPage[]>(new URL(`/titles/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`, this.URI), '[{"content":', /(\[{"content":.*?}}}\]),/);
         return pages
             .map(page => page.content.value.imageUrl)
             .filter(imageUrl => imageUrl)
