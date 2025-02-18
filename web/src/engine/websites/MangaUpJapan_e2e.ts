@@ -3,16 +3,16 @@ import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 const config: Config = {
     plugin: {
         id: 'mangaupjapan',
-        title: 'MangaUp (ƒ}ƒ“ƒKƒAƒbƒv!)'
+        title: 'MangaUp (ãƒãƒ³ã‚¬ã‚¢ãƒƒãƒ—!)'
     },
     container: {
         url: 'https://www.manga-up.com/titles/214',
         id: '214',
-        title: 'ç-ˆ¢’m‰ê•Ò-'
+        title: 'å’²-é˜¿çŸ¥è³€ç·¨-'
     },
     child: {
         id: '39175',
-        title: '‘æ‚P‹Ç ç®ç - ‡@'
+        title: 'ç¬¬ï¼‘å±€ é‚‚é€… - â‘ '
     },
     entry: {
         index: 0,
