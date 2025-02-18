@@ -2,12 +2,12 @@
 
 new TestFixture({
     plugin: {
-        id: 'spiderscans',
-        title: 'Spider Scans'
+        id: 'spidyscans',
+        title: 'Spidy Scans'
     },
     container: {
-        url: 'https://spiderscans.xyz/manga/my-god-tier-leveling-system/',
-        id: JSON.stringify({ post: '190', slug: '/manga/my-god-tier-leveling-system/' }),
+        url: 'https://spidyscans.xyz/manga/my-god-tier-leveling-system/',
+        id: JSON.stringify({ post: '1911', slug: '/manga/my-god-tier-leveling-system/' }),
         title: 'My God Tier Leveling System'
     },
     child: {

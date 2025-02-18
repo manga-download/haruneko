@@ -628,6 +628,7 @@ export { default as SkyMangas } from './SkyMangas';
 export { default as SoftKomik } from './SoftKomik';
 export { default as SoulScans } from './SoulScans';
 export { default as SpiderScans } from './SpiderScans';
+export { default as SpidyScans } from './SpidyScans';
 export { default as SpoilerPlus } from './SpoilerPlus';
 export { default as StarboundScans } from './StarboundScans';
 export { default as StellarSaber } from './StellarSaber';
