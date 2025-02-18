@@ -1,7 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
-
     plugin: {
         id: 'mangaupjapan',
         title: 'MangaUp (マンガアップ!)'
