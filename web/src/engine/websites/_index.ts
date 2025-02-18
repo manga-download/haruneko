@@ -401,6 +401,7 @@ export { default as MangaTR } from './MangaTR';
 export { default as MangaTRNet } from './MangaTRNet';
 export { default as MangaTube } from './MangaTube';
 export { default as MangaUpGlobal } from './MangaUpGlobal';
+export { default as MangaUpJapan } from './MangaUpJapan';
 export { default as MangaWorld } from './MangaWorld';
 export { default as MangaWorldAdult } from './MangaWorldAdult';
 export { default as MangaWOW } from './MangaWOW';
