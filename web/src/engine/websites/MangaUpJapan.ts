@@ -16,16 +16,12 @@ type JSONManga = {
     chapters: JSONChapter[]
 }
 
-type JSONImage = {
-    imageUrl: string,
-}
-
-type JSONContent = {
-    value: JSONImage
-}
-
 type JSONPage = {
-    content: JSONContent
+    content: {
+        value: {
+            imageUrl: string,
+        }
+    }
 }
 
 const mangasEndpoints = [
@@ -42,7 +38,7 @@ const mangasEndpoints = [
 
 function MangasExtractor(element: HTMLAnchorElement) {
     return {
-        id: element.pathname.match(new RegExpSafe('^/titles/(\\d+)$'))[1],
+        id: element.pathname.match(new RegExpSafe('^/titles/(\\d+)$')).at(1),
         title: element.querySelector('div.pc\\:text-title-md-pc').textContent.trim()
     };
 }
@@ -59,37 +55,32 @@ export default class extends DecoratableMangaScraper {
     }
 
     private ExtractNextJsPayloadData(element: HTMLScriptElement): string {
-        if (!element.innerHTML.includes('self.__next_f.push(')) {
-            return undefined;
-        }
-        const data = element.innerHTML.match(/^self\.__next_f\.push\(\[\d+,"(.*)"\]\)$/)?.[1];
+        const data = element.innerHTML.match(/^self\.__next_f\.push\(\[\d+,"(.*)"\]\)$/)?.at(1);
         return data?.replace(/\\{1,2}"/g, '"').replace(/\\{2,3}n/g, '\\n');
     }
 
-    private async GetNextJsPayloadData(uri: URL, searchString: string): Promise<string> {
+    private async ExtractJSONData<T>(uri: URL, scriptMatcher: string, dataRegexp: RegExp): Promise<T> {
         const request = new Request(uri.href);
-        const elements = await FetchCSS<HTMLScriptElement>(request, 'script');
+        const elements = await FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
         for (const element of elements) {
+            if (!element.innerHTML.includes('self.__next_f.push(')) {
+                continue;
+            }
             const data = this.ExtractNextJsPayloadData(element);
-            if (data && data.includes(searchString)) {
-                return data;
+            if (data && data.includes(scriptMatcher)) {
+                const jsonString = data.match(dataRegexp).at(1);
+                return JSON.parse(jsonString) as T;
             }
         }
         return undefined;
     }
 
     private async GetJSONManga(uri: URL): Promise<JSONManga> {
-        const data = await this.GetNextJsPayloadData(uri, '"chapters":[');
-        const jsonString = data.match(/,({"titleName":.*?}})\],/)[1];
-        const mangaData: JSONManga = JSON.parse(jsonString);
-        return mangaData;
+        return await this.ExtractJSONData<JSONManga>(uri, '"chapters":[', /,({"titleName":.*?}})\],/);
     }
 
     private async GetJSONPages(uri: URL): Promise<JSONPage[]> {
-        const data = await this.GetNextJsPayloadData(uri, '[{"content":');
-        const jsonString = data.match(/(\[{"content":.*?}}}\]),/)[1];
-        const imagesData: JSONPage[] = JSON.parse(jsonString);
-        return imagesData;
+        return await this.ExtractJSONData<JSONPage[]>(uri, '[{"content":', /(\[{"content":.*?}}}\]),/);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -97,22 +88,20 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await this.GetJSONManga(new URL(url));
-        return new Manga(this, provider, String(data.titleId), data.titleName);
+        const { titleName, titleId } = await this.GetJSONManga(new URL(url));
+        return new Manga(this, provider, titleId.toString(), titleName);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`/titles/${manga.Identifier}`, this.URI);
-        const data = await this.GetJSONManga(uri);
-        return data.chapters.map(chapter => new Chapter(this, manga, String(chapter.id), `${chapter.subName} ${chapter.name}`.trimStart()));
+        const { chapters } = await this.GetJSONManga(new URL(`/titles/${manga.Identifier}`, this.URI));
+        return chapters.map(({ id, name, subName }) => new Chapter(this, manga, id.toString(), `${subName} ${name}`.trimStart()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL(`/titles/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`, this.URI);
-        const data = await this.GetJSONPages(uri);
-        return data
+        const pages = await this.GetJSONPages(new URL(`/titles/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`, this.URI));
+        return pages
             .map(page => page.content.value.imageUrl)
-            .filter(imageUrl => imageUrl !== undefined && imageUrl !== '')
+            .filter(imageUrl => imageUrl)
             .map(imageUrl => new Page(this, chapter, new URL(imageUrl)));
     }
 }

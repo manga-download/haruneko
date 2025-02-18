@@ -1,6 +1,7 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
+
     plugin: {
         id: 'mangaupjapan',
         title: 'MangaUp (マンガアップ!)'
@@ -19,6 +20,4 @@ const config: Config = {
         size: 61_018,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
