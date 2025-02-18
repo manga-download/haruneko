@@ -1,7 +1,8 @@
 import type { Chapter, Manga, Page } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, type MangaPlugin } from '../providers/MangaPlugin';
-import type { Priority } from '../taskpool/DeferredTask';
+import type { Priority } from '../taskpool/TaskPool';
 export default class extends DecoratableMangaScraper {
+    private readonly mangasTaskPool;
     constructor();
     get Icon(): any;
     ValidateMangaURL(url: string): boolean;
@@ -11,7 +12,6 @@ export default class extends DecoratableMangaScraper {
     FetchChapters(manga: Manga): Promise<Chapter[]>;
     FetchPages(chapter: Chapter): Promise<Page[]>;
     FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
-    private DecryptImage;
     private GetImageSizeByQuality;
     private FetchTwirp;
 }
