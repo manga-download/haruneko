@@ -2,7 +2,8 @@ import type { Chapter, Manga, Page } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, type MangaPlugin } from '../providers/MangaPlugin';
 import type { Priority } from '../taskpool/TaskPool';
 export default class extends DecoratableMangaScraper {
-    private readonly mangasTaskPool;
+    private readonly mangasSequentialTaskPool;
+    private readonly drm;
     constructor();
     get Icon(): any;
     ValidateMangaURL(url: string): boolean;
