@@ -2,6 +2,7 @@ import { DownloadTask, Status } from './DownloadTask';
 import { ObservableArray, type IObservable } from './Observable';
 import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
 import type { StorageController } from './StorageController';
+import { Delay, SetTimeout } from './BackgroundTimers';
 
 export class DownloadManager {
 
@@ -16,14 +17,11 @@ export class DownloadManager {
     }
 
     /**
-     * Perform a thread/concurrency safe operation on {@link queue}
+     * Perform an (almost) thread/concurrency safe operation on {@link queue}
      */
     private async InvokeQueueTransaction<R>(transaction: () => R): Promise<R> {
         try {
-            // TODO: Use a better locking mechanism?
-            while(this.queueTransactionLock) {
-                await new Promise(resolve => setTimeout(resolve, 5));
-            }
+            while(this.queueTransactionLock) await Delay(5);
             this.queueTransactionLock = true;
             return transaction();
         } finally {
@@ -74,7 +72,7 @@ export class DownloadManager {
                 if(task) {
                     await task.Run();
                 } else {
-                    await new Promise(resolve => setTimeout(resolve, 750));
+                    await new Promise<void>(resolve => SetTimeout(resolve, 750));
                 }
             } catch { /* IGNORE */ }
         }

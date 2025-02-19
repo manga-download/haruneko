@@ -11,12 +11,12 @@ new TestFixture({
         title: 'Mairimashita! Iruma-kun'
     },
     child: {
-        id: '/id-153837-read-mairimashita-iruma-kun-chapter-174.html',
-        title: '174'
+        id: '/id-127778-read-mairimashita-iruma-kun-chapter-100.html',
+        title: '100'
     },
     entry: {
-        index: 1,
-        size: 342_746,
+        index: 2,
+        size: 265_812,
         type: 'image/webp'
     }
 }).AssertWebsite();
