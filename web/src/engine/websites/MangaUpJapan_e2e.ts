@@ -11,12 +11,12 @@ new TestFixture({
         title: '咲-阿知賀編-'
     },
     child: {
-        id: '39175',
-        title: '第１局 邂逅 - ①'
+        id: '175331',
+        title: '第３５局 心行（後編）'
     },
     entry: {
         index: 0,
-        size: 61_018,
+        size: 152_838,
         type: 'image/webp'
     }
 }).AssertWebsite();

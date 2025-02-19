@@ -25,20 +25,20 @@ type JSONPage = {
 }
 
 const mangasEndpoints = [
-    '/mon',
-    '/tue',
-    '/wed',
-    '/thu',
-    '/fri',
-    '/sat',
-    '/sun',
-    '/end',
-    '/yomikiri'
-].map(slug => `/series${slug}`);
+    'mon',
+    'tue',
+    'wed',
+    'thu',
+    'fri',
+    'sat',
+    'sun',
+    'end',
+    'yomikiri'
+].map(slug => `/series/${slug}`);
 
 function MangasExtractor(element: HTMLAnchorElement) {
     return {
-        id: element.pathname.match(new RegExpSafe('^/titles/(\\d+)$')).at(1),
+        id: element.pathname.split('/').at(-1),
         title: element.querySelector('div.pc\\:text-title-md-pc').textContent.trim()
     };
 }
@@ -60,16 +60,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async ExtractJSONData<T>(uri: URL, scriptMatcher: string, dataRegexp: RegExp): Promise<T> {
-        const request = new Request(uri.href);
-        const elements = await FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
+        const elements = await FetchCSS<HTMLScriptElement>(new Request(uri.href), 'script:not([src])');
         for (const element of elements) {
-            if (!element.innerHTML.includes('self.__next_f.push(')) {
-                continue;
-            }
             const data = this.ExtractNextJsPayloadData(element);
-            if (data && data.includes(scriptMatcher)) {
-                const jsonString = data.match(dataRegexp).at(1);
-                return JSON.parse(jsonString) as T;
+            if (data?.includes(scriptMatcher)) {
+                return JSON.parse(data.match(dataRegexp).at(1)) as T;
             }
         }
         return undefined;
