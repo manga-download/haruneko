@@ -28,12 +28,24 @@ export default defineConfig({
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
                 manualChunks: function(id) {
-                    if (/\/web\/src\/engine\/websites\//.test(id) && /\/[a-zA-Z0-9_-]+\.webp$/.test(id)) {
+                    if(id.includes('node_modules')) {
+                        return 'Vendor';
+                    }
+                    if(/\/web\/src\/engine\/websites\//.test(id) && /\/[a-zA-Z0-9_-]+\.webp$/.test(id)) {
                         return 'WebsiteIcons';
                     }
                 },
             },
         },
+    },
+    worker: {
+        rollupOptions: {
+            output: {
+                entryFileNames: `${buildID}/[name].js`,
+                assetFileNames: `${buildID}/[name].[ext]`,
+                chunkFileNames: `${buildID}/[name].js`,
+            }
+        }
     },
     esbuild: {
         minifySyntax: true,

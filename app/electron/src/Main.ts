@@ -59,7 +59,6 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
         transparent: true,
         //icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
-            backgroundThrottling: false,
             webSecurity: false, // Bypass CORS checks
             contextIsolation: true,
             nodeIntegration: false,

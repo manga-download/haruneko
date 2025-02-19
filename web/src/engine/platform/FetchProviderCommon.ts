@@ -4,16 +4,13 @@ import { EngineResourceKey as R } from '../../i18n/ILocale';
 import { CreateRemoteBrowserWindow } from './RemoteBrowserWindow';
 import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDetection';
 import type { FeatureFlags } from '../FeatureFlags';
+import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
 
 export type ScriptInjection<T extends void | JSONElement> = string | ((this: Window) => Promise<T>);
 
 export abstract class FetchProvider {
 
     private featureFlags: FeatureFlags;
-
-    private async Wait(delay: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, delay));
-    }
 
     protected async ValidateResponse(response: Response): Promise<void> {
         if(/challenge/i.test(response.headers.get('CF-Mitigated'))) {
@@ -218,7 +215,7 @@ export abstract class FetchProvider {
         };
 
         return new Promise<T>(async (resolve, reject) => {
-            let cancellation = setTimeout(async () => {
+            let cancellation = await SetTimeout(async () => {
                 await destroy();
                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
             }, timeout);
@@ -231,8 +228,8 @@ export abstract class FetchProvider {
                     switch (redirect) {
                         case FetchRedirection.Interactive:
                             // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
-                            clearTimeout(cancellation);
-                            cancellation = setTimeout(() => {
+                            ClearTimeout(cancellation);
+                            cancellation = await SetTimeout(() => {
                                 destroy();
                                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
                             }, 150_000);
@@ -241,8 +238,8 @@ export abstract class FetchProvider {
                         case FetchRedirection.Automatic:
                             break;
                         default:
-                            clearTimeout(cancellation);
-                            await this.Wait(delay);
+                            ClearTimeout(cancellation);
+                            await Delay(delay);
                             const result = await win.ExecuteScript<T>(script);
                             await destroy();
                             resolve(result);
