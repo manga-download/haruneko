@@ -8,16 +8,16 @@ const styles: ElementStyles = css`
         --body-font: NotoColorEmoji-Flags, 'Segoe UI Variable', 'Segoe UI', sans-serif;
 
         font-family: var(--body-font);
-        font-size: var(--type-ramp-base-font-size);
+        font-size: var(--fontSizeBase300);
         gap: 0;
         display: grid;
         grid-template-columns: auto;
         grid-template-rows: min-content min-content minmax(0, 1fr);
-        border: 1px var(--neutral-stroke-layer-active) solid;
-        border-radius: calc(1.25px * var(--layer-corner-radius));
-        height: calc(100vh - 2px * var(--stroke-width));
-        background-color: var(--neutral-layer-1);
-        color: var(--neutral-foreground-rest);
+        border: 1px var(--colorNeutralStroke3) solid;
+        border-radius: var(--borderRadiusXLarge);
+        height: calc(100vh - 2 * var(--strokeWidthThin));
+        background-color: var(--colorNeutralBackground2);
+        color: var(--colorNeutralForeground1);
         user-select: none;
     }
 
@@ -27,8 +27,8 @@ const styles: ElementStyles = css`
     #widgets {
         display: flex;
         flex-direction: row;
-        gap: calc(var(--base-height-multiplier) * 1px);
-        margin: calc(var(--base-height-multiplier) * 1px);
+        gap: var(--spacingHorizontalS);
+        margin: var(--spacingHorizontalS);
     }
 
     #preview {
@@ -38,12 +38,12 @@ const styles: ElementStyles = css`
         flex: 2;
         display: flex;
         flex-direction: column;
-        gap: calc(var(--base-height-multiplier) * 1px);
+        gap: var(--spacingHorizontalS);
     }
 
     #mainpanel {
         flex: 3;
-        gap: calc(var(--base-height-multiplier) * 1px);
+        gap: var(--spacingHorizontalS);
         display: grid;
         grid-template-columns: auto;
         grid-template-rows: min-content min-content minmax(0, 1fr);

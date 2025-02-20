@@ -19,9 +19,9 @@ import IconRemoveBookmark from '@fluentui/svg-icons/icons/bookmark_20_filled.svg
 // #entries .entry
 const styleEntries = [
     'height: 42px;',
-    'padding: calc(var(--design-unit) * 1px);',
-    'border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);',
-    'gap: calc(var(--design-unit) * 1px);',
+    'padding: var(--spacingHorizontalXS);',
+    'border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);',
+    'gap: var(--spacingHorizontalXS);',
     'display: grid;',
     'grid-template-rows: min-content 1fr;',
     'grid-template-columns: min-content 1fr;',
@@ -31,7 +31,7 @@ const styleEntries = [
 
 // #entries .entry:hover
 // cursor: pointer;
-// background-color: var(--neutral-fill-hover);
+// background-color: var(--colorNeutralBackground1Hover);
 
 // #entries .entry > div
 const styleTrim = [
@@ -44,11 +44,11 @@ const styleTrim = [
 const styleTitle = styleTrim + ' font-weight: bold;';
 
 // .hint
-const styleHint = styleTrim + ' color: var(--neutral-foreground-hint);';
+const styleHint = styleTrim + ' color: var(--colorNeutralForeground4);';
 
 // .icon
 const styleIcon = [
-    'margin-right: calc(var(--design-unit) * 1px);',
+    'margin-right: var(--spacingHorizontalXS);',
     'height: inherit;',
     'grid-row: 1 / -1;',
 ].join(' ');
@@ -62,9 +62,9 @@ const styles: ElementStyles = css`
     }
 
     #heading {
-        background-color: var(--neutral-layer-2);
-        padding: calc(var(--design-unit) * 1px);
-        gap: calc(var(--base-height-multiplier) * 1px);
+        background-color: var(--colorNeutralBackground4);
+        padding: var(--spacingHorizontalXS);
+        gap: var(--spacingHorizontalS);
         display: grid;
         align-items: center;
         grid-template-columns: max-content 1fr max-content;
@@ -72,11 +72,11 @@ const styles: ElementStyles = css`
 
     #heading:hover {
         cursor: pointer;
-        background-color: var(--neutral-fill-hover);
+        background-color: var(--colorNeutralBackground1Hover);
     }
 
     #heading #logo {
-        height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+        height: var(--fontSizeBase600);
     }
 
     #heading #title {
@@ -92,8 +92,8 @@ const styles: ElementStyles = css`
     }
 
     #controls .hint {
-        margin-left: calc(var(--design-unit) * 1px);
-        margin-right: calc(var(--design-unit) * 1px);
+        margin-left: var(--spacingHorizontalXS);
+        margin-right: var(--spacingHorizontalXS);
     }
 
     #dropdown {
@@ -102,10 +102,10 @@ const styles: ElementStyles = css`
     }
 
     #searchcontrol {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        background-color: var(--colorNeutralBackground4);
     }
 
     #button-update-entries.updating svg {
@@ -126,9 +126,9 @@ const styles: ElementStyles = css`
     /*
     #entries .entry {
         height: 42px;
-        padding: calc(var(--design-unit) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        gap: calc(var(--design-unit) * 1px);
+        padding: var(--spacingHorizontalXS);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        gap: var(--spacingHorizontalXS);
         display: grid;
         grid-template-rows: min-content 1fr;
         grid-template-columns: min-content 1fr;
@@ -142,18 +142,18 @@ const styles: ElementStyles = css`
 
     #entries .entry:hover {
         cursor: pointer;
-        background-color: var(--neutral-fill-hover);
+        background-color: var(--colorNeutralBackground1Hover);
     }
 
     .icon {
-        margin-right: calc(var(--design-unit) * 1px);
+        margin-right: var(--spacingHorizontalXS);
         height: inherit;
         grid-row: 1 / -1;
     }
     */
 
     .hint {
-        color: var(--neutral-foreground-hint);
+        color: var(--colorNeutralForeground4);
     }
 `;
 
@@ -169,7 +169,7 @@ const starred: ViewTemplate<MediaTitleSelect> = html`
 //       => classes are not working, apply inline styles
 //       => manually query correct host and provide callback function
 const listitem: ViewTemplate<MediaContainer<MediaChild>> = html`
-    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--neutral-fill-hover')" onmouseout="this.style.backgroundColor = ''" @click=${(model, ctx) => ctx.parent.parentNode.parentNode.host.SelectEntry(model) }>
+    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${(model, ctx) => ctx.parent.parentNode.parentNode.host.SelectEntry(model) }>
         <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
         <div class="title" style="${styleTitle}">${model => model.Title}</div>
         <div class="hint" style="${styleHint}">${model => model.Identifier}</div>

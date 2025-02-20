@@ -33,8 +33,8 @@ const styles: ElementStyles = css`
         display: grid;
         align-items: center;
         grid-template-columns: max-content auto max-content;
-        border-top-left-radius: calc(1px * var(--layer-corner-radius));
-        border-top-right-radius: calc(1px * var(--layer-corner-radius));
+        border-top-left-radius: var(--borderRadiusXLarge);
+        border-top-right-radius: var(--borderRadiusXLarge);
     }
 
     #menu {

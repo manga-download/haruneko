@@ -15,8 +15,8 @@ const styles: ElementStyles = css`
     #dialog {
         height: 100%;
         box-sizing: border-box;
-        padding: calc(var(--base-height-multiplier) * 1px);
-        gap: calc(var(--base-height-multiplier) * 1px);
+        padding: var(--spacingHorizontalS);
+        gap: var(--spacingHorizontalS);
         display: grid;
         align-items: center;
         grid-template-columns: auto;
@@ -36,17 +36,17 @@ const styles: ElementStyles = css`
     }
 
     #settings {
-        gap: calc(var(--base-height-multiplier) * 1px);
-        padding-top: calc(var(--base-height-multiplier) * 1px);
-        padding-bottom: calc(var(--base-height-multiplier) * 1px);
+        gap: var(--spacingHorizontalS);
+        padding-top: var(--spacingHorizontalS);
+        padding-bottom: var(--spacingHorizontalS);
         display: grid;
         align-items: center;
         grid-template-columns: max-content max-content;
         align-items: center;
         align-content: center;
         justify-content: space-evenly;
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
     }
 
     #content .input > * {

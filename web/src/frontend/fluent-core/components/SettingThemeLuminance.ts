@@ -6,8 +6,8 @@ import IconMoonlight from '@fluentui/svg-icons/icons/weather_moon_20_regular.svg
 
 const styles: ElementStyles = css`
     :host {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        gap: calc(var(--base-height-multiplier) * 1px);
+        padding: var(--spacingHorizontalS);
+        gap: var(--spacingHorizontalS);
         display: grid;
         align-items: center;
         grid-template-columns: min-content minmax(0, 1fr) min-content;

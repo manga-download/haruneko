@@ -11,8 +11,8 @@ const styles: ElementStyles = css`
     }
 
     #header {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        background-color: var(--colorNeutralBackground4);
         display: grid;
         align-items: center;
         grid-template-rows: auto;
@@ -28,7 +28,7 @@ const styles: ElementStyles = css`
     }
 
     .hint {
-        color: var(--neutral-foreground-hint);
+        color: var(--colorNeutralForeground4);
     }
 
     .missing {
@@ -36,10 +36,10 @@ const styles: ElementStyles = css`
     }
 
     #searchcontrol {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        background-color: var(--colorNeutralBackground4);
     }
 
     ul#entries {
@@ -51,10 +51,10 @@ const styles: ElementStyles = css`
     }
 
     ul#entries li {
-        height: 24px; /* calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px); */
-        padding: calc(var(--design-unit) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        gap: calc(var(--design-unit) * 1px);
+        height: var(--fontSizeBase600);
+        padding: var(--spacingHorizontalXS);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        gap: var(--spacingHorizontalXS);
         display: grid;
         align-items: center;
         grid-template-rows: min-content;
@@ -69,11 +69,11 @@ const styles: ElementStyles = css`
 
     ul#entries li:hover {
         cursor: pointer;
-        background-color: var(--neutral-fill-hover);
+        background-color: var(--colorNeutralBackground1Hover);
     }
 
     .icon {
-        margin-right: calc(var(--design-unit) * 1px);
+        margin-right: var(--spacingHorizontalXS);
         height: inherit;
     }
 `;

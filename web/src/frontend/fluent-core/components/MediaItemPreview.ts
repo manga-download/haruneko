@@ -13,9 +13,9 @@ const styles: ElementStyles = css`
     }
 
     #heading {
-        background-color: var(--neutral-layer-1);
-        padding: calc(var(--design-unit) * 1px);
-        gap: calc(var(--base-height-multiplier) * 1px);
+        background-color: var(--colorNeutralBackground2);
+        padding: var(--spacingHorizontalXS);
+        gap: var(--spacingHorizontalS);
         display: grid;
         align-items: center;
         grid-template-columns: max-content 1fr max-content;

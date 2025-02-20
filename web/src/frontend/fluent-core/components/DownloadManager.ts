@@ -11,8 +11,8 @@ const styles: ElementStyles = css`
     }
 
     #header {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        background-color: var(--colorNeutralBackground4);
         display: grid;
         align-items: center;
         grid-template-rows: auto;
@@ -28,14 +28,14 @@ const styles: ElementStyles = css`
     }
 
     .hint {
-        color: var(--neutral-foreground-hint);
+        color: var(--colorNeutralForeground4);
     }
 
     #searchcontrol {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        background-color: var(--colorNeutralBackground4);
     }
 
     #entries {

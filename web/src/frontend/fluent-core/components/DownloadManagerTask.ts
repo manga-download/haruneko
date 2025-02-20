@@ -24,9 +24,9 @@ const styles: ElementStyles = css`
     :host {
         display: flex;
         flex-direction: column;
-        gap: calc(var(--design-unit) * 1px);
-        padding: calc(var(--design-unit) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
+        gap: var(--spacingHorizontalXS);
+        padding: var(--spacingHorizontalXS);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
     }
 
     .mediatitle {
@@ -40,7 +40,7 @@ const styles: ElementStyles = css`
     }
 
     .controls {
-        gap: calc(var(--design-unit) * 1px);
+        gap: var(--spacingHorizontalXS);
         display: grid;
         align-items: center;
         grid-template-columns:  minmax(0, 1fr) min-content min-content;

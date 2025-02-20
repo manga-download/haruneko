@@ -8,20 +8,20 @@ const styles: ElementStyles = css`
 
     :host {
         display: inline-block;
-        margin: calc(var(--base-height-multiplier) * 1px);
+        margin: var(--spacingHorizontalS);
     }
 
     /* imitiate fluent-card as it is buggy ... */
     .preview {
-        border: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-layer-rest);
-        border-radius: calc(var(--layer-corner-radius) * 1px);
-        box-shadow: var(--elevation-shadow-card-rest);
+        border: var(--strokeWidthThin) solid var(--neutral-stroke-layer-rest);
+        border-radius: var(--borderRadiusXLarge);
+        box-shadow: var(--shadow4);
     }
 
     .preview .info {
-        padding: calc(var(--design-unit) * 1px);
-        background-color: var(--neutral-layer-2);
-        color: var(--neutral-foreground-hint);
+        padding: var(--spacingHorizontalXS);
+        background-color: var(--colorNeutralBackground4);
+        color: var(--colorNeutralForeground4);
     }
 
     .preview .info fluent-anchor::part(control) {
