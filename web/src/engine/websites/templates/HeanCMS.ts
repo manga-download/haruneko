@@ -14,11 +14,11 @@ type APIManga = {
     series_slug: string,
 }
 
-type APIResult<T> = {
+export type APIResult<T> = {
     data: T
 }
 
-type APIChapter = {
+export type APIChapter = {
     index: string,
     id: number,
     chapter_name: string,
