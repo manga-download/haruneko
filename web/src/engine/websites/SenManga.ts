@@ -45,20 +45,20 @@ type APIMultiChapter = {
 }
 
 const chapterLanguageMap = new Map([
-    ['ja', Tags.Language.Japanese],
-    ['zh', Tags.Language.Chinese],
-    ['zh-hk', Tags.Language.Chinese],
-    ['ko', Tags.Language.Korean],
-    ['id', Tags.Language.Indonesian],
-    ['fr', Tags.Language.French],
-    ['th', Tags.Language.Thai],
-    ['en', Tags.Language.English],
     ['de', Tags.Language.German],
-    ['es-la', Tags.Language.Spanish],
+    ['en', Tags.Language.English],
     ['es', Tags.Language.Spanish],
-    ['ru', Tags.Language.Russian],
+    ['es-la', Tags.Language.Spanish],
+    ['fr', Tags.Language.French],
+    ['id', Tags.Language.Indonesian],
+    ['ja', Tags.Language.Japanese],
+    ['ko', Tags.Language.Korean],
     ['pt-br', Tags.Language.Portuguese],
-    ['vi', Tags.Language.Vietnamese]
+    ['ru', Tags.Language.Russian],
+    ['th', Tags.Language.Thai],
+    ['vi', Tags.Language.Vietnamese],
+    ['zh', Tags.Language.Chinese],
+    ['zh-hk', Tags.Language.Chinese]
 ]);
 
 @Common.ImageAjax()
