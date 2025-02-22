@@ -51,7 +51,7 @@ const chapterLanguageMap = new Map([
     ['ko', Tags.Language.Korean],
     ['pl', Tags.Language.Polish],
     ['pt-br', Tags.Language.Portuguese],
-    ['pt-t', Tags.Language.Portuguese],
+    ['pt-pt', Tags.Language.Portuguese],
     ['ru', Tags.Language.Russian],
     ['tr', Tags.Language.Turkish],
     ['zh-hans', Tags.Language.Chinese],
