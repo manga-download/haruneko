@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaGezgini.webp';
+import icon from './SpidyScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -8,11 +8,11 @@ import * as Common from './decorators/Common';
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
+@Common.ImageAjax(undefined, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangagezgini', 'Manga Gezgini', 'https://mangagezgini.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Scanlator);
+        super('spidyscans', 'Spidy Scans', 'https://spidyscans.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
