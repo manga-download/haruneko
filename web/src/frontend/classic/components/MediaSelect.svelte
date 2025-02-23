@@ -123,15 +123,24 @@
         medias = loadedmedias;
         return plugin;
     }
-
-    function filterMedia(mediaNameFilter: string) {
+    
+    /**
+    * Filters the media items by title or plugin's name
+    * @param {string} mediaNameFilter - The filter string to match
+    * @returns {MediaContainer<MediaChild>[]} - An array of media items that match the filter criteria
+    */
+    function filterMedia(mediaNameFilter: string): MediaContainer<MediaChild>[] {
         if (mediaNameFilter === '') return medias;
+        const mediasInPlugin: MediaContainer<MediaChild>[] = medias.filter((item) => item.Parent.Title.toLowerCase().includes(mediaNameFilter.toLowerCase()));
+        let filteredMedia: MediaContainer<MediaChild>[] = [];
         if ($FuzzySearch)
-            return fuse.search(mediaNameFilter).map((item) => item.item);
+            filteredMedia = fuse.search(mediaNameFilter).map((item) => item.item);
         else
-            return medias.filter((item) =>
-                item.Title.toLowerCase().includes(mediaNameFilter.toLowerCase()),
+            filteredMedia = medias.filter((item) =>
+                item.Title.toLowerCase().includes(mediaNameFilter.toLowerCase())
             );
+        // Remove duplicates
+        return [...new Set([...filteredMedia, ...mediasInPlugin])];
     }
 
     let isTrackerModalOpen = $state(false);
