@@ -19,10 +19,8 @@ function CleanTitle(title: string): string {
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const container = anchor.closest<HTMLElement>('div.page-item-detail, div.manga');
     const post = container?.querySelector<HTMLElement>('div[id*="manga-item-"]')?.getAttribute('id').match(/(\d+$)/)[1] || '';
-    const slug = anchor.pathname;
-    const title = CleanTitle(anchor.text);
-    const id = JSON.stringify({ post, slug });
-    return { id, title };
+    const id = JSON.stringify({ post, slug: anchor.pathname });
+    return { id, title: CleanTitle(anchor.text)};
 }
 
 @Common.MangasMultiPageCSS('/home/page/{page}/', 'div.post-title h3 a, div.post-title h5 a', 1, 1, 0, MangaInfoExtractor)

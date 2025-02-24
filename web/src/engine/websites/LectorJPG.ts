@@ -4,13 +4,11 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
-type APIResult<T> = {
-    response: T
-}
-
-type APIManga = {
-    name: string,
-    slug: string
+type APIMangas = {
+    response: {
+        name: string,
+        slug: string
+    }[]
 }
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
@@ -36,7 +34,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { response } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./searchProject', this.apiUrl)));
+        const { response } = await FetchJSON<APIMangas>(new Request(new URL('./searchProject', this.apiUrl)));
         return response.map(manga => new Manga(this, provider, `/ver/${manga.slug}`, manga.name));
     }
 }

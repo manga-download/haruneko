@@ -41,7 +41,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'manhwaclub', targetID: 'manhwahentai' },
     { sourceID: 'nitroscans', targetID: 'nitromanga' },
     { sourceID: 'neteasecomic', targetID: 'bilibilimanhua'},
-    { sourceID: 'oxapk', targetID: 'manjanoon' },
     { sourceID: 'prismascans', targetID: 'demonsect' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
