@@ -191,8 +191,10 @@ export enum FrontendResourceKey {
     Frontend_FluentCore_Menu_ExportBookmarks_Label = 'Frontend_FluentCore_Menu_ExportBookmarks_Label',
     Frontend_FluentCore_Menu_ExportBookmarks_Description = 'Frontend_FluentCore_Menu_ExportBookmarks_Description',
 
-    Frontend_FluentCore_Settings_ThemeLuminance_Label = 'Frontend_FluentCore_Settings_ThemeLuminance_Label',
-    Frontend_FluentCore_Settings_ThemeLuminance_Description = 'Frontend_FluentCore_Settings_ThemeLuminance_Description',
+    Frontend_FluentCore_Settings_ThemeMode_Label = 'Frontend_FluentCore_Settings_ThemeMode_Label',
+    Frontend_FluentCore_Settings_ThemeMode_Description = 'Frontend_FluentCore_Settings_ThemeMode_Description',
+    Frontend_FluentCore_Settings_ThemeMode_WebDark = 'Frontend_FluentCore_Settings_ThemeMode_WebDark',
+    Frontend_FluentCore_Settings_ThemeMode_WebLight = 'Frontend_FluentCore_Settings_ThemeMode_WebLight',
     Frontend_FluentCore_Settings_ShowBookmarksPanel_Label = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Label',
     Frontend_FluentCore_Settings_ShowBookmarksPanel_Description = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Description',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Label = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Label',

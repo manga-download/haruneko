@@ -1,6 +1,6 @@
 import { observable } from '@microsoft/fast-element';
 import { DI, Registration } from '@microsoft/fast-element/di.js';
-import { webLightTheme, webDarkTheme, type Theme } from '@fluentui/tokens';
+import { webLightTheme, webDarkTheme } from '@fluentui/tokens';
 import { setTheme } from '@fluentui/web-components';
 import { type ISetting, Check, Choice } from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
@@ -14,18 +14,24 @@ const SettingKeys = {
     PanelDownloads: 'panel.downloads',
 };
 
-const FluentThemes = [
-    {
-        key: 'web-light',
-        label: R.Frontend_FluentCore_Settings_ThemeLuminance_Label,
-        theme: webLightTheme,
-    },
-    {
-        key: 'web-dark',
-        label: R.Frontend_FluentCore_Settings_ThemeLuminance_Label,
-        theme: webDarkTheme,
-    },
-];
+const ThemeWebDark = {
+    key: 'web-dark',
+    value: webDarkTheme,
+    label: R.Frontend_FluentCore_Settings_ThemeMode_WebDark,
+};
+
+const ThemeWebLight = {
+    key: 'web-light',
+    value: webLightTheme,
+    label: R.Frontend_FluentCore_Settings_ThemeMode_WebLight,
+};
+
+function GetTheme(key: string) {
+    return [
+        ThemeWebDark,
+        ThemeWebLight,
+    ].find(theme => theme.key === key) ?? ThemeWebLight;
+}
 
 // TODO: Split into SettingService and LocaleService
 class StateManager {
@@ -34,7 +40,7 @@ class StateManager {
 
     constructor() {
         HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => this.Locale = GetLocale());
-        this.settingThemeChoice.Subscribe(value => this.SettingTheme = value);
+        this.settingThemeChoice.Subscribe(value => this.SettingSelectedTheme = GetTheme(value));
         this.settingPanelBookmarksCheck.Subscribe(value => this.SettingPanelBookmarks = value);
         this.settingPanelDownloadsCheck.Subscribe(value => this.SettingPanelDownloads = value);
         this.Initialize();
@@ -46,20 +52,18 @@ class StateManager {
             this.settingPanelBookmarksCheck,
             this.settingPanelDownloadsCheck
         );
-        this.SettingTheme = this.settingThemeChoice.Value;
+        //this.SettingTheme = GetTheme(this.settingThemeChoice.Value);
         this.SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
         this.SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     }
 
     @observable Locale = GetLocale();
 
-    dbg = FluentThemes.map(({ key, label }) => { return { key, label }; });
-    private readonly settingThemeChoice = new Choice(SettingKeys.Theme, R.Frontend_FluentCore_Settings_ThemeLuminance_Label, R.Frontend_FluentCore_Settings_ThemeLuminance_Description, 'web-light', this.dbg);
-    @observable SettingTheme = this.settingThemeChoice.Value;
-    SettingThemeChanged() {
-        this.settingThemeChoice.Value = this.SettingTheme;
-        setTheme(webLightTheme);
-        //baseLayerLuminance.setValueFor(document.body, this.SettingThemeLuminance);
+    private readonly settingThemeChoice = new Choice(SettingKeys.Theme, R.Frontend_FluentCore_Settings_ThemeMode_Label, R.Frontend_FluentCore_Settings_ThemeMode_Description, 'web-light', ThemeWebDark, ThemeWebLight);
+    @observable SettingSelectedTheme = GetTheme(this.settingThemeChoice.Value);
+    SettingSelectedThemeChanged() {
+        this.settingThemeChoice.Value = this.SettingSelectedTheme.key;
+        setTheme(this.SettingSelectedTheme.value);
     }
 
     private readonly settingPanelBookmarksCheck = new Check(SettingKeys.PanelBookmarks, R.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label, R.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description, true);

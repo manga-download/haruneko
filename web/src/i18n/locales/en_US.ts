@@ -101,8 +101,10 @@ const translations: VariantResource = {
   Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
   Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: 'Theme Luminance',
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: 'Change the lightness/darkness of the theme',
+  Frontend_FluentCore_Settings_ThemeMode_Label: 'Theme Mode',
+  Frontend_FluentCore_Settings_ThemeMode_Description: 'Select the color mode for the user interface',
+  Frontend_FluentCore_Settings_ThemeMode_WebDark: 'Dark (Web)',
+  Frontend_FluentCore_Settings_ThemeMode_WebLight: 'Light (Web)',
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: 'Bookmark List',
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list on/off',
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: 'Download Manager',
