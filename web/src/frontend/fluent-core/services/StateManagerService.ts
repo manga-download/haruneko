@@ -14,24 +14,22 @@ const SettingKeys = {
     PanelDownloads: 'panel.downloads',
 };
 
-const ThemeWebDark = {
+export const ThemeWebDark = {
     key: 'web-dark',
     value: webDarkTheme,
     label: R.Frontend_FluentCore_Settings_ThemeMode_WebDark,
 };
 
-const ThemeWebLight = {
+export const ThemeWebLight = {
     key: 'web-light',
     value: webLightTheme,
     label: R.Frontend_FluentCore_Settings_ThemeMode_WebLight,
 };
 
-function GetTheme(key: string) {
-    return [
-        ThemeWebDark,
-        ThemeWebLight,
-    ].find(theme => theme.key === key) ?? ThemeWebLight;
-}
+export const Themes = new Map<string, typeof ThemeWebLight>([
+    [ ThemeWebDark.key, ThemeWebDark ],
+    [ ThemeWebLight.key, ThemeWebLight ],
+]);
 
 // TODO: Split into SettingService and LocaleService
 class StateManager {
@@ -40,7 +38,7 @@ class StateManager {
 
     constructor() {
         HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => this.Locale = GetLocale());
-        this.settingThemeChoice.Subscribe(value => this.SettingSelectedTheme = GetTheme(value));
+        this.settingThemeChoice.Subscribe(value => this.SettingSelectedTheme = Themes.get(value));
         this.settingPanelBookmarksCheck.Subscribe(value => this.SettingPanelBookmarks = value);
         this.settingPanelDownloadsCheck.Subscribe(value => this.SettingPanelDownloads = value);
         this.Initialize();
@@ -52,15 +50,15 @@ class StateManager {
             this.settingPanelBookmarksCheck,
             this.settingPanelDownloadsCheck
         );
-        //this.SettingTheme = GetTheme(this.settingThemeChoice.Value);
+        //this.SettingSelectedTheme = Themes.get(this.settingThemeChoice.Value);;
         this.SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
         this.SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     }
 
     @observable Locale = GetLocale();
 
-    private readonly settingThemeChoice = new Choice(SettingKeys.Theme, R.Frontend_FluentCore_Settings_ThemeMode_Label, R.Frontend_FluentCore_Settings_ThemeMode_Description, 'web-light', ThemeWebDark, ThemeWebLight);
-    @observable SettingSelectedTheme = GetTheme(this.settingThemeChoice.Value);
+    private readonly settingThemeChoice = new Choice(SettingKeys.Theme, R.Frontend_FluentCore_Settings_ThemeMode_Label, R.Frontend_FluentCore_Settings_ThemeMode_Description, ThemeWebLight.key, ThemeWebDark, ThemeWebLight);
+    @observable SettingSelectedTheme = Themes.get(this.settingThemeChoice.Value);
     SettingSelectedThemeChanged() {
         this.settingThemeChoice.Value = this.SettingSelectedTheme.key;
         setTheme(this.SettingSelectedTheme.value);

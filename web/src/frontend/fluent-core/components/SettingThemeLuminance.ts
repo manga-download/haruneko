@@ -1,5 +1,5 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css } from '@microsoft/fast-element';
-import { StateManagerService, type StateManager } from '../services/StateManagerService';
+import { StateManagerService, type StateManager, ThemeWebLight, ThemeWebDark} from '../services/StateManagerService';
 
 import IconSunlight from '@fluentui/svg-icons/icons/weather_sunny_20_regular.svg?raw';
 import IconMoonlight from '@fluentui/svg-icons/icons/weather_moon_20_regular.svg?raw';
@@ -15,11 +15,16 @@ const styles: ElementStyles = css`
 `;
 
 const template: ViewTemplate<SettingThemeLuminance> = html`
-    <fluent-button appearance="transparent" :innerHTML=${() => IconMoonlight} @click=${model => model.S.SettingSelectedTheme.key = 'web-dark'}></fluent-button>
-    <fluent-button appearance="transparent" :innerHTML=${() => IconSunlight} @click=${model => model.S.SettingSelectedTheme.key = 'web-light'}></fluent-button>
+    <fluent-button appearance="transparent" :innerHTML=${model => model.GetThemeIcon(model.S.SettingSelectedTheme)} @click=${model => model.S.SettingSelectedTheme = ThemeWebLight}></fluent-button>
+    <!--
+    <fluent-button appearance="transparent" :innerHTML=${() => IconMoonlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebDark}></fluent-button>
+    -->
 `;
 
 @customElement({ name: 'fluent-setting-theme-luminance', template, styles })
 export class SettingThemeLuminance extends FASTElement {
     @StateManagerService S: StateManager;
+    GetThemeIcon(selectedTheme: unknown) {
+        return selectedTheme === ThemeWebLight ? IconSunlight : IconMoonlight;
+    }
 }
