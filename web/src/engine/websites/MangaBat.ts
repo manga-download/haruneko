@@ -1,14 +1,15 @@
 import { Tags } from '../Tags';
-import icon from './MangaBat.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import icon from './MangaBat.webp';
 import * as Common from './decorators/Common';
-import * as MangaNel from './decorators/MangaNel';
+import * as MangaNelBase from './decorators/MangaNelBase';
 
-@MangaNel.MangaCSS(/(h\.|read\.)?mangabat\.com/)
-@MangaNel.MangasMultiPageCSS('/manga-list-all/{page}', 'div.panel-list-story div.list-story-item h3 a.item-title')
-@MangaNel.ChaptersSinglePageCSS()
-@MangaNel.PagesSinglePageCSS()
+@MangaNelBase.MangaCSS(/^https?:\/\/(h\.|read)?mangabat\.com\/read-[a-z]+\d+$/)
+@Common.MangasMultiPageCSS('/manga-list-all/{page}', 'div.panel-list-story div.list-story-item h3 a.item-title', 1, 1, 0, MangaNelBase.AnchorInfoExtractor)
+@Common.ChaptersSinglePageCSS(MangaNelBase.queryChapters, MangaNelBase.AnchorInfoExtractor)
+@Common.PagesSinglePageCSS(MangaNelBase.queryPages)
 @Common.ImageAjax()
+
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

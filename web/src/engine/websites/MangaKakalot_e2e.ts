@@ -1,5 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
+//Only same domain case. Others are handled by Manganato
 new TestFixture({
     plugin: {
         id: 'mangakakalot',

@@ -1,6 +1,7 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+//CASE : Different subdomain
+new TestFixture({
     plugin: {
         id: 'mangabat',
         title: 'MangaBat'
@@ -19,6 +20,26 @@ const config: Config = {
         size: 232_046,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-new TestFixture(config).AssertWebsite();
+//CASE : same subdomain
+new TestFixture({
+    plugin: {
+        id: 'mangabat',
+        title: 'MangaBat'
+    },
+    container: {
+        url: 'https://h.mangabat.com/read-fq409735',
+        id: '/read-fq409735',
+        title: 'Kyouichi',
+    },
+    child: {
+        id: '/read-fq409735-chap-5',
+        title: 'Vol.1 Chapter 5: Loop.2 - Reproduction'
+    },
+    entry: {
+        index: 0,
+        size: 204_308,
+        type: 'image/jpeg'
+    }
+}).AssertWebsite();
