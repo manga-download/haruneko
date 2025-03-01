@@ -8,6 +8,10 @@ Most UI elements will provide context help, so make sure to read the tooltip whi
 
 ## Layout
 
+The fundamental functionality is provided within a fixed set of panels.
+Additional functionalities or configurations can be found in the [Menu](#menu).
+
+![](./assets/overview.jpg)
 
 ## Menu
 
