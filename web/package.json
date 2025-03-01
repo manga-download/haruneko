@@ -23,16 +23,16 @@
         "@vitejs/plugin-react": "4.3.4",
         "@vitejs/plugin-vue": "5.2.1",
         "@vscode/codicons": "0.0.36",
-        "carbon-components-svelte": "0.87.5",
-        "carbon-icons-svelte": "13.2.0",
+        "carbon-components-svelte": "0.87.6",
+        "carbon-icons-svelte": "13.3.0",
         "fuse.js": "7.1.0",
         "lit": "3.2.1",
         "react": "19.0.0",
         "react-dom": "19.0.0",
-        "svelte": "5.20.2",
+        "svelte": "5.20.5",
         "svelte-check": "4.1.4",
         "vue": "3.5.13",
-        "vue-tsc": "2.2.4"
+        "vue-tsc": "2.2.6"
     },
     "scripts": {
         "update-website-index": "node ./scripts/website-index.mjs",
