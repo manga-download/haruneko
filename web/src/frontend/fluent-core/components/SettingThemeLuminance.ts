@@ -15,9 +15,9 @@ const styles: ElementStyles = css`
 `;
 
 const template: ViewTemplate<SettingThemeLuminance> = html`
-    <fluent-button appearance="transparent" :innerHTML=${model => model.GetThemeIcon(model.S.SettingSelectedTheme)} @click=${model => model.S.SettingSelectedTheme = ThemeWebLight}></fluent-button>
+    <fluent-button icon-only appearance="transparent" :innerHTML=${model => model.GetThemeIcon(model.S.SettingSelectedTheme)} @click=${model => model.S.SettingSelectedTheme = ThemeWebLight}></fluent-button>
     <!--
-    <fluent-button appearance="transparent" :innerHTML=${() => IconMoonlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebDark}></fluent-button>
+    <fluent-button icon-only appearance="transparent" :innerHTML=${() => IconMoonlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebDark}></fluent-button>
     -->
 `;
 
