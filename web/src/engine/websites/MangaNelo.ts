@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import icon from './MangaKakalot.webp';
+import icon from './MangaNelo.webp';
 import * as Common from './decorators/Common';
 import * as MangaNelBase from './decorators/MangaNelBase';
 
-@MangaNelBase.MangaCSS(/^https?:\/\/mangakakalot\.com\/(manga\/|read-)[^/]+$/)
-@Common.MangasMultiPageCSS('/manga_list?type=new&category=all&alpha=all&state=all&group=all&page={page}', 'div.truyen-list h3 a', 1, 1, 0, MangaNelBase.AnchorInfoExtractor)
+@MangaNelBase.MangaCSS(/^https?:\/\/(m\.|chap)manganelo\.com\/manga-[^/]+$/)
+@Common.MangasMultiPageCSS('/genre-all/{page}', 'div.genres-item-info h3 a.genres-item-name', 1, 1, 0, MangaNelBase.AnchorInfoExtractor)
 @Common.ChaptersSinglePageCSS(MangaNelBase.queryChapters, MangaNelBase.AnchorInfoExtractor)
 @Common.PagesSinglePageCSS(MangaNelBase.queryPages)
 @Common.ImageAjax()
@@ -13,7 +13,7 @@ import * as MangaNelBase from './decorators/MangaNelBase';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangakakalot', 'MangaKakalot', 'https://mangakakalot.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('manganelo', 'Manganelo', 'https://m.manganelo.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
