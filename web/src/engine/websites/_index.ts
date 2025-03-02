@@ -487,6 +487,7 @@ export { default as NeuManga } from './NeuManga';
 export { default as NewManhua } from './NewManhua';
 export { default as NewToki } from './NewToki';
 export { default as Ngomik } from './Ngomik';
+export { default as NgomikID } from './NgomikID';
 export { default as NHentai } from './NHentai';
 export { default as NHentaiCom } from './NHentaiCom';
 export { default as NiceOppai } from './NiceOppai';
