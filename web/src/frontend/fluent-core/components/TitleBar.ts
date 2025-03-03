@@ -123,8 +123,8 @@ const template: ViewTemplate<TitleBar> = html`
     <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
     <div id="controls">
         <fluent-button icon-only appearance="subtle" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" :innerHTML=${() => IconMinimize} @click="${model => model.window.Minimize()}"></fluent-button>
-        <fluent-anchor-button icon-only appearance="subtle" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize} @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}"></fluent-anchor-button>
-        <fluent-anchor-button icon-only id="close" appearance="subtle" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" :innerHTML=${() => IconClose} @click=${model => model.window.Close()}></fluent-anchor-button>
+        <fluent-button icon-only appearance="subtle" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize} @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}"></fluent-button>
+        <fluent-button icon-only id="close" appearance="subtle" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" :innerHTML=${() => IconClose} @click=${model => model.window.Close()}></fluent-button>
     </div>
 `;
 

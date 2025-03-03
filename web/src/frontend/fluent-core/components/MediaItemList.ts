@@ -135,12 +135,14 @@ const listitem: ViewTemplate<StoreableMediaContainer<MediaItem>> = html`
         <div style="${styleTrim}">${model => model.Title}</div>
         <div class="controls" style="${styleControls}">
             <fluent-button
+                icon-only
                 appearance="transparent"
                 title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
                 :innerHTML=${() => IconPreview}
                 @click=${(model, ctx) => ctx.parent.parentNode.host.ShowPreview(model)}>
             </fluent-button>
             <fluent-button
+                icon-only
                 appearance="transparent"
                 title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
                 :innerHTML=${() => IconDownload}
@@ -156,6 +158,7 @@ const template: ViewTemplate<MediaItemList> = html`
         <div id="controls">
             <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
             <fluent-button
+                icon-only
                 id="button-update-entries"
                 appearance="transparent"
                 class="${model => model.updating.includes(model.Container?.Identifier) ? 'updating' : ''}"
