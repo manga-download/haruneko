@@ -1,3 +1,17 @@
+import '@fluentui/web-components/dialog.js';
+import '@fluentui/web-components/divider.js';
+import '@fluentui/web-components/menu.js';
+import '@fluentui/web-components/menu-list.js';
+import '@fluentui/web-components/menu-item.js';
+import '@fluentui/web-components/menu-button.js';
+import '@fluentui/web-components/anchor-button.js';
+import '@fluentui/web-components/button.js';
+import '@fluentui/web-components/slider.js';
+import '@fluentui/web-components/checkbox.js';
+//import '@fluentui/web-components/field.js';
+import '@fluentui/web-components/text-input.js';
+import '@fluentui/web-components/progress-bar.js';
+
 export { App } from '../App';
 export { TitleBar } from './TitleBar';
 export { BookmarkList } from './BookmarkList';
