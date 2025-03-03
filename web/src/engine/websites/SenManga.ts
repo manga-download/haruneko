@@ -3,6 +3,7 @@ import icon from './SenManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Delay } from '../BackgroundTimers';
 
 const mangasPerPage = 100;
 
@@ -43,6 +44,23 @@ type APIMultiChapter = {
     data: JSONChapter[]
 }
 
+const chapterLanguageMap = new Map([
+    ['de', Tags.Language.German],
+    ['en', Tags.Language.English],
+    ['es', Tags.Language.Spanish],
+    ['es-la', Tags.Language.Spanish],
+    ['fr', Tags.Language.French],
+    ['id', Tags.Language.Indonesian],
+    ['ja', Tags.Language.Japanese],
+    ['ko', Tags.Language.Korean],
+    ['pt-br', Tags.Language.Portuguese],
+    ['ru', Tags.Language.Russian],
+    ['th', Tags.Language.Thai],
+    ['vi', Tags.Language.Vietnamese],
+    ['zh', Tags.Language.Chinese],
+    ['zh-hk', Tags.Language.Chinese]
+]);
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -51,8 +69,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new Request(this.URI.href);
-        return FetchWindowScript(request, `window.cookieStore.set('viewer', '1')`);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('viewer', '1')`);
     }
 
     public override get Icon() {
@@ -65,33 +82,31 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = url.split('/').at(-1);
-        const uri = new URL('/api/title/' + id, this.URI).href;
-        const request = new Request(uri);
-        const data = await FetchJSON<APISingleManga>(request);
-        return new Manga(this, provider, data.data.id, data.data.title.trim());
+        const { data } = await FetchJSON<APISingleManga>(new Request(new URL(`/api/title/${id}`, this.URI)));
+        return new Manga(this, provider, data.id, data.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist: Manga[] = [];
-        for (let page = 0, run = true; run; page+= mangasPerPage) {
+        for (let page = 0, run = true; run; page += mangasPerPage) {
+            await Delay(500);
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangalist.push(...mangas) : run = false;
         }
-        return mangalist;
+
+        return mangalist.distinct();
     }
 
     private async GetMangasFromPage(offset: number, provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL('/api/search?limit=' + mangasPerPage + '&offset=' + offset, this.URI).href;
-        const request = new Request(url);
-        const data = await FetchJSON<APIMultiManga>(request);
-        return data.success ? data.data.map(element => new Manga(this, provider, element.id, element.title.trim())) : [];
+        const { data, success } = await FetchJSON<APIMultiManga>(new Request(new URL(`/api/search?limit=${mangasPerPage}&offset=${offset}`, this.URI)));
+        return success ? data.map(element => new Manga(this, provider, element.id, element.title.trim())) : [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL('/api/title/' + manga.Identifier +'/chapters', this.URI).href;
-        const request = new Request(url);
-        const data = await FetchJSON<APIMultiChapter>(request);
-        return data.success ? data.data.map(element => new Chapter(this, manga, '/read/' + element.id, element.full_title.trim() + ' (' + element.language.code + ')')) : [];
+        const { data, success } = await FetchJSON<APIMultiChapter>(new Request(new URL(`/api/title/${manga.Identifier}/chapters`, this.URI)));
+        return success ? data.map(element => new Chapter(this, manga, `/read/${element.id}`, `${element.full_title.trim()} (${element.language.code})`,
+            ...chapterLanguageMap.has(element.language.code) ? [chapterLanguageMap.get(element.language.code)] : []
+        )) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
