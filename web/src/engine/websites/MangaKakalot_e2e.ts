@@ -1,23 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-//Only same domain case. Others are handled by Manganato
 new TestFixture({
     plugin: {
         id: 'mangakakalot',
         title: 'MangaKakalot'
     },
     container: {
-        url: 'https://mangakakalot.com/manga/rd923340',
-        id: '/manga/rd923340',
+        url: 'https://www.mangakakalot.gg/manga/my-crazy-journalist-wife',
+        id: '/manga/my-crazy-journalist-wife',
         title: 'My Crazy Journalist Wife'
     },
     child: {
-        id: '/chapter/rd923340/chapter_1',
+        id: '/manga/my-crazy-journalist-wife/chapter-1',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 2_216_516,
-        type: 'image/jpeg'
+        size: 240_002,
+        type: 'image/webp'
     }
 }).AssertWebsite();

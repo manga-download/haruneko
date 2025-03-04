@@ -1,19 +1,11 @@
 import { Tags } from '../Tags';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import icon from './MangaKakalot.webp';
-import * as Common from './decorators/Common';
-import * as MangaNelBase from './decorators/MangaNelBase';
+import { MangaNel } from './templates/MangaNel';
 
-@MangaNelBase.MangaCSS(/^https?:\/\/mangakakalot\.com\/(manga\/|read-)[^/]+$/)
-@Common.MangasMultiPageCSS('/manga_list?type=new&category=all&alpha=all&state=all&group=all&page={page}', 'div.truyen-list h3 a', 1, 1, 0, MangaNelBase.AnchorInfoExtractor)
-@Common.ChaptersSinglePageCSS(MangaNelBase.queryChapters, MangaNelBase.AnchorInfoExtractor)
-@Common.PagesSinglePageCSS(MangaNelBase.queryPages)
-@Common.ImageAjax()
-
-export default class extends DecoratableMangaScraper {
+export default class extends MangaNel {
 
     public constructor() {
-        super('mangakakalot', 'MangaKakalot', 'https://mangakakalot.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('mangakakalot', 'MangaKakalot', 'https://www.mangakakalot.gg', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
