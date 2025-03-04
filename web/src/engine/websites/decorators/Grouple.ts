@@ -96,7 +96,7 @@ async function FetchMirroredImage(this: MangaScraper, page: Page<PageMirrored>, 
         const cumulatedExceptionsMessages: string[]= [];
         for (const uri of [page.Link, ...page.Parameters.mirrors]) {
             try {
-                const request = new Request(uri, { signal: signal, headers: { Referer: page.Parameters.Referer || this.URI.href } });
+                const request = new Request(uri, { signal: signal, headers: { Referer: this.URI.href } });
                 const response = await Fetch(request);
                 const blob = await response.blob();
                 if (blob.type.startsWith('image/')) return blob;
