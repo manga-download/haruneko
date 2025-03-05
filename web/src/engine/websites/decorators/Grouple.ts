@@ -45,12 +45,12 @@ export const queryPages = [
     'div.text-center img[loading="lazy"]'
 ].join(',');
 
-type ImagesData = {
+export type ImagesData = {
     url: string,
     mirrors: string[]
 }
 
-type PageParameters = {
+export type PageMirrored = {
     mirrors: string[]
 };
 
@@ -70,7 +70,7 @@ export function PagesSinglePageJS(script = pagesWithServersScript, delay = 0) {
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
                 const images = await FetchWindowScript<ImagesData[]>(new Request(new URL(chapter.Identifier, this.URI)), script, delay);
-                return images.map(image => new Page<PageParameters>(this, chapter, new URL(image.url), { mirrors: image.mirrors }));
+                return images.map(image => new Page<PageMirrored>(this, chapter, new URL(image.url), { mirrors: image.mirrors }));
             }
         };
     };
@@ -91,7 +91,7 @@ export function ImageAjaxWithMirrors() {
     };
 }
 
-async function FetchMirroredImage(this: MangaScraper, page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+async function FetchMirroredImage(this: MangaScraper, page: Page<PageMirrored>, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const cumulatedExceptionsMessages: string[]= [];
         for (const uri of [page.Link, ...page.Parameters.mirrors]) {
