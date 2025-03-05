@@ -76,22 +76,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
-        const uri = new URL(`/chapter/query`, this.apiUrl);
-        uri.searchParams.set('perPage', '100');
-        uri.searchParams.set('series_id', manga.Identifier);
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.interactionTaskPool.Add(async () => this.GetChaptersFromPage(uri, manga, page), Priority.High);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
-
-    }
-
-    private async GetChaptersFromPage(uri: URL, manga: Manga, page: number): Promise<Chapter[]> {
-        uri.searchParams.set('page', page.toString());
-        const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(uri));
-        return data.map(item => new Chapter(this, manga, `/series/${item.series.series_slug}/${item.chapter_slug}`, [ item.chapter_name, item.chapter_title || '' ].join(' ').trim()));
+        const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`/chapters/${manga.Identifier}?perPage=9999`, this.apiUrl)));
+        return data.map(item => new Chapter(this, manga, `/series/${item.series.series_slug}/${item.chapter_slug}`, [item.chapter_name, item.chapter_title || ''].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
