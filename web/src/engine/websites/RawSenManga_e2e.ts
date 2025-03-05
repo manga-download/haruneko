@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'rawsenmanga',
         title: 'RawSenManga'
     },
     container: {
-        url: 'https://raw.senmanga.com/akuyaku-reijou-no-shitsuji-sama-hametsu-flag-wa-ore-ga-tsubusasete-itadakimasu',
-        id: '/akuyaku-reijou-no-shitsuji-sama-hametsu-flag-wa-ore-ga-tsubusasete-itadakimasu',
-        title: 'Akuyaku Reijou no Shitsuji-sama: Hametsu Flag wa Ore ga Tsubusasete itadakimasu'
+        url: 'https://raw.senmanga.com/drcl-midnight-children',
+        id: '/drcl-midnight-children',
+        title: '#DRCL – Midnight Children'
     },
     child: {
-        id: '/akuyaku-reijou-no-shitsuji-sama-hametsu-flag-wa-ore-ga-tsubusasete-itadakimasu/29.1',
-        title: 'Chapter 29.1'
+        id: '/drcl-midnight-children/64',
+        title: 'Chapter 64'
     },
     entry: {
         index: 0,
-        size: 122_414,
-        type: 'image/webp'
+        size: 285_703,
+        type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
