@@ -1,5 +1,5 @@
-import { Tags } from '../Tags';
-import icon from './MagKan.webp';
+﻿import { Tags } from '../Tags';
+import icon from './MangaBANG.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Comici from './decorators/ComiciViewer';
@@ -12,11 +12,10 @@ import * as Comici from './decorators/ComiciViewer';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('magkan', `MagKan`, 'https://kansai.mag-garden.co.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('mangabang', `MangaBANG Comics (マンガBANG コミックス)`, 'https://comics.manga-bang.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }
