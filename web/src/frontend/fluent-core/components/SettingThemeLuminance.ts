@@ -15,11 +15,11 @@ const styles: ElementStyles = css`
 `;
 
 const buttonToggleLightMode: ViewTemplate<SettingThemeLuminance> = html`
-    <fluent-button icon-only appearance="transparent" :innerHTML=${() => IconMoonlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebLight}></fluent-button>
+    <fluent-button icon-only appearance="transparent" :title=${model => model.S.Locale.Frontend_FluentCore_Button_ToggleTheme_Description(model.S.Locale[ThemeWebLight.label]())} :innerHTML=${() => IconMoonlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebLight}></fluent-button>
 `;
 
 const buttonToggleDarkMode: ViewTemplate<SettingThemeLuminance> = html`
-    <fluent-button icon-only appearance="transparent" :innerHTML=${() => IconSunlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebDark}></fluent-button>
+    <fluent-button icon-only appearance="transparent" :title=${model => model.S.Locale.Frontend_FluentCore_Button_ToggleTheme_Description(model.S.Locale[ThemeWebDark.label]())} :innerHTML=${() => IconSunlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebDark}></fluent-button>
 `;
 
 const template: ViewTemplate<SettingThemeLuminance> = html`

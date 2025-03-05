@@ -50,7 +50,6 @@ class StateManager {
             this.settingPanelBookmarksCheck,
             this.settingPanelDownloadsCheck
         );
-        //this.SettingSelectedTheme = Themes.get(this.settingThemeChoice.Value);;
         this.SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
         this.SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     }
