@@ -45,7 +45,7 @@ export const queryPages = [
     'div.text-center img[loading="lazy"]'
 ].join(',');
 
-type ImagesData = {
+export type ImagesData = {
     url: string,
     mirrors: string[]
 }
