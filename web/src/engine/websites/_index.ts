@@ -142,6 +142,7 @@ export { default as EightMuses } from './EightMuses';
 export { default as EightMusesXXX } from './EightMusesXXX';
 export { default as ElevenToon } from './ElevenToon';
 export { default as ErosScans } from './ErosScans';
+export { default as EternalMangas } from './EternalMangas';
 export { default as EuphoriaScan } from './EuphoriaScan';
 export { default as EvilFlowers } from './EvilFlowers';
 export { default as FayScans } from './FayScans';
