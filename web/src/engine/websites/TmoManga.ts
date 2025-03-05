@@ -3,6 +3,7 @@ import icon from './TmoManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
+// Madara?
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
 @Common.MangasMultiPageCSS('/biblioteca?page={page}', 'div.manga_biblioteca a[title]', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('ul li.wp-manga-chapter > a')
