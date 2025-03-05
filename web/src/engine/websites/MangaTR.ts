@@ -1,20 +1,20 @@
 import { Tags } from '../Tags';
 import icon from './MangaTR.webp';
-import { Chapter, type Manga } from '../providers/MangaPlugin';
-import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
+import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
-import { CleanTitle, FlatManga } from './templates/FlatManga';
 
-function MangaLabelExtractor(element: HTMLTitleElement) {
-    return element.text.split(' - ')[0].trim();
-}
+@Common.MangaCSS(FlatManga.pathManga, 'body title', (element: HTMLTitleElement) => element.text.split(' - ').at(0).trim())
+@Common.MangasSinglePagesCSS([ '/manga-list.html' ], 'div.container a[data-toggle="mangapop"]:not([data-original-title=""])')
+@Common.PagesSinglePageCSS(FlatManga.queryPages)
+@Common.ImageAjax()
+export default class extends DecoratableMangaScraper {
 
-@Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, 'body title', MangaLabelExtractor)
-@Common.MangasSinglePagesCSS(['/manga-list.html'], 'div.container a[data-toggle="mangapop"]:not([data-original-title=""])')
-export default class extends FlatManga {
     public constructor() {
-        super('mangatr', `Manga-TR`, 'https://manga-tr.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangatr', 'Manga-TR', 'https://manga-tr.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
+
     public override get Icon() {
         return icon;
     }
@@ -24,30 +24,6 @@ export default class extends FlatManga {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
+        return FlatManga.FetchChaptersAJAX.call(this, manga, '/cek/fetch_pages_manga.php?manga_cek={manga}', 'table.table tr td[align="left"] > a');
     }
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
-        const mangaSlug = manga.Identifier.match(/manga-([^/]+)\.html/)[1];
-        const url = new URL(`/cek/fetch_pages_manga.php?manga_cek=${mangaSlug}`, this.URI);
-        const request = new Request(url, {
-            method: 'POST',
-            body: 'page=' + page,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'x-requested-with': 'XMLHttpRequest'
-            }
-        });
-
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'table.table tr td.table-bordered:first-of-type > a');
-        return data.map(chapter => {
-            const title = CleanTitle(chapter.text.replace(manga.Title, '')) || chapter.text.trim();
-            return new Chapter(this, manga, chapter.pathname, title);
-        });
-    }
-
 }

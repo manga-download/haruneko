@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://mangagun.net/manga-oshi-no-ko-raw.html',
         id: '/manga-oshi-no-ko-raw.html',
-        title: 'OSHI NO KO'
+        title: 'OSHI NO KO - RAW'
     },
     child: {
         id: '/read-oshi-no-ko-raw-chapter-146.html',

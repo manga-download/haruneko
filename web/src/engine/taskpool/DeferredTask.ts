@@ -20,6 +20,7 @@ export class DeferredTask<T> {
     private reject: (error: Error) => void;
 
     constructor(private readonly action: () => Promise<T>, public readonly Priority: Priority, public readonly Signal?: AbortSignal) {
+        // TODO: Consider using `Promise.withResolvers()` instead
         this.Promise = new Promise<T>((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
