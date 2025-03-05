@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'comicearthstar',
         title: 'コミック アース・スター (Comic Earth Star)'
@@ -19,6 +19,4 @@ const config = {
         size: 1_174_457,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

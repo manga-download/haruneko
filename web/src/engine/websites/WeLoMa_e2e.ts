@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://weloma.art/429/',
         id: '/429/',
-        title: 'SLIME TAOSHITE 300-NEN, SHIRANAI UCHI NI LEVEL MAX NI NATTEMASHITA'
+        title: 'SLIME TAOSHITE 300-NEN, SHIRANAI UCHI NI LEVEL MAX NI NATTEMASHITA - RAW'
     },
     child: {
         id: '/429/131864/',
