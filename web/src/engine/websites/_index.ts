@@ -74,6 +74,7 @@ export { default as ComicGardo } from './ComicGardo';
 export { default as ComicGrowl } from './ComicGrowl';
 export { default as ComicK } from './ComicK';
 export { default as Comico } from './Comico';
+export { default as ComicOgyaaa } from './ComicOgyaaa';
 export { default as ComicRyu } from './ComicRyu';
 export { default as ComicSeasons } from './ComicSeasons';
 export { default as ComicsValley } from './ComicsValley';
