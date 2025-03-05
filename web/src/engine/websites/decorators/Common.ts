@@ -6,6 +6,7 @@ import type { MediaChild, MediaContainer } from '../../providers/MediaPlugin';
 import { RateLimit } from '../../taskpool/RateLimit';
 import { TaskPool, Priority } from '../../taskpool/TaskPool';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
+import { Delay } from '../../BackgroundTimers';
 
 export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContext) {
     if (context && context.kind !== 'class') {
@@ -237,7 +238,7 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
     let reducer = Promise.resolve();
     for (let page = start, run = true; run; page += step) {
         await reducer;
-        reducer = throttle > 0 ? new Promise(resolve => setTimeout(resolve, throttle)) : Promise.resolve();
+        reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract as InfoExtractor<HTMLElement>);
         mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
         // TODO: Broadcast event that mangalist for provider has been updated?
