@@ -190,6 +190,7 @@ export enum FrontendResourceKey {
     Frontend_FluentCore_Menu_ImportBookmarks_Description = 'Frontend_FluentCore_Menu_ImportBookmarks_Description',
     Frontend_FluentCore_Menu_ExportBookmarks_Label = 'Frontend_FluentCore_Menu_ExportBookmarks_Label',
     Frontend_FluentCore_Menu_ExportBookmarks_Description = 'Frontend_FluentCore_Menu_ExportBookmarks_Description',
+    Frontend_FluentCore_Button_ToggleTheme_Description = 'Frontend_FluentCore_Button_ToggleTheme_Description',
 
     Frontend_FluentCore_Settings_ThemeMode_Label = 'Frontend_FluentCore_Settings_ThemeMode_Label',
     Frontend_FluentCore_Settings_ThemeMode_Description = 'Frontend_FluentCore_Settings_ThemeMode_Description',
