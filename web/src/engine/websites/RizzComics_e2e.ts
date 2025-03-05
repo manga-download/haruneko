@@ -2,16 +2,16 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
-        id: 'realmoasis',
-        title: 'Realm Oasis'
+        id: 'rizzcomics',
+        title: 'Rizz Comics'
     },
     container: {
-        url: 'https://realmoasis.com/684173841120087/7py6s29l863525l7tlf7rxy1sz',
-        id: '/684173841120087/7py6s29l863525l7tlf7rxy1szn',
+        url: 'https://rizzfables.com/series/r2311170-demonic-master-of-mount-kunlun',
+        id: '/series/r2311170-demonic-master-of-mount-kunlun',
         title: 'Demonic Master of Mount Kunlun'
     },
     child: {
-        id: '/684173841120087/5655ccdeb635253e0707217846fd',
+        id: '/chapter/r2311170-demonic-master-of-mount-kunlun-chapter-49',
         title: 'Chapter 49'
     },
     entry: {

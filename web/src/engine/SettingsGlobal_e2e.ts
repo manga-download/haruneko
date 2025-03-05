@@ -1,8 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import type { JSHandle } from 'puppeteer-core';
 import { PuppeteerFixture } from '../../../test/PuppeteerFixture';
 import type { ISettings } from './SettingsManager';
 import { Key } from './SettingsGlobal';
+vi.mock('./BackgroundTimers', () => ({}));
 
 export class TestFixture extends PuppeteerFixture {
 
