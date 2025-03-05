@@ -3,6 +3,7 @@ import icon from './SpiderScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
@@ -12,10 +13,15 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('spiderscans', 'Spider Scans', 'https://spidyscans.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('spiderscans', 'Spider Scans', 'https://spiderscans.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
+
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(new URL(this.URI)), `window.cookieStore.set('wpmanga-adult', '1')`);
+    }
+
 }

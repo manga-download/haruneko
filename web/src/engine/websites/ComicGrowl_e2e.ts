@@ -1,6 +1,6 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'comicgrowl',
         title: 'コミックグロウル (Comic Growl)'
@@ -19,6 +19,4 @@ const config: Config = {
         size: 5_489_763,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
