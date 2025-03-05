@@ -2,6 +2,8 @@ import '../HolyManga_e2e';
 import '../KLManga_e2e';
 import '../MangaGun_e2e';
 import '../MangaTR_e2e';
+import '../Manhwa18_e2e';
+import '../ManhwaEighteen_e2e';
 import '../ManhwaFullNet_e2e';
 import '../NicoManga_e2e';
 import '../OlimpoScans_e2e';

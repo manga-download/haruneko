@@ -6,7 +6,7 @@ new TestFixture({
         title: 'TCB Scans'
     },
     container: {
-        url: 'https://tcbonepiecechapters.me/mangas/1/ace-novel-manga-adaptation',
+        url: 'https://tcbonepiecechapters.com/mangas/1/ace-novel-manga-adaptation',
         id: '/mangas/1/ace-novel-manga-adaptation',
         title: 'Ace Novel - Manga Adaptation'
     },
