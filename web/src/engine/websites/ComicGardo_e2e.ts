@@ -1,6 +1,6 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'comicgardo',
         title: 'コミックガルド (Comic Gardo)'
@@ -19,6 +19,4 @@ const config: Config = {
         size: 1_684_896,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

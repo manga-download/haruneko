@@ -245,13 +245,13 @@
             <ContextMenuOption
                 labelText="Download {selectedItems.length} selecteds"
                 shortcutText="⌘S"
-                onclick={() => downloadItems(selectedItems)}
+                onclick={() => downloadItems(selectedItems.toReversed())}
             />
         {/if}
         <ContextMenuOption
             labelText="Download all"
             shortcutText="⌘A"
-            onclick={() => downloadItems(filteredItems)}
+            onclick={() => downloadItems(filteredItems.toReversed())}
         />
         {#if contextItem}
             <ContextMenuDivider />
