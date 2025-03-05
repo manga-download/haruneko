@@ -6,17 +6,17 @@ new TestFixture({
         title: 'ManhwaFull(.net)',
     },
     container: {
-        url: 'https://manhwafull.net/manga-dance-dance-danseur.html',
-        id: '/manga-dance-dance-danseur.html',
-        title: 'Dance Dance Danseur'
+        url: 'https://manhwafull.net/manga-nano-machine.html',
+        id: '/manga-nano-machine.html',
+        title: 'Nano Machine'
     },
     child: {
-        id: '/read-dance-dance-danseur-chapter-155.html',
-        title: 'Vol.17 Chapter 155'
+        id: '/read-nano-machine-chapter-90.html',
+        title: 'Chapter 90: Qualifications Of A Vice-Lord (4)'
     },
     entry: {
-        index: 0,
-        size: 183_322,
+        index: 1,
+        size: 267_752,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

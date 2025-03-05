@@ -8,8 +8,7 @@ new TestFixture({
     container: {
         url: 'https://welovemanga.one/1067/',
         id: '/1067/',
-        title: 'TONO KANRI O SHITE MIYOU',
-        timeout: 15000
+        title: 'TONO KANRI O SHITE MIYOU - RAW',
     },
     child: {
         id: '/read-tono-kanri-o-shite-miyou-raw-chapter-65.2.html',
