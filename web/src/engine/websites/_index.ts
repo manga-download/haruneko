@@ -602,6 +602,7 @@ export { default as SeinagiFansubES } from './SeinagiFansubES';
 export { default as SekaiKomik } from './SekaiKomik';
 export { default as SekteKomik } from './SekteKomik';
 export { default as SelfManga } from './SelfManga';
+export { default as Senkuro } from './Senkuro';
 export { default as SenManga } from './SenManga';
 export { default as SenpaiEdiciones } from './SenpaiEdiciones';
 export { default as SeraphManga } from './SeraphManga';
