@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './MangaReaderTo.webp';
-import type { Chapter } from '../providers/MangaPlugin';
+import { Chapter, type Manga } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
@@ -27,20 +27,23 @@ type TGroup = {
     y: number
 }
 
-function ChapterExtractor(element: HTMLElement) {
-    const link = element instanceof HTMLAnchorElement ? (element as HTMLAnchorElement).pathname : element.querySelector<HTMLAnchorElement>('a').pathname;
-    const title = element instanceof HTMLAnchorElement ? element.title.replace(/([^:]*):(.*)/, (match, g1, g2) => g1.trim().toLowerCase() === g2.trim().toLowerCase() ? g1 : match).trim() : element.textContent.trim();
-    const lang = link.match(/\/read\/[^/]+\/([^/]+)/)[1];
-    return {
-        id: link,
-        title: `${title} (${lang})`,
-    };
-
-}
+const chapterLanguageMap = new Map([
+    ['de', Tags.Language.German],
+    ['en', Tags.Language.English],
+    ['es', Tags.Language.Spanish],
+    ['es-mx', Tags.Language.Spanish],
+    ['fr', Tags.Language.French],
+    ['it', Tags.Language.Italian],
+    ['ja', Tags.Language.Japanese],
+    ['ko', Tags.Language.Korean],
+    ['pl', Tags.Language.Polish],
+    ['pt-br', Tags.Language.Portuguese],
+    ['pt-pt', Tags.Language.Portuguese],
+    ['zh', Tags.Language.Chinese],
+]);
 
 @Common.MangaCSS(/^{origin}\/[^/]+-\d+$/, 'div#ani_detail div.anisc-detail h2.manga-name')
 @Common.MangasMultiPageCSS('/az-list?page={page}', '#main-content div.manga-detail h3 a', 1, 1, 0, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS('div.chapters-list-ul ul li a, div.volume-list-ul div.manga-poster', ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -49,6 +52,17 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const nodes = await FetchCSS<HTMLDivElement | HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div.chapters-list-ul ul li a, div.volume-list-ul div.manga-poster');
+        return nodes.map(element => {
+            const link = element instanceof HTMLAnchorElement ? (element as HTMLAnchorElement).pathname : element.querySelector<HTMLAnchorElement>('a').pathname;
+            const title = element instanceof HTMLAnchorElement ? element.title.replace(/([^:]*):(.*)/, (match, g1, g2) => g1.trim().toLowerCase() === g2.trim().toLowerCase() ? g1 : match).trim() : element.textContent.trim();
+            const languageCode = link.match(/\/read\/[^/]+\/([^/]+)/).at(1);
+            return new Chapter(this, manga, link, `${title} (${languageCode})`,
+                ...chapterLanguageMap.has(languageCode) ? [chapterLanguageMap.get(languageCode)] : []);
+        });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
