@@ -1,8 +1,6 @@
 # HakuNeko
-
-image:https://img.shields.io/github/downloads-pre/manga-download/haruneko/latest/total?color=blue&label=Download%20HaruNeko%20%28Nightly%29&logo=github[link=https://github.com/manga-download/haruneko/releases, title="Download the latest pre-release (nightly build) of HaruNeko", window="_blank"]
-
 :toc:
+:toc-placement!:
 :numbered:
 :icons: font
 :linkattrs:
@@ -18,6 +16,10 @@ endif::[]
 ---
 
 Prototype of HakuNeko based on Electron/NW.js + TypeScript + Vite
+
+image:https://img.shields.io/github/downloads-pre/manga-download/haruneko/latest/total?color=blue&label=Download%20HaruNeko%20%28Nightly%29&logo=github[link=https://github.com/manga-download/haruneko/releases, title="Download the latest pre-release (nightly build) of HaruNeko", window="_blank"]
+
+toc::[]
 
 ## Status
 ////
