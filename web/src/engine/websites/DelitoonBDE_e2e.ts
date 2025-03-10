@@ -1,14 +1,14 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'delitoonbde',
         title: 'Delitoon B (German)'
     },
     container: {
-        url: 'https://www.delitoonb.de/detail/dbd_40009',
-        id: 'dbd_40009',
-        title: 'Unumkehrbar'
+        url: 'https://www.delitoonb.de/detail/dbd_20396',
+        id: 'dbd_20396',
+        title: 'Spuren der Leere'
     },
     child: {
         id: '1',
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 237_264,
+        size: 126_700,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
