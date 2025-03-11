@@ -28,11 +28,7 @@ type APIChapter = {
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://www.kanman.com/api/';
-    private readonly product = {
-        id: '1',
-        name: 'kmh',
-        platform: 'pc'
-    };
+
     public constructor() {
         super('kanman', `看漫画 (KanMan)`, 'https://www.kanman.com', Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Official);
 
@@ -66,22 +62,22 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('getComicList', this.apiUrl)));
+        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./getComicList', this.apiUrl)));
         return data.map(manga => new Manga(this, provider, manga.comic_id.toString(), manga.comic_name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`getComicInfoBody?comic_id=${manga.Identifier}`, this.apiUrl);
+        const uri = new URL(`./getComicInfoBody?comic_id=${manga.Identifier}`, this.apiUrl);
         const { data: { comic_chapter } } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
         return comic_chapter.map(chapter => new Chapter(this, manga, chapter.chapter_newid, chapter.chapter_name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL('getchapterinfov2', this.apiUrl);
+        const uri = new URL('./getchapterinfov2', this.apiUrl);
         uri.search = new URLSearchParams({
-            product_id: this.product.id,
-            productname: this.product.name,
-            platformname: this.product.platform,
+            product_id: '1',
+            productname: 'kmh',
+            platformname: 'pc',
             comic_id: chapter.Parent.Identifier,
             chapter_newid: chapter.Identifier,
             isWebp: this.Settings.format.Value as string,
