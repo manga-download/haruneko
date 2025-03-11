@@ -8,8 +8,6 @@ import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../i18n/ILoc
 
 type APIResult<T> = {
     data: T,
-    status: number,
-    message: string;
 }
 
 type APIManga = {
