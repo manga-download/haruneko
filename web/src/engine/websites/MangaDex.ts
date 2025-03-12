@@ -40,7 +40,7 @@ type APIChapter = {
     relationships: {
         id: string
         type: string
-        attributes: {
+        attributes?: {
             name?: string
         }
     }[]
