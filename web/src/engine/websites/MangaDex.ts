@@ -164,8 +164,7 @@ export default class extends MangaScraper {
         return !data ? [] : data
             .filter(entry => entry.attributes.pages)
             .map(entry => {
-                const groups = entry.relationships.filter(relation => relation.type === 'scanlation_group')
-                    .filter(group => group.attributes?.name);
+                const groups = entry.relationships.filter(relation => relation.type === 'scanlation_group' && relation.attributes?.name);
                 const title = [
                     entry.attributes.volume ? 'Vol.' + pad(entry.attributes.volume, 2) : null,
                     entry.attributes.chapter ? 'Ch.' + pad(entry.attributes.chapter, 4) : null,
