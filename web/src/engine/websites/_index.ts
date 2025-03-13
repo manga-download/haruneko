@@ -637,6 +637,7 @@ export { default as SpiderScans } from './SpiderScans';
 export { default as SpidyScans } from './SpidyScans';
 export { default as SpoilerPlus } from './SpoilerPlus';
 export { default as StarboundScans } from './StarboundScans';
+export { default as StarlightScan } from './StarlightScan';
 export { default as StellarSaber } from './StellarSaber';
 export { default as StickHorse } from './StickHorse';
 export { default as StrayFansub } from './StrayFansub';
