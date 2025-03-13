@@ -9,6 +9,7 @@ export { default as Akuma } from './Akuma';
 export { default as AllHentai } from './AllHentai';
 export { default as AllPornComic } from './AllPornComic';
 export { default as Alphapolis } from './Alphapolis';
+export { default as AlucardScans } from './AlucardScans';
 export { default as AmuyScan } from './AmuyScan';
 export { default as Anikiga } from './Anikiga';
 export { default as AnimeSama } from './AnimeSama';
