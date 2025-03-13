@@ -354,6 +354,7 @@ export { default as Mangalek } from './Mangalek';
 export { default as MangaLib } from './MangaLib';
 export { default as MangaLike } from './MangaLike';
 export { default as MangaLink } from './MangaLink';
+export { default as MangaLivre } from './MangaLivre';
 export { default as MangaLover } from './MangaLover';
 export { default as MangaMana } from './MangaMana';
 export { default as MangaMonarca } from './MangaMonarca';
