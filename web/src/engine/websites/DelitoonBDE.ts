@@ -6,7 +6,7 @@ export default class extends DelitoonBase {
     public constructor() {
         super('delitoonbde', `Delitoon B (German)`, 'https://www.delitoonb.de', Tags.Language.German, Tags.Media.Manhwa, Tags.Source.Official);
         this.BalconyID = 'DELITOONB_DE';
-        this.pagesEndpoint = 'contents/';
+        this.pagesEndpoint = './contents';
     }
 
     public override get Icon() {

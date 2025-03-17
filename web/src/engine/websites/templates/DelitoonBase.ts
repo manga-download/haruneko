@@ -60,7 +60,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
     private authorization: APIToken = undefined;
     protected readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
     protected BalconyID: string = 'DELITOON_COM';
-    protected pagesEndpoint = 'contents/viewer/';
+    protected pagesEndpoint = './contents/viewer';
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/detail/[^/]+$`).test(url);
@@ -110,7 +110,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleParams>[]> {
         await this.UpdateToken();
-        const url = new URL(`${this.pagesEndpoint}${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
+        const url = new URL(`${this.pagesEndpoint}/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
         const { error, data: { images, isScramble } } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
         switch (error?.code) {
