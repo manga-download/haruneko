@@ -24,7 +24,7 @@
         "typescript": "5.8.2",
         "typescript-eslint": "8.26.1",
         "vite": "6.2.2",
-        "vitest": "3.0.8",
+        "vitest": "3.0.9",
         "vitest-mock-extended": "3.0.1"
     },
     "scripts": {
