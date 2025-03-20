@@ -43,6 +43,7 @@ export { default as AyaToon } from './AyaToon';
 export { default as AzoraWorld } from './AzoraWorld';
 export { default as BacaKomik } from './BacaKomik';
 export { default as BacaManga } from './BacaManga';
+export { default as Baek100 } from './Baek100';
 export { default as BakaMH } from './BakaMH';
 export { default as Baozimh } from './Baozimh';
 export { default as BarManga } from './BarManga';
