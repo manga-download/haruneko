@@ -13,7 +13,7 @@ AddAntiScrapingDetection(async (invoke) => {
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS('[...document.querySelectorAll("div.page-break > img")].map(image => image.dataset.src || image.src)', 2000)
+@Common.PagesSinglePageJS('[...document.querySelectorAll("div.page-break > img")].map(image => image.dataset.src || image.src);', 2000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
