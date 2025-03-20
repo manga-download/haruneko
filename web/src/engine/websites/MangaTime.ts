@@ -1,5 +1,5 @@
 ﻿import { Tags } from '../Tags';
-import icon from './Mangatime.webp';
+import icon from './MangaTime.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchRegex } from '../platform/FetchProvider';
