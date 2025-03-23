@@ -151,6 +151,7 @@ export { default as FayScans } from './FayScans';
 export { default as FbSquads } from './FbSquads';
 export { default as FeelWeb } from './FeelWeb';
 export { default as FireComics } from './FireComics';
+export { default as FirstKissManga } from './FirstKissManga';
 export { default as FlameComics } from './FlameComics';
 export { default as FMTeam } from './FMTeam';
 export { default as FoyScan } from './FoyScan';
