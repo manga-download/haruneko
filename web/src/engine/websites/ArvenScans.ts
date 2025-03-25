@@ -12,7 +12,7 @@ import * as KeyoApp from './templates/KeyoApp';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('arvenscans', 'Arven Scans', 'https://arvencomics.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('arvenscans', 'Arven Scans', 'https://arvencomic.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

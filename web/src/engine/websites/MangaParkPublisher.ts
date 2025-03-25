@@ -4,6 +4,7 @@ import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromBase64 } from '../BufferEncoder';
 
 type APIPages = {
     data: {
@@ -14,6 +15,10 @@ type APIPages = {
             }[]
         }[]
     }
+}
+
+type PageParameters = {
+    key: string;
 }
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
@@ -48,25 +53,17 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new Request(new URL(`/api/chapter/${chapter.Identifier}`, this.URI));
         const { data } = await FetchJSON<APIPages>(request);
-        return data.chapter.map(page => new Page(this, chapter, new URL(page.images[0].path), { key: page.images[0].key }));
+        return data.chapter.map(page => new Page<PageParameters>(this, chapter, new URL(page.images[0].path), { key: page.images[0].key }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const encrypted = await data.arrayBuffer();
-        const decrypted = this.DecryptImage(new Uint8Array(encrypted), page.Parameters.key as string);
+        const decrypted = this.DecryptImage(await data.arrayBuffer(), page.Parameters.key);
         return Common.GetTypedData(decrypted);
     }
 
-    private DecryptImage(sourceArray: Uint8Array, key: string) {
-        const e = window.atob(key).split('').map(s => s.charCodeAt(0));
-        const r = sourceArray.length;
-        const i = e.length;
-        const o = new Uint8Array(r);
-
-        for (let a = 0; a < r; a += 1) {
-            o[a] = sourceArray[a] ^ e[a % i];
-        }
-        return o.buffer;
+    private DecryptImage(encrypted: ArrayBuffer, passphrase: string): ArrayBuffer {
+        const key = GetBytesFromBase64(passphrase);
+        return new Uint8Array(encrypted).map((byte, index) => byte ^ key[index % key.length]).buffer;
     }
 }

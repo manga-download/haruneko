@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'milasub',
-        title: 'Mila Subb'
-    }, /* CloudFlare
+        title: 'Mila Sub'
+    },
     container: {
-        url: 'https://www.milasub.co/manga/i-didnt-lull-you-to-sleep/',
+        url: 'https://www.milascans.com/manga/i-didnt-lull-you-to-sleep/',
         id: JSON.stringify({ post: '3609', slug: '/manga/i-didnt-lull-you-to-sleep/'}),
         title: 'I Didn’t Lull You To Sleep Only For You To Be Obsessed With Me'
     },
@@ -18,7 +18,5 @@ const config: Config = {
         index: 10,
         size: 2_094_015,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();
