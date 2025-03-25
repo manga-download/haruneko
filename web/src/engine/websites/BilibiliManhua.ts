@@ -124,7 +124,11 @@ export default class extends DecoratableMangaScraper {
             m1: await this.#drm.GetPublicKey(),
             urls: this.#drm.CreateImageLinks(this.URI.origin, this.imageFormat.Value, images),
         });
-        return data.map(({ complete_url: x, url, token }) => new Page(this, chapter, new URL(x ?? `${url}?token=${token}`)));
+        return data.map(({ complete_url: x, url, token }) => {
+            const pageurl = new URL(x ?? `${url}?token=${token}`);
+            pageurl.searchParams.set('code', 'HeartRepo');
+            return new Page(this, chapter, pageurl);
+        });
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {

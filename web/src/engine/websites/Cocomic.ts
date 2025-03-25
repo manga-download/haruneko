@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './HikariScan.webp';
+import icon from './Cocomic.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hikariscan', 'Hikari Scan', 'https://hikariscan.org', Tags.Media.Manga, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
+        super('cocomic', 'Cocomic', 'https://cocomic.co', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Media.Manhua, Tags.Source.Aggregator, Tags.Language.English);
     }
 
     public override get Icon() {
