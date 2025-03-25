@@ -8,9 +8,9 @@ const pageScript = `
     new Promise(resolve => {
         const mainserver = cdns.shift();
         resolve( [...document.querySelectorAll('div.container-chapter-reader > img')].map ( image  => {
-            const picUrl = new URL(image.dataset.src || image.src );
-            const mirrors = cdns.map(server => new URL(picUrl.pathname, server).href);
-            return { url : picUrl.href, mirrors };
+            const imagePath = new URL(image.dataset.src || image.src ).pathname;
+            const mirrors = cdns.map(server => new URL(imagePath, server).href);
+            return { url : new URL(imagePath, mainserver).href, mirrors };
         }));
     });
 `;
