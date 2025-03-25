@@ -62,6 +62,7 @@ export { default as CatTranslator } from './CatTranslator';
 export { default as Chochox } from './Chochox';
 export { default as CiaoPlus } from './CiaoPlus';
 export { default as CMangax } from './CMangax';
+export { default as Cocomic } from './Cocomic';
 export { default as Cocorip } from './Cocorip';
 export { default as CoffeeManga } from './CoffeeManga';
 export { default as ColaManga } from './ColaManga';
