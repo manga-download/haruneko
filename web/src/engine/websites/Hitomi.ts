@@ -6,7 +6,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
     new Promise ( resolve => {
-        resolve( galleryinfo.files.map(file => url_from_url_from_hash(galleryid, file, 'webp', undefined, 'a')));
+        resolve( galleryinfo.files.map(file => url_from_url_from_hash(galleryid, file, 'webp')));
     });
 `;
 
