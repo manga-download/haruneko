@@ -20,7 +20,7 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
             await fixture.SetWebsiteFilter('Bookmarks');
             await fixture.SelectWebsite('bookmarks');
             await fixture.SetMediaTitleFilter('Apple');
-            fixture.SelectMediaTitle('Apple Collection');
+            await fixture.SelectMediaTitle('Apple Collection');
         });
     });
 });
