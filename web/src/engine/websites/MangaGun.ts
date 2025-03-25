@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(FlatManga.pathManga, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS(FlatManga.pathMangasMultiPage, FlatManga.queryMangas)
-@Common.PagesSinglePageCSS(FlatManga.queryPages, (imageElement: HTMLImageElement) => window.atob(imageElement.dataset.img))
+@Common.PagesSinglePageCSS(FlatManga.queryPages, (imageElement: HTMLImageElement) => atob(imageElement.dataset.img))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
