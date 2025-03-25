@@ -101,6 +101,7 @@ describe('BufferEncoder', () => {
             [ '', [] ],
             [ 'LQ==', [ 0x2D ] ],
             [ 'PDw/Pz8+Pg==', [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ] ],
+            [ 'PD\rw/Pz8+\nPg ==', [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ] ],
         ])('Should get bytes from valid input', (input: string, expected: number[]) => {
             const actual = testee.GetBytesFromBase64(input);
             expect(actual).toStrictEqual(new Uint8Array(expected));

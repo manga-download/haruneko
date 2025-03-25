@@ -1,4 +1,3 @@
-/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
@@ -7,7 +6,7 @@ new TestFixture({
         title: 'Arven Scans'
     },
     container: {
-        url: 'https://arvencomics.com/series/baeac6b0188/',
+        url: 'https://arvencomic.net/series/baeac6b0188/',
         id: '/series/baeac6b0188/',
         title: 'Solo Necromancy'
     },
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/webp'
     }
 }).AssertWebsite();
-*/
