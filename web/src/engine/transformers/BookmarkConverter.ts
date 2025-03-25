@@ -29,6 +29,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'kumascans', 'retsu' ],
     [ 'lovehug', 'welovemanga' ],
     [ 'lyrascans', 'quantumscans' ],
+    [ 'mangacross', 'championcross' ],
     [ 'mangamx', 'mangaoni' ],
     [ 'manganel', 'manganato' ],
     [ 'mangaproz', 'mangapro' ],
