@@ -4,6 +4,7 @@ import { Chapter, Page } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { Delay } from '../BackgroundTimers';
 
 type GraphQLResult<T> = {
     data: T
@@ -67,7 +68,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            await new Promise(resolve => setTimeout(resolve, 200));
+            await Delay(200);
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
