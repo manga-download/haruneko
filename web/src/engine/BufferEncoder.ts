@@ -31,6 +31,7 @@ export function GetBytesFromUTF8(encoded: string): Uint8Array {
  */
 export function GetBytesFromBase64(encoded: string): Uint8Array {
     if(typeof encoded !== 'string') throw new TypeError();
+    encoded = encoded.replace(/\s+/g, '');
     if(encoded.length % 4 !== 0 || !/^[+/a-zA-Z0-9]*={0,3}$/i.test(encoded)) throw new RangeError();
     return Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
 }
@@ -40,5 +41,5 @@ export function GetBytesFromBase64(encoded: string): Uint8Array {
  */
 export function GetBase64FromBytes(bytes: Uint8Array): string {
     if(bytes instanceof Uint8Array === false) throw new TypeError();
-    return btoa(String.fromCharCode.apply(null, Array.from(bytes)));
+    return btoa(String.fromCharCode(...bytes));
 }
