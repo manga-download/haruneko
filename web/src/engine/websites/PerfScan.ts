@@ -13,11 +13,11 @@ type APIPages = APIResult<{ content: { value: string }[] }>;
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.perf-scan.fr';
+    private readonly apiUrl = 'https://api.perf-scan.net';
     private readonly cdnUrl = this.apiUrl + '/cdn/';
 
     public constructor() {
-        super('perfscan', 'Perf Scan', 'https://perf-scan.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Scanlator);
+        super('perfscan', 'Perf Scan', 'https://perf-scan.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
