@@ -212,6 +212,6 @@ describe('Website Status/Metrics', { concurrent: true }, async () => {
 
         results.push(result);
 
-        expect(result.status).toSatisfy<typeof result.status>(status => status.code === StatusCode.OK, result.status.info);
+        expect(result.status).toSatisfy((status: typeof result.status) => status.code === StatusCode.OK, result.status.info);
     });
 });
