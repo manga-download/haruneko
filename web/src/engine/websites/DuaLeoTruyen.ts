@@ -18,7 +18,7 @@ function MangaExtractor(element: HTMLAnchorElement){
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenbotz.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenbotx.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

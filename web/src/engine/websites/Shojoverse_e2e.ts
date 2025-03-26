@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Shojoverse'
     },
     container: {
-        url: 'https://shojoverse.com/manga/reality-quest/',
+        url: 'https://mythicscans.net/manga/reality-quest/',
         id: '/manga/reality-quest/',
         title: 'Reality Quest',
     },

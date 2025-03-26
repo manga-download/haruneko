@@ -7,7 +7,7 @@ const config = {
         title: 'RawXZ'
     },
     container: {
-        url: 'https://rawxz1.com/manga/俺だけレベルアップな件-raw-free/',
+        url: 'https://rawxz.io/manga/俺だけレベルアップな件-raw-free/',
         id: JSON.stringify({ post: '32858', slug: mangaID }),
         title: '俺だけレベルアップな件',
     },
