@@ -147,19 +147,14 @@ class TestFixture {
     }
 
     public static async GenerateTestSummary(results: Result[]) {
-        const summary = [
+        const file = process.env.GITHUB_STEP_SUMMARY ?? path.join('web', 'scripts', 'cache', 'website-metrics.md');
+        await fs.writeFile(file, [
             '| Status | Website | URL | Info |',
             '| :---: | :---- | :---- | :---- |',
             ... results
                 .filter(result => result.status.code !== StatusCode.OK)
                 .map(result => `| ${emojis.get(result.status.code)} | **${result.title}** | ${result.url} | ${result.status.info} |`)
-        ].join('\n');
-        if(process.env.GITHUB_ACTIONS) {
-            process.env.GITHUB_STEP_SUMMARY = summary;
-        } else {
-            const directory = path.join('web', 'scripts', 'cache');
-            await fs.writeFile(path.join(directory, 'website-metrics.md'), summary);
-        }
+        ].join('\n'));
     }
 
     // TODO: Improve composition of HTML report
