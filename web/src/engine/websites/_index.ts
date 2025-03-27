@@ -441,7 +441,6 @@ export { default as ManhwaClub } from './ManhwaClub';
 export { default as ManhwaDashRaw } from './ManhwaDashRaw';
 export { default as ManhwaEighteen } from './ManhwaEighteen';
 export { default as ManhwaFullNet } from './ManhwaFullNet';
-export { default as ManhwaHentai } from './ManhwaHentai';
 export { default as ManhwaHentaiMe } from './ManhwaHentaiMe';
 export { default as ManhwaHub } from './ManhwaHub';
 export { default as ManhwaIndo } from './ManhwaIndo';
