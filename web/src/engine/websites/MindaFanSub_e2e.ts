@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Minda Fansub'
     },
     container: {
-        url: 'https://mindafansub.online/manga/painter-of-the-night/',
+        url: 'https://mindafansub.pro/manga/painter-of-the-night/',
         id: JSON.stringify({ post: '1873', slug: '/manga/painter-of-the-night/'}),
         title: 'Painter of the Night'
     },

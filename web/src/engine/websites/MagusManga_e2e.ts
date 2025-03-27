@@ -7,7 +7,7 @@ new TestFixture({
         title: 'MagusManga'
     },
     container: {
-        url: 'https://magustoon.com/series/01536939fbb/',
+        url: 'https://magustoon.net/series/01536939fbb/',
         id: '/series/01536939fbb/',
         title: 'I Became A Level 999 Mastermind Demon King'
     },
