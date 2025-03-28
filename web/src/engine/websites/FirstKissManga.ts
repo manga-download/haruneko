@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './YanpFansub.webp';
+import icon from './FirstKissManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="YANP FANSUB"])')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
+@Madara.ChaptersSinglePageAJAXv1()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yanpfansub', 'YanpFansub', 'https://trisalyanp.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('firstkissmanga', '1stKiss Manga (.org)', 'https://1stkissmanga.org', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
 
     public override get Icon() {

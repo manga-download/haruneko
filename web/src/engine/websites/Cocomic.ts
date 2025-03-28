@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './MrYaoi.webp';
+import icon from './Cocomic.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MrYaoi"])')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(Madara.WPMangaProtectorPagesExtractorScript, 2500)
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mryaoi', 'MrYaoi', 'https://mrbenne.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('cocomic', 'Cocomic', 'https://cocomic.co', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Media.Manhua, Tags.Source.Aggregator, Tags.Language.English);
     }
 
     public override get Icon() {
