@@ -18,7 +18,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tcbscans', `TCB Scans`, 'https://tcbscans.me', Tags.Language.English, Tags.Media.Manga, Tags.Source.Scanlator);
+        super('tcbscans', `TCB Scans`, 'https://tcbonepiecechapters.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

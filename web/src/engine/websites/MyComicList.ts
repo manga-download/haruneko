@@ -10,7 +10,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 function MangaLabelExtractor(element: HTMLElement): string {
-    return element.textContent.replace(/Comic$/, '').trim();
+    return element.textContent.replace(/Comic Details$/, '').trim();
 }
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'div.manga-right h1.manga-title', MangaLabelExtractor)

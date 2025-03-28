@@ -1,10 +1,6 @@
-﻿/*
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-CloudFlare crashes nwjs
-
-import { TestFixture } from '../../../test/WebsitesFixture';
-
-const config = {
+new TestFixture({
     plugin: {
         id: 'doujinku',
         title: 'Doujinku'
@@ -23,7 +19,4 @@ const config = {
         size: 550_637,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
-*/
+}).AssertWebsite();

@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'namicomi',
         title: 'NamiComi'
@@ -12,13 +12,11 @@ const config = {
     },
     child: {
         id: 'UN8qSLhu',
-        title: '2.3 Cursed (Part 3) [en]'
+        title: 'Chapter 2.3 Cursed (Part 3) [en]'
     },
     entry: {
         index: 0,
         size: 1_492_297,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

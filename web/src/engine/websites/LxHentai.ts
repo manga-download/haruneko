@@ -18,7 +18,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('lxhentai', `LxHentai (Hentai LXX)`, 'https://lxmanga.live', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+        super('lxhentai', `LxHentai (Hentai LXX)`, 'https://lxmanga.sbs', Tags.Language.Vietnamese, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -1,6 +1,6 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'shonenmagazine',
         title: '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)'
@@ -19,6 +19,4 @@ const config: Config = {
         size: 2_059_071,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
