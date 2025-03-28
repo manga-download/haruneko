@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaDex.webp';
+import icon from './Pixiv.webp';
 import { FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -55,15 +55,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        //https://www.pixiv.net/en/artworks/105844494
-        //https://www.pixiv.net/user/11750032/series/88243
         return new RegExpSafe(`^${this.URI.origin}/([^/]+/artworks/|user/\\d+/series/)\\d+`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaUrl = new URL(url);
         if (/\/[^/]+\/artworks\/\d+$/.test(mangaUrl.pathname)) {
-            const id = mangaUrl.pathname.match(/\/artworks\/(\d+)/)[1];
+            const id = mangaUrl.pathname.match(/\/artworks\/(\d+)$/).at(1);
             const { body: { illustId, illustTitle } } = await FetchJSON<APIResult<APIIlust>>(new Request(new URL(`./illust/${id}?lang=en`, this.apiURL)));
             return new Manga(this, provider, `artwork-${illustId}`, illustTitle.trim());
         } else {
@@ -77,7 +75,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList: Chapter[] = [];
         if (manga.Identifier.startsWith('artwork-')) {
-            chapterList.push(new Chapter(this, manga, manga.Identifier.match(/artwork-(\d+)/).at(1), manga.Title));
+            return [new Chapter(this, manga, manga.Identifier.match(/artwork-(\d+)$/).at(1), manga.Title)];
         } else {
             for (let page = 1, run = true; run; page++) {
                 const chapters = await this.FetchChaptersFromPage(manga, page);
