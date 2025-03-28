@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'comicdays',
         title: 'コミックDAYS (Comic Days)'
@@ -19,6 +19,4 @@ const config = {
         size: 2_259_808,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

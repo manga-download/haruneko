@@ -1,13 +1,13 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'spiderscans',
         title: 'Spider Scans'
     },
     container: {
-        url: 'https://spidyscans.xyz/manga/my-god-tier-leveling-system/',
-        id: JSON.stringify({ post: '1911', slug: '/manga/my-god-tier-leveling-system/' }),
+        url: 'https://spiderscans.xyz/manga/my-god-tier-leveling-system/',
+        id: JSON.stringify({ post: '190', slug: '/manga/my-god-tier-leveling-system/' }),
         title: 'My God Tier Leveling System'
     },
     child: {
@@ -19,6 +19,4 @@ const config = {
         size: 120_648,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'domalfansub',
         title: 'Domal Fansub'
     },
     container: {
-        url: 'https://domalfansb.com.tr/manga/code-of-silence/',
+        url: 'https://d0malfansub.com.tr/manga/code-of-silence/',
         id: JSON.stringify({ post: '5675', slug: '/manga/code-of-silence/'}),
         title: 'Code of Silence'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 959_821,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

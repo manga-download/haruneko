@@ -1,5 +1,6 @@
 import '../AGS_e2e';
 import '../ArvenScans_e2e';
+import '../AsmodeusScans_e2e';
 import '../CasaComic_e2e';
 import '../GenzToon_e2e';
 import '../MagusManga_e2e';

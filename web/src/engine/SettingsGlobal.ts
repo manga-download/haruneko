@@ -107,18 +107,6 @@ export async function Initialize(settingsManager: SettingsManager, frontends: IF
             R.Settings_NewContent_CheckInfo,
             false
         ),
-        new Numeric(
-            Key.CheckNewContentPeriod,
-            R.Settings_NewContent_CheckPeriod,
-            R.Settings_NewContent_CheckPeriodInfo,
-            30, 10, 420
-        ),
-        new Check(
-            Key.NotifyNewContent,
-            R.Settings_NewContent_Notify,
-            R.Settings_NewContent_NotifyInfo,
-            false
-        ),
         new Check(
             Key.RPCEnabled,
             R.Settings_Global_RPCEnabled,

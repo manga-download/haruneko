@@ -6,14 +6,12 @@
         HeaderGlobalAction,
         SkipToContent,
     } from 'carbon-components-svelte';
-    import {
-        Bookmark,
-        Checkbox,
-        Close,
-        Copy,
-        Home,
-        Subtract,
-    } from 'carbon-icons-svelte';
+    import Bookmark from 'carbon-icons-svelte/lib/Bookmark.svelte';
+    import Checkbox from 'carbon-icons-svelte/lib/Checkbox.svelte';
+    import Close from 'carbon-icons-svelte/lib/Close.svelte';
+    import Copy from 'carbon-icons-svelte/lib/Copy.svelte';
+    import Home from 'carbon-icons-svelte/lib/Home.svelte';
+    import Subtract from 'carbon-icons-svelte/lib/Subtract.svelte';
     import Sidenav from './Sidenav.svelte';
 
     import {

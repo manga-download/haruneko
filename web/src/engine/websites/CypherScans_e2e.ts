@@ -6,7 +6,7 @@ new TestFixture({
         title: 'CypherScans'
     },
     container: {
-        url: 'https://cypher-comic.xyz/manga/solo-max-level-newbie/',
+        url: 'https://cypheroscans.xyz/manga/solo-max-level-newbie/',
         id: '/manga/solo-max-level-newbie/',
         title: 'Solo Max-Level Newbie'
     },

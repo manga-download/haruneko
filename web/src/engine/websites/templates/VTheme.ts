@@ -1,4 +1,4 @@
-//VTheme theme by V DEV : https://discord.com/invite/yz3UN72qPd
+// VTheme theme by V DEV : https://discord.com/invite/yz3UN72qPd
 
 import { FetchJSON } from '../../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../../providers/MangaPlugin';

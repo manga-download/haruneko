@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'tcbscans',
         title: 'TCB Scans'
     },
     container: {
-        url: 'https://tcbscans.me/mangas/1/ace-novel-manga-adaptation',
+        url: 'https://tcbonepiecechapters.com/mangas/1/ace-novel-manga-adaptation',
         id: '/mangas/1/ace-novel-manga-adaptation',
         title: 'Ace Novel - Manga Adaptation'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 1_410_846,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

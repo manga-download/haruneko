@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,7 +8,7 @@ new TestFixture({
     },
     /* CloudFlare
     container: {
-        url: 'https://newtoki466.com/webtoon/35818629/신혼부부-특별전형',
+        url: 'https://newtoki468.com/webtoon/35818629/신혼부부-특별전형',
         id: encodeURI('/webtoon/35818629/신혼부부-특별전형'),
         title: '신혼부부 특별전형'
     },
@@ -17,7 +18,8 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 114_944,
+        size: 131_338,
         type: 'image/jpeg'
-    }*/
+    }
 }).AssertWebsite();
+*/

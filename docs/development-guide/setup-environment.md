@@ -3,8 +3,8 @@
 ## Requirements
 
 - Install _git_
-- Install _NodeJS 20_ with _NPM 10_
-- All tools can be run directly from terminal (a.g., added to the _Path_ environment variable)
+- Install _NodeJS 22_ with _NPM 10_
+- All tools can be run directly from terminal (e.g., added to the _Path_ environment variable)
 
 ## Checkout Sources
 
@@ -91,7 +91,7 @@ Run the application based on the current source code locally.
 If you are on Apple Silicon (Arm64) and NW isn't starting, try:
 
 ```zsh
-xattr -cr ./node_modules/nw/nwjs/nwjs.app
+xattr -r -c ./node_modules/nw/nwjs/nwjs.app
 ```
 
 See: [ARM64 Error | “app” is damaged and can’t be opened.](https://github.com/nwjs/nw.js/issues/8157)
