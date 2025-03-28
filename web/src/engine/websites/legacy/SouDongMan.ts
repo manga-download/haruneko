@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('soudongman', `斗罗大陆 (SouDongMan)`, 'https://www.soudongman.com' /*, Tags.Language.English, Tags ... */);
+        super('soudongman', `斗罗大陆 (SouDongMan)`, 'https://www.kanman.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -25,7 +25,7 @@ class SouDongMan extends MHXK {
         super.id = 'soudongman';
         super.label = '斗罗大陆 (SouDongMan)';
         this.tags = [ 'webtoon', 'chinese' ];
-        this.url = 'https://www.soudongman.com';
+        this.url = 'https://www.kanman.com';
 
         this.queryMangaTitle = 'div.title-warper h1.title';
         // extracted from: https://resource.mhxk.com/soudongman_pc/static/js/chunk/vendor.23b7d6.js

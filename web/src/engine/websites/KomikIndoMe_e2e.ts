@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture( {
     plugin: {
         id: 'komikindome',
         title: 'KomikIndoMe'
     },
     container: {
-        url: 'https://komikindo.im/manga/secret-class/',
+        url: 'https://komikindo.ing/manga/secret-class/',
         id: '/manga/secret-class/',
         title: 'Secret Class'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 12_130,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

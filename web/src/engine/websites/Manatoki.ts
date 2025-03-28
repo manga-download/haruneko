@@ -18,6 +18,25 @@ AddAntiScrapingDetection(async (invoke) => {
     return result ? FetchRedirection.Interactive : undefined;
 });
 
+const chapterScript = `
+    new Promise (resolve => {
+
+        function debloat(element) {
+            while (element.querySelector('span')) {
+                element.removeChild(element.querySelector('span'));
+            }
+        }
+
+        resolve ([...document.querySelectorAll("div.serial-list ul li a.item-subject")].map( element => {
+            debloat(element);
+            return {
+                id: element.pathname,
+                title : element.textContent.trim()
+            };
+        }));
+    });
+`;
+
 export const pageScript = `
     new Promise( resolve => {
         html_encoder(html_data);
@@ -31,7 +50,7 @@ export const pageScript = `
 export default class extends DecoratableMangaScraper {
     protected urlPrefix = 'https://manatoki';
 
-    public constructor(id = 'manatoki', label = 'Manatoki', url = 'https://manatoki466.net', tags = [Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]) {
+    public constructor(id = 'manatoki', label = 'Manatoki', url = 'https://manatoki468.net', tags = [Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]) {
         super(id, label, url, ...tags);
     }
 
@@ -66,11 +85,7 @@ export default class extends DecoratableMangaScraper {
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const url = new URL(manga.Identifier, this.URI);
         url.searchParams.set('spage', page.toString());
-        const chapters = await FetchCSS<HTMLAnchorElement>(new Request(url), 'div.serial-list ul li a.item-subject');
-        const extractor = Common.AnchorInfoExtractor(false, 'span');
-        return chapters.map(chapter => {
-            const { id, title } = extractor.call(this, chapter);
-            return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
-        });
+        const chapters = await FetchWindowScript<{ id: string, title: string}[]>(new Request(url), chapterScript, 500);
+        return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim() || chapter.title));
     }
 }

@@ -5,13 +5,11 @@ import { Priority } from './DeferredTask';
 import { RateLimit, Unlimited } from './RateLimit';
 
 class MockJob<T> {
-    constructor(public readonly Priority: Priority, public readonly Duration: number, public readonly Result: T, public readonly Signal?: AbortSignal) {
-    }
+    constructor(public readonly Priority: Priority, public readonly Duration: number, public readonly Result: T, public readonly Signal?: AbortSignal) {}
 }
 
 class Result<T> {
-    constructor(public readonly ResolveTime: number, public Status: string, public readonly Value: T) {
-    }
+    constructor(public readonly ResolveTime: number, public Status: string, public readonly Value: T) {}
 }
 
 async function RunJobs<T>(testee: TaskPool, ... jobs: MockJob<T>[]): Promise<Result<T>[]> {

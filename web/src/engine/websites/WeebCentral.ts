@@ -11,7 +11,7 @@ function MangaLabelExtractor(meta: HTMLMetaElement): string {
 const pageScript = `[...document.querySelectorAll('main section img[alt*="Page"]:not([x-show]')].map(image => new URL(image.getAttribute('src'), window.location.origin).href);`;
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/[^/]+$/, 'meta[property="og:title"]', MangaLabelExtractor)
-@Common.MangasMultiPageCSS(`/search/data?limit=32&offset={page}&display_mode=Full+Display`, 'a.link.link-hover[href*="/series/"]', 0, 32, 0)
+@Common.MangasMultiPageCSS(`/search/data?display_mode=Minimal+Display&limit=32&offset={page}`, 'article > a.link', 0, 32, 0)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

@@ -1,8 +1,7 @@
-﻿/*import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-// CloudFlare
-
-const config = {
+new TestFixture({
     plugin: {
         id: 'quantumscans',
         title: 'Quantum Scans'
@@ -21,7 +20,5 @@ const config = {
         size: 775_821,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
 */

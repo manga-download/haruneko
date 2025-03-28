@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'tonarinoyoungjump',
         title: 'となりのヤングジャンプ (Tonari no Young Jump)'
@@ -19,6 +19,4 @@ const config = {
         size: 1_466_421,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

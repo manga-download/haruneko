@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APIResponse<T> = {
-    data : T | string
+    data: T | string
 }
 
 type APIManga = {
@@ -23,9 +23,10 @@ const pagesScript = `[... document.querySelectorAll('div.chapter-img-box img')].
 @Common.PagesSinglePageJS(pagesScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+    protected queryManga = 'div.book-name h1.name';
 
-    public constructor() {
-        super('rumanhua', 'RuManhua', 'https://rumanhua.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
+    public constructor(id = 'rumanhua', label = 'RuManhua', url = 'https://rumanhua.com', tags = [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator]) {
+        super(id, label, url, ...tags);
     }
 
     public override get Icon() {
@@ -37,9 +38,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const title = (await FetchCSS(new Request(url), 'div.book-name h1.name')).shift().textContent.trim();
-        const id = url.split('/').at(-2);
-        return new Manga(this, provider, id, title);
+        const title = (await FetchCSS(new Request(url), this.queryManga)).shift().textContent.trim();
+        return new Manga(this, provider, url.split('/').at(-2), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -62,7 +62,7 @@ export default class extends DecoratableMangaScraper {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         }));
-        return data instanceof Array ? (data as APIManga[]).map(item => new Manga(this, provider, item.id, item.bookName)): [];
+        return data instanceof Array ? (data as APIManga[]).map(item => new Manga(this, provider, item.id, item.bookName)) : [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

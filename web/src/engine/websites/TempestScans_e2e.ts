@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'tempestscans',
         title: 'Tempest Scans'
     },
     container: {
-        url: 'https://tempestscans.net/manga/solo-leveling-ragnarok/',
+        url: 'https://tempestmangas.com/manga/solo-leveling-ragnarok/',
         id: '/manga/solo-leveling-ragnarok/',
-        title: 'Solo Leveling Ragnarok'
+        title: 'Solo Leveling: Ragnarok'
     },
     child: {
         id: '/solo-leveling-ragnarok-13/',
-        title: 'Bölüm: 13',
+        title: 'Bölüm 13',
     },
     entry: {
         index: 0,
-        size: 1_288_033,
-        type: 'image/jpeg'
+        size: 759_969,
+        type: 'image/avif'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

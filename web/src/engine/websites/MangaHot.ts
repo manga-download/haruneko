@@ -85,7 +85,7 @@ export default class extends DecoratableMangaScraper {
             }
 
             for (const key of Object.keys(result)) { //works with array and object list
-                const page = new Page(this, chapter, new URL(`/app_img${window.atob(result[key])}`, this.URI));
+                const page = new Page(this, chapter, new URL(`/app_img${atob(result[key])}`, this.URI));
                 if (!pageList.find(element => element.Link.href === page.Link.href)) {
                     pageList.push(page);
                 }

@@ -5,6 +5,7 @@ import { FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
+import { GetBytesFromBase64 } from '../BufferEncoder';
 
 type APIResults<T> = {
     next_cursor: null | string,
@@ -16,11 +17,11 @@ type APIManga = {
     title: string
 }
 
-type APIChapter = {
+type APIChapters = APIResults<{
     id: string,
     title: string,
     episode_order: number
-}
+}[]>;
 
 type APIPages = {
     pages: {
@@ -75,7 +76,7 @@ export default class extends DecoratableMangaScraper {
         const url = new URL(`/episodes?comic_id=${manga.Identifier}&episode_status=free_viewing%2Conly_for_subscription&order=asc&sort=episode_order`, this.apiurl);
 
         for (let run = true; run;) {
-            const { resources, next_cursor } = await FetchJSON<APIResults<APIChapter[]>>(this.CreateRequest(url));
+            const { resources, next_cursor } = await FetchJSON<APIChapters>(this.CreateRequest(url));
             resources.forEach(chapter => chapterList.push(
                 new Chapter(this, manga, chapter.id, chapter.title.trim())
             ));
@@ -100,16 +101,7 @@ export default class extends DecoratableMangaScraper {
         const key = page.Parameters.drm_hash as string;
 
         return DeScramble(data, async (image, ctx) => {
-            function decodeKey(e: string): number[] {
-                const n: number[] = [];
-                const t = window.atob(e);
-                for (let r = 0; r < t.length; r++) {
-                    n[r] = t.charCodeAt(r);
-                }
-                return n;
-            }
-
-            const r = decodeKey(key);
+            const r = GetBytesFromBase64(key);
             const i = r[0];
             const o = r[1];
             const a = r.slice(2);
@@ -127,7 +119,6 @@ export default class extends DecoratableMangaScraper {
                     v = Math.floor(index / i);
                 ctx.drawImage(image, p * l, m * f, l, f, g * l, v * f, l, f);
             }
-
         });
     }
 
@@ -138,5 +129,4 @@ export default class extends DecoratableMangaScraper {
             }
         });
     }
-
 }
