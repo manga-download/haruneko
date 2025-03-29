@@ -796,7 +796,6 @@ export { default as MangaFoxFun } from './legacy/MangaFoxFun';
 export { default as MangaHereFun } from './legacy/MangaHereFun';
 export { default as MangaHub } from './legacy/MangaHub';
 export { default as MangaKakalotFun } from './legacy/MangaKakalotFun';
-export { default as MangaKu } from './legacy/MangaKu';
 export { default as MangaOnlineFun } from './legacy/MangaOnlineFun';
 export { default as MangaPark } from './legacy/MangaPark';
 export { default as MangaParkEN } from './legacy/MangaParkEN';
