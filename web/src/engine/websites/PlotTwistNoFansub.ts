@@ -89,10 +89,8 @@ export default class extends DecoratableMangaScraper {
             }).toString()
         }));
         return data.map(chapter => {
-            const titleDiv = document.createElement('div');
-            //Adding capitulo to reflect the chapter naming convention used on the website /plot/manga/ page
-            titleDiv.innerHTML = 'Cap&iacute;tulo ' + chapter.chapter_number + ': ' + chapter.chapter_name;
-            return new Chapter(this, manga, `/reader/${chapter.post_name}/chapter-${chapter.chapter_number}/`, titleDiv.textContent.trim());
+            const title = new DOMParser().parseFromString(`Cap&iacute;tulo ${chapter.chapter_number}: ${chapter.chapter_name}`, 'text/html').body.innerText.trim();
+            return new Chapter(this, manga, `/reader/${chapter.post_name}/chapter-${chapter.chapter_number}/`, title);
         });
     }
 }
