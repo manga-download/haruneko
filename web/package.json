@@ -13,7 +13,7 @@
     "devDependencies": {
         "@fluentui/svg-icons": "1.1.292",
         "@fluentui/web-components": "beta",
-        "@microsoft/fast-element": "2.1.0",
+        "@microsoft/fast-element": "2.2.0",
         "@svelte-put/dragscroll": "4.0.0",
         "@sveltejs/vite-plugin-svelte": "5.0.3",
         "@tsconfig/svelte": "5.0.4",
