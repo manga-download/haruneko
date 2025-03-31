@@ -102,7 +102,7 @@ const translations: VariantResource = {
   Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   Frontend_FluentCore_Button_ToggleTheme_Description: 'Toggle Theme to {0}',
   //
-  Frontend_FluentCore_Settings_ThemeMode_Label: 'Theme Mode',
+  Frontend_FluentCore_Settings_ThemeMode_Label: 'Theme',
   Frontend_FluentCore_Settings_ThemeMode_Description: 'Select the color mode for the user interface',
   Frontend_FluentCore_Settings_ThemeMode_WebDark: 'Dark (Web)',
   Frontend_FluentCore_Settings_ThemeMode_WebLight: 'Light (Web)',

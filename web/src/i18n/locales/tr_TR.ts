@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "Yer İmlerini Dışa Aktar…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "Tüm yer imlerini bir dosyaya aktarma ( örn. yedekleme için)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "Tema Parlaklığı",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "Temanın açıklığını/koyuluğunu değiştirin",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Yer İmi Listesi",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "Yer imi listesinin görünürlüğünü aç/kapat",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "İndirme Yöneticisi",
