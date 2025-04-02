@@ -9,6 +9,7 @@ export default class extends MadTheme {
 
     public constructor() {
         super('toonilyme', 'Toonily (.me)', 'https://toonily.me', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        this.bookVariable = 'bookSlug';
     }
 
     public override get Icon() {
