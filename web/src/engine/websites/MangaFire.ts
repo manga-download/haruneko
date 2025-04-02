@@ -48,20 +48,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const id = manga.Identifier.split('.').at(-1);
-        const request = new Request(new URL(manga.Identifier, this.URI));
-        const data = await FetchCSS(request, 'section.m-list div.dropdown-menu a');
+        const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'section.m-list div.dropdown-menu a');
         const languageList = data.map(element => element.dataset.code.toLowerCase());
 
         const chapterList: Chapter[] = [];
         const types = [ 'chapter', 'volume' ];
         for (const language of languageList) {
             for (const type of types) {
-                const { result: { html } } = await FetchJSON<APIResult<APIHtml>>(new Request(new URL(`./ajax/read/${id}/${type}/${language}`, this.URI), {
-                    headers: {
-                        Referer: this.URI.href,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                }));
+                const { result: { html } } = await FetchJSON<APIResult<APIHtml>>(this.PrepareRequest(new URL(`./ajax/read/${id}/${type}/${language}`, this.URI)));
                 const dom = new DOMParser().parseFromString(html, 'text/html').body;
                 const chapters = [ ...dom.querySelectorAll('a') ]
                     .filter(anchor => anchor.pathname.includes(`/${type}-`))
@@ -79,12 +73,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterid: ChapterID = JSON.parse(chapter.Identifier);
-        const { result: { images } } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`ajax/read/${chapterid.itemtype}/${chapterid.itemid}`, this.URI), {
-            headers: {
-                Referer: this.URI.href,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }));
+        const { result: { images } } = await FetchJSON<APIResult<APIPages>>(this.PrepareRequest(new URL(`./ajax/read/${chapterid.itemtype}/${chapterid.itemid}`, this.URI)));
         return images.map(imageArray => {
             if (imageArray[2] < 1) {
                 return new Page(this, chapter, new URL(imageArray[0]), { Referer: this.URI.href });
@@ -97,6 +86,16 @@ export default class extends DecoratableMangaScraper {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return page.Parameters?.e ? DeScramble(blob, (source, target) => Render(source, target, page.Parameters.e as number)) : blob;
     }
+
+    private PrepareRequest(endpoint: URL): Request {
+        return new Request(endpoint, {
+            headers: {
+                Referer: this.URI.href,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+    }
+
 }
 
 async function Render(image: ImageBitmap, ctx: OffscreenCanvasRenderingContext2D, e: number): Promise<void> {
