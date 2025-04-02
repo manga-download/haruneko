@@ -56,8 +56,12 @@ export default class extends DecoratableMangaScraper {
         const types = [ 'chapter', 'volume' ];
         for (const language of languageList) {
             for (const type of types) {
-                const uri = new URL(`ajax/read/${id}/${type}/${language}`, this.URI);
-                const { result: { html } } = await FetchJSON<APIResult<APIHtml>>(new Request(uri));
+                const { result: { html } } = await FetchJSON<APIResult<APIHtml>>(new Request(new URL(`./ajax/read/${id}/${type}/${language}`, this.URI), {
+                    headers: {
+                        Referer: this.URI.href,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }));
                 const dom = new DOMParser().parseFromString(html, 'text/html').body;
                 const chapters = [ ...dom.querySelectorAll('a') ]
                     .filter(anchor => anchor.pathname.includes(`/${type}-`))
@@ -75,19 +79,23 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterid: ChapterID = JSON.parse(chapter.Identifier);
-        const uri = new URL(`ajax/read/${chapterid.itemtype}/${chapterid.itemid}`, this.URI);
-        const data = await FetchJSON<APIResult<APIPages>>(new Request(uri.href));
-        return data.result.images.map(imageArray => {
-            if (imageArray[2] < 1) {
-                return new Page(this, chapter, new URL(imageArray[0]));
+        const { result: { images } } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`ajax/read/${chapterid.itemtype}/${chapterid.itemid}`, this.URI), {
+            headers: {
+                Referer: this.URI.href,
+                'X-Requested-With': 'XMLHttpRequest'
             }
-            return new Page(this, chapter, new URL(imageArray[0]), { e: imageArray[2] });
+        }));
+        return images.map(imageArray => {
+            if (imageArray[2] < 1) {
+                return new Page(this, chapter, new URL(imageArray[0]), { Referer: this.URI.href });
+            }
+            return new Page(this, chapter, new URL(imageArray[0]), { e: imageArray[2], Referer: this.URI.href });
         });
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return page.Parameters?.e ? DeScramble(data, (source, target) => Render(source, target, page.Parameters.e as number)) : data;
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return page.Parameters?.e ? DeScramble(blob, (source, target) => Render(source, target, page.Parameters.e as number)) : blob;
     }
 }
 
