@@ -622,8 +622,6 @@ export { default as SeriManga } from './SeriManga';
 export { default as SetsuScans } from './SetsuScans';
 export { default as Seven8te } from './Seven8te';
 export { default as ShadowMangas } from './ShadowMangas';
-export { default as SheepManga } from './SheepManga';
-export { default as SheepMangaBroken } from './SheepMangaBroken';
 export { default as ShijieScans } from './ShijieScans';
 export { default as ShinigamiID } from './ShinigamiID';
 export { default as Shirakami } from './Shirakami';
