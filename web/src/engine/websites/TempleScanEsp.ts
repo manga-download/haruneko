@@ -1,41 +1,23 @@
 import { Tags } from '../Tags';
 import icon from './TempleScanEsp.webp';
-import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
+import type { MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
+import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
-
-type APIMangas = {
-    response: {
-        name: string,
-        slug: string,
-    }[]
-}
-
-class CookURL extends URL {
-
-    public constructor(url: string | URL, base?: string | URL) {
-        super(url, base);
-        this.searchParams.set('allow', 'true');
-    }
-
-    public get PathSearch() {
-        return this.pathname + this.search;
-    }
-}
+import { FetchCSS } from '../platform/FetchProvider';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
-        id: new CookURL(anchor.href).PathSearch,
-        title: anchor.querySelector<HTMLSpanElement>('span[class*="infoProject_numChapter"]').textContent.trim()
+        id: anchor.pathname,
+        title: anchor.querySelector<HTMLSpanElement>('div.grid span.truncate').textContent.trim()
     };
 }
 
-@Common.ChaptersSinglePageCSS('div[class*="infoProject_divListChapter"] a[class*="infoProject_divChapter"]', ChapterExtractor)
-@Common.PagesSinglePageCSS('main.contenedor img[class*="readChapter_image_"]')
+@Common.MangaCSS(/^{origin}\/serie\/[^/]+\/$/, 'meta[property="og:title"]', (element) => (element as HTMLMetaElement).content.split('-').at(0).trim())
+@Common.ChaptersSinglePageCSS('ul#list-chapters li a', ChapterExtractor)
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
-    private readonly apiUrl = 'https://apis.templescanesp.net/api/';
 
     public constructor() {
         super('templescanesp', 'Temple Scan (ESP)', 'https://templescanesp.caserosvive.com.ar', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Scanlator);
@@ -45,16 +27,34 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/ver/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        return await Common.FetchMangaCSS.call(this, provider, new CookURL(url).href, 'h1[class*="infoProject_titulo"]', undefined, true);
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { response } = await FetchJSON<APIMangas>(new Request(new URL('./searchProject', this.apiUrl)));
-        return response.map(manga => new Manga(this, provider, new CookURL('/ver/' + manga.slug, this.URI).PathSearch, manga.name));
+        const mangaList: Manga[] = [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this.GetMangasFromPage(page, provider);
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
+    }
+
+    public async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        const form = new URLSearchParams({
+            action: 'madara_load_more',
+            page: page.toString(),
+            template: 'madara-core/content/content-search',
+            "vars[paged]": '1',
+            "vars[template]": 'search',
+            "vars[post_type]": 'wp-manga',
+        });
+
+        const request = new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
+            method: 'POST',
+            body: form.toString(),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Referer: this.URI.href
+            }
+        });
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'div.items-start a');
+        return data.map(anchor => new Manga(this, provider, anchor.pathname, anchor.title.trim()));
     }
 }
