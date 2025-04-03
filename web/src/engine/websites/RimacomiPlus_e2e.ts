@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://rimacomiplus.jp/cocohana/series/853b5f1c905d4/',
-        id: '/cocohana/series/853b5f1c905d4/',
+        id: '/cocohana/series/853b5f1c905d4',
         title: '包帯ごっこ'
     },
     child: {

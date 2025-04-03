@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://championcross.jp/series/50d8ea89cfc92/',
-        id: '/series/50d8ea89cfc92/',
+        id: '/series/50d8ea89cfc92',
         title: 'あの頃、私たちは魔法使いでした。'
     },
     child: {

@@ -1,18 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './RimacomiPlus.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import * as Comici from './decorators/ComiciViewer';
+import { ComiciViewer } from './templates/ComiciViewer';
 
-@Common.MangaCSS(/^{origin}\/([^/]+\/)?series\/[^/]+(\/)?$/, Comici.queryMangaTitleURI)
-@Common.MangasMultiPageCSS(Comici.mangaListPath, Comici.queryManga, 0, 1, 0, Comici.MangaExtractor)
-@Comici.ChaptersSinglePageCSS()
-@Comici.PagesSinglePageAJAX()
-@Comici.ImageAjax()
-export default class extends DecoratableMangaScraper {
-
+export default class extends ComiciViewer {
     public constructor() {
         super('rimacomiplus', `RimacomiPlus (リマコミ＋)`, 'https://rimacomiplus.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
+        this.mangaRegexp = /\/([^/]+\/)?series\/[^/]+(\/)?$/;
     }
 
     public override get Icon() {

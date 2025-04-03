@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://kansai.mag-garden.co.jp/series/76efde6cc8881/',
-        id: '/series/76efde6cc8881/',
+        id: '/series/76efde6cc8881',
         title: '推し変しやがれ!!'
     },
     child: {
