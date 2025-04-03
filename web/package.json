@@ -11,14 +11,14 @@
         "protobufjs": "7.4.0"
     },
     "devDependencies": {
-        "@fluentui/svg-icons": "1.1.292",
+        "@fluentui/svg-icons": "1.1.294",
         "@fluentui/web-components": "2.6.1",
         "@microsoft/fast-element": "1.14.0",
         "@svelte-put/dragscroll": "4.0.0",
         "@sveltejs/vite-plugin-svelte": "5.0.3",
         "@tsconfig/svelte": "5.0.4",
-        "@types/react": "19.0.12",
-        "@types/react-dom": "19.0.4",
+        "@types/react": "19.1.0",
+        "@types/react-dom": "19.1.1",
         "@types/wicg-file-system-access": "2023.10.6",
         "@vitejs/plugin-react": "4.3.4",
         "@vitejs/plugin-vue": "5.2.3",
