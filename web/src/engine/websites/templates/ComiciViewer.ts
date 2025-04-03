@@ -1,4 +1,4 @@
-//Comici viewer based websites : BigComics, YoungChampion, YoungAnimal, ComicMedu, ComicRide
+//Comici.jp viewer based websites : BigComics, YoungChampion, YoungAnimal, ComicMedu, ComicRide
 
 import { Exception } from '../../Error';
 import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
@@ -62,8 +62,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`${manga.Identifier}/list`, this.URI);
-        const request = new Request(uri, {
+        const request = new Request(new URL(`${manga.Identifier}/list`, this.URI), {
             headers: {
                 Referer: this.URI.href
             }
@@ -97,8 +96,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
             const tileHeight = Math.floor(image.height / 4);
             for (let k = 0, i = 0; i < 4; i++) {
                 for (let j = 0; j < 4; j++) {
-                    const x = decodedArray[k][0], y = decodedArray[k][1];
-                    ctx.drawImage(image, tileWidth * x, tileHeight * y, tileWidth, tileHeight, tileWidth * i, tileHeight * j, tileWidth, tileHeight);
+                    ctx.drawImage(image, tileWidth * decodedArray[k][0], tileHeight * decodedArray[k][1], tileWidth, tileHeight, tileWidth * i, tileHeight * j, tileWidth, tileHeight);
                     k++;
                 }
             }
@@ -108,7 +106,6 @@ export class ComiciViewer extends DecoratableMangaScraper {
     private async FetchCoordInfo(viewerId: string, userId: string, chapter: Chapter): Promise<APIResult<APIPage[]>> {
         //first request get page count
         const { totalPages } = await FetchJSON<APIResult<APIPage[]>>(this.CreateChapterRequest('1', viewerId, userId, chapter));
-
         //second request fetch actual pages data
         return FetchJSON<APIResult<APIPage[]>>(this.CreateChapterRequest(totalPages.toString(), viewerId, userId, chapter));
     }
