@@ -16,8 +16,6 @@ for (let i = 0; i < 4; i++) {
 }
 
 type APIResult<T> = {
-    code: number,
-    message: string,
     result: T,
     totalPages: number
 }
