@@ -15,15 +15,15 @@ const chapterScript = `
     });
 `;
 
-@Common.MangaCSS(/^{origin}\/inicio\/series\/[^/]+\/$/, 'h1.post-title')
-@Common.MangasMultiPageCSS('/inicio/page/{page}/?s&post_type=wp-manga', 'div.post-title h2 > a')
+@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'h1.post-title')
+@Common.MangasMultiPageCSS('/page/{page}/?s&post_type=wp-manga', 'div.post-title h2 > a')
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangacrab', 'Manga Crab', 'https://mangacrab.yopres.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('mangacrab', 'Manga Crab', 'https://mangacrab2.yopres.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
