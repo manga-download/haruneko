@@ -18,14 +18,30 @@ const pageScript = `
     new Promise( (resolve, reject) => {
         const images = document.querySelectorAll('#divImage img');
         LoadNextPages(images.length);
-        resolve([ ...images ].map(img => img.src));
+        const start = Date.now();
+        const interval = setInterval(function () {
+            try {
+                if ([...images].at(-1).style.backgroundImage != '') {
+                    clearInterval(interval);
+                    resolve([ ...images ].map(img => img.style.backgroundImage.slice(4, -1).replace(/["']/g, '').replace('=s1600?', '=s0?')));
+                }
+            } catch (error) {
+                clearInterval(interval);
+                reject(error);
+            } finally {
+                if(Date.now() - start > 10_000) {
+                    clearInterval(interval);
+                    reject(new Error('Unable to get pictures after more than 10 seconds !'));
+                }
+            }
+        }, 1000);
     });
 `;
 
 @Common.MangaCSS(/^{origin}\/Comic\/[^/]+$/, 'div.barContent a.bigChar')
 @Common.MangasMultiPageCSS('/ComicList?page={page}', '.list-comic .item > a')
 @Common.ChaptersSinglePageCSS('div.episodeList table.listing tr td:first-of-type a, div.section ul.list li a', ChapterExtractor)
-@Common.PagesSinglePageJS(pageScript, 1000)
+@Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
