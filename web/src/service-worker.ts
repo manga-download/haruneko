@@ -1,5 +1,5 @@
 const sw = self as unknown as ServiceWorkerGlobalScope;
-const currentCacheName = sw.location.pathname.split('/').at(1) ?? sw.location.hostname;
+const currentCacheName = sw.location.hostname; // TODO: Get build ID from vite
 let currentCache: Cache = undefined;
 
 async function PrepareCache(): Promise<void> {
@@ -23,7 +23,7 @@ async function PutCache(request: Request, response: Response): Promise<void> {
 async function Fetch(request: Request): Promise<Response> {
     try {
         const response = await fetch(request);
-        PutCache(request, response); // skip waiting for updating the cached response
+        PutCache(request, response.clone()); // skip waiting for updating the cached response
         return response;
     } catch {
         return (await GetCache()).match(request) ?? new Response('Service Unavailable', { status: 503 });
@@ -44,8 +44,7 @@ function OnActivate(event: ExtendableEvent) {
 }
 
 function OnFetch(event: FetchEvent): void {
-    const hostname = new URL(event.request.url).hostname;
-    if(hostname !== 'localhost' && hostname === sw.location.hostname) {
+    if(new URL(event.request.url).hostname === sw.location.hostname) {
         event.respondWith(Fetch(event.request));
     }
 }

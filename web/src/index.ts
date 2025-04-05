@@ -16,8 +16,10 @@ declare global {
 }
 
 window.addEventListener('load', async () => {
-    const urlServiceWorker = new URL(import.meta.env.DEV ? './service-worker.ts' : './sw.js', import.meta.url);
-    const registration = await navigator.serviceWorker.register(urlServiceWorker);
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.allSettled(registrations.map(registration => registration.unregister()));
+    const urlServiceWorker = new URL(import.meta.env.DEV ? './service-worker.ts' : '/sw.js', import.meta.url);
+    const registration = await navigator.serviceWorker.register(urlServiceWorker, { scope: '/' });
     registration.addEventListener('updatefound', () => {
         const activeServiceWorker = registration.active;
         // Reload application as soon as the active servcie-worker was replaced by the updated service-worker

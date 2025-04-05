@@ -28,7 +28,7 @@ export default defineConfig({
                 sw: './src/service-worker.ts',
             },
             output: {
-                entryFileNames: `${buildID}/[name].js`,
+                entryFileNames: file => (file.name !== 'sw' ? `${buildID}/` : '') + '[name].js',
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
                 manualChunks: function(id) {
@@ -61,5 +61,10 @@ export default defineConfig({
         // TODO: once carbon-componenets-svelte v1 is released, check if svelte optimize has been improved
         // carbon-components-svelte is large, prebundle
         include: ['carbon-components-svelte'],
+    },
+    server: {
+        headers: {
+            'Service-Worker-Allowed': '/'
+        }
     }
 });
