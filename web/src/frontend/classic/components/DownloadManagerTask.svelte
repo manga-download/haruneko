@@ -62,7 +62,7 @@
         >
             <div slot="labelText" class="label">
                 {job.Media.Title}
-                {#if job.Errors.length > 0}
+                {#if job.Errors.Value.length > 0}
                     <Button
                         kind="danger-ghost"
                         size="small"
