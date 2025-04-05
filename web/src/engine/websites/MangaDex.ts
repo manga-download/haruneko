@@ -41,7 +41,7 @@ type APIChapter = {
         id: string
         type: string
         attributes?: {
-            name?: string
+            name: string
         }
     }[]
 }
