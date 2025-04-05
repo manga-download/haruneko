@@ -81,7 +81,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#content div.container > div img:not([alt *= "thumb"])', PageLinkExtractor);
+        const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#content div.container > div img:not([alt *= "thumb"]), div#S\\:1 div.container > div img:not([alt *= "thumb"])', PageLinkExtractor);
         return pages.filter(page => !page.Link.href.match(/\._000_slr\.jpg$/));//incorrect image in Solo Leveling Ragnarok chapter 1
     }
 }
