@@ -23,6 +23,10 @@ export default defineConfig({
         outDir: 'build',
         chunkSizeWarningLimit: 2 * 1024,
         rollupOptions: {
+            input: {
+                index: './index.html',
+                sw: './src/service-worker.ts',
+            },
             output: {
                 entryFileNames: `${buildID}/[name].js`,
                 assetFileNames: `${buildID}/[name].[ext]`,

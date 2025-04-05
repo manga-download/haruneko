@@ -15,7 +15,17 @@ declare global {
     }
 }
 
-function showErrorNotice(root: HTMLElement, error?: Error) {
+window.addEventListener('load', async () => {
+    const urlServiceWorker = new URL(import.meta.env.DEV ? './service-worker.ts' : './sw.js', import.meta.url);
+    const registration = await navigator.serviceWorker.register(urlServiceWorker);
+    registration.addEventListener('updatefound', () => {
+        const activeServiceWorker = registration.active;
+        // Reload application as soon as the active servcie-worker was replaced by the updated service-worker
+        activeServiceWorker?.addEventListener('statechange', () => activeServiceWorker.state === 'redundant' ? window.location.reload() : null);
+    });
+});
+
+function ShowErrorNotice(root: HTMLElement, error?: Error) {
     const heading = document.createElement('h2');
     heading.textContent = error?.message;
 
@@ -64,6 +74,6 @@ function showErrorNotice(root: HTMLElement, error?: Error) {
         }
     } catch(error) {
         console.error(error);
-        showErrorNotice(document.querySelector(noticeHook), error);
+        ShowErrorNotice(document.querySelector(noticeHook), error);
     }
 })();
