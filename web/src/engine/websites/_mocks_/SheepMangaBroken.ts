@@ -1,10 +1,8 @@
-import { Tags } from '../Tags';
+import { Tags } from '../../Tags';
 import icon from './SheepManga.webp';
-import { FetchJSON } from '../platform/FetchProvider';
-import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../providers/MangaPlugin';
-import { Numeric, Secret, Text } from '../SettingsManager';
-import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import * as Common from './decorators/Common';
+import { FetchJSON } from '../../platform/FetchProvider';
+import { type MangaPlugin, DecoratableMangaScraper, Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
 
 /**
  * Sample Website Implementation for Developer Testing
@@ -13,10 +11,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sheep-scanlations', `Sheep's Awesome Mangas`, 'https://hakuneko.download/sample-websites/sheep-scanlations/', Tags.Media.Comic, Tags.Source.Official, Tags.Rating.Safe, Tags.Language.Multilingual);
-        this.Settings.throttle = new Numeric('throttle', R.Plugin_Settings_ThrottlingDownloads, R.Plugin_Settings_ThrottlingDownloadsInfo, 0, 250, 5000);
-        this.Settings.username = new Text('username', R.Plugin_SheepScanlations_Settings_Username, R.Plugin_SheepScanlations_Settings_UsernameInfo, '');
-        this.Settings.password = new Secret('password', R.Plugin_SheepScanlations_Settings_Password, R.Plugin_SheepScanlations_Settings_PasswordInfo, '');
+        super('sheep-scanlations-broken', `🔷 Sheep's BROKEN Awesome Mangas 🔷`, 'https://hakuneko.download/sample-websites/sheep-scanlations/', Tags.Media.Comic, Tags.Source.Official, Tags.Rating.Safe, Tags.Language.Multilingual);
     }
 
     public override get Icon() {
@@ -24,7 +19,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public ValidateMangaURL(url: string): boolean {
-        return /\/sheep-scanlations\/\d+\.json/.test(url);
+        return /\/sheep-scanlations-broken\/\d+\.json/.test(url);
     }
 
     public async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -35,7 +30,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(this.URI + '/index.json');
+        const request = new Request(this.URI + '/FAKE_ERROR/index.json');
         const data = await FetchJSON<{ id: string; title: string; }[]>(request);
         return data.map(entry => new Manga(this, provider, entry.id, entry.title));
     }

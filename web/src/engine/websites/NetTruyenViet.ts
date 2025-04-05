@@ -13,7 +13,7 @@ const patternAliasDomains = [
 
 @Common.MangaCSS(new RegExp(`^https?://(${patternAliasDomains})/truyen-tranh/[^/]+$`), MojoPortalComic.queryManga)
 @Common.MangasMultiPageCSS(MojoPortalComic.patternMangas, MojoPortalComic.queryMangas, 1, 1, 2500)
-@Common.ChaptersSinglePageCSS(MojoPortalComic.queryChapters)
+@MojoPortalComic.ChaptersSinglePageAJAX()
 @Common.PagesSinglePageCSS(MojoPortalComic.queryPages, (img: HTMLImageElement) => img.dataset.src)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

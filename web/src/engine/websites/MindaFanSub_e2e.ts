@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'mindafansub',
         title: 'Minda Fansub'
     },
     container: {
-        url: 'https://mindafansub.pro/manga/painter-of-the-night/',
-        id: JSON.stringify({ post: '1873', slug: '/manga/painter-of-the-night/'}),
+        url: 'https://mindafansub.org/manga/painter-of-the-night-oku-10/',
+        id: JSON.stringify({ post: '1872', slug: '/manga/painter-of-the-night-oku-10/'}),
         title: 'Painter of the Night'
     },
     child: {
-        id: '/manga/painter-of-the-night/bolum-1/',
+        id: '/manga/painter-of-the-night-oku-10/bolum-1/',
         title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: 483_927,
+        size: 209_831,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
