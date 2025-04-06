@@ -60,11 +60,8 @@ export class MangaHubBase extends DecoratableMangaScraper {
     private apiKey = '';
 
     public override async Initialize(): Promise<void> {
-        this.imageTaskPool.RateLimit = new RateLimit(4, 0.5); //i have seen errors 522, no sore tare is accurate
+        this.imageTaskPool.RateLimit = new RateLimit(4, 0.5); //i have seen errors 522, not sure that is accurate
         await this.RenewApiKey();
-        if (!this.apiKey) {
-            throw new Error(`${this.Title}: Can't initialize the API key! Try selecting another manga from this connector!`);
-        }
     }
 
     private async RenewApiKey() {
