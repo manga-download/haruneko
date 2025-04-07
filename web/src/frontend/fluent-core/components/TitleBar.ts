@@ -58,7 +58,7 @@ const styles: ElementStyles = css`
     }
 
     #controls > fluent-button#close:hover {
-        background-color: var(--colorPaletteRedBackground3) !important;
+        background-color: var(--colorStatusDangerBackground2) !important;
     }
 
     #menu-overlay {
