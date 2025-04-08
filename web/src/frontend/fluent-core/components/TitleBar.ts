@@ -44,7 +44,7 @@ const styles: ElementStyles = css`
     }
 
     #menu-button {
-        min-width: auto !important;
+        min-width: unset !important;
     }
 
     #title {

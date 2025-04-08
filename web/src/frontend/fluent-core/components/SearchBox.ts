@@ -14,6 +14,7 @@ const styles: ElementStyles = css`
 
     #searchpattern {
         display: block;
+        max-width: unset !important;
     }
 
     #searchpattern svg {
