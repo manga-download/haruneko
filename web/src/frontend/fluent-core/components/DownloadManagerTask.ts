@@ -78,9 +78,9 @@ const template: ViewTemplate<DownloadManagerTask> = html`
     <div class="mediatitle">${model => model.Entry?.Media.Parent.Title}</div>
     <div class="mediaitem">${model => model.Entry?.Media.Title}</div>
     <div class="controls">
-        <fluent-progress-bar min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress>
+        <fluent-progress-bar min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress-bar>
         <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]} @click=${model => model.ShowErrors()}></div>
-        <fluent-button icon-only appearance="transparent" title="${() => S.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" :innerHTML=${() => IconRemove} @click=${model => HakuNeko.DownloadManager.Dequeue(model.Entry)}></fluent-button>
+        <fluent-button icon-only size="small" appearance="transparent" title="${() => S.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" :innerHTML=${() => IconRemove} @click=${model => HakuNeko.DownloadManager.Dequeue(model.Entry)}></fluent-button>
     </div>
 `;
 
