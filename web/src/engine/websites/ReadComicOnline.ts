@@ -6,7 +6,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
     new Promise( resolve => {
-        const regexp = /\\.attr\\('src',\\s*([^\\(]+)\\(([^\\[]+)\\[currImage\\]\\)/;
+        const regexp = /\\.attr\\(\\s*['"]src['"]\\s*,\\s*([\\w]+)\\(\\s*([\\w]+)\\[\\s*currImage/ ;
         const matches = document.documentElement.innerHTML.match(regexp);
         const imageArray = eval(matches[2]);
         const decodingFunc = eval(matches[1]);
