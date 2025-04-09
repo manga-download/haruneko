@@ -19,7 +19,7 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('hitomi', `Hitomi`, 'https://hitomi.la', Tags.Media.Manga, Tags.Language.Multilingual, Tags.Rating.Pornographic, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
-        this.imageTaskPool.RateLimit = new RateLimit(2, 0.5);
+        this.imageTaskPool.RateLimit = new RateLimit(4, 1);
     }
 
     public override get Icon() {
