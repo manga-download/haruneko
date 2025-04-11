@@ -38,7 +38,6 @@ export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansFree } from './AsuraScansFree';
 export { default as AsuraScansTR } from './AsuraScansTR';
 export { default as Atikrost } from './Atikrost';
-export { default as AuroraScan } from './AuroraScan';
 export { default as AuroraScans } from './AuroraScans';
 export { default as AyaToon } from './AyaToon';
 export { default as AzoraWorld } from './AzoraWorld';
