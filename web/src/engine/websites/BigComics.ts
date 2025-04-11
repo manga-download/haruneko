@@ -1,14 +1,13 @@
 import { Tags } from '../Tags';
-import icon from './MagKan.webp';
+import icon from './BigComics.webp';
 import { ComiciViewer } from'./templates/ComiciViewer';
 
 export default class extends ComiciViewer {
     public constructor() {
-        super('magkan', `MagKan`, 'https://kansai.mag-garden.co.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('bigcomics', `Big Comics`, 'https://bigcomics.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }
