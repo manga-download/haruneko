@@ -35,7 +35,6 @@ export { default as AsmodeusScans } from './AsmodeusScans';
 export { default as AstralManga } from './AstralManga';
 export { default as AstraScans } from './AstraScans';
 export { default as AsuraScans } from './AsuraScans';
-export { default as AsuraScansFree } from './AsuraScansFree';
 export { default as AsuraScansTR } from './AsuraScansTR';
 export { default as Atikrost } from './Atikrost';
 export { default as AuroraScans } from './AuroraScans';
