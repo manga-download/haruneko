@@ -13,7 +13,7 @@ const scriptPages = `Reader.images.map(element => new URL(element.url, window.lo
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('desu', `Desu`, 'https://desu.store', Tags.Language.Russian, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('desu', `Desu`, 'https://desu.work', Tags.Language.Russian, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

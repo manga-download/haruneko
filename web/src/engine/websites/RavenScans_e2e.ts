@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ravenscans',
         title: 'Raven Scans'
     },
     container: {
-        url: 'https://ravenscans.com/manga/am-i-invincible/',
+        url: 'https://xavierscans.com/manga/am-i-invincible/',
         id: '/manga/am-i-invincible/',
         title: 'Am I Invincible'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 408_841,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
