@@ -344,7 +344,6 @@ export { default as MangaHot } from './MangaHot';
 export { default as MangaHubFR } from './MangaHubFR';
 export { default as MangaHubRU } from './MangaHubRU';
 export { default as MangaID } from './MangaID';
-export { default as MangaIro } from './MangaIro';
 export { default as MangaItalia } from './MangaItalia';
 export { default as MangaKakalot } from './MangaKakalot';
 export { default as MangaKatana } from './MangaKatana';
