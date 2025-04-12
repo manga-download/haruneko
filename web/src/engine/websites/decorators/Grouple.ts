@@ -39,18 +39,18 @@ export const chapterScript = `
 export const queryMangas = 'div.tile div.desc h3 a';
 export const queryMangaTitle = 'meta[itemprop = "name"]';
 export const pathMangas = '/list?offset={page}';
-export const pageMangaOffset = 70;
+export const pageMangaOffset = 50;
 export const queryPages = [
     'div#all img.img-responsive',
     'div.text-center img[loading="lazy"]'
 ].join(',');
 
-export type ImagesData = {
+type ImagesData = {
     url: string,
     mirrors: string[]
 }
 
-export type PageMirrored = {
+type PageMirrored = {
     mirrors: string[]
 };
 

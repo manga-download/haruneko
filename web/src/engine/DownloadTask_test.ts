@@ -63,7 +63,7 @@ describe('DownloadTask', () => {
             expect(Date.now() - testee.Created.getTime()).toBeLessThan(7.5);
             await new Promise(resolve => setTimeout(resolve, 5));
             expect(testee.Media).toBe(fixture.MediaContainerMock);
-            expect(testee.Errors).toEqual([]);
+            expect(testee.Errors.Value).toEqual([]);
             expect(testee.Status.Value).toBe(Status.Queued);
             expect(fixture.StatusChangedCallbackMock).not.toBeCalled();
             expect(testee.Progress.Value).toBe(0);
@@ -210,7 +210,7 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            expect(testee.Errors.length).toBe(0);
+            expect(testee.Errors.Value.length).toBe(0);
         });
 
         it('Should catch and keep all downloading errors', async () => {
@@ -220,9 +220,9 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            expect(testee.Errors.length).toBe(2);
-            expect(testee.Errors[0].message).toBe('x');
-            expect(testee.Errors[1].message).toBe('x');
+            expect(testee.Errors.Value.length).toBe(2);
+            expect(testee.Errors.Value.at(0).message).toBe('x');
+            expect(testee.Errors.Value.at(1).message).toBe('x');
         });
 
         it('Should catch and keep any processing error', async () => {
@@ -233,8 +233,8 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            expect(testee.Errors.length).toBe(1);
-            expect(testee.Errors[0].message).toBe('o');
+            expect(testee.Errors.Value.length).toBe(1);
+            expect(testee.Errors.Value.at(0).message).toBe('o');
         });
     });
 

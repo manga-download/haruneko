@@ -6,7 +6,7 @@ const config = {
         title: 'TurkManga'
     },
     container: {
-        url: 'https://turkmanga.com.tr/manga/mercenary-enrollment',
+        url: 'https://turkmanga.net/manga/mercenary-enrollment',
         id: '/manga/mercenary-enrollment',
         title: 'Mercenary Enrollment'
     },
