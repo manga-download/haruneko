@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'manytooncom',
         title: 'ManyToon'
     },
     container: {
-        url: 'https://manytoon.org/comic/boarding-school/',
+        url: 'https://manytoon.com/comic/boarding-school/',
         id: JSON.stringify({ post: '222638', slug: '/comic/boarding-school/' }),
         title: 'Boarding School'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 898_037,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

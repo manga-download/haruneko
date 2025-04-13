@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rawkuma', 'Rawkuma', 'https://rawkuma.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawkuma', 'Rawkuma', 'https://rawkuma.net', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
