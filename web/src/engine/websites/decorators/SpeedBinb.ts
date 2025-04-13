@@ -15,7 +15,7 @@ type RequestData = {
     dmytime,
     u0: string,
     u1: string,
-    request: Request
+    config: ContentConfiguration
 }
 
 type JSONPageData = {
@@ -107,7 +107,7 @@ async function GetViewerData(this: MangaScraper, chapter: Chapter): Promise<View
     let viewerUrl = new URL(chapter.Identifier, this.URI);
     const request = new Request(viewerUrl, {
         headers: {
-            Referer: this.URI.origin
+            Referer: this.URI.href
         }
     });
 
@@ -125,7 +125,7 @@ async function GetViewerData(this: MangaScraper, chapter: Chapter): Promise<View
  * @param viewerUrl - Read Url of the SpeedBinb Viewer
  * @param sbHtmlElement - HTMLElement extracted from said page
  */
-async function CreatePtBinbRequestData(viewerUrl: URL, sbHtmlElement: HTMLElement): Promise<RequestData> {
+async function CreatePtBinbRequestData(viewerUrl: URL, sbHtmlElement: HTMLElement, needCookies: boolean = false): Promise<RequestData> {
     let cid = viewerUrl.searchParams.get('cid') ?? sbHtmlElement.dataset['ptbinbCid'];
 
     //in case cid is not in url and not in html, try to get it from page redirected by Javascript/ Meta element
@@ -152,7 +152,10 @@ async function CreatePtBinbRequestData(viewerUrl: URL, sbHtmlElement: HTMLElemen
         }
     });
 
-    return { cid, sharingKey, dmytime, u0, u1, request };
+    const { items } = !needCookies ? await FetchJSON<JSONPageData>(request) :
+        await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
+
+    return { cid, sharingKey, dmytime, u0, u1, config: items.at(0) };
 }
 
 /**********************************************
@@ -170,15 +173,15 @@ async function CreatePtBinbRequestData(viewerUrl: URL, sbHtmlElement: HTMLElemen
 export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, version: SpeedBindVersion, needCookies = false): Promise<Page[]> {
     const { viewerUrl, SBHtmlElement } = await GetViewerData.call(this, chapter);
     if (version == SpeedBindVersion.v016061) {
-        //ComicBrise, ComicMeteor, ComicPorta, ComicValKyrie, DigitalMargaret, MichiKusa, OneTwoThreeHon, TKSuperheroComics
+        //ComicBrise, ComicMeteor, ComicPorta, ComicValKyrie, MichiKusa, OneTwoThreeHon, TKSuperheroComics
         const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
         return imageConfigurations.map(element => new Page(this, chapter, getSanitizedURL(viewerUrl.href, element.dataset.ptimg)));
     }
 
-    const params = await CreatePtBinbRequestData(viewerUrl, SBHtmlElement);
-    const { items } = !needCookies ? await FetchJSON<JSONPageData>(params.request) : await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', params.request.url), 2000);
-    return getPagesLinks.call(this, items[0], params, chapter, version);
+    const params = await CreatePtBinbRequestData(viewerUrl, SBHtmlElement, needCookies);
+    return getPagesLinks.call(this, params, chapter, version);
 }
+
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
  * @param version - SpeedBinb version used by the website
@@ -196,7 +199,8 @@ export function PagesSinglePageAjax(version: SpeedBindVersion, needCookies = fal
         };
     };
 }
-async function getPagesLinks(this: MangaScraper, configuration: ContentConfiguration, params: RequestData, chapter: Chapter, version: SpeedBindVersion): Promise<Page[]> {
+async function getPagesLinks(this: MangaScraper, params: RequestData, chapter: Chapter, version: SpeedBindVersion): Promise<Page[]> {
+    const configuration = params.config;
     const cid = version === SpeedBindVersion.v016452 ? params.cid : configuration.ContentID;
     configuration.ctbl = _pt(cid, params.sharingKey, configuration.ctbl as string);
     configuration.ptbl = _pt(cid, params.sharingKey, configuration.ptbl as string);

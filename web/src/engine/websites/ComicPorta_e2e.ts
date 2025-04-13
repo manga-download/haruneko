@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'comicporta',
         title: 'COMICポルタ (Comic Porta)'
@@ -20,6 +20,4 @@ const config = {
         type: 'image/png',
         timeout: 20000
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

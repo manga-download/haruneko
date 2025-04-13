@@ -1,9 +1,9 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'youngjump',
-        title: 'となりのヤングジャンプ (Tonari no Young Jump)'
+        title: 'ヤングジャンプ / ウルトラジャンプ (young jump/ultra jump)'
     },
     /* Content is accessible after login
     container: {
@@ -20,6 +20,4 @@ const config = {
         size: 4_627_863,
         type: 'image/png'
     }*/
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

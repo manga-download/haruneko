@@ -126,7 +126,6 @@ export { default as DEXHentai } from './DEXHentai';
 export { default as DiamondFansub } from './DiamondFansub';
 export { default as DianxiaTrads } from './DianxiaTrads';
 export { default as Digimon } from './Digimon';
-export { default as DigitalMargaret } from './DigitalMargaret';
 export { default as DigitalTeam } from './DigitalTeam';
 export { default as DingManhua } from './DingManhua';
 export { default as DisasterScans } from './DisasterScans';

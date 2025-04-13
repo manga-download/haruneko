@@ -23,7 +23,7 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangaCSS(/^{origin}\/titles\/\d+\//, 'div.intr-title')
 @Common.MangasMultiPageCSS('/titles/?page_num={page}', 'div.book-box4', 1, 1, 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.episode-list', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
+@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'tksuperherocomics',
         title: 'Televi-kun Superhero Comics (てれびくんスーパーヒーローコミックス)'
@@ -19,6 +19,4 @@ const config = {
         size: 1_867_269,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
