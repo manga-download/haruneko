@@ -49,7 +49,7 @@ function ChapterExtractor(element: HTMLElement) {
 @Common.MangasMultiPageCSS('/series/list?page={page}', 'div.series-box-vertical', 0, 1, 0, MangaInfoExtractor)
 export class ComiciViewer extends DecoratableMangaScraper {
 
-    protected mangaRegexp = /\/series\/[^/]+(\/)?$/;
+    protected mangaRegexp = /\/series\/[^/]+(\/)?$/;//same website can provide manga links with and without trailing slash
 
     public override ValidateMangaURL(url: string): boolean {
         return this.mangaRegexp.test(url) && url.startsWith(this.URI.origin);
@@ -62,12 +62,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`${manga.Identifier}/list`, this.URI), {
-            headers: {
-                Referer: this.URI.href
-            }
-        });
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'div.series-ep-list a[data-href]' );
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}/list`, this.URI)), 'div.series-ep-list a[data-href]' );
         return data.map(element => {
             const { id, title } = ChapterExtractor.call(this, element);
             return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
@@ -75,12 +70,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI), {
-            headers: {
-                Referer: this.URI.href
-            }
-        });
-        const [viewer] = await FetchCSS(request, '#comici-viewer');
+        const [viewer] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#comici-viewer');
         if (!viewer) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
         const { result } = await this.FetchCoordInfo(viewer.getAttribute('comici-viewer-id'), viewer.dataset['memberJwt'], chapter);
