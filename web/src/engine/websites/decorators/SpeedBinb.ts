@@ -9,7 +9,7 @@ type ViewerData = {
     SBHtmlElement: HTMLElement
 }
 
-type RequestData = {
+type SpeedBinbParameters = {
     cid: string,
     sharingKey: string,
     dmytime,
@@ -103,7 +103,7 @@ function getSanitizedURL(base: string, append: string): URL {
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  */
-async function GetViewerData(this: MangaScraper, chapter: Chapter): Promise<ViewerData> {
+async function GetViewerInformations(this: MangaScraper, chapter: Chapter): Promise<ViewerData> {
     let viewerUrl = new URL(chapter.Identifier, this.URI);
     const request = new Request(viewerUrl, {
         headers: {
@@ -121,14 +121,14 @@ async function GetViewerData(this: MangaScraper, chapter: Chapter): Promise<View
     return { viewerUrl, SBHtmlElement };
 }
 /**
- * Create first SpeedBinb AJAX request to perform, using viewerUrl GET parameters, and endpoint from SpeedBinb HTML node
+ * Gather (cid, sharingkey, dmytime, u0, u1, configuration) using viewerUrl and SBHtmlElement
  * @param viewerUrl - Read Url of the SpeedBinb Viewer
  * @param sbHtmlElement - HTMLElement extracted from said page
  */
-async function CreatePtBinbRequestData(viewerUrl: URL, sbHtmlElement: HTMLElement, needCookies: boolean = false): Promise<RequestData> {
+async function GetSBParameters(viewerUrl: URL, sbHtmlElement: HTMLElement, needCookies: boolean = false): Promise<SpeedBinbParameters> {
     let cid = viewerUrl.searchParams.get('cid') ?? sbHtmlElement.dataset['ptbinbCid'];
 
-    //in case cid is not in url and not in html, try to get it from page redirected by Javascript/ Meta element
+    //in case cid is not in url and not in html, try to get it from page redirected by Javascript/ Meta
     if (!cid) {
         cid = await FetchWindowScript<string>(new Request(viewerUrl), 'new URL(window.location).searchParams.get("cid");', 5000);
     }
@@ -171,15 +171,22 @@ async function CreatePtBinbRequestData(viewerUrl: URL, sbHtmlElement: HTMLElemen
  * @param needCookies - Use browser window to perform first JSON request to get access cookies properly
  */
 export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, version: SpeedBindVersion, needCookies = false): Promise<Page[]> {
-    const { viewerUrl, SBHtmlElement } = await GetViewerData.call(this, chapter);
+
+    //1 Fetch "div#content.pages" and "real" chapter url (since a redirection is possible)
+    const { viewerUrl, SBHtmlElement } = await GetViewerInformations.call(this, chapter);
+
+    //easy mode : pages are just an array of div
     if (version == SpeedBindVersion.v016061) {
         //ComicBrise, ComicMeteor, ComicPorta, ComicValKyrie, MichiKusa, OneTwoThreeHon, TKSuperheroComics
         const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
         return imageConfigurations.map(element => new Page(this, chapter, getSanitizedURL(viewerUrl.href, element.dataset.ptimg)));
     }
 
-    const params = await CreatePtBinbRequestData(viewerUrl, SBHtmlElement, needCookies);
-    return getPagesLinks.call(this, params, chapter, version);
+    //2 Gather all informations using viewerUrl and SBHtmlElement (cid, sharingkey, dmytime, u0, u1, configuration)
+    const params = await GetSBParameters(viewerUrl, SBHtmlElement, needCookies);
+
+    //3 Fetch pages links using speedbinb informations
+    return FetchPagesLinks.call(this, params, chapter, version);
 }
 
 /**
@@ -199,7 +206,14 @@ export function PagesSinglePageAjax(version: SpeedBindVersion, needCookies = fal
         };
     };
 }
-async function getPagesLinks(this: MangaScraper, params: RequestData, chapter: Chapter, version: SpeedBindVersion): Promise<Page[]> {
+
+/**
+ * Return pages links from SpeedBinB API for a chapter
+ * @param params - A set of needed SpeedBinbParameters (cid, sharingkey, dmytime, u0, u1, configuration)
+ * @param chapter - the Chapter who we cant to extract pages
+ * @param version - SpeedBinB version to use.
+ */
+async function FetchPagesLinks(this: MangaScraper, params: SpeedBinbParameters, chapter: Chapter, version: SpeedBindVersion): Promise<Page[]> {
     const configuration = params.config;
     const cid = version === SpeedBindVersion.v016452 ? params.cid : configuration.ContentID;
     configuration.ctbl = _pt(cid, params.sharingKey, configuration.ctbl as string);
@@ -250,7 +264,7 @@ async function ExtractPages(uri: URL, replaceFrom : string, replaceto: string, c
         pageUri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
         if (setSrc) pageUri.searchParams.set('src', src);
 
-        if (!src.startsWith('/')) src = '/' + src;
+        if (!src.startsWith('/')) src = `/{src}`;
         pageUri.href = pageUri.href.replace(replaceFrom, replaceto.replace('{src}', src));
         return new Page(this, chapter, pageUri);
 
@@ -284,14 +298,13 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
 }
 
 async function descramble_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    const data = await FetchJSON<JSONImageData>(new Request(page.Link));
-    const fakepage = new Page(scraper, page.Parent as Chapter, new URL(data.resources.i.src, page.Link.href));
+    const { resources: { i: { src } }, views } = await FetchJSON<JSONImageData>(new Request(page.Link));
+    const fakepage = new Page(scraper, page.Parent as Chapter, new URL(src, page.Link.href));
     const imagedata: Blob = await Common.FetchImageAjax.call(scraper, fakepage, priority, signal, detectMimeType);
 
     return DeScramble(imagedata, async (image, ctx) => {
-        const view = data.views[0];
 
-        for (const part of view.coords) {
+        for (const part of views.at(0).coords) {
             const num = part.split(/[:,+>]/);
             const sourceX = parseInt(num[1]);
             const sourceY = parseInt(num[2]);
