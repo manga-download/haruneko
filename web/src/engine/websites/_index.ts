@@ -110,7 +110,6 @@ export { default as DecadenceScans } from './DecadenceScans';
 export { default as Delitoon } from './Delitoon';
 export { default as DelitoonBDE } from './DelitoonBDE';
 export { default as DelitoonDE } from './DelitoonDE';
-export { default as DemoneCeleste } from './DemoneCeleste';
 export { default as DemonSect } from './DemonSect';
 export { default as DennoMavo } from './DennoMavo';
 export { default as Desu } from './Desu';
