@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'turkmanga',
         title: 'TurkManga'
     },
     container: {
-        url: 'https://turkmanga.net/manga/mercenary-enrollment',
-        id: '/manga/mercenary-enrollment',
-        title: 'Mercenary Enrollment'
+        url: 'https://turk-manga.com/manga/just-twilight',
+        id: '/manga/just-twilight',
+        title: 'Just Twilight'
     },
     child: {
-        id: 'bolum-196',
-        title: 'Bölüm 195'
+        id: 'bolum-1',
+        title: 'Bölüm 1'
     },
     entry: {
         index: 1,
-        size: 1_496_390,
+        size: 1_188_107,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
