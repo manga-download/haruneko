@@ -490,7 +490,6 @@ export { default as NetTruyenPlus } from './NetTruyenPlus';
 export { default as NetTruyenViet } from './NetTruyenViet';
 export { default as NetTruyenZZZ } from './NetTruyenZZZ';
 export { default as NeuManga } from './NeuManga';
-export { default as NewManhua } from './NewManhua';
 export { default as NewToki } from './NewToki';
 export { default as Ngomik } from './Ngomik';
 export { default as NgomikID } from './NgomikID';
