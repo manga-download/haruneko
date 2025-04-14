@@ -428,7 +428,6 @@ export { default as ManhuaHot } from './ManhuaHot';
 export { default as ManhuaNext } from './ManhuaNext';
 export { default as ManhuaPlus } from './ManhuaPlus';
 export { default as Manhuaren } from './Manhuaren';
-export { default as Manhuass } from './Manhuass';
 export { default as ManhuaUs } from './ManhuaUs';
 export { default as Manhwa18 } from './Manhwa18';
 export { default as Manhwa18cc } from './Manhwa18cc';
