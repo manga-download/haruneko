@@ -306,6 +306,7 @@ export { default as Manga168 } from './Manga168';
 export { default as Manga347 } from './Manga347';
 export { default as MangaAy } from './MangaAy';
 export { default as MangaBat } from './MangaBat';
+export { default as MangaBook } from './MangaBook';
 export { default as Mangabox } from './Mangabox';
 export { default as MangaBTT } from './MangaBTT';
 export { default as MangaBuddy } from './MangaBuddy';
