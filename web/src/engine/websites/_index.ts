@@ -363,7 +363,6 @@ export { default as MangaLink } from './MangaLink';
 export { default as MangaLivre } from './MangaLivre';
 export { default as MangaLover } from './MangaLover';
 export { default as MangaMana } from './MangaMana';
-export { default as MangaMonarca } from './MangaMonarca';
 export { default as MangaMovil } from './MangaMovil';
 export { default as MangaNato } from './MangaNato';
 export { default as MangaNeed } from './MangaNeed';
