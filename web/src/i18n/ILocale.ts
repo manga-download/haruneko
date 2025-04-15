@@ -120,7 +120,7 @@ export enum FrontendResourceKey {
     Frontend_Setting = 'Frontend_Setting',
     Frontend_Settings = 'Frontend_Settings',
     Frontend_Help = 'Frontend_Help',
-    Frontend_About = 'Frontend_About',
+    Frontend_About= 'Frontend_About',
     Frontend_Plugin = 'Frontend_Plugin',
     Frontend_Plugins = 'Frontend_Plugins',
     Frontend_Plugin_List = 'Frontend_Plugin_List',
