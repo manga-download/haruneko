@@ -298,12 +298,6 @@ const translations: VariantResource = {
   Plugin_Settings_ImageFormat: 'Preferred Image Format',
   Plugin_Settings_ImageFormatInfo: 'Download pictures using this file format if possible',
 
-  Plugin_Settings_ImageQuality: 'Image quality',
-  Plugin_Settings_ImageQualityInfo: 'Download pictures using this quality if possible',
-  Plugin_Settings_ImageQuality_High: 'High',
-  Plugin_Settings_ImageQuality_Medium: 'Medium',
-  Plugin_Settings_ImageQuality_Low: 'Low',
-
   Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
   Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',

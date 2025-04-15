@@ -37,15 +37,6 @@ export default class extends DecoratableMangaScraper {
             { key: '0', label: E.Settings_Global_Format_JPEG },
             { key: '1', label: E.Settings_Global_Format_WEBP },
         );
-
-        this.Settings.quality = new Choice('image.quality',
-            W.Plugin_Settings_ImageQuality,
-            W.Plugin_Settings_ImageQualityInfo,
-            'high',
-            { key: 'high', label: W.Plugin_Settings_ImageQuality_High },
-            { key: 'middle', label: W.Plugin_Settings_ImageQuality_Medium },
-            { key: 'low', label: W.Plugin_Settings_ImageQuality_Low },
-        );
     }
     public override get Icon() {
         return icon;
@@ -53,7 +44,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const [data] = await FetchCSS(new Request(url), 'h1.title');
-        return new Manga(this, provider, url.match(/(\d+)\/$/)[1], data.textContent.trim());
+        return new Manga(this, provider, url.match(/(\d+)\/$/).at(1), data.textContent.trim());
     }
     public override ValidateMangaURL(url: string): boolean {
         return new RegExp(`^${this.URI.origin}/[^/]+/$`).test(url);
@@ -65,8 +56,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`./getComicInfoBody?comic_id=${manga.Identifier}`, this.apiUrl);
-        const { data: { comic_chapter } } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
+        const { data: { comic_chapter } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./getComicInfoBody?comic_id=${manga.Identifier}`, this.apiUrl)));
         return comic_chapter.map(chapter => new Chapter(this, manga, chapter.chapter_newid, chapter.chapter_name.trim()));
     }
 
@@ -79,7 +69,7 @@ export default class extends DecoratableMangaScraper {
             comic_id: chapter.Parent.Identifier,
             chapter_newid: chapter.Identifier,
             isWebp: this.Settings.format.Value as string,
-            quality: this.Settings.quality.Value as string
+            quality: 'high'
         }).toString();
         const { data: { current_chapter: { chapter_img_list } } } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
         return chapter_img_list.map(page => new Page(this, chapter, new URL(page)));
