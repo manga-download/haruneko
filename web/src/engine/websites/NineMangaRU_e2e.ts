@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ninemanga-ru',
         title: 'NineMangaRU'
@@ -19,6 +19,4 @@ const config = {
         size: 375_292,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -3,7 +3,7 @@ import icon from './NineMangaRU.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as TAADD from './decorators/TAADDBase';
 import * as Common from './decorators/Common';
-import { Fetch } from '../platform/FetchProvider';
+import { Fetch, FetchRegex } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', TAADD.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(TAADD.mangaPath, TAADD.queryMangas)
@@ -22,52 +22,37 @@ export default class extends DecoratableMangaScraper {
         const pages: Page[] = [];
 
         //1) Fetch "server page" & get GO page from button
-        const chapterUrl = new URL(chapter.Identifier, this.URI);
-        let request = new Request(chapterUrl, {
-            headers: {
-                Referer: this.URI.origin,
-            }
-        });
-
-        let response = await Fetch(request);
-        const serverPage = response.url;
+        let response = await Fetch(this.CreateRequest(new URL(chapter.Identifier, this.URI), this.URI.href));
+        const serverChoicePage = response.url; //get redirected url
         const buttonLink = new DOMParser().parseFromString(await response.text(), 'text/html').querySelector<HTMLAnchorElement>('a.cool-blue').href;
         const cookieValue = new URL(buttonLink, response.url).searchParams.get('cid');
 
         //2) get javascript redirect from page
-        request = new Request(buttonLink, {
-            headers: {
-                Referer: serverPage,
-            }
-        });
-
-        response = await Fetch(request);
-        let data = await response.text();
-        const lastLocation = new URL(data.match(/window\.location\.href\s*=\s*['"](.*)['"]/)[1], request.url);
+        const [ nextPathname ] = await FetchRegex(this.CreateRequest(new URL(buttonLink), serverChoicePage), /window\.location\.href\s*=\s*['"](.*)['"]/g );
+        const lastLocation = new URL(nextPathname, buttonLink);
 
         //3) forge Cookie
-        const cookieName = 'lrgarden_visit_check_' + lastLocation.pathname.match(/(\d+)\.html$/)[1];
+        const cookieName = 'lrgarden_visit_check_' + lastLocation.pathname.match(/(\d+)\.html$/).at(1);
         const cookie = `${cookieName}=${cookieValue};`;
 
         //4) get pages
-        request = new Request(lastLocation, {
-            //credentials: 'include',
+        response = await Fetch(this.CreateRequest(lastLocation, buttonLink, cookie));
+        const data = (await response.text()).replaceAll(/(\r\n|\n|\r)/gm, '').match(/all_imgs_url\s*:\s*(\[[^\]]*\])/).at(1);
+
+        let result;
+        while (result = /(http[^'"]+)['"]/g.exec(data)) {
+            pages.push(new Page(this, chapter, new URL(result[1]), { Referer: lastLocation.href }));
+        }
+        return pages;
+    }
+
+    private CreateRequest(endpoint: URL, referer: string, cookie: string = ''): Request {
+        return new Request(endpoint, {
             headers: {
-                Referer: buttonLink,
+                Referer: referer,
                 Cookie: cookie
             }
         });
-        response = await Fetch(request);
-        data = await response.text();
-        data = data.replaceAll(/(\r\n|\n|\r)/gm, "").match(/all_imgs_url\s*:\s*(\[[^\]]*\])/)[1];
-
-        let result;
-        const pageRegexp = /(http[^'"]+)['"]/g;
-        while (result = pageRegexp.exec(data)) {
-            pages.push(new Page(this, chapter, new URL(result[1]), { Referer: lastLocation.href }));
-        }
-
-        return pages;
     }
 
 }
