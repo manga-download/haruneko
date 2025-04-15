@@ -6,7 +6,7 @@ const config = {
         title: 'Manhwax'
     },
     container: {
-        url: 'https://manhwax.org/manga/amagami-san-chi-no-enmusubi/',
+        url: 'https://manhwax.top/manga/amagami-san-chi-no-enmusubi/',
         id: '/manga/amagami-san-chi-no-enmusubi/',
         title: 'Amagami-San Chi No Enmusubi'
     },

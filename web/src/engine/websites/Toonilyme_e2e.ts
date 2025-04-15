@@ -11,12 +11,12 @@ new TestFixture({
         title: 'Solo Leveling'
     },
     child: {
-        id: '/solo-leveling/side-story-21-the-end',
-        title: 'Side Story 21 - The End'
+        id: '/solo-leveling/chapter-50',
+        title: 'Chapter 50'
     },
     entry: {
         index: 0,
-        size: 862_108,
+        size: 281_750,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
