@@ -17,13 +17,20 @@ async function GetCache(): Promise<Cache> {
 }
 
 async function PutCache(request: Request, response: Response): Promise<void> {
-    return (await GetCache()).put(request, response);
+    //if(!/^GET$/.test(request.method)) {
+    //    return;
+    //}
+    try {
+        return (await GetCache()).put(request, response);
+    } catch(error) {
+        console.warn('Failed to cache request', request, error);
+    }
 }
 
 async function Fetch(request: Request): Promise<Response> {
     try {
         const response = await fetch(request);
-        PutCache(request, response.clone()); // skip waiting for updating the cached response
+        PutCache(request, response.clone()); // do not await caching the response
         return response;
     } catch {
         return (await GetCache()).match(request) ?? new Response('Service Unavailable', { status: 503 });
