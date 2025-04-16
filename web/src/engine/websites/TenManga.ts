@@ -10,7 +10,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, TAADD.queryMangaTitleFromURI, TAADD.MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, 'meta[property="og:title"]', TAADD.MangaLabelExtractor)
 @Common.MangasMultiPageCSS(TAADD.mangaPath, 'section.book-list div.book-item a:first-of-type', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @TAADD.ChaptersSinglePageCSS('div.chp-item a', ChapterExtractor)
 @TAADD.PagesSinglePageCSS('div.option-list.chp-selection-list[option_name="page_head"] div[option_val]')

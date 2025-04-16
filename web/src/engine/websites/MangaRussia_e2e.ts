@@ -6,17 +6,17 @@ new TestFixture({
         title: 'MangaRussia'
     },
     container: {
-        url: 'https://www.mangarussia.com/manga/Дандадан.html',
-        id: encodeURI('/manga/Дандадан.html'),
-        title: 'Дандадан',
+        url: 'https://www.mangarussia.com/manga/Невеста+чародея.html',
+        id: encodeURI('/manga/Невеста+чародея.html'),
+        title: 'Невеста чародея',
     },
     child: {
-        id: encodeURI('/chapter/Дандадан+16+-+141+Переели+вкусняшек/4332724/'),
-        title: '16 - 141 Переели вкусняшек',
+        id: encodeURI('/chapter/Глава+v13+-+65/1927199/'),
+        title: 'Глава v13 - 65',
     },
     entry: {
         index: 0,
-        size: 819_587, // 752_216 or 819_587
+        size: 546_648,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

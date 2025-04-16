@@ -3,19 +3,19 @@ import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/Ma
 import type { Priority } from '../../taskpool/DeferredTask';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 import * as Common from './Common';
+
 export function MangaLabelExtractor(element: HTMLElement) {
     return ((element as HTMLMetaElement).content || element.textContent).replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
 }
 
-type LinkExtractor = (this: MangaScraper, element: HTMLElement) => string;
-export function ChapterExtractor(element: HTMLAnchorElement) {
+function ChapterExtractor(element: HTMLAnchorElement) {
     return {
         id: element.pathname + element.search,
         title: element.childNodes[0].nodeValue.trim()
     };
 }
 
-export function PageLinkExtractor(this: MangaScraper, element: HTMLElement) {
+function PageLinkExtractor(this: MangaScraper, element: HTMLElement) {
     switch (element.nodeName) {
         case 'OPTION'://Most TAADD websites got a selector with options element
             return new URL((element as HTMLOptionElement).value, this.URI).href;
@@ -27,19 +27,20 @@ export function PageLinkExtractor(this: MangaScraper, element: HTMLElement) {
 }
 
 export const mangaPath = '/search/?completed_series=either&page={page}';
-export const queryMangaTitleFromURI = 'meta[property="og:title"]';
 export const queryMangas = [
     'div.clistChr ul li div.intro h2 a',
     'a.bookname',
     'a.resultbookname',
 ].join(',');
 
-export const queryChapters = [
+const queryChapters = [
     'div.chapter_list table tr td:first-of-type a',
     'div.chapterbox ul li a.chapter_list_a', //NineManga
 ].join(',');
-export const queryPages = 'select#page option';
-export const queryImages = [
+
+const queryPages = 'select#page option';
+
+const queryImages = [
     'img#comicpic',
     'img.manga_pic'
 ].join(',');
@@ -64,14 +65,12 @@ async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, quer
         url.searchParams.set('warning', '1');
         url.searchParams.set('waring', '1'); //NineManga typo
     }
-
     const data = await FetchCSS<HTMLAnchorElement>(new Request(url), query);
     return data.map(element => {
         const { id, title } = extractor.call(this, element);
-        const mangaTitle = manga.Title.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&'); //escape special regex chars in manga name
-        let finaltitle = title.replace(new RegExpSafe(mangaTitle, 'i'), '') === '' ? title : title.replace(new RegExpSafe(mangaTitle, 'i'), '');//replace manga title in chapter title
-        finaltitle = finaltitle.replace(/\s*new$/, '').trim();
-        return new Chapter(this, manga, id, finaltitle );
+        const escapedMangaTitle = manga.Title.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&'); //escape special regex chars in manga name
+        const finaltitle = title.replace(new RegExpSafe(escapedMangaTitle, 'i'), '') ?? title;
+        return new Chapter(this, manga, id, finaltitle.trim());
     });
 }
 
@@ -108,12 +107,12 @@ export function ChaptersSinglePageCSS(query: string = queryChapters, extractor =
  * @param extractor - A function to extract the subpage information from a single element (found with {@link query})
   * */
 
-export async function FetchPagesSinglePagesCSS(this: MangaScraper, chapter: Chapter, query: string = queryPages, extractor: LinkExtractor = PageLinkExtractor): Promise<Page[]> {
+export async function FetchPagesSinglePagesCSS(this: MangaScraper, chapter: Chapter, query: string = queryPages, extractor = PageLinkExtractor): Promise<Page[]> {
+    const chapterUrl = new URL(chapter.Identifier, this.URI);
     const data = await FetchCSS<HTMLElement>(new Request(new URL(chapter.Identifier, this.URI)), query);
     //There may be MORE than one page list element on the page, we need only one ! In case of direct picture links, doesnt matter
     const subpages = Array.from(new Set([...data.map(element => extractor.call(this, element))]));
-    return subpages.map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.href }));
-
+    return subpages.map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: chapterUrl.href }));
 }
 
 /**
@@ -123,7 +122,7 @@ export async function FetchPagesSinglePagesCSS(this: MangaScraper, chapter: Chap
  * @param extractor - A function to extract the subpage information from a single element (found with {@link query})
  */
 
-export function PagesSinglePageCSS(query: string = queryPages, extractor: LinkExtractor = PageLinkExtractor) {
+export function PagesSinglePageCSS(query: string = queryPages, extractor = PageLinkExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
@@ -148,10 +147,14 @@ export function PagesSinglePageCSS(query: string = queryPages, extractor: LinkEx
  */
 export async function FetchImageAjaxFromHTML(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, queryImage: string = queryImages, detectMimeType = false, deProxifyLink = false): Promise<Blob> {
     return await this.imageTaskPool.Add(async () => {
+        const FirefoxVersion = Math.floor(Math.random() * (999 - 110 + 1)) + 110;
         let request = new Request(page.Link, {
             signal: signal, //To avoid redirection on crappy hosts, DONT USE referrer on html subpages
+            headers: {
+                'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:${FirefoxVersion}.0) Gecko/20100101 Firefox/${FirefoxVersion}.0`
+            }
         });
-        let realimage = (await FetchCSS<HTMLImageElement>(request, queryImage))[0].getAttribute('src');
+        let realimage = (await FetchCSS<HTMLImageElement>(request, queryImage)).at(0).getAttribute('src');
         realimage = deProxifyLink ? DeProxify(new URL(realimage)).href : realimage;
         request = new Request(realimage, {
             signal,
