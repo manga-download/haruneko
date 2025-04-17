@@ -27,7 +27,7 @@ const manifest = {
         'https://app.hakuneko.download/*',
         `${new URL(pkgConfig.url).origin}/*`,
     ],
-    'chromium-args': null,
+    'chromium-args': '--allow-running-insecure-content',
     'user-agent': targetConfig['user-agent'] ?? null,
     dependencies: pkgConfig.dependencies
 };
