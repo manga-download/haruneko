@@ -121,7 +121,7 @@ export default class extends DecoratableMangaScraper {
             }
         `;
         const { getChapterById: { pictures } } = await FetchGraphQL<APIPages>(new Request(new URL('/graphql', this.apiUrl)), 'getChapterById', query, variables);
-        return pictures.map(page => new Page(this, chapter, new URL(page.pictureUrl.replace(/^http:\/\//, 'https://'))));
+        return pictures.map(page => new Page(this, chapter, new URL(page.pictureUrl.replace(/^http:/, 'https:'))));
 
     }
 
