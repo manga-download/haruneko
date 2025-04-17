@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @MangaStream.MangaCSS(/^{origin}\/komik\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS(undefined, '/komik/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
-@Common.PagesSinglePageJS('ts_reader_control.getImages().map(image => image.replace(/^http:/, "https:"))', 1500)
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

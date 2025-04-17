@@ -1,6 +1,6 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-new TestFixture({
+const config: Config = {
     plugin: {
         id: 'komiktap',
         title: 'KomikTap'
@@ -19,4 +19,6 @@ new TestFixture({
         size: 323_135,
         type: 'image/jpeg'
     }
-}).AssertWebsite();
+};
+
+new TestFixture(config).AssertWebsite();
