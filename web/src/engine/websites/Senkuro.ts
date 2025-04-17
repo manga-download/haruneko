@@ -118,12 +118,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangasList: Manga[] = [];
-        for (let run = true, cursor = null; run;) {
+        let cursor: string = null;
+        do {
             await Delay(500);
             const { mangas, mangas: { pageInfo: { hasNextPage, endCursor } } } = await this.FetchMangasData(provider, cursor);
             mangasList.push(...mangas.edges.map(manga => new Manga(this, provider, manga.node.slug, manga.node.originalName.content)));
-            run = hasNextPage, cursor = endCursor;
-        }
+            cursor = hasNextPage? endCursor: null;
+        } while (cursor);
         return mangasList;
     }
 
@@ -189,14 +190,15 @@ export default class extends DecoratableMangaScraper {
         const { manga: { branches } } = await this.FetchMangaInfos(manga.Identifier);
         const chaptersList: Chapter[] = [];
         for (const branch of branches) {
-            for (let run = true, cursor = null; run;) {
+            let cursor: string = null;
+            do {
                 const { mangaChapters, mangaChapters: { pageInfo: { hasNextPage, endCursor } } } = await this.FetchChaptersData(branch.id, cursor);
                 chaptersList.push(...mangaChapters.edges.map(chapter => {
                     const title = [`Том ${chapter.node.volume} Глава ${chapter.node.number}`, chapter.node.name].join(' ').trim();
                     return new Chapter(this, manga, chapter.node.slug, title);
                 }));
-                run = hasNextPage, cursor = endCursor;
-            }
+                cursor = hasNextPage ? endCursor : null;
+            } while (cursor);
         }
         return chaptersList;
     }
