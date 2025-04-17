@@ -17,13 +17,11 @@ async function GetCache(): Promise<Cache> {
 }
 
 async function PutCache(request: Request, response: Response): Promise<void> {
-    //if(!/^GET$/.test(request.method)) {
-    //    return;
-    //}
     try {
-        return (await GetCache()).put(request, response);
+        const cache = await GetCache();
+        await cache.put(request, response);
     } catch(error) {
-        console.warn('Failed to cache request', request, error);
+        console.warn('Failed to cache request:', request, error);
     }
 }
 
@@ -51,7 +49,7 @@ function OnActivate(event: ExtendableEvent) {
 }
 
 function OnFetch(event: FetchEvent): void {
-    if(new URL(event.request.url).hostname === sw.location.hostname) {
+    if(new URL(event.request.url).hostname === sw.location.hostname /* && /^GET$/.test(event.request.method) */) {
         event.respondWith(Fetch(event.request));
     }
 }
