@@ -24,14 +24,10 @@ const styles: ElementStyles = css`
         color: var(--colorNeutralForeground4);
     }
 
-    .preview .info fluent-anchor::part(control) {
-        text-decoration: none;
-    }
-
-    .preview img {
+    fluent-image {
+        display: inline-block;
         width: 320px;
         height: 320px;
-        object-fit: contain;
     }
 
     .preview fluent-progress-ring {
@@ -41,11 +37,28 @@ const styles: ElementStyles = css`
     }
 `;
 
+const templateImage: ViewTemplate<MediaItemPage> = html`
+    <div class="info">
+        <fluent-link target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">
+            <div>${model => model.info ?? '┄'}</div>
+        </fluent-link>
+    </div>
+    <fluent-link appearance="subtle" target="_blank" href="${model => model.Image}" title="${model => model.Image}">
+        <fluent-image fit="contain" shape="square">
+            <img src="${model => model.Image}" />
+        </fluent-image>
+    </fluent-link>
+`;
+
+const templateSpinner: ViewTemplate<MediaItemPage> = html`
+    <div class="info">┄</div>
+    <fluent-spinner size="huge"></fluent-spinner>
+`;
+
 const template: ViewTemplate<MediaItemPage> = html`
     <div class="preview">
-        <div class="info"><fluent-anchor appearance="hypertext" target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">${model => model.info ?? '┄'}</fluent-anchor></div>
-        ${when(model => model.Image, html`<fluent-anchor appearance="hypertext" target="_blank" href="${model => model.Image}" title="${model => model.Image}"><img src="${model => model.Image}" /></fluent-anchor>`)}
-        ${when(model => !model.Image, html`<fluent-progress-ring></fluent-progress-ring>`)}
+        ${when(model => model.Image, templateImage)}
+        ${when(model => !model.Image, templateSpinner)}
     </div>
 `;
 

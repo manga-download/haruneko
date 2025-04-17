@@ -11,6 +11,9 @@ import '@fluentui/web-components/checkbox.js';
 //import '@fluentui/web-components/field.js';
 import '@fluentui/web-components/text-input.js';
 import '@fluentui/web-components/progress-bar.js';
+import '@fluentui/web-components/spinner.js';
+import '@fluentui/web-components/image.js';
+import '@fluentui/web-components/link.js';
 
 export { App } from '../App';
 export { TitleBar } from './TitleBar';
