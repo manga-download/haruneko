@@ -130,6 +130,16 @@ export default class extends FetchProvider {
     public async Fetch(request: Request): Promise<Response> {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         await UpdateCookieHeader(request.url, request.headers);
+
+        if (/^http:\/\//.test(request.url)) {
+            const newHeaders = new Headers(request.headers);
+            newHeaders.set('Upgrade-Insecure-Requests', '1');
+            request = new Request(request, {
+                redirect: 'follow',
+                headers: newHeaders
+            });
+        }
+
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
