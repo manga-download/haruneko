@@ -39,11 +39,11 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.turkmanga.com.tr/';
+    private readonly apiUrl = 'https://api.turkmanga.online/';
     private nextBuild = '';
 
     public constructor() {
-        super('turkmanga', 'TurkManga', 'https://turkmanga.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('turkmanga', 'TurkManga', 'https://turk-manga.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -74,8 +74,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`/_next/data/${this.nextBuild}${manga.Identifier}.json`, this.URI);
-        const request = new Request(uri);
-        const { pageProps: { data: { manga: { episodes } } } } = await FetchJSON<NextManga>(request);
+        const { pageProps: { data: { manga: { episodes } } } } = await FetchJSON<NextManga>(new Request(uri));
         return episodes.map(chapter => new Chapter(this, manga, chapter.slug, chapter.name.trim()));
     }
 

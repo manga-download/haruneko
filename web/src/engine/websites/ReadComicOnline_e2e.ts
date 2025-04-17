@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Star Wars: Legacy War'
     },
     child: {
-        id: '/Comic/Star-Wars-Legacy-War/Issue-1?id=77062&readType=1&quality=hq',
+        id: '/Comic/Star-Wars-Legacy-War/Issue-1',
         title: 'Issue #1',
     },
     entry: {

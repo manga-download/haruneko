@@ -17,13 +17,18 @@ async function GetCache(): Promise<Cache> {
 }
 
 async function PutCache(request: Request, response: Response): Promise<void> {
-    return (await GetCache()).put(request, response);
+    try {
+        const cache = await GetCache();
+        await cache.put(request, response);
+    } catch(error) {
+        console.warn('Failed to cache request:', request, error);
+    }
 }
 
 async function Fetch(request: Request): Promise<Response> {
     try {
         const response = await fetch(request);
-        PutCache(request, response.clone()); // skip waiting for updating the cached response
+        PutCache(request, response.clone()); // do not await caching the response
         return response;
     } catch {
         return (await GetCache()).match(request) ?? new Response('Service Unavailable', { status: 503 });
@@ -44,7 +49,7 @@ function OnActivate(event: ExtendableEvent) {
 }
 
 function OnFetch(event: FetchEvent): void {
-    if(new URL(event.request.url).hostname === sw.location.hostname) {
+    if(new URL(event.request.url).hostname === sw.location.hostname /* && /^GET$/.test(event.request.method) */) {
         event.respondWith(Fetch(event.request));
     }
 }

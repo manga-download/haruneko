@@ -6,17 +6,17 @@ new TestFixture({
         title: 'ComicVn'
     },
     container: {
-        url: 'https://comicvn10.net/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
-        id: '/hoa-vo-co-su-671202ad7cbc225b837930e1.html',
-        title: 'Hỏa Võ Cố Sự'
+        url: 'https://comicvn11.net/mau-do-long-son-67a1f438e6885976e14a3bb2.html',
+        id: '/mau-do-long-son-67a1f438e6885976e14a3bb2.html',
+        title: 'Máu đỏ lòng son'
     },
     child: {
-        id: '/hoa-vo-co-su/chapter-1-671205165502ed59626fc2c7.html',
+        id: '/mau-do-long-son/chapter-1-67a1f54906a402681e289f83.html',
         title: 'Chapter 1'
     },
     entry: {
-        index: 1,
-        size: 836_999,
+        index: 0,
+        size: 630_027,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
