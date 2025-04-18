@@ -6,17 +6,17 @@ new TestFixture({
         title: 'LectorJPG'
     },
     container: {
-        url: 'https://lectorjpg.com/ver/una-bestia-al-anochecer',
-        id: '/ver/una-bestia-al-anochecer',
-        title: 'Una bestia al anochecer'
+        url: 'https://lectorjpg.com/serie/una-bestia-al-anochcer/',
+        id: '/serie/una-bestia-al-anochcer/',
+        title: 'Una bestia al anochcer'
     },
     child: {
-        id: '/ver/una-bestia-al-anochecer/captulo-35',
-        title: 'Capítulo 35'
+        id: '/serie/una-bestia-al-anochcer/capitulo-1/',
+        title: 'Capítulo 1'
     },
     entry: {
         index: 0,
-        size: 611_994,
+        size: 1_552_208,
         type: 'image/webp'
     }
 }).AssertWebsite();
