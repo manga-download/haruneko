@@ -128,7 +128,6 @@ const template: ViewTemplate<TitleBar> = html`
                     </fluent-menu-item>
                 </fluent-menu-list>
             </fluent-menu-item>
-            <fluent-divider></fluent-divider>
         </fluent-menu-list>
     </fluent-menu>
     <div id="title">${model => model.S.Locale.Frontend_Product_Title()}</div>
