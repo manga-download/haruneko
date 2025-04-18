@@ -67,7 +67,7 @@
                         kind="danger-ghost"
                         size="small"
                         icon={WarningHexFilled}
-                        iconDescription={job.Errors[0].message}
+                        iconDescription={job.Errors[0]?.message || 'error message missing'}
                         on:click={(e) => {
                             taskerror = job;
                             e.stopPropagation();
