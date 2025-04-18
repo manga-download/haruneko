@@ -8,6 +8,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import protobuf from 'protobufjs';
+import { GetBytesFromHex } from '../BufferEncoder';
 
 type MangaDetailResponse = {
     manga: ApiManga,
@@ -150,8 +151,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptPicture(encrypted: Uint8Array, page: ApiImage): Promise<ArrayBuffer> {
-        const iv = Buffer.from(page.iv, 'hex');
-        const key = Buffer.from(page.encryptionKey, 'hex');
+        const iv = GetBytesFromHex(page.iv);
+        const key = GetBytesFromHex(page.encryptionKey);
 
         const secretKey = await crypto.subtle.importKey(
             'raw',

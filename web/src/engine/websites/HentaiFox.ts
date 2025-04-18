@@ -6,18 +6,14 @@ import * as Common from './decorators/Common';
 const scriptPages = `
     new Promise((resolve, reject) => {
         try {
+            const extensions = { p: '.png', b: '.bmp', g: '.gif', w: '.webp' };
             const dir = $('#load_dir').val();
             const id = $('#load_id').val();
+            const uniqid = window.location.pathname.match(/gallery\\/(\\d+)/).at(1);
+            const cdn = parseInt(uniqid) > 140236 ? 'https://i3.hentaifox.com' : 'https://i.hentaifox.com';
             const images = Object.values(g_th).map((item, index) => {
-                let extension = '.jpg';
-                switch (item[0]) {
-                    case 'p': extension = '.png'; break;
-                    case 'b': extension = '.bmp'; break;
-                    case 'g': extension = '.gif'; break;
-                    case 'w': extension = '.webp'; break;
-                }
-                const file = (index + 1) + extension;
-                return [ 'https://i.hentaifox.com', dir, id, file ].join('/');
+                const file = (index + 1) + (extensions[item[0]] ?? '.jpg');
+                return [ cdn, dir, id, file ].join('/');
             });
             resolve(images);
         } catch(error) {

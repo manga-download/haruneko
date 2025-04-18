@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'ikiru',
         title: 'Ikiru'
     },
     container: {
-        url: 'https://ikiru.one/manga/martial-peak/',
+        url: 'https://id.ikiru.wtf/manga/martial-peak/',
         id: '/manga/martial-peak/',
         title: 'Martial Peak'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 124_648,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

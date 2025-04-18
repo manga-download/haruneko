@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangapro',
         title: 'Manga Pro'
     },
     container: {
-        url: 'https://promanga.pro/manga/i-eat-soft-rice-in-another-world/',
-        id: '/manga/i-eat-soft-rice-in-another-world/',
+        url: 'https://promanga.net/series/i-eat-soft-rice-in-another-world',
+        id: JSON.stringify({ slug: 'i-eat-soft-rice-in-another-world', id: 327 }),
         title: 'I Eat Soft Rice In Another World'
     },
     child: {
-        id: '/i-eat-soft-rice-in-another-world-0/',
-        title: 'الفصل 0',
+        id: '/series/i-eat-soft-rice-in-another-world/chapter-0',
+        title: '0',
     },
     entry: {
         index: 0,
-        size: 2_728_927,
-        type: 'image/jpeg'
+        size: 1_345_428,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

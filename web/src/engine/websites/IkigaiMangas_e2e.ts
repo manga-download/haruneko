@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ikigaimangas',
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://lectorikigai.acamu.net/series/el-sacerdote-ji-soon-es-un-santo/',
-        id: '/series/el-sacerdote-ji-soon-es-un-santo/',
-        title: 'El sacerdote Ji Soon es un Santo'
+        url: 'https://visorikigai.damilok.xyz/series/el-sacerdote-sanador-del-sol/',
+        id: '/series/el-sacerdote-sanador-del-sol/',
+        title: 'El Sacerdote Sanador del Sol'
     },
     child: {
-        id: '/capitulo/993135822339538947/',
-        title: 'Capítulo 19'
+        id: '/capitulo/917826995654492162/',
+        title: 'Capítulo 68'
     },
     entry: {
-        index: 1,
-        size: 3_363_253,
-        type: 'image/jpeg'
+        index: 0,
+        size: 689_586,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

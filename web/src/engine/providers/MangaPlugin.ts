@@ -164,7 +164,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
         if(!directory) {
             throw new Exception(R.Settings_Global_MediaDirectory_UnsetError);
         }
-        if(await directory.requestPermission() !== 'granted') {
+        if(await directory.queryPermission({ mode: 'readwrite' }) !== 'granted' && await directory.requestPermission({ mode: 'readwrite' }) !== 'granted') {
             throw new Exception(R.Settings_Global_MediaDirectory_PermissionError);
         }
         if(settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {
@@ -178,7 +178,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
         // TODO: Find more appropriate way to inject the storage dependency
         const registry = CreateChapterExportRegistry(this.Parent?.Parent['storageController']);
-        await registry[settings.Get<Choice>(Key.MangaExportFormat).Value].Export(resources, directory, this.Title);
+        await registry[settings.Get<Choice>(Key.MangaExportFormat).Value].Export(resources, directory, this.Title, this.Parent?.Title);
     }
 }
 

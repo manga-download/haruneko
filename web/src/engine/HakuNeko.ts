@@ -1,15 +1,13 @@
-import { Initialize as InitGlobalSettings } from './SettingsGlobal';
+import { Initialize as InitGlobalSettings, Key as GlobalKey } from './SettingsGlobal';
 import { Tags } from './Tags';
 import { PluginController } from './PluginController';
 import { BookmarkPlugin } from './providers/BookmarkPlugin';
 import { ItemflagManager } from './ItemflagManager';
 import { CreateStorageController, type StorageController } from './StorageController';
 import { InteractiveFileContentProvider } from './InteractiveFileContentProvider';
-import { SettingsManager } from './SettingsManager';
+import { SettingsManager, type Check } from './SettingsManager';
 import { FeatureFlags } from './FeatureFlags';
 import { DownloadManager } from './DownloadManager';
-import { Key as GlobalKey } from './SettingsGlobal';
-import type { Check } from './SettingsManager';
 import { CreateBloatGuard } from './platform/BloatGuard';
 import { SetupFetchProvider } from './platform/FetchProvider';
 import { CreateRemoteProcedureCallManager } from './platform/RemoteProcedureCallManager';

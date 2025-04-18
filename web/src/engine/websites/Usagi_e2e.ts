@@ -12,7 +12,7 @@ new TestFixture({
         title: 'Всеведущий читатель'
     },
     child: {
-        id: '/omniscient_reader_s_viewpoint/vol1/100',
+        id: '/omniscient_reader_s_viewpoint/vol1/100?mtr=1',
         title: '1 - 100 То, что невозможно изменить - часть 2'
     },
     entry: {
@@ -29,12 +29,12 @@ new TestFixture({
         title: 'Usagi'
     },
     container: {
-        url: 'https://web.usagi.one/one_piece',
-        id: '/one_piece',
+        url: 'https://web.usagi.one/van_pis',
+        id: '/van_pis',
         title: 'Ван Пис'
     },
     child: {
-        id: '/one_piece/vol100/1010',
+        id: '/van_pis/vol100/1010?mtr=1',
         title: '100 - 1010 Королевская воля'
     },
     entry: {

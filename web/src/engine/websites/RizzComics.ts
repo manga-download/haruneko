@@ -4,21 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.getAttribute('title').trim();
-    return {id, title};
-}
-
 @MangaStream.MangaCSS(/^{origin}\/series\/[^/]+$/)
-@Common.MangasSinglePageCSS('/series', 'div.bsx a', MangaExtractor)
+@Common.MangasSinglePagesCSS(['/series'], 'div.bsx a', Common.AnchorInfoExtractor(true))
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS([/discord\.webp$/])
+@MangaStream.PagesSinglePageCSS([/ramrvsrc\d+\.webp$/, /66c47bc2c15dd\.webp/])
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rizzcomics', 'Rizz Comics', 'https://rizzfables.com', Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
+        super('rizzcomics', 'Rizz Comics', 'https://rizzfables.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

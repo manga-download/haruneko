@@ -11,12 +11,10 @@
         ToolbarSearch,
         Pagination,
     } from 'carbon-components-svelte';
-    import {
-        Settings,
-        Star,
-        StarFilled,
-        ContentDeliveryNetwork,
-    } from 'carbon-icons-svelte';
+    import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
+    import Star from 'carbon-icons-svelte/lib/Star.svelte';
+    import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
+    import ContentDeliveryNetwork from 'carbon-icons-svelte/lib/ContentDeliveryNetwork.svelte';
     // Svelte
     import { fade } from 'svelte/transition';
     // UI: Components
@@ -45,22 +43,20 @@
         };
     }
 
-    export let isPluginModalOpen = false;
-    let pagination = {
-        totalItems: 0,
-        page: 1,
-        pageSize: 10,
-        pageSizes: [5, 10, 20],
-    };
+    interface Props {
+        isPluginModalOpen?: boolean;
+    }
 
-    let pluginToConfigure: MediaContainer<MediaChild>;
+    let { isPluginModalOpen = $bindable(false) }: Props = $props();
+
+    let pluginToConfigure: MediaContainer<MediaChild> = $state();
 
     const langTags = Tags.Language.toArray();
     const typeTags = Tags.Media.toArray();
     const otherTags = [...Tags.Source.toArray(), ...Tags.Rating.toArray()];
 
-    let pluginNameFilter = '';
-    let pluginTagsFilter: Tag[] = [];
+    let pluginNameFilter = $state('');
+    let pluginTagsFilter: Tag[] = $state([]);
 
     function addTagFilter(tag: Tag) {
         if (!pluginTagsFilter.includes(tag)) {
@@ -71,10 +67,8 @@
         pluginTagsFilter = pluginTagsFilter.filter((value) => tag !== value);
     }
 
-    let filterFavorites = false;
-    let filteredPluginlist: ReturnType<typeof createDataRow>[] = [];
-    $: {
-        filteredPluginlist = HakuNeko.PluginController.WebsitePlugins.filter(
+    let filterFavorites = $state(false);
+    let filteredPluginlist: ReturnType<typeof createDataRow>[] = $derived(HakuNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
                 let rejectconditions: Array<boolean> = [];
                 if (
@@ -92,9 +86,14 @@
                 }
                 return !rejectconditions.length;
             },
-        ).map((item) => createDataRow(item));
-        pagination.totalItems = filteredPluginlist.length;
-    }
+        ).map((item) => createDataRow(item)));
+        
+    // Pagination
+    let page = $state(1);
+    let pageSize = $state(10);
+    let pageSizes = $state([5, 10, 20]);
+    let totalItems = $derived(filteredPluginlist.length);
+
 </script>
 
 <Modal
@@ -168,8 +167,8 @@
             { key: 'tags', value: 'Tags' },
             { key: 'overflow', empty: true },
         ]}
-        pageSize={pagination.pageSize}
-        bind:page={pagination.page}
+        pageSize={pageSize}
+        page={page}
         rows={filteredPluginlist}
         on:click:row={(event) => {
             $selectedPlugin = event.detail.overflow;
@@ -185,7 +184,8 @@
                 />
             </ToolbarContent>
         </Toolbar>
-        <svelte:fragment slot="cell-header" let:header>
+    <!-- @migration-task: migrate this slot by hand, `cell-header` is an invalid identifier -->
+    <svelte:fragment slot="cell-header" let:header>
             {#if header.key === 'favorite'}
                 <Button
                     kind="secondary"
@@ -200,8 +200,9 @@
                 {header.value}
             {/if}
         </svelte:fragment>
-        <div class="plugin-row" slot="cell" let:cell in:fade>
-            {#if cell.key === 'favorite'}
+        <!-- @migration-task: migrate this slot by hand, `cell` is an invalid identifier -->
+        <div class="plugin-row" slot="cell" let:cell={{key,value}} in:fade>
+            {#if key === 'favorite'}
                 <Button
                     kind="ghost"
                     size="small"
@@ -212,19 +213,19 @@
                         e.stopPropagation();
                     }}
                 />
-            {:else if cell.key === 'website'}
-                <OutboundLink href={cell.value}
-                    >{cell.value.hostname}
+            {:else if key === 'website'}
+                <OutboundLink href={value}
+                    >{value.hostname}
                 </OutboundLink>
-            {:else if cell.key === 'image'}
-                <img src={cell.value} alt="Logo" height="24" />
-            {:else if cell.key === 'tags'}
-                {#each cell.value as item}
+            {:else if key === 'image'}
+                <img src={value} alt="Logo" height="24" />
+            {:else if key === 'tags'}
+                {#each value as item}
                     <Chip category={item.Category} label={item.Title} />
                 {/each}
-            {:else if cell.key === 'overflow'}
+            {:else if key === 'overflow'}
                 <div class=" action-cell">
-                    {#if [...cell.value.Settings].length > 0}
+                    {#if [...value.Settings].length > 0}
                         <Button
                             size="small"
                             kind="secondary"
@@ -232,7 +233,7 @@
                             icon={Settings}
                             iconDescription="Connector's settings"
                             on:click={(e) => {
-                                pluginToConfigure = cell.value;
+                                pluginToConfigure = value;
                                 e.stopPropagation();
                             }}
                         />
@@ -245,22 +246,19 @@
                         iconDescription="Open website URL"
                         on:click={(e) => {
                             e.stopPropagation();
-                            window.open(cell.value.URI);
+                            window.open(value.URI);
                         }}
                     />
                 </div>
-            {:else}{cell.value}{/if}
+            {:else}{value}{/if}
         </div>
     </DataTable>
     <Pagination
-        pageSize={pagination.pageSize}
-        bind:page={pagination.page}
-        totalItems={pagination.totalItems}
+        bind:pageSize={pageSize} 
+        pageSizes={pageSizes} 
+        bind:page={page}
+        {totalItems}
     />
-    <!-- TEMPORARY svelte5 bugfix (original below)
-        bind:pageSize={pagination.pageSize} 
-        pageSizes={pagination.pageSizes} 
-    -->
 </Modal>
 
 {#if pluginToConfigure}

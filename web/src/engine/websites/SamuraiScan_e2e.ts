@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'samuraiscan',
         title: 'Samurai Scan'
     },
     container: {
-        url: 'https://latan.visorsmr.com/dl/camino-celestial-del-maestro-marcial-estelar/',
-        id: JSON.stringify({ post: '39', slug: '/dl/camino-celestial-del-maestro-marcial-estelar/' }),
-        title: 'Camino Celestial del Maestro Marcial Estelar'
+        url: 'https://samurai.wordoco.com/rd/dios-marcial-estelar/',
+        id: JSON.stringify({ post: '39', slug: '/rd/dios-marcial-estelar/' }),
+        title: 'Dios Marcial Estelar'
     },
     child: {
-        id: '/dl/camino-celestial-del-maestro-marcial-estelar/capitulo-1/',
+        id: '/rd/dios-marcial-estelar/capitulo-1/',
         title: 'Capitulo 1',
     },
     entry: {
-        index: 0,
-        size: 85_402,
+        index: 1,
+        size: 106_120,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

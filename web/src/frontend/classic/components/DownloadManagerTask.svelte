@@ -1,7 +1,8 @@
 <script lang="ts">
     // TODO: text-overflow not working
     import { Button, ProgressBar } from 'carbon-components-svelte';
-    import { TrashCan, WarningHexFilled } from 'carbon-icons-svelte';
+    import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+    import WarningHexFilled from 'carbon-icons-svelte/lib/WarningHexFilled.svelte';
 
     import { onMount, onDestroy } from 'svelte';
 
@@ -61,12 +62,12 @@
         >
             <div slot="labelText" class="label">
                 {job.Media.Title}
-                {#if job.Errors.length > 0}
+                {#if job.Errors.Value.length > 0}
                     <Button
                         kind="danger-ghost"
                         size="small"
                         icon={WarningHexFilled}
-                        iconDescription={job.Errors[0].message}
+                        iconDescription={job.Errors[0]?.message || 'error message missing'}
                         on:click={(e) => {
                             taskerror = job;
                             e.stopPropagation();

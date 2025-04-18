@@ -8,20 +8,21 @@ import { Numeric } from '../SettingsManager';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { FetchJSON } from '../platform/FetchProvider';
 
-type APIResult<T> ={
-    data : T
+type APIResult<T> = {
+    data: T
 }
 
 type APIManga = {
-    id: number
-    title: string,
+    id: number,
+    title: string
 }
 
 type APIChapter = {
     chapter_slug: string,
-    chapter_name: string
+    chapter_name: string,
+    chapter_title: string | null,
     series: {
-        series_slug : string
+        series_slug: string
     }
 }
 
@@ -75,25 +76,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
-        const uri = new URL(`/chapter/query`, this.apiUrl);
-        uri.searchParams.set('perPage', '100');
-        uri.searchParams.set('series_id', manga.Identifier);
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.interactionTaskPool.Add(async () => this.GetChaptersFromPage(uri, manga, page), Priority.High);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
-
-    }
-    private async GetChaptersFromPage(uri: URL, manga: Manga, page: number): Promise<Chapter[]> {
-        uri.searchParams.set('page', page.toString());
-        const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(uri));
-        return data.map(item => new Chapter(this, manga, `/series/${item.series.series_slug}/${item.chapter_slug}`, item.chapter_name.trim()));
+        const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`/chapters/${manga.Identifier}?perPage=9999`, this.apiUrl)));
+        return data.map(item => new Chapter(this, manga, `/series/${item.series.series_slug}/${item.chapter_slug}`, [item.chapter_name, item.chapter_title || ''].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#content div.container > div img:not([alt *= "thumb"])', PageLinkExtractor);
+        const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#content div.container > div img:not([alt *= "thumb"]), div#S\\:1 div.container > div img:not([alt *= "thumb"])', PageLinkExtractor);
         return pages.filter(page => !page.Link.href.match(/\._000_slr\.jpg$/));//incorrect image in Solo Leveling Ragnarok chapter 1
     }
 }

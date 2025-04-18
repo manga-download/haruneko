@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: "Umum",
   Frontend_Classic_Sidenav_Settings_Interface: "Antarmuka",
   Frontend_Classic_Sidenav_Settings_Trackers: "Pelacak",
-  Frontend_Classic_Sidenav_Settings_Network: "Jaringan",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: 'Fluent Core',
   Frontend_FluentCore_Description: 'A simple frontend with no bells and whistles, especially for developers to quickly verify essential functionality',
@@ -281,6 +280,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
   Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
+  Plugin_Common_Image_MirroredDownloadError: 'Unable to download image from multiple servers : {0}',
   Plugin_Common_Preferred_Language: 'Preferred Language for the website',
   Plugin_Common_Preferred_LanguageInfo: 'Preferred language for website content.',
   Plugin_MissingWebsite_UpdateError: 'Failed to update the content index for a non-existing website!',

@@ -1,6 +1,7 @@
+/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'resetscans',
         title: 'Reset Scans'
@@ -19,6 +20,5 @@ const config = {
         size: 275_130,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
+*/

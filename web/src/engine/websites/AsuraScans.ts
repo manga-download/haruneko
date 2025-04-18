@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './AsuraScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 const excludes = [
     /panda_gif_large/i,
@@ -13,6 +13,19 @@ const excludes = [
     /EndDesignPSD/i
 ];
 
+const chapterScript = `
+    new Promise( resolve => {
+        resolve( [...document.querySelectorAll('a[href*="/chapter/"]:has(h3.text-xs)')].map(chapter => {
+            return {
+                id: chapter.pathname.replace(/(-[^-]+\\/chapter)/, '-/chapter'),
+                title : chapter.querySelector('h3').innerText.replace('\\n', ' ').trim()
+            };
+        }));
+    });
+`;
+
+const pagesScript = `[... document.querySelectorAll('div.items-center div div.center img')].map(image=> image.src);`;
+
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname.replace(/-[^-]+$/, '-'),
@@ -21,8 +34,9 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangasMultiPageCSS('/series?page={page}', 'div.grid a', 1, 1, 0, MangaInfoExtractor)
-@MangaStream.PagesSinglePageCSS(excludes, 'img[alt*="chapter"]')
-@Common.ImageAjax()
+@Common.ChaptersSinglePageJS(chapterScript, 500)
+@MangaStream.PagesSinglePageJS(excludes, pagesScript, 1000)
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -44,11 +58,6 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(this: DecoratableMangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
         const manga = await MangaStream.FetchMangaCSS.call(this, provider, url.replace(/-[^-]+$/, '-'), 'title');
         return new Manga(this, provider, manga.Identifier, manga.Title.replace(' - Asura Scans', '').trim());
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div.scrollbar-thumb-themecolor a.block');
-        return chapters.map(chapter => new Chapter(this, manga, [manga.Identifier, 'chapter', chapter.pathname.match(/(\d+)+$/)[1]].join('/'), chapter.textContent.trim()));
     }
 
 }

@@ -6,11 +6,19 @@ import type { ISettings, SettingsManager } from '../src/engine/SettingsManager';
 import type { StorageController } from '../src/engine/StorageController';
 import { PluginController } from '../src/engine/PluginController';
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 enum StatusCode {
     OK = 0,
     WARNING = 1,
     ERROR = 2,
 }
+
+const emojis = new Map([
+    [ StatusCode.OK, '✅' ],
+    [ StatusCode.WARNING, '⚠️' ],
+    [ StatusCode.ERROR, '❌' ],
+]);
 
 type SimilarWebData = {
     GlobalRank: {
@@ -32,8 +40,8 @@ type Result = {
 }
 
 const expectedRedirectPatterns = new Map([
-    [ 'https://www.corocoro.jp/', [ // The website redirects to the top-level domain when requesting the root path only (the sub-domain is still valid for non-empty paths)
-        /^https:\/\/corocoro-news\.jp\/$/,
+    [ 'https://erosxcomic.xyz/', [ // REASON: The website uses redirects to rotating (top-level) domains (probably to avoid scraping or DMCA)
+        /^https:\/\/(erosxcomic|erosmanga|doomcomic)\.xyz\/$/,
     ] ],
     [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/w+\d*\.holymanga\.net\/$/,
@@ -53,6 +61,9 @@ const expectedRedirectPatterns = new Map([
     [ 'https://pijamalikoi.com/', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
         /^https:\/\/www\.pijamalikoi\.com\/$/,
     ] ],
+    [ 'https://eros-fabltoon.xyz/', [ // REASON: The website uses redirects to rotating (top-level) domains (probably to avoid scraping or DMCA)
+        /^https:\/\/(tecno|tenco|terco|eros)-?[a-z]+\.xyz\/$/,
+    ] ],
     [ 'https://www.toomics.com/', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
         /^https:\/\/global\.toomics\.com\/en$/,
     ] ],/*
@@ -61,13 +72,10 @@ const expectedRedirectPatterns = new Map([
     ] ],*/
     [ 'https://web.6parkbbs.com/', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
         /^https:\/\/club\.6parkbbs\.com\/index.php$/,
-    ] ],
-    [ 'https://vortexscans.org/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
-        /^https:\/\/vortexscans\.org\/home$/,
-    ] ],
-    [ 'https://flixscans.net/', [ // REASON: The website redirects to a sub-path when requesting the root path only (the top-level domain is still valid for non-empty paths)
-        /^https:\/\/flixscans\.net\/webtoons\/romance\/home$/,
-    ] ],
+    ] ],/*
+    [ 'https://comicvn0.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+        /^https:\/\/comicvn\d+\.net\/$/,
+    ] ],*/
 ]);
 
 class TestFixture {
@@ -83,12 +91,14 @@ class TestFixture {
         return new PluginController(this.MockStorageController, this.MockSettingsManager);
     }
 
-    private static CheckUnexpectedRedirected(requestURL: string, responseURL: string): boolean {
-        const patterns = expectedRedirectPatterns.get(requestURL);
-        if(patterns?.length) {
-            return !(patterns.some(pattern => pattern.test(responseURL)));
+    private static IsUnexpectedRedirect(request: Request, response: Response): boolean {
+        if(response.redirected) {
+            const patterns = expectedRedirectPatterns.get(request.url) ?? [];
+            const isExpectedRedirectURL = patterns.some(pattern => pattern.test(response.url));
+            const isCrossOriginRedirect = new URL(request.url).origin !== new URL(response.url).origin;
+            return isExpectedRedirectURL ? false : isCrossOriginRedirect;
         } else {
-            return new URL(requestURL).origin !== new URL(responseURL).origin;
+            return false;
         }
     }
 
@@ -97,7 +107,7 @@ class TestFixture {
         try {
             const request = new Request(uri, { signal: AbortSignal.timeout(30_000) });
             const response = await fetch(request);
-            if(this.CheckUnexpectedRedirected(request.url, response.url)) {
+            if(this.IsUnexpectedRedirect(request, response)) {
                 result.code = StatusCode.WARNING;
                 result.info = 'Redirected: ' + response.url;
             } else {
@@ -136,17 +146,22 @@ class TestFixture {
         */
     }
 
+    public static async GenerateTestSummary(results: Result[]) {
+        const file = process.env.GITHUB_STEP_SUMMARY ?? path.join('web', 'scripts', 'cache', 'website-metrics.md');
+        await fs.writeFile(file, [
+            '| Status | Website | URL | Info |',
+            '| :---: | :---- | :---- | :---- |',
+            ... results
+                .filter(result => result.status.code !== StatusCode.OK)
+                .map(result => `| ${emojis.get(result.status.code)} | **${result.title}** | ${result.url} | ${result.status.info} |`)
+        ].join('\n'));
+    }
+
     // TODO: Improve composition of HTML report
     public static async GenerateReport(results: Result[]) {
-    
+
         const directory = path.join('web', 'scripts', 'cache');
-    
-        const emojis = new Map([
-            [ StatusCode.OK, '✅' ],
-            [ StatusCode.WARNING, '⚠️' ],
-            [ StatusCode.ERROR, '❌' ],
-        ]);
-    
+
         function sort(self: Result, other: Result) {
             // First Priority
             if(self.status.code !== other.status.code) {
@@ -191,6 +206,7 @@ describe('Website Status/Metrics', { concurrent: true }, async () => {
     const results: Result[] = [];
 
     afterAll(async () => {
+        await TestFixture.GenerateTestSummary(results);
         await TestFixture.GenerateReport(results);
     });
 
@@ -210,6 +226,6 @@ describe('Website Status/Metrics', { concurrent: true }, async () => {
 
         results.push(result);
 
-        expect(result.status).toSatisfy<typeof result.status>(status => status.code === StatusCode.OK, result.status.info);
+        expect(result.status).toSatisfy((status: typeof result.status) => status.code === StatusCode.OK, result.status.info);
     });
 });

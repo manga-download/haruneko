@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './SushiScansCOM.webp';
+import icon from './SushiScansFR.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @MangaStream.MangaCSS(/^{origin}\/catalogue\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS(undefined, '/catalogue/list-mode/')
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS([], 'ts_reader.params.sources.shift().images;')
+@Common.PagesSinglePageJS('ts_reader.params.sources.shift().images;')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

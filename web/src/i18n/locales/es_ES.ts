@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: 'General',
   Frontend_Classic_Sidenav_Settings_Interface: "Interfaz",
   Frontend_Classic_Sidenav_Settings_Trackers: "Rastreadores",
-  Frontend_Classic_Sidenav_Settings_Network: "Red",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: "Núcleo fluido",
   Frontend_FluentCore_Description: "Una interfaz simple sin campanas ni silbidos, especialmente para los desarrolladores para verificar rápidamente la funcionalidad esencial",
@@ -281,6 +280,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "No se puede crear el índice de contenido de este sitio web. Utilice la función Copiar y Pegar para acceder directamente al contenido de una URL específica!",
   Plugin_Common_Chapter_UnavailableError: "¡El capítulo no está disponible (no comprado/desbloqueado/público)!",
   Plugin_Common_Chapter_InvalidError: "¡Error al extraer las páginas del contenido del capítulo!",
+  Plugin_Common_Image_MirroredDownloadError: 'Unable to download image from multiple servers : {0}',
   Plugin_Common_Preferred_Language: "Idioma preferido para el sitio web",
   Plugin_Common_Preferred_LanguageInfo: "Idioma preferido para el contenido del sitio web.",
   Plugin_MissingWebsite_UpdateError: "¡Error al actualizar el índice de contenido de un sitio web no existente!",

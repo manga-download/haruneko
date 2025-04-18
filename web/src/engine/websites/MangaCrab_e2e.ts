@@ -1,13 +1,13 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangacrab',
         title: 'Manga Crab'
     },
     container: {
-        url: 'https://toonscrab.com/series/mi-sistema-es-muy-serio/',
-        id: JSON.stringify({ post: '30840', slug: '/series/mi-sistema-es-muy-serio/' }),
+        url: 'https://mangacrab2.yopres.com/series/mi-sistema-es-muy-serio/',
+        id: '/series/mi-sistema-es-muy-serio/',
         title: 'Mi Sistema Es Muy serio'
     },
     child: {
@@ -15,10 +15,8 @@ const config = {
         title: 'Capitulo 19'
     },
     entry: {
-        index: 1,
+        index: 2,
         size: 769_088,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

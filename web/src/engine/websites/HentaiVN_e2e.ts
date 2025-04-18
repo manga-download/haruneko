@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'hentaivn',
         title: 'HentaiVN'
     },
     container: {
-        url: 'https://hentaivn.mom/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
+        url: 'https://hentaivn.boo/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
         id: JSON.stringify({ post: '10351', slug: '/truyen-hentai/dong-ho-ngung-dong-thoi-gian/'}),
         title: 'Đồng Hồ Ngưng Đọng Thời Gian'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 589_281,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

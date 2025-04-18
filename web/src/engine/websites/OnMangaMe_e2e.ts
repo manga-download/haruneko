@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'on-manga',
         title: 'مانجا اون لاين (On-Manga)'
@@ -19,6 +19,4 @@ const config = {
         size: 767_631,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

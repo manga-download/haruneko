@@ -7,12 +7,12 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^{origin}\/truyen-hentai\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Madara.PagesSinglePageCSS('div.page-break img.wp-manga-chapter-img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hentaivn', 'HentaiVN', 'https://hentaivn.mom', Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('hentaivn', 'HentaiVN', 'https://hentaivn.boo', Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

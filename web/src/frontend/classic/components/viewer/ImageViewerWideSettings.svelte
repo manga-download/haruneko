@@ -1,15 +1,13 @@
 <script lang="ts">
-    import {
-        ChevronLeft,
-        ChevronRight,
-        Misuse,
-        IntentRequestScaleIn,
-        IntentRequestScaleOut,
-        CloudServiceManagement,
-        ScreenMap,
-        ZoomIn,
-        ZoomOut,
-    } from 'carbon-icons-svelte';
+    import ChevronLeft from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
+    import ChevronRight from 'carbon-icons-svelte/lib/ChevronRight.svelte';
+    import Misuse from 'carbon-icons-svelte/lib/Misuse.svelte';
+    import IntentRequestScaleIn from 'carbon-icons-svelte/lib/IntentRequestScaleIn.svelte';
+    import IntentRequestScaleOut from 'carbon-icons-svelte/lib/IntentRequestScaleOut.svelte';
+    import CloudServiceManagement from 'carbon-icons-svelte/lib/CloudServiceManagement.svelte';
+    import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
+    import ZoomIn from 'carbon-icons-svelte/lib/ZoomIn.svelte';
+    import ZoomOut from 'carbon-icons-svelte/lib/ZoomOut.svelte';
     import {
         ContentSwitcher,
         Switch,

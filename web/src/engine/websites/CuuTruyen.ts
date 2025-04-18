@@ -7,6 +7,7 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as W } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIResult<T> = {
     data: T,
@@ -110,7 +111,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<DrmData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return !page.Parameters.drmData ? blob : DeScramble(blob, async (image, ctx) => {
-            const decryptedDrmData = decodeXorCipher(Buffer.from(page.Parameters.drmData, 'base64').toString(), '3141592653589793');
+            const decryptedDrmData = this.DecryptDescrambleData(page.Parameters.drmData, '3141592653589793');
             let sy = 0;
             for (const piece of decryptedDrmData.split('|').slice(1)) {
                 const [dy, height] = piece.split('-', 2).map(Number);
@@ -119,12 +120,10 @@ export default class extends DecoratableMangaScraper {
             }
         });
     }
-}
 
-function decodeXorCipher(data: string, key: string): string {
-    let output = '';
-    for (let i = 0; i < data.length; i++) {
-        output += String.fromCharCode(data.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    private DecryptDescrambleData(encrypted: string, passphrase: string): string {
+        const key = GetBytesFromUTF8(passphrase);
+        const decrypted = GetBytesFromBase64(encrypted).map((byte, index) => byte ^ key[index % key.length]);
+        return String.fromCharCode(...decrypted);
     }
-    return output;
 }

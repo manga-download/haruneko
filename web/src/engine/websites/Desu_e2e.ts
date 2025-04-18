@@ -1,12 +1,12 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'desu',
         title: 'Desu'
-    },
+    }, /* Region Locked : Russia
     container: {
-        url: 'https://desu.me/manga/wondance.3628/',
+        url: 'https://desu.work/manga/wondance.3628/',
         id: '/manga/wondance.3628/',
         title: 'WonDance'
     },
@@ -18,7 +18,5 @@ const config: Config = {
         index: 5,
         size: 146_711,
         type: 'image/jpeg'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    }*/
+}).AssertWebsite();

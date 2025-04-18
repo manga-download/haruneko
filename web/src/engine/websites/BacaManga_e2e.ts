@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'bacamanga',
         title: 'BacaManga'
     },
     container: {
-        url: 'https://bacamanga.id/manga/50kg-cinderella/',
-        id: '/manga/50kg-cinderella/',
-        title: '-50kg Cinderella'
+        url: 'https://komikindo3.com/komik/martial-peak/',
+        id: '/komik/martial-peak/',
+        title: 'Martial Peak'
     },
     child: {
-        id: '/50kg-cinderella-chapter-1-1/',
-        title: 'Chapter 1.1'
+        id: '/martial-peak-chapter-3772/',
+        title: 'Chapter 3772'
     },
     entry: {
-        index: 2,
-        size: 57_750,
+        index: 1,
+        size: 224_158,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -8,7 +8,9 @@
         InlineNotification,
     } from 'carbon-components-svelte';
 
-    import { BookmarkFilled , UpdateNow, CopyLink } from 'carbon-icons-svelte';
+    import BookmarkFilled from 'carbon-icons-svelte/lib/BookmarkFilled.svelte';
+    import UpdateNow from 'carbon-icons-svelte/lib/UpdateNow.svelte';
+    import CopyLink from 'carbon-icons-svelte/lib/CopyLink.svelte';
     import type {
         ComboBoxItem,
         ComboBoxItemId,
@@ -17,10 +19,10 @@
     import Fuse from 'fuse.js';
     // Svelte
     import { fade } from 'svelte/transition';
-	import { VirtualList } from 'svelte-virtuallists';
     // UI: Components
     import Media from './Media.svelte';
     import Tracker from './Tracker.svelte';
+    import VirtualList from '../lib/VirtualList.svelte';
     // UI : Stores
     import {
         selectedPlugin,
@@ -38,8 +40,6 @@
     import { FrontendResourceKey as R } from '../../../i18n/ILocale';
     import { resizeBar } from '../lib/actions';
     import type { MediaContainer2 } from '../Types';
-
-    let ref:HTMLElement = $state();
 
     // Plugins selection
     let currentPlugin: MediaContainer<MediaChild> = $state();
@@ -89,7 +89,9 @@
     let filteredmedias: MediaContainer<MediaChild>[] = $state([]);
     $effect(() => {
         medias;
-        filteredmedias = filterMedia(mediaNameFilter);
+        filteredmedias = filterMedia(mediaNameFilter).sort((a, b) => 
+            a.Title.localeCompare(b.Title)
+        );
     });
     let fuse = new Fuse([]);
 
@@ -97,6 +99,7 @@
 
     selectedPlugin.subscribe((newplugin) => {
         const previousPlugin = currentPlugin;
+        loadPlugin = Promise.resolve(newplugin);
         currentPlugin = newplugin;
         pluginDropdownSelected = currentPlugin?.Identifier;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
@@ -120,15 +123,24 @@
         medias = loadedmedias;
         return plugin;
     }
-
-    function filterMedia(mediaNameFilter: string) {
+    
+    /**
+    * Filters the media items by title or plugin's name
+    * @param {string} mediaNameFilter - The filter string to match
+    * @returns {MediaContainer<MediaChild>[]} - An array of media items that match the filter criteria
+    */
+    function filterMedia(mediaNameFilter: string): MediaContainer<MediaChild>[] {
         if (mediaNameFilter === '') return medias;
+        const mediasInPlugin: MediaContainer<MediaChild>[] = medias.filter((item) => item.Parent.Title.toLowerCase().includes(mediaNameFilter.toLowerCase()));
+        let filteredMedia: MediaContainer<MediaChild>[] = [];
         if ($FuzzySearch)
-            return fuse.search(mediaNameFilter).map((item) => item.item);
+            filteredMedia = fuse.search(mediaNameFilter).map((item) => item.item);
         else
-            return medias.filter((item) =>
-                item.Title.includes(mediaNameFilter),
+            filteredMedia = medias.filter((item) =>
+                item.Title.toLowerCase().includes(mediaNameFilter.toLowerCase())
             );
+        // Remove duplicates
+        return [...new Set([...filteredMedia, ...mediasInPlugin])];
     }
 
     let isTrackerModalOpen = $state(false);
@@ -140,6 +152,7 @@
     }
 
     async function onUpdateMediaEntriesClick() {
+        filteredmedias = []
         $selectedMedia = undefined;
         $selectedItem = undefined;
         loadPlugin = updatePlugin($selectedPlugin);
@@ -183,9 +196,8 @@
         );
     }
 
-    // VirtualList
-    let container:HTMLElement = $state();
-    let containerHeight = $state(0);
+    let medialistref : HTMLElement = $state();
+    let medialistrefHeight = $state(0);
 </script>
 
 {#if isTrackerModalOpen}
@@ -198,7 +210,7 @@
         />
     </div>
 {/if}
-<div id="Media" transition:fade bind:this={ref}>
+<div id="Media" transition:fade>
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
@@ -216,8 +228,8 @@
             id="PluginSelect"
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
-            on:clear={() => ($selectedPlugin = undefined)}
-            on:select={(event) => selectPlugin(event.detail.selectedId)}
+            on:clear={async() => ($selectedPlugin = undefined)}
+            on:select={async(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
             items={pluginsCombo}
             shouldFilterItem={shouldFilterPlugin}
@@ -249,29 +261,30 @@
     <div id="MediaFilter">
         <Search id="MediaFilterSearch" size="sm" bind:value={mediaNameFilter} />
     </div>
-    <div id="MediaList" class="list" bind:this={container} bind:clientHeight={containerHeight}>
+    <div id="MediaList" class="list" bind:this={medialistref} bind:clientHeight={medialistrefHeight}>
         {#await loadPlugin}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
                 <div>... medias</div>
             </div>
-        {:then}
-        <VirtualList style='height:100%' items={filteredmedias}>
-            {#snippet vl_slot({ index, item })}
-                <Media 
-                    media={item as MediaContainer2}
-                />
-            {/snippet}
-        </VirtualList>
         {:catch error}
             <div class="error">
                 <InlineNotification
                     lowContrast
-                    title={error}
+                    title={error.name}
                     subtitle={error.message}
                 />
             </div>
         {/await}
+        <VirtualList items={filteredmedias as MediaContainer2[]} itemHeight={24} container={medialistref} containerHeight={medialistrefHeight}>
+            {#snippet children(item)}
+                <div class="media">
+                        <Media 
+                        media={item}
+                        /> 
+                </div>
+            {/snippet}
+        </VirtualList>
     </div>
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
@@ -280,7 +293,7 @@
         role="separator"
         aria-orientation="vertical"
         class="resize"
-        use:resizeBar={{target: ref, orientation:'vertical'}}
+        use:resizeBar={{orientation:'vertical'}}
     > </div>
     
 </div>
@@ -340,14 +353,19 @@
     }
     #MediaList {
         grid-area: MediaList;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden;
         background-color: var(--cds-field-01);
-        overflow: hidden;
         user-select: none;
-        overflow: auto;
     }
     #MediaList .loading {
         width: 100%;
         height: 100%;
+    }
+    #MediaList :global(.items) {
+        flex: 1;
+        overflow-x: hidden !important;
     }
     #MediaCount {
         grid-area: MediaCount;

@@ -1,13 +1,13 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'grimelek',
         title: 'Grimelek'
     },
     /* NEED LOGIN FOR EVERYTHING
     container: {
-        url: 'https://grimelek.dev/seri/revenge-by-harem/',
+        url: 'https://siyahmelek.org/seri/revenge-by-harem/',
         id: JSON.stringify({ slug: '/seri/revenge-by-harem/' }),
         title: 'Revenge By Harem'
     },
@@ -20,6 +20,4 @@ const config = {
         size: 2_567_425,
         type: 'image/jpeg'
     }*/
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangaforest',
         title: 'MangaForest'
@@ -11,14 +11,12 @@ const config = {
         title: 'Tales Of Demons And Gods'
     },
     child: {
-        id: '/tales-of-demons-and-gods/chapter-1-rebirth',
-        title: 'Chapter 1: Rebirth'
+        id: '/tales-of-demons-and-gods/chapter-50',
+        title: 'Chapter 50'
     },
     entry: {
-        index: 0,
-        size: 129_583,
+        index: 1,
+        size: 135_362,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

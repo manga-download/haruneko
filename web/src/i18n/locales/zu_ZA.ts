@@ -76,7 +76,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Sidenav_Settings_General: "crwdns1275:0crwdne1275:0",
   Frontend_Classic_Sidenav_Settings_Interface: "crwdns1277:0crwdne1277:0",
   Frontend_Classic_Sidenav_Settings_Trackers: "crwdns1279:0crwdne1279:0",
-  Frontend_Classic_Sidenav_Settings_Network: "crwdns1281:0crwdne1281:0",
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: "crwdns1283:0crwdne1283:0",
   Frontend_FluentCore_Description: "crwdns1285:0crwdne1285:0",
@@ -281,6 +280,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "crwdns1606:0crwdne1606:0",
   Plugin_Common_Chapter_UnavailableError: "crwdns1608:0crwdne1608:0",
   Plugin_Common_Chapter_InvalidError: "crwdns1610:0crwdne1610:0",
+  Plugin_Common_Image_MirroredDownloadError: "crwdns2188:0{0}crwdne2188:0",
   Plugin_Common_Preferred_Language: "crwdns2102:0crwdne2102:0",
   Plugin_Common_Preferred_LanguageInfo: "crwdns2104:0crwdne2104:0",
   Plugin_MissingWebsite_UpdateError: "crwdns1612:0crwdne1612:0",

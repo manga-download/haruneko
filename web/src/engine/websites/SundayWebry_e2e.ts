@@ -1,6 +1,6 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'sundaywebry',
         title: 'サンデーうぇぶり (Sunday Webry)'
@@ -16,9 +16,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 464_508,
+        size: 464_547,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

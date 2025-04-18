@@ -1,5 +1,6 @@
 # HakuNeko
 :toc:
+:toc-placement!:
 :numbered:
 :icons: font
 :linkattrs:
@@ -12,9 +13,13 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
----
-
 Prototype of HakuNeko based on Electron/NW.js + TypeScript + Vite
+
+image:https://img.shields.io/github/downloads-pre/manga-download/haruneko/latest/total?color=blue&label=Download%20HaruNeko%20%28Nightly%29&logo=github[link=https://github.com/manga-download/haruneko/releases, title="Download the latest pre-release (nightly build) of HaruNeko", window="_blank"]
+
+toc::[]
+
+---
 
 ## Status
 ////
@@ -29,7 +34,7 @@ image:https://badges.crowdin.net/hakuneko/localized.svg[link=https://crowdin.com
 
 ## Documentation
 
-image:https://img.shields.io/badge/-read-blue?logo=html5&label=User%20Manual[link=https://haruneko-docs.pages.dev/user-manual/, title="User Manual (online)", window="_blank"]
+image:https://img.shields.io/badge/-read-blue?logo=html5&label=User%20Manual[link=https://docs.hakuneko.download/user-manual/, title="User Manual (online)", window="_blank"]
 image:https://img.shields.io/badge/-edit-red?logo=github&label=User%20Manual[link=https://github.com/manga-download/haruneko/tree/master/docs/user-manual, title="User Manual (source)", window="_blank"]
-image:https://img.shields.io/badge/-read-blue?logo=html5&label=Development%20Guide[link=https://haruneko-docs.pages.dev/development-guide/, title="User Manual (online)", window="_blank"]
+image:https://img.shields.io/badge/-read-blue?logo=html5&label=Development%20Guide[link=https://docs.hakuneko.download/development-guide/, title="User Manual (online)", window="_blank"]
 image:https://img.shields.io/badge/-edit-red?logo=github&label=Development%20Guide[link=https://github.com/manga-download/haruneko/tree/master/docs/development-guide, title="User Manual (source)", window="_blank"]

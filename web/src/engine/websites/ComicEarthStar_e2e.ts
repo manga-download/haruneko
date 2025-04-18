@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'comicearthstar',
         title: 'コミック アース・スター (Comic Earth Star)'
@@ -12,13 +12,11 @@ const config = {
     },
     child: {
         id: '/episode/14079602755509015085',
-        title: '第1話'
+        title: '第1話-①'
     },
     entry: {
         index: 9,
         size: 1_174_457,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

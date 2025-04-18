@@ -1,4 +1,3 @@
-import '../ArrayExtensions';
 import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
 import { MediaContainer, type MediaChild } from './MediaPlugin';
@@ -303,7 +302,7 @@ describe('BookmarkPlugin', () => {
             fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(false);
             const testee = await fixture.CreateTestee();
 
-            expect(testee.Import()).rejects.toBe(expected);
+            await expect(testee.Import()).rejects.toBe(expected);
             expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
         });
     });
@@ -358,7 +357,7 @@ describe('BookmarkPlugin', () => {
             fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(false);
             const testee = await fixture.CreateTestee();
 
-            expect(testee.Export()).rejects.toBe(expected);
+            await expect(testee.Export()).rejects.toBe(expected);
         });
     });
 });

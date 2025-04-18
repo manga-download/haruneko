@@ -1,4 +1,3 @@
-// https://themesia.com/category/wordpress-themes/
 // https://themesia.com/mangastream-wordpress-theme/
 
 import type { MangaScraper, MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
@@ -80,7 +79,7 @@ function MangaInfosExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, path = pathname, query = queryMangaListLinks): Promise<Manga[]> {
-    return Common.FetchMangasSinglePageCSS.call(this, provider, path, query, MangaInfosExtractor);
+    return Common.FetchMangasSinglePagesCSS.call(this, provider, [ path ], query, MangaInfosExtractor);
 }
 
 /**
@@ -89,7 +88,7 @@ export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: Man
  * @param path - The path relative to the scraper's base url from which the mangas shall be extracted
  */
 export function MangasSinglePageCSS(query: string = queryMangaListLinks, path: string = pathname) {
-    return Common.MangasSinglePageCSS(path, query, MangaInfosExtractor);
+    return Common.MangasSinglePagesCSS([ path ], query, MangaInfosExtractor);
 }
 
 /*************************************************

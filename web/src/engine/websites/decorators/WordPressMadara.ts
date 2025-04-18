@@ -1,5 +1,6 @@
 // https://mangabooth.com/product/wp-manga-theme-madara/
 
+import { Delay } from '../../BackgroundTimers';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
 import { FetchCSS, FetchHTML } from '../../platform/FetchProvider';
@@ -41,10 +42,6 @@ export const WPMangaProtectorPagesExtractorScript = `
         resolve(JSON.parse(imgdata));
     });
 `;
-
-async function delay(milliseconds: number) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
-}
 
 /***************************************************
  ******** Manga from URL Extraction Methods ********
@@ -172,7 +169,7 @@ export async function FetchMangasMultiPageAJAX(this: MangaScraper, provider: Man
             return new Manga(this, provider, id, title.trim());
         });
         mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        await delay(throttle);
+        await Delay(throttle);
     }
     return mangaList;
 }

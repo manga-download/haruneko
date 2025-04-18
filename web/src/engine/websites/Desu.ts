@@ -3,15 +3,7 @@ import icon from './Desu.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-const scriptPages = `
-    new Promise((resolve, reject) => {
-        try {
-            resolve(Reader.images.map(element => new URL(element.url, window.location.origin)));
-        } catch (error) {
-            reject(error);
-        }
-    });
-`;
+const scriptPages = `Reader.images.map(element => new URL(element.url, window.location.origin));`;
 
 @Common.MangaCSS(/^{origin}\/[^/]+\//, 'div.titleBar h1 span.name')
 @Common.MangasMultiPageCSS('/manga/?page={page}', 'h3 a.animeTitle.oTitle')
@@ -21,7 +13,7 @@ const scriptPages = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('desu', `Desu`, 'https://desu.me', Tags.Language.Russian, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('desu', `Desu`, 'https://desu.work', Tags.Language.Russian, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
