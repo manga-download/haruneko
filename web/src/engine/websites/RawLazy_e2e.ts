@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'rawlazy',
         title: 'RawLazy'
     },
     container: {
-        url: 'https://rawlazy.to/manga-lazy/彼女-お借りします-raw-free/',
+        url: 'https://rawlazy.rs/manga-lazy/彼女-お借りします-raw-free/',
         id: encodeURI('/manga-lazy/彼女-お借りします-raw-free/'),
         title: '彼女、お借りします'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 276_488,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
