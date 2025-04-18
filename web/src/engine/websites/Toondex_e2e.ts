@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Toondex'
     },
     container: {
-        url: 'https://toondex.net/comics/the-bosss-daughter/',
+        url: 'https://toondex.co/comics/the-bosss-daughter/',
         id: '/comics/the-bosss-daughter/',
         title: 'The Boss’s Daughter'
     },

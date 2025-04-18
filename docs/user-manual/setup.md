@@ -25,13 +25,17 @@ In case the binary file is missing, ensure that it was not removed by your anti-
 
 ::: warning IMPORTANT
 When MacOS complains that the application is damaged, launch a terminal alongside the _HakuNeko.app_ folder and remove the extended attributes.
+
 ```zsh
 xattr -r -c ./HakuNeko.app
 ```
+
 When MacOS complains that the application can't be opened, launch a terminal alongside the _HakuNeko.app_ folder and add the executable permission.
+
 ```zsh
 chmod -R +X ./HakuNeko.app
 ```
+
 :::
 
 ::: warning IMPORTANT

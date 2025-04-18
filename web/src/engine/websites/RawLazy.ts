@@ -27,7 +27,7 @@ type APIResult = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rawlazy', 'RawLazy', 'https://rawlazy.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawlazy', 'RawLazy', 'https://rawlazy.rs', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

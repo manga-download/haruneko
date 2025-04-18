@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'astrascans',
         title: 'AstraScans'
     },
     container: {
-        url: 'https://astrascans.org/series/anti-hero/',
-        id: '/series/anti-hero/',
-        title: 'Anti-Hero'
+        url: 'https://astrascans.net/series/unstoppable-muscle-power/',
+        id: '/series/unstoppable-muscle-power/',
+        title: 'Unstoppable Muscle Power'
     },
     child: {
-        id: '/anti-hero-chapter-3/',
-        title: 'Chapter 3'
+        id: '/unstoppable-muscle-power-chapter-23/',
+        title: 'Chapter 23'
     },
     entry: {
         index: 0,
-        size: 176_620,
+        size: 119_697,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
