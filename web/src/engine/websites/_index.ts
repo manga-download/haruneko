@@ -647,6 +647,7 @@ export { default as Sukima } from './Sukima';
 export { default as SumManga } from './SumManga';
 export { default as Summertoon } from './Summertoon';
 export { default as SundayWebry } from './SundayWebry';
+export { default as SuratManga } from './SuratManga';
 export { default as SuryaScans } from './SuryaScans';
 export { default as SushiScans } from './SushiScans';
 export { default as SushiScansFR } from './SushiScansFR';
