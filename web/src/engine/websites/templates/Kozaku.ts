@@ -8,7 +8,7 @@ Description:Redesigned especially for catharsisworld
 
 * Look likes madara but no similar endpoint
 * Spanish websites (?)
-* Use different madar endpoint to get mangasa
+* Use different madara endpoint to get mangas
             action: 'madara_load_more',
             page: page.toString(),
             template: 'madara-core/content/content-search',
