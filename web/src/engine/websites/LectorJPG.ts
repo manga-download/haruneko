@@ -1,6 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './LectorJPG.webp';
 import { Kozaku } from './templates/Kozaku';
+
 export default class extends Kozaku {
 
     public constructor() {

@@ -1,7 +1,9 @@
-import { Tags } from '../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './InariManga.webp';
 import { Kozaku } from './templates/Kozaku';
+import * as Common from './decorators/Common';
 
+@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'meta[property="og:title"]', (element) => (element as HTMLMetaElement).content.split('–').at(0).trim())
 export default class extends Kozaku {
 
     public constructor() {
