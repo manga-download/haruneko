@@ -35,17 +35,7 @@ type JSONPages = {
 }
 
 function SetTokenCookie(token: string) {
-    return `
-        new Promise(async (resolve, reject) => {
-            try {
-                await window.cookieStore.set('mhub_access', '${token}');
-                resolve () ;
-            } catch (error) {
-                reject(error);
-            }
-        });
-`;
-
+    return `window.cookieStore.set('mhub_access', '${token}');`;
 }
 
 function RandomString(length: number) {
