@@ -76,8 +76,8 @@ export class MangaHubBase extends DecoratableMangaScraper {
                 }
             }
         }`;
-        const { search: { rows } } = await this.FetchGraphQL<APIMangas>( query );
-        return rows.map(manga => new Manga(this, provider, manga.slug, new DOMParser().parseFromString(manga.title, 'text/html').body.innerHTML.trim()));
+        const { search: { rows } } = await this.FetchGraphQL<APIMangas>(query);
+        return rows.map(manga => new Manga(this, provider, manga.slug, new DOMParser().parseFromString(manga.title, 'text/html').body.innerText.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
