@@ -6,7 +6,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
   new Promise( resolve => {
-        const regexp =  /\\s*(\\w+)\\s*\\((\\w+)\\s*\\[/;
+        const regexp =  /\\s*(\\w+)\\s*\\(\\s*\\d+\\s*,\\s*(\\w+)\\s*\\[/;
         let imageArray = undefined;
         let decodingFunc = undefined;
         const script = [...document.querySelectorAll('script:not([src])')].find(scr => {
@@ -19,7 +19,7 @@ const pageScript = `
             } catch {}
             return false;
         });
-        resolve( imageArray.map(image => decodingFunc(image) ));
+        resolve( imageArray.map(image => decodingFunc(1337, image) ));
     });
 `;
 
