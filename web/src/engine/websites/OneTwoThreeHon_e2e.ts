@@ -8,7 +8,7 @@ new TestFixture( {
     container: {
         url: 'https://www.123hon.com/polca/web-comic/spxsp/',
         id: '/polca/web-comic/spxsp/',
-        title: '異世界温泉冒険譚~スプラッシュ×スプラッシュ~',
+        title: '異世界温泉冒険譚 ~スプラッシュ×スプラッシュ~',
     },
     child: {
         id: '/vw/spxsp/sv_pt000644b1883c326d_1a/',

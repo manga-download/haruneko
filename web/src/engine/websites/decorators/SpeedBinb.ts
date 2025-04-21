@@ -264,7 +264,7 @@ async function ExtractPages(uri: URL, replaceFrom : string, replaceto: string, c
         pageUri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
         if (setSrc) pageUri.searchParams.set('src', src);
 
-        if (!src.startsWith('/')) src = `/{src}`;
+        if (!src.startsWith('/')) src = `/${src}`;
         pageUri.href = pageUri.href.replace(replaceFrom, replaceto.replace('{src}', src));
         return new Page(this, chapter, pageUri);
 

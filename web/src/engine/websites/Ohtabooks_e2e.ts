@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'ohtabooks',
         title: 'Ohtabooks'
@@ -21,6 +21,4 @@ const config: Config = {
         size: 1_385_998,
         type: 'image/png'
     }*/
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
