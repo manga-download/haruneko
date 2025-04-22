@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'truyenqq',
         title: 'TruyenQQ'
     },
     container: {
-        url: 'https://truyenqqto.com/truyen-tranh/long-phi-bat-bai-322',
+        url: 'https://truyenqqgo.com/truyen-tranh/long-phi-bat-bai-322',
         id: '/truyen-tranh/long-phi-bat-bai-322',
         title: 'Long Phi Bất Bại'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 301_848,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
