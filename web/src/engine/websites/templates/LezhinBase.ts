@@ -226,34 +226,31 @@ export class LezhinBase extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<EpisodeParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const parameters = page.Parameters;
         const tokenURI = new URL('cloudfront/signed-url/generate', this.apiUrl);
-        const tokenParams = new URLSearchParams({
+        tokenURI.search = new URLSearchParams({
             contentId: parameters.comicID.toString(),
             episodeId: parameters.episodeID.toString(),
             purchased: parameters.purchased.toString(),
             q: '40',
             firstCheckType: 'P',
-        });
+        }).toString();
 
-        tokenURI.search = tokenParams.toString();
         let data: APIKeyPair = undefined;
         try {
             data = await FetchJSON<APIKeyPair>(this.CreateRequest(tokenURI));
         } catch {
             throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
         }
-
         //update image url
-        const imageParams = new URLSearchParams({
+        page.Link.search = new URLSearchParams({
             purchased: parameters.purchased.toString(),
             q: '40',
             updated: parameters.updatedAt.toString(),
             Policy: data.data.Policy,
             Signature: data.data.Signature,
             'Key-Pair-Id': data.data['Key-Pair-Id']
-        });
-        page.Link.search = imageParams.toString();
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        }).toString();
 
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         return !parameters.shuffled ? blob : DeScramble(blob, async (image, ctx) => {
 
             const NUM_COL_ROW = 5;
