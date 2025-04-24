@@ -283,7 +283,20 @@ export class LezhinBase extends DecoratableMangaScraper {
         Therefore we get it from the /account page. If we are logged it works.
         In case we are not logged, /account redirect to /login and __LZ_CONFIG__ is still available.
         */
-        return FetchWindowScript<LZConfig>(this.CreateRequest(new URL('/account', this.URI)), '__LZ_CONFIG__', 2500);
+
+        const LzConfigScript = `
+            new Promise ( resolve => {
+                if (window.__LZ_CONFIG__) resolve(window.__LZ_CONFIG__)
+                else {
+                    resolve({
+                        contentsCdnUrl : JSON.parse(document.querySelector('#lz-static').dataset.env).CONTENT_CDN_URL,
+                        token : document.documentElement.innerHTML.match(/accessToken.*([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})/)?.at(1)
+                    });
+                }
+            });
+        `;
+
+        return FetchWindowScript<LZConfig>(this.CreateRequest(new URL('/account', this.URI)), LzConfigScript, 2500);
     }
 
     private async InitializeAccount() {
