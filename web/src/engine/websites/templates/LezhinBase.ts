@@ -150,7 +150,6 @@ export class LezhinBase extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
-
         for (let page = 0, run = true; run; page++) {
             const { mangas, hasNext } = await this.GetMangasFromPage(page, provider);
             mangaList.push(...mangas);
@@ -161,14 +160,15 @@ export class LezhinBase extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<MangasList> {
         const mangasPerPage: number = 500;
+
         const uri = new URL('contents', this.apiUrl);
-        const params = new URLSearchParams({
+        uri.search = new URLSearchParams({
             menu: 'general',
             limit: mangasPerPage.toString(),
             offset: (page * mangasPerPage).toString(),
             order: 'popular'
-        });
-        uri.search = params.toString();
+        }).toString();
+
         const request = this.CreateRequest(uri, {
             'X-LZ-Adult': '2',
             'X-LZ-AllowAdult': 'true',
@@ -201,15 +201,14 @@ export class LezhinBase extends DecoratableMangaScraper {
         }
 
         const uri = new URL('inventory_groups/comic_viewer', this.apiUrl);
-        const params = new URLSearchParams({
+        uri.search = new URLSearchParams({
             platform: 'web',
             store: 'web',
             alias: chapter.Parent.Identifier.split('/').pop(),
             name: chapter.Identifier.split('/').pop(),
             preload: 'false',
             type: 'comic_episode'
-        });
-        uri.search = params.toString();
+        }).toString();
         const { data: { extra: { comic, episode, subscribed } } } = await FetchJSON<APIPages>(this.CreateRequest(uri));
 
         parameters.episodeID = episode.id;
