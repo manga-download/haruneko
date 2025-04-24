@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,7 +7,7 @@ new TestFixture({
         title: 'MangaPanda'
     },
     container: {
-        url: 'https://www.mangapanda.in/manga/theres-no-hope-for-winter',
+        url: 'https://mangapanda.in/manga/theres-no-hope-for-winter',
         id: '/manga/theres-no-hope-for-winter',
         title: `There’s No Hope for Winter`
     },
@@ -20,3 +21,4 @@ new TestFixture({
         type: 'image/webp',
     }
 }).AssertWebsite();
+*/
