@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
 import type { MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Priority } from '../../../engine/taskpool/DeferredTask';
 
@@ -7,59 +7,65 @@ function noop() {/* ... */}
 const styles: ElementStyles = css`
 
     :host {
-        display: inline-block;
+        display: inline-grid;
         margin: var(--spacingHorizontalS);
-    }
-
-    /* imitiate fluent-card as it is buggy ... */
-    .preview {
+        /* imitiate fluent-card as it is buggy ... */
         border: var(--strokeWidthThin) solid var(--neutral-stroke-layer-rest);
         border-radius: var(--borderRadiusXLarge);
         box-shadow: var(--shadow4);
     }
 
-    .preview .info {
+    a {
+        text-decoration: none;
+    }
+
+    .info {
         padding: var(--spacingHorizontalXS);
         background-color: var(--colorNeutralBackground4);
         color: var(--colorNeutralForeground4);
     }
 
-    fluent-image {
-        display: inline-block;
+    .thumbnail {
         width: 320px;
         height: 320px;
     }
 
-    .preview fluent-progress-ring {
-        width: 64px;
-        height: 64px;
-        margin: 128px;
+    .link {
+        display: block;
+    }
+
+    .spinner {
+        display: grid;
+        align-items: center;
+        justify-items: center;
     }
 `;
 
+const templateInfo: ViewTemplate<MediaItemPage> = html`
+    <a target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">
+        ${model => model.Info ?? '┄'}
+    </a>
+`;
+
 const templateImage: ViewTemplate<MediaItemPage> = html`
-    <div class="info">
-        <fluent-link target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">
-            <div>${model => model.info ?? '┄'}</div>
-        </fluent-link>
-    </div>
-    <fluent-link appearance="subtle" target="_blank" href="${model => model.Image}" title="${model => model.Image}">
+    <a class="thumbnail link" target="_blank" href="${model => model.Image}" title="${model => model.Image}">
         <fluent-image fit="contain" shape="square">
             <img src="${model => model.Image}" />
         </fluent-image>
-    </fluent-link>
+    </a>
 `;
 
 const templateSpinner: ViewTemplate<MediaItemPage> = html`
-    <div class="info">┄</div>
-    <fluent-spinner size="huge"></fluent-spinner>
+    <div class="thumbnail spinner">
+        <fluent-spinner size="huge"></fluent-spinner>
+    </div>
 `;
 
 const template: ViewTemplate<MediaItemPage> = html`
-    <div class="preview">
-        ${when(model => model.Image, templateImage)}
-        ${when(model => !model.Image, templateSpinner)}
+    <div class="info">
+        ${model => model.Item && model.Info ? templateInfo : html`┄`}
     </div>
+    ${model => model.Image ? templateImage : templateSpinner}
 `;
 
 @customElement({ name: 'fluent-media-item-page', template, styles })
@@ -91,10 +97,10 @@ export class MediaItemPage extends FASTElement {
             URL.revokeObjectURL(oldValue);
         }
         if(!newValue?.startsWith('blob:')) {
-            this.info = undefined;
+            this.Info = undefined;
         }
     }
-    @observable info: string = undefined;
+    @observable Info: string = undefined;
 
     private async LoadPage() {
         try {
@@ -109,7 +115,7 @@ export class MediaItemPage extends FASTElement {
                 return;
             }
             this.Image = URL.createObjectURL(data);
-            this.info = `${data.type} @ ${data.size.toLocaleString('en-US', { useGrouping: true })}`;
+            this.Info = `${data.type} @ ${data.size.toLocaleString('en-US', { useGrouping: true })}`;
         } catch(error) {
             console.warn(error);
         } finally {
