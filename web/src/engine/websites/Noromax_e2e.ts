@@ -6,7 +6,7 @@ const config = {
         title: 'Noromax'
     },
     container: {
-        url: 'https://noromax.my.id/Komik/all-hail-the-sect-leader-bahasa-indonesia/',
+        url: 'https://noromax01.my.id/Komik/all-hail-the-sect-leader-bahasa-indonesia/',
         id: '/Komik/all-hail-the-sect-leader-bahasa-indonesia/',
         title: 'All Hail the Sect Leader'
     },

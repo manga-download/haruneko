@@ -1,17 +1,17 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'phenixscans',
         title: 'Phenix Scans'
     },
     container: {
-        url: 'https://phenixscans.fr/manga/infinite-mage/',
-        id: '/manga/infinite-mage/',
+        url: 'https://phenix-scans.com/manga/infinite-mage',
+        id: '/manga/infinite-mage',
         title: 'Infinite Mage'
     },
     child: {
-        id: '/infinite-mage-chapitre-60/',
+        id: '/manga/infinite-mage/chapitre/60',
         title: 'Chapitre 60'
     },
     entry: {
@@ -19,6 +19,4 @@ const config = {
         size: 1_217_836,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

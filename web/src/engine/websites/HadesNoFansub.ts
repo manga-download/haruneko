@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hadesnofansub', 'Hades No Fansub', 'https://mangareaderpro.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish);
+        super('hadesnofansub', 'Hades No Fansub', 'https://hadesnofansub.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish);
     }
 
     public override get Icon() {
