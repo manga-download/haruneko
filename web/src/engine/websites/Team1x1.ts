@@ -12,7 +12,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangasMultiPageCSS('/series?page={page}', 'div.bs div.bsx a', 1, 1, 0, MangaExtractor)
-@Common.PagesSinglePageCSS('.manga-chapter-canvas[data-src]', (element) => element.dataset.src)
+@Common.PagesSinglePageCSS('.page-break img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
