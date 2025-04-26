@@ -13,7 +13,22 @@ type APIChapterResult = {
     }
 }
 
-@Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.mainTitle h1.titleTxt')
+function MangaExtractor(element: HTMLHeadingElement) {
+    return CleanTitle(element.textContent);
+}
+
+function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: CleanTitle(anchor.textContent.trim()),
+    };
+}
+
+function CleanTitle(title: string): string {
+    return title.replace(/^<.*>/i, '').trim();
+}
+
+@Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.mainTitle h1.titleTxt', MangaExtractor)
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -36,7 +51,7 @@ export default class extends DecoratableMangaScraper {
         genres = Array.from(new Set(genres));
         const mangaList: Manga[] = [];
         for (const genre of genres) {
-            mangaList.push(... await Common.FetchMangasMultiPageCSS.call(this, provider, `/genre/${genre}/?page={page}`, 'ul.listBox li div.titleName a'));
+            mangaList.push(... await Common.FetchMangasMultiPageCSS.call(this, provider, `/genre/${genre}/?page={page}`, 'ul.listBox li div.titleName a', 1, 1, 0, MangaInfoExtractor));
         }
         return mangaList.distinct();
     }
@@ -52,7 +67,7 @@ export default class extends DecoratableMangaScraper {
             const { data } = await FetchJSON<APIChapterResult>(request);
             const chaptersNodes = [...new DOMParser().parseFromString(data.html_content, 'text/html').querySelectorAll<HTMLElement>('ul.detailBox div.inner_table')];
             for (const chapterNode of chaptersNodes) {
-                const title = chapterNode.querySelector('p.titleName').textContent.trim();
+                const title = chapterNode.querySelector<HTMLParagraphElement>('p.titleName').textContent.trim();
                 const linkNode = chapterNode.querySelector<HTMLAnchorElement>('div.btnBlock a.prevBtn');
                 if (linkNode) chapters.push(new Chapter(this, manga, linkNode.pathname + linkNode.search, title));
             }
