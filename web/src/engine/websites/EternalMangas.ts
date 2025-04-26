@@ -22,15 +22,11 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
-    public override async Initialize(): Promise<void> {
-        this.token = (await FetchRegex(new Request(new URL('./comics', this.URI)), /token\\['"]:\\["']([^\\]+)/g)).at(0);
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const token = (await FetchRegex(new Request(new URL('./comics', this.URI)), /token\\['"]:\\["']([^\\]+)/g)).at(0);
         const data = await FetchJSON<APIManga[]>(new Request(new URL('./comics-actu', this.apiUrl), {
             headers: {
-                'x-eternal-key': this.token
+                'x-eternal-key': token
             }
         }));
         return data.map(manga => new Manga(this, provider, `/ver/${manga.slug}`, manga.name));
