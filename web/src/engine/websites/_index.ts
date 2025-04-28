@@ -576,7 +576,6 @@ export { default as Retsu } from './Retsu';
 export { default as RezoScans } from './RezoScans';
 export { default as RidiBooks } from './RidiBooks';
 export { default as RimuScan } from './RimuScan';
-export { default as Rio2Manga } from './Rio2Manga';
 export { default as RizzComics } from './RizzComics';
 export { default as RokuHentai } from './RokuHentai';
 export { default as RuManhua } from './RuManhua';
@@ -754,6 +753,7 @@ export { default as ZenithScans } from './ZenithScans';
 export { default as ZeroScans } from './ZeroScans';
 export { default as ZeurelScan } from './ZeurelScan';
 export { default as Zhuzhumh } from './Zhuzhumh';
+export { default as ZinchanManga } from './ZinchanManga';
 export { default as ZinManga } from './ZinManga';
 export { default as ZinMangaNet } from './ZinMangaNet';
 // Legacy Websites
