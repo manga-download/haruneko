@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://visualikigai.skcar.xyz/series/el-sacerdote-sanador-del-sol/',
+        url: 'https://visualikigai.skteq.xyz/series/el-sacerdote-sanador-del-sol/',
         id: '/series/el-sacerdote-sanador-del-sol/',
         title: 'El Sacerdote Sanador del Sol'
     },
