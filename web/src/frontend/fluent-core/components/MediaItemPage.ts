@@ -9,13 +9,15 @@ const styles: ElementStyles = css`
     :host {
         display: inline-grid;
         margin: var(--spacingHorizontalS);
-        /* imitiate fluent-card as it is buggy ... */
+        /* imitiate fluent-card as it is not yet implemented ... */
         border: var(--strokeWidthThin) solid var(--neutral-stroke-layer-rest);
         border-radius: var(--borderRadiusXLarge);
         box-shadow: var(--shadow4);
+        overflow: clip;
     }
 
     a {
+        color: var(--colorBrandForegroundLink);
         text-decoration: none;
     }
 
@@ -40,6 +42,14 @@ const styles: ElementStyles = css`
         justify-items: center;
     }
 `;
+
+/* FIXME: Fluent-Link click will be fired twice
+const templateInfo: ViewTemplate<MediaItemPage> = html`
+    <fluent-link target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">
+        ${model => model.Info ?? '┄'}
+    </fluent-link>
+`;
+*/
 
 const templateInfo: ViewTemplate<MediaItemPage> = html`
     <a target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">
