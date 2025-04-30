@@ -72,7 +72,10 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
     `;
     const uri = new URL(chapter.Identifier, this.URI);
     const images = await FetchWindowScript<string[]>(new Request(uri), script, 1000);
-    return images.map(url => new Page(this, chapter, new URL(url), { Referer: uri.href }));
+    return images.map(url => { 
+        if(!url.includes(uri.protocol)) url = uri.protocol+url;
+        return new Page(this, chapter, new URL(url), { Referer: uri.href });
+    });
 }
 
 /**
