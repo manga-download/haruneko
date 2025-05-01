@@ -16,22 +16,24 @@
     import InputText from './InputText.svelte';
 
     export let settings: ISetting[];
+    export let inline = false;
+    export let style = null;
 
 </script>
-<form>
+<form {style}>
     {#each settings as setting (setting.ID)}
         {#if setting instanceof Choice}
-            <InputChoice {setting} />
+            <InputChoice {setting} {inline} />
         {:else if setting instanceof Check}
             <InputCheck {setting} />
         {:else if setting instanceof Text}
-            <InputText {setting} />
+            <InputText {setting} {inline} />
         {:else if setting instanceof Secret}
-            <InputSecret {setting} />
+            <InputSecret {setting} {inline} />
         {:else if setting instanceof Numeric}
             <InputNumeric {setting} />
         {:else if setting instanceof Directory}
-            <InputDirectory {setting} />
+            <InputDirectory {setting} {inline} />
         {:else}
             <p>Unknown setting type: {setting.constructor.name}</p>
         {/if}
