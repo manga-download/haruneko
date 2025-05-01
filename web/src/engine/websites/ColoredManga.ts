@@ -8,8 +8,6 @@ import type { Priority } from '../taskpool/DeferredTask';
 type APIMangas = {
     id: string,
     name: string
-    volumes: APIVolume[]
-
 }[];
 
 type APIManga = {
