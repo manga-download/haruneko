@@ -22,7 +22,6 @@ type APIChapter = {
     _id: string,
     number: string,
     title: string,
-    volume: string
 }
 
 type APIVolume = {
