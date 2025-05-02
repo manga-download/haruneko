@@ -55,7 +55,7 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
                 });
             }
             try {
-                const images = window.newImgs ? window.newImgs : await fetchScriptedImages();
+                const images = window.newImgs ? window.newImgs.map(image => new URL(image, window.location.href).href) : await fetchScriptedImages();
                 const lastImage = new Image();
                 lastImage.onload = () => {
                     if(lastImage.naturalWidth === 1000 && lastImage.naturalHeight === 563) {
@@ -72,10 +72,7 @@ export async function FetchPagesSinglePageScript(this: MangaScraper, chapter: Ch
     `;
     const uri = new URL(chapter.Identifier, this.URI);
     const images = await FetchWindowScript<string[]>(new Request(uri), script, 1000);
-    return images.map(url => {
-        if(!url.includes(uri.protocol)) url = uri.protocol+url;
-        return new Page(this, chapter, new URL(url), { Referer: uri.href });
-    });
+    return images.map(url => new Page(this, chapter, new URL(url), { Referer: uri.href }));
 }
 
 /**
