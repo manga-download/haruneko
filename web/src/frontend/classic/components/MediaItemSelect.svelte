@@ -312,17 +312,25 @@
     <div id="ItemTitle">
         <h5>Item List</h5>
     </div>
+    <div id="LanguageFilter">
+        <Button
+            icon={EarthFilled}
+            size="small"
+            tooltipPosition="bottom"
+            tooltipAlignment="center"
+            iconDescription="Languages"
+        />
+
+        <Dropdown
+            disabled={MediaLanguages.length === 0}
+            placeholder="Select a language"
+            bind:selectedId={langFilterID}
+            size="sm"
+            items={langComboboxItems}
+        />
+    </div>
     <div id="ItemFilter">
         <Search id="ItemFilterSearch" size="sm" bind:value={itemNameFilter} />
-                <OverflowMenu size="sm"
-        >
-            <OverflowMenuItem text="Download 34 selcted" />
-            <OverflowMenuItem text="Download all" danger/>
-            <OverflowMenuItem text="Language" hasDivider disabled/>
-            <OverflowMenuItem text="  English" /> 
-            <OverflowMenuItem text="  French" /> 
-            <OverflowMenuItem text="Copy manga name" hasDivider/>
-          </OverflowMenu>
     </div>
     <div id="ItemList" class="list" bind:this={itemsdiv}>
         {#await loadItem}
@@ -378,10 +386,11 @@
         min-height: 0;
         height: 100%;
         grid-template-columns: 1fr 4px;
-        grid-template-rows: 2.2em 2.2em 1fr 2em;
+        grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
             'ItemTitle Nothing'
+            'LanguageFilter Resize'
             'ItemFilter Resize'
             'ItemList Resize'
             'ItemBottom Resize';
@@ -391,12 +400,10 @@
     #LanguageFilter {
         grid-area: LanguageFilter;
         display: grid;
-        grid-template-columns:  1fr auto;
+        grid-template-columns: auto 1fr;
     }
     #ItemFilter {
         grid-area: ItemFilter;
-        display: grid;
-        grid-template-columns:  1fr auto;
     }
     #ItemList {
         grid-area: ItemList;
