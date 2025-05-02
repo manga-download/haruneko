@@ -2,12 +2,12 @@
 
 new TestFixture({
     plugin: {
-        id: 'shojoverse',
-        title: 'Shojoverse'
+        id: 'kingofmanhwa',
+        title: 'KingOfManhwa'
     },
     container: {
-        url: 'https://mythicscans.com/series/the-player-hides-his-past/',
-        id: '/series/the-player-hides-his-past/',
+        url: 'https://kingofmanhwa.com/manga/the-player-hides-his-past/',
+        id: '/manga/the-player-hides-his-past/',
         title: 'The Player Hides His Past',
     },
     child: {
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 899_204,
+        size: 1_191_678,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
