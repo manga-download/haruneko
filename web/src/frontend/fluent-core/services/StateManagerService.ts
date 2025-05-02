@@ -75,7 +75,7 @@ class StateManager {
         this.settingPanelDownloadsCheck.Value = this.SettingPanelDownloads;
     }
 
-    public ShowSettingsDialog: (...settings: ISetting[]) => void;
+    @observable ShowSettingsDialog: (...settings: ISetting[]) => void = () => {};
 }
 
 export type { StateManager };

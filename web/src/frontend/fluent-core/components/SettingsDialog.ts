@@ -1,8 +1,9 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
 import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
 import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
 import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
-import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
+import { S, StateManagerService, type StateManager } from '../services/StateManagerService';
+import type { Dialog } from '@fluentui/web-components';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 
@@ -111,35 +112,39 @@ const templateSettingRow: ViewTemplate<ISetting> = html`
 `;
 
 const template: ViewTemplate<SettingsDialog> = html`
-    <fluent-dialog trap-focus modal ?hidden=${model => model.hidden}>
-        <div id="dialog">
-            <div id="header">${() => S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
-            <div id="content">
-                <div id="settings">
-                    ${repeat(model => model.settings, templateSettingRow)}
+    <fluent-dialog trap-focus type="modal" ${ref('dialog')}>
+        <fluent-dialog-body>
+            <div slot="title">${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
+            <div id="dialog">
+                <div id="header">${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
+                <div id="content">
+                    <div id="settings">
+                        ${repeat(model => model.settings, templateSettingRow)}
+                    </div>
+                </div>
+                <div id="footer">
+                    <fluent-button id="settings-close-button" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}</fluent-button>
                 </div>
             </div>
-            <div id="footer">
-                <fluent-button id="settings-close-button" appearance="accent" @click=${model => model.hidden = true}>${() => S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}</fluent-button>
-            </div>
-        </div>
+        </fluent-dialog-body>
     </fluent-dialog>
 `;
 
 @customElement({ name: 'fluent-settings-dialog', template, styles })
 export class SettingsDialog extends FASTElement {
 
-    constructor() {
-        super();
-        S.ShowSettingsDialog = (...settings: ISetting[]) => {
-            this.settings = settings;
-            this.hidden = false;
-        };
-    }
-
-    @observable hidden = true;
+    readonly dialog: Dialog;
+    @StateManagerService S: StateManager;
     @observable settings: ISetting[] = [];
     @InteractiveFileContentProviderService fileIO: InteractiveFileContentProvider;
+
+    override connectedCallback(): void {
+        super.connectedCallback();
+        this.S.ShowSettingsDialog = (...settings: ISetting[]) => {
+            this.settings = settings;
+            this.dialog.show();
+        };
+    }
 
     public async SelectDirectory(directory: Directory): Promise<void> {
         try {

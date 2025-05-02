@@ -1,7 +1,7 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
 import type { SearchBox } from './SearchBox';
-import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
+import { StateManagerService, type StateManager } from '../services/StateManagerService';
 
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
 import IconBrowse from '@fluentui/svg-icons/icons/open_20_regular.svg?raw';
@@ -154,11 +154,11 @@ const styles: ElementStyles = css`
 `;
 
 const unstarred: ViewTemplate<WebsiteSelect> = html`
-    <fluent-button icon-only id="add-favorite-button" appearance="transparent" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description()}" ?disabled=${model => !model.Selected} :innerHTML=${() => IconAddFavorite} @click=${(model, ctx) => model.AddFavorite(ctx.event)}></fluent-button>
+    <fluent-button icon-only id="add-favorite-button" appearance="transparent" title="${model => model.S.Locale.Frontend_FluentCore_WebsiteSelect_AddFavoriteButton_Description()}" ?disabled=${model => !model.Selected} :innerHTML=${() => IconAddFavorite} @click=${(model, ctx) => model.AddFavorite(ctx.event)}></fluent-button>
 `;
 
 const starred: ViewTemplate<WebsiteSelect> = html`
-    <fluent-button icon-only id="remove-favorite-button" appearance="transparent" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description()}" ?disabled=${model => !model.Selected} :innerHTML=${() => IconRemoveFavorite} @click=${(model, ctx) => model.RemoveFavorite(ctx.event)}></fluent-button>
+    <fluent-button icon-only id="remove-favorite-button" appearance="transparent" title="${model => model.S.Locale.Frontend_FluentCore_WebsiteSelect_RemoveFavoriteButton_Description()}" ?disabled=${model => !model.Selected} :innerHTML=${() => IconRemoveFavorite} @click=${(model, ctx) => model.RemoveFavorite(ctx.event)}></fluent-button>
 `;
 
 // HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
@@ -173,19 +173,19 @@ const listitem: ViewTemplate<MediaContainer<MediaChild>> = html`
 `;
 
 const template: ViewTemplate<WebsiteSelect> = html`
-    <div id="heading" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_Description()}" @click=${model => model.Expanded = !model.Expanded}>
+    <div id="heading" title="${model => model.S.Locale.Frontend_FluentCore_WebsiteSelect_Description()}" @click=${model => model.Expanded = !model.Expanded}>
         <img id="logo" src="${model => model.Selected?.Icon}"></img>
         <div id="title">${model => model.Selected?.Title ?? '…'}</div>
         <div id="controls">
             <div class="hint">${model => (model.filtered?.length ?? '') + '／' + (model.Entries?.length ?? '')}</div>
             <fluent-button icon-only id="button-browse" appearance="transparent" title="${model => model.Selected?.URI?.href}" ?disabled=${model => !model.Selected?.URI} :innerHTML=${() => IconBrowse} @click="${(model, ctx) => model.OpenBrowser(ctx.event)}"></fluent-button>
             ${model => model.favorite ? starred : unstarred}
-            <fluent-button icon-only id="button-settings" appearance="transparent" title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.Selected} :innerHTML=${() => IconSettings} @click="${(model, ctx) => model.OpenSettings(ctx.event)}"></fluent-button>
+            <fluent-button icon-only id="button-settings" appearance="transparent" title="${model => model.S.Locale.Frontend_FluentCore_WebsiteSelect_OpenSettingsButton_Description()}" ?disabled=${model => !model.Selected} :innerHTML=${() => IconSettings} @click="${(model, ctx) => model.OpenSettings(ctx.event)}"></fluent-button>
         </div>
     </div>
     <div id="dropdown" ${ref('dropdown')}>
         <div id="searchcontrol">
-            <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+            <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${model => model.S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
         <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
     </div>
@@ -194,6 +194,7 @@ const template: ViewTemplate<WebsiteSelect> = html`
 @customElement({ name: 'fluent-website-select', template, styles })
 export class WebsiteSelect extends FASTElement {
 
+    @StateManagerService S: StateManager;
     readonly dropdown: HTMLDivElement;
     readonly searchbox: SearchBox;
 
@@ -248,7 +249,7 @@ export class WebsiteSelect extends FASTElement {
     public OpenSettings(event: Event) {
         event.stopPropagation();
         if(this.Selected?.Settings) {
-            S.ShowSettingsDialog(...this.Selected.Settings);
+            this.S.ShowSettingsDialog(...this.Selected.Settings);
         }
     }
 
