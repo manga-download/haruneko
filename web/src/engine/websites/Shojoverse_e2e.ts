@@ -2,7 +2,7 @@
 
 new TestFixture({
     plugin: {
-        id: 'kingofmanhwa',
+        id: 'shojoverse',
         title: 'KingOfManhwa'
     },
     container: {
