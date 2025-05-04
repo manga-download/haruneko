@@ -5,7 +5,7 @@ import { Kozaku } from './templates/Kozaku';
 export default class extends Kozaku {
 
     public constructor() {
-        super('templescanesp', 'Temple Scan (ESP)', 'https://templescanesp.caserosvive.com.ar', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('templescanesp', 'Temple Scan (ESP)', 'https://templescanesp.kawi.lat', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
