@@ -171,6 +171,7 @@ export { default as GManga } from './GManga';
 export { default as Gntai } from './Gntai';
 export { default as GolgeBahcesi } from './GolgeBahcesi';
 export { default as GoofFansub } from './GoofFansub';
+export { default as GorakuWeb } from './GorakuWeb';
 export { default as GourmetScans } from './GourmetScans';
 export { default as GrabberZone } from './GrabberZone';
 export { default as Grimelek } from './Grimelek';
