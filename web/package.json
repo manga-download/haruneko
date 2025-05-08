@@ -7,8 +7,8 @@
     },
     "dependencies": {
         "jszip": "3.10.1",
-        "pdfkit": "github:manga-download/pdfkit#v0.17.0",
-        "protobufjs": "7.5.0"
+        "pdfkit": "github:manga-download/pdfkit#v0.17.1",
+        "protobufjs": "7.5.1"
     },
     "devDependencies": {
         "@fluentui/svg-icons": "1.1.298",
