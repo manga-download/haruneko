@@ -6,7 +6,7 @@ new TestFixture({
         title: 'MonzeeKomik'
     },
     container: {
-        url: 'https://monzeekomik.my.id/manga/i-have-90-billion-licking-gold-bahasa-indonesia/',
+        url: 'https://monzee01.my.id/manga/i-have-90-billion-licking-gold-bahasa-indonesia/',
         id: '/manga/i-have-90-billion-licking-gold-bahasa-indonesia/',
         title: 'I Have 90 Billion Licking Gold'
     },

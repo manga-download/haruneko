@@ -1,6 +1,6 @@
 ﻿import { Tags } from '../Tags';
 import icon from './RawLazy.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin, type MangaScraper } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
@@ -9,10 +9,10 @@ function MangaLabelExtractor(element: HTMLElement) {
     return text.replace(/\(Raw.*Free\)/i, '').trim();
 }
 
-function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
+function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.querySelector('span').textContent.trim()
+        title: anchor.querySelector<HTMLSpanElement>('span').textContent.trim()
     };
 }
 
@@ -27,7 +27,7 @@ type APIResult = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rawlazy', 'RawLazy', 'https://rawlazy.rs', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawlazy', 'RawLazy', 'https://rawlazy.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
