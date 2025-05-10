@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,18 +6,17 @@ new TestFixture({
         title: 'Poseidon Scans'
     },
     container: {
-        url: 'https://poseidonscans.fr/manga/ending-maker/',
-        id: JSON.stringify({ post: '4857', slug : '/manga/ending-maker/'}),
-        title: 'Ending Maker'
+        url: 'https://poseidonscans.fr/serie/regression-of-the-close-combat-mage',
+        id: 'regression-of-the-close-combat-mage',
+        title: 'Regression of the Close Combat Mage'
     },
     child: {
-        id: '/manga/ending-maker/chapitre-1/',
-        title: 'Chapitre 1'
+        id: '/serie/regression-of-the-close-combat-mage/chapter/38',
+        title: 'Chapitre 38'
     },
     entry: {
-        index: 1,
-        size: 561_605,
+        index: 0,
+        size: 190_488,
         type: 'image/webp'
     }
 }).AssertWebsite();
-*/

@@ -7,7 +7,7 @@ new TestFixture({
         title: 'MangaPanda'
     },
     container: {
-        url: 'https://mangapanda.in/manga/theres-no-hope-for-winter',
+        url: 'https://www.mangapanda.in/manga/theres-no-hope-for-winter',
         id: '/manga/theres-no-hope-for-winter',
         title: `There’s No Hope for Winter`
     },

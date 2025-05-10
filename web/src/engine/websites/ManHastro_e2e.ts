@@ -6,7 +6,7 @@ new TestFixture({
         title: 'ManHastro'
     },
     container: {
-        url: 'https://manhastro.com/lermanga/yohan-loves-tite/',
+        url: 'https://manhastro.net/lermanga/yohan-loves-tite/',
         id: JSON.stringify({ post: '47401', slug: '/lermanga/yohan-loves-tite/'}),
         title: 'Yohan Loves Tite'
     },
