@@ -6,18 +6,17 @@ new TestFixture({
         title: 'Aincard Manga'
     },
     container: {
-        url: 'https://aincardmanga.com/manga/himitsu-no-akuma-barai/',
-        id: JSON.stringify({ post: '719', slug: '/manga/himitsu-no-akuma-barai/' }),
-        title: 'Himitsu no Akuma Barai'
+        url: 'https://aincardmanga.com.tr/manga/gakkou-gurashi/',
+        id: JSON.stringify({ post: '117', slug: '/manga/gakkou-gurashi/' }),
+        title: 'Gakkou Gurashi!'
     },
-    /*  Login needed for chapter
     child: {
-        id: '/manga/yasakli-yuce-buyucunun-reenkarnasyonu/bolum-66/',
-        title: 'Bölüm 1 - Final - Sapkın Rahibe'
+        id: '/manga/gakkou-gurashi/bolum-56/',
+        title: 'Bölüm 56'
     },
     entry: {
-        index: 0,
-        size: 346_236,
+        index: 1,
+        size: 299_716,
         type: 'image/webp'
-    }*/
+    }
 }).AssertWebsite();

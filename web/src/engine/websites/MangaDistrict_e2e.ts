@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangadistrict',
         title: 'MangaDistrict'
     },
     container: {
-        url: 'https://mangadistrict.com/read-scan/no-mans-land/',
-        id: JSON.stringify({ post: '114637', slug: '/read-scan/no-mans-land/' }),
-        title: `No Man’s Land`
+        url: 'https://mangadistrict.com/title/no-mans-land/',
+        id: JSON.stringify({ post: '114637', slug: '/title/no-mans-land/' }),
+        title: `No Man's Land`
     },
     child: {
-        id: '/read-scan/no-mans-land/chapter-48/',
+        id: '/title/no-mans-land/chapter-48/',
         title: 'Chapter 48 - The Missing Queen'
     },
     entry: {
         index: 0,
-        size: 1_081_770,
+        size: 1_002_645,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

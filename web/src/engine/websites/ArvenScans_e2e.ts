@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Arven Scans'
     },
     container: {
-        url: 'https://arvencomic.net/series/baeac6b0188/',
+        url: 'https://arvencomics.com/series/baeac6b0188/',
         id: '/series/baeac6b0188/',
         title: 'Solo Necromancy'
     },

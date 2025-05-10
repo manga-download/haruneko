@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'ungtycomic',
         title: 'Ung Ty Comic'
     },
     container: {
-        url: 'https://ungtycomicsvip.org/ba-tong-vuong-phi-lat-xe-chi-nam.html',
+        url: 'https://ungtycomicsnay.com/ba-tong-vuong-phi-lat-xe-chi-nam.html',
         id: '/ba-tong-vuong-phi-lat-xe-chi-nam.html',
         title: 'Bá Tổng Vương Phi Lật Xe Chỉ Nam',
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 205_902,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
