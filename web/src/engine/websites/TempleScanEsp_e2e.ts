@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Temple Scan (ESP)'
     },
     container: {
-        url: 'https://templescanesp.caserosvive.com.ar/ver/temblor-esencial',
-        id: '/ver/temblor-esencial?allow=true',
-        title: 'Temblor Esencial'
+        url: 'https://templescanesp.kawi.lat/serie/esponjoso/',
+        id: '/serie/esponjoso/',
+        title: 'Esponjoso'
     },
     child: {
-        id: '/ver/temblor-esencial/capitulo-22?allow=true',
-        title: 'Capítulo 22'
+        id: '/serie/esponjoso/capitulo-25/',
+        title: 'Capitulo 25'
     },
     entry: {
-        index: 0,
-        size: 1_619_278,
+        index: 1,
+        size: 734_618,
         type: 'image/webp'
     }
 }).AssertWebsite();

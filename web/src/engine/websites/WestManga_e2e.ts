@@ -1,12 +1,12 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'westmanga',
         title: 'WestManga'
     },
     container: {
-        url: 'https://westmanga.fun/manga/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c/',
+        url: 'https://westmanga.me/manga/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c/',
         id: '/manga/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c/',
         title: 'Henkyou Gurashi no Maou, Tensei Shite Saikyou no Majutsushi ni naru 〜Aisarenagara Nariagaru Moto Maō wa, Ningen o Shiritai〜'
     },
@@ -15,10 +15,8 @@ const config: Config = {
         title: 'Chapter 1.1'
     },
     entry: {
-        index: 0,
-        size: 90_536,
+        index: 1,
+        size: 141_906,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

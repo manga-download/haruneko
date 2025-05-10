@@ -11,19 +11,22 @@ export class RemoteProcedureCallContract implements Contract {
 
     public async SetCloudFlareBypass(userAgent: string, cookies: chrome.cookies.Cookie[]): Promise<void> {
         for(const cookie of cookies) {
-            await session.defaultSession.cookies.set({
-                domain: cookie.domain,
-                path: cookie.path,
-                url: `https://${ cookie.domain.replace(/^\./, '') }${ cookie.path }`,
-                name: cookie.name,
-                value: cookie.value,
-                // Enforce 1 month expiration to persist cookie after application restart
-                expirationDate: Math.round(Date.now() / 1000 + 2628000), // cookie.expirationDate
-                httpOnly: cookie.httpOnly,
-                secure: cookie.secure,
-                sameSite: cookie.sameSite,
-                //storeId: cookie.storeId,
-            });
+            try {
+                await session.defaultSession.cookies.set({
+                    url: `https://${ cookie.domain.replace(/^\./, '') }${ cookie.path }`,
+                    name: cookie.name,
+                    value: cookie.value,
+                    domain: cookie.domain,
+                    path: cookie.path,
+                    secure: cookie.secure,
+                    httpOnly: cookie.httpOnly,
+                    // Enforce 1 month expiration to persist cookie after application restart
+                    expirationDate: Math.round(Date.now() / 1000 + 2628000), // cookie.expirationDate
+                    sameSite: cookie.sameSite,
+                });
+            } catch(error) {
+                console.warn('Failed to set cookie:', cookie, error);
+            }
         }
 
         if(userAgent !== this.webContents.getUserAgent()) {
