@@ -78,6 +78,8 @@ const translations: VariantResource = {
   Frontend_Classic_Settings_ViewerReverseDirectionInfo: 'Show pages/images in reverse order (like in tradional Manga)',
   Frontend_Classic_Settings_ViewerDoublePage: 'Show Double Pages',
   Frontend_Classic_Settings_ViewerDoublePageInfo: 'Show two pages/images at once (like in tradional Manga)',
+  Frontend_Classic_Settings_WelcomeGuide: 'Startup Guide',
+  Frontend_Classic_Settings_WelcomeGuideInfo: 'Show the welcome guide on first startup',
   Frontend_Classic_Sidenav_Home: 'Home',
   Frontend_Classic_Sidenav_Settings_General: 'General',
   Frontend_Classic_Sidenav_Settings_Interface: 'Interface',
