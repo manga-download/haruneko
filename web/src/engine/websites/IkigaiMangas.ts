@@ -12,14 +12,14 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'article > img', (element: HTMLImageElement) => element.alt.trim())
+@Common.MangaCSS(/^https:\/\/visualikigai\.\w+\.(net|com|xyz)\/series\/[^/]+\/$/, 'article > img', (element: HTMLImageElement) => element.alt.trim())
 @Common.MangasMultiPageCSS('/series/?pagina={page}', 'section ul.grid li > a', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageCSS('div.w-full img[alt*="Page"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visorikigai.damilok.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.prriegeurfhefieof.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -35,8 +35,8 @@ export default class extends DecoratableMangaScraper {
         return chapterList;
     }
 
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}?pagina=${page}`, this.URI)), 'ul li.w-full a');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.querySelector('h3.font-semibold').textContent.trim()));
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.querySelector<HTMLHeadingElement>('h3.font-semibold').textContent.trim()));
     }
 }
