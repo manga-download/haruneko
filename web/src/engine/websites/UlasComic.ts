@@ -37,7 +37,7 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ulascomic', 'Ulas Comic', 'https://www.ulascomic.xyz', Tags.Media.Manga, Tags.Language.Indonesian);
+        super('ulascomic', 'Ulas Comic', 'https://www.ulascomic00.xyz', Tags.Media.Manga, Tags.Language.Indonesian);
     }
 
     public override get Icon() {

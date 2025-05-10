@@ -1,5 +1,4 @@
 import { Tags } from '../Tags';
-import { FetchJSON } from '../platform/FetchProvider';
 import {type MangaPlugin, Manga} from '../providers/MangaPlugin';
 import icon from './Bomtoon.webp';
 import { DelitoonBase, type APIManga, type APIResult } from './templates/DelitoonBase';
@@ -12,7 +11,7 @@ export default class extends DelitoonBase {
 
     public constructor() {
         super('bomtoon', `Bomtoon`, 'https://www.bomtoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
-        this.BalconyID = 'BOMTOON_COM';
+        this.balconyID = 'BOMTOON_COM';
     }
 
     public override get Icon() {
@@ -29,7 +28,7 @@ export default class extends DelitoonBase {
                 contentsThumbnailType: 'MAIN',
                 size: '9999'
             }).toString();
-            return FetchJSON<APIResult<APIMangas>>(this.CreateRequest(url));
+            return super.FetchBalconyJSON<APIResult<APIMangas>>(url);
         });
 
         const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
