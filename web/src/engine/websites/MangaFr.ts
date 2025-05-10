@@ -1,8 +1,8 @@
 ﻿import { Tags } from '../Tags';
-import icon from './GManga.webp';
+import icon from './MangaFr.webp';
 import { type Chapter, DecoratableMangaScraper, Page, type MangaScraper } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { Fetch } from '../platform/FetchProvider';
+import * as Common from './decorators/Common';
 
 function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
     return {
@@ -11,14 +11,14 @@ function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.card div.row h1', (element) => element.textContent.replace('الفصل', '').trim())
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div.series-paginated a.link-series')
+@Common.MangaCSS(/^https:\/\/(www\.)?mangafr\.org\/series\/[^/]+$/, 'div.card div.row h1')
+@Common.MangasMultiPageCSS('/series?page={page}', 'div.series-paginated a.link-series')
 @Common.ChaptersSinglePageCSS('div.chapters-list a', ChapterExtractor)
 @Common.ImageAjaxFromHTML('div.book-page img.img-fluid')
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('gmanga', 'GManga', 'https://gmanga.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
+        super('mangafr', 'Manga FR', 'https://mangafr.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
