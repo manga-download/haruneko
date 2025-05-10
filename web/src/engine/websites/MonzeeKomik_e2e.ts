@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'monzeekomik',
         title: 'MonzeeKomik'
     },
     container: {
-        url: 'https://monzeekomik.my.id/manga/i-have-90-billion-licking-gold-bahasa-indonesia/',
+        url: 'https://monzee01.my.id/manga/i-have-90-billion-licking-gold-bahasa-indonesia/',
         id: '/manga/i-have-90-billion-licking-gold-bahasa-indonesia/',
         title: 'I Have 90 Billion Licking Gold'
     },
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 127_177,
+        size: 175_503,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

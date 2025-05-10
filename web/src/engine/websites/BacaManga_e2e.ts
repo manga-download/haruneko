@@ -4,9 +4,9 @@ new TestFixture({
     plugin: {
         id: 'bacamanga',
         title: 'BacaManga'
-    },
+    }, /* Region Locked : indonesia
     container: {
-        url: 'https://komikindo2.com/komik/martial-peak/',
+        url: 'https://komikindo4.com/komik/martial-peak/',
         id: '/komik/martial-peak/',
         title: 'Martial Peak'
     },
@@ -18,5 +18,5 @@ new TestFixture({
         index: 1,
         size: 224_158,
         type: 'image/jpeg'
-    }
+    }*/
 }).AssertWebsite();

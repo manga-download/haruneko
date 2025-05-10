@@ -6,17 +6,17 @@ new TestFixture({
         title: 'LectorJPG'
     },
     container: {
-        url: 'https://lectorjpg.com/ver/una-bestia-al-anochecer',
-        id: '/ver/una-bestia-al-anochecer',
-        title: 'Una bestia al anochecer'
+        url: 'https://lectorjpg.com/serie/killer-beat/',
+        id: '/serie/killer-beat/',
+        title: 'Killer Beat'
     },
     child: {
-        id: '/ver/una-bestia-al-anochecer/captulo-35',
-        title: 'Capítulo 35'
+        id: '/serie/killer-beat/capitulo-01/',
+        title: 'Capítulo 01'
     },
     entry: {
         index: 0,
-        size: 611_994,
+        size: 931_556,
         type: 'image/webp'
     }
 }).AssertWebsite();
