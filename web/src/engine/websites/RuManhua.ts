@@ -25,7 +25,7 @@ const pagesScript = `[... document.querySelectorAll('div.chapter-img-box img')].
 export default class extends DecoratableMangaScraper {
     protected queryManga = 'div.book-name h1.name';
 
-    public constructor(id = 'rumanhua', label = 'RuManhua', url = 'https://rumanhua.com', tags = [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator]) {
+    public constructor(id = 'rumanhua', label = 'RuManhua', url = 'https://rumanhua1.com', tags = [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator]) {
         super(id, label, url, ...tags);
     }
 

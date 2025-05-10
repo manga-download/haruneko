@@ -1,14 +1,14 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const mangaID = encodeURI('/manga/俺だけレベルアップな件-raw-free/');
-const config = {
+new TestFixture({
     plugin: {
         id: 'rawxz',
         title: 'RawXZ'
     },
     container: {
-        url: 'https://rawxz.io/manga/俺だけレベルアップな件-raw-free/',
-        id: JSON.stringify({ post: '32858', slug: mangaID }),
+        url: 'https://rawxz.asia/manga/俺だけレベルアップな件-raw-free/',
+        id: JSON.stringify({ post: '34868', slug: mangaID }),
         title: '俺だけレベルアップな件',
     },
     child: {
@@ -20,6 +20,4 @@ const config = {
         size: 242_580,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

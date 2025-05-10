@@ -1,5 +1,5 @@
-import { Tags } from '../Tags';
-import icon from './MangaZade.webp';
+﻿import { Tags } from '../Tags';
+import icon from './ZinchanManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangazade', 'MangaZade', 'https://mangazade.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Turkish);
+        super('zinchanmanga', 'Zinchan Manga', 'https://zinchangmanga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
