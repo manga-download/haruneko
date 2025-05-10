@@ -8,7 +8,7 @@ function PageExtractor(image: HTMLImageElement): string {
     return image.dataset.wpfcOriginalSrc || image.src;
 }
 
-@Madara.MangaCSS(/^{origin}\/read-scan\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="MANGA DISTRICT"])')
+@Madara.MangaCSS(/^{origin}\/title\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Common.PagesSinglePageCSS('div.page-break img', PageExtractor)

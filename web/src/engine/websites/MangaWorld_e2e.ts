@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Manga World'
     },
     container: {
-        url: 'https://www.mangaworld.ac/manga/2682/subzero/',
+        url: 'https://www.mangaworld.nz/manga/2682/subzero/',
         id: '/manga/2682/subzero/',
         title: 'SubZero'
     },
