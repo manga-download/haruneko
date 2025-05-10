@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Mila Sub'
     },
     container: {
-        url: 'https://www.milascans.com/manga/i-didnt-lull-you-to-sleep/',
+        url: 'https://www.milascan.com/manga/i-didnt-lull-you-to-sleep/',
         id: JSON.stringify({ post: '3609', slug: '/manga/i-didnt-lull-you-to-sleep/'}),
         title: 'I Didn’t Lull You To Sleep Only For You To Be Obsessed With Me'
     },
