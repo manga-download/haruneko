@@ -6,7 +6,7 @@ new TestFixture({
         title: 'RuManhua'
     },
     container: {
-        url: 'https://rumanhua.com/IVppgVq/',
+        url: 'https://rumanhua1.com/IVppgVq/',
         id: 'IVppgVq',
         title: '我是怪兽大主宰'
     },

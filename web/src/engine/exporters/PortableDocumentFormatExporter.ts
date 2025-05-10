@@ -29,8 +29,8 @@ export class PortableDocumentFormatExporter extends MangaExporter {
         return Promise.all(promises);
     }
 
-    public async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, targetBaseName: string): Promise<void> {
-        const file = await targetDirectory.getFileHandle(SanitizeFileName(targetBaseName + '.pdf'), { create: true });
+    public override async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, chapterTitle: string, _mangaTitle?: string): Promise<void> {
+        const file = await targetDirectory.getFileHandle(SanitizeFileName(chapterTitle + '.pdf'), { create: true });
         const stream = await file.createWritable();
         const pdf = new PDFDocument({
             autoFirstPage: false,
