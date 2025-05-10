@@ -5,9 +5,10 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('.tt').textContent.trim();
-    return {id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector('.tt').textContent.trim()
+    };
 }
 
 @Common.MangasMultiPageCSS('/series?page={page}', 'div.bs div.bsx a', 1, 1, 0, MangaExtractor)

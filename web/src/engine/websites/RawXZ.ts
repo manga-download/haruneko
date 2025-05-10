@@ -15,7 +15,7 @@ function CleanTitle(title: string): string {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rawxz', 'RawXZ', 'https://rawxz1.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawxz', 'RawXZ', 'https://rawxz.asia', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^https://rawxz\\d*.com/manga/[^/]+/$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+/$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

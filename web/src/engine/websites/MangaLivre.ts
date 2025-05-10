@@ -23,7 +23,7 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangalivre', 'MangaLivre', 'https://mangalivre.ru', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese);
+        super('mangalivre', 'MangaLivre', 'https://mangalivre.tv', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese);
     }
 
     public override get Icon() {

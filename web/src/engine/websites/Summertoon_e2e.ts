@@ -6,7 +6,7 @@ const config = {
         title: 'Summertoon'
     },
     container: {
-        url: 'https://summertoon.co/manga/i-cant-get-enough-of-you/',
+        url: 'https://summertoons.com/manga/i-cant-get-enough-of-you/',
         id: '/manga/i-cant-get-enough-of-you/',
         title: 'I Can’t Get Enough of You'
     },

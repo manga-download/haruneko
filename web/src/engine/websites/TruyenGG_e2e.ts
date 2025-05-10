@@ -1,12 +1,13 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'truyengg',
         title: 'TruyenGG'
-    }, /* CloudFlare
+    },
     container: {
-        url: 'https://truyengg.com/truyen-tranh/luyen-khi-chi-than-43774.html',
+        url: 'https://truyengg.net/truyen-tranh/luyen-khi-chi-than-43774.html',
         id: '/truyen-tranh/luyen-khi-chi-than-43774.html',
         title: 'Luyện Khí Chi Thần'
     },
@@ -18,7 +19,6 @@ const config = {
         index: 1,
         size: 174_984,
         type: 'image/jpeg'
-    } */
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();
+*/
