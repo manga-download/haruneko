@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Manga Pro'
     },
     container: {
-        url: 'https://promanga.pro/series/i-eat-soft-rice-in-another-world',
+        url: 'https://promanga.net/series/i-eat-soft-rice-in-another-world',
         id: JSON.stringify({ slug: 'i-eat-soft-rice-in-another-world', id: 327 }),
         title: 'I Eat Soft Rice In Another World'
     },

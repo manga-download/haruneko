@@ -8,44 +8,47 @@ import DeScramble from '../../transformers/ImageDescrambler';
 import type { Priority } from '../../taskpool/DeferredTask';
 
 export type APIResult<T> = {
-    result: string,
     error?: {
         code: string
-    }
-    data: T
+    },
+    data: T,
 }
 
 export type APIManga = {
     id: number,
     alias: string,
-    title: string
-    episodes: APIChapter[]
+    title: string,
+    episodes: APIChapter[],
 }
 
 type APIChapter = {
     id: string,
     alias: string,
     title: string,
-    subTitle: string
+    subTitle: string,
 }
 
-type APIPages = {
+type APIPages = APIResult<{
     isScramble: boolean,
-    images: {
-        imagePath: string,
-        line: string,
-        point: string,
-        defaultHeight: number,
-    }[]
-}
+    images: ImageInfo,
+}>;
+
+type ImageInfo = {
+    imagePath: string,
+    line: string,
+    point: string,
+    defaultHeight: number,
+}[];
+
+type DecrypionKey = APIResult<string>;
 
 type APIUser = {
     user?: {
-        accessToken: APIToken,
+        accessToken: APISession,
     },
 };
 
-type APIToken = {
+type APISession = {
     token: string,
     expiredAt: number,
 };
@@ -56,10 +59,11 @@ type ScrambleParams = {
 }
 
 export class DelitoonBase extends DecoratableMangaScraper {
-    private readonly Platform: string = 'WEB';
-    private authorization: APIToken = undefined;
-    protected readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
-    protected BalconyID: string = 'DELITOON_COM';
+
+    private readonly platform: string = 'WEB';
+    private activeUserSession: APISession = undefined;
+    private readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
+    protected balconyID: string = 'DELITOON_COM';
     protected pagesEndpoint = './contents/viewer';
 
     public override ValidateMangaURL(url: string): boolean {
@@ -68,9 +72,9 @@ export class DelitoonBase extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = new URL(url).pathname.split('/').at(-1);
-        const endpointUrl = new URL(`contents/${mangaid}`, this.apiUrl);
-        endpointUrl.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(endpointUrl));
+        const endpoint = new URL(`contents/${mangaid}`, this.apiUrl);
+        endpoint.searchParams.set('isNotLoginAdult', 'true');
+        const { data } = await this.FetchBalconyJSON<APIResult<APIManga>>(endpoint, false);
         return new Manga(this, provider, mangaid, data.title.trim());
     }
 
@@ -84,7 +88,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
                 contentsThumbnailType: 'MAIN'
             }).toString();
 
-            return FetchJSON<APIResult<APIManga[]>>(this.CreateRequest(url));
+            return this.FetchBalconyJSON<APIResult<APIManga[]>>(url);
         });
 
         const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
@@ -97,10 +101,9 @@ export class DelitoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        await this.UpdateToken();
         const url = new URL(`contents/${manga.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await FetchJSON<APIResult<APIManga>>(this.CreateRequest(url));
+        const { data } = await this.FetchBalconyJSON<APIResult<APIManga>>(url);
         return data.episodes.map(element => {
             let title = element.title.trim();
             title += element.subTitle ? ' : ' + element.subTitle.trim() : '';
@@ -109,58 +112,52 @@ export class DelitoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleParams>[]> {
-        await this.UpdateToken();
         const url = new URL(`${this.pagesEndpoint}/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const { error, data: { images, isScramble } } = await FetchJSON<APIResult<APIPages>>(this.CreateRequest(url));
+        const { error, data: { images, isScramble } } = await this.FetchBalconyJSON<APIPages>(url);
         switch (error?.code) {
             case 'NOT_LOGIN_USER':
             case 'UNAUTHORIZED_CONTENTS':
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-
-        if (isScramble) {
-            const endpoint = new URL(`contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
-            const body = JSON.stringify({ line: images[0].line });
-            const { data } = await FetchJSON<APIResult<string>>(this.CreateRequest(endpoint, true, body));
-            const promises = images.map(async image => {
-                const scrambleIndex = await this.Decrypt(image.point, data);
-                return new Page<ScrambleParams>(this, chapter, new URL(image.imagePath), { scrambleIndex, defaultHeight: image.defaultHeight });
-            });
-            return Promise.all(promises);
-        } else return images.map(element => new Page(this, chapter, new URL(element.imagePath)));
+        return isScramble ? this.FetchScarambledPages(chapter, images) : images.map(image => new Page(this, chapter, new URL(image.imagePath)));
     }
 
-    private async Decrypt(encrypted: string, scramblekey: string): Promise<number[]> {
-        const cipher = { name: 'AES-CBC', iv: GetBytesFromUTF8(scramblekey.slice(0, 16)) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(scramblekey), { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(cipher, key, GetBytesFromBase64(encrypted));
-        return JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
+    private async FetchScarambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
+        const endpoint = new URL(`contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
+        const { data } = await this.FetchBalconyJSON<DecrypionKey>(endpoint, { line: images[0].line });
+        const keyData = GetBytesFromUTF8(data);
+        const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16) };
+        const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
+        const promises = images.map(async image => {
+            const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(image.point));
+            const scrambleIndex = JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
+            return new Page<ScrambleParams>(this, chapter, new URL(image.imagePath), { scrambleIndex, defaultHeight: image.defaultHeight });
+        });
+        return Promise.all(promises);
     }
 
-    protected CreateRequest(url: URL, includeAuthorization = true, body: string = undefined): Request {
-        const request = new Request(url, {
+    private CreateBalconyRequest(url: URL, body: JSONElement = undefined): Request {
+        return new Request(url, {
             method: body ? 'POST' : 'GET',
             headers: {
                 'Referer': this.URI.origin,
-                'X-Balcony-Id': this.BalconyID,
-                'X-Platform': this.Platform,
-                'Content-type': body ? 'application/json' : undefined
+                'X-Balcony-Id': this.balconyID,
+                'X-Platform': this.platform,
+                'Content-Type': body ? 'application/json' : undefined,
+                'Authorization': this.activeUserSession ? ' Bearer ' + this.activeUserSession.token : undefined,
             },
-            body: body
+            body: body ? JSON.stringify(body) : undefined,
         });
-        if (this.authorization && includeAuthorization) {
-            request.headers.set('authorization', ' Bearer ' + this.authorization.token);
-        }
-        return request;
     }
 
-    protected async UpdateToken() {
-        if (!this.authorization || this.authorization.expiredAt < Date.now()) {
-            const url = new URL('/api/auth/session', this.URI);
-            const { user } = await FetchJSON<APIUser>(this.CreateRequest(url, false));
-            this.authorization = user?.accessToken;
+    protected async FetchBalconyJSON<T extends JSONElement>(url: URL, body: JSONElement = undefined): Promise<T> {
+        if (!this.activeUserSession || this.activeUserSession.expiredAt < Date.now() - 60_000) {
+            const request = this.CreateBalconyRequest(new URL('/api/auth/session', this.URI));
+            const { user } = await FetchJSON<APIUser>(request);
+            this.activeUserSession = user?.accessToken;
         }
+        return FetchJSON<T>(this.CreateBalconyRequest(url, body));
     }
 
     public override async FetchImage(page: Page<ScrambleParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -178,5 +175,4 @@ export class DelitoonBase extends DecoratableMangaScraper {
             });
         });
     }
-
 }

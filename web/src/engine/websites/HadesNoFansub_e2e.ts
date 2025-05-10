@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Hades No Fansub'
     },
     container: {
-        url: 'https://mangareaderpro.com/manga/dark-star-emperor/',
+        url: 'https://hadesnofansub.com/manga/dark-star-emperor/',
         id: JSON.stringify({ post: '117', slug: '/manga/dark-star-emperor/' }),
         title: 'Dark Star Emperor'
     },
