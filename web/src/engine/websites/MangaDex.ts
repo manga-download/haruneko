@@ -134,7 +134,7 @@ export default class extends MangaScraper {
             const chapters = await this.chaptersTaskPool.Add(() => this.FetchChaptersFromPage(manga, page), Priority.Normal);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
-        return chapterList;
+        return chapterList.reverse();
     }
 
     private async FetchChaptersFromPage(manga: Manga, page: number) {
