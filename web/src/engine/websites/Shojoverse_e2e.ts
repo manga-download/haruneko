@@ -3,20 +3,20 @@
 new TestFixture({
     plugin: {
         id: 'shojoverse',
-        title: 'Shojoverse'
+        title: 'KingOfManhwa'
     },
     container: {
-        url: 'https://mythicscans.net/manga/reality-quest/',
-        id: '/manga/reality-quest/',
-        title: 'Reality Quest',
+        url: 'https://kingofmanhwa.com/manga/the-player-hides-his-past/',
+        id: '/manga/the-player-hides-his-past/',
+        title: 'The Player Hides His Past',
     },
     child: {
-        id: '/reality-quest-chapter-152/',
-        title: 'Chapter 152'
+        id: '/the-player-hides-his-past-chapter-64/',
+        title: 'Chapter 64'
     },
     entry: {
-        index: 0,
-        size: 311_196,
+        index: 1,
+        size: 1_191_678,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

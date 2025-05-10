@@ -91,7 +91,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
-            const data = await FetchJSON<APIManga[]>(new Request(new URL(`v1.0/search?page=${page}&limit=49`, this.apiUrl)));
+            const data = await FetchJSON<APIManga[]>(new Request(new URL(`v1.0/search?page=${page}&limit=50&sort=user_follow_count`, this.apiUrl)));
             return data.map(item => new Manga(this, provider, item.hid, item.title.trim()));
         } catch { // TODO: Do not return empty list for generic errors
             return [];
@@ -136,7 +136,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { md_images } } = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl)));
+        const { chapter: { md_images } } = await FetchJSON<APISingleChapter>(new Request(new URL(`/chapter/${chapter.Identifier}`, this.apiUrl), {
+            headers: {
+                Referer: this.URI.href,
+                Origin: this.URI.origin
+            }
+        }));
         return md_images.map(image => new Page<PageParameters>(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), {
             mirrors: [
                 new URL(image.b2key, `https://meo.comick.pictures/`).href,

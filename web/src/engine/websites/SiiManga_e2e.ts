@@ -6,7 +6,7 @@ new TestFixture({
         title: 'SiiManga'
     },
     container: {
-        url: 'https://siikomik.art/manga/i-have-90-billion-licking-gold/',
+        url: 'https://siikomik.fun/manga/i-have-90-billion-licking-gold/',
         id: '/manga/i-have-90-billion-licking-gold/',
         title: 'I Have 90 Billion Licking Gold'
     },
