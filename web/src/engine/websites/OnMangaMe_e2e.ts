@@ -6,7 +6,7 @@ new TestFixture({
         title: 'مانجا اون لاين (On-Manga)'
     },
     container: {
-        url: 'https://onma.me/manga/chainsaw-man',
+        url: 'https://www.onma.top/manga/chainsaw-man',
         id: '/manga/chainsaw-man',
         title: 'Chainsaw Man'
     },

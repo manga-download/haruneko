@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'gmanga',
         title: 'GManga'
     },
     container: {
-        url: 'https://gmanga.site/manga/catastrophic-necromancer/',
-        id: JSON.stringify({ post: '2358', slug: '/manga/catastrophic-necromancer/'}),
-        title: 'Catastrophic Necromancer'
+        url: 'https://gmanga.net/manga/6000',
+        id: '/manga/6000',
+        title: '6000'
     },
     child: {
-        id: '/manga/catastrophic-necromancer/catastrophic-necromancer-20/',
-        title: '20'
+        id: '/scan/24248',
+        title: '16 - Hell'
     },
     entry: {
         index: 0,
-        size: 956_241,
-        type: 'image/jpeg'
+        size: 258_288,
+        type: 'image/avif'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
