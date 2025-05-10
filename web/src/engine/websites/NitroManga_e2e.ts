@@ -1,17 +1,17 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'nitromanga',
         title: 'Nitro Manga'
     },
     container: {
-        url: 'https://nitroscans.net/mangas/the-all-knowing-cultivator/',
-        id: JSON.stringify({ post: '9062', slug: '/mangas/the-all-knowing-cultivator/' }),
+        url: 'https://nitroscans.net/series/the-all-knowing-cultivator/',
+        id: JSON.stringify({ post: '9062', slug: '/series/the-all-knowing-cultivator/' }),
         title: 'The All-Knowing Cultivator'
     },
     child: {
-        id: '/mangas/the-all-knowing-cultivator/chapter-0/',
+        id: '/series/the-all-knowing-cultivator/chapter-0/',
         title: 'Chapter 0'
     },
     entry: {
@@ -19,6 +19,4 @@ const config = {
         size: 286_264,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import { exec, spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
 
-export const AppURL = 'http://localhost:5000/';
+export const AppURL = 'https://localhost:5000/';
 export const AppSelector = 'body #app main#hakunekoapp';
 const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite'));
 const tempDir = path.normalize(path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32)));
@@ -68,7 +68,7 @@ async function LaunchNW(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectNW(),
-        args: [ nwApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL ],
+        args: [ nwApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL, '--ignore-certificate-errors' ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);

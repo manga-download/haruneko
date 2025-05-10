@@ -5,19 +5,28 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
 const pageScript = `
-    new Promise( resolve => {
-        const regexp = /\\.attr\\(\\s*['"]src['"]\\s*,\\s*([\\w]+)\\(\\s*([\\w]+)\\[\\s*currImage/ ;
-        const matches = document.documentElement.innerHTML.match(regexp);
-        const imageArray = eval(matches[2]);
-        const decodingFunc = eval(matches[1]);
-        resolve( imageArray.map(image => decodingFunc(image) ));
+  new Promise( resolve => {
+        const regexp =  /\\s*(\\w+)\\s*\\(\\s*\\d+\\s*,\\s*(\\w+)\\s*\\[/;
+        let imageArray = undefined;
+        let decodingFunc = undefined;
+        const script = [...document.querySelectorAll('script:not([src])')].find(scr => {
+            const matches = scr.text.match(regexp);
+            if(!matches) return false;
+            try {
+                decodingFunc = window[matches[1]];
+                imageArray = window[matches[2]];
+                return imageArray instanceof Array && typeof decodingFunc === 'function';
+            } catch {}
+            return false;
+        });
+        resolve( imageArray.map(image => decodingFunc(1337, image) ));
     });
 `;
 
 @Common.MangaCSS(/^{origin}\/Comic\/[^/]+$/, 'div.barContent a.bigChar')
 @Common.MangasMultiPageCSS('/ComicList?page={page}', '.list-comic .item > a')
 @Common.ChaptersSinglePageCSS('div.episodeList table.listing tr td:first-of-type a, div.section ul.list li a')
-@Common.PagesSinglePageJS(pageScript, 1000)
+@Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

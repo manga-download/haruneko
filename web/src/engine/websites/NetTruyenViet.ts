@@ -5,7 +5,7 @@ import * as MojoPortalComic from './templates/MojoPortalComic';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-const primaryDomain = 'nettruyenvie.com';
+const primaryDomain = 'nettruyenvio.com';
 const patternAliasDomains = [
     primaryDomain,
     'nettruyenrr.com',

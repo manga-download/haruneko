@@ -21,6 +21,7 @@ const manifest = {
     url: pkgConfig.url,
     'node-remote': [
         'http://localhost/*',
+        'https://localhost/*',
         'https://*.pages.dev/*',
         'https://app.hakuneko.ovh/*',
         'https://app.hakuneko.download/*',

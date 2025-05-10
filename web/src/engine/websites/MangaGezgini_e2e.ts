@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Manga Gezgini'
     },
     container: {
-        url: 'https://mangagezgini.site/manga/limit-breaker/',
+        url: 'https://mangagezgini.love/manga/limit-breaker/',
         id: JSON.stringify({ post: '873', slug: '/manga/limit-breaker/' }),
         title: 'Limit Breaker'
     },
