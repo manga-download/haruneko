@@ -24,6 +24,6 @@ function config(_url: string): Config {
     };
 }
 
-new TestFixture(config('https://nettruyenvie.com/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();
+new TestFixture(config('https://nettruyenvio.com/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();
 new TestFixture(config('https://nettruyenrr.com/truyen-tranh/ta-co-90-ty-tien-liem-cau-16581')).AssertWebsite();
 */
