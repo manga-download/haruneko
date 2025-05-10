@@ -3,6 +3,11 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { exec, spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
+import {
+    SetupBlinkEvasions,
+    EvadeWebDriverDetection,
+    EvadeChromeDevToolProtocolDetection
+} from './AutomationEvasions';
 
 export const AppURL = 'https://localhost:5000/';
 export const AppSelector = 'body #app main#hakunekoapp';
@@ -67,6 +72,7 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
+    SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
 
     const start = Date.now();
     while(Date.now() - start < 7500) {

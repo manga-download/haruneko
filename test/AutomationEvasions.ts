@@ -35,12 +35,10 @@ const conceal = `
     }
 `;
 
-/*
-function EvadeWebDriverDetection(page: Page) {
+export async function EvadeWebDriverDetection(page: Page) {
     //await page.evaluateOnNewDocument(`delete navigator.__proto__.webdriver`);
     await page.evaluateOnNewDocument(`navigator.__proto__.webdriver = false`);
 }
-*/
 
 /**
  * When dumping an object with the console functions, the properties of the object will be evaluated.
