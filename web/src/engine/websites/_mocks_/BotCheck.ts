@@ -57,10 +57,6 @@ const botchecks = [
     },
 ];
 
-async function ClearCloudFlareCookies() {
-    // TODO: Clear existing CloudFlare cookie(s) ...
-}
-
 /**
  * Sample Website Implementation for Developer Testing
  */
@@ -86,7 +82,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        await ClearCloudFlareCookies();
+        await fetch(new URL('/reset', this.URI));
         const entry = botchecks.find(entry => entry.url === manga.Identifier);
         const bypassed = await FetchWindowScript<boolean>(new Request(entry.url), entry.script);
         return [

@@ -16,22 +16,34 @@ async function GetCache(): Promise<Cache> {
     return currentCache;
 }
 
-async function PutCache(request: Request, response: Response): Promise<void> {
+async function PutCacheResponse(request: Request, response: Response): Promise<void> {
     try {
         const cache = await GetCache();
         await cache.put(request, response);
     } catch(error) {
-        console.warn('Failed to cache request:', request, error);
+        console.warn('Failed to put response to cache:', request, response, error);
+    }
+}
+
+async function GetCacheResponse(request: Request): Promise<Response> {
+    let response: Response | undefined;
+    try {
+        const cache = await GetCache();
+        response = await cache.match(request);
+    } catch(error) {
+        console.warn('Failed to get response from cache:', request, error);
+    } finally {
+        return response ?? new Response('Service Unavailable', { status: 503 });
     }
 }
 
 async function Fetch(request: Request): Promise<Response> {
     try {
         const response = await fetch(request);
-        PutCache(request, response.clone()); // do not await caching the response
+        PutCacheResponse(request, response.clone()); // do not await caching the response
         return response;
     } catch {
-        return (await GetCache()).match(request) ?? new Response('Service Unavailable', { status: 503 });
+        return GetCacheResponse(request);
     }
 }
 
@@ -49,8 +61,12 @@ function OnActivate(event: ExtendableEvent) {
 }
 
 function OnFetch(event: FetchEvent): void {
-    if(new URL(event.request.url).hostname === sw.location.hostname /* && /^GET$/.test(event.request.method) */) {
-        event.respondWith(Fetch(event.request));
+    try {
+        if(new URL(event.request.url).hostname === sw.location.hostname /* && /^GET$/.test(event.request.method) */) {
+            event.respondWith(Fetch(event.request));
+        }
+    } catch(error) {
+        console.warn('Failed to fetch via Service Worker:', event, error);
     }
 }
 
