@@ -22,6 +22,12 @@ export default class extends DecoratableMangaScraper {
         super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.prriegeurfhefieof.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
+    public override async Initialize(): Promise<void> {
+        const response = await fetch('https://visualikigai.com');
+        this.URI.href = new URL(response.url).origin;
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
+    }
+
     public override get Icon() {
         return icon;
     }

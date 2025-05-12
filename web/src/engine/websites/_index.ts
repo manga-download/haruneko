@@ -457,7 +457,6 @@ export { default as ManyToonKR } from './ManyToonKR';
 export { default as MaviManga } from './MaviManga';
 export { default as MechaComic } from './MechaComic';
 export { default as MenudoFansub } from './MenudoFansub';
-export { default as MeowSubs } from './MeowSubs';
 export { default as MerlinScans } from './MerlinScans';
 export { default as MgJinx } from './MgJinx';
 export { default as Mgkomik } from './Mgkomik';
