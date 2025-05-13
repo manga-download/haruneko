@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture( {
     plugin: {
         id: 'manhwaland',
         title: 'Manhwaland'
     },
     container: {
-        url: 'https://ww1.manhwaland01.xyz/manga/got-a-room-uncensored/',
+        url: 'https://www.manhwaland.asia/manga/got-a-room-uncensored/',
         id: '/manga/got-a-room-uncensored/',
         title: 'Got a Room? UNCENSORED'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 480_076,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
