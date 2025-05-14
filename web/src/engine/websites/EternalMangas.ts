@@ -13,7 +13,6 @@ type APIManga = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://apis.eternalmangas.com/api/';
-    private token: string = undefined;
 
     public constructor() {
         super('eternalmangas', 'Eternal Mangas', 'https://eternalmangas.com', Tags.Media.Manhwa, Tags.Media.Novel, Tags.Language.Spanish, Tags.Source.Scanlator);
@@ -43,14 +42,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaUrl = new URL(manga.Identifier, this.URI);
-        const data = await this.FetchFormHTML<HTMLAnchorElement>(mangaUrl, 'project_slug', 'div.contenedor div.grid a');
+        const data = await this.FetchFormHTML<HTMLAnchorElement>(new URL(manga.Identifier, this.URI), 'project_slug', 'div.contenedor div.grid a');
         return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.textContent.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const chapterUrl = new URL(chapter.Identifier, this.URI);
-        const data = await this.FetchFormHTML<HTMLImageElement>(chapterUrl, 'chapter_slug', 'img[data-src]');
+        const data = await this.FetchFormHTML<HTMLImageElement>(new URL(chapter.Identifier, this.URI), 'chapter_slug', 'img[data-src]');
         return data.map(image => new Page(this, chapter, new URL(image.dataset.src || image.src)));
     }
 
