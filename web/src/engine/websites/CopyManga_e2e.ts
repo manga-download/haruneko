@@ -6,7 +6,7 @@ const configGlobal: Config = {
         title: 'CopyManga'
     },
     container: {
-        url: 'https://www.copy-manga.com/comic/zhanvmeizhabao',
+        url: 'https://www.copy20.com/comic/zhanvmeizhabao',
         id: 'zhanvmeizhabao',
         title: '渣女沒渣報'
     },
