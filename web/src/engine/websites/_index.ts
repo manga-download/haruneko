@@ -420,6 +420,7 @@ export { default as MangaWT } from './MangaWT';
 export { default as Mangazure } from './Mangazure';
 export { default as ManHastro } from './ManHastro';
 export { default as ManHatic } from './ManHatic';
+export { default as ManhuaBuddy } from './ManhuaBuddy';
 export { default as ManhuaFast } from './ManhuaFast';
 export { default as ManhuaFastNet } from './ManhuaFastNet';
 export { default as Manhuaga } from './Manhuaga';
