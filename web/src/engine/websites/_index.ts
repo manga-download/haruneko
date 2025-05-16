@@ -429,6 +429,7 @@ export { default as ManHuaGui } from './ManHuaGui';
 export { default as ManhuaHot } from './ManhuaHot';
 export { default as ManhuaNext } from './ManhuaNext';
 export { default as ManhuaPlus } from './ManhuaPlus';
+export { default as ManhuaRead } from './ManhuaRead';
 export { default as Manhuaren } from './Manhuaren';
 export { default as ManhuaUs } from './ManhuaUs';
 export { default as Manhwa18 } from './Manhwa18';
