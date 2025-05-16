@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     private readonly defaultKey = 'xxxmanga.woo.key';
 
     public constructor() {
-        super('copymanga', 'CopyManga', 'https://www.copy-manga.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
+        super('copymanga', 'CopyManga', 'https://www.copy20.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
 
         //this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
         //(this.Settings.url as Text).Subscribe(value => this.URI.href = value);
