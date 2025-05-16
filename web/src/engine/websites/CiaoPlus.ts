@@ -40,6 +40,10 @@ type TDimension = {
     height: number
 }
 
+type PageSeed = {
+    seed: number
+}
+
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
     protected apiUrl = 'https://api.ciao.shogakukan.co.jp/';
@@ -89,15 +93,14 @@ export default class extends DecoratableMangaScraper {
         return chapters;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageSeed>[]> {
         const request = await this.CreateRequest(`./web/episode/viewer?0&platform=3&episode_id=${chapter.Identifier}`);
         const { page_list, scramble_seed } = await FetchJSON<APIPages>(request);
-        return page_list.map(page => new Page(this, chapter, new URL(page), { seed: scramble_seed }));
+        return page_list.map(page => new Page<PageSeed>(this, chapter, new URL(page), { seed: scramble_seed }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageSeed>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const scramble_seed = page.Parameters['seed'] as number;
         const COL_NUM = 4;
 
         return DeScramble(blob, async (image, ctx) => {
@@ -149,7 +152,7 @@ export default class extends DecoratableMangaScraper {
             ctx.drawImage(image, 0, 0);
             const o = getPieceDimension(image.width, image.height, COL_NUM);
             ctx.clearRect(0, 0, o.width * COL_NUM, o.height * COL_NUM);
-            for (const piece of xs(COL_NUM, scramble_seed ?? 1)) {
+            for (const piece of xs(COL_NUM, page.Parameters.seed ?? 1)) {
                 ctx.drawImage(
                     image,
                     piece.source.x * o.width,
