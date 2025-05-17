@@ -13,7 +13,7 @@ new TestFixture({
     },
     child: {
         id: '/api/manga/7965--chainsaw-man/chapter?number=1&volume=1&branch_id=4667',
-        title: 'Том 1 Глава 1 - Пёс и бензопила [Nippa Team]'
+        title: 'Том 1 Глава 1 - Пёс и бензопила [Nippa]'
     },
     entry: {
         index: 4,
