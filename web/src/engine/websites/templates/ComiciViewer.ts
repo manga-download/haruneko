@@ -8,13 +8,6 @@ import DeScramble from '../../transformers/ImageDescrambler';
 import * as Common from '../decorators/Common';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 
-const defaultOrder: Array<Array<number>> = [];
-for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 4; j++) {
-        defaultOrder.push([i, j]);
-    }
-}
-
 type APIResult<T> = {
     result: T,
     totalPages: number
@@ -50,6 +43,7 @@ function ChapterExtractor(element: HTMLElement) {
 export class ComiciViewer extends DecoratableMangaScraper {
 
     protected mangaRegexp = /\/series\/[^/]+(\/)?$/;//same website can provide manga links with and without trailing slash
+    private readonly scrambleMatrix = new Array(16).fill(null).map((_, index) => [index / 4 >> 0, index % 4 >> 0]);
 
     public override ValidateMangaURL(url: string): boolean {
         return this.mangaRegexp.test(url) && url.startsWith(this.URI.origin);
@@ -62,7 +56,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}/list`, this.URI)), 'div.series-ep-list a[data-href]' );
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}/list`, this.URI)), 'div.series-ep-list a[data-href]');
         return data.map(element => {
             const { id, title } = ChapterExtractor.call(this, element);
             return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
@@ -112,8 +106,8 @@ export class ComiciViewer extends DecoratableMangaScraper {
     private DecodeScrambleArray(scramble: string): number[][] {
         const decoded: number[][] = [];
         const encoded = scramble.replace(/\s+/g, '').slice(1).slice(0, -1).split(',');
-        for (let i = 0; i < defaultOrder.length; i++) {
-            decoded.push(defaultOrder[encoded[i]]);
+        for (let i = 0; i < this.scrambleMatrix.length; i++) {
+            decoded.push(this.scrambleMatrix[encoded[i]]);
         }
         return decoded;
     }
