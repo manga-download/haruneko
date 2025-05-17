@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 @TAADD.ImageAjaxFromHTML()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('ninemanga-en', `NineMangaEN`, 'https://en.ninemanga.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('ninemanga-en', `NineMangaEN`, 'https://ninemanga.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
     public override get Icon() {
         return icon;

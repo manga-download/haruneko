@@ -6,7 +6,7 @@ new TestFixture({
         title: 'NineMangaEN'
     },
     container: {
-        url: 'https://en.ninemanga.com/manga/My+Angel+Childhood+Friend+was+a+Gal+When+We+Met+Again.html',
+        url: 'https://ninemanga.com/manga/My+Angel+Childhood+Friend+was+a+Gal+When+We+Met+Again.html',
         id: '/manga/My+Angel+Childhood+Friend+was+a+Gal+When+We+Met+Again.html',
         title: 'My Angel Childhood Friend was a Gal When We Met Again',
     },
