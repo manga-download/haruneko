@@ -17,6 +17,12 @@ type APIMangas = {
 
 }
 
+export type MangaData = {
+    id: string,
+    title: string,
+    episode_list: number[]
+}
+
 type APIChapters = {
     episode_list: {
         episode_id: number,
@@ -34,13 +40,18 @@ type TDimension = {
     height: number
 }
 
+type PageSeed = {
+    seed: number
+}
+
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
+    protected apiUrl = 'https://api.ciao.shogakukan.co.jp/';
+    protected requestHashProperty = 'x-bambi-hash';
+    protected requestHashAppend : string = '';
 
-    private readonly apiUrl = 'https://api.ciao.shogakukan.co.jp/';
-
-    public constructor() {
-        super('ciaoplus', 'Ciao Plus', 'https://ciao.shogakukan.co.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
+    public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator]) {
+        super(id, label, url, ...tags );
     }
 
     public override get Icon() {
@@ -53,27 +64,25 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = parseInt(url.split('/').at(-3));
-        const request = await this.CreateRequest(`/title/list?platform=3&title_id_list=${mangaid}`);
-        const { title_list: [manga] } = await FetchJSON<APIMangas>(request);
-        return new Manga(this, provider, manga.title_id.toString(), manga.title_name.trim());
+        const manga = await this.GetMangaDatas(mangaid.toString());
+        return new Manga(this, provider, manga.id, manga.title);
+
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        let request = await this.CreateRequest(`/title/list?platform=3&title_id_list=${manga.Identifier}`);
-        const { title_list } = await FetchJSON<APIMangas>(request);
-        const chaptersIds = title_list[0].episode_id_list;
+        const { episode_list } = await this.GetMangaDatas(manga.Identifier);
         const chapters: Chapter[] = [];
 
         //request is limited to 50 chapters
         const chunkSize = 50;
         const chaptersChunks: Array<Array<number>> = [];
-        for (let i = 0; i < chaptersIds.length; i += chunkSize) {
-            const chunk = chaptersIds.slice(i, i + chunkSize);
+        for (let i = 0; i < episode_list.length; i += chunkSize) {
+            const chunk = episode_list.slice(i, i + chunkSize);
             chaptersChunks.push(chunk);
         }
 
         for (const chapterChunk of chaptersChunks) {
-            request = await this.CreatePostRequest(`/episode/list`, new URLSearchParams({
+            const request = await this.CreatePostRequest(`./episode/list`, new URLSearchParams({
                 platform: '3',
                 episode_id_list: chapterChunk.toString()
             }));
@@ -84,15 +93,14 @@ export default class extends DecoratableMangaScraper {
         return chapters;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = await this.CreateRequest(`/web/episode/viewer?0&platform=3&episode_id=${chapter.Identifier}`);
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageSeed>[]> {
+        const request = await this.CreateRequest(`./web/episode/viewer?0&platform=3&episode_id=${chapter.Identifier}`);
         const { page_list, scramble_seed } = await FetchJSON<APIPages>(request);
-        return page_list.map(page => new Page(this, chapter, new URL(page), { seed: scramble_seed }));
+        return page_list.map(page => new Page<PageSeed>(this, chapter, new URL(page), { seed: scramble_seed }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageSeed>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const scramble_seed = page.Parameters['seed'] as number;
         const COL_NUM = 4;
 
         return DeScramble(blob, async (image, ctx) => {
@@ -144,7 +152,7 @@ export default class extends DecoratableMangaScraper {
             ctx.drawImage(image, 0, 0);
             const o = getPieceDimension(image.width, image.height, COL_NUM);
             ctx.clearRect(0, 0, o.width * COL_NUM, o.height * COL_NUM);
-            for (const piece of xs(COL_NUM, scramble_seed ?? 1)) {
+            for (const piece of xs(COL_NUM, page.Parameters.seed ?? 1)) {
                 ctx.drawImage(
                     image,
                     piece.source.x * o.width,
@@ -161,13 +169,23 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private async CreateRequest(endpoint: string): Promise<Request> {
+    protected async GetMangaDatas(mangaId: string): Promise<MangaData> {
+        const request = await this.CreateRequest(`./title/list?platform=3&title_id_list=${mangaId}`);
+        const { title_list: [manga] } = await FetchJSON<APIMangas>(request);
+        return {
+            id: manga.title_id.toString(),
+            title: manga.title_name.trim(),
+            episode_list: manga.episode_id_list
+        };
+    }
+
+    protected async CreateRequest(endpoint: string): Promise<Request> {
         const url = new URL(endpoint, this.apiUrl);
-        const bambihash = await this.ComputeBambiHash(url.searchParams);
+        const requestHash = await this.ComputeHash(url.searchParams);
         return new Request(url, {
             method: 'GET',
             headers: {
-                'x-bambi-hash': bambihash,
+                [this.requestHashProperty]: requestHash,
                 Origin: this.URI.origin,
                 Referer: this.URI.href
             }
@@ -176,31 +194,36 @@ export default class extends DecoratableMangaScraper {
 
     private async CreatePostRequest(endpoint: string, variables: URLSearchParams): Promise<Request> {
         const url = new URL(endpoint, this.apiUrl);
-        const bambihash = await this.ComputeBambiHash(variables);
+        const requestHash = await this.ComputeHash(variables);
         return new Request(url, {
             method: 'POST',
             body: variables.toString(),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'x-bambi-hash': bambihash,
+                [this.requestHashProperty]: requestHash,
                 Origin: this.URI.origin,
                 Referer: this.URI.href
             }
         });
     }
 
-    private async ComputeBambiHash(variables: URLSearchParams): Promise<string> {
+    private async ComputeHash(variables: URLSearchParams): Promise<string> {
         const params = Object.fromEntries(variables);
-        const keys = Object.keys(params).sort();
+        const dictionary = {};
+        for (const [key, value] of Object.entries(params)) typeof value != 'string' &&
+            typeof value != 'number' || (dictionary[key] = value.toString());
         const hashtable: string[] = [];
-        for (const key of keys) {
-            const keyHash = await this.SHA(key, 'SHA-256');
-            const valueHash = await this.SHA(params[key], 'SHA-512');
-            hashtable.push([keyHash, valueHash].join('_'));
+        for (const key of Object.keys(dictionary).sort()) {
+            hashtable.push(await this.DoubleSHA(key, dictionary[key] ));
         }
-        const bambihash = await this.SHA(hashtable.toString(), 'SHA-256');
-        return await this.SHA(bambihash, 'SHA-512');
+        const hash = await this.SHA(hashtable.toString(), 'SHA-256');
+        return await this.SHA(`${hash}${this.requestHashAppend}`, 'SHA-512');
+    }
 
+    protected async DoubleSHA(key: string, value: string): Promise<string> {
+        const keyHash = await this.SHA(key, 'SHA-256');
+        const valueHash = await this.SHA(value, 'SHA-512');
+        return [keyHash, valueHash].join('_');
     }
 
     private async SHA(text: string, algorithm: AlgorithmIdentifier): Promise<string> {
