@@ -133,14 +133,22 @@ export async function teardown() {
             break;
         default:
             const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
-            for(let index = 0; index < signals.length && server.exitCode === null; index++) {
-                console.log(new Date().toISOString(), '=>', signals[index], server.kill(signals[index]));
+            for(let index = 0; index < signals.length && server.signalCode === null; index++) {
+                console.log(new Date().toISOString(), '=>', signals[index], path.relative(process.cwd(), server.spawnfile), server.kill(signals[index]));
+                await delay(1000);
             }
             break;
     }
-    await delay(1000);
-    if(server.exitCode === null) {
+    await delay(2500);
+    if(server.exitCode === null && server.signalCode === null) {
         console.warn(new Date().toISOString(), '=>', `Failed to stop server (pid: ${server.pid}):`, path.relative(process.cwd(), server.spawnfile));
+        if(server.pid) {
+            try {
+                console.log(new Date().toISOString(), '=>', `SIGKILL server process group ${-server.pid}`, process.kill(-server.pid, 'SIGKILL'));
+            } catch {
+                console.warn(new Date().toISOString(), '=>', `Failed to stop server process group (pid: ${-server.pid}):`, path.relative(process.cwd(), server.spawnfile));
+            }
+        }
     }
     await fs.rm(tempDir, { recursive: true });
     process.exit();
