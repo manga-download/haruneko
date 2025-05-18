@@ -49,20 +49,58 @@ type BlockInfo = {
     h: number
 }
 
-const tokenScript = `decodeURIComponent(document.cookie.match(/token_meian_plus=([^;]+)/).at(1)).replaceAll('"', '');`;
+/**
+ * A basic oAuth token manager with MeianPlus specific business logic
+ */
+class TokenProvider {
+
+    #token: string = null;
+
+    constructor(private readonly clientURI: URL) { }
+
+    /**
+     * Extract the token directly from the website (e.g., after login/logout through manual website interaction)
+     */
+    public async UpdateToken() {
+        try {
+            this.#token = await FetchWindowScript<string>(new Request(this.clientURI), `(async () => (decodeURIComponent((await cookieStore.get('token_meian_plus')).value).replaceAll('"', '')))();`) ?? null;
+        } catch (error) {
+            console.warn('UpdateToken()', error);
+            this.#token = null;
+        }
+    }
+
+    /**
+     * Determine the _Bearer_ extracted from the current token and add it as authorization header to the given {@link init} headers (replacing any existing authorization header).
+     * In case the _Bearer_ could not be extracted from the current token the authorization header will not be added/replaced.
+     */
+    public async ApplyAuthorizationHeader(init: HeadersInit): Promise<HeadersInit> {
+        const headers = new Headers(init);
+        if (this.#token) {
+            headers.set('Authorization', 'Bearer ' + this.#token);
+        }
+        return headers;
+    }
+}
 
 export default class extends DecoratableMangaScraper {
-    private token: string = undefined;
+    private readonly tokenProvider: TokenProvider;
     private readonly apiUrl = 'https://api.meian-plus.fr/v1/';
     private readonly imageCDN = 'https://ebook.meian-plus.fr/';
     private readonly scramblingMatrix = new Array(100).fill(null).map((_, index) => [(index / 10 >> 0) + 1, (index % 10 >> 0) + 1]);
 
     public constructor() {
         super('meianplus', 'Meian Plus', 'https://www.meian-plus.fr', Tags.Media.Manga, Tags.Language.French, Tags.Source.Official);
+        this.tokenProvider = new TokenProvider(this.URI);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        // TODO: Update the token whenever the user performs a login/logout through manual website interaction
+        await this.tokenProvider.UpdateToken();
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -130,19 +168,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, baseUrl: string = this.apiUrl): Promise<T> {
-        if (baseUrl === this.imageCDN) {
-            this.token = await FetchWindowScript(new Request(this.URI), tokenScript, 2500);
-        }
-
         const request = new Request(new URL(endpoint, baseUrl), {
-            headers: {
+            headers: await this.tokenProvider.ApplyAuthorizationHeader({
                 Accept: 'application/json, text/plain, */*',
-                Authorization: this.token ? `Bearer ${this.token}` : null,
                 Origin: this.URI.origin,
                 Referer: this.URI.href
-            }
+            })
         });
-
         const response = await Fetch(request);
         const text = await response.text();
         return JSON.parse(text.replace(/^\)\]}',/, '')) as T;
