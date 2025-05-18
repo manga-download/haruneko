@@ -28,8 +28,10 @@ async function CloseSplashScreen(target: puppeteer.Target) {
     while(!url?.startsWith('http')) {
         await delay(250);
         url = page?.url();
+        // TODO: leave after timeout?
     }
     if(url && /splash.html/i.test(url)) {
+        page?.removeAllListeners();
         await page?.close();
     }
 }
@@ -68,7 +70,7 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectElectron(),
-        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL, '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu' ],
+        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu'/*, '--trace-warnings'*/, '--origin=' + AppURL ],
         userDataDir: userDir,
         dumpio: true,
     });
@@ -119,13 +121,15 @@ export async function teardown() {
     const pages = await browser.pages();
     for(const page of pages) {
         try {
+            page.removeAllListeners();
             await page.close();
         } catch(error) {
             console.warn(new Date().toISOString(), '=>', 'Failed to close page:', page?.url());
         }
     }
     try {
-       await browser.close(); 
+        browser.removeAllListeners();
+        await browser.close(); 
     } catch(error) {
         console.warn(new Date().toISOString(), '=>', 'Failed to close browser');
     }
