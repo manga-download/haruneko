@@ -68,7 +68,7 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectElectron(),
-        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL, '--ignore-certificate-errors' ],
+        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL, '--ignore-certificate-errors', '--no-sandbox' ],
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
