@@ -67,7 +67,11 @@ export function SetupBlinkEvasions(browser: Browser, ...evasions: Evasion[]) {
     browser.on('targetcreated', async (target: Target) => {
         if(target.type() === TargetType.PAGE) {
             const page = await target.page();
-            await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
+            try {
+                await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
+            } catch(error) {
+                //console.warn(error);
+            }
         }
     });
 }
