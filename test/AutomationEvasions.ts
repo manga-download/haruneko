@@ -48,10 +48,12 @@ export async function EvadeWebDriverDetection(page: Page) {
 export async function EvadeChromeDevToolProtocolDetection(page: Page) {
     await page.evaluateOnNewDocument(`
         ${conceal}
+        //conceal(console, 'clear', () => {});
         conceal(console, 'log', () => {});
         conceal(console, 'warn', () => {});
         conceal(console, 'error', () => {});
         conceal(console, 'debug', () => {});
+        conceal(console, 'table', () => {});
     `);
 }
 
