@@ -115,8 +115,18 @@ export async function setup() {
 
 export async function teardown() {
     const pages = await browser.pages();
-    for(const page of pages) await page.close();
-    await browser.close();
+    for(const page of pages) {
+        try {
+            await page.close();
+        } catch(error) {
+            console.warn(new Date().toISOString(), '=>', 'Failed to close page:', page?.url());
+        }
+    }
+    try {
+       await browser.close(); 
+    } catch(error) {
+        console.warn(new Date().toISOString(), '=>', 'Failed to close browser');
+    }
     switch (process.platform) {
         case 'win32':
             await new Promise(resolve => exec(`taskkill /pid ${server.pid} /T /F`, resolve));
