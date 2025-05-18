@@ -1,8 +1,8 @@
-import { Tags } from '../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './KuManga.webp';
 import * as Common from './decorators/Common';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
-import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, Manga, Page, type MangaPlugin, type Chapter } from '../providers/MangaPlugin';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIMangas = {
     code: number,
@@ -28,10 +28,29 @@ const getTokenScript = `
         const tokenIdentifier = data.replace(/=/g, 'k');
         const tokenAttribute = btoaReverse(data).replace(/=/g, 'k').toLowerCase();
         resolve(document.getElementById(tokenIdentifier).getAttribute(tokenAttribute));
-    })
+    });
 `;
 
-@Common.PagesSinglePageJS(pageScript, 2000)
+const chapterScript = `
+    new Promise (resolve => {
+        const chapters = [...document.querySelectorAll('a.media-chapter__link')].map(chapter => {
+            return {
+                id : chapter.pathname,
+                title: chapter.innerText.trim()
+            };
+        });
+        OTHER_CHAPTERS.forEach(chapter => {
+            chapters.push({
+                id : '/manga/'+ UMconfig.id+ '/capitulo/'+ chapter.NumCap,
+                title: ['Capítulo', chapter.NumCap, (chapter.title ?? '')].join(' ').trim()
+            });
+        });
+        resolve (chapters);
+    });
+`;
+
+@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'h1.media-name__main', Common.ElementLabelExtractor('small,div,span'))
+@Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -41,15 +60,6 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/manga/\\d+/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const title = (await FetchCSS<HTMLHeadingElement>(new Request(url), 'div.title_container h1')).at(0).textContent.trim();
-        return new Manga(this, provider, url.match(/\/manga\/(\d+)/)[1], title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -76,25 +86,20 @@ export default class extends DecoratableMangaScraper {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 Origin: this.URI.origin,
-                Referrer: new URL(`/mangalist?&page=${page}`, this.URI).href
+                Referer: new URL(`/mangalist?&page=${page}`, this.URI).href,
+                'X-Requested-With': 'XMLHttpRequest'
             }
         });
 
         const { code, contents } = await FetchJSON<APIMangas>(request);
-        return ( code === 200 ? contents : [] ).map(manga => new Manga(this, provider, manga.id.toString(), manga.name.trim()));
+        return (code === 200 ? contents.filter(item => item.name) : []).map(manga => new Manga(this, provider, `/manga/${manga.id}/${manga.slug}`, manga.name.trim()));
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number) {
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`/manga/${manga.Identifier}/p/${page}`, this.URI)), 'div.media-body h5 > a');
-        return data.map(element => new Chapter(this, manga, element.pathname.replace('/c/', '/leer/'), element.text.replace(manga.Title, '').trim().replace(/ -$/, '')));
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const realUrl = (await Fetch(new Request(new URL(chapter.Identifier, this.URI), {
+            method: 'HEAD'
+        }))).url.replace('/c/', '/leer/');
+        const pages = await FetchWindowScript<string[]>(new Request(new URL(realUrl)), pageScript, 500);
+        return pages.map(page => new Page(this, chapter, new URL(page), { Referer: realUrl }));
     }
 }
