@@ -1,4 +1,3 @@
-/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
@@ -7,8 +6,8 @@ new TestFixture({
         title: 'Reset Scans'
     },
     container: {
-        url: 'https://rspro.xyz/manga/stuck-in-the-tower/',
-        id: JSON.stringify({ post: '6418', slug: '/manga/stuck-in-the-tower/' }),
+        url: 'https://reset-scans.org/manga/stuck-in-the-tower/',
+        id: JSON.stringify({ post: '162', slug: '/manga/stuck-in-the-tower/' }),
         title: 'Stuck in the Tower'
     },
     child: {
@@ -17,8 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 275_130,
+        size: 259_130,
         type: 'image/webp'
     }
 }).AssertWebsite();
-*/
