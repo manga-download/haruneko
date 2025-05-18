@@ -73,7 +73,7 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         dumpio: true,
     });
     browser.on('targetcreated', CloseSplashScreen);
-    SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
+    //SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
 
     const start = Date.now();
     while(Date.now() - start < 7500) {
