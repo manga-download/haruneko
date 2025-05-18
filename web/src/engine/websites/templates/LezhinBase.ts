@@ -19,7 +19,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 function LoginScript(username: string, password: string): string {
     return `
         new Promise((resolve, reject) => {
-            if (document.cookie.split(';').some(cookie => cookie.split('=')[0].trim() === 'RSESSION')) revolve()
+            if (!window.location.pathname.endsWith('/login')) resolve()
             else {
                 const form = $('form#email');
                 form.find('input#login-email').val('${username}');
@@ -34,11 +34,6 @@ function LoginScript(username: string, password: string): string {
             }
         });
     `;
-}
-
-type LZConfig = {
-    contentsCdnUrl: string
-    token: string
 }
 
 type APIMangasList = {
@@ -110,9 +105,69 @@ type TPiece = {
     width: number
 }
 
+type TPieceData = {
+    from: TPiece,
+    to: TPiece
+}
+
 type TDimensions = {
     width: number
     height: number,
+}
+
+/**
+ * A basic oAuth token manager with Lezhin specific business logic
+ */
+class TokenProvider {
+
+    #token: string = null;
+    #userID: string = null;
+
+    constructor(private readonly clientURI: URL) { }
+
+    /**
+     * Extract the token directly from the website (e.g., after login/logout through manual website interaction)
+     */
+    public async UpdateToken() {
+        const script = `
+            new Promise(resolve => {
+                const matches = document.documentElement.innerHTML.match(/"id.*:(\\d+),.*accessToken.*([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})/);
+                resolve ({
+                    userID : matches?.at(1),
+                    token : matches?.at(2)
+                });
+            });
+        `;
+        //const script = `(window.__LZ_CONFIG__?.token ?? document.documentElement.innerHTML.match(/accessToken.*([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})/)?.at(1))`;
+        try {
+            const { token, userID } = await FetchWindowScript<{ userID: string, token: string }>(new Request(this.clientURI), script);
+            this.#token = token;
+            this.#userID = userID;
+        } catch (error) {
+            console.warn('UpdateToken()', error);
+            this.#token = null;
+        }
+    }
+
+    get UserId() {
+        return this.#userID;
+    }
+
+    public HasToken(): boolean {
+        return !!this.#token;
+    }
+
+    /**
+     * Determine the _Bearer_ extracted from the current token and add it as authorization header to the given {@link init} headers (replacing any existing authorization header).
+     * In case the _Bearer_ could not be extracted from the current token the authorization header will not be added/replaced.
+     */
+    public async ApplyAuthorizationHeader(init: HeadersInit): Promise<HeadersInit> {
+        const headers = new Headers(init);
+        if (this.#token) {
+            headers.set('Authorization', 'Bearer ' + this.#token);
+        }
+        return headers;
+    }
 }
 
 @Common.ChaptersSinglePageCSS('ul[class*=episodeListContents__list] li a', ChapterExtractor)
@@ -120,16 +175,15 @@ export class LezhinBase extends DecoratableMangaScraper {
     protected locale: string;
     private readonly apiUrl = 'https://www.lezhinus.com/lz-api/v2/';
     private cdnURI: string;
-    private token?: string;
     protected languagePath: string;
+    private tokenProvider: TokenProvider;
 
     public constructor(identifier: string, name: string, url: string, tags: Tag[]) {
         super(identifier, name, url, ...tags);
-        this.token = undefined;
-
         this.Settings.username = new Text('username', W.Plugin_Lezhin_Settings_Username, W.Plugin_Lezhin_Settings_UsernameInfo, '');
         this.Settings.password = new Secret('password', W.Plugin_Lezhin_Settings_Password, W.Plugin_Lezhin_Settings_PasswordInfo, '');
         this.Settings.forceJPEG = new Check('forceJPEG', W.Plugin_Lezhin_Settings_Force_JPEG, W.Plugin_Lezhin_Settings_Force_JPEGInfo, false);
+        this.tokenProvider = new TokenProvider(new URL('./account/', this.URI));
     }
 
     public override get Icon() {
@@ -137,7 +191,10 @@ export class LezhinBase extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        await this.InitializeAccount();
+        await this.LoginAttempt();
+        await this.tokenProvider.UpdateToken();
+        await this.UpdateCDN();
+        await this.ForceLanguage();
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -161,7 +218,7 @@ export class LezhinBase extends DecoratableMangaScraper {
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<MangasList> {
         const mangasPerPage: number = 500;
 
-        const uri = new URL('contents', this.apiUrl);
+        const uri = new URL('./contents', this.apiUrl);
         uri.search = new URLSearchParams({
             menu: 'general',
             limit: mangasPerPage.toString(),
@@ -169,18 +226,16 @@ export class LezhinBase extends DecoratableMangaScraper {
             order: 'popular'
         }).toString();
 
-        const request = this.CreateRequest(uri, {
+        const { data, hasNext } = await this.FetchAPI<APIMangasList>(uri, {
             'X-LZ-Adult': '2',
             'X-LZ-AllowAdult': 'true',
         });
 
-        const { data, hasNext } = await FetchJSON<APIMangasList>(request);
         const mangas = data.map(manga => new Manga(this, provider, new URL(`/${this.languagePath}/comic/${manga.alias}`, this.URI).pathname, manga.title.trim()));
         return { mangas, hasNext };
     }
 
     public async FetchPages(chapter: Chapter): Promise<Page<EpisodeParameters>[]> {
-        await this.InitializeAccount();
 
         const parameters: EpisodeParameters = {
             episodeID: undefined,
@@ -191,16 +246,19 @@ export class LezhinBase extends DecoratableMangaScraper {
             subscribed: false
         };
 
-        //if we arelogged check if purchased
-        if (this.token) {
+        //if we are logged check if purchased
+        if (this.tokenProvider.HasToken) {
             const uri = new URL(`https://www.lezhinus.com/lz-api/contents/v3/${chapter.Parent.Identifier.split('/').at(-1)}/episodes/${chapter.Identifier.split('/').at(-1)}`);
             uri.searchParams.set('referrerViewType', 'NORMAL');
             uri.searchParams.set('objectType', 'comic');
-            const { data: { episode: { isCollected } } } = await FetchJSON<APIEpisode>(this.CreateRequest(uri, { 'X-LZ-Adult': '2', Referrer: new URL(chapter.Identifier, this.URI).href }));
+            const { data: { episode: { isCollected } } } = await this.FetchAPI<APIEpisode>(uri, {
+                'X-LZ-Adult': '2',
+                Referrer: new URL(chapter.Identifier, this.URI).href
+            });
             parameters.purchased = !!isCollected;
         }
 
-        const uri = new URL('inventory_groups/comic_viewer', this.apiUrl);
+        const uri = new URL('./inventory_groups/comic_viewer', this.apiUrl);
         uri.search = new URLSearchParams({
             platform: 'web',
             store: 'web',
@@ -209,13 +267,13 @@ export class LezhinBase extends DecoratableMangaScraper {
             preload: 'false',
             type: 'comic_episode'
         }).toString();
-        const { data: { extra: { comic, episode, subscribed } } } = await FetchJSON<APIPages>(this.CreateRequest(uri));
+        const { data: { extra: { comic, episode, subscribed } } } = await this.FetchAPI<APIPages>(uri);
 
         parameters.episodeID = episode.id;
         parameters.comicID = episode.idComic;
         parameters.updatedAt = episode.updatedAt;
         parameters.shuffled = !!comic.metadata?.imageShuffle;
-        parameters.subscribed= subscribed;
+        parameters.subscribed = subscribed;
 
         const extension = this.Settings.forceJPEG.Value ? '.jpg' : '.webp';
         const pages = episode.pagesInfo ?? episode.scrollsInfo;
@@ -223,126 +281,104 @@ export class LezhinBase extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<EpisodeParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const parameters = page.Parameters;
-        const tokenURI = new URL('cloudfront/signed-url/generate', this.apiUrl);
+        const { comicID, episodeID, purchased, updatedAt, shuffled } = page.Parameters;
+        const tokenURI = new URL('./cloudfront/signed-url/generate', this.apiUrl);
         tokenURI.search = new URLSearchParams({
-            contentId: parameters.comicID.toString(),
-            episodeId: parameters.episodeID.toString(),
-            purchased: parameters.purchased.toString(),
+            contentId: comicID.toString(),
+            episodeId: episodeID.toString(),
+            purchased: purchased.toString(),
             q: '40',
             firstCheckType: 'P',
         }).toString();
 
-        let data: APIKeyPair = undefined;
+        let keyPair: APIKeyPair = undefined;
         try {
-            data = await FetchJSON<APIKeyPair>(this.CreateRequest(tokenURI));
+            keyPair = await this.FetchAPI<APIKeyPair>(tokenURI);
         } catch {
             throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
         }
         //update image url
         page.Link.search = new URLSearchParams({
-            purchased: parameters.purchased.toString(),
+            purchased: purchased.toString(),
             q: '40',
-            updated: parameters.updatedAt.toString(),
-            Policy: data.data.Policy,
-            Signature: data.data.Signature,
-            'Key-Pair-Id': data.data['Key-Pair-Id']
+            updated: updatedAt.toString(),
+            Policy: keyPair.data.Policy,
+            Signature: keyPair.data.Signature,
+            'Key-Pair-Id': keyPair.data['Key-Pair-Id']
         }).toString();
 
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        return !parameters.shuffled ? blob : DeScramble(blob, async (image, ctx) => {
-
+        return !shuffled ? blob : DeScramble(blob, async (image, ctx) => {
             const NUM_COL_ROW = 5;
-            const scrambleTableArray = CreateSuperArray(AddLength(GenerateScrambleTable(parameters.episodeID, NUM_COL_ROW)));
-            const arrayLength = Math.floor(Math.sqrt(scrambleTableArray.length));
-            const dimensions: TDimensions = { width: image.width, height: image.height };
-
-            const piecesData = scrambleTableArray.map(entry => {
-                return {
-                    from: CalculatePiece(dimensions, arrayLength, parseInt(entry[0])),
-                    to: CalculatePiece(dimensions, arrayLength, entry[1])
-                };
-            }).filter(entry => {
-                return !!entry.from && !!entry.to;
-            });
-
+            const piecesData = new LehzinUnscrambler(episodeID, NUM_COL_ROW, image).GetPieces();
             for (const piece of piecesData) {
                 ctx.drawImage(image, piece.to.left, piece.to.top, piece.to.width, piece.to.height, piece.from.left, piece.from.top, piece.from.width, piece.from.height);
             }
-
         });
 
     }
 
-    private async GetLzConfig(): Promise<LZConfig> {
-        /*/__LZ_CONFIG__ is not available on frontpage anymore
-        Therefore we get it from the /account page. If we are logged it works.
-        In case we are not logged, /account redirect to /login and __LZ_CONFIG__ is still available.
-        */
-
-        const LzConfigScript = `
-            new Promise ( resolve => {
-                if (window.__LZ_CONFIG__) resolve(window.__LZ_CONFIG__)
-                else {
-                    resolve({
-                        contentsCdnUrl : JSON.parse(document.querySelector('#lz-static').dataset.env).CONTENT_CDN_URL,
-                        token : document.documentElement.innerHTML.match(/accessToken.*([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})/)?.at(1)
-                    });
-                }
-            });
-        `;
-
-        return FetchWindowScript<LZConfig>(this.CreateRequest(new URL('/account', this.URI)), LzConfigScript, 2500);
-    }
-
-    private async InitializeAccount() {
-        const { contentsCdnUrl, token } = await this.GetLzConfig();
-
-        //refresh token, in any case
-        this.token = token;
-        this.cdnURI = contentsCdnUrl;
-
+    private async LoginAttempt(): Promise<void> {
         //if token is defined , or we miss credential infos there is nothing to do.
-        if (this.token || !this.Settings.username.Value || !this.Settings.password.Value) {
+        if (this.tokenProvider.HasToken() || !this.Settings.username.Value || !this.Settings.password.Value) {
             return;
         }
         const username = this.Settings.username.Value as string;
         const password = (this.Settings.password.Value as string).replaceAll("'", "\\'");//Escape password because its injected between single quotes
 
-        //attempt login (that works)
         await FetchWindowScript(new Request(new URL(`/${this.languagePath}/login`, this.URI)), LoginScript(username, password), 1500);
-
-        this.token = (await this.GetLzConfig()).token;
-
-        //force Language
-        await Fetch(this.CreateRequest(new URL(`/${this.languagePath}/locale/${this.locale}`, this.URI)));
-
     }
 
-    private CreateRequest(url: URL, additionalHeaders: Record<string, string> = {}): Request {
-        const headers: HeadersInit = {
-            Referer: this.URI.origin,
-            Cookie: `x-lz-locale=${this.locale.replace('-', '_')}`,
-            'x-lz-locale': this.locale,
-            ...additionalHeaders,
-        };
-        if (this.token) headers['authorization'] = ` Bearer ${this.token}`;
-        return new Request(url, {
-            method: 'GET',
-            headers: headers
+    private async UpdateCDN(): Promise<void> {
+        const script = `(window.__LZ_CONFIG__?.contentsCdnUrl ?? JSON.parse(document.querySelector('#lz-static').dataset.env).CONTENT_CDN_URL)`;
+        try {
+            this.cdnURI = await FetchWindowScript<string>(new Request(new URL('./account', this.URI)), script) ?? null;
+        } catch (error) {
+            console.warn('UpdateCDN()', error);
+            this.cdnURI = null;
+        }
+    }
+
+    private async ForceLanguage(): Promise<void> {
+        if (!this.tokenProvider.HasToken) return;
+        await Fetch(new Request(new URL(`./api/my-preference?userId=${this.tokenProvider.UserId}&lng=${this.languagePath}`, this.URI)));
+    }
+
+    private async FetchAPI<T extends JSONElement>(url: URL, additionalHeaders: HeadersInit = {}): Promise<T> {
+        const request = new Request(url, {
+            headers: await this.tokenProvider.ApplyAuthorizationHeader({
+                Origin: this.URI.origin,
+                Referer: this.URI.href,
+                'x-lz-locale': this.locale,
+                ...additionalHeaders
+            })
         });
+        return FetchJSON<T>(request);
     }
 
 }
 
-function GenerateScrambleTable(episodeid: number, numColAndRows: number): number[] {
-    return episodeid ? new LezhinRandomizer(episodeid, numColAndRows).Get() : [];
-}
-class LezhinRandomizer {
-
+class LehzinUnscrambler {
     private state: bigint;
-    private order: number[];
+    private scrambleTable: number[];
     private seed: number;
+    private size: TDimensions = { width: 0, height: 0 };
+
+    constructor(episodeId: number, numColAndRows: number, image: ImageBitmap) {
+        this.seed = episodeId;
+        this.state = BigInt(this.seed);
+        const numPieces = numColAndRows * numColAndRows;
+        const order = Array.from({ length: numPieces }, function (_, length) { return length; });
+        for (let index = 0; index < order.length; index++) {
+            const s = this.Random(numPieces);
+            const u = order[index];
+            order[index] = order[s];
+            order[s] = u;
+        }
+        this.scrambleTable = order;
+        this.size.width = image.width;
+        this.size.height = image.height;
+    }
 
     private Random(t: number): number {
         const BigNumber = BigInt('18446744073709551615');
@@ -355,64 +391,61 @@ class LezhinRandomizer {
         return Number((e >> BigInt(32)) % BigInt(t));
     }
 
-    public Get(): number[] {
-        return this.order;
+    private AddLength(array: number[]): number[] {
+        return [].concat(array, [
+            array.length,
+            array.length + 1
+        ]);
     }
 
-    constructor(episodeId: number, numColAndRows: number) {
-        this.seed = episodeId;
-        this.state = BigInt(this.seed);
+    private CreateSuperArray(array: number[]): [string, number][] {
+        //generate "0", "arraylength" array
+        const indexArray = Array(array.length).fill(0).map((_, index) => index.toString());
+        const resultArray = [];
+        indexArray.map(element => resultArray.push([element, array[element]]));
+        return resultArray;
+    }
+
+    private CalculatePiece(imageDimensions: TDimensions, numColAndRows: number, pieceIndex: number): TPiece {
+        let width: number;
+        let height: number;
         const numPieces = numColAndRows * numColAndRows;
-        const order = Array.from({ length: numPieces }, function (_, length) { return length; });
-        for (let index = 0; index < order.length; index++) {
-            const s = this.Random(numPieces);
-            const u = order[index];
-            order[index] = order[s];
-            order[s] = u;
-        }
-        this.order = order;
+        return pieceIndex < numPieces ? (
+            width = Math.floor(imageDimensions.width / numColAndRows),
+            height = Math.floor(imageDimensions.height / numColAndRows),
+            {
+                left: pieceIndex % numColAndRows * width,
+                top: Math.floor(pieceIndex / numColAndRows) * height,
+                width: width,
+                height: height
+            }
+        ) : pieceIndex === numPieces ?
+            0 === (width = imageDimensions.width % numColAndRows) ? null : {
+                left: imageDimensions.width - width,
+                top: 0,
+                width: width,
+                height: imageDimensions.height
+            }
+            :
+            0 === (height = imageDimensions.height % numColAndRows) ? null : {
+                left: 0,
+                top: imageDimensions.height - height,
+                width: imageDimensions.width - imageDimensions.width % numColAndRows,
+                height: height
+            };
     }
-}
 
-function AddLength(array: number[]): number[] {
-    return [].concat(array, [
-        array.length,
-        array.length + 1
-    ]);
-}
-function CreateSuperArray(array: number[]): [string, number][] {
-    //generate "0", "arraylength" array
-    const indexArray = Array(array.length).fill(0).map((_, index) => index.toString());
-    const resultArray = [];
-    indexArray.map(element => resultArray.push([element, array[element]]));
-    return resultArray;
-}
-
-function CalculatePiece(imageDimensions: TDimensions, numColAndRows: number, pieceIndex: number): TPiece {
-    let width: number;
-    let height: number;
-    const numPieces = numColAndRows * numColAndRows;
-    return pieceIndex < numPieces ? (
-        width = Math.floor(imageDimensions.width / numColAndRows),
-        height = Math.floor(imageDimensions.height / numColAndRows),
-        {
-            left: pieceIndex % numColAndRows * width,
-            top: Math.floor(pieceIndex / numColAndRows) * height,
-            width: width,
-            height: height
-        }
-    ) : pieceIndex === numPieces ?
-        0 === (width = imageDimensions.width % numColAndRows) ? null : {
-            left: imageDimensions.width - width,
-            top: 0,
-            width: width,
-            height: imageDimensions.height
-        }
-        :
-        0 === (height = imageDimensions.height % numColAndRows) ? null : {
-            left: 0,
-            top: imageDimensions.height - height,
-            width: imageDimensions.width - imageDimensions.width % numColAndRows,
-            height: height
-        };
+    public GetPieces(): TPieceData[] {
+        const scrambleTableArray = this.CreateSuperArray(this.AddLength(this.scrambleTable));
+        const arrayLength = Math.floor(Math.sqrt(scrambleTableArray.length));
+        const piecesData = scrambleTableArray.map(entry => {
+            return {
+                from: this.CalculatePiece(this.size, arrayLength, parseInt(entry[0])),
+                to: this.CalculatePiece(this.size, arrayLength, entry[1])
+            };
+        }).filter(entry => {
+            return !!entry.from && !!entry.to;
+        });
+        return piecesData;
+    }
 }
