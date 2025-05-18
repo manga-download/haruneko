@@ -6,7 +6,7 @@ import * as puppeteer from 'puppeteer-core';
 import {
     SetupBlinkEvasions,
     EvadeWebDriverDetection,
-    EvadeChromeDevToolProtocolDetection
+    //EvadeChromeDevToolProtocolDetection
 } from './AutomationEvasions';
 
 export const AppURL = 'https://localhost:5000/';
@@ -72,7 +72,7 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         userDataDir: userDir
     });
     browser.on('targetcreated', CloseSplashScreen);
-    SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
+    SetupBlinkEvasions(browser, EvadeWebDriverDetection/*, EvadeChromeDevToolProtocolDetection*/);
 
     const start = Date.now();
     while(Date.now() - start < 7500) {
