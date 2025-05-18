@@ -102,8 +102,9 @@ export async function setup() {
     server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], {
         cwd: path.resolve('web'),
         stdio: [ 'pipe', process.stdout, process.stderr ],
-        shell : process.platform === 'win32',
+        shell: process.platform === 'win32',
     });
+    console.log(new Date().toISOString(), '=>', `Started Server (pid: ${server.pid}):`, server.exitCode === null);
     try {
         browser = await LaunchElectron();
         process.env.browserWS = browser.wsEndpoint();
