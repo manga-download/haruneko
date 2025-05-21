@@ -9,6 +9,7 @@ import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 
 const styles: ElementStyles = css`
 
+/*
     :host {
         z-index: 2147483647;
     }
@@ -24,43 +25,33 @@ const styles: ElementStyles = css`
         grid-template-rows: max-content minmax(0, 1fr) max-content;
     }
 
-    #header {
-        text-align: center;
-        font-weight: bold;
-        font-size: large;
-    }
-
     #content {
         align-self: stretch;
         overflow-x: hidden;
         overlow-y: auto;
     }
-
+*/
     #settings {
+        display: grid;
         gap: var(--spacingHorizontalS);
         padding-top: var(--spacingHorizontalS);
         padding-bottom: var(--spacingHorizontalS);
-        display: grid;
         align-items: center;
         grid-template-columns: max-content max-content;
         align-items: center;
         align-content: center;
         justify-content: space-evenly;
-        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
-        border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        overflow-x: hidden;
     }
 
-    #content .input > * {
+    #settings .input > * {
         display: block;
     }
-
-    #footer {
-        text-align: center;
-    }
-
+/*
     fluent-select::part(listbox) {
         max-height: 200px;
     }
+*/
 `;
 
 const templateText: ViewTemplate<Text> = html`
@@ -112,19 +103,12 @@ const templateSettingRow: ViewTemplate<ISetting> = html`
 `;
 
 const template: ViewTemplate<SettingsDialog> = html`
-    <fluent-dialog trap-focus type="modal" ${ref('dialog')}>
+    <fluent-dialog type="modal" ${ref('dialog')}>
         <fluent-dialog-body>
             <div slot="title">${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
-            <div id="dialog">
-                <div id="header">${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
-                <div id="content">
-                    <div id="settings">
-                        ${repeat(model => model.settings, templateSettingRow)}
-                    </div>
-                </div>
-                <div id="footer">
-                    <fluent-button id="settings-close-button" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}</fluent-button>
-                </div>
+            <fluent-button slot="action" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}</fluent-button>
+            <div id="settings">
+                ${repeat(model => model.settings, templateSettingRow)}
             </div>
         </fluent-dialog-body>
     </fluent-dialog>

@@ -1,4 +1,5 @@
 import '@fluentui/web-components/dialog.js';
+import '@fluentui/web-components/dialog-body.js';
 import '@fluentui/web-components/divider.js';
 import '@fluentui/web-components/menu.js';
 import '@fluentui/web-components/menu-list.js';

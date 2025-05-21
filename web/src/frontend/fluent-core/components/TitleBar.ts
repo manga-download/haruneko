@@ -148,7 +148,7 @@ export class TitleBar extends FASTElement {
     @observable settings = false;
 
     public ShowGlobalSettingsDialog() {
-        this.S.ShowSettingsDialog(...HakuNeko.SettingsManager.OpenScope());
+        this.S.ShowSettingsDialog(...this.S.GlobalSettings);
     }
 
     public async ImportBookmarks() {
