@@ -240,6 +240,7 @@ export { default as Kanjiku } from './Kanjiku';
 export { default as KanMan } from './KanMan';
 export { default as Kanzenin } from './Kanzenin';
 export { default as Katakomik } from './Katakomik';
+export { default as Kedi } from './Kedi';
 export { default as KingOfScans } from './KingOfScans';
 export { default as KingOfShojo } from './KingOfShojo';
 export { default as Kiryuu } from './Kiryuu';
