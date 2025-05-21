@@ -3,7 +3,7 @@
 new TestFixture({
     plugin: {
         id: 'mangaship',
-        title: 'Manga Ship'
+        title: 'Manga Bahcesi'
     },
     container: {
         url: 'https://mangabahcesi.com/Tr/Manga/undead-unluck',
