@@ -2,7 +2,7 @@ import { observable } from '@microsoft/fast-element';
 import { DI, Registration } from '@microsoft/fast-element/di.js';
 import { webLightTheme, webDarkTheme } from '@fluentui/tokens';
 import { setTheme } from '@fluentui/web-components';
-import { type ISetting, Check, Choice } from '../../../engine/SettingsManager';
+import { type ISetting, Check, Choice, type Directory } from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
 import { FrontendResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
@@ -34,10 +34,12 @@ export const Themes = new Map<string, typeof ThemeWebLight>([
 // TODO: Split into SettingService and LocaleService
 class StateManager {
 
-    private readonly settings = HakuNeko.SettingsManager.OpenScope(SettingKeys.Scope);
+    public readonly GlobalSettings = HakuNeko.SettingsManager.OpenScope();
+    private readonly frontendSettings = HakuNeko.SettingsManager.OpenScope(SettingKeys.Scope);
 
     constructor() {
-        HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => this.Locale = GetLocale());
+        this.SettingMediaDirectory = this.GlobalSettings.Get<Directory>(GlobalKey.MediaDirectory);
+        this.GlobalSettings.Get<Choice>(GlobalKey.Language).Subscribe(() => this.Locale = GetLocale());
         this.settingThemeChoice.Subscribe(value => this.SettingSelectedTheme = Themes.get(value));
         this.settingPanelBookmarksCheck.Subscribe(value => this.SettingPanelBookmarks = value);
         this.settingPanelDownloadsCheck.Subscribe(value => this.SettingPanelDownloads = value);
@@ -45,7 +47,7 @@ class StateManager {
     }
 
     private async Initialize() {
-        await this.settings.Initialize(
+        await this.frontendSettings.Initialize(
             this.settingThemeChoice,
             this.settingPanelBookmarksCheck,
             this.settingPanelDownloadsCheck
@@ -55,6 +57,7 @@ class StateManager {
     }
 
     @observable Locale = GetLocale();
+    public readonly SettingMediaDirectory: Directory;
 
     private readonly settingThemeChoice = new Choice(SettingKeys.Theme, R.Frontend_FluentCore_Settings_ThemeMode_Label, R.Frontend_FluentCore_Settings_ThemeMode_Description, ThemeWebLight.key, ThemeWebDark, ThemeWebLight);
     @observable SettingSelectedTheme = Themes.get(this.settingThemeChoice.Value);
