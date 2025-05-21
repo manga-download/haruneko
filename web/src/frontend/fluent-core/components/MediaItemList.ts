@@ -227,7 +227,7 @@ export class MediaItemList extends FASTElement {
             await S.SettingMediaDirectory.EnsureAccess();
         } catch(error) {
             // TODO: Introduce generic UI component to show errors
-            alert(error.message ?? error);
+            return alert(error.message ?? error);
         }
         await HakuNeko.DownloadManager.Enqueue(entry);
     }
