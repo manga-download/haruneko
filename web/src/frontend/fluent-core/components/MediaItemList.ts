@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
 import type { StoreableMediaContainer, MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
-import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
+import { StateManagerService, type StateManager } from '../services/StateManagerService';
 import type { LazyScroll } from './LazyScroll';
 
 //import IconSortNone from '@fluentui/svg-icons/icons/arrow_sort_20_regular.svg?raw';
@@ -139,14 +139,14 @@ function CreateItemTemplate(container: MediaItemList) {
                 <fluent-button
                     icon-only
                     appearance="transparent"
-                    title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
+                    title="${() => container.S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
                     :innerHTML=${() => IconPreview}
                     @click=${(model, _ctx) => /*ctx.parent.parentNode.host*/container.ShowPreview(model)}>
                 </fluent-button>
                 <fluent-button
                     icon-only
                     appearance="transparent"
-                    title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
+                    title="${() => container.S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
                     :innerHTML=${() => IconDownload}
                     @click=${(model, _ctx) => container.Download(/*_ctx.event, */model)}>
                 </fluent-button>
@@ -158,7 +158,7 @@ function CreateItemTemplate(container: MediaItemList) {
 
 const template: ViewTemplate<MediaItemList> = html`
     <div id="header">
-        <div id="title">${() => S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
+        <div id="title">${model => model.S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
         <div id="controls">
             <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
             <fluent-button
@@ -166,7 +166,7 @@ const template: ViewTemplate<MediaItemList> = html`
                 id="button-update-entries"
                 appearance="transparent"
                 class="${model => model.updating.includes(model.Container?.Identifier) ? 'updating' : ''}"
-                title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}"
+                title="${model => model.S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}"
                 ?disabled=${model => !model.Container || model.updating.includes(model.Container?.Identifier)}
                 :innerHTML=${() => IconSynchronize}
                 @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>
@@ -181,6 +181,8 @@ const template: ViewTemplate<MediaItemList> = html`
 
 @customElement({ name: 'fluent-media-item-list', template, styles })
 export class MediaItemList extends FASTElement {
+
+    @StateManagerService S: StateManager;
 
     @observable Container?: MediaContainer<StoreableMediaContainer<MediaItem>>;
     ContainerChanged() {
@@ -224,7 +226,7 @@ export class MediaItemList extends FASTElement {
 
     public async Download(entry: StoreableMediaContainer<MediaItem>) {
         try {
-            await S.SettingMediaDirectory.EnsureAccess();
+            await this.S.SettingMediaDirectory.EnsureAccess();
         } catch(error) {
             // TODO: Introduce generic UI component to show errors
             return alert(error.message ?? error);
