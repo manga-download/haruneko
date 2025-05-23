@@ -14,7 +14,7 @@ type FeedResults = {
     }
 }
 
-export function PageLinkExtractor(image: HTMLImageElement): string {
+function PageLinkExtractor(image: HTMLImageElement): string {
     return image.src.replace(/(\/s(\d+[^/]*)(\/[^/]+$))/, '/s0$3');
 }
 
