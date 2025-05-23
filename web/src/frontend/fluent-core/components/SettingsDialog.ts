@@ -9,57 +9,28 @@ import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 
 const styles: ElementStyles = css`
 
-/*
-    :host {
-        z-index: 2147483647;
-    }
-
-    #dialog {
-        height: 100%;
-        box-sizing: border-box;
-        padding: var(--spacingHorizontalS);
-        gap: var(--spacingHorizontalS);
-        display: grid;
-        align-items: center;
-        grid-template-columns: auto;
-        grid-template-rows: max-content minmax(0, 1fr) max-content;
-    }
-
-    #content {
-        align-self: stretch;
-        overflow-x: hidden;
-        overlow-y: auto;
-    }
-*/
     #settings {
         display: grid;
-        gap: var(--spacingHorizontalS);
-        padding-top: var(--spacingHorizontalS);
-        padding-bottom: var(--spacingHorizontalS);
         align-items: center;
         grid-template-columns: max-content max-content;
-        align-items: center;
-        align-content: center;
-        justify-content: space-evenly;
-        overflow-x: hidden;
+        gap: var(--spacingHorizontalS);
     }
 
-    #settings .input > * {
-        display: block;
-    }
-/*
-    fluent-select::part(listbox) {
+    /* #settings .input {
+        display: contents;
+    } */
+
+    /* fluent-select::part(listbox) {
         max-height: 200px;
-    }
-*/
+    } */
 `;
 
 const templateText: ViewTemplate<Text> = html`
-    <fluent-text-field :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-field>
+    <fluent-text-input type="text" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
 `;
 
 const templateSecret: ViewTemplate<Secret> = html`
-    <fluent-text-field type="password" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-field>
+    <fluent-text-input type="password" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
 `;
 
 const templateNumeric: ViewTemplate<Numeric> = html`
@@ -75,9 +46,11 @@ const templateChoiceOption: ViewTemplate<{key: string, label: string}> = html`
 `;
 
 const templateChoice: ViewTemplate<Choice> = html`
-    <fluent-select :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
-        ${repeat(model => model.Options, templateChoiceOption)}
-    </fluent-select>
+    <fluent-dropdown type="combobox" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
+        <fluent-listbox>
+            ${repeat(model => model.Options, templateChoiceOption)}
+        </fluent-listbox>
+    </fluent-dropdown>
 `;
 
 const templateDirectory: ViewTemplate<Directory> = html`
@@ -88,7 +61,7 @@ const templateDirectory: ViewTemplate<Directory> = html`
     </fluent-text-field>
 `;
 
-const templateSettingRow: ViewTemplate<ISetting> = html`
+/*
     <div title="${model => S.Locale[model.Description]()}">
         ${model => S.Locale[model.Label]()}
     </div>
@@ -100,16 +73,27 @@ const templateSettingRow: ViewTemplate<ISetting> = html`
         ${when(model => model instanceof Choice, templateChoice)}
         ${when(model => model instanceof Directory, templateDirectory)}
     </div>
+*/
+const templateSettingRow: ViewTemplate<ISetting> = html`
+    <div title=${model => S.Locale[model.Description]()}>${model => S.Locale[model.Label]()}</div>
+    ${when(model => model instanceof Text, templateText)}
+    ${when(model => model instanceof Secret, templateSecret)}
+    ${when(model => model instanceof Numeric, html`<div>[Numeric]</div>`)}
+    ${when(model => model instanceof Check, templateCheck)}
+    ${when(model => model instanceof Choice, html`<div>[Choice]</div>`)}
+    ${when(model => model instanceof Directory, html`<div>[Directory]</div>`)}
 `;
 
 const template: ViewTemplate<SettingsDialog> = html`
     <fluent-dialog type="modal" ${ref('dialog')}>
         <fluent-dialog-body>
             <div slot="title">${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
-            <fluent-button slot="action" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}</fluent-button>
             <div id="settings">
                 ${repeat(model => model.settings, templateSettingRow)}
             </div>
+            <fluent-button slot="action" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>
+                ${ model => model.S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label() }
+            </fluent-button>
         </fluent-dialog-body>
     </fluent-dialog>
 `;

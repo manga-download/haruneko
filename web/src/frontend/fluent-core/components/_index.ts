@@ -9,6 +9,7 @@ import '@fluentui/web-components/anchor-button.js';
 import '@fluentui/web-components/button.js';
 import '@fluentui/web-components/slider.js';
 import '@fluentui/web-components/checkbox.js';
+import '@fluentui/web-components/dropdown.js';
 //import '@fluentui/web-components/field.js';
 import '@fluentui/web-components/text-input.js';
 import '@fluentui/web-components/progress-bar.js';
