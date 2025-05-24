@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'anisamanga',
         title: 'Anisa manga'
     },
     container: {
-        url: 'https://anisamanga.com/manga/pumpkin-night/',
-        id: JSON.stringify({ post: '469', slug: '/manga/pumpkin-night/' }),
-        title: 'Pumpkin Night'
+        url: 'https://anisamanga.net/manga/summer-scent/',
+        id: '/manga/summer-scent/',
+        title: 'Summer Scent'
     },
     child: {
-        id: '/manga/pumpkin-night/bolum-1/',
-        title: 'Bölüm 1'
-    },
+        id: '/summer-scent-bolum-13/',
+        title: 'Bölüm 13'
+    }, /* Need Login
     entry: {
-        index: 0,
-        size: 504_475,
+        index: 1,
+        size: 1_297_242,
         type: 'image/jpeg'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    }*/
+}).AssertWebsite();
