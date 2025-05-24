@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,13 +6,13 @@ new TestFixture({
         title: 'MagusManga'
     },
     container: {
-        url: 'https://magustoon.net/series/01536939fbb/',
-        id: '/series/01536939fbb/',
+        url: 'https://magustoon.org/series/i-became-a-level-999-mastermind-demon-king',
+        id: JSON.stringify({ slug: 'i-became-a-level-999-mastermind-demon-king', id: 200 }),
         title: 'I Became A Level 999 Mastermind Demon King'
     },
     child: {
-        id: '/chapter/01536939fbb-b99c3c5ce14/',
-        title: 'Chapter 25'
+        id: '/series/i-became-a-level-999-mastermind-demon-king/chapter-25',
+        title: '25 : Chapter 25'
     },
     entry: {
         index: 1,
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/
