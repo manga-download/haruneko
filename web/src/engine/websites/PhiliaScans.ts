@@ -8,7 +8,6 @@ import * as Common from './decorators/Common';
 @Common.ChaptersSinglePageCSS('ul li[data-chapter] a:not([href="#"])', Common.AnchorInfoExtractor(false, 'span.coin'))
 @Common.PagesSinglePageCSS('div#ch-images img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
