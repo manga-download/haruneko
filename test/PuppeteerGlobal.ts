@@ -118,7 +118,7 @@ export async function setup() {
 }
 
 export async function teardown() {
-    const pages = await browser.pages();
+    const pages = await browser?.pages() ?? [];
     for(const page of pages) {
         try {
             page.removeAllListeners();
