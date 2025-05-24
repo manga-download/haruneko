@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://visualikigai.udonun.net/series/el-sacerdote-sanador-del-sol/',
+        url: 'https://visualikigai.tutorialesminecraft.net/series/el-sacerdote-sanador-del-sol/',
         id: '/series/el-sacerdote-sanador-del-sol/',
         title: 'El Sacerdote Sanador del Sol'
     },
