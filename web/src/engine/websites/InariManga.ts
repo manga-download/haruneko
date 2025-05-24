@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 export default class extends Kosaku {
 
     public constructor() {
-        super('inarimanga', 'InariManga', 'https://inarimanga.yobest.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('inarimanga', 'InariManga', 'https://inarimanga.yomod.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
