@@ -1,6 +1,5 @@
 import * as puppeteer from 'puppeteer-core';
 import { AppURL } from './PuppeteerGlobal';
-import type { Evasion } from './AutomationEvasions';
 
 export class PuppeteerFixture {
 
@@ -10,10 +9,6 @@ export class PuppeteerFixture {
         await page.setCacheEnabled(false);
         return page;
     });
-
-    private GetBrowser() {
-        return PuppeteerFixture.#browser;
-    }
 
     public GetPage() {
         return PuppeteerFixture.#page;
@@ -26,14 +21,6 @@ export class PuppeteerFixture {
             captureBeyondViewport: true,
             path: `./screenshot_${Date.now().toString(36)}.png`,
         });
-    }
-
-    protected async OpenPage(url: string, ...evasions: Evasion[]): Promise<puppeteer.Page> {
-        const page = await (await this.GetBrowser()).newPage();
-        await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
-        await page.setCacheEnabled(false);
-        await page.goto(url);
-        return page;
     }
 
     protected EvaluateHandle: typeof puppeteer.Page.prototype.evaluateHandle = async (pageFunction, ...args) => {

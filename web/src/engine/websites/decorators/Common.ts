@@ -99,7 +99,6 @@ function GetParentReferer(item: MediaContainer<MediaChild>, base: URL): URL {
  * @param extract - An Extractor to get manga infos
  * @param includeSearch - append Uri.search to the manga identifier
  * @param includeHash - append Uri.hash to the manga identifier
-
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string, extract = DefaultLabelExtractor as LabelExtractor, includeSearch = false, includeHash = false): Promise<Manga> {
     const uri = new URL(url);

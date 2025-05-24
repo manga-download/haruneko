@@ -91,23 +91,28 @@ function UpdatePermissions(session: Electron.Session, appURI: URL) {
 }
 
 async function OpenWindow(): Promise<void> {
-    InitializeMenu();
-    const argv = ParseCLI();
-    const manifest = await LoadManifest();
-    await SetupUserDataDirectory(manifest);
-    app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
-    await app.whenReady();
-    const win = await CreateApplicationWindow();
-    const ipc = new IPC(win.webContents);
-    const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
-    const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
-    UpdatePermissions(win.webContents.session, uri);
-    new RemoteProcedureCallManager(rpc, ipc);
-    new FetchProvider(ipc, win.webContents);
-    new RemoteBrowserWindowController(ipc);
-    new BloatGuard(ipc, win.webContents);
-    win.RegisterChannels(ipc);
-    return win.loadURL(uri.href);
+    try {
+        InitializeMenu();
+        const argv = ParseCLI();
+        const manifest = await LoadManifest();
+        await SetupUserDataDirectory(manifest);
+        app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
+        await app.whenReady();
+        const win = await CreateApplicationWindow();
+        const ipc = new IPC(win.webContents);
+        const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
+        const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
+        UpdatePermissions(win.webContents.session, uri);
+        new RemoteProcedureCallManager(rpc, ipc);
+        new FetchProvider(ipc, win.webContents);
+        new RemoteBrowserWindowController(ipc);
+        new BloatGuard(ipc, win.webContents);
+        win.RegisterChannels(ipc);
+        await win.loadURL(uri.href).catch(error => console.warn(error));
+    } catch(error) {
+        console.error(error);
+        app.quit();
+    }
 }
 
 OpenWindow();
