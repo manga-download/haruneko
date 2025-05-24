@@ -36,6 +36,17 @@ async function CloseSplashScreen(target: puppeteer.Target) {
     }
 }
 
+async function LaunchServer(): Promise<ChildProcess> {
+    const vite = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], {
+        cwd: path.resolve('web'),
+        stdio: [ 'pipe', process.stdout, process.stderr ],
+        shell: process.platform === 'win32',
+    });
+    await delay(1000); // TODO: Find better solution to wait until web-app is hosted ...
+    console.log(new Date().toISOString(), '=>', `Started Server (pid: ${vite.pid}):`, vite.exitCode === null);
+    return vite;
+}
+
 async function DetectElectron(): Promise<string> {
     const executables = [
         'electron',
@@ -102,13 +113,13 @@ export async function setup() {
     }
     await fs.mkdir(tempDir, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
-    server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], {
-        cwd: path.resolve('web'),
-        stdio: [ 'pipe', process.stdout, process.stderr ],
-        shell: process.platform === 'win32',
-    });
-    await delay(1000);
-    console.log(new Date().toISOString(), '=>', `Started Server (pid: ${server.pid}):`, server.exitCode === null);
+
+    try {
+        server = await LaunchServer();
+    } catch(error) {
+        throw error;
+    }
+
     try {
         browser = await LaunchElectron();
         process.env.browserWS = browser.wsEndpoint();
