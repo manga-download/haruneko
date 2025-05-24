@@ -70,7 +70,7 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectElectron(),
-        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu'/*, '--trace-warnings'*/, '--origin=' + AppURL ],
+        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu', '--trace-warnings', '--origin=' + AppURL ],
         userDataDir: userDir,
         dumpio: true,
     });
@@ -118,18 +118,22 @@ export async function setup() {
 }
 
 export async function teardown() {
-    const pages = await browser?.pages() ?? [];
-    for(const page of pages) {
+    if(browser) {
+        const pages = await browser.pages() ?? [];
+        for(const page of pages) {
+            try {
+                page.removeAllListeners();
+                await page.close();
+            } catch {}
+        }
         try {
-            page.removeAllListeners();
-            await page.close();
+            await browser.removeAllListeners().close();
         } catch {}
+        await TryStopProcess(browser.process(), 'Browser');
     }
-    try {
-        await browser.removeAllListeners().close();
-    } catch {}
-    await TryStopProcess(browser.process(), 'Browser');
-    await TryStopProcess(server, 'Server');
+    if(server) {
+        await TryStopProcess(server, 'Server');
+    }
     await fs.rm(tempDir, { recursive: true });
     process.exit();
 }
