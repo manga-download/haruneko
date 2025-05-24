@@ -15,7 +15,7 @@ const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.plat
 const tempDir = path.normalize(path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32)));
 const userDir = path.normalize(path.resolve(tempDir, 'user-data'));
 
-let server: ReturnType<typeof spawn>;
+let server: ReturnType<typeof spawn> | null;
 let browser: puppeteer.Browser;
 
 async function delay(milliseconds: number) {
@@ -118,29 +118,28 @@ export async function setup() {
 }
 
 export async function teardown() {
-    if(browser) {
-        const pages = await browser.pages() ?? [];
-        for(const page of pages) {
-            try {
-                page.removeAllListeners();
-                await page.close();
-                await delay(1000);
-            } catch {}
-        }
+    const pages = await browser?.pages() ?? [];
+    for(const page of pages) {
         try {
-            await browser.removeAllListeners().close();
+            page.removeAllListeners();
+            await page.close();
             await delay(1000);
         } catch {}
-        await TryStopProcess(browser.process(), 'Browser');
     }
-    if(server) {
-        await TryStopProcess(server, 'Server');
-    }
+    try {
+        await browser?.removeAllListeners()?.close();
+        await delay(1000);
+    } catch {}
+    await TryStopProcess(browser?.process(), 'Browser');
+    await TryStopProcess(server, 'Server');
     await fs.rm(tempDir, { recursive: true });
     process.exit();
 }
 
 async function TryStopProcess(processInfo: ChildProcess, label: string): Promise<void> {
+    if(!processInfo) {
+        return;
+    }
     const isRunning = () => processInfo.exitCode === null && processInfo.signalCode === null;
     const processPath = path.relative(process.cwd(), processInfo.spawnfile);
     try {
