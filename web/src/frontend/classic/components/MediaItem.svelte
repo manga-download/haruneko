@@ -53,6 +53,8 @@
     import { selectedItem } from '../stores/Stores';
     import { Locale } from '../stores/Settings';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
+    import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
+    import type { Directory } from '../../../engine/SettingsManager';
 
     let flag: FlagType = $state();
     const flagiconmap = new Map<FlagType, any>([
@@ -95,6 +97,22 @@
     async function refreshDownloadStatus(newstatus: Status, _task: DownloadTask) {
         downloadTaskStatus = newstatus;
     }
+
+    async function addDownload(item: StoreableMediaContainer<MediaItem>) {
+        try {
+            await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
+        } catch(error) {
+            // TODO: Use appropriate error visualization ...
+            alert(error?.message ?? error);
+            return;
+        }
+        await window.HakuNeko.DownloadManager.Enqueue(item);
+    }
+
+    async function removeDownload(task: DownloadTask) {
+        await window.HakuNeko.DownloadManager.Dequeue(task)
+    }
+
     // TODO: download complete button should open file explorer
 </script>
 
@@ -118,7 +136,7 @@
             tooltipAlignment="end"
             icon={CloudDownload}
             iconDescription="Download"
-            onclick={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
+            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         />
     {:else if downloadTaskStatus === Status.Queued}
         <Button
@@ -127,7 +145,7 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             iconDescription="Cancel"
-            onclick={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
+            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         >
             <PauseFuture fill="var(--cds-icon-secondary)" />
         </Button>
@@ -138,7 +156,7 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             iconDescription="Cancel (paused)"
-            onclick={() => window.HakuNeko.DownloadManager.Dequeue(downloadTask)}
+            onclick={() => removeDownload(downloadTask)}
         >
             <Pause fill="var(--cds-toggle-off)" />
         </Button>
@@ -149,7 +167,7 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             iconDescription="Cancel (downloading...)"
-            onclick={() => window.HakuNeko.DownloadManager.Dequeue(downloadTask)}
+            onclick={() => removeDownload(downloadTask)}
         >
             <Download fill="var(--cds-support-info)" />
         </Button>
@@ -159,7 +177,7 @@
             size="small"
             kind="ghost"
             iconDescription="Cancel (processing...)"
-            onclick={() => window.HakuNeko.DownloadManager.Dequeue(downloadTask)}
+            onclick={() => removeDownload(downloadTask)}
         >
             <VolumeFileStorage fill="var(--cds-support-info)" />
         </Button>
@@ -191,7 +209,7 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             iconDescription="Download"
-            onclick={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
+            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         >
             <CloudDownload fill="var(--cds-icon-01)" />
         </Button>

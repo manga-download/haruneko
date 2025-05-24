@@ -34,6 +34,8 @@
     } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
     import { resizeBar } from '../lib/actions';
+    import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
+    import type { Directory } from '../../../engine/SettingsManager';
 
     let items: MediaContainer<MediaItem>[] = $state([]);
     let filteredItems: MediaContainer<MediaItem>[] = $state([]);
@@ -219,12 +221,15 @@
         }
     };
 
-    function downloadItems(items: MediaContainer<MediaItem>[]) {
-        items.forEach((item) => {
-            window.HakuNeko.DownloadManager.Enqueue(
-                item as StoreableMediaContainer<MediaItem>,
-            );
-        });
+    async function downloadItems(items: MediaContainer<MediaItem>[]) {
+        try {
+            await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
+        } catch(error) {
+            // TODO: Use appropriate error visualization ...
+            alert(error?.message ?? error);
+            return;
+        }
+        items.forEach(item => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>));
     }
 
     function reverseSort() {

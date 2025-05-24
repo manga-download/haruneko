@@ -15,7 +15,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div#chapterList ul a', ChapterExtractor)
 @Common.PagesSinglePageCSS('main div.text-center img[alt*=" - Page"]')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
