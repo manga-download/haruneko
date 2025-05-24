@@ -23,17 +23,20 @@ type APIPages = Array<{
     }[]
 }>
 
+const ApiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5b214c3Bvb3NicnNsZGJicHRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDUwOTYsImV4cCI6MjA2MTc4MTA5Nn0.eHEJnJgzeZkxzCAfIHXg1tYUYk8spWiMamybyVk6FfQ';
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://ayomxspoosbrsldbbptc.supabase.co/rest/v1/';
     private readonly cdnUrl = 'https://ayomxspoosbrsldbbptc.supabase.co/storage/v1/object/public/webtoon-images/';
-    private readonly key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5b214c3Bvb3NicnNsZGJicHRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDUwOTYsImV4cCI6MjA2MTc4MTA5Nn0.eHEJnJgzeZkxzCAfIHXg1tYUYk8spWiMamybyVk6FfQ';
-    private readonly apiHeaders = new Headers({
-        Authorization: `Bearer ${this.key}`,
-        Apikey: this.key,
-        'X-Client-Info': 'supabase-js-web/2.49.4',
-    });
+    private readonly apiUrl = 'https://ayomxspoosbrsldbbptc.supabase.co/rest/v1/';
+    private readonly apiRequestInit = {
+        headers: {
+            'Authorization': 'Bearer ' + ApiToken,
+            'ApiKey': ApiToken,
+            'X-Client-Info': 'supabase-js-web/2.49.4',
+        }
+    };
 
     public constructor() {
         super('starboundscans', 'Starbound Scans', 'https://starboundscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Scanlator);
@@ -70,9 +73,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiUrl), {
-            headers: this.apiHeaders
-        });
+        const request = new Request(new URL(endpoint, this.apiUrl), this.apiRequestInit);
         return await FetchJSON<T>(request);
     }
 }
