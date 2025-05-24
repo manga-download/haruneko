@@ -124,10 +124,12 @@ export async function teardown() {
             try {
                 page.removeAllListeners();
                 await page.close();
+                await delay(1000);
             } catch {}
         }
         try {
             await browser.removeAllListeners().close();
+            await delay(1000);
         } catch {}
         await TryStopProcess(browser.process(), 'Browser');
     }
