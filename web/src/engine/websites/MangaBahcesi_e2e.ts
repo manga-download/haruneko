@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangaship',
-        title: 'Manga Ship'
+        title: 'Manga Bahçesi'
     },
     container: {
-        url: 'https://mangaship.net/Tr/Manga/undead-unluck',
+        url: 'https://mangabahcesi.com/Tr/Manga/undead-unluck',
         id: '/Tr/Manga/undead-unluck',
         title: 'Ölümsüz ve Şanssız'
     },
@@ -20,6 +20,4 @@ const config = {
         size: 847_092,
         type: 'image/jpeg'
     }*/
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

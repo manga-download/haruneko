@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'tresdaos',
         title: 'Tres Daos'
     },
     container: {
-        url: 'https://tresdaos.com/manga/vengeance-of-the-heavenly-demon/',
+        url: 'https://3daos.mewingzone.com/manga/vengeance-of-the-heavenly-demon/',
         id: '/manga/vengeance-of-the-heavenly-demon/',
         title: 'Vengeance of the Heavenly Demon'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 532_427,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
