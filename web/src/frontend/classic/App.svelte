@@ -17,8 +17,9 @@
     import AppBar from './components/AppBar.svelte';
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
+    import WelcomeGuide from './components/startupguide/StartupGuide.svelte';
     // UI: Stores
-    import { ContentPanel, Theme as ThemeSetting } from './stores/Settings';
+    import { ContentPanel, Theme as ThemeSetting, WelcomeGuide as WelcomeGuideSetting } from './stores/Settings';
     import { selectedItem, contentscreen } from './stores/Stores';
 
     let resolveFinishLoading: () => void;
@@ -37,6 +38,10 @@
 </script>
 
 <UserMessage />
+
+{#if $WelcomeGuideSetting}
+    <WelcomeGuide />
+{/if}
 
 <Theme theme={$ThemeSetting}>
     <AppBar

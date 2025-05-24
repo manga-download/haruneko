@@ -6,6 +6,7 @@
     import SettingItem from './SettingItem.svelte';
 
     export let setting: Secret;
+    export let inline = false;
     let value: string = setting.Value;
 
     $: setting.Value = value;
@@ -26,5 +27,5 @@
     labelText={$Locale[setting.Label]()}
     helperText={$Locale[setting.Description]()}
 >
-    <PasswordInput hideLabel bind:value />
+    <PasswordInput hideLabel bind:value {inline} />
 </SettingItem>

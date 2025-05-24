@@ -6,6 +6,7 @@
     import SettingItem from './SettingItem.svelte';
 
     export let setting: Directory;
+    export let inline = false;
     let value: FileSystemDirectoryHandle = setting.Value;
 
     onMount(() => {
@@ -20,12 +21,14 @@
     }
 
     async function SelectFolder() {
-        const directory = await window['showDirectoryPicker']({
-            startIn: value ?? 'documents',
-        });
-        if (directory) {
-            setting.Value = directory;
-        }
+        try{
+            const directory = await window['showDirectoryPicker']({
+                startIn: value ?? 'documents',
+            });
+            if (directory) {
+                setting.Value = directory;
+            }
+        } catch (error) {console.log('error')}
     }
 </script>
 
@@ -38,5 +41,6 @@
         readonly
         value={value?.name}
         on:click={SelectFolder}
+        {inline}
     />
 </SettingItem>
