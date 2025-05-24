@@ -6,7 +6,7 @@ new TestFixture({
         title: 'AllHentai'
     },
     container: {
-        url: 'https://20.allhen.online/nochiu_ona_nimfomanka',
+        url: 'https://z.ahen.me/nochiu_ona_nimfomanka',
         id: '/nochiu_ona_nimfomanka',
         title: 'Ночью она нимфоманка'
     },
