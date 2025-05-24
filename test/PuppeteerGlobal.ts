@@ -131,30 +131,39 @@ export async function teardown() {
         const electron = browser.process();
         console.log('+++ Browser Status +++', electron.exitCode, electron.connected, browser.debugInfo);
         await browser.removeAllListeners().close();
-        await delay(1000);
         console.log('+++ Browser Status +++', electron.exitCode, electron.connected, browser.debugInfo);
-        if(server.exitCode === null && server.signalCode === null) {
-            console.warn(new Date().toISOString(), '=>', `Failed to stop browser (pid: ${electron.pid}):`, electron.spawnfile);
-        }
     } catch(error) {
         console.warn(new Date().toISOString(), '=>', 'Failed to close browser');
     }
-    switch (process.platform) {
-        case 'win32':
-            await new Promise(resolve => exec(`taskkill /pid ${server.pid} /T /F`, resolve));
-            break;
-        default:
-            const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
-            for(let index = 0; index < signals.length && server.exitCode === null && server.signalCode === null; index++) {
-                console.log(new Date().toISOString(), '=>', signals[index], path.relative(process.cwd(), server.spawnfile), server.kill(signals[index]));
-                await delay(1000);
-            }
-            break;
-    }
-    await delay(1000);
-    if(server.exitCode === null && server.signalCode === null) {
-        console.warn(new Date().toISOString(), '=>', `Failed to stop server (pid: ${server.pid}):`, path.relative(process.cwd(), server.spawnfile));
-    }
+    await TryStopProcess(browser.process(), 'Browser');
+    await TryStopProcess(server, 'Server');
     await fs.rm(tempDir, { recursive: true });
     process.exit();
+}
+
+async function TryStopProcess(processInstance: NodeJS.ChildProcess, processLabel: string = 'Process'): Promise<void> {
+    const isRunning = () => processInstance.exitCode === null && processInstance.signalCode === null;
+    const processPath = path.relative(process.cwd(), processInstance.spawnfile);
+    try {
+        switch (process.platform) {
+            case 'win32':
+                if(isRunning()) {
+                    await new Promise(resolve => exec(`taskkill /pid ${processInstance.pid} /T /F`, resolve));
+                    break;
+                }
+            default:
+                const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
+                for(let index = 0; isRunning() && index < signals.length; index++) {
+                    console.log(new Date().toISOString(), '=>', signals[index], processPath, processInstance.kill(signals[index]));
+                    await delay(1000);
+                }
+                break;
+        }
+        await delay(1000);
+        if(isRunning()) {
+            throw new Error();
+        }
+    } catch(error) {
+        console.warn(new Date().toISOString(), '=>', `Failed to stop ${processLabel} (pid: ${processInstance.pid}):`, processPath);
+    }
 }
