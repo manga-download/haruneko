@@ -107,6 +107,7 @@ export async function setup() {
         stdio: [ 'pipe', process.stdout, process.stderr ],
         shell: process.platform === 'win32',
     });
+    await delay(1000);
     console.log(new Date().toISOString(), '=>', `Started Server (pid: ${server.pid}):`, server.exitCode === null);
     try {
         browser = await LaunchElectron();
