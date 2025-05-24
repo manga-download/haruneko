@@ -6,7 +6,6 @@ import SpoilerPlus, { MangaInfoExtractor, MangaLabelExtractor } from './SpoilerP
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+-raw-free\/$/, 'h1.padding-title', MangaLabelExtractor)
 @Common.MangasMultiPageCSS('/page/{page}/', 'div.pa-list-item div.pa-text a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('ul.basic-list li a.ch-name')
-
 export default class extends SpoilerPlus {
 
     public constructor() {

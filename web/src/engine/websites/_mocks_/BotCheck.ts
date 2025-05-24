@@ -5,6 +5,16 @@ import * as Common from '../decorators/Common';
 
 const botchecks = [
     {
+        url: 'https://www.browserscan.net/bot-detection',
+        title: 'BrowserScan: Robot Detection',
+        script: `
+            new Promise(resolve => {
+                setTimeout(() => resolve(false), 2500);
+                setInterval(() => document.querySelector('main div svg[height="36"] use[*|href="#status_success"]') ? resolve(true) : console.log('-'), 250);
+            });
+        `,
+    },
+    {
         url: 'https://cloudflare.bot-check.ovh/automatic',
         title: 'Cloudflare: JavaScript Challenge',
         script: `
@@ -55,6 +65,16 @@ const botchecks = [
             });
         `,
     },
+    {
+        url: 'https://vercel.bot-check.ovh',
+        title: 'Vercel: Attack Challenge Mode',
+        script: `
+            new Promise(resolve => {
+                setTimeout(() => resolve(false), 2500);
+                setInterval(() => document.querySelector('#hash')?.innerText === 'FDF049D4B2312945BB7AA2158F041278' ? resolve(true) : console.log('-'), 500);
+            });
+        `,
+    },
 ];
 
 /**
@@ -82,7 +102,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        await fetch(new URL('/reset', this.URI));
+        await fetch(new URL('/reset', manga.Identifier));
         const entry = botchecks.find(entry => entry.url === manga.Identifier);
         const bypassed = await FetchWindowScript<boolean>(new Request(entry.url), entry.script);
         return [
