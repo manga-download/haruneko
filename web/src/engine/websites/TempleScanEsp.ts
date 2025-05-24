@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './TempleScanEsp.webp';
-import { Kozaku } from './templates/Kozaku';
+import { Kosaku } from './templates/Kosaku';
 
-export default class extends Kozaku {
+export default class extends Kosaku {
 
     public constructor() {
-        super('templescanesp', 'Temple Scan (ESP)', 'https://templescanesp.kawi.lat', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('templescanesp', 'Temple Scan (ESP)', 'https://templescanesp.vxviral.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

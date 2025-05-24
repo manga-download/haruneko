@@ -6,7 +6,7 @@ const config = {
         title: 'Comikey (Archive)'
     },
     container: {
-        url: 'https://comikey.ovh/read/kengan-ashura-manga/',
+        url: 'https://cdn.comikey-cloud.workers.dev/read/kengan-ashura-manga/',
         id: 'kengan-ashura-manga',
         title: 'Kengan Ashura'
     },

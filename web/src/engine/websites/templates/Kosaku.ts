@@ -1,20 +1,33 @@
-﻿/* Kōsaku WC
-
-Version: 1.8.4.0
-
-Author: King
-
-Description:Redesigned especially for catharsisworld
-
-* Look likes madara but no similar endpoint
-* Spanish websites (?)
-* Use different madara endpoint to get mangas
+﻿/*
+    Kōsaku WC
+    Version: 1.8.4.0
+    Author: King
+    Look likes madara but no similar endpoint
+    Use different madara endpoint to get mangas
 */
 
 import { FetchCSS } from "../../platform/FetchProvider";
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from "../../providers/MangaPlugin";
 import * as Common from '../decorators/Common';
 import * as Madara from '../decorators/WordPressMadara';
+
+export const PageScript = `
+    new Promise((resolve, reject) => {
+        const imgdata = JSON.parse(CryptoJS.AES.decrypt(kosaku_data, kosakuprotectornonce, {
+            format: {
+                parse(serialized) {
+                    const deserialized = JSON.parse(serialized);
+                    return CryptoJS.lib.CipherParams.create({
+                        ciphertext: CryptoJS.enc.Base64.parse(deserialized.ct),
+                        iv: deserialized.iv && CryptoJS.enc.Hex.parse(deserialized.iv),
+                        salt: deserialized.s && CryptoJS.enc.Hex.parse(deserialized.s),
+                    });
+                }
+            }
+        }).toString(CryptoJS.enc.Utf8));
+        resolve(JSON.parse(imgdata));
+    });
+`;
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -27,7 +40,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('ul#list-chapters li a', ChapterExtractor)
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
-export class Kozaku extends DecoratableMangaScraper {
+export class Kosaku extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
@@ -59,5 +72,4 @@ export class Kozaku extends DecoratableMangaScraper {
         const data = await FetchCSS<HTMLAnchorElement>(request, 'button a.grid.w-full');
         return data.map(anchor => new Manga(this, provider, anchor.pathname, anchor.title.trim()));
     }
-
 }

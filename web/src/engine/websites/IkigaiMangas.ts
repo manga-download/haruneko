@@ -19,7 +19,13 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.nzvetclinics.one', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.tutorialesminecraft.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+    }
+
+    public override async Initialize(): Promise<void> {
+        const response = await fetch('https://visualikigai.com');
+        this.URI.href = new URL(response.url).origin;
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override get Icon() {
