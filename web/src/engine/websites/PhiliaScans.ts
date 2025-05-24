@@ -1,13 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './PhiliaScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.post-title h1')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.serie-info h1.serie-title')
+@Common.MangasMultiPageCSS('/all-mangas/page/{page}/', 'a.c-title')
+@Common.ChaptersSinglePageCSS('ul li[data-chapter] a:not([href="#"])', Common.AnchorInfoExtractor(false, 'span.coin'))
+@Common.PagesSinglePageCSS('div#ch-images img')
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
