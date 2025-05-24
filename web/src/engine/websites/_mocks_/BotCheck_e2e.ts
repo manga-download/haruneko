@@ -1,10 +1,12 @@
 import { TestFixture } from '../../../../test/WebsitesFixture';
 
+const plugin = {
+    id: 'bot-check',
+    title: '🔷 Bot-Check 🔷'
+};
+
 new TestFixture({
-    plugin: {
-        id: 'bot-check',
-        title: '🔷 Bot-Check 🔷'
-    },
+    plugin,
     container: {
         url: 'https://www.browserscan.net/bot-detection',
         id: 'https://www.browserscan.net/bot-detection',
@@ -17,10 +19,7 @@ new TestFixture({
 }).AssertWebsite();
 
 new TestFixture({
-    plugin: {
-        id: 'bot-check',
-        title: '🔷 Bot-Check 🔷'
-    },
+    plugin,
     container: {
         url: 'https://cloudflare.bot-check.ovh/automatic',
         id: 'https://cloudflare.bot-check.ovh/automatic',
@@ -33,10 +32,7 @@ new TestFixture({
 }).AssertWebsite();
 
 new TestFixture({
-    plugin: {
-        id: 'bot-check',
-        title: '🔷 Bot-Check 🔷'
-    },
+    plugin,
     container: {
         url: 'https://vercel.bot-check.ovh',
         id: 'https://vercel.bot-check.ovh',
