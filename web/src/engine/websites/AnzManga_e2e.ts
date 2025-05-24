@@ -6,7 +6,7 @@ new TestFixture({
         title: 'AnzManga',
     },
     container: {
-        url: 'https://www.anzmangashd.com/manga/sono-bisque-doll-wa-koi-wo-suru',
+        url: 'https://www.anzmanga25.com/manga/sono-bisque-doll-wa-koi-wo-suru',
         id: '/manga/sono-bisque-doll-wa-koi-wo-suru',
         title: 'Sono Bisque Doll wa Koi wo Suru',
     },

@@ -1,3 +1,4 @@
+/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 // CASE: Invariant Locale
@@ -43,3 +44,4 @@ new TestFixture({
         type: 'image/webp'
     }
 }).AssertWebsite();
+*/
