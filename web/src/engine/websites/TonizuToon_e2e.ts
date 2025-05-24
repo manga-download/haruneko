@@ -4,9 +4,9 @@ new TestFixture({
     plugin: {
         id: 'tonizutoon',
         title: 'Tonizu Toon'
-    },
+    }, /* Need Login
     container: {
-        url: 'https://tonizu.online/manga/dana/',
+        url: 'https://tonizu.top/manga/dana/',
         id: JSON.stringify({ post: '186', slug: '/manga/dana/' }),
         title: 'DANA'
     },
@@ -18,5 +18,5 @@ new TestFixture({
         index: 0,
         size: 1_258_937,
         type: 'image/jpeg'
-    }
+    }*/
 }).AssertWebsite();

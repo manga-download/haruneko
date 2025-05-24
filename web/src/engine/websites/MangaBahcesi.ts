@@ -1,5 +1,5 @@
-import { Tags } from '../Tags';
-import icon from './MangaShip.webp';
+﻿import { Tags } from '../Tags';
+import icon from './MangaBahcesi.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -54,7 +54,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaship', `Manga Ship`, 'https://mangaship.net', Tags.Language.Turkish, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangaship', 'Manga Bahçesi', 'https://mangabahcesi.com', Tags.Language.Turkish, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
