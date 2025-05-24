@@ -136,7 +136,7 @@ export async function teardown() {
     process.exit();
 }
 
-async function TryStopProcess(processInfo: ChildProcess, label: string): Promise<void> {
+async function TryStopProcess(processInfo: ChildProcess | null, label: string): Promise<void> {
     if(!processInfo) {
         return;
     }
