@@ -123,18 +123,11 @@ export async function teardown() {
         try {
             page.removeAllListeners();
             await page.close();
-        } catch(error) {
-            console.warn(new Date().toISOString(), '=>', 'Failed to close page:', page?.url());
-        }
+        } catch {}
     }
     try {
-        const electron = browser.process();
-        console.log('+++ Browser Status +++', electron.exitCode, electron.connected, browser.debugInfo);
         await browser.removeAllListeners().close();
-        console.log('+++ Browser Status +++', electron.exitCode, electron.connected, browser.debugInfo);
-    } catch(error) {
-        console.warn(new Date().toISOString(), '=>', 'Failed to close browser');
-    }
+    } catch {}
     await TryStopProcess(browser.process(), 'Browser');
     await TryStopProcess(server, 'Server');
     await fs.rm(tempDir, { recursive: true });
