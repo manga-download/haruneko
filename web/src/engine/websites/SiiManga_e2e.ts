@@ -6,7 +6,7 @@ new TestFixture({
         title: 'SiiManga'
     },
     container: {
-        url: 'https://siikomik.fun/manga/i-have-90-billion-licking-gold/',
+        url: 'https://siikomik.org/manga/i-have-90-billion-licking-gold/',
         id: '/manga/i-have-90-billion-licking-gold/',
         title: 'I Have 90 Billion Licking Gold'
     },
@@ -15,8 +15,8 @@ new TestFixture({
         title: 'Chapter 365'
     },
     entry: {
-        index: 1,
-        size: 268_110,
+        index: 2,
+        size: 150_237,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
