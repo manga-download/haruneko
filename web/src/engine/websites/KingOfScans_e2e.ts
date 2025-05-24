@@ -3,10 +3,10 @@
 new TestFixture({
     plugin: {
         id: 'shojoverse',
-        title: 'KingOfManhwa'
+        title: 'KingOfScans'
     },
     container: {
-        url: 'https://kingofmanhwa.com/manga/the-player-hides-his-past/',
+        url: 'https://kingofscans.com/manga/the-player-hides-his-past/',
         id: '/manga/the-player-hides-his-past/',
         title: 'The Player Hides His Past',
     },
