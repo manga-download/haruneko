@@ -1,7 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { exec, spawn } from 'node:child_process';
+import { type ChildProcess, exec, spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
 import {
     SetupBlinkEvasions,
@@ -141,7 +141,7 @@ export async function teardown() {
     process.exit();
 }
 
-async function TryStopProcess(processInstance: NodeJS.ChildProcess, processLabel: string = 'Process'): Promise<void> {
+async function TryStopProcess(processInstance: ChildProcess, processLabel: string): Promise<void> {
     const isRunning = () => processInstance.exitCode === null && processInstance.signalCode === null;
     const processPath = path.relative(process.cwd(), processInstance.spawnfile);
     try {
