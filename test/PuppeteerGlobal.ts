@@ -112,7 +112,7 @@ export async function setup() {
         browser = await LaunchElectron();
         process.env.browserWS = browser.wsEndpoint();
     } catch(error) {
-        server.kill('SIGINT') || server.kill('SIGTERM') || server.kill('SIGKILL');
+        await TryStopProcess(server, 'Server');
         throw error;
     }
 }
@@ -134,20 +134,20 @@ export async function teardown() {
     process.exit();
 }
 
-async function TryStopProcess(processInstance: ChildProcess, processLabel: string): Promise<void> {
-    const isRunning = () => processInstance.exitCode === null && processInstance.signalCode === null;
-    const processPath = path.relative(process.cwd(), processInstance.spawnfile);
+async function TryStopProcess(processInfo: ChildProcess, label: string): Promise<void> {
+    const isRunning = () => processInfo.exitCode === null && processInfo.signalCode === null;
+    const processPath = path.relative(process.cwd(), processInfo.spawnfile);
     try {
         switch (process.platform) {
             case 'win32':
                 if(isRunning()) {
-                    await new Promise(resolve => exec(`taskkill /pid ${processInstance.pid} /T /F`, resolve));
+                    await new Promise(resolve => exec(`taskkill /pid ${processInfo.pid} /T /F`, resolve));
                     break;
                 }
             default:
                 const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
                 for(let index = 0; isRunning() && index < signals.length; index++) {
-                    console.log(new Date().toISOString(), '=>', signals[index], processPath, processInstance.kill(signals[index]));
+                    console.log(new Date().toISOString(), '=>', signals[index], processPath, processInfo.kill(signals[index]));
                     await delay(1000);
                 }
                 break;
@@ -157,6 +157,6 @@ async function TryStopProcess(processInstance: ChildProcess, processLabel: strin
             throw new Error();
         }
     } catch(error) {
-        console.warn(new Date().toISOString(), '=>', `Failed to stop ${processLabel} (pid: ${processInstance.pid}):`, processPath);
+        console.warn(new Date().toISOString(), '=>', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
     }
 }
