@@ -128,8 +128,14 @@ export async function teardown() {
         }
     }
     try {
-        browser.removeAllListeners();
-        await browser.close(); 
+        const electron = browser.process();
+        console.log('+++ Browser Status +++', electron.exitCode, electron.connected, browser.debugInfo);
+        await browser.removeAllListeners().close();
+        await delay(1000);
+        console.log('+++ Browser Status +++', electron.exitCode, electron.connected, browser.debugInfo);
+        if(server.exitCode === null && server.signalCode === null) {
+            console.warn(new Date().toISOString(), '=>', `Failed to stop browser (pid: ${electron.pid}):`, electron.spawnfile);
+        }
     } catch(error) {
         console.warn(new Date().toISOString(), '=>', 'Failed to close browser');
     }
