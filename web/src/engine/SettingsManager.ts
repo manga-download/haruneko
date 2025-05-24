@@ -1,4 +1,4 @@
-import { type IResource, EngineResourceKey as R } from '../i18n/ILocale';
+import { EngineResourceKey, type IResource, EngineResourceKey as R } from '../i18n/ILocale';
 import { type StorageController, Store } from './StorageController';
 import { Observable } from './Observable';
 import { Scope } from './SettingsGlobal';
@@ -151,6 +151,20 @@ export class Directory extends Setting<FileSystemDirectoryHandle> {
 
     constructor(id: string, label: keyof IResource, description: keyof IResource, initial: FileSystemDirectoryHandle) {
         super(id, label, description, initial);
+    }
+
+    /**
+     * Check if the directory is accessible and optionally tries to elevate permissions (user prompt).
+     * This method must be invoked through user interaction (e.g., click event).
+     * @throws {@link Exception} if the directory is not set or the permission for write access was denied
+     */
+    public async EnsureAccess(): Promise<void> {
+        if(!this.Value) {
+            throw new Exception(EngineResourceKey.Settings_Global_MediaDirectory_UnsetError);
+        }
+        if(await this.Value.queryPermission({ mode: 'readwrite' }) !== 'granted' && await this.Value.requestPermission({ mode: 'readwrite' }) !== 'granted') {
+            throw new Exception(EngineResourceKey.Settings_Global_MediaDirectory_PermissionError);
+        }
     }
 }
 
