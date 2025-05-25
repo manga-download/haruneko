@@ -8,22 +8,20 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
-type APISeries = {
-    licences: APISerieDetails[];
-}
-
 type APISerie = {
-    licence: APISerieDetails
+    licence: {
+        id_licence: number,
+        titre_licence: string,
+        articles: {
+            ref: number,
+            titre: string,
+            ebook_statut: boolean
+        }[]
+    }
 }
 
-type APISerieDetails = {
-    id_licence: number,
-    titre_licence: string,
-    articles: {
-        ref: number,
-        titre: string,
-        ebook_statut: boolean
-    }[]
+type APISeries = {
+    licences: APISerie['licence'][];
 }
 
 type APIEbook = {
@@ -44,9 +42,11 @@ type APIImages = {
     }[]
 }
 
-type BlockInfo = {
-    w: number,
-    h: number
+type PageInfo = {
+    descrambleBlock: {
+        width: number,
+        height: number,
+    }
 }
 
 /**
@@ -63,7 +63,7 @@ class TokenProvider {
      */
     public async UpdateToken() {
         try {
-            this.#token = await FetchWindowScript<string>(new Request(this.clientURI), `(async () => (decodeURIComponent((await cookieStore.get('token_meian_plus')).value).replaceAll('"', '')))();`) ?? null;
+            this.#token = JSON.parse(decodeURIComponent(await FetchWindowScript<string>(new Request(this.clientURI), `(async () => (await cookieStore.get('token_meian_plusc'))?.value ?? null)();`)));
         } catch (error) {
             console.warn('UpdateToken()', error);
             this.#token = null;
@@ -108,8 +108,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const idLicence = url.match(/\/licence\/[^/]+\/(\d+)$/).at(1);
-        const { licence: { id_licence, titre_licence } } = await this.FetchAPI<APISerie>(`./licence/?id_licence=${idLicence}`);
+        const { licence: { id_licence, titre_licence } } = await this.FetchAPI<APISerie>(this.apiUrl, './licence/', {
+            id_licence: url.split('/').at(-1)
+        });
         return new Manga(this, provider, id_licence.toString(), titre_licence);
     }
 
@@ -123,12 +124,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { licences } = await this.FetchAPI<APISeries>(`./licences/?q=&index=${page}&limit=96&ebook=1`);
+        const { licences } = await this.FetchAPI<APISeries>(this.apiUrl, './licences/', {
+            ebook: '1',
+            limit: '96',
+            index: '' + page,
+        });
         return licences.map(item => new Manga(this, provider, item.id_licence.toString(), item.titre_licence));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { licence: { articles } } = await this.FetchAPI<APISerie>(`./licence/?id_licence=${manga.Identifier}`);
+        const { licence: { articles } } = await this.FetchAPI<APISerie>(this.apiUrl, './licence/', { id_licence: manga.Identifier });
         return articles.filter(item => item.ebook_statut)
             .map(item => {
                 const title = item.titre.replace(manga.Title, '').replace(/^\s*-\s*/, '').trim();
@@ -136,48 +141,58 @@ export default class extends DecoratableMangaScraper {
             });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<BlockInfo>[]> {
-        //get pages number
-        const { success, ebook } = await this.FetchAPI<APIEbook>(`./ebook/?ref=${chapter.Identifier}`);
-
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageInfo>[]> {
+        const { success, ebook } = await this.FetchAPI<APIEbook>(this.apiUrl, './ebook/', { ref: chapter.Identifier });
         if (!success) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
 
-        //get pagesinfo
-        const { images } = await this.FetchAPI<APIImages>(`./v1/images/?ref=${chapter.Identifier}&p=1&w=1920&h=1080&q=1&webp=true=&nb_pages=${ebook.max_page}&devicePixelRatio=1.5`, this.imageCDN);
-        return images.map(item => new Page<BlockInfo>(this, chapter, new URL(`${this.imageCDN}/hm-img?p=${item.param}'&prio=h&k=${item.key}`), {
-            w: item.w,
-            h: item.h
+        const { images } = await this.FetchAPI<APIImages>(this.imageCDN, './v1/images/', {
+            p: '1',
+            q: '1',
+            w: '1920',
+            h: '1080',
+            webp: 'false',
+            devicePixelRatio: (3/2).toFixed(1),
+            nb_pages: '' + ebook.max_page,
+            ref: chapter.Identifier,
+        });
+
+        return images.map(item => new Page<PageInfo>(this, chapter, new URL('./hm-img?' + new URLSearchParams({
+            prio: 'h',
+            k: item.key,
+            p: item.param,
+        }), this.imageCDN), {
+            descrambleBlock: {
+                width: item.w,
+                height: item.h,
+            }
         }));
     }
 
-    public override async FetchImage(page: Page<BlockInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return DeScramble(blob, async (image, ctx) => {
+            const block = page.Parameters.descrambleBlock;
             const decryptedDrmData = window.atob(page.Link.searchParams.get('k')).split('|');
             for (let i = 0; i < decryptedDrmData.length; i++) {
                 const pieceMatrix = decryptedDrmData[i].split(';');
-                const sourceY = (this.scramblingMatrix[i][0] - 1) * page.Parameters.h;
-                const sourceX = (this.scramblingMatrix[i][1] - 1) * page.Parameters.w;
-                const destY = (parseInt(pieceMatrix[0]) - 1) * page.Parameters.h;
-                const destX = (parseInt(pieceMatrix[1]) - 1) * page.Parameters.w;
-                ctx.drawImage(image, sourceX, sourceY, page.Parameters.w, page.Parameters.h, destX, destY, page.Parameters.w, page.Parameters.h);
+                const sourceY = (this.scramblingMatrix[i][0] - 1) * block.height;
+                const sourceX = (this.scramblingMatrix[i][1] - 1) * block.width;
+                const destY = (parseInt(pieceMatrix[0]) - 1) * block.height;
+                const destX = (parseInt(pieceMatrix[1]) - 1) * block.width;
+                ctx.drawImage(image, sourceX, sourceY, block.width, block.height, destX, destY, block.width, block.height);
             }
         });
     }
 
-    private async FetchAPI<T extends JSONElement>(endpoint: string, baseUrl: string = this.apiUrl): Promise<T> {
-        const request = new Request(new URL(endpoint, baseUrl), {
-            headers: await this.tokenProvider.ApplyAuthorizationHeader({
-                Accept: 'application/json, text/plain, */*',
-                Origin: this.URI.origin,
-                Referer: this.URI.href
-            })
+    private async FetchAPI<T extends JSONElement>(base: string, endpoint: string, search: Record<string, string>): Promise<T> {
+        const uri = new URL(endpoint + '?' + new URLSearchParams(search), base);
+        const request = new Request(uri, {
+            headers: await this.tokenProvider.ApplyAuthorizationHeader({ Referer: this.URI.href })
         });
         const response = await Fetch(request);
         const text = await response.text();
-        return JSON.parse(text.replace(/^\)\]}',/, '')) as T;
+        return JSON.parse(text.split('\n').at(-1));
     }
-
 }
