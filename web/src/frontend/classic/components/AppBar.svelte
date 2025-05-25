@@ -79,7 +79,7 @@
             <Button
                 class="clickable"
                 icon={Bookmark}
-                iconDescription={'Bookmarks'}
+                iconDescription={$Locale.Frontend_Classic_BookmarkList_Heading()}
                 kind="ghost"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
@@ -104,17 +104,21 @@
         {#if showWindowControls}
             <HeaderGlobalAction
                 on:click={minimize}
-                iconDescription="Minimize"
+                iconDescription={$Locale.Frontend_Classic_Window_ButtonMinimize_Description()}
                 icon={Subtract}
             />
             <HeaderGlobalAction
-                on:click={() => (winMaximized ? restore() : maximize())}
-                iconDescription="Maximize"
-                icon={winMaximized ? Copy : Checkbox}
+            on:click={() => (winMaximized ? restore() : maximize())}
+            iconDescription={
+            winMaximized
+            ? $Locale.Frontend_Classic_Window_ButtonRestore_Description()
+            : $Locale.Frontend_Classic_Window_ButtonMaximize_Description()
+            }
+            icon={winMaximized ? Copy : Checkbox}
             />
             <HeaderGlobalAction
                 on:click={() => close()}
-                iconDescription="Close"
+                iconDescription={$Locale.Frontend_Classic_Window_ButtonClose_Description()}
                 icon={Close}
                 class="close"
             />
