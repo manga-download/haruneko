@@ -651,6 +651,7 @@ export { default as SuratManga } from './SuratManga';
 export { default as SuryaScans } from './SuryaScans';
 export { default as SushiScans } from './SushiScans';
 export { default as SushiScansFR } from './SushiScansFR';
+export { default as SussyToons } from './SussyToons';
 export { default as SweetTimeScan } from './SweetTimeScan';
 export { default as Tapas } from './Tapas';
 export { default as TappyToon } from './TappyToon';
