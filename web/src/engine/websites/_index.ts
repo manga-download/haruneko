@@ -496,7 +496,6 @@ export { default as NetTruyenZZZ } from './NetTruyenZZZ';
 export { default as NeuManga } from './NeuManga';
 export { default as NewToki } from './NewToki';
 export { default as Ngomik } from './Ngomik';
-export { default as NgomikID } from './NgomikID';
 export { default as NhatTruyen } from './NhatTruyen';
 export { default as NHentai } from './NHentai';
 export { default as NHentaiCom } from './NHentaiCom';
