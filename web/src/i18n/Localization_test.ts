@@ -34,7 +34,7 @@ describe('Localization', () => {
         const codes = Object.keys(LocaleID) as LocaleID[];
         const locales = codes.map(code => GetLocale(code));
 
-        it('Should contain expected langauge codes', async () => {
+        it('Should contain expected language codes', async () => {
             const expected = [
                 LocaleID.Locale_arSA,
                 LocaleID.Locale_deDE,
@@ -157,7 +157,7 @@ describe('Localization', () => {
             expect(GetLocale(LocaleID.Locale_zhCN).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
-        it('Should not be defined for invalid langauge code', async () => {
+        it('Should not be defined for invalid language code', async () => {
             expect(GetLocale('-' as LocaleID)).toBeUndefined();
         });
     });
