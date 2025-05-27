@@ -37,10 +37,10 @@ const resources: Record<LocaleID, ILocale> = {
 
 const crowdinPseudoResource = CreateLocale(crowdinPseudoLanguage);
 
-function Format(this: string, ...params: string[]) {
+function Format(this: string, ...params: unknown[]) {
     let text = this.toString();
     for(const index in params) {
-        text = text.replace(`{${index}}`, params[index]);
+        text = text.replaceAll(`{${index}}`, `${params[index]}`);
         /*
         const regex = new RegExpSafe(`\\{${index}\\}`, 'g');
         text = text.replace(regex, params[index]);
