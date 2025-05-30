@@ -8,6 +8,8 @@
 
     import type { DownloadTask } from '../../../engine/DownloadTask';
     import { Status } from '../../../engine/DownloadTask';
+    import { Locale } from '../stores/Settings';
+
 
     interface Props {
         job: DownloadTask;
@@ -82,7 +84,7 @@
             kind="ghost"
             size="small"
             icon={TrashCan}
-            iconDescription="Delete"
+            iconDescription={$Locale.Frontend_DownloadManagerTask_Delete()}
             on:click={() => window.HakuNeko.DownloadManager.Dequeue(job)}
         />
     </div>

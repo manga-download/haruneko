@@ -24,6 +24,7 @@ export enum LocaleID {
     Locale_thTH = 'Locale_thTH',
     Locale_trTR = 'Locale_trTR',
     Locale_zhCN = 'Locale_zhCN',
+    Locale_jaJP = 'Locale_jaJP',
 }
 
 export const InvariantResourceKey = {
@@ -126,17 +127,31 @@ export enum FrontendResourceKey {
     Frontend_Plugin_List = 'Frontend_Plugin_List',
     Frontend_Plugin_Select = 'Frontend_Plugin_Select',
     Frontend_Plugin_Selection = 'Frontend_Plugin_Selection',
+    Frontend_ImportExport = 'Frontend_ImportExport', //add
     Frontend_Media = 'Frontend_Media',
     Frontend_Medias = 'Frontend_Medias',
     Frontend_Media_List = 'Frontend_Media_List',
     Frontend_Media_Select = 'Frontend_Media_Select',
     Frontend_Media_Selection = 'Frontend_Media_Selection',
+    Frontend_PasteMediaURL = 'Frontend_PasteMediaURL', //add
     Frontend_Media_PasteLink_NotFoundError = 'Frontend_Media_PasteLink_NotFoundError',
     Frontend_Item = 'Frontend_Item',
     Frontend_Items = 'Frontend_Items',
     Frontend_Item_List = 'Frontend_Item_List',
     Frontend_Item_Select = 'Frontend_Item_Select',
     Frontend_Item_Selection = 'Frontend_Item_Selection',
+    Frontend_Bookmarks = 'Frontend_Bookmarks', //add
+    Frontend_Documentation = 'Frontend_Documentation', //add
+    Frontend_Discord = 'Frontend_Discord', //add
+    Frontend_OpenTicket = 'Frontend_OpenTicket', //add
+    Frontend_HomePage = 'Frontend_HomePage', //add
+    Frontend_ShowIP = 'Frontend_ShowIP', //add
+    Frontend_CodeSource = 'Frontend_CodeSource', //add
+    Frontend_AppVersion = 'Frontend_AppVersion', //add
+    Frontend_Maintainers = 'Frontend_Maintainers', //add
+    Frontend_Contributors = 'Frontend_Contributors', //add
+    Frontend_Artwork = 'Frontend_Artwork', //add
+
 }
 
 // [SECTION]: Frontend: Classic
@@ -170,7 +185,64 @@ export enum FrontendResourceKey {
     Frontend_Classic_Sidenav_Home = 'Frontend_Classic_Sidenav_Home',
     Frontend_Classic_Sidenav_Settings_General = 'Frontend_Classic_Sidenav_Settings_General',
     Frontend_Classic_Sidenav_Settings_Interface = 'Frontend_Classic_Sidenav_Settings_Interface',
+    Frontend_Classic_Sidenav_Settings_Viewer = 'Frontend_Classic_Sidenav_Settings_Viewer',
     Frontend_Classic_Sidenav_Settings_Trackers = 'Frontend_Classic_Sidenav_Settings_Trackers',
+    //
+    Frontend_Classic_Bookmark_ModalHeading = 'Frontend_Classic_Bookmark_ModalHeading',
+    Frontend_Classic_Bookmark_CloseButton = 'Frontend_Classic_Bookmark_CloseButton',
+    Frontend_Classic_Bookmark_ImportButton = 'Frontend_Classic_Bookmark_ImportButton',
+    Frontend_Classic_Bookmark_ExportButton = 'Frontend_Classic_Bookmark_ExportButton',
+    Frontend_Classic_Bookmark_ImportDescription = 'Frontend_Classic_Bookmark_ImportDescription',
+    Frontend_Classic_Bookmark_Importing = 'Frontend_Classic_Bookmark_Importing',
+    Frontend_Classic_Bookmark_ImportDone = 'Frontend_Classic_Bookmark_ImportDone',
+    Frontend_Classic_Bookmark_Exporting = 'Frontend_Classic_Bookmark_Exporting',
+    Frontend_Classic_Bookmark_ExportDone = 'Frontend_Classic_Bookmark_ExportDone',
+    Frontend_Classic_Bookmark_UserCanceled = 'Frontend_Classic_Bookmark_UserCanceled',
+    Frontend_Classic_Bookmark_Error = 'Frontend_Classic_Bookmark_Error',
+    Frontend_Classic_Bookmark_Found = 'Frontend_Classic_Bookmark_Found',
+    Frontend_Classic_Bookmark_Imported = 'Frontend_Classic_Bookmark_Imported',
+    Frontend_Classic_Bookmark_Skipped = 'Frontend_Classic_Bookmark_Skipped',
+    Frontend_Classic_Bookmark_Broken = 'Frontend_Classic_Bookmark_Broken',
+    Frontend_Classic_Bookmark_Exported = 'Frontend_Classic_Bookmark_Exported',
+
+    // --- Reassigned from [SECTION]: Added for testing purposes ---
+    Frontend_Classic_BookmarkList_Heading = 'Frontend_Classic_BookmarkList_Heading',
+    Frontend_Classic_Window_ButtonMinimize_Description = 'Frontend_Classic_Window_ButtonMinimize_Description',
+    Frontend_Classic_Window_ButtonRestore_Description = 'Frontend_Classic_Window_ButtonRestore_Description',
+    Frontend_Classic_Window_ButtonMaximize_Description = 'Frontend_Classic_Window_ButtonMaximize_Description',
+    Frontend_Classic_Window_ButtonClose_Description = 'Frontend_Classic_Window_ButtonClose_Description',
+
+    Frontend_Trackers_NotImplemented_Title = 'Frontend_Trackers_NotImplemented_Title',
+    Frontend_Trackers_NotImplemented_Subtitle = 'Frontend_Trackers_NotImplemented_Subtitle',
+
+    Frontend_ContextMenu_DownloadSingle = 'Frontend_ContextMenu_DownloadSingle',
+    Frontend_ContextMenu_DownloadMultiple = 'Frontend_ContextMenu_DownloadMultiple',
+    Frontend_ContextMenu_DownloadAll = 'Frontend_ContextMenu_DownloadAll',
+    Frontend_ContextMenu_View = 'Frontend_ContextMenu_View',
+    Frontend_ContextMenu_FlagAs = 'Frontend_ContextMenu_FlagAs',
+    Frontend_ContextMenu_Copy = 'Frontend_ContextMenu_Copy',
+    Frontend_ContextMenu_CopyOptions = 'Frontend_ContextMenu_CopyOptions',
+    Frontend_ContextMenu_CopyURL = 'Frontend_ContextMenu_CopyURL',
+    Frontend_ContextMenu_CopyName = 'Frontend_ContextMenu_CopyName',
+
+    Frontend_MediaItemList_Heading = 'Frontend_MediaItemList_Heading',
+    Frontend_Loading_Items = 'Frontend_Loading_Items',
+
+    Frontend_DownloadManager_ClearFinished = 'Frontend_DownloadManager_ClearFinished',
+    Frontend_DownloadManager_RetryFailed = 'Frontend_DownloadManager_RetryFailed',
+    Frontend_DownloadManager_DeleteAll = 'Frontend_DownloadManager_DeleteAll',
+    Frontend_DownloadManager_NoTasks = 'Frontend_DownloadManager_NoTasks',
+    Frontend_DownloadManager_Active = 'Frontend_DownloadManager_Active',
+    Frontend_DownloadManagerTask_Delete = 'Frontend_DownloadManagerTask_Delete',
+
+    Frontend_MediaItem_Download = 'Frontend_MediaItem_Download',
+    Frontend_MediaItem_Cancel = 'Frontend_MediaItem_Cancel',
+    Frontend_MediaItem_CancelPaused = 'Frontend_MediaItem_CancelPaused',
+    Frontend_MediaItem_CancelDownloading = 'Frontend_MediaItem_CancelDownloading',
+    Frontend_MediaItem_CancelProcessing = 'Frontend_MediaItem_CancelProcessing',
+    Frontend_MediaItem_ErrorRetry = 'Frontend_MediaItem_ErrorRetry',
+    Frontend_MediaItem_DownloadComplete = 'Frontend_MediaItem_DownloadComplete',
+    Frontend_MediaItem_View = 'Frontend_MediaItem_View'
 }
 
 // [SECTION]: Frontend: FluentCore
@@ -357,6 +429,7 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
 }
+
 
 export const VariantResourceKey = {
     ...TagCategoryResourceKey,
