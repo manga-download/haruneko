@@ -15,7 +15,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'cocomanhua', 'colamanga' ],
     [ 'comicbushi', 'comicgrowl' ],
     [ 'comicwalker', 'kadocomi' ],
-    [ 'evascans', 'manwe' ],
     [ 'firescans', 'firecomics' ],
     [ 'firstkiss', 'likemanga' ],
     [ 'flamescans-org', 'flamecomics' ],
