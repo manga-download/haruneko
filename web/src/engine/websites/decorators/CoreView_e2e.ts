@@ -14,6 +14,5 @@ import '../KurageBunch_e2e';
 import '../MagComi_e2e';
 import '../OurFeel_e2e';
 import '../ShonenJumpPlus_e2e';
-import '../ShonenMagazine_e2e';
 import '../SundayWebry_e2e';
 import '../TonariNoYoungJump_e2e';
