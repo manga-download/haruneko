@@ -38,7 +38,7 @@ export const chapterScript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    protected apiUrl = 'https://api-get-v2.mgsearcher.com/api/';
+    private apiUrl = 'https://api-get-v2.mgsearcher.com/api/';
 
     public constructor(id = 'godamanhua', label = 'GodaManhua', url = 'https://baozimh.org', tags = [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator]) {
         super(id, label, url, ...tags );
