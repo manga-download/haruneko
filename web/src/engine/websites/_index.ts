@@ -145,6 +145,7 @@ export { default as EightMusesXXX } from './EightMusesXXX';
 export { default as ElevenToon } from './ElevenToon';
 export { default as Ero18x } from './Ero18x';
 export { default as ErosScans } from './ErosScans';
+export { default as EternalMangas } from './EternalMangas';
 export { default as EuphoriaScan } from './EuphoriaScan';
 export { default as EvilFlowers } from './EvilFlowers';
 export { default as FbSquads } from './FbSquads';
