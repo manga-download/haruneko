@@ -170,6 +170,8 @@ export { default as GenzToon } from './GenzToon';
 export { default as GhostScan } from './GhostScan';
 export { default as GManga } from './GManga';
 export { default as Gntai } from './Gntai';
+export { default as GodaComic } from './GodaComic';
+export { default as GodaManhua } from './GodaManhua';
 export { default as GolgeBahcesi } from './GolgeBahcesi';
 export { default as GoofFansub } from './GoofFansub';
 export { default as GorakuWeb } from './GorakuWeb';
