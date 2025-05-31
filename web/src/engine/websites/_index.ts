@@ -753,6 +753,7 @@ export { default as YomuComics } from './YomuComics';
 export { default as YumeKomik } from './YumeKomik';
 export { default as YuraManga } from './YuraManga';
 export { default as YuriVerso } from './YuriVerso';
+export { default as YushukeMangas } from './YushukeMangas';
 export { default as Zebrack } from './Zebrack';
 export { default as ZenithScans } from './ZenithScans';
 export { default as ZeroScans } from './ZeroScans';
