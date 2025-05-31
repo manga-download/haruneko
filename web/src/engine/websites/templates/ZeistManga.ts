@@ -14,8 +14,13 @@ type FeedResults = {
     }
 }
 
+type MediaEntry = {
+    pathname: string,
+    title: string
+}
+
 function PageLinkExtractor(image: HTMLImageElement): string {
-    return image.src.replace(/(\/s(\d+[^/]*)(\/[^/]+$))/, '/s0$3');
+    return image.src.replace(/\/s\d+[^/]*(\/[^/]+$)/, '/s0$1');
 }
 
 @Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'header h1[itemprop="name"]')
@@ -25,19 +30,20 @@ export class ZeistManga extends DecoratableMangaScraper {
     protected mangaSlugScript = `clwd.settings.cat;`;
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { feed: { entry } } = await FetchJSON<FeedResults>(new Request(new URL('/feeds/posts/default/-/Series?orderby=published&alt=json&max-results=9999', this.URI)));
-        return entry.map(manga => {
-            const goodLink = manga.link.find(link => link.rel === 'alternate');
-            return new Manga(this, provider, new URL(goodLink.href).pathname, goodLink.title.trim());
-        });
+        return (await this.FetchEntries('Series')).map(entry => new Manga(this, provider, entry.pathname, entry.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaSlug = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), this.mangaSlugScript, 1000);
-        const { feed: { entry } } = await FetchJSON<FeedResults>(new Request(new URL(`/feeds/posts/default/-/${mangaSlug}?start-index=1&orderby=published&alt=json&max-results=9999`, this.URI)));
+        return (await this.FetchEntries(mangaSlug, manga)).map(entry => new Chapter(this, manga, entry.pathname, entry.title));
+    }
+
+    private async FetchEntries(slug: string, parent: Manga = undefined): Promise<MediaEntry[]> {
+        const { feed: { entry } } = await FetchJSON<FeedResults>(new Request(new URL(`/feeds/posts/default/-/${slug}?start-index=1&&alt=json&max-results=9999`, this.URI)));
         return entry.map(chapter => {
             const goodLink = chapter.link.find(link => link.rel === 'alternate');
-            return new Chapter(this, manga, new URL(goodLink.href).pathname, goodLink.title.replace(manga.Title, '').trim());
-        }).filter(entry => entry.Identifier != manga.Identifier);
+            return { pathname: new URL(goodLink.href).pathname, title: goodLink.title.replace(parent?.Title, '').trim() };
+        }).filter(entry => parent ? entry.pathname != parent.Identifier : true);
     }
+
 }
