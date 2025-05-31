@@ -11,12 +11,12 @@ new TestFixture({
         title: 'Tales of Demons and Gods',
     },
     child: {
-        id: '/chapter/Tales%20of%20Demons%20and%20Gods/499635.html',
-        title: 'Tales of Demons and Gods 189.5', //yes, chapter contains two times manga title, :D
+        id: '/chapter/Tales%20of%20Demons%20and%20Gods/539331.html',
+        title: 'Tales of Demons and Gods 193.5', //yes, chapter contains two times manga title, :D
     },
     entry: {
         index: 0,
-        size: 124_890,
+        size: 467_603,
         type: 'image/jpeg',
     }
 }).AssertWebsite();

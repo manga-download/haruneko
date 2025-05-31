@@ -1,4 +1,3 @@
-import '../MangaRussia_e2e';
 import '../NineMangaBR_e2e';
 import '../NineMangaDE_e2e';
 import '../NineMangaEN_e2e';

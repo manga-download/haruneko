@@ -1,23 +1,17 @@
 import { Tags } from '../Tags';
 import icon from './TenManga.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as TAADD from './decorators/TAADDBase';
 import * as Common from './decorators/Common';
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.getElementsByClassName('chp-idx')[0].textContent.trim()
-    };
-}
+import { MangaLabelExtractor, TAADBase, mangaPath } from './templates/TAADDBase';
 
-@Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, 'meta[property="og:title"]', TAADD.MangaLabelExtractor)
-@Common.MangasMultiPageCSS(TAADD.mangaPath, 'section.book-list div.book-item a:first-of-type', 1, 1, 0, Common.AnchorInfoExtractor(true))
-@TAADD.ChaptersSinglePageCSS('div.chp-item a', ChapterExtractor)
-@TAADD.PagesSinglePageCSS('div.option-list.chp-selection-list[option_name="page_head"] div[option_val]')
-@TAADD.ImageAjaxFromHTML()
-export default class extends DecoratableMangaScraper {
+@Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, 'meta[property="og:title"]', MangaLabelExtractor)
+@Common.MangasMultiPageCSS(mangaPath, 'section.book-list div.book-item a:first-of-type', 1, 1, 0, Common.AnchorInfoExtractor(true))
+
+export default class extends TAADBase {
     public constructor() {
         super('tenmanga', `TenManga`, 'https://www.tenmanga.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        this.queryChapters = 'div.chp-item a';
+        this.queryPages = 'div.option-list.chp-selection-list[option_name="page_head"] div[option_val]';
+        this.forcedWebpCookieValue = undefined;
     }
     public override get Icon() {
         return icon;

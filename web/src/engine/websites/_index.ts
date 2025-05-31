@@ -389,7 +389,6 @@ export { default as MangaReaderTo } from './MangaReaderTo';
 export { default as MangaRockTeam } from './MangaRockTeam';
 export { default as MangaRolls } from './MangaRolls';
 export { default as MangaRose } from './MangaRose';
-export { default as MangaRussia } from './MangaRussia';
 export { default as MangAs } from './MangAs';
 export { default as MangaSail } from './MangaSail';
 export { default as MangaScantrad } from './MangaScantrad';
