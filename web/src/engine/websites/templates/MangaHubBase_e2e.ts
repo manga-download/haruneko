@@ -1,0 +1,1 @@
+import '../MangaHub_e2e';
