@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'cosmicscansid',
         title: 'Cosmic Scans ID'
     },
     container: {
-        url: 'https://cosmic345.co/manga/eleceed/',
+        url: 'https://cosmic02.com/manga/eleceed/',
         id: '/manga/eleceed/',
         title: 'Eleceed'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 98_349,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

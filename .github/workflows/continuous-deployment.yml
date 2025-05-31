@@ -37,7 +37,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: |
             pages deploy ./web/build --project-name=hakuneko --commit-dirty=true
-            pages deploy ./web/build --project-name=haruneko --commit-dirty=true
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
@@ -47,4 +46,3 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: |
             pages deploy ./docs/.vitepress/dist --project-name=hakuneko-docs --commit-dirty=true
-            pages deploy ./docs/.vitepress/dist --project-name=haruneko-docs --commit-dirty=true

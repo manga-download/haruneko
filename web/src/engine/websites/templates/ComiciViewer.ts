@@ -56,7 +56,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}/list`, this.URI)), 'div.series-ep-list a[data-href]' );
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}/list`, this.URI)), 'div.series-ep-list a[data-href]');
         return data.map(element => {
             const { id, title } = ChapterExtractor.call(this, element);
             return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);

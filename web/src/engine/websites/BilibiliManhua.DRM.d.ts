@@ -1,4 +1,3 @@
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 export declare class DRMProvider {
     #private;
     GetPublicKey(): Promise<string>;
