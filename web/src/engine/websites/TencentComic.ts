@@ -9,7 +9,7 @@ import { DRMProvider } from './TencentComic.DRM.js';
 @Common.ChaptersSinglePageCSS('.works-chapter-list.chapter-page-all li span.works-chapter-item a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    #drm: DRMProvider;
+    readonly #drm: DRMProvider = new DRMProvider();
 
     public constructor() {
         super('tencentcomic', 'Tencent (Comic)', 'https://ac.qq.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Official);
@@ -17,10 +17,6 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon(): string {
         return icon;
-    }
-
-    public override async Initialize(): Promise<void> {
-        this.#drm = new DRMProvider();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
