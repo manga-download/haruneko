@@ -16,6 +16,13 @@ const styles: ElementStyles = css`
         gap: var(--spacingHorizontalS);
     }
 
+    /*
+    fluent-text-input {
+        display: block;
+        max-width: unset !important;
+    }
+    */
+
     /* #settings .input {
         display: contents;
     } */
@@ -46,42 +53,27 @@ const templateChoiceOption: ViewTemplate<{key: string, label: string}> = html`
 `;
 
 const templateChoice: ViewTemplate<Choice> = html`
-    <fluent-dropdown type="combobox" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
-        <fluent-listbox>
-            ${repeat(model => model.Options, templateChoiceOption)}
-        </fluent-listbox>
-    </fluent-dropdown>
+<fluent-dropdown type="dropdown" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
+    <fluent-listbox>
+        ${repeat(model => model.Options, templateChoiceOption)}
+    </fluent-listbox>
+</fluent-dropdown>
 `;
 
 const templateDirectory: ViewTemplate<Directory> = html`
-    <fluent-text-field readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
-    <div slot="end" style="display: flex; align-items: center;">
-        <fluent-button icon-only appearance="transparent" style="height: fit-content;" :innerHTML=${() => IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
-    </div>
-    </fluent-text-field>
+    <fluent-text-input readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
+        <fluent-button slot="end" icon-only size="small" appearance="transparent" :innerHTML=${() => IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
+    </fluent-text-input>
 `;
 
-/*
-    <div title="${model => S.Locale[model.Description]()}">
-        ${model => S.Locale[model.Label]()}
-    </div>
-    <div class="input">
-        ${when(model => model instanceof Text, templateText)}
-        ${when(model => model instanceof Secret, templateSecret)}
-        ${when(model => model instanceof Numeric, templateNumeric)}
-        ${when(model => model instanceof Check, templateCheck)}
-        ${when(model => model instanceof Choice, templateChoice)}
-        ${when(model => model instanceof Directory, templateDirectory)}
-    </div>
-*/
 const templateSettingRow: ViewTemplate<ISetting> = html`
     <div title=${model => S.Locale[model.Description]()}>${model => S.Locale[model.Label]()}</div>
     ${when(model => model instanceof Text, templateText)}
     ${when(model => model instanceof Secret, templateSecret)}
     ${when(model => model instanceof Numeric, html`<div>[Numeric]</div>`)}
     ${when(model => model instanceof Check, templateCheck)}
-    ${when(model => model instanceof Choice, html`<div>[Choice]</div>`)}
-    ${when(model => model instanceof Directory, html`<div>[Directory]</div>`)}
+    ${when(model => model instanceof Choice, templateChoice)}
+    ${when(model => model instanceof Directory, templateDirectory)}
 `;
 
 const template: ViewTemplate<SettingsDialog> = html`
@@ -96,6 +88,14 @@ const template: ViewTemplate<SettingsDialog> = html`
             </fluent-button>
         </fluent-dialog-body>
     </fluent-dialog>
+
+    <fluent-dropdown type="dropdown">
+        <fluent-listbox>
+            <fluent-option value="1">1 - A</fluent-option>
+            <fluent-option value="2">2 - B</fluent-option>
+            <fluent-option value="3">3 - C</fluent-option>
+        </fluent-listbox>
+    </fluent-dropdown>
 `;
 
 @customElement({ name: 'fluent-settings-dialog', template, styles })

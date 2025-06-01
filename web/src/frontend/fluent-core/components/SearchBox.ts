@@ -17,8 +17,8 @@ const styles: ElementStyles = css`
         max-width: unset !important;
     }
 
-    #searchpattern svg {
-        height: 75%;
+    #searchpattern [slot="start"] svg {
+        height: 1em;
     }
 
     #searchpattern [slot="start"] {
@@ -29,10 +29,6 @@ const styles: ElementStyles = css`
     #searchpattern [slot="end"] {
         display: flex;
         align-items: center;
-    }
-
-    #searchpattern [slot="end"] fluent-button {
-        height: fit-content;
     }
 `;
 
