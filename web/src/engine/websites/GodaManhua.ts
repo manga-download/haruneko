@@ -4,6 +4,8 @@ import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
+// TODO: Revision
+
 export type ChapterID = {
     mangaid: string,
     id: string
@@ -66,5 +68,4 @@ export default class extends DecoratableMangaScraper {
         const CDN = line === 2 ? 'https://f40-1-4.g-mh.online' : 'https://t40-1-4.g-mh.online';
         return images.map(page => new Page(this, chapter, new URL(page.url, CDN), { Referer: this.URI.href }));
     }
-
 }

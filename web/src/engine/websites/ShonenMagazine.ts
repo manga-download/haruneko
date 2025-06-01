@@ -3,6 +3,8 @@ import icon from './ShonenMagazine.webp';
 import { FetchJSON } from '../platform/FetchProvider';
 import CiaoPlus, { type MangaData } from './CiaoPlus';
 
+// TODO: Revision
+
 type APIManga = {
     web_title: {
         title_id: number,
@@ -13,7 +15,7 @@ type APIManga = {
 
 export default class extends CiaoPlus {
     public constructor() {
-        //Shonenmagazine.com && pocket.shonenmagazine.com mangas url starts with https://pocket.shonenmagazine.com so this plugin handles both.
+        // Shonenmagazine.com && pocket.shonenmagazine.com mangas url starts with https://pocket.shonenmagazine.com so this plugin handles both.
         super('shonenmagazine', `週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)`, 'https://pocket.shonenmagazine.com', [Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga]);
         this.apiUrl = 'https://api.pocket.shonenmagazine.com/';
         this.requestHashProperty = 'x-manga-hash';

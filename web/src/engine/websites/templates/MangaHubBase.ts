@@ -5,6 +5,8 @@ import { FetchCSS, FetchGraphQL, FetchWindowScript } from '../../platform/FetchP
 import * as Common from '../decorators/Common';
 import { RateLimit } from '../../taskpool/RateLimit';
 
+// TODO: Revision
+
 type APIMangas = {
     search: {
         rows: {

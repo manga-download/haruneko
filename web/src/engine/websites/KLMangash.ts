@@ -4,6 +4,8 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchHTML, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
+// TODO: Revision
+
 type ZingParams = {
     nonce: string,
     ajax_url: string

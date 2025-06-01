@@ -2,6 +2,8 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../..
 import * as Common from '../decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 
+// TODO: Revision
+
 type FeedResults = {
     feed: {
         entry: {
@@ -27,6 +29,7 @@ export function PageLinkExtractor(image: HTMLImageElement): string {
 @Common.PagesSinglePageCSS('article#reader div.separator a img', PageLinkExtractor)
 @Common.ImageAjax()
 export class ZeistManga extends DecoratableMangaScraper {
+
     protected mangaSlugScript = `clwd.settings.cat;`;
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -45,5 +48,4 @@ export class ZeistManga extends DecoratableMangaScraper {
             return { pathname: new URL(goodLink.href).pathname, title: goodLink.title.replace(parent?.Title, '').trim() };
         }).filter(entry => parent ? entry.pathname != parent.Identifier : true);
     }
-
 }

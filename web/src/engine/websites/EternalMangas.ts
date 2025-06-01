@@ -4,6 +4,8 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON, FetchRegex } from '../platform/FetchProvider';
 
+// TODO: Revision
+
 type APIManga = {
     id: number,
     name: string,
@@ -66,5 +68,4 @@ export default class extends DecoratableMangaScraper {
         });
         return FetchCSS<T>(request, query);
     }
-
 }

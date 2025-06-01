@@ -8,6 +8,8 @@ import DeScramble from '../../transformers/ImageDescrambler';
 import * as Common from '../decorators/Common';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 
+// TODO: Revision
+
 type APIResult<T> = {
     result: T,
     totalPages: number

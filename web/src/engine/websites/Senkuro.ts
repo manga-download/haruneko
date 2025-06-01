@@ -5,6 +5,8 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import { Delay } from '../BackgroundTimers';
 
+// TODO: Revision
+
 type GraphQLResult<T> = {
     data: T
 }

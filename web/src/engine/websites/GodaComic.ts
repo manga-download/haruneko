@@ -5,6 +5,8 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import GodaManhua, { chapterScript, type ChapterID } from './GodaManhua';
 
+// TODO: Revision
+
 @Common.PagesSinglePageCSS('div#chapcontent img[data-src]')
 @Common.ImageAjax()
 export default class extends GodaManhua {
@@ -25,5 +27,4 @@ export default class extends GodaManhua {
             return new Chapter(this, manga, `./chapter/getcontent?m=${mangaid}&c=${id}`, chapter.title.replace(manga.Title, '').trim() || chapter.title);
         });
     }
-
 }

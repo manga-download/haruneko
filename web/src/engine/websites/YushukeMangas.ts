@@ -4,9 +4,11 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
+// TODO: Revision
+
 type ChaptersData = {
     chapters: string,
-    remaining : number
+    remaining: number
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+/, 'div.manga-details div.manga-title-row h1')
@@ -36,7 +38,7 @@ export default class extends DecoratableMangaScraper {
 
     private ExtractChapters(manga: Manga, html: string): Chapter[] {
         const doc = new DOMParser().parseFromString(html, 'text/html');
-        return [...doc.querySelectorAll<HTMLAnchorElement>('a.chapter-item')].map(chapter => {
+        return [ ...doc.querySelectorAll<HTMLAnchorElement>('a.chapter-item') ].map(chapter => {
             const { id, title } = Common.AnchorInfoExtractor(false, 'span:not(.capitulo-numero)').call(this, chapter);
             return new Chapter(this, manga, id, title);
         });

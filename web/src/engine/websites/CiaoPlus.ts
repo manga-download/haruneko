@@ -8,6 +8,8 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 
+// TODO: Revision
+
 type APIMangas = {
     title_list: {
         title_id: number,
