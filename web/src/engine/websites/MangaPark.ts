@@ -70,6 +70,7 @@ const mangaLanguageMap = new Map([
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     protected apiURL = `${this.URI.origin}/apo/`;
 
     public constructor() {
@@ -92,9 +93,7 @@ export default class extends DecoratableMangaScraper {
         const query = `
             query get_comicNode($comicId: ID!) {
                 get_comicNode(id: $comicId) {
-                    data {
-                        id, name, tranLang
-                    }
+                    data { id, name, tranLang }
                 }
             }
         `;
@@ -104,8 +103,7 @@ export default class extends DecoratableMangaScraper {
         };
 
         const { get_comicNode: { data } } = await FetchGraphQL<APISingleManga>(this.CreateRequest(), 'get_comicNode', query, variables);
-        return new Manga(this, provider, data.id, this.CleanName(data.name) + ` [${data.tranLang}]`,
-            ...mangaLanguageMap.has(data.tranLang) ? [mangaLanguageMap.get(data.tranLang)] : []);
+        return this.CreateManga(provider, data);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -121,41 +119,25 @@ export default class extends DecoratableMangaScraper {
         const query = `
             query get_searchComic($select: SearchComic_Select) {
                 get_searchComic(select: $select) {
-                    paging {
-                        pages
-                    }
-                    items {
-                        data {
-                            id
-                            name
-                            tranLang
-                        }
-                    }
+                    paging { pages }
+                    items { data { id, name, tranLang } }
                 }
             }
         `;
+
         const variables = {
-            select: {
-                word: '',
-                page: page,
-                incGenres: [],
-                excGenres: [],
-            }
+            select: { page }
         };
 
         const { get_searchComic: { items } } = await FetchGraphQL<APIMangas>(this.CreateRequest(), 'get_searchComic', query, variables);
-        return items.map(item => new Manga(this, provider, item.data.id, this.CleanName(item.data.name) + ` [${item.data.tranLang}]`,
-            ...mangaLanguageMap.has(item.data.tranLang) ? [mangaLanguageMap.get(item.data.tranLang)] : [] ));
-
+        return items.map(item => this.CreateManga(provider, item.data));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const query = `
             query Get_comicChapterList($comicId: ID!) {
                 get_comicChapterList(comicId: $comicId) {
-                    data {
-                    	  id, dateCreate, dname, title
-                    }
+                    data { id, dateCreate, dname, title }
                 } 
             }
         `;
@@ -174,11 +156,7 @@ export default class extends DecoratableMangaScraper {
         const query = `
             query Get_chapterNode($getChapterNodeId: ID!) {
                 get_chapterNode(id: $getChapterNodeId) {
-                    data {
-                        imageFile {
-                            urlList
-                        }
-                    }
+                    data { imageFile { urlList } }
                 }
             }
         `;
@@ -191,18 +169,18 @@ export default class extends DecoratableMangaScraper {
         return urlList.map(page => new Page(this, chapter, new URL(page), { Referer: this.URI.href }));
     }
 
-    private CleanName(name: string): string {
-        return new DOMParser().parseFromString(name, 'text/html').documentElement.innerText.trim();
+    private CreateManga(provider: MangaPlugin, data: APIManga['data']): Manga {
+        const title = new DOMParser().parseFromString(`${data.name} [${data.tranLang}]`, 'text/html').documentElement.innerText.trim();
+        const tags = [ mangaLanguageMap.get(data.tranLang) ].filter(tag => tag);
+        return new Manga(this, provider, data.id, title, ...tags);
     }
 
     private CreateRequest(): Request {
         return new Request(new URL(this.apiURL), {
             headers: {
                 Referer: this.URI.href,
-                Origin: this.URI.origin,
                 Cookie: 'nsfw=2'
             }
         });
     }
-
 }
