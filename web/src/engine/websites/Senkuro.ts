@@ -8,20 +8,14 @@ import { Delay } from '../BackgroundTimers';
 type APIManga = {
     manga: {
         slug: string,
-        originalName: {
-            content: string
-        },
-        branches: {
-            id: string
-        }[]
+        originalName: { content: string },
+        branches: { id: string }[]
     }
 }
 
 type APIMangas = {
     mangas: {
-        edges: {
-            node: APIManga['manga']
-        }[],
+        edges: { node: APIManga['manga'] }[],
         pageInfo: {
             hasNextPage: boolean,
             endCursor: string
@@ -48,13 +42,7 @@ type APIChapters = {
 
 type APIPages = {
     mangaChapter: {
-        pages: {
-            image: {
-                original: {
-                    url: string
-                }
-            }
-        }[]
+        pages: { image: { original: { url: string } } }[]
     }
 }
 
