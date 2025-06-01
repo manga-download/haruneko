@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Cosmic Scans ID'
     },
     container: {
-        url: 'https://cosmic02.com/manga/eleceed/',
+        url: 'https://kmvs03.com/manga/eleceed/',
         id: '/manga/eleceed/',
         title: 'Eleceed'
     },

@@ -1,22 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './ComicGrowl.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as CoreView from './decorators/CoreView';
-import * as Common from './decorators/Common';
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('h5.title').textContent.replace(/^完結 /, '').trim()
-    };
-}
+import { ComiciViewer } from'./templates/ComiciViewer';
 
-@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@Common.MangasSinglePagesCSS([ '/' ], 'section#lineup ul.lineup-list div.lineup-item a', MangaExtractor)
-@CoreView.ChaptersSinglePageAJAXV1()
-@CoreView.PagesSinglePageJSON()
-@CoreView.ImageAjax()
-export default class extends DecoratableMangaScraper {
-
+export default class extends ComiciViewer {
     public constructor() {
         super('comicgrowl', `コミックグロウル (Comic Growl)`, 'https://comic-growl.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
