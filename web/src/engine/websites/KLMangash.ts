@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
         return this.imageTaskPool.Add(async () => {
             const data = await this.FetchZingPage(page.Parameters);
             const link = new DOMParser().parseFromString(data, 'text/html').documentElement.querySelector('img')?.src;
-            return Fetch(new Request(link)).then(response => response.blob());
+            return Fetch(new Request(link)).then(response => response.arrayBuffer()).then(data => Common.GetTypedData(data));
         }, priority, signal);
     }
 
