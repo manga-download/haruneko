@@ -19,7 +19,7 @@ type MediaEntry = {
     title: string
 }
 
-function PageLinkExtractor(image: HTMLImageElement): string {
+export function PageLinkExtractor(image: HTMLImageElement): string {
     return image.src.replace(/\/s\d+[^/]*(\/[^/]+$)/, '/s0$1');
 }
 
