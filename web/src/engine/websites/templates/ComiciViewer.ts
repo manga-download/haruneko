@@ -28,7 +28,7 @@ function StripTrailingDash(text: string): string {
 function MangaInfoExtractor(element: HTMLElement) {
     return {
         id: StripTrailingDash(element.querySelector('a').pathname),
-        title: element.querySelector('h2.title-text').textContent.trim()
+        title: element.querySelector<HTMLHeadingElement>('h2.title-text').textContent.trim()
     };
 }
 
