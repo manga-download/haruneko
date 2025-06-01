@@ -11,12 +11,12 @@ new TestFixture({
         title: 'ボールパークでつかまえて！'
     },
     child: {
-        id: encodeURI('/manga-raw/ボールパークでつかまえて！-raw-free/chapter-191/').toLowerCase(),
-        title: '【第191話】'
+        id: encodeURI('/manga-raw/ボールパークでつかまえて！-raw-free/chapter-190/').toLowerCase(),
+        title: '【第190話】'
     },
     entry: {
-        index: 0,
-        size: 117_354,
+        index: 11,
+        size: 219_118,
         type: 'image/webp'
     }
 }).AssertWebsite();
