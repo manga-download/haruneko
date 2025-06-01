@@ -4,13 +4,12 @@ import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { DRMProvider } from './TencentComic.DRM.js';
 
-// TODO: Revision
-
 @Common.MangaCSS(/^{origin}\/Comic\/ComicInfo\/id\/\d+$/i, 'h2.works-intro-title')
 @Common.MangasMultiPageCSS('/Comic/all/search/time/vip/1/page/{page}', 'div.ret-main ul.ret-search-list li.ret-search-item div.ret-works-info h3.ret-works-title a')
 @Common.ChaptersSinglePageCSS('.works-chapter-list.chapter-page-all li span.works-chapter-item a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     readonly #drm: DRMProvider = new DRMProvider();
 
     public constructor() {
