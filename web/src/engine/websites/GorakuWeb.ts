@@ -35,7 +35,7 @@ type PageParams = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('gorakuweb', 'Goraku Web', 'https://gorakuweb.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('gorakuweb', 'Goraku Web', 'https://gorakuweb.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga/*, Tags.Accessibility.RegionLocked*/);
     }
 
     public override get Icon() {
@@ -58,8 +58,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(encrypted: Blob, page: PageParams): Promise<Blob> {
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.iv) }; // NOTE: The default for the `length` is `128`
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.keyData), algorithm, true, [ 'decrypt' ]);
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.iv) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.keyData), algorithm, false, [ 'decrypt' ]);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, await encrypted.arrayBuffer());
         return Common.GetTypedData(decrypted);
     }

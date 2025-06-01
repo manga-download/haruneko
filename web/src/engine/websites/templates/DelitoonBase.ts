@@ -127,8 +127,8 @@ export class DelitoonBase extends DecoratableMangaScraper {
         const endpoint = new URL(`contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         const { data } = await this.FetchBalconyJSON<DecrypionKey>(endpoint, { line: images[0].line });
         const keyData = GetBytesFromUTF8(data);
-        const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16) };
-        const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
+        const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16), length: 256 };
+        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, [ 'decrypt' ]);
         const promises = images.map(async image => {
             const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(image.point));
             const scrambleIndex = JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
