@@ -95,18 +95,18 @@ export abstract class FetchProvider {
      * @param query - A valid GraphQL query
      * @param variables - A JSONObject containing the variables of the query.
      */
-    public async FetchGraphQL<T extends JSONElement>(request: Request, operationName: string, query: string, variables: JSONObject): Promise<T> {
+    public async FetchGraphQL<T extends JSONElement>(request: Request, operationName: string, query: string | undefined, variables: JSONObject, extensions: JSONObject | undefined = undefined): Promise<T> {
 
         const graphQLRequest = new Request(request.url, {
-            body: JSON.stringify({ operationName, query, variables }),
             method: 'POST',
+            body: JSON.stringify({ operationName, query, variables, extensions }),
             headers: {
-                'content-type': 'application/json',
-                'accept': '*/*'
+                'Content-Type': 'application/json',
+                'Accept': '*/*'
             },
         });
 
-        //copy custom headers from parent request
+        // NOTE: Copy custom headers from parent request
         for (const header of request.headers) {
             graphQLRequest.headers.set(header[0], header[1]);
         }

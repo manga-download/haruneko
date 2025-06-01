@@ -29,7 +29,7 @@ export const FetchCSS = <T extends HTMLElement>(request: Request, query: string)
 /** {@inheritDoc FetchProvider.FetchProto} @see {@link FetchProvider.FetchProto} */
 export const FetchProto = <T extends JSONElement>(request: Request, schema: string, messageTypePath: string) => instance.FetchProto<T>(request, schema, messageTypePath);
 /** {@inheritDoc FetchProvider.FetchGraphQL} @see {@link FetchProvider.FetchGraphQL} */
-export const FetchGraphQL = <T extends JSONElement>(request: Request, operationName: string, query: string, variables: JSONObject) => instance.FetchGraphQL<T>(request, operationName, query, variables);
+export const FetchGraphQL = <T extends JSONElement>(request: Request, operationName: string, query: string | undefined, variables: JSONObject, extensions: JSONObject | undefined) => instance.FetchGraphQL<T>(request, operationName, query, variables, extensions);
 /** {@inheritDoc FetchProvider.FetchWindowScript} @see {@link FetchProvider.FetchWindowScript} */
 export const FetchWindowScript = <T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number) => instance.FetchWindowScript<T>(request, script, delay, timeout);
 /** {@inheritDoc FetchProvider.FetchWindowPreloadScript} @see {@link FetchProvider.FetchWindowPreloadScript} */

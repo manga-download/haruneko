@@ -2,25 +2,8 @@
 import icon from './Senkuro.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchGraphQL } from '../platform/FetchProvider';
 import { Delay } from '../BackgroundTimers';
-
-// TODO: Revision
-
-type GraphQLResult<T> = {
-    data: T
-}
-
-type GraphQLBody = {
-    variables: JSONElement,
-    operationName: string,
-    extensions: {
-        persistedQuery: {
-            version: number,
-            sha256Hash: string
-        }
-    }
-}
 
 type APIManga = {
     manga: {
@@ -37,12 +20,7 @@ type APIManga = {
 type APIMangas = {
     mangas: {
         edges: {
-            node: {
-                slug: string,
-                originalName: {
-                    content: string
-                }
-            }
+            node: APIManga['manga']
         }[],
         pageInfo: {
             hasNextPage: boolean,
@@ -97,164 +75,71 @@ export default class extends DecoratableMangaScraper {
         return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+(\/chapters)?$`).test(url);
     }
 
-    private async FetchMangaInfos(slug: string): Promise<APIManga> {
-        const body: GraphQLBody = {
-            operationName: 'fetchManga',
-            extensions: {
-                persistedQuery: {
-                    version: 1,
-                    sha256Hash: '08f66ec9b6a68ceb58645213aa63f4a93e7cac2efa572654b88a625781da8b69'
-                }
-            },
-            variables: {
-                slug
-            }
-        };
-        return await this.FetchGraphQL<APIManga>(body);
-    }
-
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { manga } = await this.FetchMangaInfos(url.match(/manga\/([^/]+)/).at(1));
+        const slug = url.match(/manga\/([^/]+)/).at(-1);
+        const { manga } = await this.FetchAPI<APIManga>('fetchManga', { slug }, '08f66ec9b6a68ceb58645213aa63f4a93e7cac2efa572654b88a625781da8b69');
         return new Manga(this, provider, manga.slug, manga.originalName.content);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangasList: Manga[] = [];
-        let cursor: string = null;
-        do {
-            await Delay(500);
-            const { mangas, mangas: { pageInfo: { hasNextPage, endCursor } } } = await this.FetchMangasData(provider, cursor);
+        for(let run = true, after: string = null; run;) {
+            await Delay(250);
+            const { mangas, mangas: { pageInfo: { hasNextPage, endCursor } } } = await this.FetchMangasData(after);
             mangasList.push(...mangas.edges.map(manga => new Manga(this, provider, manga.node.slug, manga.node.originalName.content)));
-            cursor = hasNextPage? endCursor: null;
-        } while (cursor);
+            after = endCursor;
+            run = hasNextPage;
+        }
         return mangasList;
     }
 
-    private async FetchMangasData(provider: MangaPlugin, after: string = null): Promise<APIMangas> {
-        const body: GraphQLBody = {
-            extensions: {
-                persistedQuery: {
-                    sha256Hash: '0fd2decbd14ae2ebcc09f6f19d0dd9474d323c55e44bd15041d18666316b0944',
-                    version: 1
-                }
-            },
-            operationName: 'fetchMangas',
-            variables: {
-                after,
-                bookmark: {
-                    exclude: [],
-                    include: []
-                },
-                chapters: {},
-                format: {
-                    exclude: [],
-                    include: []
-                },
-                label: {
-                    exclude: [],
-                    include: []
-                },
-                orderDirection: 'DESC',
-                orderField: 'POPULARITY_SCORE',
-                originCountry: {
-                    exclude: [],
-                    include: []
-                },
-                rating: {
-                    exclude: [],
-                    include: []
-                },
-                releasedOn: {},
-                search: null,
-                source: {
-                    exclude: [],
-                    include: []
-                },
-                status: {
-                    exclude: [],
-                    include: []
-                },
-                translitionStatus: {
-                    exclude: [],
-                    include: []
-                },
-                type: {
-                    exclude: [],
-                    include: []
-                }
-            }
-        };
-
-        return await this.FetchGraphQL<APIMangas>(body);
+    private async FetchMangasData(after: string): Promise<APIMangas> {
+        return this.FetchAPI<APIMangas>('fetchMangas', {
+            after,
+            orderDirection: 'DESC',
+            orderField: 'CREATED_AT',
+        }, '0fd2decbd14ae2ebcc09f6f19d0dd9474d323c55e44bd15041d18666316b0944');
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { manga: { branches } } = await this.FetchMangaInfos(manga.Identifier);
+        const { manga: { branches } } = await this.FetchAPI<APIManga>('fetchManga', { slug: manga.Identifier }, '08f66ec9b6a68ceb58645213aa63f4a93e7cac2efa572654b88a625781da8b69');
         const chaptersList: Chapter[] = [];
         for (const branch of branches) {
-            let cursor: string = null;
-            do {
-                const { mangaChapters, mangaChapters: { pageInfo: { hasNextPage, endCursor } } } = await this.FetchChaptersData(branch.id, cursor);
+            for(let run = true, after: string = null; run;) {
+                const { mangaChapters, mangaChapters: { pageInfo: { hasNextPage, endCursor } } } = await this.FetchChaptersData(branch.id, after);
                 chaptersList.push(...mangaChapters.edges.map(chapter => {
-                    const title = [`Том ${chapter.node.volume} Глава ${chapter.node.number}`, chapter.node.name].join(' ').trim();
+                    const title = [ 'Том', chapter.node.volume, 'Глава', chapter.node.number, chapter.node.name ].join(' ').trim();
                     return new Chapter(this, manga, chapter.node.slug, title);
                 }));
-                cursor = hasNextPage ? endCursor : null;
-            } while (cursor);
+                after = endCursor;
+                run = hasNextPage;
+            }
         }
         return chaptersList;
     }
 
-    private async FetchChaptersData(branchId: string, after: string = null): Promise<APIChapters> {
-        const body: GraphQLBody = {
-            extensions: {
-                persistedQuery: {
-                    sha256Hash: '8c854e121f05aa93b0c37889e732410df9ea207b4186c965c845a8d970bdcc12',
-                    version: 1
-                }
-            },
-            operationName: 'fetchMangaChapters',
-            variables: {
-                after,
-                branchId,
-                number: null,
-                orderBy: {
-                    direction: 'DESC',
-                    field: 'NUMBER'
-                }
-            }
-        };
-        return await this.FetchGraphQL<APIChapters>(body);
+    private FetchChaptersData(branchId: string, after: string): Promise<APIChapters> {
+        return this.FetchAPI<APIChapters>('fetchMangaChapters', {
+            after,
+            branchId,
+            orderBy: { direction: 'DESC', field: 'NUMBER' },
+        }, '8c854e121f05aa93b0c37889e732410df9ea207b4186c965c845a8d970bdcc12');
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const body: GraphQLBody = {
-            extensions: {
-                persistedQuery: {
-                    sha256Hash: '320a2637126c71ccdbce6af04325fe2f5878cc7adf9e90d06bdd6752f9bbb14e',
-                    version: 1
-                }
-            },
-            operationName: 'fetchMangaChapter',
-            variables: {
-                cdnQuality: 'auto',
-                slug: chapter.Identifier
-            }
-        };
-        const { mangaChapter: { pages } } = await this.FetchGraphQL<APIPages>(body);
+        const { mangaChapter: { pages } } = await this.FetchAPI<APIPages>('fetchMangaChapter', {
+            cdnQuality: 'auto',
+            slug: chapter.Identifier,
+        }, '320a2637126c71ccdbce6af04325fe2f5878cc7adf9e90d06bdd6752f9bbb14e');
         return pages.map(page => new Page(this, chapter, new URL(page.image.original.url)));
     }
 
-    private async FetchGraphQL<T extends JSONElement>(body: GraphQLBody): Promise<T> {
-        const { data } = await FetchJSON<GraphQLResult<T>>(new Request(new URL(this.apiUrl), {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-                'Content-type': 'application/json',
-                Origin: this.URI.origin,
-                Referrer: this.URI.href
+    private async FetchAPI<T extends JSONElement>(operation: string, variables: JSONObject, queryID: string, queryVersion = 1): Promise<T> {
+        return FetchGraphQL<T>(new Request(new URL(this.apiUrl)), operation, undefined, variables, {
+            persistedQuery: {
+                sha256Hash: queryID,
+                version: queryVersion,
             }
-        }));
-        return data;
+        });
     }
 }
