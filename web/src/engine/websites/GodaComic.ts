@@ -1,18 +1,27 @@
 ﻿import { Tags } from '../Tags';
 import icon from './GodaComic.webp';
-import { Chapter, type Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import GodaManhua, { chapterScript, type ChapterID } from './GodaManhua';
+import { chapterScript, type ChapterID } from './GodaManhua';
 
-// TODO: Revision
+/*
+const script = `
+    fetch('/manga/get?mode=all&mid=' + document.querySelector('div[data-mid]').dataset.mid).then(response => response.text()).then(test => {
+        document.body.innerHTML = text;
+        return [ ...document.querySelectorAll('.chapteritem > a') ].map(element => ({ id: element.pathname, title: element.dataset.ct }));
+    });
+`;
+*/
 
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'nav ol li:last-of-type a')
+@Common.MangasMultiPageCSS('/manga/page/{page}', 'div.cardlist a')
 @Common.PagesSinglePageCSS('div#chapcontent img[data-src]')
 @Common.ImageAjax()
-export default class extends GodaManhua {
+export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('godacomic', 'GodaComic', 'https://manhuascans.org', [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator]);
+        super('godacomic', 'GodaComic', 'https://manhuascans.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

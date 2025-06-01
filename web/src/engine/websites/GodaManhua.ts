@@ -4,13 +4,6 @@ import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
-// TODO: Revision
-
-export type ChapterID = {
-    mangaid: string,
-    id: string
-}
-
 type APIPages = {
     data: {
         info: {
@@ -25,14 +18,10 @@ type APIPages = {
 }
 
 export const chapterScript = `
-    new Promise (resolve => {
-        resolve ([...document.querySelectorAll('div.chapteritem a')].map(chapter => {
-            return {
-                id: JSON.stringify({mangaid : chapter.dataset.ms, id: chapter.dataset.cs}),
-                title: chapter.dataset.ct.trim()
-            }
-        }));
-    });
+    [ ...document.querySelectorAll('.chapteritem > a') ].map(element => ({
+        id: JSON.stringify({ m: element.dataset.ms, c: element.dataset.cs }),
+        title: element.dataset.ct.trim(),
+    }));
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'nav ol li:last-of-type a')
@@ -42,8 +31,8 @@ export default class extends DecoratableMangaScraper {
 
     private apiUrl = 'https://api-get-v2.mgsearcher.com/api/';
 
-    public constructor(id = 'godamanhua', label = 'GodaManhua', url = 'https://baozimh.org', tags = [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator]) {
-        super(id, label, url, ...tags );
+    public constructor() {
+        super('godamanhua', 'GodaManhua', 'https://baozimh.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -51,12 +40,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        // /manga/get?mode=all&mid=7
         const request = new Request(new URL(manga.Identifier.replace('/manga/', '/chapterlist/'), this.URI));
         const chapters = await FetchWindowScript<{ id: string, title: string }[]>(request, chapterScript, 2000);
         return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim() || chapter.title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        // /chapter/getcontent?m=7&c=41775
         const { mangaid, id } = JSON.parse(chapter.Identifier) as ChapterID;
         const request = new Request(new URL(`./chapter/getinfo?m=${mangaid}&c=${id}`, this.apiUrl), {
             headers: {
