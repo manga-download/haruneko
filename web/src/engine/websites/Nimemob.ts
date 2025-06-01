@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
-import icon from './Mikoroku.webp';
+import icon from './Nimemob.webp';
 import { ZeistManga } from './templates/ZeistManga';
 
 export default class extends ZeistManga {
 
     public constructor() {
-        super('mikoroku', 'Mikoroku', 'https://www.mikoroku.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('nimemob', 'Nimemob', 'https://www.nimemob.my.id', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
