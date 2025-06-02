@@ -19,7 +19,7 @@ type APIPages = {
 
 export const chapterScript = `
     [ ...document.querySelectorAll('.chapteritem > a') ].map(element => ({
-        id: JSON.stringify({ m: element.dataset.ms, c: element.dataset.cs }),
+        id: new URLSearchParams({ m: element.dataset.ms, c: element.dataset.cs }).toString(),
         title: element.dataset.ct.trim(),
     }));
 `;
@@ -40,16 +40,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        // /manga/get?mode=all&mid=7
         const request = new Request(new URL(manga.Identifier.replace('/manga/', '/chapterlist/'), this.URI));
         const chapters = await FetchWindowScript<{ id: string, title: string }[]>(request, chapterScript, 2000);
-        return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim() || chapter.title));
+        //return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim() || chapter.title));
+        return chapters.map(chapter => new Chapter(this, manga, `./chapter/getinfo?${chapter.id}`, chapter.title.replace(manga.Title, '').trim() || chapter.title));
     }
 
+    // TODO: Simplify?
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        // /chapter/getcontent?m=7&c=41775
-        const { mangaid, id } = JSON.parse(chapter.Identifier) as ChapterID;
-        const request = new Request(new URL(`./chapter/getinfo?m=${mangaid}&c=${id}`, this.apiUrl), {
+        // ./chapter/getcontent?${chapter.id}
+        const request = new Request(new URL(chapter.Identifier, this.apiUrl), {
             headers: {
                 Referer: this.URI.href,
                 Origin: this.URI.origin
