@@ -1,18 +1,20 @@
 import { Tags } from '../Tags';
 import icon from './EternalMangas.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchRegex } from '../platform/FetchProvider';
+import { FetchCSS } from '../platform/FetchProvider';
 
-type APIManga = {
+type JSONManga = {
     id: number,
     name: string,
     slug: string
 }
 
+@Common.MangaCSS(/^{origin}\/ver\/[^/]+$/, 'meta[property="og:title"]')
+@Common.ChaptersSinglePageCSS('div[class*="infoProject_divListChapter"] a[class*="infoProject_divChapter"]', Common.AnchorInfoExtractor(false, 'span:not([class*="infoProject_numChapter"])'))
+@Common.PagesSinglePageCSS('main.read img[class*="readChapter_image"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://apis.eternalmangas.com/api/';
 
     public constructor() {
         super('eternalmangas', 'Eternal Mangas', 'https://eternalmangas.com', Tags.Media.Manhwa, Tags.Media.Novel, Tags.Language.Spanish, Tags.Source.Scanlator);
@@ -22,49 +24,27 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const token = (await FetchRegex(new Request(new URL('./comics', this.URI)), /token\\['"]:\\["']([^\\]+)/g)).at(0);
-        const data = await FetchJSON<APIManga[]>(new Request(new URL('./comics-actu', this.apiUrl), {
-            headers: {
-                'x-eternal-key': token
+        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('./comics', this.URI)), 'script:not([src])');
+        const mangas = this.ExtractData<JSONManga[]>(scripts, 'project_id', 'aea');
+        return mangas.map(manga => new Manga(this, provider, `/ver/${manga.slug}`, manga.name));
+    }
+
+    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
+        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
+        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
+        const record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
+
+        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
+            if (parent[keyName]) {
+                return parent[keyName];
             }
-        }));
-        return data.map(manga => new Manga(this, provider, `/ver/${manga.slug}`, manga.name));
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/ver/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaUrl = new URL(url);
-        const [data] = await this.FetchFormHTML<HTMLParagraphElement>(mangaUrl, 'project_slug', 'div#info div:first-of-type p:nth-of-type(2)');
-        return new Manga(this, provider, mangaUrl.pathname, data.textContent.trim());
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await this.FetchFormHTML<HTMLAnchorElement>(new URL(manga.Identifier, this.URI), 'project_slug', 'div.contenedor div.grid a');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.textContent.trim()));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await this.FetchFormHTML<HTMLImageElement>(new URL(chapter.Identifier, this.URI), 'chapter_slug', 'img[data-src]');
-        return data.map(image => new Page(this, chapter, new URL(image.dataset.src || image.src)));
-    }
-
-    private async FetchFormHTML<T extends HTMLElement>(url: URL, inputFormName: string, query: string): Promise<T[]> {
-        const [form] = await FetchCSS<HTMLFormElement>(new Request(url), `form:has(input[name="${inputFormName}"])`);
-        const parameters = new URLSearchParams();
-        [...form.querySelectorAll<HTMLInputElement>('input')].forEach(inputElement => parameters.set(inputElement.name, inputElement.value));
-        const request = new Request(new URL(form.getAttribute('action')), {
-            method: 'POST',
-            body: parameters.toString(),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Origin: this.URI.origin,
-                Referer: this.URI.href
+            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
+                const result = FindValueForKeyName(child);
+                if (result) {
+                    return result;
+                }
             }
-        });
-        return FetchCSS<T>(request, query);
+            return undefined;
+        })(record) as T;
     }
-
 }
