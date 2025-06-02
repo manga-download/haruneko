@@ -23,6 +23,7 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('./comics', this.URI)), 'script:not([src])');
         const mangas = this.ExtractData<JSONManga[]>(scripts, 'project_id', 'aea');
