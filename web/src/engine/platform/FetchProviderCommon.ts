@@ -86,7 +86,7 @@ export abstract class FetchProvider {
      */
     public async FetchCSS<T extends HTMLElement>(request: Request, query: string): Promise<T[]> {
         const dom = await this.FetchHTML(request);
-        return [...dom.querySelectorAll(query)] as T[];
+        return [ ...dom.querySelectorAll(query) ] as T[];
     }
 
     /**
@@ -168,6 +168,28 @@ export abstract class FetchProvider {
         return new Array(result.snapshotLength).fill(null).map((_, index) => result.snapshotItem(index) as Node);
     }
     */
+
+    /**
+     * Extract all NextJS hydrated flight data objects from the HTML script tags of the provided {@link request}
+     * and returns the first data object that fulfills the given {@link predicate} or `undefined` if non was found.
+     * @remarks This is an extremely flakey extractor for NextJS flight data which needs much improvement for generic use.
+     */
+    public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONElement) => unknown): Promise<T | undefined> {
+        const scripts = await this.FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
+        return scripts
+            .map(script => script.text)
+            .filter(script => script.includes('self.__next_f.push'))
+            .map(script => {
+                // TODO: Improve extraction variety and robustness (e.g., split line breaks into sub-scripts)
+                try {
+                    const content: string = JSON.parse(script.slice(script.indexOf(',"') + 1, -2));
+                    return JSON.parse(content.slice(content.indexOf(':') + 1)).at(-1) as T;
+                } catch {
+                    return {} as T;
+                }
+            })
+            .find(predicate);
+    }
 
     /**
      * Open the given {@link request} in a new browser window and inject the given {@link script}.
