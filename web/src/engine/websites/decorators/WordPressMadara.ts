@@ -62,8 +62,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
     const data = await FetchHTML(request);
     const post = data.querySelector<HTMLElement>('div#manga-chapters-holder')?.dataset?.id
         || data.querySelector<HTMLInputElement>('input.rating-post-id')?.value
-        || data.querySelector<HTMLElement>('a[data-post]')?.dataset?.post
-        || data.querySelector<HTMLElement>('div.star-rating[data-post-id]')?.dataset?.postId;
+        || data.querySelector<HTMLElement>('a[data-post]')?.dataset?.post;
     const slug = uri.pathname;
     const element = data.querySelector<HTMLElement>(query);
     const title = (element instanceof HTMLMetaElement ? element.content : element.textContent).trim();
