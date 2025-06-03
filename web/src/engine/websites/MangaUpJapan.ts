@@ -2,20 +2,16 @@ import { Tags } from '../Tags';
 import icon from './MangaUpJapan.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchNextJS } from '../platform/FetchProvider';
 
-type JSONChapters = {
+type HydratedChapterData = {
     id: number,
     name: string,
-    subName: string
+    subName: string,
 }[];
 
-type JSONPages = {
-    content: {
-        value: {
-            imageUrl: string,
-        }
-    }
+type HydratedPageData = {
+    content: { value: { imageUrl?: string } }
 }[];
 
 const mangasEndpoints = [
@@ -50,32 +46,34 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    /*
-    private ExtractNextJsPayloadData(element: HTMLScriptElement): string {
-        const data = element.innerHTML.match(/^self\.__next_f\.push\(\[\d+,"(.*)"\]\)$/)?.at(1);
-        return data?.replace(/\\{1,2}"/g, '"').replace(/\\{2,3}n/g, '\\n');
-    }
-
-    private async FetchNextJsData<T>(pathname: string, pattern: RegExp): Promise<T> {
-        const request = new Request(new URL(pathname, this.URI));
-        const elements = await FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
-        for (const element of elements) {
-            const match = this.ExtractNextJsPayloadData(element)?.match(pattern);
-            if (match) return JSON.parse(match.at(-1));
-        }
-    }
-    */
-
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await this.FetchNextJsData<JSONChapters>(manga.Identifier, /"chapters":(\[{.*?}\]),/);
-        return chapters.map(({ id, name, subName }) => new Chapter(this, manga, `${manga.Identifier}/chapters/${id}`, `${subName} ${name}`.replace(/\s+/g, ' ').trim()));
+        const request = new Request(new URL(manga.Identifier, this.URI));
+        const data = await FetchNextJS(request, data => this.ExtractValue(data, 'chapters'));
+        const entries = this.ExtractValue<HydratedChapterData>(data, 'chapters');
+        return entries.map(({ id, name, subName }) => new Chapter(this, manga, `${manga.Identifier}/chapters/${id}`, `${subName} ${name}`.replace(/\s+/g, ' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages = await this.FetchNextJsData<JSONPages>(chapter.Identifier, /(\[{"content":.*?}}}\]),/);
-        return pages
-            .map(page => page.content.value.imageUrl)
-            .filter(imageUrl => imageUrl)
-            .map(imageUrl => new Page(this, chapter, new URL(imageUrl)));
+        const request = new Request(new URL(chapter.Identifier, this.URI));
+        const data = await FetchNextJS(request, data => this.ExtractValue(data, 'pages'));
+        const entries = this.ExtractValue<HydratedPageData>(data, 'pages');
+        return entries
+            .filter(page => page.content.value.imageUrl)
+            .map(page => new Page(this, chapter, new URL(page.content.value.imageUrl, this.URI)));
+    }
+
+    /**
+     * Scans the the given {@link data} object recursively searching for the first occurence of the given {@link key}
+     * and returns the corresponding value, or `undefined` if non was found.
+     */
+    private ExtractValue<T extends JSONElement>(data: JSONElement, key: string | number): T {
+        if(data && typeof data === 'object') {
+            if(key in data) return data[key];
+            for(const value of Object.values(data)) {
+                const result = this.ExtractValue<T>(value, key);
+                if(result) return result;
+            }
+        }
+        return undefined;
     }
 }
