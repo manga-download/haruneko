@@ -60,6 +60,7 @@ export default class extends DecoratableMangaScraper {
         return images.map(image => new Page(this, chapter, new URL(image.originalUrl, this.URI)));
     }
 
+    /*
     private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
         const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
         const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
@@ -78,5 +79,5 @@ export default class extends DecoratableMangaScraper {
             return undefined;
         })(record) as T;
     }
-
+    */
 }

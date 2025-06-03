@@ -50,6 +50,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    /*
     private ExtractNextJsPayloadData(element: HTMLScriptElement): string {
         const data = element.innerHTML.match(/^self\.__next_f\.push\(\[\d+,"(.*)"\]\)$/)?.at(1);
         return data?.replace(/\\{1,2}"/g, '"').replace(/\\{2,3}n/g, '\\n');
@@ -63,6 +64,7 @@ export default class extends DecoratableMangaScraper {
             if (match) return JSON.parse(match.at(-1));
         }
     }
+    */
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await this.FetchNextJsData<JSONChapters>(manga.Identifier, /"chapters":(\[{.*?}\]),/);
