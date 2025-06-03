@@ -2,6 +2,8 @@ import { Tags } from '../Tags';
 import icon from './MangaHub.webp';
 import { MangaHubBase } from './templates/MangaHubBase';
 
+// TODO: Revision
+
 export default class extends MangaHubBase {
 
     public constructor() {
