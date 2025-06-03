@@ -2,13 +2,13 @@ import { Tags } from '../Tags';
 import icon from './DisasterScans.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchNextJS } from '../platform/FetchProvider';
 
-type JSONChapter = {
+type HydratedChapterData = {
+    chapterID: number,
     ChapterName: string,
     ChapterNumber: string,
-    chapterID: number
-}
+}[];
 
 function MangaExtractor(element: HTMLMetaElement) {
     return element.content.split('- Disaster Scans').at(0).trim();
@@ -42,31 +42,27 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${manga.Identifier}`, this.URI)), 'script:not([src])');
-        const chapters = this.ExtractData<JSONChapter[]>(scripts, 'ChapterNumber', 'chapters');
-        return chapters.map(chapter => {
-            let title = `Chapter ${chapter.ChapterNumber}`;
-            title += chapter.ChapterName ? ` - ${chapter.ChapterName}` : '';
+        const request = new Request(new URL(`${manga.Identifier}`, this.URI));
+        const data = await FetchNextJS(request, data => this.ExtractValue(data, 'chapters'));
+        const entries = this.ExtractValue<HydratedChapterData>(data, 'chapters');
+        return entries.map(chapter => {
+            const title = [ `Chapter ${chapter.ChapterNumber}`, chapter.ChapterName ].filter(segment => segment).join(' - ');
             return new Chapter(this, manga, `${manga.Identifier}/${chapter.chapterID}-chapter-${chapter.ChapterNumber}`, title);
         });
     }
 
-    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
-        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
-        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
-        const record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
-
-        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
-            if (parent[keyName]) {
-                return parent[keyName];
+    /**
+     * Scans the the given {@link data} object recursively searching for the first occurence of the given {@link key}
+     * and returns the corresponding value, or `undefined` if non was found.
+     */
+    private ExtractValue<T extends JSONElement>(data: JSONElement, key: string | number): T {
+        if(data && typeof data === 'object') {
+            if(key in data) return data[key];
+            for(const value of Object.values(data)) {
+                const result = this.ExtractValue<T>(value, key);
+                if(result) return result;
             }
-            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
-                const result = FindValueForKeyName(child);
-                if (result) {
-                    return result;
-                }
-            }
-            return undefined;
-        })(record) as T;
+        }
+        return undefined;
     }
 }
