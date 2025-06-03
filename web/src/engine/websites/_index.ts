@@ -180,7 +180,6 @@ export { default as Gntai } from './Gntai';
 export { default as GodaComic } from './GodaComic';
 export { default as GodaManhua } from './GodaManhua';
 export { default as GolgeBahcesi } from './GolgeBahcesi';
-export { default as GoofFansub } from './GoofFansub';
 export { default as GorakuWeb } from './GorakuWeb';
 export { default as GourmetScans } from './GourmetScans';
 export { default as GrabberZone } from './GrabberZone';
