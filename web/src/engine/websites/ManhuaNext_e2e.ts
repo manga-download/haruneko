@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'manhuanext',
         title: 'ManhuaNext'
     },
     container: {
-        url: 'https://manhuanext.com/manga/the-godslayer-who-cheats/',
-        id: JSON.stringify({ post: '1918', slug: '/manga/the-godslayer-who-cheats/' }),
-        title: 'The Godslayer Who Cheats'
+        url: 'https://manhuanext.com/manga/the-villain-wants-to-live-one-more-day/',
+        id: JSON.stringify({ post: '89', slug: '/manga/the-villain-wants-to-live-one-more-day/' }),
+        title: 'The Villain Wants to Live One More Day'
     },
     child: {
-        id: '/manga/the-godslayer-who-cheats/chapter-70/',
-        title: 'Chapter 70'
+        id: '/manga/the-villain-wants-to-live-one-more-day/chapter-33/',
+        title: 'Chapter 33'
     },
     entry: {
-        index: 2,
-        size: 116_854,
+        index: 0,
+        size: 966_724,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
