@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'madaradex',
         title: 'MadaraDex'
@@ -15,10 +15,8 @@ const config = {
         title: 'Chapter 1'
     },
     entry: {
-        index: 2,
-        size: 87_884,
-        type: 'image/jpeg'
+        index: 0,
+        size: 12_212,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Koreli Scans'
     },
     container: {
-        url: 'https://koreliscans.com/manga/gorunusculuk/',
-        id: JSON.stringify({ post: '3038', slug: '/manga/gorunusculuk/' }),
+        url: 'https://koreliscans.com/manga/45888549/',
+        id: JSON.stringify({ post: '3038', slug: '/manga/45888549/' }),
         title: 'Lookism'
     },
     child: {
-        id: '/manga/gorunusculuk/bolum-550/',
+        id: '/manga/45888549/bolum-550/',
         title: 'Bölüm 550'
     },
     entry: {
