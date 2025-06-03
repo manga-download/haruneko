@@ -50,8 +50,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     private readonly patterns = new Map<RegExp, string>([
-        [ new RegExpSafe(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`), 'section#series-intro div h2' ],
-        [ new RegExpSafe(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`), 'body > div.row h3.type-md' ],
+        [ new RegExp(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`), 'section#series-intro div h2' ],
+        [ new RegExp(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`), 'body > div.row h3.type-md' ],
     ]);
 
     public constructor() {
