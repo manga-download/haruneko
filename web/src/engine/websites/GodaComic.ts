@@ -1,9 +1,8 @@
 ﻿import { Tags } from '../Tags';
 import icon from './GodaComic.webp';
-import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
-import { chapterScript } from './GodaManhua';
+import { FetchChapters } from './GodaManhua';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'nav ol li:last-of-type a')
 @Common.MangasMultiPageCSS('/manga/page/{page}', 'div.cardlist a')
@@ -20,8 +19,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier.replace('/manga/', '/chapterlist/'), this.URI));
-        const chapters = await FetchWindowScript<{ id: string, title: string }[]>(request, chapterScript, 2000);
-        return chapters.map(chapter => new Chapter(this, manga, `./chapter/getcontent?${chapter.id}`, chapter.title.replace(manga.Title, '').trim() || chapter.title));
+        return FetchChapters(manga, '/chapter/getcontent?');
     }
 }

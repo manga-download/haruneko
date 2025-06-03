@@ -17,19 +17,30 @@ type APIPages = {
     }
 }
 
-export const chapterScript = `
-    [ ...document.querySelectorAll('.chapteritem > a') ].map(element => ({
-        id: new URLSearchParams({ m: element.dataset.ms, c: element.dataset.cs }).toString(),
-        title: element.dataset.ct.trim(),
-    }));
-`;
+export async function FetchChapters(manga: Manga, prefix: string = ''): Promise<Chapter[]> {
+
+    const script = `
+        [ ...document.querySelectorAll('.chapteritem > a') ].map(element => ({
+            id: new URLSearchParams({ m: element.dataset.ms, c: element.dataset.cs }).toString(),
+            title: element.dataset.ct.trim(),
+        }));
+    `;
+
+    const request = new Request(new URL(manga.Identifier.replace('/manga/', '/chapterlist/'), //this.URI));
+    const chapters = await FetchWindowScript<{ id: string, title: string }[]>(request, script, 2000);
+    return chapters.map(chapter => new Chapter(this, manga, prefix + chapter.id, chapter.title.replace(manga.Title, '').trim() || chapter.title));
+}
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'nav ol li:last-of-type a')
 @Common.MangasMultiPageCSS('/manga/page/{page}', 'div.cardlist a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private apiUrl = 'https://api-get-v2.mgsearcher.com/api/';
+    private apiUrl = 'https://api-get-v2.mgsearcher.com/api/'; // https://m.g-mh.org/api/
+    private imageCDN = {
+        0: 'https://t40-1-4.g-mh.online',
+        2: 'https://f40-1-4.g-mh.online',
+    };
 
     public constructor() {
         super('godamanhua', 'GodaManhua', 'https://baozimh.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
@@ -40,23 +51,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier.replace('/manga/', '/chapterlist/'), this.URI));
-        const chapters = await FetchWindowScript<{ id: string, title: string }[]>(request, chapterScript, 2000);
-        //return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim() || chapter.title));
-        return chapters.map(chapter => new Chapter(this, manga, `./chapter/getinfo?${chapter.id}`, chapter.title.replace(manga.Title, '').trim() || chapter.title));
+        return FetchChapters(manga, '/chapter/getcontent?');
     }
 
-    // TODO: Simplify?
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        // ./chapter/getcontent?${chapter.id}
         const request = new Request(new URL(chapter.Identifier, this.apiUrl), {
             headers: {
                 Referer: this.URI.href,
-                Origin: this.URI.origin
+                Origin: 'https://manhuascans.org',
             }
         });
         const { data: { info: { images: { line, images } } } } = await FetchJSON<APIPages>(request);
-        const CDN = line === 2 ? 'https://f40-1-4.g-mh.online' : 'https://t40-1-4.g-mh.online';
-        return images.map(page => new Page(this, chapter, new URL(page.url, CDN), { Referer: this.URI.href }));
+        return images.map(page => new Page(this, chapter, new URL(page.url, this.imageCDN[line] ?? this.imageCDN[0]), { Referer: this.URI.href }));
     }
 }
