@@ -9,16 +9,13 @@ type APIPages = {
         info: {
             images: {
                 line: number,
-                images: {
-                    url: string
-                }[]
+                images: { url: string }[]
             }
         }
     }
 }
 
-export async function FetchChapters(manga: Manga, prefix: string = ''): Promise<Chapter[]> {
-
+export async function FetchChapters(this: DecoratableMangaScraper, manga: Manga, prefix: string = ''): Promise<Chapter[]> {
     const script = `
         [ ...document.querySelectorAll('.chapteritem > a') ].map(element => ({
             id: new URLSearchParams({ m: element.dataset.ms, c: element.dataset.cs }).toString(),
@@ -26,7 +23,7 @@ export async function FetchChapters(manga: Manga, prefix: string = ''): Promise<
         }));
     `;
 
-    const request = new Request(new URL(manga.Identifier.replace('/manga/', '/chapterlist/'), //this.URI));
+    const request = new Request(new URL(manga.Identifier.replace('/manga/', '/chapterlist/'), this.URI));
     const chapters = await FetchWindowScript<{ id: string, title: string }[]>(request, script, 2000);
     return chapters.map(chapter => new Chapter(this, manga, prefix + chapter.id, chapter.title.replace(manga.Title, '').trim() || chapter.title));
 }
@@ -51,15 +48,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FetchChapters(manga, '/chapter/getcontent?');
+        return FetchChapters.call(this, manga, './chapter/getinfo?');
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const request = new Request(new URL(chapter.Identifier, this.apiUrl), {
-            headers: {
-                Referer: this.URI.href,
-                Origin: 'https://manhuascans.org',
-            }
+            headers: { Referer: this.URI.href }
         });
         const { data: { info: { images: { line, images } } } } = await FetchJSON<APIPages>(request);
         return images.map(page => new Page(this, chapter, new URL(page.url, this.imageCDN[line] ?? this.imageCDN[0]), { Referer: this.URI.href }));

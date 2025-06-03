@@ -19,6 +19,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FetchChapters(manga, '/chapter/getcontent?');
+        return FetchChapters.call(this, manga, '/chapter/getcontent?');
     }
 }
