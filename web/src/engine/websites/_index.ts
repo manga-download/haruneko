@@ -417,7 +417,6 @@ export { default as Mangatellers } from './Mangatellers';
 export { default as MangaTepesi } from './MangaTepesi';
 export { default as MangaTilkisi } from './MangaTilkisi';
 export { default as MangaTime } from './MangaTime';
-export { default as MangaTitan } from './MangaTitan';
 export { default as MangaTown } from './MangaTown';
 export { default as MangaTR } from './MangaTR';
 export { default as MangaTRNet } from './MangaTRNet';
