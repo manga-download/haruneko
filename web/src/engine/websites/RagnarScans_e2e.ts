@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'ragnarscans',
         title: 'Ragnar Scans',
     },
     container: {
-        url: 'https://ragnarscans.com/manga/gosu/',
-        id: JSON.stringify({ post: '6377', slug: '/manga/gosu/'}),
-        title: 'Gosu',
+        url: 'https://ragnarscans.com/manga/code-geass-alternatif-son/',
+        id: JSON.stringify({ post: '61060', slug: '/manga/code-geass-alternatif-son/'}),
+        title: 'Code Geass: Alternatif Son',
     },
     child: {
-        id: '/manga/gosu/bolum-231/',
-        title: 'Bölüm 231',
+        id: '/manga/code-geass-alternatif-son/bolum-0/',
+        title: 'Bölüm 0',
     },
     entry: {
-        index: 2,
-        size: 132_826,
+        index: 0,
+        size: 204_517,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

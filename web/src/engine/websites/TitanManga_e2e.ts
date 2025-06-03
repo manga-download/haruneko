@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'titanmanga',
         title: 'Titan Manga'
     },
     container: {
-        url: 'https://titanmanga.com/manga/i-am-really-not-an-matchless-genius/',
-        id: JSON.stringify({ post: '1854', slug: '/manga/i-am-really-not-an-matchless-genius/' }),
-        title: 'I Am Really Not an Matchless Genius'
+        url: 'https://titanmanga.com/manga/hajime-no-ippo/',
+        id: JSON.stringify({ post: '14946', slug: '/manga/hajime-no-ippo/' }),
+        title: 'Hajime no Ippo'
     },
     child: {
-        id: '/manga/i-am-really-not-an-matchless-genius/bolum-20/',
-        title: 'Bölüm 20'
+        id: '/manga/hajime-no-ippo/bolum-1482/',
+        title: 'Bölüm 1482'
     },
     entry: {
-        index: 0,
-        size: 3_171_682,
-        type: 'image/jpeg'
+        index: 1,
+        size: 542_370,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
