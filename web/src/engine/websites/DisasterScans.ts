@@ -4,11 +4,13 @@ import { Chapter, DecoratableMangaScraper, type Manga, type MangaScraper } from 
 import * as Common from './decorators/Common';
 import { FetchNextJS } from '../platform/FetchProvider';
 
-type HydratedChapterData = {
-    chapterID: number,
-    ChapterName: string,
-    ChapterNumber: string,
-}[];
+type HydratedChapters = {
+    chapters: {
+        chapterID: number,
+        ChapterName: string,
+        ChapterNumber: string,
+    }[]
+};
 
 function MangaExtractor(element: HTMLMetaElement) {
     return element.content.split('- Disaster Scans').at(0).trim();
@@ -31,8 +33,6 @@ function PageLinkExtractor(this: MangaScraper, image: HTMLImageElement): string 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private nextBuild = '';
-
     public constructor() {
         super('disasterscans', 'Disaster Scans', 'https://disasterscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
@@ -43,26 +43,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(`${manga.Identifier}`, this.URI));
-        const data = await FetchNextJS(request, data => this.ExtractValue(data, 'chapters'));
-        const entries = this.ExtractValue<HydratedChapterData>(data, 'chapters');
-        return entries.map(chapter => {
+        const { chapters } = await FetchNextJS<HydratedChapters>(request, data => 'chapters' in data);
+        return chapters.map(chapter => {
             const title = [ `Chapter ${chapter.ChapterNumber}`, chapter.ChapterName ].filter(segment => segment).join(' - ');
             return new Chapter(this, manga, `${manga.Identifier}/${chapter.chapterID}-chapter-${chapter.ChapterNumber}`, title);
         });
-    }
-
-    /**
-     * Scans the the given {@link data} object recursively searching for the first occurence of the given {@link key}
-     * and returns the corresponding value, or `undefined` if non was found.
-     */
-    private ExtractValue<T extends JSONElement>(data: JSONElement, key: string | number): T {
-        if(data && typeof data === 'object') {
-            if(key in data) return data[key];
-            for(const value of Object.values(data)) {
-                const result = this.ExtractValue<T>(value, key);
-                if(result) return result;
-            }
-        }
-        return undefined;
     }
 }

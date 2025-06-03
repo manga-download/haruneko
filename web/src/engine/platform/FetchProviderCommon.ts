@@ -170,11 +170,11 @@ export abstract class FetchProvider {
     */
 
     /**
-     * Extract all NextJS hydrated flight data objects from the HTML script tags of the provided {@link request}
-     * and returns the first data object that fulfills the given {@link predicate} or `undefined` if non was found.
+     * Extract all NextJS hydrated flight data payloads from the HTML script tags of the provided {@link request}
+     * and returns the first payload that fulfills the given {@link predicate} or `undefined` if non was found.
      * @remarks This is an extremely flakey extractor for NextJS flight data which needs much improvement for generic use.
      */
-    public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONElement) => unknown): Promise<T | undefined> {
+    async #FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONElement) => unknown): Promise<T | undefined> {
         const scripts = await this.FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
         return scripts
             .map(script => script.text)
@@ -189,6 +189,32 @@ export abstract class FetchProvider {
                 }
             })
             .find(predicate);
+    }
+
+    /**
+     * Scans the the given {@link data} payload recursively searching for the first occurence that fulfills the given {@link predicate}
+     * and returns the corresponding value, or `undefined` if non was found.
+     */
+    #ExtractValueNextJS<T extends JSONElement>(data: JSONElement, predicate: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown): T {
+        if(data && typeof data === 'object') {
+            if(predicate(data)) return data as T;
+            for(const value of Object.values(data)) {
+                const result = this.#ExtractValueNextJS<T>(value, predicate);
+                if(result) return result;
+            }
+        }
+        return undefined;
+    }
+
+    /**
+     * Extract all NextJS hydrated flight data payloads from the HTML script tags of the provided {@link request}
+     * and returns the first nested data element that fulfills the given {@link predicate} or `undefined` if non was found.
+     * @remarks This is an extremely flakey extractor for NextJS flight data which needs much improvement for generic use.
+     */
+    public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown): Promise<T | undefined> {
+        // TODO: Optimize method to prevent duplicated extraction
+        const data = await this.#FetchNextJS(request, data => this.#ExtractValueNextJS(data, predicate));
+        return this.#ExtractValueNextJS<T>(data, predicate);
     }
 
     /**

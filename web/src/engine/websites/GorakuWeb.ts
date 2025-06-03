@@ -6,14 +6,14 @@ import { FetchNextJS } from '../platform/FetchProvider';
 import { GetBytesFromHex } from '../BufferEncoder';
 import type { Priority } from '../taskpool/DeferredTask';
 
-type HydratedEpisodeData = {
+type HydratedChapters = {
     episodeList: {
         href: string,
         title: string,
     }[]
 };
 
-type HydratedPageData = {
+type HydratedPages = {
     accessKey: string,
     keyBytes?: string,
     ivBytes?: string,
@@ -44,13 +44,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(manga.Identifier, this.URI));
-        const { episodeList } = await FetchNextJS<HydratedEpisodeData>(request, data => data['episodeList']);
+        const { episodeList } = await FetchNextJS<HydratedChapters>(request, data => 'episodeList' in data);
         return episodeList.map(chapter => new Chapter(this, manga, new URL(chapter.href, this.URI).pathname, chapter.title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParams>[]> {
         const request = new Request(new URL(chapter.Identifier, this.URI));
-        const { metadata: { pages }, accessKey, keyBytes, ivBytes, base } = await FetchNextJS<HydratedPageData>(request, data => data['metadata'] && data['accessKey']);
+        const { metadata: { pages }, accessKey, keyBytes, ivBytes, base } = await FetchNextJS<HydratedPages>(request, data => 'metadata' in data && 'accessKey' in data);
         return pages.map(page => new Page<PageParams>(this, chapter, new URL(`${base}/${page.filename}?__token__=${accessKey}`), { keyData: keyBytes, iv: ivBytes }));
     }
 

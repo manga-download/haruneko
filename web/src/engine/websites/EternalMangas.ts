@@ -4,7 +4,7 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchNextJS } from '../platform/FetchProvider';
 
-type HydratedMangaData = {
+type HydratedMangas = {
     aea: {
         id: number,
         name: string,
@@ -28,7 +28,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const request = new Request(new URL('./comics', this.URI));
-        const { aea: entries } = await FetchNextJS<HydratedMangaData>(request, data => data['aea']);
-        return entries.map(entry => new Manga(this, provider, `/ver/${entry.slug}`, entry.name));
+        const { aea: mangas } = await FetchNextJS<HydratedMangas>(request, data => 'aea' in data);
+        return mangas.map(manga => new Manga(this, provider, `/ver/${manga.slug}`, manga.name));
     }
 }
