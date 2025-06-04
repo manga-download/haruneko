@@ -736,6 +736,7 @@ export { default as WebComicsApp } from './WebComicsApp';
 export { default as WebDexScans } from './WebDexScans';
 export { default as WebNovel } from './WebNovel';
 export { default as WebtoonHatti } from './WebtoonHatti';
+export { default as WebtoonScan } from './WebtoonScan';
 export { default as WebtoonTR } from './WebtoonTR';
 export { default as WebtoonTRNET } from './WebtoonTRNET';
 export { default as WebtoonXYZ } from './WebtoonXYZ';
