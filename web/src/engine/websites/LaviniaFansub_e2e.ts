@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Lavinia Fansub'
     },
     container: {
-        url: 'https://laviniafansub.com/manga/placebo-lets-playing-laviniafansub/',
+        url: 'https://laviniafansub.site/manga/placebo-lets-playing-laviniafansub/',
         id: JSON.stringify({ post: '1068', slug: '/manga/placebo-lets-playing-laviniafansub/' }),
         title: `Placebo: Let's Play`
     },
