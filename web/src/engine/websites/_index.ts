@@ -389,6 +389,7 @@ export { default as MangaPanda } from './MangaPanda';
 export { default as MangaPark } from './MangaPark';
 export { default as MangaParkPublisher } from './MangaParkPublisher';
 export { default as MangaPill } from './MangaPill';
+export { default as MangaplusTV } from './MangaplusTV';
 export { default as MangaPro } from './MangaPro';
 export { default as MangaRaw1001 } from './MangaRaw1001';
 export { default as MangaRawAC } from './MangaRawAC';
