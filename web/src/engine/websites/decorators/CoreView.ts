@@ -1,6 +1,6 @@
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
-import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+import { FetchCSS, FetchHTML, FetchJSON } from '../../platform/FetchProvider';
 import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
@@ -39,7 +39,12 @@ type APIChaptersHTML = {
     nextUrl: string
 }
 
-type APIChapter = {
+type APIChaptersV1 = {
+    chapters : Chapter[],
+    nextUrl: string
+}
+
+type APIChapterV2 = {
     title: string,
     viewer_uri: string
 }
@@ -104,24 +109,43 @@ export function ChaptersMultiPagesAJAXV1(query: string = defaultQueryChapters, e
  * @param extractor - A function to extract id and title from queried elements
  */
 export async function FetchChaptersMultiPagesAJAXV1(this: MangaScraper, manga: Manga, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
-    let endpoint = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.js-readable-product-list')).shift().dataset.firstListEndpoint;
-    const chapters: Chapter[] = [];
 
-    for (let run = true; run;) {
-        try {
-            const { html, nextUrl } = await FetchJSON<APIChaptersHTML>(new Request(endpoint));
-            const doc = new DOMParser().parseFromString(html, 'text/html');
-            chapters.push(...[...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
-                const { id, title } = extractor(chapter);
-                return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
-            }));
+    const chaptersList: Chapter[] = [];
+    const doc = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
+
+    const firstListEndpoint = doc.querySelector<HTMLDivElement>('.js-readable-product-list')?.dataset.firstListEndpoint;
+    chaptersList.push(...(await ExtractChaptersV1.call(this, manga, firstListEndpoint, queryChapters, extractor)).chapters);
+
+    const readMoreElement = doc.querySelector<HTMLDivElement>('.js-read-more-button');
+    if (readMoreElement) {
+        const readMoreCount = parseInt(readMoreElement.dataset.maxReadMoreCount);
+        let endpoint = readMoreElement.dataset.readMoreEndpoint;
+        for (let i = 1; i <= readMoreCount; i++) {
+            const { chapters, nextUrl } = await ExtractChaptersV1.call(this, manga, endpoint, queryChapters, extractor);
+            chaptersList.push(...chapters);
             endpoint = nextUrl;
-        } catch {
-            run = false;
         }
     }
 
-    return chapters;
+    const latestListEndpoint = doc.querySelector<HTMLDivElement>('.js-readable-product-list')?.dataset.latestListEndpoint;
+    chaptersList.push(...(await ExtractChaptersV1.call(this, manga, latestListEndpoint, queryChapters, extractor)).chapters);
+
+    return chaptersList.distinct();
+
+}
+
+async function ExtractChaptersV1(this: MangaScraper, manga: Manga, endpoint: string, queryChapters: string, extractor: Function): Promise<APIChaptersV1> {
+    if (!endpoint) return {
+        chapters: [], nextUrl: ''
+    };
+    const chapters: Chapter[] = [];
+    const { html, nextUrl } = await FetchJSON<APIChaptersHTML>(new Request(endpoint));
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    chapters.push(...[...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
+        const { id, title } = extractor(chapter);
+        return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
+    }));
+    return { chapters, nextUrl };
 }
 
 /**
@@ -157,7 +181,7 @@ export async function FetchChaptersMultiPagesAJAXV2(this: MangaScraper, manga: M
             offset: offset.toString()
         }).toString();
 
-        const data = await FetchJSON<APIChapter[]>(new Request(url));
+        const data = await FetchJSON<APIChapterV2[]>(new Request(url));
         const chapters = data.map(chapter => {
             const title = chapter.title.replace(manga.Title, '').trim() || chapter.title;
             return new Chapter(this, manga, new URL(chapter.viewer_uri).pathname, title);

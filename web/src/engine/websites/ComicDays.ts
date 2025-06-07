@@ -28,14 +28,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const series = await this.GetMangaListFromPages(provider, '/series', 'section.daily ul.daily-series > li.daily-series-item a.link[href*="/episode/"]', 'img');
         const magazines = await this.GetMangaListFromPages(provider, '/magazine', 'a.barayomi-magazine-list-link-latest', 'img.barayomi-magazine-series-image');
-        const mangas = await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/oneshot', '/newcomer', '/daysneo' ], 'div.yomikiri-container ul.yomikiri-items > li.yomikiri-item-box > a.yomikiri-link', MangaExtractor);
+        const mangas = await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/oneshot', '/newcomer', '/daysneo'], 'div.yomikiri-container ul.yomikiri-items > li.yomikiri-item-box > a.yomikiri-link', MangaExtractor);
         const mangaList = [...series, ...magazines, ...mangas];
         // remove mangas with same title but different ID
         return mangaList.filter(manga => manga === mangaList.find(m => m.Title === manga.Title));
     }
     private async GetMangaListFromPages(provider: MangaPlugin, path: string, query: string, queryimg: string): Promise<Manga[]> {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(path, this.URI)), query);
-        return data.map(element => new Manga(this, provider, element.pathname, element.querySelector(queryimg).getAttribute('alt').trim()));
+        return data.map(element => new Manga(this, provider, element.pathname, element.querySelector<HTMLImageElement>(queryimg).alt.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
