@@ -30,6 +30,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'kumascans', targetID: 'retsu' },
     { sourceID: 'lovehug', targetID: 'welovemanga' },
     { sourceID: 'lyrascans', targetID: 'quantumscans' },
+    { sourceID: 'mangacross', targetID: 'championcross'},
     { sourceID: 'mangamx', targetID: 'mangaoni' },
     { sourceID: 'manganel', targetID: 'manganato' },
     { sourceID: 'mangaproz', targetID: 'mangapro' },

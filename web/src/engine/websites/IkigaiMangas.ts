@@ -12,14 +12,14 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https:\/\/visualikigai\.\w+\.(net|com|xyz)\/series\/[^/]+\/$/, 'article > img', (element: HTMLImageElement) => element.alt.trim())
+@Common.MangaCSS(/^https:\/\/lectorikigai\.\w+\.(net|com|xyz)\/series\/[^/]+\/$/, 'article > img', (element: HTMLImageElement) => element.alt.trim())
 @Common.MangasMultiPageCSS('/series/?pagina={page}', 'section ul.grid li > a', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageCSS('div.w-full img[alt*="Page"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.favoriso.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('ikigaimangas', 'Ikigai Mangas', 'https://lectorikigai.damilok.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override async Initialize(): Promise<void> {

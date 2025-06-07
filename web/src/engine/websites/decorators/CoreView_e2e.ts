@@ -3,7 +3,6 @@ import '../ComicBorder_e2e';
 import '../ComicDays_e2e';
 import '../ComicEarthStar_e2e';
 import '../ComicGardo_e2e';
-import '../ComicGrowl_e2e';
 import '../ComicOgyaaa_e2e';
 import '../ComicTrail_e2e';
 import '../ComicSeasons_e2e';

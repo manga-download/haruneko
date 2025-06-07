@@ -19,7 +19,7 @@ type MediaEntry = {
     title: string
 }
 
-function PageLinkExtractor(image: HTMLImageElement): string {
+export function PageLinkExtractor(image: HTMLImageElement): string {
     return image.src.replace(/\/s\d+[^/]*(\/[^/]+$)/, '/s0$1');
 }
 
@@ -39,7 +39,7 @@ export class ZeistManga extends DecoratableMangaScraper {
     }
 
     private async FetchEntries(slug: string, parent: Manga = undefined): Promise<MediaEntry[]> {
-        const { feed: { entry } } = await FetchJSON<FeedResults>(new Request(new URL(`/feeds/posts/default/-/${slug}?start-index=1&&alt=json&max-results=9999`, this.URI)));
+        const { feed: { entry } } = await FetchJSON<FeedResults>(new Request(new URL(`/feeds/posts/default/-/${slug}?start-index=1&alt=json&max-results=9999`, this.URI)));
         return entry.map(chapter => {
             const goodLink = chapter.link.find(link => link.rel === 'alternate');
             return { pathname: new URL(goodLink.href).pathname, title: goodLink.title.replace(parent?.Title, '').trim() };
