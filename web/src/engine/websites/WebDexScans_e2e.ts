@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'webdexscans',
         title: 'WebDex Scans'
     },
     container: {
-        url: 'https://webdexscans.com/series/the-lone-sss-rank-summoner/',
-        id: JSON.stringify({ post: '2010', slug: '/series/the-lone-sss-rank-summoner/' }),
-        title: 'The Lone SSS-Rank Summoner'
+        url: 'https://webdexscans.com/series/steel-covenant/',
+        id: JSON.stringify({ post: '2071', slug: '/series/steel-covenant/' }),
+        title: 'Steel Covenant'
     },
     child: {
-        id: '/series/the-lone-sss-rank-summoner/chapter-100/',
-        title: 'Chapter 100'
+        id: '/series/steel-covenant/chapter-25/',
+        title: 'Chapter 25'
     },
     entry: {
-        index: 0,
-        size: 448_368,
+        index: 1,
+        size: 719_170,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

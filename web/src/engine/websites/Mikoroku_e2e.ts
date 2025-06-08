@@ -1,13 +1,13 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mikoroku',
         title: 'Mikoroku'
     },
     container: {
-        url: 'https://www.mikoroku.com/2024/12/harem-ou-no-isekai-press-manyuuki.html',
-        id: '/2024/12/harem-ou-no-isekai-press-manyuuki.html',
+        url: 'https://www.mikoroku.com/2025/01/harem-ou-no-isekai-press-manyuuki_12.html',
+        id: '/2025/01/harem-ou-no-isekai-press-manyuuki_12.html',
         title: 'Harem Ou no Isekai Press Manyuuki'
     },
     child: {
@@ -15,10 +15,8 @@ const config = {
         title: 'Chapter 01'
     },
     entry: {
-        index: 0,
-        size: 215_888,
-        type: 'image/webp'
+        index: 1,
+        size: 186_568,
+        type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

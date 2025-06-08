@@ -51,7 +51,7 @@ function RevealHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webReque
     return headers;
 }
 
-function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
+function ModifyRequestHeaders(details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
 
     let headers = RevealHeaders(details.requestHeaders ?? []);
 
@@ -64,7 +64,7 @@ function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetail
     };
 }
 
-function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDetails): chrome.webRequest.BlockingResponse {
+function ModifyResponseHeaders(details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
     return {
         // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
         // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)

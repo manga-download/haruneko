@@ -1,13 +1,13 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'sweettimescan',
         title: 'Sweet Time Scan'
     },
     container: {
         url: 'https://sweetscan.net/manga/the-monster-duchess-and-contract-princess/',
-        id: JSON.stringify({ post: "44", slug: "/manga/the-monster-duchess-and-contract-princess/"}),
+        id: JSON.stringify({ post: '44', slug: '/manga/the-monster-duchess-and-contract-princess/'}),
         title: 'The Monster Duchess and Contract Princess'
     },
     child: {
@@ -19,6 +19,4 @@ const config = {
         size: 913_896,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

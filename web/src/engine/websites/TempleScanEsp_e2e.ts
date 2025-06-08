@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Temple Scan (ESP)'
     },
     container: {
-        url: 'https://templescanesp.vxviral.xyz/serie/esponjoso/',
+        url: 'https://templescanesp.caserosvive.com.ar/serie/esponjoso/',
         id: '/serie/esponjoso/',
         title: 'Esponjoso'
     },
