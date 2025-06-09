@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Samurai Scan'
     },
     container: {
-        url: 'https://samurai.yocat.xyz/rd/dios-marcial-estelar/',
+        url: 'https://samurai.yoketo.xyz/rd/dios-marcial-estelar/',
         id: JSON.stringify({ post: '39', slug: '/rd/dios-marcial-estelar/' }),
         title: 'Dios Marcial Estelar'
     },
