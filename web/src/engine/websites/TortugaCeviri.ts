@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tortugaceviri', 'Tortuga Çeviri', 'https://tortuga-ceviri.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('tortugaceviri', 'Tortuga Çeviri', 'https://tortugaceviri.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
