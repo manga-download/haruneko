@@ -45,12 +45,51 @@ type PageSeed = {
     seed: number
 }
 
+export class DRMProvider {
+
+    constructor(private readonly apiURL: string, readonly requestHeaderHash: { name: string, seed: string }) {}
+
+    public async FetchAPI<T extends JSONElement>(endpoint: string, parameters: Record<string, string>, init: RequestInit = { method: 'GET' }): Promise<T> {
+        const request = await this.CreateRequest(endpoint, init, parameters);
+        return FetchJSON<T>(request);
+    }
+
+    private async CreateRequest(endpoint: string, init: RequestInit, parameters: Record<string, string>) {
+        const payload = new URLSearchParams(parameters);
+        const uri = new URL(endpoint, this.apiURL);
+        if(/^POST$/i.test(init.method)) {
+            init.body = payload;
+        } else {
+            uri.search = payload.toString();
+        }
+        const request = new Request(uri, init);
+        request.headers.set(this.requestHeaderHash.name, await this.ComputeHash(payload, this.requestHeaderHash.seed));
+        return request;
+    }
+
+    private async ComputeHash(parameters: URLSearchParams, seed: string): Promise<string> {
+        parameters.sort();
+        const parameterHashes = await Promise.all([ ...parameters.entries() ].map(async ([ key, value ]) => [
+            await this.SHA(key, 'SHA-256'),
+            await this.SHA(value, 'SHA-512'),
+        ].join('_')));
+        const aggreagteHash = await this.SHA(parameterHashes.join(','), 'SHA-256');
+        return this.SHA(aggreagteHash + seed, 'SHA-512');
+    }
+
+    private async SHA(text: string, algorithm: 'SHA-256' | 'SHA-512'): Promise<string> {
+        const hash = await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text));
+        return GetHexFromBytes(new Uint8Array(hash));
+    }
+}
+
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
-    protected apiUrl = 'https://api.ciao.shogakukan.co.jp/';
-    protected requestHashProperty = 'X-Bambi-Hash';
-    protected requestHashAppend : string = '';
+    protected readonly drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
+        name: 'X-Bambi-Hash',
+        seed: '',
+    });
 
     public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator]) {
         super(id, label, url, ...tags );
@@ -64,6 +103,18 @@ export default class extends DecoratableMangaScraper {
         return new RegExpSafe(`^${this.URI.origin}/comics/title/\\d+/episode/\\d+$`).test(url);
     }
 
+    protected async GetMangaDatas(mangaId: string): Promise<MangaData> {
+        const { title_list: [ manga ] } = await this.drm.FetchAPI<APIMangas>('./title/list', {
+            platform: '3',
+            title_id_list: mangaId
+        });
+        return {
+            id: manga.title_id.toString(),
+            title: manga.title_name.trim(),
+            episode_list: manga.episode_id_list,
+        };
+    }
+
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = parseInt(url.split('/').at(-3));
         const manga = await this.GetMangaDatas(mangaid.toString());
@@ -72,14 +123,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return this.FetchChapterList(manga, this.GetMangaDatas);
+        return this.FetchChapterList(manga);
     }
 
-    protected async FetchChapterList(manga: Manga, mangaInfoProvider: typeof this.GetMangaDatas): Promise<Chapter[]> {
-        const { episode_list } = await mangaInfoProvider(manga.Identifier);
+    protected async FetchChapterList(manga: Manga): Promise<Chapter[]> {
+        const { episode_list } = await this.GetMangaDatas(manga.Identifier);
         const chapters: Chapter[] = [];
 
-        //request is limited to 50 chapters
         const chunkSize = 50;
         const chaptersChunks: Array<Array<number>> = [];
         for (let i = 0; i < episode_list.length; i += chunkSize) {
@@ -88,20 +138,26 @@ export default class extends DecoratableMangaScraper {
         }
 
         for (const chapterChunk of chaptersChunks) {
-            const request = await this.CreatePostRequest(`./episode/list`, new URLSearchParams({
+            const { episode_list } = await this.drm.FetchAPI<APIChapters>(`./episode/list`, {
                 platform: '3',
-                episode_id_list: chapterChunk.toString()
-            }));
-
-            const { episode_list } = await FetchJSON<APIChapters>(request);
+                episode_id_list: chapterChunk.toString(),
+            }, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            });
             chapters.push(...episode_list.map(chapter => new Chapter(this, manga, chapter.episode_id.toString(), chapter.episode_name.trim())));
         };
         return chapters;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageSeed>[]> {
-        const request = await this.CreateRequest(`./web/episode/viewer?0&platform=3&episode_id=${chapter.Identifier}`);
-        const { page_list, scramble_seed } = await FetchJSON<APIPages>(request);
+        const { page_list, scramble_seed } = await this.drm.FetchAPI<APIPages>('./web/episode/viewer', {
+            0: '',
+            platform: '3',
+            episode_id: chapter.Identifier,
+        });
         return page_list.map(page => new Page<PageSeed>(this, chapter, new URL(page), { seed: scramble_seed }));
     }
 
@@ -128,68 +184,6 @@ export default class extends DecoratableMangaScraper {
             }
 
         });
-    }
-
-    protected async GetMangaDatas(mangaId: string): Promise<MangaData> {
-        const request = await this.CreateRequest(`./title/list?platform=3&title_id_list=${mangaId}`);
-        const { title_list: [manga] } = await FetchJSON<APIMangas>(request);
-        return {
-            id: manga.title_id.toString(),
-            title: manga.title_name.trim(),
-            episode_list: manga.episode_id_list
-        };
-    }
-
-    protected async CreateRequest(endpoint: string): Promise<Request> {
-        const url = new URL(endpoint, this.apiUrl);
-        const requestHash = await this.ComputeHash(url.searchParams);
-        return new Request(url, {
-            method: 'GET',
-            headers: {
-                [this.requestHashProperty]: requestHash,
-                Origin: this.URI.origin,
-                Referer: this.URI.href
-            }
-        });
-    }
-
-    private async CreatePostRequest(endpoint: string, variables: URLSearchParams): Promise<Request> {
-        const url = new URL(endpoint, this.apiUrl);
-        const requestHash = await this.ComputeHash(variables);
-        return new Request(url, {
-            method: 'POST',
-            body: variables.toString(),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                [this.requestHashProperty]: requestHash,
-                Origin: this.URI.origin,
-                Referer: this.URI.href
-            }
-        });
-    }
-
-    private async ComputeHash(variables: URLSearchParams): Promise<string> {
-        const params = Object.fromEntries(variables);
-        const dictionary = {};
-        for (const [key, value] of Object.entries(params)) typeof value != 'string' &&
-            typeof value != 'number' || (dictionary[key] = value.toString());
-        const hashtable: string[] = [];
-        for (const key of Object.keys(dictionary).sort()) {
-            hashtable.push(await this.DoubleSHA(key, dictionary[key] ));
-        }
-        const hash = await this.SHA(hashtable.toString(), 'SHA-256');
-        return await this.SHA(`${hash}${this.requestHashAppend}`, 'SHA-512');
-    }
-
-    protected async DoubleSHA(key: string, value: string): Promise<string> {
-        const keyHash = await this.SHA(key, 'SHA-256');
-        const valueHash = await this.SHA(value, 'SHA-512');
-        return [keyHash, valueHash].join('_');
-    }
-
-    private async SHA(text: string, algorithm: AlgorithmIdentifier): Promise<string> {
-        const hash = await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text));
-        return GetHexFromBytes(new Uint8Array(hash));
     }
 }
 
