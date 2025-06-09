@@ -16,7 +16,6 @@ type APIMangas = {
         title_name: string
         episode_id_list: number[]
     }[]
-
 }
 
 export type MangaData = {
@@ -48,8 +47,9 @@ type PageSeed = {
 
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
+
     protected apiUrl = 'https://api.ciao.shogakukan.co.jp/';
-    protected requestHashProperty = 'x-bambi-hash';
+    protected requestHashProperty = 'X-Bambi-Hash';
     protected requestHashAppend : string = '';
 
     public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator]) {
@@ -72,7 +72,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { episode_list } = await this.GetMangaDatas(manga.Identifier);
+        return this.FetchChapterList(manga, this.GetMangaDatas);
+    }
+
+    protected async FetchChapterList(manga: Manga, mangaInfoProvider: typeof this.GetMangaDatas): Promise<Chapter[]> {
+        const { episode_list } = await mangaInfoProvider(manga.Identifier);
         const chapters: Chapter[] = [];
 
         //request is limited to 50 chapters
@@ -103,53 +107,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageSeed>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const COL_NUM = 4;
 
         return DeScramble(blob, async (image, ctx) => {
-
-            function getPieceDimension(width: number, height: number, t: number): TDimension {
-
-                if (width < t || height < t) return null;
-                const s = Cs(t, 8);
-                return width > s && height > s && (width = Math.floor(width / s) * s, height = Math.floor(height / s) * s),
-                {
-                    width: Math.floor(width / t),
-                    height: Math.floor(height / t)
-                };
-            }
-
-            function Cs(e: number, i: number): number {
-                e > i && ([e, i] = [i, e]);
-                const t = (s, o) => s ? t(o % s, s) : o;
-                return e * i / t(e, i);
-            }
-
-            const xs = function* (e: number, i: number) {
-                yield* Is([...Array(e ** 2)].map((s, o) => o), i).map(
-                    (s, o) => ({
-                        source: {
-                            x: s % e,
-                            y: Math.floor(s / e)
-                        },
-                        dest: {
-                            x: o % e,
-                            y: Math.floor(o / e)
-                        }
-                    })
-                );
-            };
-            function Is(e: number[], seed: number): number[] {
-                const t = Ls(seed);
-                return e.map(o => [t.next().value, o]).sort((o, r) => + (o[0] > r[0]) - + (r[0] > o[0])).map(o => o[1]);
-            }
-
-            const Ls = function* (seed: number) {
-                const i = Uint32Array.of(seed);
-                for (; ;) i[0] ^= i[0] << 13,
-                i[0] ^= i[0] >>> 17,
-                i[0] ^= i[0] << 5,
-                yield i[0];
-            };
 
             ctx.drawImage(image, 0, 0);
             const o = getPieceDimension(image.width, image.height, COL_NUM);
@@ -233,3 +192,52 @@ export default class extends DecoratableMangaScraper {
         return GetHexFromBytes(new Uint8Array(hash));
     }
 }
+
+// Website Script
+
+const COL_NUM = 4;
+
+function getPieceDimension(width: number, height: number, t: number): TDimension {
+
+    if (width < t || height < t) return null;
+    const s = Cs(t, 8);
+    return width > s && height > s && (width = Math.floor(width / s) * s, height = Math.floor(height / s) * s),
+    {
+        width: Math.floor(width / t),
+        height: Math.floor(height / t)
+    };
+}
+
+function Cs(e: number, i: number): number {
+    e > i && ([e, i] = [i, e]);
+    const t = (s, o) => s ? t(o % s, s) : o;
+    return e * i / t(e, i);
+}
+
+const xs = function* (e: number, i: number) {
+    yield* Is([...Array(e ** 2)].map((s, o) => o), i).map(
+        (s, o) => ({
+            source: {
+                x: s % e,
+                y: Math.floor(s / e)
+            },
+            dest: {
+                x: o % e,
+                y: Math.floor(o / e)
+            }
+        })
+    );
+};
+
+function Is(e: number[], seed: number): number[] {
+    const t = Ls(seed);
+    return e.map(o => [t.next().value, o]).sort((o, r) => + (o[0] > r[0]) - + (r[0] > o[0])).map(o => o[1]);
+}
+
+const Ls = function* (seed: number) {
+    const i = Uint32Array.of(seed);
+    for (; ;) i[0] ^= i[0] << 13,
+    i[0] ^= i[0] >>> 17,
+    i[0] ^= i[0] << 5,
+    yield i[0];
+};
