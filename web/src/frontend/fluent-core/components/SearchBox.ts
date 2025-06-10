@@ -1,5 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, attr, when, ref } from '@microsoft/fast-element';
-import type { Field } from '@fluentui/web-components';
+import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, attr, when } from '@microsoft/fast-element';
 import { StateManagerService, type StateManager } from '../services/StateManagerService';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
@@ -41,7 +40,7 @@ const templateRegularExpression: ViewTemplate<SearchBox> = html`
 `;
 
 const template: ViewTemplate<SearchBox> = html`
-    <fluent-text-input id="searchpattern" ${ref('control')} appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.Needle} @input=${(model, ctx) => model.Needle = ctx.event.currentTarget['value']}>
+    <fluent-text-input id="searchpattern" appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.Needle} @input=${(model, ctx) => model.Needle = ctx.event.currentTarget['value']}>
         <div slot="start" :innerHTML=${() => IconSearch}></div>
         <div slot="end">
             <fluent-button icon-only size="small" appearance="transparent" title="${model => model.S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.Needle = ''}></fluent-button>
@@ -56,7 +55,6 @@ export class SearchBox extends FASTElement {
 
     @StateManagerService S: StateManager;
     private readonly event = 'predicate';
-    readonly control: Field;
 
     @attr placeholder = '';
 
