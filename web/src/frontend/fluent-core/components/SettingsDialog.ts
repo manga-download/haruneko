@@ -40,8 +40,18 @@ const templateSecret: ViewTemplate<Secret> = html`
     <fluent-text-input type="password" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
 `;
 
+/*
+ * TODO: Migrate to number-field as soon as available
 const templateNumeric: ViewTemplate<Numeric> = html`
     <fluent-number-field :min=${model => model.Min} :max=${model => model.Max} :valueAsNumber=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['valueAsNumber']}></fluent-number-field>
+`;
+*/
+
+const templateNumeric: ViewTemplate<Numeric> = html`
+    <fluent-text-input type="text" :value=${model => model.Value} @change=${(model, ctx) => model.Value = Math.max(model.Min, Math.min(model.Max, ctx.event.currentTarget['value']))}>
+        <fluent-button slot="start" icon-only size="small" appearance="small" @click=${model => console.log('increment', model.Value++)}>+</button>
+        <fluent-button slot="end" icon-only size="small" appearance="small" @click=${model => console.log('decrement', model.Value--)}>-</button>
+    </fluent-text-input>
 `;
 
 const templateCheck: ViewTemplate<Check> = html`
@@ -70,7 +80,7 @@ const templateSettingRow: ViewTemplate<ISetting> = html`
     <div title=${model => S.Locale[model.Description]()}>${model => S.Locale[model.Label]()}</div>
     ${when(model => model instanceof Text, templateText)}
     ${when(model => model instanceof Secret, templateSecret)}
-    ${when(model => model instanceof Numeric, html`<div>[Numeric]</div>`)}
+    ${when(model => model instanceof Numeric, templateNumeric)}
     ${when(model => model instanceof Check, templateCheck)}
     ${when(model => model instanceof Choice, templateChoice)}
     ${when(model => model instanceof Directory, templateDirectory)}
