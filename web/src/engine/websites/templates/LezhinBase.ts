@@ -1,6 +1,6 @@
 import type { Tag } from '../../Tags';
 import icon from '../Lezhin.webp';
-import { Fetch, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
+import { Fetch, FetchCSS, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { WebsiteResourceKey as W } from '../../../i18n/ILocale';
 import type { Priority } from '../../taskpool/TaskPool';
@@ -16,21 +16,32 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function LoginScript(username: string, password: string): string {
+function LoginScript(username: string, password: string,): string {
     return `
-        new Promise((resolve, reject) => {
-            if (!window.location.pathname.endsWith('/login')) resolve()
-            else {
-                const form = $('form#email');
-                form.find('input#login-email').val('${username}');
-                form.find('input#login-password').val('${password}');
-                $.ajax({
-                    type: 'POST',
-                    url: form.prop('action'),
-                    data: form.serialize(),
-                    success: resolve,
-                    error: reject
-                });
+        new Promise(async (resolve, reject) => {
+            try {
+                if (!window.location.pathname.endsWith('/login')) resolve()
+                else {
+                    const form = document.querySelector('form[class^="login"]');
+                    const body = JSON.stringify({
+                        email :  '${username}', 
+                        password: '${password}',
+                        remember: 'false',
+                        provider: 'email',
+                        language: JSON.stringify(window.location.pathname.split('/').at(1))
+                    });
+
+                    const response = await fetch(new URL('./api/authentication/login', window.location.origin), {
+                        method: 'POST',
+                        body,
+                        headers: {
+                            'Content-type': 'application/json',
+                        },
+                    });
+                    resolve(await response.json());
+                }
+            } catch (error) {
+                reject(error);
             }
         });
     `;
@@ -115,6 +126,11 @@ type TDimensions = {
     height: number,
 }
 
+type AuthData = {
+    id: number,
+    accessToken: string
+}
+
 /**
  * A basic oAuth token manager with Lezhin specific business logic
  */
@@ -129,21 +145,15 @@ class TokenProvider {
      * Extract the token directly from the website (e.g., after login/logout through manual website interaction)
      */
     public async UpdateToken() {
-        const script = `
-            new Promise(resolve => {
-                const matches = document.documentElement.innerHTML.match(/"id.*:(\\d+),.*accessToken.*([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})/);
-                resolve ({
-                    userID : matches?.at(1),
-                    token : matches?.at(2)
-                });
-            });
-        `;
-        //const script = `(window.__LZ_CONFIG__?.token ?? document.documentElement.innerHTML.match(/accessToken.*([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})/)?.at(1))`;
+
         try {
-            const { token, userID } = await FetchWindowScript<{ userID: string, token: string }>(new Request(this.clientURI), script);
-            this.#token = token;
-            this.#userID = userID;
-        } catch (error) {
+            const scripts = await FetchCSS<HTMLScriptElement>(new Request(this.clientURI), 'script:not([src])');
+            const { accessToken, id } = this.ExtractData<AuthData>(scripts, 'accessToken', 'accessToken');
+            this.#token = accessToken;
+            this.#userID = id.toString();
+        }
+
+        catch (error) {
             console.warn('UpdateToken()', error);
             this.#token = null;
         }
@@ -168,6 +178,26 @@ class TokenProvider {
         }
         return headers;
     }
+
+    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string, asObject = true): T {
+        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
+        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
+        const record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
+
+        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
+            if (parent[keyName]) {
+                return asObject ? parent : parent[keyName];
+            }
+            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
+                const result = FindValueForKeyName(child);
+                if (result) {
+                    return result;
+                }
+            }
+            return undefined;
+        })(record) as T;
+    }
+
 }
 
 @Common.ChaptersSinglePageCSS('ul[class*=episodeListContents__list] li a', ChapterExtractor)
