@@ -48,10 +48,7 @@ const templateNumeric: ViewTemplate<Numeric> = html`
 */
 
 const templateNumeric: ViewTemplate<Numeric> = html`
-    <fluent-text-input type="text" :value=${model => model.Value} @change=${(model, ctx) => model.Value = Math.max(model.Min, Math.min(model.Max, ctx.event.currentTarget['value']))}>
-        <fluent-button slot="start" icon-only size="small" appearance="small" @click=${model => console.log('increment', model.Value++)}>+</button>
-        <fluent-button slot="end" icon-only size="small" appearance="small" @click=${model => console.log('decrement', model.Value--)}>-</button>
-    </fluent-text-input>
+    <input type="number" min=${model => model.Min} max=${model => model.Max} :value=${model => model.Value} @change=${(model, ctx) => model.Value = parseInt(ctx.eventTarget<HTMLInputElement>().value)}></input>
 `;
 
 const templateCheck: ViewTemplate<Check> = html`
@@ -63,15 +60,15 @@ const templateChoiceOption: ViewTemplate<{key: string, label: string}> = html`
 `;
 
 const templateChoice: ViewTemplate<Choice> = html`
-<fluent-dropdown type="dropdown" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
-    <fluent-listbox>
-        ${repeat(model => model.Options, templateChoiceOption)}
-    </fluent-listbox>
-</fluent-dropdown>
+    <fluent-dropdown type="dropdown" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
+        <fluent-listbox>
+            ${repeat(model => model.Options, templateChoiceOption)}
+        </fluent-listbox>
+    </fluent-dropdown>
 `;
 
 const templateDirectory: ViewTemplate<Directory> = html`
-    <fluent-text-input readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
+    <fluent-text-input type="text" readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
         <fluent-button slot="end" icon-only size="small" appearance="transparent" :innerHTML=${() => IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
     </fluent-text-input>
 `;
@@ -82,7 +79,7 @@ const templateSettingRow: ViewTemplate<ISetting> = html`
     ${when(model => model instanceof Secret, templateSecret)}
     ${when(model => model instanceof Numeric, templateNumeric)}
     ${when(model => model instanceof Check, templateCheck)}
-    ${when(model => model instanceof Choice, templateChoice)}
+    ${when(model => model instanceof Choice, html`<div>-</div>` /*templateChoice*/)}
     ${when(model => model instanceof Directory, templateDirectory)}
 `;
 
@@ -98,7 +95,7 @@ const template: ViewTemplate<SettingsDialog> = html`
             </fluent-button>
         </fluent-dialog-body>
     </fluent-dialog>
-
+<!--
     <fluent-dropdown type="dropdown">
         <fluent-listbox>
             <fluent-option value="1">1 - A</fluent-option>
@@ -106,6 +103,7 @@ const template: ViewTemplate<SettingsDialog> = html`
             <fluent-option value="3">3 - C</fluent-option>
         </fluent-listbox>
     </fluent-dropdown>
+-->
 `;
 
 @customElement({ name: 'fluent-settings-dialog', template, styles })
