@@ -253,8 +253,7 @@ export class MediaTitleSelect extends FASTElement {
     ExpandedChanged() {
         if(this.dropdown) {
             this.dropdown.style.display = this.Expanded ? 'block' : 'none';
-            this.searchbox.control.focus();
-            //this.searchbox.control.select();
+            this.searchbox.Focus();
         }
     }
 
