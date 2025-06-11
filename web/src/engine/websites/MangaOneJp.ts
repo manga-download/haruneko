@@ -40,7 +40,8 @@ type WebVolumeListUsedByPaging = {
 
 type ChapterProto = {
     chapterId: number,
-    chapterName: string
+    chapterName: string,
+    description: string
 }
 
 type Volume = {
@@ -71,7 +72,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://manga-one.com/api/client';
 
     public constructor() {
-        super('mangaonejp', 'MangaOne (Japan)', 'https://manga-one.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
+        super('mangaonejp', 'Manga One (Japan)', 'https://manga-one.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
     public override get Icon() {
@@ -80,14 +81,14 @@ export default class extends DecoratableMangaScraper {
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/viewer/\\d+`).test(url);
-
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        //There is no manga link, user can paste chapter url or volume url (with or without args)
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(url)), 'script:not([src])');
         const { chapter_id, type } = this.ExtractData<JSONViewerData>(scripts, 'chapter_id', 'viewer_type');
-        const { currentTitle: { title } } = await FetchProto<WebViewerResponse>(new Request(new URL(`?rq=viewer&chapter_id=${chapter_id}&viewer_type=${type}&page=1`, this.apiUrl), { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
-        return new Manga(this, provider, title.toString(), title.titleName);
+        const { currentTitle: { title } } = await this.GetWebViewerResponse(chapter_id, type);
+        return new Manga(this, provider, title.titleId.toString(), title.titleName);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -104,7 +105,10 @@ export default class extends DecoratableMangaScraper {
 
         url.searchParams.set('type', 'chapter');
         const { chapterList: { chapterList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
-        chapters.push(...chapterList.map(chapter => new Chapter(this, manga, JSON.stringify({ id: chapter.chapterId, type: 'chapter' }), chapter.chapterName)));
+        chapters.push(...chapterList.map(chapter => {
+            const id = JSON.stringify({ id: chapter.chapterId, type: 'chapter' });
+            return new Chapter(this, manga, id, [chapter.chapterName, chapter.description].join(' ').trim());
+        }));
 
         url.searchParams.set('type', 'volume');
         const { volumeList: { volumeList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
@@ -115,20 +119,24 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { id, type }: ItemID = JSON.parse(chapter.Identifier);
-        const url = new URL(this.apiUrl);
-        url.searchParams.set('rq', type === 'volume' ? 'volume_viewer' : 'viewer');
-        url.searchParams.set(type === 'volume' ? 'volume_id_for_read' : 'chapter_id', id.toString());
-        url.searchParams.set('viewer_type', type);
 
-        let data = await FetchProto<WebViewerResponse>(new Request(url, { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
+        let data = await this.GetWebViewerResponse(id, type);
         if (!data.pages) {
-            url.searchParams.set('is_trial', 'true');
-            data = await FetchProto<WebViewerResponse>(new Request(url, { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
+            data = await this.GetWebViewerResponse(id, type, true);
             if (!data.pages)
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return data.pages.filter(page => page.image)
             .map(page => new Page(this, chapter, new URL(page.image.imageUrl)));
+    }
+
+    private async GetWebViewerResponse(id: number, type: string, isTrial : boolean = false): Promise<WebViewerResponse> {
+        const url = new URL(this.apiUrl);
+        url.searchParams.set('rq', type === 'volume' ? 'volume_viewer' : 'viewer');
+        url.searchParams.set(type === 'volume' ? 'volume_id_for_read' : 'chapter_id', id.toString());
+        url.searchParams.set('viewer_type', type);
+        if (isTrial) url.searchParams.set('is_trial', 'true');
+        return await FetchProto<WebViewerResponse>(new Request(url, { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
     }
 
     private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string, asObject: boolean = true): T {

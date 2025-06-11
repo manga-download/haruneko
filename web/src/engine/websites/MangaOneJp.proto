@@ -21,7 +21,7 @@ message DayOfWeekTitleList {
 	repeated WebTitle titles = 2;
 }
 
-//Chapters , ??? and volumes
+//Chapters and volumes
 message WebChapterListForViewerResponse {
 	optional WebChapterListUsedByPaging chapterList = 1;
 	optional WebVolumeListUsedByPaging volumeList = 3;
@@ -38,6 +38,7 @@ message WebVolumeListUsedByPaging {
 message ChapterProto {
 	optional uint32 chapterId = 1;
 	optional string chapterName = 2;
+	optional string description = 3;
 }
 
 message WebVolume {
