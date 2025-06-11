@@ -3,6 +3,7 @@ import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '
 import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
 import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
 import { S, StateManagerService, type StateManager } from '../services/StateManagerService';
+import type { FluentNumberField } from './FluentNumberField';
 import type { Dialog } from '@fluentui/web-components';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
@@ -40,15 +41,9 @@ const templateSecret: ViewTemplate<Secret> = html`
     <fluent-text-input type="password" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
 `;
 
-/*
- * TODO: Migrate to number-field as soon as available
+// TODO: Migrate to real fluent-number-field as soon as available
 const templateNumeric: ViewTemplate<Numeric> = html`
-    <fluent-number-field :min=${model => model.Min} :max=${model => model.Max} :valueAsNumber=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['valueAsNumber']}></fluent-number-field>
-`;
-*/
-
-const templateNumeric: ViewTemplate<Numeric> = html`
-    <input type="number" min=${model => model.Min} max=${model => model.Max} :value=${model => model.Value} @change=${(model, ctx) => model.Value = parseInt(ctx.eventTarget<HTMLInputElement>().value)}></input>
+    <fluent-number-field :min=${model => model.Min} :max=${model => model.Max} :valueAsNumber=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<FluentNumberField>().valueAsNumber}></input>
 `;
 
 const templateCheck: ViewTemplate<Check> = html`

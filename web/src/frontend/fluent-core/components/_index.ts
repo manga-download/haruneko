@@ -19,6 +19,7 @@ import '@fluentui/web-components/link.js';
 
 // TODO: Replace by the real fluent components as soon as they are ready
 import './FluentCard';
+import './FluentNumberField';
 
 export { App } from '../App';
 export { TitleBar } from './TitleBar';
