@@ -17,6 +17,9 @@ import '@fluentui/web-components/spinner.js';
 import '@fluentui/web-components/image.js';
 import '@fluentui/web-components/link.js';
 
+// TODO: Replace by the real fluent components as soon as they are ready
+import './FluentCard';
+
 export { App } from '../App';
 export { TitleBar } from './TitleBar';
 export { BookmarkList } from './BookmarkList';
