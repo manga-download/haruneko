@@ -492,6 +492,7 @@ export { default as MintManga } from './MintManga';
 export { default as mkzhan } from './mkzhan';
 export { default as MonochromeScans } from './MonochromeScans';
 export { default as MonzeeKomik } from './MonzeeKomik';
+export { default as MugiwarasOficial } from './MugiwarasOficial';
 export { default as MultPorn } from './MultPorn';
 export { default as MundoManhwa } from './MundoManhwa';
 export { default as MyComic } from './MyComic';
