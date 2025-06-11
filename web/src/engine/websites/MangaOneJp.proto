@@ -44,6 +44,7 @@ message WebVolume {
 	optional Volume volume = 1;
 }
 
+message Volume {
 	optional uint32 id = 1;
 	optional string name = 2;
 }
