@@ -288,6 +288,7 @@ export { default as LegacyScans } from './LegacyScans';
 export { default as LELManga } from './LELManga';
 export { default as LELScan } from './LELScan';
 export { default as LELScanVF } from './LELScanVF';
+export { default as LevaScans } from './LevaScans';
 export { default as LewdManhwa } from './LewdManhwa';
 export { default as LezhinES } from './LezhinES';
 export { default as LHTranslation } from './LHTranslation';
