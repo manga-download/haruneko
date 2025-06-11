@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/viewer/\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/viewer/\\d+`).test(url);
 
     }
 
