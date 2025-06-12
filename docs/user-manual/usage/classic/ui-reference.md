@@ -37,7 +37,17 @@ To close the menu, click the button again or any space in the application other 
 
 ## Bookmark Panel
 
-### Media Items Panel
+### Media List Panel
+
+![](./assets/)
+
+1. Use this button to load the manga links (e.g. https://mangadex.org/title/31013/eleceed) currently stored in the clipboard into the manga list. This is useful to quickly drop manga downloads into HakuNeko while browsing manga websites with your browser.
+2. It is also possible to browse manga lists directly in HakuNeko. You can type here the name of your Source from which the manga shall be shown (if the list was updated). There are also some special sources which are discussed later.
+3. If a website is selected as source, the manga will be shown from a locally cached list. To update the list use this synchronize button. A refresh logo will appear at the place of the Manga List
+4. Enter a search pattern to filter the manga list. The pattern requires at least 3 characters to perform a search (or 2 with non-latin characters). You can search by the title of a manga or by the source name.
+5. With the bookmark button (the star) you can add or remove the selected manga from he manga list to the bookmark list.
+6. The list of manga that are shown for the selected source and filtered by the search pattern. Select a manga to load its chapters in the Chapter List.
+7. The status bar may show an activity icon when the list is loading or synchronizing. It also shows the number of filtered manga in the list and the total number of available manga for the selected source.
 
 ### Media Preview
 
