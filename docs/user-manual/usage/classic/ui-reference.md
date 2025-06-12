@@ -49,7 +49,30 @@ To close the menu, click the button again or any space in the application other 
 6. The list of manga that are shown for the selected source and filtered by the search pattern. Select a manga to load its chapters in the Chapter List.
 7. The status bar may show an activity icon when the list is loading or synchronizing. It also shows the number of filtered manga in the list and the total number of available manga for the selected source.
 
+### Item List
+
+The chapter list shows the chapters of the selected manga from the [Media List](#media-list-panel).
+
+![](./assets/Item-List.jpg)
+
+1. Use the sort button to toggle between different ordering of the chapters. The options are original, ascending, descending.
+2. Choose a language to show only chapters of this selected language. If the language option is not available than the site does not have multiple languages or that it was not coded yet (you can make a request on github).
+<!--![](./assets/Item-List-Language.jpg)-->
+3. Show only chapters that matches a given search pattern. Regular expressions are also supported.
+4. The list of chapters that are shown for the selected source and filtered by the language and search pattern.
+5. Each chapter has some controls and a title. The download button will add the chapter to the download list and save it to the folder that is configured in the Settings. The button has different appearances reflecting the current state. See the tooltip for additional information. The preview button will show the pages of the chapter in the Preview Panel. The marker logo keeps track of your last read chapter. To change the read status of a chapter you will need to right click on the chapter and select the *Flag as* option than the read status of your need. These features do not work in offline mode. <!--double check if this is still the case-->
+6. The status bar may show an activity icon when the list is loading. It also shows the number of filtered chapters in the list and the total number of available chapters for the selected manga.
+
+![](./assets/Item-List-RClick.jpg)
+
+Currently to download a chapter you need to right click on a chapter. <!--This will change in the future-->
+A menu will appear with multiple options.
+You can add to the download list one chapter at a time or add all chapters to the download list.
+It will be downloaded to the folder that is configured in the Settings.
+
 ### Media Preview
+
+
 
 ### Download Panel
 
