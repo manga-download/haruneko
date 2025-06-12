@@ -1,13 +1,13 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'portalyaoi',
         title: 'Portal Yaoi'
     },
     container: {
         url: 'https://portalyaoi.com/manga/love-shuttle/',
-        id: JSON.stringify({ post: '14', slug: '/manga/love-shuttle/' }),
+        id: JSON.stringify({ slug: '/manga/love-shuttle/' }),
         title: 'Love Shuttle'
     },
     child: {
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 878_576,
+        size: 272_635,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

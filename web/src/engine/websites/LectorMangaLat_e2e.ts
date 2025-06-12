@@ -1,13 +1,13 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'lectormangalat',
         title: 'LectorManga (.Lat)'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://lectormanga.lat/biblioteca/lily-of-the-valley/',
-        id: JSON.stringify({ post: '18933', slug: '/biblioteca/lily-of-the-valley/'}),
+        id: JSON.stringify({ post: '18933', slug: '/biblioteca/lily-of-the-valley/' }),
         title: 'Lily of the valley'
     },
     child: {
@@ -18,7 +18,5 @@ const config: Config = {
         index: 0,
         size: 610831,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

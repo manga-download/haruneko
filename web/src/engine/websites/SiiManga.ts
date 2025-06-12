@@ -8,11 +8,12 @@ import * as Common from './decorators/Common';
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS([/\.gif$/])
-@Common.ImageAjax(undefined, true)
+@Common.ImageElement(false, undefined, true)
+
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('siimanga', 'SiiManga', 'https://siikomik.art', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('siimanga', 'SiiManga', 'https://web.siikomik.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

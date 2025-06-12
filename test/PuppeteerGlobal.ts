@@ -1,16 +1,21 @@
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { exec, spawn } from 'node:child_process';
+import { type ChildProcess, exec, spawn } from 'node:child_process';
 import * as puppeteer from 'puppeteer-core';
+import {
+    SetupBlinkEvasions,
+    EvadeWebDriverDetection,
+    EvadeChromeDevToolProtocolDetection
+} from './AutomationEvasions';
 
-export const AppURL = 'http://localhost:5000/';
+export const AppURL = 'https://localhost:5000/';
 export const AppSelector = 'body #app main#hakunekoapp';
 const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite'));
 const tempDir = path.normalize(path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32)));
 const userDir = path.normalize(path.resolve(tempDir, 'user-data'));
 
-let server: ReturnType<typeof spawn>;
+let server: ReturnType<typeof spawn> | null;
 let browser: puppeteer.Browser;
 
 async function delay(milliseconds: number) {
@@ -23,55 +28,65 @@ async function CloseSplashScreen(target: puppeteer.Target) {
     while(!url?.startsWith('http')) {
         await delay(250);
         url = page?.url();
+        // TODO: leave after timeout?
     }
     if(url && /splash.html/i.test(url)) {
+        page?.removeAllListeners();
         await page?.close();
     }
 }
 
-async function DetectNW(): Promise<string> {
+async function LaunchServer(): Promise<ChildProcess> {
+    const vite = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], {
+        cwd: path.resolve('web'),
+        stdio: [ 'pipe', process.stdout, process.stderr ],
+        shell: process.platform === 'win32',
+    });
+    await delay(1000); // TODO: Find better solution to wait until web-app is hosted ...
+    console.log(new Date().toISOString(), '=>', `Started Server (pid: ${vite.pid}):`, vite.exitCode === null);
+    return vite;
+}
+
+async function DetectElectron(): Promise<string> {
     const executables = [
-        'nw',
-        'nw.exe',
-        path.join('nwjs.app', 'Contents', 'MacOS', 'nwjs'),
+        'electron',
+        'electron.exe',
+        path.join('Electron.app', 'Contents', 'MacOS', 'Electron'),
     ];
-    const rootModule = path.normalize(path.resolve('node_modules', 'nw'));
-    const appModule = path.normalize(path.resolve('app', 'nw', 'node_modules', 'nw'));
+    const rootModule = path.normalize(path.resolve('node_modules', 'electron'));
+    const appModule = path.normalize(path.resolve('app', 'electron', 'node_modules', 'electron'));
 
-    let search: string[] = [];
-    try {
-        const folder = (await fs.readdir(rootModule)).filter(entry => entry.startsWith('nwjs-')).at(0) ?? 'nwjs';
-        search = executables.map(segment => path.resolve(rootModule, folder, segment));
-    } catch {}
-    try {
-        const folder = (await fs.readdir(appModule)).filter(entry => entry.startsWith('nwjs-')).at(0) ?? 'nwjs';
-        search = executables.map(segment => path.resolve(appModule, folder, segment));
-    } catch {}
+    const search: string[] = [
+        ... executables.map(segment => path.resolve(rootModule, 'dist', segment)),
+        ... executables.map(segment => path.resolve(appModule, 'dist', segment)),
+    ];
 
-    for(const nw of search) {
+    for(const electron of search) {
         try {
-            if((await fs.stat(path.normalize(nw))).isFile()) {
-                console.log(new Date().toISOString(), '=>', 'Detected NW:', nw);
-                return nw;
+            if((await fs.stat(path.normalize(electron))).isFile()) {
+                console.log(new Date().toISOString(), '=>', 'Detected Electron:', electron);
+                return electron;
             }
         } catch {}
     }
 
-    throw new Error('Failed to detect location of nw executable!');
+    throw new Error('Failed to detect location of Electron executable!');
 }
 
-async function LaunchNW(): Promise<puppeteer.Browser> {
-    const nwApp = path.resolve('app', 'nw', 'build');
+async function LaunchElectron(): Promise<puppeteer.Browser> {
+    const electronApp = path.resolve('app', 'electron', 'build');
 
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
         ignoreDefaultArgs: true,
-        executablePath: await DetectNW(),
-        args: [ nwApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--origin=' + AppURL ],
-        userDataDir: userDir
+        executablePath: await DetectElectron(),
+        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu', '--trace-warnings', '--origin=' + AppURL ],
+        userDataDir: userDir,
+        dumpio: true,
     });
     browser.on('targetcreated', CloseSplashScreen);
+    //SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
 
     const start = Date.now();
     while(Date.now() - start < 7500) {
@@ -98,39 +113,67 @@ export async function setup() {
     }
     await fs.mkdir(tempDir, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
-    server = spawn(viteExe, [ 'preview', '--port=5000', '--strictPort' ], {
-        cwd: path.resolve('web'),
-        stdio: [ 'pipe', process.stdout, process.stderr ],
-        shell : process.platform === 'win32',
-    });
+
     try {
-        browser = await LaunchNW();
+        server = await LaunchServer();
+    } catch(error) {
+        throw error;
+    }
+
+    try {
+        browser = await LaunchElectron();
         process.env.browserWS = browser.wsEndpoint();
     } catch(error) {
-        server.kill('SIGINT') || server.kill('SIGTERM') || server.kill('SIGKILL');
+        await TryStopProcess(server, 'Server');
         throw error;
     }
 }
 
 export async function teardown() {
-    const pages = await browser.pages();
-    for(const page of pages) await page.close();
-    await browser.close();
-    switch (process.platform) {
-        case 'win32':
-            await new Promise(resolve => exec(`taskkill /pid ${server.pid} /T /F`, resolve));
-            break;
-        default:
-            const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
-            for(let index = 0; index < signals.length && server.exitCode === null; index++) {
-                console.log(new Date().toISOString(), '=>', signals[index], server.kill(signals[index]));
-            }
-            break;
+    const pages = await browser?.pages() ?? [];
+    for(const page of pages) {
+        try {
+            page.removeAllListeners();
+            await page.close();
+            await delay(1000);
+        } catch {}
     }
-    await delay(1000);
-    if(server.exitCode === null) {
-        console.warn(new Date().toISOString(), '=>', `Failed to stop server (pid: ${server.pid}):`, path.relative(process.cwd(), server.spawnfile));
-    }
+    try {
+        await browser?.removeAllListeners()?.close();
+        await delay(1000);
+    } catch {}
+    await TryStopProcess(browser?.process(), 'Browser');
+    await TryStopProcess(server, 'Server');
     await fs.rm(tempDir, { recursive: true });
     process.exit();
+}
+
+async function TryStopProcess(processInfo: ChildProcess | null, label: string): Promise<void> {
+    if(!processInfo) {
+        return;
+    }
+    const isRunning = () => processInfo.exitCode === null && processInfo.signalCode === null;
+    const processPath = path.relative(process.cwd(), processInfo.spawnfile);
+    try {
+        switch (process.platform) {
+            case 'win32':
+                if(isRunning()) {
+                    await new Promise(resolve => exec(`taskkill /pid ${processInfo.pid} /T /F`, resolve));
+                    break;
+                }
+            default:
+                const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
+                for(let index = 0; isRunning() && index < signals.length; index++) {
+                    console.log(new Date().toISOString(), '=>', signals[index], processPath, processInfo.kill(signals[index]));
+                    await delay(1000);
+                }
+                break;
+        }
+        await delay(1000);
+        if(isRunning()) {
+            throw new Error();
+        }
+    } catch(error) {
+        console.warn(new Date().toISOString(), '=>', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
+    }
 }

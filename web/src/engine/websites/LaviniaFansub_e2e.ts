@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'laviniafansub',
         title: 'Lavinia Fansub'
     },
     container: {
-        url: 'https://laviniafansub.com/manga/placebo-lets-play/',
-        id: JSON.stringify({ post: '1068', slug: '/manga/placebo-lets-play/' }),
+        url: 'https://laviniafansub.site/manga/placebo-lets-playing-laviniafansub/',
+        id: JSON.stringify({ post: '1068', slug: '/manga/placebo-lets-playing-laviniafansub/' }),
         title: `Placebo: Let's Play`
     },
     child: {
-        id: '/manga/placebo-lets-play/27-bolum/',
+        id: '/manga/placebo-lets-playing-laviniafansub/27-bolum/',
         title: '27. Bölüm'
-    },
+    }, /* Need Login
     entry: {
         index: 2,
         size: 1_332_320,
         type: 'image/jpeg'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    }*/
+}).AssertWebsite();

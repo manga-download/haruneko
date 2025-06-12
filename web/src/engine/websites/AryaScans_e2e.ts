@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'aryascans',
         title: 'Arya Scans'
@@ -15,10 +15,8 @@ const config = {
         title: 'Chapter 0'
     },
     entry: {
-        index: 0,
-        size: 665_527,
+        index: 2,
+        size: 410_353,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

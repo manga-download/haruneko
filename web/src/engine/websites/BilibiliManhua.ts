@@ -76,7 +76,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { data: { id, title } } = await this.#drm.FetchTwirp<APIChapters>(new URL(url), 'ComicDetail', {
-            comic_id: parseInt(url.match(/\/mc(\d+)/)[1])
+            comic_id: parseInt(url.match(/\/mc(\d+)/).at(1))
         });
         return new Manga(this, provider, id.toString(), title);
     }
@@ -86,7 +86,7 @@ export default class extends DecoratableMangaScraper {
         try {
             const mangaList: Manga[] = [];
             for (let page = 1, run = true; run; page++) {
-                const mangas = await this.mangasSequentialTaskPool .Add(() => this.GetMangasFromPage(page, provider), Priority.Low, cancellator.signal);
+                const mangas = await this.mangasSequentialTaskPool.Add(() => this.GetMangasFromPage(page, provider), Priority.Low, cancellator.signal);
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             }
             return mangaList;
@@ -96,7 +96,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await this.#drm.FetchTwirp<APIMangas>(new URL('/classify', this.URI), 'ClassPage', {
+        const { data } = await this.#drm.FetchTwirp<APIMangas>(new URL('/classify?styles=-1&areas=-1&status=-1&prices=-1&orders=0&special=0', this.URI), 'ClassPage', {
             style_id: -1,
             area_id: -1,
             is_free: -1,
@@ -118,15 +118,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaUrl = new URL(`/detail/mc${chapter.Parent.Identifier}`, this.URI);
-        const { data: { images } } = await this.#drm.FetchTwirp<APIPages>(mangaUrl, 'GetImageIndex', { ep_id: chapter.Identifier });
-        const { data } = await this.#drm.FetchTwirp<APIImageTokens>(mangaUrl, 'ImageToken', {
+        const chapterUrl = new URL(`/detail/mc${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+        const { data: { images } } = await this.#drm.FetchTwirp<APIPages>(chapterUrl, 'GetImageIndex', { ep_id: chapter.Identifier });
+        const { data } = await this.#drm.FetchTwirp<APIImageTokens>(chapterUrl, 'ImageToken', {
             m1: await this.#drm.GetPublicKey(),
-            urls: this.#drm.CreateImageLinks(this.URI.origin, this.imageFormat.Value, images),
-        });
+            urls: this.#drm.CreateImageLinks(this.URI.origin, this.imageFormat.Value, images)
+        }, false);
         return data.map(({ complete_url: x, url, token }) => {
             const pageurl = new URL(x ?? `${url}?token=${token}`);
-            pageurl.searchParams.set('code', 'ImagePath');
+            pageurl.searchParams.set('code', 'biliManga');
             return new Page(this, chapter, pageurl);
         });
     }

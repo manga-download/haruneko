@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('morenovel', `Morenovel`, 'https://morenovel.net' /*, Tags.Language.English, Tags ... */);
+        super('morenovel', `Morenovel`, 'https://risenovel.com' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
@@ -25,7 +25,7 @@ class MoreNovel extends WordPressMadaraNovel {
         super.id = 'morenovel';
         super.label = 'Morenovel';
         this.tags = [ 'novel', 'indonesian' ];
-        this.url = 'https://morenovel.net';
+        this.url = 'https://risenovel.com';
 
         this.novelObstaclesQuery = 'div#text-chapter-toolbar, div.ad, div.go-to-top';
     }

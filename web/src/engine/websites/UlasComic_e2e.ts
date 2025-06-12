@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'ulascomic',
         title: 'Ulas Comic',
     },
     container: {
-        url: 'https://www.ulascomic.xyz/2024/05/god-of-blackfield.html',
+        url: 'https://www.ulascomic00.xyz/2024/05/god-of-blackfield.html',
         id: '/2024/05/god-of-blackfield.html',
         title: 'God Of Blackfield',
     },
     child: {
-        id: `/2024/05/chapter-01.html`,
-        title: 'Chapter 01',
+        id: '/2025/05/god-of-blackfield-chapter-273.html',
+        title: 'Chapter 273',
     },
     entry: {
         index: 0,
-        size: 747_486,
-        type: 'image/webp'
+        size: 303_394,
+        type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

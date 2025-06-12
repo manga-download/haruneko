@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Perf Scan'
     },
     container: {
-        url: 'https://perf-scan.fr/fr/series/006ccbce-6404-4654-85ea-ce15774bb276',
+        url: 'https://perf-scan.net/fr/series/006ccbce-6404-4654-85ea-ce15774bb276',
         id: '006ccbce-6404-4654-85ea-ce15774bb276',
         title: 'Traces of the Moon'
     },

@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'rumanhua',
         title: 'RuManhua'
     },
     container: {
-        url: 'https://rumanhua.com/IVppgVq/',
+        url: 'https://rumanhua1.com/IVppgVq/',
         id: 'IVppgVq',
         title: '我是怪兽大主宰'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 57_787,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,4 +1,5 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿/* NW.js crash on website initialize => CloudFlare
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -41,3 +42,4 @@ new TestFixture({
         type: 'image/png'
     }
 }).AssertWebsite();
+*/
