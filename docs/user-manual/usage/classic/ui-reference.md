@@ -72,9 +72,40 @@ It will be downloaded to the folder that is configured in the Settings.
 
 ### Media Preview
 
+![]()
 
+Shows the pages or the video for the selected chapter in the [Item list](#item-list).
+Downloaded chapters are shown from the local folder, otherwise the content is streamed directly from the website.
 
 ### Download Panel
+
+![]()
+
+Whenever a chapter is downloaded, it will be added to the download queue. 
+After completion the download job will be shown with a success or a failed message.
+
+1. The list of chapters that are downloading, queued or failed. Each entry shows the title of the source, the manga and the chapter.
+2. The button reflects the current status of the download. See the tooltip for further details, especially useful to show the error when a download failed. Click on a failed download to add the chapter again to the download queue.
+3. The progress bar roughly shows the percentage of the remaining data until the download is complete.
+4. The toggle button to show or hide the download queue.
+5. The status shows the number of downloads that are queued in the list.
+
+### Reader
+
+![]()
+
+To open the reader just click any of the pages from the [Preview Panel](#media-preview). 
+The control panel is at the top right corner and will expand as soon as the cursor enters (hover).
+
+1. The current name of the chapter.
+2. Navigate to the chapter that is below the current chapter in the chapter list without leaving the reader.
+3. Navigate to the chapter that is above the current chapter in the chapter list without leaving the reader.
+4. Decrease the space between the pages. This is useful to remove the gap when reading webtoons.
+5. Increase the space between the pages.
+6. Increase the size of the pages.
+7. Decrease the size of the pages.
+8. Close the reader.
+
 
 ## Website Selection Panel
 
