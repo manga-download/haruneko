@@ -7,7 +7,6 @@
         TabContent,
     } from 'carbon-components-svelte';
     import SettingsViewer from './SettingsViewer.svelte';
-    import ViewerSettings from '../viewer/Settings.svelte';
     import { Scope as UI_Classic_Scope, Scope_Viewer as UI_Classic_Scope_Viewer } from '../../stores/Settings';
     import { Scope as Global_Scope } from '../../../../engine/SettingsGlobal';
 

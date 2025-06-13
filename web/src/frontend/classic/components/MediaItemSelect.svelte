@@ -8,6 +8,8 @@
         Dropdown,
         InlineNotification,
         Loading,
+        OverflowMenu,
+        OverflowMenuItem,
         Search,
     } from 'carbon-components-svelte';
     import ChevronSort from 'carbon-icons-svelte/lib/ChevronSort.svelte';
