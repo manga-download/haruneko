@@ -25,6 +25,7 @@
     import View from 'carbon-icons-svelte/lib/View.svelte';
     import ViewFilled from 'carbon-icons-svelte/lib/ViewFilled.svelte';
     import VolumeFileStorage from 'carbon-icons-svelte/lib/VolumeFileStorage.svelte';
+    
 
     import { Tags, type Tag } from '../../../engine/Tags';
     const availableLanguageTags = Tags.Language.toArray();
@@ -135,7 +136,7 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             icon={CloudDownload}
-            iconDescription="Download"
+            iconDescription={$Locale.Frontend_MediaItem_Download()}
             onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         />
     {:else if downloadTaskStatus === Status.Queued}
@@ -144,7 +145,7 @@
             kind="ghost"
             tooltipPosition="right"
             tooltipAlignment="end"
-            iconDescription="Cancel"
+            iconDescription={$Locale.Frontend_MediaItem_Cancel()}
             onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         >
             <PauseFuture fill="var(--cds-icon-secondary)" />
@@ -155,7 +156,7 @@
             kind="ghost"
             tooltipPosition="right"
             tooltipAlignment="end"
-            iconDescription="Cancel (paused)"
+            iconDescription={$Locale.Frontend_MediaItem_CancelPaused()}
             onclick={() => removeDownload(downloadTask)}
         >
             <Pause fill="var(--cds-toggle-off)" />
@@ -166,7 +167,7 @@
             kind="ghost"
             tooltipPosition="right"
             tooltipAlignment="end"
-            iconDescription="Cancel (downloading...)"
+            iconDescription={$Locale.Frontend_MediaItem_CancelDownloading()}
             onclick={() => removeDownload(downloadTask)}
         >
             <Download fill="var(--cds-support-info)" />
@@ -176,7 +177,7 @@
         <Button
             size="small"
             kind="ghost"
-            iconDescription="Cancel (processing...)"
+            iconDescription={$Locale.Frontend_MediaItem_CancelProcessing()}
             onclick={() => removeDownload(downloadTask)}
         >
             <VolumeFileStorage fill="var(--cds-support-info)" />
@@ -188,7 +189,7 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             icon={EventIncident}
-            iconDescription="Error: click to retry (detailed error in download tasks)"
+            iconDescription={$Locale.Frontend_MediaItem_ErrorRetry()}
             onclick={() => downloadTask.Run()}
         />
     {:else if downloadTaskStatus === Status.Completed}
@@ -197,7 +198,7 @@
             kind="ghost"
             tooltipPosition="right"
             tooltipAlignment="end"
-            iconDescription="Download complete"
+            iconDescription={$Locale.Frontend_MediaItem_DownloadComplete()}
             onclick={() => alert('Download complete. TODO: open folder using system explorer')}
         >
             <FolderOpen fill="var(--cds-support-03)" />
@@ -208,7 +209,7 @@
             kind="ghost"
             tooltipPosition="right"
             tooltipAlignment="end"
-            iconDescription="Download"
+            iconDescription={$Locale.Frontend_MediaItem_Download()}
             onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         >
             <CloudDownload fill="var(--cds-icon-01)" />
@@ -220,7 +221,7 @@
         icon={flagicon}
         tooltipPosition="right"
         tooltipAlignment="end"
-        iconDescription="View"
+        iconDescription={$Locale.Frontend_MediaItem_View()}
         onclick={(event) => onView(event)}
     />
     <ClickableTile class="title" onclick={(event) => onView(event)}>

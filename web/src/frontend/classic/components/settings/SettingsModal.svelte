@@ -10,6 +10,7 @@
     import ViewerSettings from '../viewer/Settings.svelte';
     import { Scope as UI_Classic_Scope, Scope_Viewer as UI_Classic_Scope_Viewer } from '../../stores/Settings';
     import { Scope as Global_Scope } from '../../../../engine/SettingsGlobal';
+    import { Locale } from '../../stores/Settings';
 
     interface Props {
         isSettingsModalOpen: boolean;
@@ -24,17 +25,17 @@
     hasScrollingContent
     bind:open={isSettingsModalOpen}
     passiveModal
-    modalHeading="Settings"
+    modalHeading={$Locale.Frontend_Settings()}
     on:click:button--secondary={() => (isSettingsModalOpen = false)}
     on:open
     on:close
     hasForm
 >
     <Tabs type="container" bind:selected={selectedTab}>
-        <Tab label="General" />
-        <Tab label="Interface" />
-        <Tab label="Viewer" />
-        <Tab label="Trackers" />
+        <Tab label={$Locale.Frontend_Classic_Sidenav_Settings_General()} />
+        <Tab label={$Locale.Frontend_Classic_Sidenav_Settings_Interface()} />
+        <Tab label={$Locale.Frontend_Classic_Sidenav_Settings_Viewer()} />
+        <Tab label={$Locale.Frontend_Classic_Sidenav_Settings_Trackers()} />
         <!-- TODO: selectedtab check: temporary cheat until carbon is svelte5 (snippets instead of slots) -->
         <svelte:fragment slot="content">
             <TabContent
@@ -69,8 +70,8 @@
             >
                 <InlineNotification
                     kind="warning"
-                    title="Not implemented"
-                    subtitle="Trackers are currently not used (yet)"
+                    title={$Locale.Frontend_Trackers_NotImplemented_Title()}
+                    subtitle={$Locale.Frontend_Trackers_NotImplemented_Subtitle()}
                 />
                 {#each [...window.HakuNeko.PluginController.InfoTrackers].filter((tracker) => [...tracker.Settings].length > 0) as tracker}
                     <h4>{tracker.Title}</h4>
