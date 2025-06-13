@@ -8,7 +8,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends Kosaku {
 
     public constructor() {
-        super('inarimanga', 'InariManga', 'https://inarimanga.rzgam.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('inarimanga', 'InariManga', 'https://inarimanga.yoword.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

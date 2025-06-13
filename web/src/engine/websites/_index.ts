@@ -657,7 +657,6 @@ export { default as StarlightScan } from './StarlightScan';
 export { default as StellarSaber } from './StellarSaber';
 export { default as StickHorse } from './StickHorse';
 export { default as StrayFansub } from './StrayFansub';
-export { default as Submanga } from './Submanga';
 export { default as Sukima } from './Sukima';
 export { default as SumManga } from './SumManga';
 export { default as Summertoon } from './Summertoon';
