@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, type ExecutionContext, customElement, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
 import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
 import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
 import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
@@ -34,16 +34,16 @@ const styles: ElementStyles = css`
 `;
 
 const templateText: ViewTemplate<Text> = html`
-    <fluent-text-input type="text" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
+    <fluent-text-input type="text" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
 `;
 
 const templateSecret: ViewTemplate<Secret> = html`
-    <fluent-text-input type="password" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
+    <fluent-text-input type="password" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
 `;
 
 // TODO: Migrate to real fluent-number-field as soon as available
 const templateNumeric: ViewTemplate<Numeric> = html`
-    <fluent-number-field :min=${model => model.Min} :max=${model => model.Max} :valueAsNumber=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<FluentNumberField>().valueAsNumber}></input>
+    <fluent-number-field min=${model => model.Min} max=${model => model.Max} value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<FluentNumberField>().value}></input>
 `;
 
 const templateCheck: ViewTemplate<Check> = html`
@@ -55,7 +55,7 @@ const templateChoiceOption: ViewTemplate<{key: string, label: string}> = html`
 `;
 
 const templateChoice: ViewTemplate<Choice> = html`
-    <fluent-dropdown type="dropdown" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
+    <fluent-dropdown type="dropdown" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
         <fluent-listbox>
             ${repeat(model => model.Options, templateChoiceOption)}
         </fluent-listbox>
@@ -63,8 +63,8 @@ const templateChoice: ViewTemplate<Choice> = html`
 `;
 
 const templateDirectory: ViewTemplate<Directory> = html`
-    <fluent-text-input type="text" readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
-        <fluent-button slot="end" icon-only size="small" appearance="transparent" :innerHTML=${() => IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
+    <fluent-text-input type="text" readonly id="${model => model.ID}" value=${model => model.Value?.name}>
+        <fluent-button slot="end" icon-only size="small" appearance="transparent" :innerHTML=${() => IconFolder} @click=${(model, ctx: ExecutionContext<SettingsDialog>) => ctx.parent.SelectDirectory(model)}></fluent-button>
     </fluent-text-input>
 `;
 
