@@ -209,6 +209,7 @@ export { default as HentaiRead } from './HentaiRead';
 export { default as HentaiTeca } from './HentaiTeca';
 export { default as HentaiVN } from './HentaiVN';
 export { default as HentaiWebtoon } from './HentaiWebtoon';
+export { default as HentaiXYuri } from './HentaiXYuri';
 export { default as HentaiZone } from './HentaiZone';
 export { default as HerosWeb } from './HerosWeb';
 export { default as HeroTruyen } from './HeroTruyen';
