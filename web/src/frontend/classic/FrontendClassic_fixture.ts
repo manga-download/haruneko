@@ -25,6 +25,9 @@ export class TestFixture extends FrontendFixture {
         await super.SetText(selectorWebsiteFilter, search);
     }
 
+    /**
+     * Click the option in the website selection list that corresponds to the given website plugin {@link id}.
+     */
     public async SelectWebsite(id: string) {
         const selector = `#Plugin [role="listbox"] #${id}[role="option"] .title`;
         const page = await super.GetPage();
