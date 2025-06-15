@@ -6,7 +6,7 @@ new TestFixture({
         title: 'InariManga',
     },
     container: {
-        url: 'https://inarimanga.rzgam.xyz/series/reembolsare-la-bondad-con-la-que-me-criaron-con-obsesion/',
+        url: 'https://inarimanga.yoword.xyz/series/reembolsare-la-bondad-con-la-que-me-criaron-con-obsesion/',
         id: '/series/reembolsare-la-bondad-con-la-que-me-criaron-con-obsesion/',
         title: 'Reembolsaré La Bondad Con La Que Me Criaron Con Obsesión'
     },
