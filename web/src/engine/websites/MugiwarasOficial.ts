@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
-import icon from './KnightNoFansub.webp';
+import icon from './MugiwarasOficial.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^https:\/\/kns\.[^/]+\.(xyz|com)\/sr\/[^/]+\/$/, 'meta[property="og:title"]')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('knightnofansub', 'Knight no Fansub', 'https://kns.allgia.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+        super('mugiwarasoficial', 'Mugiwaras Oficial', 'https://mugiwarasoficial.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
