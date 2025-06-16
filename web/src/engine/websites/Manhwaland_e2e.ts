@@ -6,7 +6,7 @@ new TestFixture( {
         title: 'Manhwaland'
     },
     container: {
-        url: 'https://www.manhwaland.asia/manga/got-a-room-uncensored/',
+        url: 'https://baca.manhwaland.onl/manga/got-a-room-uncensored/',
         id: '/manga/got-a-room-uncensored/',
         title: 'Got a Room? UNCENSORED'
     },
