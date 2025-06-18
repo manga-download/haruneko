@@ -132,19 +132,33 @@ At the top o the window you will find three buttons in the following order:
 
 ### Reader
 
-![]()
+![](./assets/Reader-1.jpg)
 
 To open the reader just click any of the pages from the [Preview Panel](#media-preview). 
 The control panel is at the top right corner and will expand as soon as the cursor enters (hover).
 
-1. The current name of the chapter.
-2. Navigate to the chapter that is below the current chapter in the chapter list without leaving the reader.
-3. Navigate to the chapter that is above the current chapter in the chapter list without leaving the reader.
-4. Decrease the space between the pages. This is useful to remove the gap when reading webtoons.
-5. Increase the space between the pages.
-6. Increase the size of the pages.
-7. Decrease the size of the pages.
-8. Close the reader.
+You will found four buttons.
+
+1. To go to the previous chapter.
+2. To go to the next chapter.
+3. To go to quick reader settings.
+4. To close the reader.
+
+Selecting the Quick Reader Settings will bring up the following settings and information.
+
+![](./assets/Reader-2.jpg)
+
+1. The current name of the manga.
+2. The current name of the chapter.
+3. Navigate to the chapter that is below the current chapter in the chapter list without leaving the reader.
+4. Navigate to the chapter that is above the current chapter in the chapter list without leaving the reader.
+5. Increase the size of the pages.
+6. Decrease the size of the pages.
+7. Decrease the space between the pages. 
+   This is useful to remove the gap when reading webtoons.
+8. Increase the space between the pages.
+9. Change the view mode.
+    Paginated or longstrip
 
 
 ## Website Selection Panel
