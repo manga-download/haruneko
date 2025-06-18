@@ -183,6 +183,9 @@ In the plugin selection menu you can find several sorting options and other tool
 
 For each site you can find its name, the website link and its associated tags.
 
+When you first select a website you will need to use the refresh button to load the [Media List](#media-list-panel).
+This can take up to several minutes for large websites.
+
 ### Title Selection Panel
 
 ### Website Settings
