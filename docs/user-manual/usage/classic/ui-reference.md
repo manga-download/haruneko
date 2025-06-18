@@ -163,6 +163,26 @@ Selecting the Quick Reader Settings will bring up the following settings and inf
 
 ## Website Selection Panel
 
+The source selection list can be reached by the corresponding control (number 4) in the [Manga List](#menu). 
+
+![](./assets/Plugin-Select.jpg)
+
+Besides the website sources, there are certain sources with a special meaning.
+
+![](./assets/Plugin-Select-Window.jpg)
+
+In the plugin selection menu you can find several sorting options and other tools.
+
+1. You can sort by Languages.
+2. You can sort by Media type
+3. You can sort by Site type
+4. You have a search bar if you are looking for a specific site.
+5. You can favorite sites, so that you can find them quicker.
+   **This option is work in progress**
+6. Open the site inside haru web browsing window.
+
+For each site you can find its name, the website link and its associated tags.
+
 ### Title Selection Panel
 
 ### Website Settings
