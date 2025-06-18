@@ -32,26 +32,38 @@ const translations: VariantResource = {
   Frontend_Setting: 'Setting',
   Frontend_Settings: 'Settings',
   Frontend_Help: 'Help',
+  Frontend_Documentation: "Documentation", //add
+  Frontend_Discord: "Discord", //add
+  Frontend_OpenTicket: "Open a ticket", //add
+  Frontend_HomePage: "Home page", //add
+  Frontend_ShowIP: "Show IP and localisation", //add
   Frontend_About: 'About',
+  Frontend_CodeSource: "Code source", //add
+  Frontend_AppVersion: "Using version X.X.X", //add
+  Frontend_Maintainers: "Maintainers", //add
+  Frontend_Contributors: "Contributors", //add
+  Frontend_Artwork: "Artwork", //add
   Frontend_Plugin: 'Plugin',
   Frontend_Plugins: 'Plugins',
   Frontend_Plugin_List: 'Plugin list',
   Frontend_Plugin_Select: 'Select a plugin',
   Frontend_Plugin_Selection: 'Plugin selection',
+  Frontend_ImportExport: "Import/Export", //add
   Frontend_Media: 'Media',
   Frontend_Medias: 'Media',
   Frontend_Media_List: 'Media list',
   Frontend_Media_Select: 'Select a media',
   Frontend_Media_Selection: 'Media selection',
+  Frontend_PasteMediaURL: "Paste Media URL", //add
   Frontend_Media_PasteLink_NotFoundError: 'The provided link is not supported (a matching website was not found): {0}',
   Frontend_Item: 'Item',
   Frontend_Items: 'items',
   Frontend_Item_List: 'Item list',
   Frontend_Item_Select: 'Select an item',
   Frontend_Item_Selection: 'Item selection',
+ 
 
   // [SECTION]: Frontend Classic
-
   Frontend_Classic_Label: 'Classic',
   Frontend_Classic_Description: 'The standard frontend mostly based on the previous version',
   Frontend_Classic_Settings_FuzzySearch: 'Fuzzy Search',
@@ -81,10 +93,27 @@ const translations: VariantResource = {
   Frontend_Classic_Sidenav_Home: 'Home',
   Frontend_Classic_Sidenav_Settings_General: 'General',
   Frontend_Classic_Sidenav_Settings_Interface: 'Interface',
+  Frontend_Classic_Sidenav_Settings_Viewer: "Viewer",
   Frontend_Classic_Sidenav_Settings_Trackers: 'Trackers',
+  //
+  Frontend_Classic_Bookmark_ModalHeading: "Import/Export bookmarks",
+  Frontend_Classic_Bookmark_CloseButton: "Close",
+  Frontend_Classic_Bookmark_ImportButton: "Import",
+  Frontend_Classic_Bookmark_ExportButton: "Export",
+  Frontend_Classic_Bookmark_ImportDescription: "Import Hakuneko's bookmarks from previous version",
+  Frontend_Classic_Bookmark_Importing: "Import in progress ...",
+  Frontend_Classic_Bookmark_ImportDone: "Import completed",
+  Frontend_Classic_Bookmark_Exporting: "Export in progress ...",
+  Frontend_Classic_Bookmark_ExportDone: "Export completed",
+  Frontend_Classic_Bookmark_UserCanceled: "User canceled",
+  Frontend_Classic_Bookmark_Error: "Error: {error}",
+  Frontend_Classic_Bookmark_Found: "found",
+  Frontend_Classic_Bookmark_Imported: "imported",
+  Frontend_Classic_Bookmark_Skipped: "skipped",
+  Frontend_Classic_Bookmark_Broken: "broken",
+  Frontend_Classic_Bookmark_Exported: "exported",
 
   // [SECTION]: Frontend FluentCore
-
   Frontend_FluentCore_Label: 'Fluent Core',
   Frontend_FluentCore_Description: 'A simple frontend with no bells and whistles, especially for developers to quickly verify essential functionality',
   //
@@ -321,6 +350,37 @@ const translations: VariantResource = {
   Plugin_SheepScanlations_Settings_UsernameInfo: 'Username for automatic account login to Sheep-Scanlations 😉',
   Plugin_SheepScanlations_Settings_Password: 'Password',
   Plugin_SheepScanlations_Settings_PasswordInfo: 'Password for automatic account login to Sheep-Scanlations 😉',
+
+  //[SECTION]: Added for testing purposes
+  Frontend_Trackers_NotImplemented_Title: "Not implemented",
+  Frontend_Trackers_NotImplemented_Subtitle: "Trackers are currently not used (yet)",
+  Frontend_ContextMenu_DownloadSingle: "Download - {0}",
+  Frontend_ContextMenu_DownloadMultiple: "Download {0} selected",
+  Frontend_ContextMenu_DownloadAll: "Download all",
+  Frontend_ContextMenu_View: "View",
+  Frontend_ContextMenu_FlagAs: "Flag as",
+  Frontend_ContextMenu_Copy: "Copy",
+  Frontend_ContextMenu_CopyOptions: "Copy options",
+  Frontend_ContextMenu_CopyURL: "URL",
+  Frontend_ContextMenu_CopyName: "Name",
+  Frontend_MediaItemList_Heading: "Item List",
+  Frontend_Loading_Items: "... items",
+  Frontend_DownloadManager_ClearFinished: "Clear finished tasks",
+  Frontend_DownloadManager_RetryFailed: "Retry failed tasks",
+  Frontend_DownloadManager_DeleteAll: "Delete all tasks",
+  Frontend_DownloadManager_NoTasks: "<no tasks>",
+  Frontend_DownloadManager_Active: "Downloads ({0})",
+  Frontend_DownloadManagerTask_Delete: "Delete",
+  Frontend_MediaItem_Download: "Download",
+  Frontend_MediaItem_Cancel: "Cancel",
+  Frontend_MediaItem_CancelPaused: "Cancel (paused)",
+  Frontend_MediaItem_CancelDownloading: "Cancel (downloading...)",
+  Frontend_MediaItem_CancelProcessing: "Cancel (processing...)",
+  Frontend_MediaItem_ErrorRetry: "Error: click to retry (detailed error in download tasks)",
+  Frontend_MediaItem_DownloadComplete: "Download complete",
+  Frontend_MediaItem_View: "View",
+
+
 };
 
 export default translations;
