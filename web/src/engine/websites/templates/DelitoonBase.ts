@@ -33,10 +33,10 @@ type APIChapter = {
     subTitle: string,
 }
 
-type APIPages = APIResult<{
+type APIPages = {
     isScramble: boolean,
     images: ImageInfo,
-}>;
+};
 
 type ImageInfo = {
     imagePath: string,
@@ -44,8 +44,6 @@ type ImageInfo = {
     point: string,
     defaultHeight: number,
 }[];
-
-type DecryptionKey = APIResult<string>;
 
 type APIUser = {
     user?: {
@@ -80,19 +78,12 @@ export class DelitoonBase extends DecoratableMangaScraper {
         const mangaid = new URL(url).pathname.split('/').at(-1);
         const endpoint = new URL(`./contents/${mangaid}`, this.apiUrl);
         endpoint.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await this.FetchBalconyJSON<APIResult<APIManga>>(endpoint, false);
+        const { data } = await this.FetchBalconyJSON<APIManga>(endpoint, false);
         return new Manga(this, provider, mangaid, data.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        switch (this.mangaSearchVersion) {
-            case 1: return await this.FetchMangasV1(provider);
-            case 2: return await this.FetchMangasV2(provider);
-        }
-    }
-
-    private async FetchMangasV1(provider): Promise<Manga[]> {
-        const url = new URL('./contents/search', this.apiUrl);
+        const url = this.mangaSearchVersion === 1 ? new URL('./contents/search', this.apiUrl) : new URL('/api/balcony-api-v2/search/all', this.URI);
         const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
             url.search = new URLSearchParams({
                 searchText: character,
@@ -101,43 +92,36 @@ export class DelitoonBase extends DecoratableMangaScraper {
                 contentsThumbnailType: 'MAIN'
             }).toString();
 
-            return this.FetchBalconyJSON<APIResult<APIManga[]>>(url);
+            return this.mangaSearchVersion === 1 ? this.FetchBalconyJSON<APIManga[]>(url) : this.FetchBalconyJSON<APIMangas>(url);
         });
 
-        const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
-            const mangas = element.data.map(element => new Manga(this, provider, element.alias, element.title.trim()));
-            accumulator.push(...mangas);
-            return accumulator;
-        }, []);
-
-        return results.distinct();
-    }
-
-    private async FetchMangasV2(provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL('/api/balcony-api-v2/search/all', this.URI);
-        const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
-            url.search = new URLSearchParams({
-                searchText: character,
-                isCheckDevice: 'true',
-                isIncludeAdult: 'true',
-                contentsThumbnailType: 'MAIN',
-                size: '9999'
-            }).toString();
-            return this.FetchBalconyJSON<APIResult<APIMangas>>(url);
-        });
-
-        const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
-            const mangas = (element.data.content ?? element.data.contents).map(element => new Manga(this, provider, element.alias, element.title.trim()));
-            accumulator.push(...mangas);
-            return accumulator;
-        }, []);
+        let results: Manga[] = [];
+        switch (this.mangaSearchVersion) {
+            case 1: {
+                results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
+                    const mangas = (element as APIResult<APIManga[]>).data.map(element => new Manga(this, provider, element.alias, element.title.trim()));
+                    accumulator.push(...mangas);
+                    return accumulator;
+                }, []);
+                break;
+            };
+            case 2: {
+                results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
+                    const data = (element as APIResult<APIMangas>).data.content ?? (element as APIResult<APIMangas>).data.contents;
+                    const mangas = data.map(element => new Manga(this, provider, element.alias, element.title.trim()));
+                    accumulator.push(...mangas);
+                    return accumulator;
+                }, []);
+                break;
+            }
+        }
         return results.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`./contents/${manga.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await this.FetchBalconyJSON<APIResult<APIManga>>(url);
+        const { data } = await this.FetchBalconyJSON<APIManga>(url);
         return data.episodes.map(element => {
             let title = element.title.trim();
             title += element.subTitle ? ' : ' + element.subTitle.trim() : '';
@@ -159,7 +143,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
 
     private async FetchScrambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
         const endpoint = new URL(`./contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
-        const { data } = await this.FetchBalconyJSON<DecryptionKey>(endpoint, { line: images[0].line });
+        const { data } = await this.FetchBalconyJSON<string>(endpoint, { line: images[0].line });
         const keyData = GetBytesFromUTF8(data);
         const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16) };
         const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
@@ -185,13 +169,13 @@ export class DelitoonBase extends DecoratableMangaScraper {
         });
     }
 
-    protected async FetchBalconyJSON<T extends JSONElement>(url: URL, body: JSONElement = undefined): Promise<T> {
+    protected async FetchBalconyJSON<T extends JSONElement>(url: URL, body: JSONElement = undefined): Promise<APIResult<T>> {
         if (!this.activeUserSession || this.activeUserSession.expiredAt < Date.now() - 60_000) {
             const request = this.CreateBalconyRequest(new URL('./api/auth/session', this.URI));
             const { user } = await FetchJSON<APIUser>(request);
             this.activeUserSession = user?.accessToken;
         }
-        return FetchJSON<T>(this.CreateBalconyRequest(url, body));
+        return FetchJSON<APIResult<T>>(this.CreateBalconyRequest(url, body));
     }
 
     public override async FetchImage(page: Page<ScrambleParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
