@@ -45,7 +45,7 @@ type ImageInfo = {
     defaultHeight: number,
 }[];
 
-type DecrypionKey = APIResult<string>;
+type DecryptionKey = APIResult<string>;
 
 type APIUser = {
     user?: {
@@ -154,12 +154,12 @@ export class DelitoonBase extends DecoratableMangaScraper {
             case 'UNAUTHORIZED_CONTENTS':
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        return isScramble ? this.FetchScarambledPages(chapter, images) : images.map(image => new Page(this, chapter, new URL(image.imagePath)));
+        return isScramble ? this.FetchScrambledPages(chapter, images) : images.map(image => new Page(this, chapter, new URL(image.imagePath)));
     }
 
-    private async FetchScarambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
+    private async FetchScrambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
         const endpoint = new URL(`./contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
-        const { data } = await this.FetchBalconyJSON<DecrypionKey>(endpoint, { line: images[0].line });
+        const { data } = await this.FetchBalconyJSON<DecryptionKey>(endpoint, { line: images[0].line });
         const keyData = GetBytesFromUTF8(data);
         const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16) };
         const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
