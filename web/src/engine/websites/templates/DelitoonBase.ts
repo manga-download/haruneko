@@ -22,8 +22,8 @@ type APIManga = {
 }
 
 type APIMangas = {
-    contents: APIManga[],
-    content: APIManga[]
+    contents?: APIManga[],
+    content?: APIManga[]
 }
 
 type APIChapter = {
