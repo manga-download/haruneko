@@ -55,7 +55,7 @@ const templateChoiceOption: ViewTemplate<{key: string, label: string}> = html`
 `;
 
 const templateChoice: ViewTemplate<Choice> = html`
-    <fluent-dropdown type="dropdown" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
+    <fluent-dropdown type="dropdown" id=${model => model.ID} :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
         <fluent-listbox>
             ${repeat(model => model.Options, templateChoiceOption)}
         </fluent-listbox>
@@ -74,7 +74,7 @@ const templateSettingRow: ViewTemplate<ISetting> = html`
     ${when(model => model instanceof Secret, templateSecret)}
     ${when(model => model instanceof Numeric, templateNumeric)}
     ${when(model => model instanceof Check, templateCheck)}
-    ${when(model => model instanceof Choice, html`<div>-</div>` /*templateChoice*/)}
+    ${when(model => model instanceof Choice, templateChoice)}
     ${when(model => model instanceof Directory, templateDirectory)}
 `;
 
@@ -90,18 +90,8 @@ const template: ViewTemplate<SettingsDialog> = html`
             </fluent-button>
         </fluent-dialog-body>
     </fluent-dialog>
-<!--
-    <fluent-dropdown type="dropdown">
-        <fluent-listbox>
-            <fluent-option value="1">1 - A</fluent-option>
-            <fluent-option value="2">2 - B</fluent-option>
-            <fluent-option value="3">3 - C</fluent-option>
-        </fluent-listbox>
-    </fluent-dropdown>
--->
 `;
 
-@customElement({ name: 'fluent-settings-dialog', template, styles })
 export class SettingsDialog extends FASTElement {
 
     readonly dialog: Dialog;
@@ -131,3 +121,5 @@ export class SettingsDialog extends FASTElement {
         }
     }
 }
+
+SettingsDialog.define({ name: 'fluent-settings-dialog', template, styles });
