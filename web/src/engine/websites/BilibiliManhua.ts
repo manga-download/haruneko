@@ -126,7 +126,7 @@ export default class extends DecoratableMangaScraper {
         }, false);
         return data.map(({ complete_url: x, url, token }) => {
             const pageurl = new URL(x ?? `${url}?token=${token}`);
-            pageurl.searchParams.set('code', 'biliManga');
+            pageurl.searchParams.set('code', 'bilibili');
             return new Page(this, chapter, pageurl);
         });
     }
