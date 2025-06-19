@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, attr, ref } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, html, css, attr, ref } from '@microsoft/fast-element';
 
 const styles: ElementStyles = css`
     :host {
@@ -10,7 +10,6 @@ const template: ViewTemplate<FluentNumberField> = html`
     <input ${ref('input')} type="number" style="padding: 0.5em;" min=${model => model.min} max=${model => model.max} value=${model => model.value.toString()} @change=${(model, _) => model.DispatchChangeEvent()}></input>
 `;
 
-@customElement({ name: 'fluent-number-field', template, styles })
 export class FluentNumberField extends FASTElement {
     readonly input: HTMLInputElement;
     @attr min: number;
@@ -26,3 +25,5 @@ export class FluentNumberField extends FASTElement {
         }
     }
 }
+
+FluentNumberField.define({ name: 'fluent-number-field', template, styles });

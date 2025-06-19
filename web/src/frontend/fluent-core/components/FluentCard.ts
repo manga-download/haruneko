@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, html, css } from '@microsoft/fast-element';
 
 const styles: ElementStyles = css`
     :host {
@@ -15,5 +15,6 @@ const template: ViewTemplate<FluentCard> = html`
     <slot></slot>
 `;
 
-@customElement({ name: 'fluent-card', template, styles })
 export class FluentCard extends FASTElement {}
+
+FluentCard.define({ name: 'fluent-card', template, styles });
