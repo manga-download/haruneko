@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'tenshiid',
         title: 'Tenshi.ID'
     },
     container: {
-        url: 'https://tenshi01.id/komik/a-bad-person/',
+        url: 'https://web.tenshiku.asia/komik/a-bad-person/',
         id: '/komik/a-bad-person/',
         title: 'A Bad Person'
     },
@@ -16,10 +16,8 @@ const config: Config = {
         timeout: 15000
     },
     entry: {
-        index: 0,
-        size: 70_363,
+        index: 1,
+        size: 172_827,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
