@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('jiangzaiToon', 'JiangzaiToon', 'https://jiangzaitoon.art', Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('jiangzaiToon', 'JiangzaiToon', 'https://jiangzaitoon.best', Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
