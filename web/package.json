@@ -12,7 +12,7 @@
         "protobufjs": "7.5.3"
     },
     "devDependencies": {
-        "@fluentui/svg-icons": "1.1.303",
+        "@fluentui/svg-icons": "1.1.304",
         "@fluentui/web-components": "2.6.1",
         "@microsoft/fast-element": "1.14.0",
         "@svelte-put/dragscroll": "4.0.0",
@@ -30,9 +30,9 @@
         "lit": "3.3.0",
         "react": "19.1.0",
         "react-dom": "19.1.0",
-        "svelte": "5.34.3",
-        "svelte-check": "4.2.1",
-        "vue": "3.5.16",
+        "svelte": "5.34.7",
+        "svelte-check": "4.2.2",
+        "vue": "3.5.17",
         "vue-tsc": "next"
     },
     "scripts": {
