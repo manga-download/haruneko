@@ -1,10 +1,10 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, type ExecutionContext, customElement, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ElementStyles, type ExecutionContext, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
 import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
 import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
 import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
 import { S, StateManagerService, type StateManager } from '../services/StateManagerService';
+import type { TextInput, Checkbox, Dropdown, Dialog } from '@fluentui/web-components';
 import type { FluentNumberField } from './FluentNumberField';
-import type { Dialog } from '@fluentui/web-components';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 
@@ -16,59 +16,46 @@ const styles: ElementStyles = css`
         grid-template-columns: max-content max-content;
         gap: var(--spacingHorizontalS);
     }
-
-    /*
-    fluent-text-input {
-        display: block;
-        max-width: unset !important;
-    }
-    */
-
-    /* #settings .input {
-        display: contents;
-    } */
-
-    /* fluent-select::part(listbox) {
-        max-height: 200px;
-    } */
 `;
 
-const templateText: ViewTemplate<Text> = html`
-    <fluent-text-input type="text" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
+const templateText = html<Text>`
+    <fluent-text-input type="text" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<TextInput>().value}></fluent-text-input>
 `;
 
-const templateSecret: ViewTemplate<Secret> = html`
-    <fluent-text-input type="password" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-input>
+const templateSecret = html<Secret>`
+    <fluent-text-input type="password" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<TextInput>().value}></fluent-text-input>
 `;
 
 // TODO: Migrate to real fluent-number-field as soon as available
-const templateNumeric: ViewTemplate<Numeric> = html`
+const templateNumeric = html<Numeric>`
     <fluent-number-field min=${model => model.Min} max=${model => model.Max} value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<FluentNumberField>().value}></input>
 `;
 
-const templateCheck: ViewTemplate<Check> = html`
-    <fluent-checkbox style="display: inline-block;" :checked=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['checked']}></fluent-checkbox>
+const templateCheck = html<Check>`
+    <fluent-checkbox style="display: inline-block;" :checked=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<Checkbox>().checked}></fluent-checkbox>
 `;
 
-const templateChoiceOption: ViewTemplate<{key: string, label: string}> = html`
-    <fluent-option value="${model => model.key}">${model => S.Locale[model.label]()}</fluent-option>
-`;
+function CreateChoiceOptionTemplate(model: Choice) {
+    return html<{key: string, label: string}>`
+        <fluent-option value=${item => item.key} selected=${item => item.key === model.Value}>${item => S.Locale[item.label]()}</fluent-option>
+    `;
+}
 
-const templateChoice: ViewTemplate<Choice> = html`
-    <fluent-dropdown type="dropdown" id=${model => model.ID} :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
+const templateChoice = html<Choice>`
+    <fluent-dropdown type="dropdown" id=${model => model.ID} @change=${(model, ctx) => model.Value = ctx.eventTarget<Dropdown>().value}>
         <fluent-listbox>
-            ${repeat(model => model.Options, templateChoiceOption)}
+            ${repeat<Choice>(model => model.Options, CreateChoiceOptionTemplate)}
         </fluent-listbox>
     </fluent-dropdown>
 `;
 
-const templateDirectory: ViewTemplate<Directory> = html`
-    <fluent-text-input type="text" readonly id="${model => model.ID}" value=${model => model.Value?.name}>
+const templateDirectory = html<Directory>`
+    <fluent-text-input type="text" readonly id=${model => model.ID} value=${model => model.Value?.name}>
         <fluent-button slot="end" icon-only size="small" appearance="transparent" :innerHTML=${() => IconFolder} @click=${(model, ctx: ExecutionContext<SettingsDialog>) => ctx.parent.SelectDirectory(model)}></fluent-button>
     </fluent-text-input>
 `;
 
-const templateSettingRow: ViewTemplate<ISetting> = html`
+const templateSettingRow = html<ISetting>`
     <div title=${model => S.Locale[model.Description]()}>${model => S.Locale[model.Label]()}</div>
     ${when(model => model instanceof Text, templateText)}
     ${when(model => model instanceof Secret, templateSecret)}
@@ -78,7 +65,7 @@ const templateSettingRow: ViewTemplate<ISetting> = html`
     ${when(model => model instanceof Directory, templateDirectory)}
 `;
 
-const template: ViewTemplate<SettingsDialog> = html`
+const template = html<SettingsDialog>`
     <fluent-dialog type="modal" ${ref('dialog')}>
         <fluent-dialog-body>
             <div slot="title">${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
