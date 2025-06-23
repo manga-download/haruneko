@@ -5,7 +5,6 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-
 @MangaStream.MangaCSS(/^https:\/\/(eros|doom)x?-?(toon|comic|manga|void)(s-x)?\.xyz\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS('div#chapterlist ul li div.chbox:not(:has(.dt)) div.eph-num a') //Exclude chapters on TecnoScans
