@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, type ElementStyles, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
 import type { SearchBox } from './SearchBox';
 import { StateManagerService, type StateManager } from '../services/StateManagerService';
@@ -164,15 +164,17 @@ const starred: ViewTemplate<WebsiteSelect> = html`
 // HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
 //       => classes are not working, apply inline styles
 //       => manually query correct host and provide callback function
-const listitem: ViewTemplate<MediaContainer<MediaChild>> = html`
-    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${(model, ctx) => ctx.parent.parentNode.parentNode.host.SelectEntry(model) }>
+function CreateItemTemplate(container: WebsiteSelect) {
+    return html<MediaContainer<MediaChild>>`
+    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${model => container.SelectEntry(model)}>
         <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
         <div class="title" style="${styleTitle}">${model => model.Title}</div>
         <div class="hint" style="${styleHint}">${model => model.Identifier}</div>
     </div>
 `;
+}
 
-const template: ViewTemplate<WebsiteSelect> = html`
+const template = html<WebsiteSelect>`
     <div id="heading" title="${model => model.S.Locale.Frontend_FluentCore_WebsiteSelect_Description()}" @click=${model => model.Expanded = !model.Expanded}>
         <img id="logo" src="${model => model.Selected?.Icon}"></img>
         <div id="title">${model => model.Selected?.Title ?? '…'}</div>
@@ -187,11 +189,10 @@ const template: ViewTemplate<WebsiteSelect> = html`
         <div id="searchcontrol">
             <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${model => model.S.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-        <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
+        <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${CreateItemTemplate}></fluent-lazy-scroll>
     </div>
 `;
 
-@customElement({ name: 'fluent-website-select', template, styles })
 export class WebsiteSelect extends FASTElement {
 
     @StateManagerService S: StateManager;
@@ -259,3 +260,5 @@ export class WebsiteSelect extends FASTElement {
         }
     }
 }
+
+WebsiteSelect.define({ name: 'fluent-website-select', template, styles });

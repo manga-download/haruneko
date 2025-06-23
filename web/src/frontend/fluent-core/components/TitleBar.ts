@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import { WindowManagerService, type IWindowManager } from '../services/WindowManagerService';
 import { StateManagerService, type StateManager, ThemeWebLight, ThemeWebDark} from '../services/StateManagerService';
 
@@ -27,8 +27,9 @@ import IconMinimize from '@vscode/codicons/src/icons/chrome-minimize.svg?raw';
 import IconMaximize from '@vscode/codicons/src/icons/chrome-maximize.svg?raw';
 import IconRestore from '@vscode/codicons/src/icons/chrome-restore.svg?raw';
 import IconClose from '@vscode/codicons/src/icons/chrome-close.svg?raw';
+import type { MenuItem } from '@fluentui/web-components';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         gap: 0;
@@ -76,23 +77,23 @@ const styles: ElementStyles = css`
     }
 `;
 
-const buttonToggleLightMode: ViewTemplate<TitleBar> = html`
+const buttonToggleLightMode = html<TitleBar>`
     <fluent-button icon-only appearance="transparent" :title=${model => model.S.Locale.Frontend_FluentCore_Button_ToggleTheme_Description(model.S.Locale[ThemeWebLight.label]())} :innerHTML=${() => IconMoonlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebLight}></fluent-button>
 `;
 
-const buttonToggleDarkMode: ViewTemplate<TitleBar> = html`
+const buttonToggleDarkMode = html<TitleBar>`
     <fluent-button icon-only appearance="transparent" :title=${model => model.S.Locale.Frontend_FluentCore_Button_ToggleTheme_Description(model.S.Locale[ThemeWebDark.label]())} :innerHTML=${() => IconSunlight} @click=${model => model.S.SettingSelectedTheme = ThemeWebDark}></fluent-button>
 `;
 
-const template: ViewTemplate<TitleBar> = html`
+const template = html<TitleBar>`
     <fluent-menu id="menu">
         <fluent-menu-button id="menu-button" slot="trigger" appearance="subtle" title="${model => model.S.Locale.Frontend_FluentCore_Menu_Description()}" :innerHTML=${() => IconMenu}></fluent-menu-button>
         <fluent-menu-list id="menu-popup">
-            <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description()}" :checked=${model => model.S.SettingPanelBookmarks} @change=${(model, ctx) => model.S.SettingPanelBookmarks = ctx.event.currentTarget['checked']}>
+            <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description()}" :checked=${model => model.S.SettingPanelBookmarks} @change=${(model, ctx) => model.S.SettingPanelBookmarks = ctx.eventTarget<MenuItem>().checked}>
                 <div slot="start" :innerHTML=${() => IconBookmarkList}></div>
                 ${model => model.S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label()}
             </fluent-menu-item>
-            <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description()}" :checked=${model => model.S.SettingPanelDownloads} @change=${(model, ctx) => model.S.SettingPanelDownloads = ctx.event.currentTarget['checked']}>
+            <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description()}" :checked=${model => model.S.SettingPanelDownloads} @change=${(model, ctx) => model.S.SettingPanelDownloads = ctx.eventTarget<MenuItem>().checked}>
                 <div slot="start" :innerHTML=${() => IconDownloadManager}></div>
                 ${model => model.S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label()}
             </fluent-menu-item>
@@ -114,15 +115,15 @@ const template: ViewTemplate<TitleBar> = html`
                 <div slot="start" :innerHTML=${() => IconFeatureFlags}></div>
                 ${model => model.S.Locale.Settings_FeatureFlags_Label()}
                 <fluent-menu-list slot="submenu">
-                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Description]()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.event.currentTarget['checked']}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Description]()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconWindowAd}></div>
                         ${model => model.S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Label]()}
                     </fluent-menu-item>
-                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale[HakuNeko.FeatureFlags.VerboseFetchWindow.Description]()}" :checked=${() => HakuNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.event.currentTarget['checked']}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale[HakuNeko.FeatureFlags.VerboseFetchWindow.Description]()}" :checked=${() => HakuNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconDebugConsole}></div>
                         ${model => model.S.Locale[HakuNeko.FeatureFlags.VerboseFetchWindow.Label]()}
                     </fluent-menu-item>
-                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale[HakuNeko.FeatureFlags.CrowdinTranslationMode.Description]()}" :checked=${() => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value = ctx.event.currentTarget['checked']}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.S.Locale[HakuNeko.FeatureFlags.CrowdinTranslationMode.Description]()}" :checked=${() => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value = ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconCrowdinContextTranslation}></div>
                         ${model => model.S.Locale[HakuNeko.FeatureFlags.CrowdinTranslationMode.Label]()}
                     </fluent-menu-item>
@@ -139,7 +140,6 @@ const template: ViewTemplate<TitleBar> = html`
     </div>
 `;
 
-@customElement({ name: 'fluent-titlebar', template, styles })
 export class TitleBar extends FASTElement {
 
     @WindowManagerService window!: IWindowManager;
@@ -171,3 +171,5 @@ export class TitleBar extends FASTElement {
         }
     }
 }
+
+TitleBar.define({ name: 'fluent-titlebar', template, styles });

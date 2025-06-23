@@ -1,8 +1,8 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ExecutionContext, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
 import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: grid;
@@ -78,14 +78,14 @@ const styles: ElementStyles = css`
     }
 `;
 
-const listitem: ViewTemplate<Bookmark> = html`
-    <li class=${model => model?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
+const listitem = html<Bookmark>`
+    <li class=${model => model?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx: ExecutionContext<BookmarkList>) => ctx.parent.SelectEntry(model)}>
         <img class="icon" src="${model => model.Parent.Icon}"></img>
         <div>${model => model.Title}</div>
     </li>
 `;
 
-const template: ViewTemplate<BookmarkList> = html`
+const template = html<BookmarkList>`
     <div id="header">
         <div id="title">${() => S.Locale.Frontend_FluentCore_BookmarkList_Heading()}</div>
         <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
@@ -98,7 +98,6 @@ const template: ViewTemplate<BookmarkList> = html`
     </ul>
 `;
 
-@customElement({ name: 'fluent-bookmark-list', template, styles })
 export class BookmarkList extends FASTElement {
 
     override connectedCallback(): void {
@@ -135,3 +134,5 @@ export class BookmarkList extends FASTElement {
         this.Entries = HakuNeko.BookmarkPlugin.Entries.Value.slice();
     }.bind(this);
 }
+
+BookmarkList.define({ name: 'fluent-bookmark-list', template, styles });

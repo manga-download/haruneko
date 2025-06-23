@@ -1,12 +1,13 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, attr, when, ref } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable, attr, when, ref } from '@microsoft/fast-element';
 import { StateManagerService, type StateManager } from '../services/StateManagerService';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
 import IconClear from '@vscode/codicons/src/icons/trash.svg?raw';
 import IconCase from '@vscode/codicons/src/icons/case-sensitive.svg?raw';
 import IconRegex from '@vscode/codicons/src/icons/regex.svg?raw';
+import type { TextInput } from '@fluentui/web-components';
 
-const styles: ElementStyles = css`
+const styles = css`
     :host {
         display: block;
     }
@@ -31,16 +32,16 @@ const styles: ElementStyles = css`
     }
 `;
 
-const templateCaseSensivity: ViewTemplate<SearchBox> = html`
+const templateCaseSensivity = html<SearchBox>`
     <fluent-button icon-only size="small" appearance="${model => model.CaseEnabled ? 'outline' : 'transparent'}" title="${model => model.S.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${() => IconCase} @click=${model => model.CaseEnabled = !model.CaseEnabled}></fluent-button>
 `;
 
-const templateRegularExpression: ViewTemplate<SearchBox> = html`
+const templateRegularExpression = html<SearchBox>`
     <fluent-button icon-only size="small" appearance="${model => model.RegexEnabled ? 'outline' : 'transparent'}" title="${model => model.S.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${() => IconRegex} @click=${model => model.RegexEnabled = !model.RegexEnabled}></fluent-button>
 `;
 
-const template: ViewTemplate<SearchBox> = html`
-    <fluent-text-input id="searchpattern" ${ref('searchpattern')} appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.Needle} @input=${(model, ctx) => model.Needle = ctx.event.currentTarget['value']}>
+const template = html<SearchBox>`
+    <fluent-text-input id="searchpattern" ${ref('searchpattern')} appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.Needle} @input=${(model, ctx) => model.Needle = ctx.eventTarget<TextInput>().value}>
         <div slot="start" :innerHTML=${() => IconSearch}></div>
         <div slot="end">
             <fluent-button icon-only size="small" appearance="transparent" title="${model => model.S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.Needle = ''}></fluent-button>
@@ -50,7 +51,6 @@ const template: ViewTemplate<SearchBox> = html`
     </fluent-text-input>
 `;
 
-@customElement({ name: 'fluent-searchbox', template, styles })
 export class SearchBox extends FASTElement {
 
     @StateManagerService S: StateManager;
@@ -109,3 +109,5 @@ export class SearchBox extends FASTElement {
         }
     }
 }
+
+SearchBox.define({ name: 'fluent-searchbox', template, styles });

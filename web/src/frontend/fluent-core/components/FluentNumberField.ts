@@ -1,12 +1,12 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, html, css, attr, ref } from '@microsoft/fast-element';
+import { FASTElement, html, css, attr, ref } from '@microsoft/fast-element';
 
-const styles: ElementStyles = css`
+const styles = css`
     :host {
         display: contents;
     }
 `;
 
-const template: ViewTemplate<FluentNumberField> = html`
+const template = html<FluentNumberField>`
     <input ${ref('input')} type="number" style="padding: 0.5em;" min=${model => model.min} max=${model => model.max} value=${model => model.value.toString()} @change=${(model, _) => model.DispatchChangeEvent()}></input>
 `;
 

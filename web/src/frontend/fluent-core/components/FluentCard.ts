@@ -1,6 +1,6 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, html, css } from '@microsoft/fast-element';
+import { FASTElement, html, css } from '@microsoft/fast-element';
 
-const styles: ElementStyles = css`
+const styles = css`
     :host {
         box-shadow: var(--shadow4);
         border-radius: var(--borderRadiusLarge);
@@ -11,9 +11,7 @@ const styles: ElementStyles = css`
     }
 `;
 
-const template: ViewTemplate<FluentCard> = html`
-    <slot></slot>
-`;
+const template = html<FluentCard>`<slot></slot>`;
 
 export class FluentCard extends FASTElement {}
 

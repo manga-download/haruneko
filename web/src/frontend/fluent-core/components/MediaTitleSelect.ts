@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
@@ -53,7 +53,7 @@ const styleIcon = [
     'grid-row: 1 / -1;',
 ].join(' ');
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: grid;
@@ -157,26 +157,28 @@ const styles: ElementStyles = css`
     }
 `;
 
-const unstarred: ViewTemplate<MediaTitleSelect> = html`
+const unstarred = html<MediaTitleSelect>`
     <fluent-button icon-only id="add-favorite-button" appearance="transparent" ?disabled=${model => !model.Selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description()}" :innerHTML=${() => IconAddBookmark} @click=${(model, ctx) => model.AddBookmark(ctx.event)}></fluent-button>
 `;
 
-const starred: ViewTemplate<MediaTitleSelect> = html`
+const starred = html<MediaTitleSelect>`
     <fluent-button icon-only id="remove-favorite-button" appearance="transparent" ?disabled=${model => !model.Selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description()}" :innerHTML=${() => IconRemoveBookmark} @click=${(model, ctx) => model.RemoveBookmark(ctx.event)}></fluent-button>
 `;
 
 // HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
 //       => classes are not working, apply inline styles
 //       => manually query correct host and provide callback function
-const listitem: ViewTemplate<MediaContainer<MediaChild>> = html`
-    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${(model, ctx) => ctx.parent.parentNode.parentNode.host.SelectEntry(model) }>
+function CreateItemTemplate(container: MediaTitleSelect) {
+    return html<MediaContainer<MediaChild>>`
+    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${model => container.SelectEntry(model)}>
         <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
         <div class="title" style="${styleTitle}">${model => model.Title}</div>
         <div class="hint" style="${styleHint}">${model => model.Identifier}</div>
     </div>
 `;
+}
 
-const template: ViewTemplate<MediaTitleSelect> = html`
+const template = html<MediaTitleSelect>`
     <div id="heading" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_Description()}" @click=${model => model.Expanded = !model.Expanded}>
         <img id="logo" src="${model => model.Selected?.Icon}"></img>
         <div id="title">${model => model.Selected?.Title ?? '…'}</div>
@@ -208,11 +210,10 @@ const template: ViewTemplate<MediaTitleSelect> = html`
         <div id="searchcontrol">
             <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-        <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
+        <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${CreateItemTemplate}></fluent-lazy-scroll>
     </div>
 `;
 
-@customElement({ name: 'fluent-media-title-select', template, styles })
 export class MediaTitleSelect extends FASTElement {
 
     override connectedCallback(): void {
@@ -340,3 +341,5 @@ export class MediaTitleSelect extends FASTElement {
         }
     }
 }
+
+MediaTitleSelect.define({ name: 'fluent-media-title-select', template, styles });

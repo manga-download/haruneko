@@ -1,4 +1,4 @@
-import { FASTElement, type ElementStyles, type ExecutionContext, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ExecutionContext, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
 import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
 import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
 import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
@@ -8,7 +8,7 @@ import type { FluentNumberField } from './FluentNumberField';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     #settings {
         display: grid;

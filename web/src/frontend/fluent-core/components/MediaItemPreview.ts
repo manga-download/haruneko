@@ -1,11 +1,11 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
 import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Chapter } from '../../../engine/providers/MangaPlugin';
 import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
 import IconClose from '@fluentui/svg-icons/icons/dismiss_20_regular.svg?raw';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: flex;
@@ -35,10 +35,10 @@ const styles: ElementStyles = css`
     }
 `;
 
-const templatePage: ViewTemplate<MediaItem> = html`<fluent-media-item-page :Item=${model => model}></fluent-media-item-page>`;
-const templateChapter: ViewTemplate<MediaItemPreview> = html`${repeat(model => model.items, templatePage, { recycle: false })}`;
+const templatePage = html<MediaItem> `<fluent-media-item-page :Item=${model => model}></fluent-media-item-page>`;
+const templateChapter = html<MediaItemPreview>`${repeat(model => model.items, templatePage, { recycle: false })}`;
 
-const template: ViewTemplate<MediaItemPreview> = html`
+const template = html<MediaItemPreview>`
     <div id="heading">
         <fluent-button icon-only appearance="transparent" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.Entry = undefined}></fluent-button>
         <div id="caption">${model => model.Entry?.Title ?? ''}</div>
@@ -49,7 +49,6 @@ const template: ViewTemplate<MediaItemPreview> = html`
     </div>
 `;
 
-@customElement({ name: 'fluent-media-item-preview', template, styles })
 export class MediaItemPreview extends FASTElement {
 
     @observable items: ReadonlyArray<MediaItem>;
@@ -64,3 +63,5 @@ export class MediaItemPreview extends FASTElement {
         this.$emit('entryChanged', this.Entry);
     }
 }
+
+MediaItemPreview.define({ name: 'fluent-media-item-preview', template, styles });

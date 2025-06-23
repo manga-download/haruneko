@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import { type DownloadTask, Status } from '../../../engine/DownloadTask';
 import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
@@ -19,7 +19,7 @@ const StatusIcons: Record<Status, string> = {
     [Status.Completed]: IconCompleted,
 };
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: flex;
@@ -74,7 +74,7 @@ const styles: ElementStyles = css`
     }
 `;
 
-const template: ViewTemplate<DownloadManagerTask> = html`
+const template = html<DownloadManagerTask>`
     <div class="mediatitle">${model => model.Entry?.Media.Parent.Title}</div>
     <div class="mediaitem">${model => model.Entry?.Media.Title}</div>
     <div class="controls">
@@ -84,7 +84,6 @@ const template: ViewTemplate<DownloadManagerTask> = html`
     </div>
 `;
 
-@customElement({ name: 'fluent-download-manager-task', template, styles })
 export class DownloadManagerTask extends FASTElement {
 
     override connectedCallback(): void {
@@ -138,3 +137,5 @@ export class DownloadManagerTask extends FASTElement {
         }
     }
 }
+
+DownloadManagerTask.define({ name: 'fluent-download-manager-task', template, styles });

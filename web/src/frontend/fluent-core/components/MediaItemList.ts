@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import type { StoreableMediaContainer, MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
 import { StateManagerService, type StateManager } from '../services/StateManagerService';
 import type { LazyScroll } from './LazyScroll';
@@ -41,7 +41,7 @@ const styleControls = [
     'visibility: hidden;',
 ].join(' ');
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: grid;
@@ -131,7 +131,7 @@ const styles: ElementStyles = css`
 `;
 
 function CreateItemTemplate(container: MediaItemList) {
-    const listitem: ViewTemplate<StoreableMediaContainer<MediaItem>, LazyScroll> = html`
+    return html<StoreableMediaContainer<MediaItem>, LazyScroll>`
         <div class="entry" style="${styleEntry}" onmouseover="this.querySelector('div.controls').style.visibility = 'visible'" onmouseout="this.querySelector('div.controls').style.visibility = 'hidden'">
             <div style="${styleTrim}"><!-- <fluent-checkbox></fluent-checkbox> --></div>
             <div style="${styleTrim}">${model => model.Title}</div>
@@ -141,22 +141,21 @@ function CreateItemTemplate(container: MediaItemList) {
                     appearance="transparent"
                     title="${() => container.S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
                     :innerHTML=${() => IconPreview}
-                    @click=${(model, _ctx) => /*ctx.parent.parentNode.host*/container.ShowPreview(model)}>
+                    @click=${model => container.ShowPreview(model)}>
                 </fluent-button>
                 <fluent-button
                     icon-only
                     appearance="transparent"
                     title="${() => container.S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
                     :innerHTML=${() => IconDownload}
-                    @click=${(model, _ctx) => container.Download(/*_ctx.event, */model)}>
+                    @click=${model => container.Download(model)}>
                 </fluent-button>
             </div>
         </div>
     `;
-    return listitem;
 }
 
-const template: ViewTemplate<MediaItemList> = html`
+const template = html<MediaItemList>`
     <div id="header">
         <div id="title">${model => model.S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
         <div id="controls">
@@ -176,10 +175,9 @@ const template: ViewTemplate<MediaItemList> = html`
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
-    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateItemTemplate(model)}></fluent-lazy-scroll>
+    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${CreateItemTemplate}></fluent-lazy-scroll>
 `;
 
-@customElement({ name: 'fluent-media-item-list', template, styles })
 export class MediaItemList extends FASTElement {
 
     @StateManagerService S: StateManager;
@@ -234,3 +232,5 @@ export class MediaItemList extends FASTElement {
         await HakuNeko.DownloadManager.Enqueue(entry);
     }
 }
+
+MediaItemList.define({ name: 'fluent-media-item-list', template, styles });

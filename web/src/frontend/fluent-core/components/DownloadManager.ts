@@ -1,8 +1,8 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { DownloadTask } from '../../../engine/DownloadTask';
 import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: grid;
@@ -44,11 +44,11 @@ const styles: ElementStyles = css`
     }
 `;
 
-const listitem: ViewTemplate<DownloadTask> = html`
+const listitem = html<DownloadTask>`
     <fluent-download-manager-task :Entry=${model => model}></fluent-download-manager-task>
 `;
 
-const template: ViewTemplate<DownloadManager> = html`
+const template = html<DownloadManager>`
     <div id="header">
         <div id="title">${() => S.Locale.Frontend_FluentCore_DownloadManager_Heading()}</div>
         <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
@@ -61,7 +61,6 @@ const template: ViewTemplate<DownloadManager> = html`
     </div>
 `;
 
-@customElement({ name: 'fluent-download-manager', template, styles })
 export class DownloadManager extends FASTElement {
 
     override connectedCallback(): void {
@@ -93,3 +92,5 @@ export class DownloadManager extends FASTElement {
         this.Entries = HakuNeko.DownloadManager.Queue.Value.slice();
     };
 }
+
+DownloadManager.define({ name: 'fluent-download-manager', template, styles });

@@ -1,10 +1,10 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import type { MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Priority } from '../../../engine/taskpool/DeferredTask';
 
 function noop() {/* ... */}
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: inline-grid;
@@ -51,13 +51,13 @@ const templateInfo: ViewTemplate<MediaItemPage> = html`
 `;
 */
 
-const templateInfo: ViewTemplate<MediaItemPage> = html`
+const templateInfo = html<MediaItemPage>`
     <a target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">
         ${model => model.Info ?? '┄'}
     </a>
 `;
 
-const templateImage: ViewTemplate<MediaItemPage> = html`
+const templateImage = html<MediaItemPage>`
     <a class="thumbnail link" target="_blank" href="${model => model.Image}" title="${model => model.Image}">
         <fluent-image fit="contain" shape="square">
             <img src="${model => model.Image}" />
@@ -65,20 +65,19 @@ const templateImage: ViewTemplate<MediaItemPage> = html`
     </a>
 `;
 
-const templateSpinner: ViewTemplate<MediaItemPage> = html`
+const templateSpinner = html<MediaItemPage>`
     <div class="thumbnail spinner">
         <fluent-spinner size="huge"></fluent-spinner>
     </div>
 `;
 
-const template: ViewTemplate<MediaItemPage> = html`
+const template = html<MediaItemPage>`
     <div class="info">
         ${model => model.Item && model.Info ? templateInfo : html`┄`}
     </div>
     ${model => model.Image ? templateImage : templateSpinner}
 `;
 
-@customElement({ name: 'fluent-media-item-page', template, styles })
 export class MediaItemPage extends FASTElement {
 
     override disconnectedCallback(): void {
@@ -133,3 +132,5 @@ export class MediaItemPage extends FASTElement {
         }
     }
 }
+
+MediaItemPage.define({ name: 'fluent-media-item-page', template, styles });
