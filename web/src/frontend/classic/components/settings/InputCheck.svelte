@@ -26,5 +26,5 @@
     labelText={$Locale[setting.Label]()}
     helperText={$Locale[setting.Description]()}
 >
-    <Toggle bind:toggled={value} />
+    <Toggle bind:toggled={value}/>
 </SettingItem>
