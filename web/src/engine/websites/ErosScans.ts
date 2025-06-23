@@ -5,7 +5,8 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@MangaStream.MangaCSS(/^https:\/\/(eros[-]?toon[s]?|eros-comicx|erosxcomic|erosmanga|doomcomic|erosvoid)\.xyz\/manga\/[^/]+\/$/)
+
+@MangaStream.MangaCSS(/^https:\/\/(eros|doom)x?-?(toon|comic|manga|void)(s-x)?\.xyz\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS('div#chapterlist ul li div.chbox:not(:has(.dt)) div.eph-num a') //Exclude chapters on TecnoScans
 @MangaStream.PagesSinglePageJS()
@@ -13,7 +14,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('erosscans', 'Eros Scans', 'https://erostoons.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+        super('erosscans', 'Eros Scans', 'https://eros-void.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
