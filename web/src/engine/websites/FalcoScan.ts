@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './Tenkai.webp';
+import icon from './FalcoScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -24,7 +24,7 @@ function ChapterExtractor(element: HTMLDivElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tenkai', 'Tenkai', 'https://tenkaiscan.net', Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('tenkai', 'Falco Scan', 'https://falcoscan.net', Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
