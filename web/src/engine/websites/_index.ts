@@ -488,6 +488,7 @@ export { default as MilfToon } from './MilfToon';
 export { default as MindaFanSub } from './MindaFanSub';
 export { default as MiniTwoScan } from './MiniTwoScan';
 export { default as MintManga } from './MintManga';
+export { default as MirrorKomik } from './MirrorKomik';
 export { default as mkzhan } from './mkzhan';
 export { default as MonochromeScans } from './MonochromeScans';
 export { default as MonzeeKomik } from './MonzeeKomik';
