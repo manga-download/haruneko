@@ -11,5 +11,3 @@ class FluentCore implements IFrontendModule {
 }
 
 export default new FluentCore();
-
-// TODO: Fix all Fluent Elements ...

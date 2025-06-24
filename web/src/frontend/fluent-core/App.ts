@@ -124,14 +124,14 @@ export class App extends FASTElement {
 
     public SelectedWebsiteChanged(event: CustomEvent<MediaContainer<MediaChild>>) {
         this.selectedWebsite = event.detail;
-        if(!this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
+        if (!this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
             this.selectedTitle = undefined;
         }
     }
 
     public SelectedMediaTitleChanged(event: CustomEvent<MediaContainer<MediaChild>>) {
         this.selectedTitle = event.detail;
-        if(this.selectedTitle && (this.selectedWebsite || this.selectedTitle?.Parent) && !this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
+        if (this.selectedTitle && (this.selectedWebsite || this.selectedTitle?.Parent) && !this.selectedWebsite?.IsSameAs(this.selectedTitle?.Parent)) {
             this.selectedWebsite = this.selectedTitle?.Parent;
         }
     }

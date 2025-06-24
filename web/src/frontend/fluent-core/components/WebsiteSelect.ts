@@ -210,13 +210,13 @@ export class WebsiteSelect extends FASTElement {
     @observable filtered: MediaContainer<MediaChild>[] = [];
     @observable Selected: MediaContainer<MediaChild>;
     SelectedChanged(previous: MediaContainer<MediaChild>, current: MediaContainer<MediaChild>) {
-        if((current || previous) && !current?.IsSameAs(previous)) {
+        if ((current || previous) && !current?.IsSameAs(previous)) {
             this.$emit('selectedChanged', this.Selected);
         }
     }
     @observable Expanded = false;
     ExpandedChanged() {
-        if(this.dropdown) {
+        if (this.dropdown) {
             this.dropdown.style.display = this.Expanded ? 'block' : 'none';
             this.searchbox.Focus();
         }
@@ -248,14 +248,14 @@ export class WebsiteSelect extends FASTElement {
 
     public OpenSettings(event: Event) {
         event.stopPropagation();
-        if(this.Selected?.Settings) {
+        if (this.Selected?.Settings) {
             this.S.ShowSettingsDialog(...this.Selected.Settings);
         }
     }
 
     public OpenBrowser(event: Event) {
         event.stopPropagation();
-        if(this.Selected?.URI) {
+        if (this.Selected?.URI) {
             window.open(this.Selected.URI);
         }
     }

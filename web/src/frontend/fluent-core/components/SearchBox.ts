@@ -88,15 +88,15 @@ export class SearchBox extends FASTElement {
 
     private UpdatePredicate() {
         try {
-            if(!this.Needle) {
+            if (!this.Needle) {
                 this.$emit(this.event, () => true);
             } else {
-                if(this.AllowRegex && this.RegexEnabled) {
+                if (this.AllowRegex && this.RegexEnabled) {
                     // TODO: Prevent ReDoS by input validation or sanitization
                     const regex = new RegExpSafe(this.Needle, this.AllowCase && this.CaseEnabled ? undefined : 'i');
                     this.$emit(this.event, (text: string) => regex.test(text));
                 } else {
-                    if(this.AllowCase && this.CaseEnabled ) {
+                    if (this.AllowCase && this.CaseEnabled) {
                         this.$emit(this.event, (text: string) => text.includes(this.Needle));
                     } else {
                         const lcNeedle = this.Needle.toLocaleLowerCase();

@@ -37,7 +37,7 @@ class StateManager {
     public readonly GlobalSettings = HakuNeko.SettingsManager.OpenScope();
     private readonly frontendSettings = HakuNeko.SettingsManager.OpenScope(SettingKeys.Scope);
 
-    constructor() {
+    constructor () {
         this.SettingMediaDirectory = this.GlobalSettings.Get<Directory>(GlobalKey.MediaDirectory);
         this.GlobalSettings.Get<Choice>(GlobalKey.Language).Subscribe(() => this.Locale = GetLocale());
         this.settingThemeChoice.Subscribe(value => this.SettingSelectedTheme = Themes.get(value));
@@ -78,7 +78,7 @@ class StateManager {
         this.settingPanelDownloadsCheck.Value = this.SettingPanelDownloads;
     }
 
-    @observable ShowSettingsDialog: (...settings: ISetting[]) => void = () => {};
+    @observable ShowSettingsDialog: (...settings: ISetting[]) => void = () => { };
 }
 
 export type { StateManager };

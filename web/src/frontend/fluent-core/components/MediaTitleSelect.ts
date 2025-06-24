@@ -245,14 +245,14 @@ export class MediaTitleSelect extends FASTElement {
     @observable filtered: MediaContainer<MediaChild>[] = [];
     @observable Selected: MediaContainer<MediaChild>;
     SelectedChanged(previous: MediaContainer<MediaChild>, current: MediaContainer<MediaChild>) {
-        if(current !== previous) {
+        if (current !== previous) {
             this.BookmarksChanged(HakuNeko.BookmarkPlugin.Entries.Value, HakuNeko.BookmarkPlugin);
             this.$emit('selectedChanged', this.Selected);
         }
     }
     @observable Expanded = false;
     ExpandedChanged() {
-        if(this.dropdown) {
+        if (this.dropdown) {
             this.dropdown.style.display = this.Expanded ? 'block' : 'none';
             this.searchbox.Focus();
         }
@@ -277,12 +277,12 @@ export class MediaTitleSelect extends FASTElement {
         event.stopPropagation();
         const container = this.Container;
         try {
-            if(!this.updating.includes(container.Identifier)) {
+            if (!this.updating.includes(container.Identifier)) {
                 this.updating = [ ...this.updating, container.Identifier ];
                 await container?.Update();
                 this.ContainerChanged();
             }
-        } catch(error) {
+        } catch (error) {
             console.warn(error);
         } finally {
             this.updating = this.updating.filter(id => id !== container.Identifier);
@@ -291,39 +291,39 @@ export class MediaTitleSelect extends FASTElement {
 
     public async AddBookmark(event: Event) {
         event.stopPropagation();
-        if(this.Selected) {
+        if (this.Selected) {
             await HakuNeko.BookmarkPlugin.Add(this.Selected as MediaContainer<MediaContainer<MediaChild>>);
         }
     }
 
     public async RemoveBookmark(event: Event) {
         event.stopPropagation();
-        if(this.Selected && HakuNeko.BookmarkPlugin.IsBookmarked(this.Selected)) {
+        if (this.Selected && HakuNeko.BookmarkPlugin.IsBookmarked(this.Selected)) {
             const bookmark = HakuNeko.BookmarkPlugin.Find(this.Selected);
             await HakuNeko.BookmarkPlugin.Remove(bookmark);
         }
     }
 
-    private BookmarksChanged = function(this: MediaTitleSelect, _: ReadonlyArray<Bookmark>, sender: BookmarkPlugin) {
+    private BookmarksChanged = function (this: MediaTitleSelect, _: ReadonlyArray<Bookmark>, sender: BookmarkPlugin) {
         this.bookmark = this.Selected && sender.IsBookmarked(this.Selected);
     }.bind(this);
 
-    private PastedClipboardUrlChanged = async function(this: MediaTitleSelect, uri: URL) {
+    private PastedClipboardUrlChanged = async function (this: MediaTitleSelect, uri: URL) {
         try {
             this.pasting = true;
-            for(const website of HakuNeko.PluginController.WebsitePlugins) {
+            for (const website of HakuNeko.PluginController.WebsitePlugins) {
                 let media = await website.TryGetEntry(uri.href);
-                if(media) {
+                if (media) {
                     media = HakuNeko.BookmarkPlugin.Entries.Value.find(entry => entry.IsSameAs(media)) ?? media;
                     await media.Update();
-                    if(!this.Selected || !this.Selected.IsSameAs(media)) {
+                    if (!this.Selected || !this.Selected.IsSameAs(media)) {
                         this.Selected = media;
                     }
                     return;
                 }
             }
             throw new Exception(R.Frontend_Media_PasteLink_NotFoundError, uri.href);
-        } catch(error) {
+        } catch (error) {
             console.warn(error);
         }
         finally {
@@ -336,7 +336,7 @@ export class MediaTitleSelect extends FASTElement {
         const content = await navigator.clipboard.readText();
         try {
             HakuNeko.PastedClipboardURL.Value = new URL(content);
-        } catch(error) {
+        } catch (error) {
             console.warn(error);
         }
     }

@@ -2,7 +2,7 @@ import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import type { MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Priority } from '../../../engine/taskpool/DeferredTask';
 
-function noop() {/* ... */}
+function noop() { }
 
 const styles = css`
 
@@ -52,7 +52,7 @@ const templateInfo: ViewTemplate<MediaItemPage> = html`
 */
 
 const templateInfo = html<MediaItemPage>`
-    <a target="_blank" href="${model => model.Item?.['Link']}" title="${model => model.Item?.['Link']}">
+    <a target="_blank" href="${model => model.Item?.[ 'Link' ]}" title="${model => model.Item?.[ 'Link' ]}">
         ${model => model.Info ?? '┄'}
     </a>
 `;
@@ -94,7 +94,7 @@ export class MediaItemPage extends FASTElement {
         // NOTE: Prevent too frequent changes, e.g. caused by recycling existing instances...
         window.clearTimeout(this.timerLoadPage);
         this.timerLoadPage = window.setTimeout(() => {
-            if(this.Item) {
+            if (this.Item) {
                 window.clearTimeout(this.timerLoadPage);
                 this.LoadPage();
             }
@@ -102,10 +102,10 @@ export class MediaItemPage extends FASTElement {
     }
     @observable Image: string = undefined;
     ImageChanged(oldValue: string, newValue: string) {
-        if(oldValue?.startsWith('blob:')) {
+        if (oldValue?.startsWith('blob:')) {
             URL.revokeObjectURL(oldValue);
         }
-        if(!newValue?.startsWith('blob:')) {
+        if (!newValue?.startsWith('blob:')) {
             this.Info = undefined;
         }
     }
@@ -120,12 +120,12 @@ export class MediaItemPage extends FASTElement {
             };
             const data = await this.Item.Fetch(Priority.High, cancellator.signal);
             this.abort = noop;
-            if(!data || cancellator.signal.aborted) {
+            if (!data || cancellator.signal.aborted) {
                 return;
             }
             this.Image = URL.createObjectURL(data);
             this.Info = `${data.type} @ ${data.size.toLocaleString('en-US', { useGrouping: true })}`;
-        } catch(error) {
+        } catch (error) {
             console.warn(error);
         } finally {
             this.abort = noop;

@@ -12,7 +12,7 @@ export interface IWindowManager {
 
 class WindowManager implements IWindowManager {
 
-    constructor(private readonly windowController: IAppWindow) {}
+    constructor (private readonly windowController: IAppWindow) { }
 
     @observable IsMaximized = false;
 

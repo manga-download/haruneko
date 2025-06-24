@@ -36,8 +36,8 @@ const templateCheck = html<Check>`
 `;
 
 function CreateChoiceOptionTemplate(model: Choice) {
-    return html<{key: string, label: string}>`
-        <fluent-option value=${item => item.key} selected=${item => item.key === model.Value}>${item => S.Locale[item.label]()}</fluent-option>
+    return html<{ key: string, label: string; }>`
+        <fluent-option value=${item => item.key} selected=${item => item.key === model.Value}>${item => S.Locale[ item.label ]()}</fluent-option>
     `;
 }
 
@@ -56,7 +56,7 @@ const templateDirectory = html<Directory>`
 `;
 
 const templateSettingRow = html<ISetting>`
-    <div title=${model => S.Locale[model.Description]()}>${model => S.Locale[model.Label]()}</div>
+    <div title=${model => S.Locale[ model.Description ]()}>${model => S.Locale[ model.Label ]()}</div>
     ${when(model => model instanceof Text, templateText)}
     ${when(model => model instanceof Secret, templateSecret)}
     ${when(model => model instanceof Numeric, templateNumeric)}
@@ -73,7 +73,7 @@ const template = html<SettingsDialog>`
                 ${repeat(model => model.settings, templateSettingRow)}
             </div>
             <fluent-button slot="action" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>
-                ${ model => model.S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label() }
+                ${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}
             </fluent-button>
         </fluent-dialog-body>
     </fluent-dialog>
@@ -99,8 +99,8 @@ export class SettingsDialog extends FASTElement {
             const folder = await this.fileIO.PickDirectory(directory.Value ?? 'documents') ?? directory.Value;
             this.shadowRoot.querySelector<HTMLInputElement>('#' + directory.ID).value = folder.name;
             directory.Value = folder;
-        } catch(error) {
-            if(this.fileIO.IsAbortError(error)) {
+        } catch (error) {
+            if (this.fileIO.IsAbortError(error)) {
                 return;
             } else {
                 throw error;
