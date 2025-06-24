@@ -251,6 +251,7 @@ export { default as Katakomik } from './Katakomik';
 export { default as Kedi } from './Kedi';
 export { default as KingOfScans } from './KingOfScans';
 export { default as KingOfShojo } from './KingOfShojo';
+export { default as KiraScans } from './KiraScans';
 export { default as Kiryuu } from './Kiryuu';
 export { default as KissmangaIN } from './KissmangaIN';
 export { default as KlikManga } from './KlikManga';
