@@ -11,12 +11,12 @@ new TestFixture({
         title: '火の神さまの掃除人ですが、いつの間にか花嫁として溺愛されています【単話】'
     },
     child: {
-        id: '/bviewer/s/?cid=60169967_001',
+        id: '/bviewer/s/?cid=20063601_001',
         title: '1'
     },
     entry: {
         index: 0,
-        size: 2_218_237,
+        size: 2_219_447,
         type: 'image/png'
     }
 }).AssertWebsite();
