@@ -10,6 +10,7 @@ type ViewerData = {
 }
 
 type SpeedBinbParameters = {
+    viewerUrl : URL,
     cid: string,
     sharingKey: string,
     dmytime,
@@ -155,7 +156,7 @@ async function GetSBParameters(viewerUrl: URL, sbHtmlElement: HTMLElement, needC
     const { items } = !needCookies ? await FetchJSON<JSONPageData>(request) :
         await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
 
-    return { cid, sharingKey, dmytime, u0, u1, config: items.at(0) };
+    return { viewerUrl, cid, sharingKey, dmytime, u0, u1, config: items.at(0) };
 }
 
 /**********************************************
@@ -224,6 +225,9 @@ async function FetchPagesLinks(this: MangaScraper, params: SpeedBinbParameters, 
 
     switch (configuration.ServerType as number) {
         case 0: { //v016130 Booklive , v016452 CMOA
+            //Fix for ShukanManga that has only got a path in ContentsServer
+            if (!configuration.ContentsServer.startsWith('http')) configuration.ContentsServer = new URL(configuration.ContentsServer, params.viewerUrl).href;
+
             const uri = getSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
             uri.searchParams.set('cid', cid);
             uri.searchParams.set('dmytime', configuration.ContentDate);

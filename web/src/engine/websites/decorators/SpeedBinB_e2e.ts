@@ -13,6 +13,7 @@ import '../MangaPlaza_e2e';
 import '../MichiKusa_e2e';
 import '../Ohtabooks_e2e';
 import '../OneTwoThreeHon_e2e';
+import '../ShukanManga_e2e';
 import '../SManga_e2e';
 import '../StoriaDash_e2e';
 import '../TKSuperheroComics_e2e';
