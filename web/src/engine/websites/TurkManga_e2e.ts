@@ -6,7 +6,7 @@ new TestFixture({
         title: 'TurkManga'
     },
     container: {
-        url: 'https://turk-manga.com/manga/just-twilight',
+        url: 'https://turkmanga.online/manga/just-twilight',
         id: '/manga/just-twilight',
         title: 'Just Twilight'
     },

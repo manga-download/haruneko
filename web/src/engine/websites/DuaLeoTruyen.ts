@@ -3,10 +3,10 @@ import icon from './DuaLeoTruyen.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function MangaExtractor(element: HTMLAnchorElement){
+function MangaExtractor(element: HTMLAnchorElement) {
     return {
         id: element.pathname,
-        title: element.querySelector('div.name').textContent.trim()
+        title: element.querySelector<HTMLDivElement>('div.name').textContent.trim()
     };
 }
 
@@ -18,7 +18,7 @@ function MangaExtractor(element: HTMLAnchorElement){
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyeno.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenc.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
