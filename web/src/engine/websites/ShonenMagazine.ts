@@ -17,6 +17,7 @@ export default class extends CiaoPlus {
         super('shonenmagazine', `週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)`, 'https://pocket.shonenmagazine.com', [Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga]);
         this.apiUrl = 'https://api.pocket.shonenmagazine.com/';
         this.requestHashProperty = 'x-manga-hash';
+        this.pieceScale = 32;
     }
 
     public override get Icon() {

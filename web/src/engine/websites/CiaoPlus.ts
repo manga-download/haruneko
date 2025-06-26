@@ -49,6 +49,7 @@ export default class extends DecoratableMangaScraper {
     protected apiUrl = 'https://api.ciao.shogakukan.co.jp/';
     protected requestHashProperty = 'x-bambi-hash';
     protected requestHashAppend : string = '';
+    protected pieceScale = 8;
 
     public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator]) {
         super(id, label, url, ...tags );
@@ -102,13 +103,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<PageSeed>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         const COL_NUM = 4;
+        const PIECE_SCALE = this.pieceScale;
 
         return DeScramble(blob, async (image, ctx) => {
 
             function getPieceDimension(width: number, height: number, t: number): TDimension {
 
                 if (width < t || height < t) return null;
-                const s = Cs(t, 8);
+                const s = Cs(t, PIECE_SCALE);
                 return width > s && height > s && (width = Math.floor(width / s) * s, height = Math.floor(height / s) * s),
                 {
                     width: Math.floor(width / t),
