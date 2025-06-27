@@ -6,7 +6,7 @@ new TestFixture( {
         title: 'KomikIndoMe'
     },
     container: {
-        url: 'https://komikindo2.link/manga/secret-class/',
+        url: 'https://komikindo3.link/manga/secret-class/',
         id: '/manga/secret-class/',
         title: 'Secret Class'
     },
