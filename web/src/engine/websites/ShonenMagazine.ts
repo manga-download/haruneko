@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './ShonenMagazine.webp';
 import { FetchJSON } from '../platform/FetchProvider';
-import CiaoPlus, { type MangaData } from './CiaoPlus';
+import CiaoPlus, { type MangaData, type TDimension } from './CiaoPlus';
 
 type APIManga = {
     web_title: {
@@ -40,4 +40,17 @@ export default class extends CiaoPlus {
             episode_list: episode_id_list
         };
     }
+
+    protected GetPieceDimension(width: number, height: number, numCol: number): TDimension {
+        if (width < numCol * 8 || height < numCol * 8) return null;
+        const o = Math.floor(width / 8),
+            t = Math.floor(height / 8),
+            u = Math.floor(o / numCol),
+            r = Math.floor(t / numCol);
+        return {
+            width: u * 8,
+            height: r * 8
+        };
+    }
+
 }
