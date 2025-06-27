@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,18 +6,17 @@ new TestFixture({
         title: 'Quantum Scans'
     },
     container: {
-        url: 'https://quantumscans.org/series/628e2319b4b/',
-        id: '/series/628e2319b4b/',
-        title: 'Celestial Phase'
+        url: 'https://quantumscans.org/series/celestial-phenomenon',
+        id: JSON.stringify({ id: '5', slug: 'celestial-phenomenon' }),
+        title: 'Celestial Phenomenon'
     },
     child: {
-        id: '/chapter/628e2319b4b-628e242ce6f/',
+        id: JSON.stringify({ id: '435', slug: 'chapter-47' }),
         title: 'Chapter 47'
     },
     entry: {
-        index: 0,
+        index: 1,
         size: 775_821,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/
