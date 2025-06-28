@@ -11,6 +11,7 @@ type APIManga = {
     };
 };
 
+// TODO: Integration => https://github.com/manga-download/haruneko/commit/72a42dc5b3615af0c01588bc1c8d4db14a36a799#diff-0f4fdeca648eb4546349d45ef81d6abca1844a3dc84b0863ce3073832853792a
 export default class extends CiaoPlus {
 
     protected override readonly drm = new DRMProvider('https://api.pocket.shonenmagazine.com/', {
@@ -21,7 +22,7 @@ export default class extends CiaoPlus {
         ].join('_')
     });
 
-    public constructor() {
+    public constructor () {
         super('shonenmagazine', '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)', 'https://pocket.shonenmagazine.com', [ Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official ]);
     }
 
@@ -49,4 +50,18 @@ export default class extends CiaoPlus {
         const { web_title: { episode_id_list } } = await this.#FetchMangaInfo(manga.Identifier);
         return this.FetchChapterList(manga, episode_id_list);
     }
+
+    /*
+    protected GetPieceDimension(width: number, height: number, numCol: number): TDimension {
+        if (width < numCol * 8 || height < numCol * 8) return null;
+        const o = Math.floor(width / 8),
+            t = Math.floor(height / 8),
+            u = Math.floor(o / numCol),
+            r = Math.floor(t / numCol);
+        return {
+            width: u * 8,
+            height: r * 8
+        };
+    }
+    */
 }

@@ -9,11 +9,11 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIManga = {
-    title_list: [{
+    title_list: [ {
         title_id: number;
         title_name: string;
         episode_id_list: number[];
-    }];
+    } ];
 };
 
 type APIChapters = {
@@ -40,7 +40,7 @@ export default class extends DecoratableMangaScraper {
         seed: '',
     });
 
-    public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [ Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official ]) {
+    public constructor (id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [ Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official ]) {
         super(id, label, url, ...tags);
     }
 
@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
 
     protected async FetchChapterList(manga: Manga, chapterIDs: number[]): Promise<Chapter[]> {
         const chapters: Chapter[] = [];
-        while(chapterIDs.length > 0) {
+        while (chapterIDs.length > 0) {
             const { episode_list } = await this.drm.FetchAPI<APIChapters>(`./episode/list`, {
                 platform: '3',
                 episode_id_list: chapterIDs.splice(0, 50).join(','),
@@ -111,9 +111,10 @@ export default class extends DecoratableMangaScraper {
     }
 }
 
+// TODO: Integration => https://github.com/manga-download/haruneko/commit/72a42dc5b3615af0c01588bc1c8d4db14a36a799#diff-0f4fdeca648eb4546349d45ef81d6abca1844a3dc84b0863ce3073832853792a
 export class DRMProvider {
 
-    constructor(private readonly apiURL: string, readonly requestHeaderHash: { name: string, seed: string }) {}
+    constructor (private readonly apiURL: string, readonly requestHeaderHash: { name: string, seed: string; }) { }
 
     public async FetchAPI<T extends JSONElement>(endpoint: string, parameters: Record<string, string>, init: RequestInit = { method: 'GET' }): Promise<T> {
         const request = await this.#CreateRequest(endpoint, init, parameters);
@@ -123,7 +124,7 @@ export class DRMProvider {
     async #CreateRequest(endpoint: string, init: RequestInit, parameters: Record<string, string>) {
         const payload = new URLSearchParams(parameters);
         const uri = new URL(endpoint, this.apiURL);
-        if(/^POST$/i.test(init.method)) {
+        if (/^POST$/i.test(init.method)) {
             init.body = payload;
         } else {
             uri.search = payload.toString();
@@ -172,13 +173,13 @@ function getPieceDimension(width: number, height: number, t: number) {
 }
 
 function Cs(e: number, i: number): number {
-    e > i && ([e, i] = [i, e]);
+    e > i && ([ e, i ] = [ i, e ]);
     const t = (s, o) => s ? t(o % s, s) : o;
     return e * i / t(e, i);
 }
 
 const xs = function* (e: number, i: number) {
-    yield* Is([...Array(e ** 2)].map((s, o) => o), i).map(
+    yield* Is([ ...Array(e ** 2) ].map((s, o) => o), i).map(
         (s, o) => ({
             source: {
                 x: s % e,
@@ -194,13 +195,10 @@ const xs = function* (e: number, i: number) {
 
 function Is(e: number[], seed: number): number[] {
     const t = Ls(seed);
-    return e.map(o => [t.next().value, o]).sort((o, r) => + (o[0] > r[0]) - + (r[0] > o[0])).map(o => o[1]);
+    return e.map(o => [ t.next().value, o ]).sort((o, r) => + (o[ 0 ] > r[ 0 ]) - + (r[ 0 ] > o[ 0 ])).map(o => o[ 1 ]);
 }
 
 const Ls = function* (seed: number) {
     const i = Uint32Array.of(seed);
-    for (; ;) i[0] ^= i[0] << 13,
-    i[0] ^= i[0] >>> 17,
-    i[0] ^= i[0] << 5,
-    yield i[0];
+    for (; ;) i[ 0 ] ^= i[ 0 ] << 13, i[ 0 ] ^= i[ 0 ] >>> 17, i[ 0 ] ^= i[ 0 ] << 5, yield i[ 0 ];
 };
