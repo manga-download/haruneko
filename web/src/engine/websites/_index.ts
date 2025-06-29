@@ -734,6 +734,7 @@ export { default as VizShonenJump } from './VizShonenJump';
 export { default as VNSharing } from './VNSharing';
 export { default as VortexScans } from './VortexScans';
 export { default as VortexScansFree } from './VortexScansFree';
+export { default as Voyce } from './Voyce';
 export { default as VyManga } from './VyManga';
 export { default as WebAce } from './WebAce';
 export { default as WebComicsApp } from './WebComicsApp';
