@@ -183,7 +183,6 @@ export { default as GourmetScans } from './GourmetScans';
 export { default as GrabberZone } from './GrabberZone';
 export { default as Grimelek } from './Grimelek';
 export { default as GTOTheGreatSite } from './GTOTheGreatSite';
-export { default as GuncelManga } from './GuncelManga';
 export { default as GuruKomik } from './GuruKomik';
 export { default as Hachirumi } from './Hachirumi';
 export { default as HadesNoFansub } from './HadesNoFansub';
