@@ -1,7 +1,7 @@
 import { FASTElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
 import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Chapter } from '../../../engine/providers/MangaPlugin';
-import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
+import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
 
 import IconClose from '@fluentui/svg-icons/icons/dismiss_20_regular.svg?raw';
 
@@ -40,7 +40,7 @@ const templateChapter = html<MediaItemPreview>`${repeat(model => model.items, te
 
 const template = html<MediaItemPreview>`
     <div id="heading">
-        <fluent-button icon-only appearance="transparent" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.Entry = undefined}></fluent-button>
+        <fluent-button icon-only appearance="transparent" title="${model => model.Localization.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.Entry = undefined}></fluent-button>
         <div id="caption">${model => model.Entry?.Title ?? ''}</div>
         <div></div>
     </div>
@@ -50,6 +50,8 @@ const template = html<MediaItemPreview>`
 `;
 
 export class MediaItemPreview extends FASTElement {
+
+    @LocalizationProviderRegistration Localization: LocalizationProvider;
 
     @observable items: ReadonlyArray<MediaItem>;
 

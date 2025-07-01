@@ -2,15 +2,7 @@ import { DI, Registration } from '@microsoft/fast-element/di.js';
 import { observable } from '@microsoft/fast-element';
 import type { IAppWindow } from '../../../engine/platform/AppWindow';
 
-export interface IWindowManager {
-    readonly IsMaximized: boolean;
-    Minimize(): void;
-    Maximize(): void;
-    Restore(): void;
-    Close(): void;
-}
-
-class WindowManager implements IWindowManager {
+class WindowManager {
 
     constructor (private readonly windowController: IAppWindow) { }
 
@@ -35,8 +27,8 @@ class WindowManager implements IWindowManager {
     }
 }
 
-export const WindowManagerService = DI.createContext<IWindowManager>();
-
-export function registerWindowManagerService(windowController: IAppWindow) {
-    DI.getOrCreateDOMContainer(document.body).register(Registration.instance(WindowManagerService, new WindowManager(windowController)));
+export type { WindowManager };
+export const WindowManagerRegistration = DI.createContext<WindowManager>();
+export function RegisterWindowManager(windowController: IAppWindow) {
+    DI.getOrCreateDOMContainer(document.body).register(Registration.instance(WindowManagerRegistration, new WindowManager(windowController)));
 }

@@ -1,6 +1,7 @@
 import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import type { StoreableMediaContainer, MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
-import { StateManagerService, type StateManager } from '../services/StateManagerService';
+import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type SettingsManager } from '../services/SettingsManager';
 import type { LazyScroll } from './LazyScroll';
 
 //import IconSortNone from '@fluentui/svg-icons/icons/arrow_sort_20_regular.svg?raw';
@@ -139,14 +140,14 @@ function CreateItemTemplate(container: MediaItemList) {
                 <fluent-button
                     icon-only
                     appearance="transparent"
-                    title="${() => container.S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
+                    title="${() => container.Localization.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
                     :innerHTML=${() => IconPreview}
                     @click=${model => container.ShowPreview(model)}>
                 </fluent-button>
                 <fluent-button
                     icon-only
                     appearance="transparent"
-                    title="${() => container.S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
+                    title="${() => container.Localization.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
                     :innerHTML=${() => IconDownload}
                     @click=${model => container.Download(model)}>
                 </fluent-button>
@@ -157,7 +158,7 @@ function CreateItemTemplate(container: MediaItemList) {
 
 const template = html<MediaItemList>`
     <div id="header">
-        <div id="title">${model => model.S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
+        <div id="title">${model => model.Localization.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
         <div id="controls">
             <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
             <fluent-button
@@ -165,7 +166,7 @@ const template = html<MediaItemList>`
                 id="button-update-entries"
                 appearance="transparent"
                 class="${model => model.updating.includes(model.Container?.Identifier) ? 'updating' : ''}"
-                title="${model => model.S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}"
+                title="${model => model.Localization.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}"
                 ?disabled=${model => !model.Container || model.updating.includes(model.Container?.Identifier)}
                 :innerHTML=${() => IconSynchronize}
                 @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>
@@ -180,7 +181,8 @@ const template = html<MediaItemList>`
 
 export class MediaItemList extends FASTElement {
 
-    @StateManagerService S: StateManager;
+    @LocalizationProviderRegistration Localization: LocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: SettingsManager;
 
     @observable Container?: MediaContainer<StoreableMediaContainer<MediaItem>>;
     ContainerChanged() {
@@ -206,12 +208,12 @@ export class MediaItemList extends FASTElement {
         event.stopPropagation();
         const container = this.Container;
         try {
-            if(!this.updating.includes(container.Identifier)) {
+            if (!this.updating.includes(container.Identifier)) {
                 this.updating = [ ...this.updating, container.Identifier ];
                 await container?.Update();
                 this.ContainerChanged();
             }
-        } catch(error) {
+        } catch (error) {
             console.warn(error);
         } finally {
             this.updating = this.updating.filter(id => id !== container.Identifier);
@@ -224,8 +226,8 @@ export class MediaItemList extends FASTElement {
 
     public async Download(entry: StoreableMediaContainer<MediaItem>) {
         try {
-            await this.S.SettingMediaDirectory.EnsureAccess();
-        } catch(error) {
+            await this.SettingsManager.SettingMediaDirectory.EnsureAccess();
+        } catch (error) {
             // TODO: Introduce generic UI component to show errors
             return alert(error.message ?? error);
         }

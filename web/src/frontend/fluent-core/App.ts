@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../engine/providers/MediaPlugin';
-import { StateManagerService, type StateManager } from './services/StateManagerService';
+import { SettingsManagerRegistration, type SettingsManager } from './services/SettingsManager';
 
 const styles: ElementStyles = css`
     :host {
@@ -68,12 +68,12 @@ const styles: ElementStyles = css`
 
 const templateSidePanel: ViewTemplate<App> = html`
     <div id="sidepanel">
-        <fluent-card id="bookmark-list-panel" style="display: ${model => model.S.SettingPanelBookmarks ? 'block' : 'none'}">
+        <fluent-card id="bookmark-list-panel" style="display: ${model => model.SettingsManager.SettingPanelBookmarks ? 'block' : 'none'}">
             <fluent-bookmark-list id="bookmark-list"
                 @bookmarkClicked=${(model, ctx) => model.selectedTitle = (ctx.event as CustomEvent<MediaContainer<MediaChild>>).detail}></fluent-bookmark-list>
         </fluent-card>
         <!-- TODO: Download Panel not shown, probably not Injected/Initialized? -->
-        <fluent-card id="download-manager-panel" style="display: ${model => model.S.SettingPanelDownloads ? 'block' : 'none'}">
+        <fluent-card id="download-manager-panel" style="display: ${model => model.SettingsManager.SettingPanelDownloads ? 'block' : 'none'}">
             <fluent-download-manager id="download-manager"></fluent-download-manager>
         </fluent-card>
     </div>
@@ -81,7 +81,7 @@ const templateSidePanel: ViewTemplate<App> = html`
 
 const templateWidgets: ViewTemplate<App> = html`
     <div id="widgets">
-        ${when(model => model.S.SettingPanelBookmarks || model.S.SettingPanelDownloads, templateSidePanel)}
+        ${when(model => model.SettingsManager.SettingPanelBookmarks || model.SettingsManager.SettingPanelDownloads, templateSidePanel)}
         <div id="mainpanel">
             <fluent-card>
                 <fluent-website-select id="website-select" :Entries=${() => HakuNeko.PluginController.WebsitePlugins} :Selected=${model => model.selectedWebsite}
@@ -103,7 +103,7 @@ const templateWidgets: ViewTemplate<App> = html`
 
 const templatePreview: ViewTemplate<App> = html`
     <fluent-media-item-preview id="preview" :Entry=${model => model.previewEntry}
-        @entryChanged=${(model, ctx) => model.previewEntry = (ctx.event as CustomEvent<MediaContainer<MediaChild>>).detail}></fluent-media-item-preview>
+        @entryChanged=${(model, ctx) => model.previewEntry = ctx.eventDetail<MediaContainer<MediaChild>>()}></fluent-media-item-preview>
 `;
 
 const template: ViewTemplate<App> = html`
@@ -116,7 +116,7 @@ const template: ViewTemplate<App> = html`
 @customElement({ name: 'fluent-app', template, styles })
 export class App extends FASTElement {
 
-    @StateManagerService S: StateManager;
+    @SettingsManagerRegistration SettingsManager: SettingsManager;
 
     @observable selectedWebsite: MediaContainer<MediaChild>;
     @observable selectedTitle: MediaContainer<MediaChild>;

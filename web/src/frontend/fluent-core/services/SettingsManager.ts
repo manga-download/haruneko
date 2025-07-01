@@ -5,9 +5,8 @@ import { setTheme } from '@fluentui/web-components';
 import { type ISetting, Check, Choice, type Directory } from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
 import { FrontendResourceKey as R } from '../../../i18n/ILocale';
-import { GetLocale } from '../../../i18n/Localization';
 
-const SettingKeys = {
+const FrontendSettingKeys = {
     Scope: 'frontend.fluent-core',
     Theme: 'theme',
     PanelBookmarks: 'panel.bookmarks',
@@ -31,15 +30,14 @@ export const Themes = new Map<string, typeof ThemeWebLight>([
     [ ThemeWebLight.key, ThemeWebLight ],
 ]);
 
-// TODO: Split into SettingService and LocaleService
-class StateManager {
+class SettingsManager {
 
-    public readonly GlobalSettings = HakuNeko.SettingsManager.OpenScope();
-    private readonly frontendSettings = HakuNeko.SettingsManager.OpenScope(SettingKeys.Scope);
+    readonly #globalSettings = HakuNeko.SettingsManager.OpenScope();
+    readonly #frontendSettings = HakuNeko.SettingsManager.OpenScope(FrontendSettingKeys.Scope);
 
     constructor () {
-        this.SettingMediaDirectory = this.GlobalSettings.Get<Directory>(GlobalKey.MediaDirectory);
-        this.GlobalSettings.Get<Choice>(GlobalKey.Language).Subscribe(() => this.Locale = GetLocale());
+        this.SettingLanguage = this.#globalSettings.Get<Choice>(GlobalKey.Language);
+        this.SettingMediaDirectory = this.#globalSettings.Get<Directory>(GlobalKey.MediaDirectory);
         this.settingThemeChoice.Subscribe(value => this.SettingSelectedTheme = Themes.get(value));
         this.settingPanelBookmarksCheck.Subscribe(value => this.SettingPanelBookmarks = value);
         this.settingPanelDownloadsCheck.Subscribe(value => this.SettingPanelDownloads = value);
@@ -47,7 +45,7 @@ class StateManager {
     }
 
     private async Initialize() {
-        await this.frontendSettings.Initialize(
+        await this.#frontendSettings.Initialize(
             this.settingThemeChoice,
             this.settingPanelBookmarksCheck,
             this.settingPanelDownloadsCheck
@@ -56,34 +54,42 @@ class StateManager {
         this.SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     }
 
-    @observable Locale = GetLocale();
+    public get GlobalSettings() {
+        return [ ...this.#globalSettings ];
+    }
+
+    public get FrontendSettings() {
+        return [ ...this.#frontendSettings ];
+    }
+
+    public readonly SettingLanguage: Choice;
+
+    // TODO: Is this used?
     public readonly SettingMediaDirectory: Directory;
 
-    private readonly settingThemeChoice = new Choice(SettingKeys.Theme, R.Frontend_FluentCore_Settings_ThemeMode_Label, R.Frontend_FluentCore_Settings_ThemeMode_Description, ThemeWebLight.key, ThemeWebDark, ThemeWebLight);
+    private readonly settingThemeChoice = new Choice(FrontendSettingKeys.Theme, R.Frontend_FluentCore_Settings_ThemeMode_Label, R.Frontend_FluentCore_Settings_ThemeMode_Description, ThemeWebLight.key, ThemeWebDark, ThemeWebLight);
     @observable SettingSelectedTheme = Themes.get(this.settingThemeChoice.Value);
     SettingSelectedThemeChanged() {
         this.settingThemeChoice.Value = this.SettingSelectedTheme.key;
         setTheme(this.SettingSelectedTheme.value);
     }
 
-    private readonly settingPanelBookmarksCheck = new Check(SettingKeys.PanelBookmarks, R.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label, R.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description, true);
+    private readonly settingPanelBookmarksCheck = new Check(FrontendSettingKeys.PanelBookmarks, R.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label, R.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description, true);
     @observable SettingPanelBookmarks = this.settingPanelBookmarksCheck.Value;
     SettingPanelBookmarksChanged() {
         this.settingPanelBookmarksCheck.Value = this.SettingPanelBookmarks;
     }
 
-    private readonly settingPanelDownloadsCheck = new Check(SettingKeys.PanelDownloads, R.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label, R.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description, false);
+    private readonly settingPanelDownloadsCheck = new Check(FrontendSettingKeys.PanelDownloads, R.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label, R.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description, false);
     @observable SettingPanelDownloads = this.settingPanelDownloadsCheck.Value;
     SettingPanelDownloadsChanged() {
         this.settingPanelDownloadsCheck.Value = this.SettingPanelDownloads;
     }
 
+    // TODO: Make non-observable?
     @observable ShowSettingsDialog: (...settings: ISetting[]) => void = () => { };
 }
 
-export type { StateManager };
-export const StateManagerService = DI.createContext<StateManager>();
-DI.getOrCreateDOMContainer(document.body).register(Registration.instance(StateManagerService, new StateManager()));
-
-// TODO: Use service instead of exported instance
-export const S = new StateManager();
+export type { SettingsManager };
+export const SettingsManagerRegistration = DI.createContext<SettingsManager>();
+DI.getOrCreateDOMContainer(document.body).register(Registration.instance(SettingsManagerRegistration, new SettingsManager()));

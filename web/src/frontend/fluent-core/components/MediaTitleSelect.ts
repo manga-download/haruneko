@@ -3,7 +3,7 @@ import type { MediaContainer, MediaChild } from '../../../engine/providers/Media
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
 import type { SearchBox } from './SearchBox';
-import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
+import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
 import { Exception } from '../../../engine/Error';
 import { FrontendResourceKey as R } from '../../../i18n/ILocale';
 
@@ -158,11 +158,11 @@ const styles = css`
 `;
 
 const unstarred = html<MediaTitleSelect>`
-    <fluent-button icon-only id="add-favorite-button" appearance="transparent" ?disabled=${model => !model.Selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description()}" :innerHTML=${() => IconAddBookmark} @click=${(model, ctx) => model.AddBookmark(ctx.event)}></fluent-button>
+    <fluent-button icon-only id="add-favorite-button" appearance="transparent" ?disabled=${model => !model.Selected} title="${model => model.Localization.Locale.Frontend_FluentCore_MediaTitleSelect_AddBookmarkButton_Description()}" :innerHTML=${() => IconAddBookmark} @click=${(model, ctx) => model.AddBookmark(ctx.event)}></fluent-button>
 `;
 
 const starred = html<MediaTitleSelect>`
-    <fluent-button icon-only id="remove-favorite-button" appearance="transparent" ?disabled=${model => !model.Selected} title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description()}" :innerHTML=${() => IconRemoveBookmark} @click=${(model, ctx) => model.RemoveBookmark(ctx.event)}></fluent-button>
+    <fluent-button icon-only id="remove-favorite-button" appearance="transparent" ?disabled=${model => !model.Selected} title="${model => model.Localization.Locale.Frontend_FluentCore_MediaTitleSelect_RemoveBookmarkButton_Description()}" :innerHTML=${() => IconRemoveBookmark} @click=${(model, ctx) => model.RemoveBookmark(ctx.event)}></fluent-button>
 `;
 
 // HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
@@ -170,16 +170,16 @@ const starred = html<MediaTitleSelect>`
 //       => manually query correct host and provide callback function
 function CreateItemTemplate(container: MediaTitleSelect) {
     return html<MediaContainer<MediaChild>>`
-    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${model => container.SelectEntry(model)}>
-        <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
-        <div class="title" style="${styleTitle}">${model => model.Title}</div>
-        <div class="hint" style="${styleHint}">${model => model.Identifier}</div>
-    </div>
-`;
+        <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${model => container.SelectEntry(model)}>
+            <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
+            <div class="title" style="${styleTitle}">${model => model.Title}</div>
+            <div class="hint" style="${styleHint}">${model => model.Identifier}</div>
+        </div>
+    `;
 }
 
 const template = html<MediaTitleSelect>`
-    <div id="heading" title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_Description()}" @click=${model => model.Expanded = !model.Expanded}>
+    <div id="heading" title="${model => model.Localization.Locale.Frontend_FluentCore_MediaTitleSelect_Description()}" @click=${model => model.Expanded = !model.Expanded}>
         <img id="logo" src="${model => model.Selected?.Icon}"></img>
         <div id="title">${model => model.Selected?.Title ?? '…'}</div>
         <div id="controls">
@@ -189,7 +189,7 @@ const template = html<MediaTitleSelect>`
                 id="button-update-entries"
                 appearance="transparent"
                 class="${model => model.updating.includes(model.Container?.Identifier) || model.pasting ? 'updating' : ''}"
-                title="${() => S.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}"
+                title="${model => model.Localization.Locale.Frontend_FluentCore_WebsiteSelect_UpdateEntriesButton_Description()}"
                 ?disabled=${model => !model.Container || model.updating.includes(model.Container?.Identifier) || model.pasting}
                 :innerHTML=${() => IconSynchronize}
                 @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>
@@ -199,7 +199,7 @@ const template = html<MediaTitleSelect>`
                 icon-only
                 id="paste-clipboard-button"
                 appearance="transparent"
-                title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}"
+                title="${model => model.Localization.Locale.Frontend_FluentCore_MediaTitleSelect_PasteClipboardButton_Description()}"
                 ?disabled=${model => model.updating.includes(model.Container?.Identifier) || model.pasting}
                 :innerHTML=${() => IconClipboard}
                 @click="${(model, ctx) => model.PasteClipboard(ctx.event)}">
@@ -208,13 +208,15 @@ const template = html<MediaTitleSelect>`
     </div>
     <div id="dropdown" ${ref('dropdown')}>
         <div id="searchcontrol">
-            <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+            <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${model => model.Localization.Locale.Frontend_FluentCore_MediaTitleSelect_SearchBox_Placeholder()}" allowcase allowregex @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
         <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${CreateItemTemplate}></fluent-lazy-scroll>
     </div>
 `;
 
 export class MediaTitleSelect extends FASTElement {
+
+    @LocalizationProviderRegistration Localization: LocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();

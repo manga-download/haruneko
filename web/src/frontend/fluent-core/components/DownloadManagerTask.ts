@@ -1,6 +1,6 @@
 import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import { type DownloadTask, Status } from '../../../engine/DownloadTask';
-import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
+import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
 
 import IconQueued from '@fluentui/svg-icons/icons/clock_20_regular.svg?raw';
 import IconPaused from '@fluentui/svg-icons/icons/pause_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/debug-paused.svg?raw';
@@ -11,12 +11,12 @@ import IconCompleted from '@fluentui/svg-icons/icons/checkmark_circle_20_regular
 import IconRemove from '@fluentui/svg-icons/icons/dismiss_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/trash.svg?raw';
 
 const StatusIcons: Record<Status, string> = {
-    [Status.Queued]: IconQueued,
-    [Status.Paused]: IconPaused,
-    [Status.Downloading]: IconDownloading,
-    [Status.Processing]: IconProcessing,
-    [Status.Failed]: IconFailed,
-    [Status.Completed]: IconCompleted,
+    [ Status.Queued ]: IconQueued,
+    [ Status.Paused ]: IconPaused,
+    [ Status.Downloading ]: IconDownloading,
+    [ Status.Processing ]: IconProcessing,
+    [ Status.Failed ]: IconFailed,
+    [ Status.Completed ]: IconCompleted,
 };
 
 const styles = css`
@@ -79,12 +79,14 @@ const template = html<DownloadManagerTask>`
     <div class="mediaitem">${model => model.Entry?.Media.Title}</div>
     <div class="controls">
         <fluent-progress-bar min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress-bar>
-        <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[model.status]} @click=${model => model.ShowErrors()}></div>
-        <fluent-button icon-only size="small" appearance="transparent" title="${() => S.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" :innerHTML=${() => IconRemove} @click=${model => HakuNeko.DownloadManager.Dequeue(model.Entry)}></fluent-button>
+        <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[ model.status ]} @click=${model => model.ShowErrors()}></div>
+        <fluent-button icon-only size="small" appearance="transparent" title="${model => model.Localization.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" :innerHTML=${() => IconRemove} @click=${model => HakuNeko.DownloadManager.Dequeue(model.Entry)}></fluent-button>
     </div>
 `;
 
 export class DownloadManagerTask extends FASTElement {
+
+    @LocalizationProviderRegistration Localization: LocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();
@@ -118,7 +120,7 @@ export class DownloadManagerTask extends FASTElement {
     }.bind(this);
 
     public ShowErrors() {
-        if(this.Entry.Errors.Value.length > 0) {
+        if (this.Entry.Errors.Value.length > 0) {
             // TODO: Show all errors in a fancy error dialog ...
             const message = this.Entry.Errors.Value.map(error => {
                 return `<div>${error.message}</div><pre>${error.stack}</pre>`;

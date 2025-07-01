@@ -1,6 +1,6 @@
 import { FASTElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { DownloadTask } from '../../../engine/DownloadTask';
-import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
+import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
 
 const styles = css`
 
@@ -44,24 +44,26 @@ const styles = css`
     }
 `;
 
-const listitem = html<DownloadTask>`
-    <fluent-download-manager-task :Entry=${model => model}></fluent-download-manager-task>
-`;
+function CreateItemTemplate(_container: DownloadManager) {
+    return html<DownloadTask>`<fluent-download-manager-task :Entry=${model => model}></fluent-download-manager-task>`;
+}
 
 const template = html<DownloadManager>`
     <div id="header">
-        <div id="title">${() => S.Locale.Frontend_FluentCore_DownloadManager_Heading()}</div>
+        <div id="title">${model => model.Localization.Locale.Frontend_FluentCore_DownloadManager_Heading()}</div>
         <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
     </div>
     <div id="searchcontrol">
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <div id="entries">
-        ${repeat(model => model.filtered, listitem)}
+        ${repeat(model => model.filtered, CreateItemTemplate)}
     </div>
 `;
 
 export class DownloadManager extends FASTElement {
+
+    @LocalizationProviderRegistration Localization: LocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();

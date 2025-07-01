@@ -1,5 +1,5 @@
 import { FASTElement, html, css, observable, attr, when, ref } from '@microsoft/fast-element';
-import { StateManagerService, type StateManager } from '../services/StateManagerService';
+import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
 import IconClear from '@vscode/codicons/src/icons/trash.svg?raw';
@@ -33,18 +33,18 @@ const styles = css`
 `;
 
 const templateCaseSensivity = html<SearchBox>`
-    <fluent-button icon-only size="small" appearance="${model => model.CaseEnabled ? 'outline' : 'transparent'}" title="${model => model.S.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${() => IconCase} @click=${model => model.CaseEnabled = !model.CaseEnabled}></fluent-button>
+    <fluent-button icon-only size="small" appearance="${model => model.CaseEnabled ? 'outline' : 'transparent'}" title="${model => model.Localization.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${() => IconCase} @click=${model => model.CaseEnabled = !model.CaseEnabled}></fluent-button>
 `;
 
 const templateRegularExpression = html<SearchBox>`
-    <fluent-button icon-only size="small" appearance="${model => model.RegexEnabled ? 'outline' : 'transparent'}" title="${model => model.S.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${() => IconRegex} @click=${model => model.RegexEnabled = !model.RegexEnabled}></fluent-button>
+    <fluent-button icon-only size="small" appearance="${model => model.RegexEnabled ? 'outline' : 'transparent'}" title="${model => model.Localization.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${() => IconRegex} @click=${model => model.RegexEnabled = !model.RegexEnabled}></fluent-button>
 `;
 
 const template = html<SearchBox>`
     <fluent-text-input id="searchpattern" ${ref('searchpattern')} appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.Needle} @input=${(model, ctx) => model.Needle = ctx.eventTarget<TextInput>().value}>
         <div slot="start" :innerHTML=${() => IconSearch}></div>
         <div slot="end">
-            <fluent-button icon-only size="small" appearance="transparent" title="${model => model.S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.Needle = ''}></fluent-button>
+            <fluent-button icon-only size="small" appearance="transparent" title="${model => model.Localization.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.Needle = ''}></fluent-button>
             ${when(model => model.AllowCase, templateCaseSensivity)}
             ${when(model => model.AllowRegex, templateRegularExpression)}
         </div>
@@ -53,7 +53,7 @@ const template = html<SearchBox>`
 
 export class SearchBox extends FASTElement {
 
-    @StateManagerService S: StateManager;
+    @LocalizationProviderRegistration Localization: LocalizationProvider;
     private readonly event = 'predicate';
     readonly searchpattern: FASTElement;
 

@@ -1,10 +1,10 @@
 import { FASTElement, type ExecutionContext, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
-import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
-import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
-import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
-import { S, StateManagerService, type StateManager } from '../services/StateManagerService';
 import type { TextInput, Checkbox, Dropdown, Dialog } from '@fluentui/web-components';
 import type { FluentNumberField } from './FluentNumberField';
+import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
+import { InteractiveFileContentProviderRegistration, type InteractiveFileContentProvider } from '../services/InteractiveFileContentProvider';
+import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type SettingsManager } from '../services/SettingsManager';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 
@@ -35,19 +35,21 @@ const templateCheck = html<Check>`
     <fluent-checkbox style="display: inline-block;" :checked=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<Checkbox>().checked}></fluent-checkbox>
 `;
 
-function CreateChoiceOptionTemplate(model: Choice) {
+function CreateChoiceOptionTemplate(container: SettingsDialog, model: Choice) {
     return html<{ key: string, label: string; }>`
-        <fluent-option value=${item => item.key} selected=${item => item.key === model.Value}>${item => S.Locale[ item.label ]()}</fluent-option>
+        <fluent-option value=${item => item.key} selected=${item => item.key === model.Value}>${item => container.Localization.Get(item.label)}</fluent-option>
     `;
 }
 
-const templateChoice = html<Choice>`
-    <fluent-dropdown type="dropdown" id=${model => model.ID} @change=${(model, ctx) => model.Value = ctx.eventTarget<Dropdown>().value}>
-        <fluent-listbox>
-            ${repeat<Choice>(model => model.Options, CreateChoiceOptionTemplate)}
-        </fluent-listbox>
-    </fluent-dropdown>
-`;
+function CreateChoiceTemplate(container: SettingsDialog/*, model: Choice*/) {
+    return html<Choice>`
+        <fluent-dropdown type="dropdown" id=${model => model.ID} @change=${(model, ctx) => model.Value = ctx.eventTarget<Dropdown>().value}>
+            <fluent-listbox>
+                ${repeat<Choice>(model => model.Options, model => CreateChoiceOptionTemplate(container, model))}
+            </fluent-listbox>
+        </fluent-dropdown>
+    `;
+}
 
 const templateDirectory = html<Directory>`
     <fluent-text-input type="text" readonly id=${model => model.ID} value=${model => model.Value?.name}>
@@ -55,25 +57,27 @@ const templateDirectory = html<Directory>`
     </fluent-text-input>
 `;
 
-const templateSettingRow = html<ISetting>`
-    <div title=${model => S.Locale[ model.Description ]()}>${model => S.Locale[ model.Label ]()}</div>
-    ${when(model => model instanceof Text, templateText)}
-    ${when(model => model instanceof Secret, templateSecret)}
-    ${when(model => model instanceof Numeric, templateNumeric)}
-    ${when(model => model instanceof Check, templateCheck)}
-    ${when(model => model instanceof Choice, templateChoice)}
-    ${when(model => model instanceof Directory, templateDirectory)}
-`;
+function CreateSettingTemplate(container: SettingsDialog) {
+    return html<ISetting>`
+        <div title=${model => container.Localization.Locale[ model.Description ]()}>${model => container.Localization.Get(model.Label)}</div>
+        ${when(model => model instanceof Text, templateText)}
+        ${when(model => model instanceof Secret, templateSecret)}
+        ${when(model => model instanceof Numeric, templateNumeric)}
+        ${when(model => model instanceof Check, templateCheck)}
+        ${when(model => model instanceof Choice, CreateChoiceTemplate(container))}
+        ${when(model => model instanceof Directory, templateDirectory)}
+    `;
+}
 
 const template = html<SettingsDialog>`
     <fluent-dialog type="modal" ${ref('dialog')}>
         <fluent-dialog-body>
-            <div slot="title">${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
+            <div slot="title">${model => model.Localization.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
             <div id="settings">
-                ${repeat(model => model.settings, templateSettingRow)}
+                ${repeat(model => model.Settings, CreateSettingTemplate)}
             </div>
             <fluent-button slot="action" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>
-                ${model => model.S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}
+                ${model => model.L10N.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}
             </fluent-button>
         </fluent-dialog-body>
     </fluent-dialog>
@@ -82,16 +86,21 @@ const template = html<SettingsDialog>`
 export class SettingsDialog extends FASTElement {
 
     readonly dialog: Dialog;
-    @StateManagerService S: StateManager;
-    @observable settings: ISetting[] = [];
-    @InteractiveFileContentProviderService fileIO: InteractiveFileContentProvider;
+    @InteractiveFileContentProviderRegistration fileIO: InteractiveFileContentProvider;
+    @LocalizationProviderRegistration Localization: LocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: SettingsManager;
+    @observable Settings: ISetting[] = [];
 
     override connectedCallback(): void {
         super.connectedCallback();
-        this.S.ShowSettingsDialog = (...settings: ISetting[]) => {
-            this.settings = settings;
+        this.SettingsManager.ShowSettingsDialog = (...settings: ISetting[]) => {
+            this.Settings = settings;
             this.dialog.show();
         };
+    }
+
+    @observable get L10N() {
+        return this.Localization.Locale;
     }
 
     public async SelectDirectory(directory: Directory): Promise<void> {

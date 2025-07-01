@@ -1,6 +1,6 @@
-import { FASTElement, type ExecutionContext, html, css, observable, repeat } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
-import { S /*, StateManagerService, type StateManager*/ } from '../services/StateManagerService';
+import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
 
 const styles = css`
 
@@ -78,27 +78,31 @@ const styles = css`
     }
 `;
 
-const listitem = html<Bookmark>`
-    <li class=${model => model?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx: ExecutionContext<BookmarkList>) => ctx.parent.SelectEntry(model)}>
-        <img class="icon" src="${model => model.Parent.Icon}"></img>
-        <div>${model => model.Title}</div>
-    </li>
-`;
+function CreateItemTemplate(container: BookmarkList) {
+    return html<Bookmark>`
+        <li class=${model => model?.IsOrphaned ? 'missing' : ''} @click=${model => container.SelectEntry(model)}>
+            <img class="icon" src="${model => model.Parent.Icon}"></img>
+            <div>${model => model.Title}</div>
+        </li>
+    `;
+}
 
 const template = html<BookmarkList>`
     <div id="header">
-        <div id="title">${() => S.Locale.Frontend_FluentCore_BookmarkList_Heading()}</div>
+        <div id="title">${model => model.Localization.Locale.Frontend_FluentCore_BookmarkList_Heading()}</div>
         <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
     </div>
     <div id="searchcontrol">
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <ul id="entries">
-        ${repeat(model => model.filtered, listitem)}
+        ${repeat(model => model.filtered, CreateItemTemplate)}
     </ul>
 `;
 
 export class BookmarkList extends FASTElement {
+
+    @LocalizationProviderRegistration Localization: LocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();
@@ -130,7 +134,7 @@ export class BookmarkList extends FASTElement {
         this.filtered = this.Entries.filter(entry => this.Match(entry.Title)).slice(0, 500); /* TODO: virtual scrolling */
     }
 
-    private BookmarksChanged = function(this: BookmarkList) {
+    private BookmarksChanged = function (this: BookmarkList) {
         this.Entries = HakuNeko.BookmarkPlugin.Entries.Value.slice();
     }.bind(this);
 }
