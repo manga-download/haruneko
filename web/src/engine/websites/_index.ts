@@ -720,7 +720,6 @@ export { default as TwoAnimx } from './TwoAnimx';
 export { default as UlasComic } from './UlasComic';
 export { default as UmeTruyen } from './UmeTruyen';
 export { default as UngTyComic } from './UngTyComic';
-export { default as UraSunday } from './UraSunday';
 export { default as Usagi } from './Usagi';
 export { default as Utoon } from './Utoon';
 export { default as UzayManga } from './UzayManga';
