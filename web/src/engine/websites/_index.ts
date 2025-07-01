@@ -58,7 +58,6 @@ export { default as CartelDeManhwas } from './CartelDeManhwas';
 export { default as CarToonMad } from './CarToonMad';
 export { default as CasaComic } from './CasaComic';
 export { default as CatharsisWorld } from './CatharsisWorld';
-export { default as CatTranslator } from './CatTranslator';
 export { default as ChampionCross } from './ChampionCross';
 export { default as Chochox } from './Chochox';
 export { default as CiaoPlus } from './CiaoPlus';
