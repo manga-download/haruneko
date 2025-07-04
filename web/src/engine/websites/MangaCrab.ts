@@ -23,7 +23,7 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangacrab', 'Manga Crab', 'https://mangacrab2.yopres.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('mangacrab', 'Manga Crab', 'https://mangacrab.topmanhuas.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
