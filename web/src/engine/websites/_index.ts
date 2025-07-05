@@ -137,7 +137,6 @@ export { default as Doujins } from './Doujins';
 export { default as DoujinZa } from './DoujinZa';
 export { default as DragonTea } from './DragonTea';
 export { default as DragonTranslation } from './DragonTranslation';
-export { default as DrakeScans } from './DrakeScans';
 export { default as DtupScan } from './DtupScan';
 export { default as DuaLeoTruyen } from './DuaLeoTruyen';
 export { default as DuManwu } from './DuManwu';
@@ -777,6 +776,7 @@ export { default as Zhuzhumh } from './Zhuzhumh';
 export { default as ZinchanManga } from './ZinchanManga';
 export { default as ZinManga } from './ZinManga';
 export { default as ZinMangaNet } from './ZinMangaNet';
+export { default as Ziz } from './Ziz';
 // Legacy Websites
 export { default as AnimePahe } from './legacy/AnimePahe';
 export { default as ArazNovel } from './legacy/ArazNovel';
