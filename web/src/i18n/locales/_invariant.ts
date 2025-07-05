@@ -13,4 +13,5 @@ export const invariant: InvariantResource = {
   Locale_thTH: '🇹🇭 ไทย (TH)',
   Locale_trTR: '🇹🇷 Türkçe (TR)',
   Locale_zhCN: '🇨🇳 中文 (中国)',
+   Locale_jaJP: "🇯🇵 日本語 (JP)",
 };
