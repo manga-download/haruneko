@@ -1,3 +1,4 @@
+import '../AGS_e2e';
 import '../AuroraScans_e2e';
 import '../HiveScans_e2e';
 import '../MagusManga_e2e';

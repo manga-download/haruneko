@@ -1,13 +1,12 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
         id: 'truyengg',
-        title: 'TruyenGG'
+        title: 'FoxTruyen'
     },
     container: {
-        url: 'https://truyengg.net/truyen-tranh/luyen-khi-chi-than-43774.html',
+        url: 'https://foxtruyen.com/truyen-tranh/luyen-khi-chi-than-43774.html',
         id: '/truyen-tranh/luyen-khi-chi-than-43774.html',
         title: 'Luyện Khí Chi Thần'
     },
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/
