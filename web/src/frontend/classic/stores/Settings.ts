@@ -36,6 +36,7 @@ export const enum Key {
     ViewerReverseDirection = 'viewer-reverse-direction',
     //
     ViewerDoublePage = 'viewer-double-page',
+    WelcomeGuide = 'welcome-guide',
 }
 
 export async function Initialize(): Promise<void> {
@@ -115,6 +116,13 @@ export const ViewerDoublePage = CreateSettingStore<boolean, Check>(new Check(
 ));
 
 export const checkNewContent = CreateExistingSettingStore<boolean, Check>(GlobalKey.CheckNewContent);
+
+export const WelcomeGuide = CreateSettingStore<boolean, Check>(new Check(
+    Key.WelcomeGuide,
+    R.Frontend_Classic_Settings_WelcomeGuide,
+    R.Frontend_Classic_Settings_WelcomeGuideInfo,
+    true
+));
 
 // Non persistant settings
 /** Viewer **/
