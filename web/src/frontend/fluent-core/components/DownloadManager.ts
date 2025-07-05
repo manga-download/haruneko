@@ -1,6 +1,6 @@
 import { FASTElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { DownloadTask } from '../../../engine/DownloadTask';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 
 const styles = css`
 
@@ -63,7 +63,7 @@ const template = html<DownloadManager>`
 
 export class DownloadManager extends FASTElement {
 
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();

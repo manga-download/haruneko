@@ -1,7 +1,7 @@
 import { FASTElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
 import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Chapter } from '../../../engine/providers/MangaPlugin';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 
 import IconClose from '@fluentui/svg-icons/icons/dismiss_20_regular.svg?raw';
 
@@ -51,7 +51,7 @@ const template = html<MediaItemPreview>`
 
 export class MediaItemPreview extends FASTElement {
 
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
 
     @observable items: ReadonlyArray<MediaItem>;
 

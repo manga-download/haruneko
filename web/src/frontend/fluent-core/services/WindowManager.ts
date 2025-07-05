@@ -1,8 +1,8 @@
-import { DI, Registration } from '@microsoft/fast-element/di.js';
+import { DI } from '@microsoft/fast-element/di.js';
 import { observable } from '@microsoft/fast-element';
 import type { IAppWindow } from '../../../engine/platform/AppWindow';
 
-class WindowManager {
+export class WindowManager {
 
     constructor (private readonly windowController: IAppWindow) { }
 
@@ -27,8 +27,5 @@ class WindowManager {
     }
 }
 
-export type { WindowManager };
+export type { WindowManager as IWindowManager };
 export const WindowManagerRegistration = DI.createContext<WindowManager>();
-export function RegisterWindowManager(windowController: IAppWindow) {
-    DI.getOrCreateDOMContainer(document.body).register(Registration.instance(WindowManagerRegistration, new WindowManager(windowController)));
-}

@@ -1,14 +1,13 @@
-import { observable } from "@microsoft/fast-element";
-import { DI, Registration } from "@microsoft/fast-element/di.js";
+import { DI } from '@microsoft/fast-element/di.js';
+import { observable } from '@microsoft/fast-element';
 import { GetLocale } from '../../../i18n/Localization';
-import { SettingsManagerRegistration, type SettingsManager } from './SettingsManager';
+import { SettingsManagerRegistration, type ISettingsManager } from './SettingsManager';
 
-class LocalizationProvider {
+export class LocalizationProvider {
 
-    @SettingsManagerRegistration SettingsManager: SettingsManager;
     @observable Locale = GetLocale();
 
-    constructor () {
+    constructor (@SettingsManagerRegistration private readonly SettingsManager: ISettingsManager) {
         this.SettingsManager.SettingLanguage.Subscribe(() => this.Locale = GetLocale());
     }
 
@@ -17,6 +16,5 @@ class LocalizationProvider {
     }
 }
 
-export type { LocalizationProvider };
+export type { LocalizationProvider as ILocalizationProvider };
 export const LocalizationProviderRegistration = DI.createContext<LocalizationProvider>();
-DI.getOrCreateDOMContainer(document.body).register(Registration.instance(LocalizationProviderRegistration, new LocalizationProvider()));

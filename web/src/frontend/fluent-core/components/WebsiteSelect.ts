@@ -1,8 +1,8 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, html, css, observable, Observable, ref } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type ISettingsManager } from '../services/SettingsManager';
 import type { SearchBox } from './SearchBox';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
-import { SettingsManagerRegistration, type SettingsManager } from '../services/SettingsManager';
 
 import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw';
 import IconBrowse from '@fluentui/svg-icons/icons/open_20_regular.svg?raw';
@@ -196,8 +196,8 @@ const template = html<WebsiteSelect>`
 
 export class WebsiteSelect extends FASTElement {
 
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
-    @SettingsManagerRegistration SettingsManager: SettingsManager;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: ISettingsManager;
     readonly dropdown: HTMLDivElement;
     readonly searchbox: SearchBox;
 

@@ -1,7 +1,7 @@
 import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import type { StoreableMediaContainer, MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
-import { SettingsManagerRegistration, type SettingsManager } from '../services/SettingsManager';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type ISettingsManager } from '../services/SettingsManager';
 import type { LazyScroll } from './LazyScroll';
 
 //import IconSortNone from '@fluentui/svg-icons/icons/arrow_sort_20_regular.svg?raw';
@@ -181,8 +181,8 @@ const template = html<MediaItemList>`
 
 export class MediaItemList extends FASTElement {
 
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
-    @SettingsManagerRegistration SettingsManager: SettingsManager;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: ISettingsManager;
 
     @observable Container?: MediaContainer<StoreableMediaContainer<MediaItem>>;
     ContainerChanged() {

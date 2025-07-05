@@ -1,6 +1,6 @@
 import { FASTElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 
 const styles = css`
 
@@ -102,7 +102,7 @@ const template = html<BookmarkList>`
 
 export class BookmarkList extends FASTElement {
 
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();

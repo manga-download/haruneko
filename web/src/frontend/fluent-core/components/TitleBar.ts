@@ -1,7 +1,7 @@
 import { FASTElement, html, css, observable } from '@microsoft/fast-element';
-import { WindowManagerRegistration, type WindowManager } from '../services/WindowManagerService';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
-import { SettingsManagerRegistration, type SettingsManager, ThemeWebLight, ThemeWebDark } from '../services/SettingsManager';
+import { WindowManagerRegistration, type IWindowManager } from '../services/WindowManager';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type ISettingsManager, ThemeWebLight, ThemeWebDark } from '../services/SettingsManager';
 
 // See: https://icon-sets.iconify.design/fluent/
 import IconSunlight from '@fluentui/svg-icons/icons/weather_sunny_20_regular.svg?raw';
@@ -143,9 +143,9 @@ const template = html<TitleBar>`
 
 export class TitleBar extends FASTElement {
 
-    @WindowManagerRegistration WindowManager: WindowManager;
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
-    @SettingsManagerRegistration SettingsManager: SettingsManager;
+    @WindowManagerRegistration WindowManager: IWindowManager;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: ISettingsManager;
     @observable maximized = false;
     @observable settings = false;
 

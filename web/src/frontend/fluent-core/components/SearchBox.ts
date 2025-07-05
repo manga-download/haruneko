@@ -1,11 +1,11 @@
 import { FASTElement, html, css, observable, attr, when, ref } from '@microsoft/fast-element';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
+import type { TextInput } from '@fluentui/web-components';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
 import IconClear from '@vscode/codicons/src/icons/trash.svg?raw';
 import IconCase from '@vscode/codicons/src/icons/case-sensitive.svg?raw';
 import IconRegex from '@vscode/codicons/src/icons/regex.svg?raw';
-import type { TextInput } from '@fluentui/web-components';
 
 const styles = css`
     :host {
@@ -53,7 +53,7 @@ const template = html<SearchBox>`
 
 export class SearchBox extends FASTElement {
 
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
     private readonly event = 'predicate';
     readonly searchpattern: FASTElement;
 

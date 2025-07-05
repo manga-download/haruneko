@@ -1,6 +1,6 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when } from '@microsoft/fast-element';
 import type { MediaContainer, MediaChild } from '../../engine/providers/MediaPlugin';
-import { SettingsManagerRegistration, type SettingsManager } from './services/SettingsManager';
+import { SettingsManagerRegistration, type ISettingsManager } from './services/SettingsManager';
 
 const styles: ElementStyles = css`
     :host {
@@ -116,7 +116,7 @@ const template: ViewTemplate<App> = html`
 @customElement({ name: 'fluent-app', template, styles })
 export class App extends FASTElement {
 
-    @SettingsManagerRegistration SettingsManager: SettingsManager;
+    @SettingsManagerRegistration SettingsManager: ISettingsManager;
 
     @observable selectedWebsite: MediaContainer<MediaChild>;
     @observable selectedTitle: MediaContainer<MediaChild>;

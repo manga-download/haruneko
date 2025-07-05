@@ -1,6 +1,6 @@
 import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import { type DownloadTask, Status } from '../../../engine/DownloadTask';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 
 import IconQueued from '@fluentui/svg-icons/icons/clock_20_regular.svg?raw';
 import IconPaused from '@fluentui/svg-icons/icons/pause_circle_20_regular.svg?raw'; // '@vscode/codicons/src/icons/debug-paused.svg?raw';
@@ -86,7 +86,7 @@ const template = html<DownloadManagerTask>`
 
 export class DownloadManagerTask extends FASTElement {
 
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();

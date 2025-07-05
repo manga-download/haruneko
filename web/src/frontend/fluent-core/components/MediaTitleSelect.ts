@@ -2,10 +2,10 @@ import { FASTElement, html, css, observable, Observable, ref } from '@microsoft/
 import type { MediaContainer, MediaChild } from '../../../engine/providers/MediaPlugin';
 import type { BookmarkPlugin } from '../../../engine/providers/BookmarkPlugin';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
-import type { SearchBox } from './SearchBox';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
 import { Exception } from '../../../engine/Error';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 import { FrontendResourceKey as R } from '../../../i18n/ILocale';
+import type { SearchBox } from './SearchBox';
 
 import IconSynchronize from '@vscode/codicons/src/icons/refresh.svg?raw'; // sync.svg
 import IconClipboard from '@fluentui/svg-icons/icons/clipboard_link_20_regular.svg?raw';
@@ -216,7 +216,7 @@ const template = html<MediaTitleSelect>`
 
 export class MediaTitleSelect extends FASTElement {
 
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();

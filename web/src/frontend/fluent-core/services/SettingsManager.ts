@@ -1,5 +1,5 @@
+import { DI } from '@microsoft/fast-element/di.js';
 import { observable } from '@microsoft/fast-element';
-import { DI, Registration } from '@microsoft/fast-element/di.js';
 import { webLightTheme, webDarkTheme } from '@fluentui/tokens';
 import { setTheme } from '@fluentui/web-components';
 import { type ISetting, Check, Choice, type Directory } from '../../../engine/SettingsManager';
@@ -30,7 +30,7 @@ export const Themes = new Map<string, typeof ThemeWebLight>([
     [ ThemeWebLight.key, ThemeWebLight ],
 ]);
 
-class SettingsManager {
+export class SettingsManager {
 
     readonly #globalSettings = HakuNeko.SettingsManager.OpenScope();
     readonly #frontendSettings = HakuNeko.SettingsManager.OpenScope(FrontendSettingKeys.Scope);
@@ -90,6 +90,5 @@ class SettingsManager {
     @observable ShowSettingsDialog: (...settings: ISetting[]) => void = () => { };
 }
 
-export type { SettingsManager };
+export type { SettingsManager as ISettingsManager };
 export const SettingsManagerRegistration = DI.createContext<SettingsManager>();
-DI.getOrCreateDOMContainer(document.body).register(Registration.instance(SettingsManagerRegistration, new SettingsManager()));

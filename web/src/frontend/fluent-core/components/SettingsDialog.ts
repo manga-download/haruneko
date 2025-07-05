@@ -2,9 +2,9 @@ import { FASTElement, type ExecutionContext, html, css, ref, observable, when, r
 import type { TextInput, Checkbox, Dropdown, Dialog } from '@fluentui/web-components';
 import type { FluentNumberField } from './FluentNumberField';
 import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
-import { InteractiveFileContentProviderRegistration, type InteractiveFileContentProvider } from '../services/InteractiveFileContentProvider';
-import { LocalizationProviderRegistration, type LocalizationProvider } from '../services/LocalizationProvider';
-import { SettingsManagerRegistration, type SettingsManager } from '../services/SettingsManager';
+import { InteractiveFileContentProviderRegistration, type IInteractiveFileContentProvider } from '../services/InteractiveFileContentProvider';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type ISettingsManager } from '../services/SettingsManager';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 
@@ -77,7 +77,7 @@ const template = html<SettingsDialog>`
                 ${repeat(model => model.Settings, CreateSettingTemplate)}
             </div>
             <fluent-button slot="action" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>
-                ${model => model.L10N.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}
+                ${model => model.Localization.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}
             </fluent-button>
         </fluent-dialog-body>
     </fluent-dialog>
@@ -86,9 +86,9 @@ const template = html<SettingsDialog>`
 export class SettingsDialog extends FASTElement {
 
     readonly dialog: Dialog;
-    @InteractiveFileContentProviderRegistration fileIO: InteractiveFileContentProvider;
-    @LocalizationProviderRegistration Localization: LocalizationProvider;
-    @SettingsManagerRegistration SettingsManager: SettingsManager;
+    @InteractiveFileContentProviderRegistration InteractiveFileContentProvider: IInteractiveFileContentProvider;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: ISettingsManager;
     @observable Settings: ISetting[] = [];
 
     override connectedCallback(): void {
@@ -99,17 +99,13 @@ export class SettingsDialog extends FASTElement {
         };
     }
 
-    @observable get L10N() {
-        return this.Localization.Locale;
-    }
-
     public async SelectDirectory(directory: Directory): Promise<void> {
         try {
-            const folder = await this.fileIO.PickDirectory(directory.Value ?? 'documents') ?? directory.Value;
+            const folder = await this.InteractiveFileContentProvider.PickDirectory(directory.Value ?? 'documents') ?? directory.Value;
             this.shadowRoot.querySelector<HTMLInputElement>('#' + directory.ID).value = folder.name;
             directory.Value = folder;
         } catch (error) {
-            if (this.fileIO.IsAbortError(error)) {
+            if (this.InteractiveFileContentProvider.IsAbortError(error)) {
                 return;
             } else {
                 throw error;
