@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Haremu18'
     },
     container: {
-        url: 'https://haremu18.net/manga/te-shu-bodeigado',
+        url: 'https://toon18.cc/manga/te-shu-bodeigado',
         id: '/manga/te-shu-bodeigado',
         title: '特殊ボディガード'
     },
