@@ -13,13 +13,13 @@ export abstract class FetchProvider {
     private featureFlags: FeatureFlags;
 
     protected async ValidateResponse(response: Response): Promise<void> {
-        if(/challenge/i.test(response.headers.get('CF-Mitigated'))) {
+        if (/challenge/i.test(response.headers.get('CF-Mitigated'))) {
             throw new Exception(R.FetchProvider_Fetch_CloudFlareChallenge, response.url);
         }
-        if(/challenge/i.test(response.headers.get('X-Vercel-Mitigated'))) {
+        if (/challenge/i.test(response.headers.get('X-Vercel-Mitigated'))) {
             throw new Exception(R.FetchProvider_Fetch_VercelChallenge, response.url);
         }
-        if(response.status === 403) {
+        if (response.status === 403) {
             throw new Exception(R.FetchProvider_Fetch_Forbidden, response.url);
         }
     }
@@ -61,7 +61,7 @@ export abstract class FetchProvider {
 
         // NOTE: Monkey patching the `innerText` property, stripping whitespaces as it would be rendered when attached to window DOM
         const selectors = [ 'h1', 'h2', 'h3', 'h4', 'h5', 'div', 'span', 'a', 'li' ].join(', ');
-        for(const element of document.body.querySelectorAll<HTMLElement>(selectors)) {
+        for (const element of document.body.querySelectorAll<HTMLElement>(selectors)) {
             Object.defineProperty(element, 'innerText', {
                 get: () => element.textContent?.replace(/\s+/g, ' ').trim()
             });
@@ -91,9 +91,10 @@ export abstract class FetchProvider {
 
     /**
      * Perform a GraphQL request (POST) to a desired endpoint and returns JSON data.
-     * @param operationName - The name of the query to be performed
+     * @param operationName - The name of the query to be performed or `undefined` for unnamed queries
      * @param query - A valid GraphQL query
      * @param variables - A JSONObject containing the variables of the query.
+     * @param extensions - ...
      */
     public async FetchGraphQL<T extends JSONElement>(request: Request, operationName: string, query: string | undefined, variables: JSONObject, extensions: JSONObject | undefined = undefined): Promise<T> {
 
@@ -108,7 +109,7 @@ export abstract class FetchProvider {
 
         // NOTE: Copy custom headers from parent request
         for (const header of request.headers) {
-            graphQLRequest.headers.set(header[0], header[1]);
+            graphQLRequest.headers.set(header.at(0), header.at(1));
         }
 
         type GraphQLResult = {
@@ -140,10 +141,10 @@ export abstract class FetchProvider {
         }
         const response = await fetch(request);
         const data = await response.text();
-        const result : string[] = [];
+        const result: string[] = [];
         let match = undefined;
         while (match = regex.exec(data)) {
-            result.push(match[1]);
+            result.push(match.at(1));
         }
         return result;
     }
@@ -154,7 +155,7 @@ export abstract class FetchProvider {
      * @param messageTypePath - The name of the package and schema type separated by a `.` which should be used to decode the response
      * @returns The decoded response data
      */
-    public async FetchProto<T extends JSONElement>(request: Request, schema: string, messageTypePath: string) : Promise<T> {
+    public async FetchProto<T extends JSONElement>(request: Request, schema: string, messageTypePath: string): Promise<T> {
         const response = await fetch(request);
         const serialized = new Uint8Array(await response.arrayBuffer());
         const prototype = protobuf.parse(schema, { keepCase: true }).root.lookupType(messageTypePath);
@@ -174,11 +175,11 @@ export abstract class FetchProvider {
      * and returns the corresponding value, or `undefined` if non was found.
      */
     #ExtractValueNextJS<T extends JSONElement>(payload: JSONElement, predicate: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown): T {
-        if(payload && typeof payload === 'object') {
-            if(predicate(payload)) return payload as T;
-            for(const value of Object.values(payload)) {
+        if (payload && typeof payload === 'object') {
+            if (predicate(payload)) return payload as T;
+            for (const value of Object.values(payload)) {
                 const result = this.#ExtractValueNextJS<T>(value, predicate);
-                if(result) return result;
+                if (result) return result;
             }
         }
         return undefined;
@@ -204,9 +205,9 @@ export abstract class FetchProvider {
                 }
             });
 
-        for(const payload of payloads) {
+        for (const payload of payloads) {
             const data: T = this.#ExtractValueNextJS<T>(payload, predicate);
-            if(data) return data;
+            if (data) return data;
         }
 
         return undefined;
@@ -235,7 +236,7 @@ export abstract class FetchProvider {
 
         const invocations: {
             name: string;
-            info: string
+            info: string;
         }[] = [];
 
         const win = CreateRemoteBrowserWindow();
@@ -247,12 +248,12 @@ export abstract class FetchProvider {
 
         const destroy = async () => {
             try {
-                if(this.featureFlags.VerboseFetchWindow.Value) {
+                if (this.featureFlags.VerboseFetchWindow.Value) {
                     console.log('FetchWindow()::invocations', invocations);
                 } else {
                     win.Close();
                 }
-            } catch(error) {
+            } catch (error) {
                 console.warn(error);
             }
         };
@@ -267,7 +268,7 @@ export abstract class FetchProvider {
                 invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
                 try {
                     const redirect = await CheckAntiScrapingDetection(win);
-                    invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[redirect]}`});
+                    invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[ redirect ]}` });
                     switch (redirect) {
                         case FetchRedirection.Interactive:
                             // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
@@ -292,7 +293,7 @@ export abstract class FetchProvider {
                 }
             });
 
-            invocations.push({ name: 'Open', info: `Request URL: ${request.url}`});
+            invocations.push({ name: 'Open', info: `Request URL: ${request.url}` });
             await win.Open(request, this.featureFlags.VerboseFetchWindow.Value, preload);
         });
     }
