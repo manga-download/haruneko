@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement): string {
-    return element.textContent.split('|')[0].trim();
+    return element.textContent.split('|')[ 0 ].trim();
 }
 
 function ChapterExtractor(element: HTMLAnchorElement) {
@@ -18,10 +18,10 @@ function ChapterExtractor(element: HTMLAnchorElement) {
 type APIPages = {
     response: {
         pages: {
-            urlImg: string
-        }
-    }
-}
+            urlImg: string;
+        };
+    };
+};
 
 @Common.MangaCSS(/^{origin}\/sr2\/[^/]+$/, 'title', MangaExtractor)
 @Common.MangasMultiPageCSS('/comics?page={page}', 'div#projectsDiv figure div a')
@@ -29,7 +29,7 @@ type APIPages = {
 @Common.ImageAjax(true, true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('ravenseries', `RavenSeries`, 'https://ravensword.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
@@ -43,5 +43,4 @@ export default class extends DecoratableMangaScraper {
         const { response: { pages: { urlImg } } } = await FetchJSON<APIPages>(new Request(new URL(`/api/fake/${mangaSlug}/${chapterSlug}`, this.URI)));
         return (JSON.parse(urlImg) as string[]).map(page => new Page(this, chapter, new URL(page)));
     }
-
 }

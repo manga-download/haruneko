@@ -16,7 +16,7 @@ const pageScript = `[...document.querySelectorAll('main section img[alt*="Page"]
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('weebcentral', 'WeebCentral', 'https://weebcentral.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
@@ -25,9 +25,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const serieId = manga.Identifier.match(/(\/series\/[^/]+)\//)[1];
+        const serieId = manga.Identifier.match(/(\/series\/[^/]+)\//)[ 1 ];
         const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${serieId}/full-chapter-list`, this.URI)), 'a[href*="/chapters/"]');
         return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.querySelector<HTMLSpanElement>('span.grow span').textContent.trim()));
     }
-
 }

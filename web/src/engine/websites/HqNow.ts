@@ -15,19 +15,19 @@ type APISingleManga = {
 type APIManga = {
     id: number,
     name: string,
-    capitulos: APIChapter[]
+    capitulos: APIChapter[];
 };
 
 type APIChapter = {
     name: string,
     id: number,
-    number: number
+    number: number;
 };
 
 type APIPages = {
     getChapterById: {
-        pictures: { pictureUrl: string }[]
-    }
+        pictures: { pictureUrl: string; }[];
+    };
 };
 
 @Common.ImageAjax()
@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://admin.hq-now.com';
 
-    public constructor() {
+    public constructor () {
         super('hqnow', `Hq Now`, 'https://www.hq-now.com', Tags.Language.Spanish, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
@@ -48,7 +48,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = parseInt(new URL(url).pathname.match(/\/hq\/([\d]+)/)[1]);
+        const id = parseInt(new URL(url).pathname.match(/\/hq\/([\d]+)/)[ 1 ]);
         const variables: JSONObject = {
             id: id
         };
@@ -62,7 +62,7 @@ export default class extends DecoratableMangaScraper {
         `;
         const request = new Request(new URL('/graphql', this.apiUrl).href);
         const data = await FetchGraphQL<APISingleManga>(request, 'getHqsById', query, variables);
-        return new Manga(this, provider, String(id), data.getHqsById[0].name.trim());
+        return new Manga(this, provider, String(id), data.getHqsById[ 0 ].name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -81,7 +81,6 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(new URL('/graphql', this.apiUrl).href);
         const data = await FetchGraphQL<APIMangas>(request, 'getHqsByNameStartingLetter', query, variables);
         return data.getHqsByNameStartingLetter.map(manga => new Manga(this, provider, String(manga.id), manga.name));
-
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -104,7 +103,7 @@ export default class extends DecoratableMangaScraper {
 
         const request = new Request(new URL('/graphql', this.apiUrl).href);
         const data = await FetchGraphQL<APISingleManga>(request, 'getHqsById', query, variables);
-        return data.getHqsById[0].capitulos.map(chapter => {
+        return data.getHqsById[ 0 ].capitulos.map(chapter => {
             const name = chapter.name ? String(chapter.number) + ' : ' + chapter.name.trim() : String(chapter.number);
             return new Chapter(this, manga, String(chapter.id), name);
         });
@@ -128,7 +127,5 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(new URL('/graphql', this.apiUrl).href);
         const data = await FetchGraphQL<APIPages>(request, 'getChapterById', query, variables);
         return data.getChapterById.pictures.map(page => new Page(this, chapter, new URL(page.pictureUrl)));
-
     }
-
 }

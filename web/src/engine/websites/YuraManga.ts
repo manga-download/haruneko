@@ -11,12 +11,11 @@ import * as ZManga from './templates/ZManga';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('yuramanga', 'YuraManga', 'https://www.yuramanga.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

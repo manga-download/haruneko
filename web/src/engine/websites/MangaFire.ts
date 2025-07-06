@@ -8,22 +8,25 @@ import DeScramble from '../transformers/ImageDescrambler';
 
 type APIResult<T> = {
     result: T,
-    status: number
-}
+};
 
-type APIHtml = {
-    html: string
-}
+type APIChapters = APIResult<{
+    html: string;
+}>;
 
-type APIPages = {
-    images: [[string, number, number]]
-}
+type APIPages = APIResult<{
+    images: [ [ string, never, number ] ];
+}>;
 
 type ChapterID = {
     itemid: string,
     itemtype: string,
-    language: string
-}
+    language: string;
+};
+
+type PageParameters = {
+    blockScramblingOffset?: number;
+};
 
 const chapterLanguageMap = new Map<string, Tag>([
     [ 'en', Tags.Language.English ],
@@ -38,7 +41,7 @@ const chapterLanguageMap = new Map<string, Tag>([
 @Common.MangasMultiPageCSS('/az-list?page={page}', 'div.info > a', 1, 1, 250)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('mangafire', `MangaFire`, 'https://mangafire.to', Tags.Language.English, Tags.Language.French, Tags.Language.Japanese, Tags.Language.Portuguese, Tags.Language.Spanish, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator);
     }
 
@@ -55,13 +58,13 @@ export default class extends DecoratableMangaScraper {
         const types = [ 'chapter', 'volume' ];
         for (const language of languageList) {
             for (const type of types) {
-                const { result: { html } } = await FetchJSON<APIResult<APIHtml>>(this.PrepareRequest(new URL(`./ajax/read/${id}/${type}/${language}`, this.URI)));
+                const { result: { html } } = await FetchJSON<APIChapters>(this.PrepareRequest(new URL(`./ajax/read/${id}/${type}/${language}`, this.URI)));
                 const dom = new DOMParser().parseFromString(html, 'text/html').body;
                 const chapters = [ ...dom.querySelectorAll('a') ]
                     .filter(anchor => anchor.pathname.includes(`/${type}-`))
                     .map(anchor => {
                         const id = JSON.stringify({ itemid: anchor.dataset.id, itemtype: type, language });
-                        return new Chapter(this, manga, id, `${ anchor.text.trim() } (${ language })`,
+                        return new Chapter(this, manga, id, `${anchor.text.trim()} (${language})`,
                             ...chapterLanguageMap.has(language) ? [ chapterLanguageMap.get(language) ] : []
                         );
                     });
@@ -71,20 +74,20 @@ export default class extends DecoratableMangaScraper {
         return chapterList.distinct();
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const chapterid: ChapterID = JSON.parse(chapter.Identifier);
-        const { result: { images } } = await FetchJSON<APIResult<APIPages>>(this.PrepareRequest(new URL(`./ajax/read/${chapterid.itemtype}/${chapterid.itemid}`, this.URI)));
+        const { result: { images } } = await FetchJSON<APIPages>(this.PrepareRequest(new URL(`./ajax/read/${chapterid.itemtype}/${chapterid.itemid}`, this.URI)));
         return images.map(imageArray => {
-            if (imageArray[2] < 1) {
-                return new Page(this, chapter, new URL(imageArray[0]), { Referer: this.URI.href });
+            if (imageArray.at[ 2 ] < 1) {
+                return new Page<PageParameters>(this, chapter, new URL(imageArray.at[ 0 ]), { Referer: this.URI.href });
             }
-            return new Page(this, chapter, new URL(imageArray[0]), { e: imageArray[2], Referer: this.URI.href });
+            return new Page<PageParameters>(this, chapter, new URL(imageArray.at[ 0 ]), { Referer: this.URI.href, blockScramblingOffset: imageArray.at[ 2 ] });
         });
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return page.Parameters?.e ? DeScramble(blob, (source, target) => Render(source, target, page.Parameters.e as number)) : blob;
+        return page.Parameters?.blockScramblingOffset ? DeScramble(blob, (source, target) => Render(source, target, page.Parameters.blockScramblingOffset)) : blob;
     }
 
     private PrepareRequest(endpoint: URL): Request {
@@ -95,39 +98,37 @@ export default class extends DecoratableMangaScraper {
             }
         });
     }
-
 }
 
-async function Render(image: ImageBitmap, ctx: OffscreenCanvasRenderingContext2D, e: number): Promise<void> {
+async function Render(image: ImageBitmap, ctx: OffscreenCanvasRenderingContext2D, blockScramblingOffset: number): Promise<void> {
     ctx.clearRect(0, 0, image.width, image.height);
-    const f = 5;
-    const s = Math.min(200, Math.ceil(image.width / f));
-    const h = Math.min(200, Math.ceil(image.height / f));
-    const W = Math.ceil(image.width / s) - 1;
-    const d = Math.ceil(image.height / h) - 1;
+    const blockCount = 5;
+    const blockWidth = Math.min(200, Math.ceil(image.width / blockCount));
+    const blockHeight = Math.min(200, Math.ceil(image.height / blockCount));
+    const blockRowCount = Math.ceil(image.width / blockWidth) - 1;
+    const blockColumnCount = Math.ceil(image.height / blockHeight) - 1;
 
-    let x: number, l: number;
-    for (let y = 0; y <= d; y++) {
-        for (let m = 0; m <= W; m++) {
-            x = m;
-            l = y;
-            if (m < W) {
-                x = (W - m + e) % W;
+    for (let targetBlockColumn = 0, sourceBlockColumn = 0; targetBlockColumn <= blockColumnCount; targetBlockColumn++) {
+        for (let targetBlockRow = 0, sourceBlockRow = 0; targetBlockRow <= blockRowCount; targetBlockRow++) {
+            sourceBlockRow = targetBlockRow;
+            sourceBlockColumn = targetBlockColumn;
+            if (targetBlockRow < blockRowCount) {
+                sourceBlockRow = (blockRowCount - targetBlockRow + blockScramblingOffset) % blockRowCount;
             }
-            if (y < d) {
-                l = (d - y + e) % d;
+            if (targetBlockColumn < blockColumnCount) {
+                sourceBlockColumn = (blockColumnCount - targetBlockColumn + blockScramblingOffset) % blockColumnCount;
             }
 
             ctx.drawImage(
                 image,
-                x * s,
-                l * h,
-                Math.min(s, image.width - m * s),
-                Math.min(h, image.height - y * h),
-                m * s,
-                y * h,
-                Math.min(s, image.width - m * s),
-                Math.min(h, image.height - y * h)
+                sourceBlockRow * blockWidth,
+                sourceBlockColumn * blockHeight,
+                Math.min(blockWidth, image.width - targetBlockRow * blockWidth),
+                Math.min(blockHeight, image.height - targetBlockColumn * blockHeight),
+                targetBlockRow * blockWidth,
+                targetBlockColumn * blockHeight,
+                Math.min(blockWidth, image.width - targetBlockRow * blockWidth),
+                Math.min(blockHeight, image.height - targetBlockColumn * blockHeight)
             );
         }
     }
