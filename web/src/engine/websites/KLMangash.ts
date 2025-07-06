@@ -8,13 +8,13 @@ import type { Priority } from '../taskpool/DeferredTask';
 type ZingParams = {
     nonce: string,
     apiURL: string,
-}
+};
 
 type PageParameters = {
     sp: string,
     chapterID: string,
     imageIndex: number,
-}
+};
 
 function CleanTitle(title: string): string {
     return title.replace(/\(Raw.*Free\)/i, '').trim();
@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
 
     private zingParams: ZingParams;
 
-    public constructor() {
+    public constructor () {
         super('klmangash', 'KLManga(.sh)', 'https://klmanga.hot', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchZingPage(params: PageParameters): Promise<string> {
-        const { mes } = await FetchJSON<{ mes: string }>(new Request(this.zingParams.apiURL, {
+        const { mes } = await FetchJSON<{ mes: string; }>(new Request(this.zingParams.apiURL, {
             method: 'POST',
             body: new URLSearchParams({
                 nonce_a: this.zingParams.nonce,

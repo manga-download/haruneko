@@ -10,8 +10,8 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
-        super('haremu18', 'Haremu18', 'https://haremu18.net', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+    public constructor () {
+        super('haremu18', 'Haremu18', 'https://toon18.cc', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
