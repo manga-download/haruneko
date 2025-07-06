@@ -1,6 +1,5 @@
 .DS_Store
 .vscode
-*.code-workspace
 .cache
 cache
 build
