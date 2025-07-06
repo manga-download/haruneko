@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './DrakeScans.webp';
+import icon from './ElfToon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('drakescans', 'DrakeScans', 'https://drakecomic.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('elftoon', 'Elf Toon', 'https://elftoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
