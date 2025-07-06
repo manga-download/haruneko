@@ -14,6 +14,7 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('ravenscans', 'Raven Scans', 'https://ravenscans.com', Tags.Source.Aggregator, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
+
     public override get Icon(): string {
         return icon;
     }
