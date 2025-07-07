@@ -62,7 +62,7 @@ export default class extends DecoratableMangaScraper {
         const params = new URLSearchParams({
             nonce_a: this.zingParams.nonce,
             action: 'z_do_ajax',
-            _action: 'decode_images_100',
+            _action: 'decode_images_g',
             p: doc.documentElement.innerHTML.match(/\sp:\s*(\d+),/).at(1),
             img_index: '0',
             chapter_id: doc.documentElement.innerHTML.match(/chapter_id\s*:\s*['"]([^'"]+)/).at(1),

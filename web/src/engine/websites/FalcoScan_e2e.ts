@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'tenkai',
-        title: 'Tenkai'
+        title: 'Falco Scan'
     },
     container: {
-        url: 'https://tenkaiscan.net/comics/cafeina',
+        url: 'https://falcoscan.net/comics/cafeina',
         id: '/comics/cafeina',
         title: 'Cafeina'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 164_168,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -35,7 +35,7 @@ type APIPages = {
     page_list: string[]
 }
 
-type TDimension = {
+export type TDimension = {
     width: number,
     height: number
 }
@@ -48,10 +48,10 @@ type PageSeed = {
 export default class extends DecoratableMangaScraper {
     protected apiUrl = 'https://api.ciao.shogakukan.co.jp/';
     protected requestHashProperty = 'x-bambi-hash';
-    protected requestHashAppend : string = '';
+    protected requestHashAppend: string = '';
 
     public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator]) {
-        super(id, label, url, ...tags );
+        super(id, label, url, ...tags);
     }
 
     public override get Icon() {
@@ -93,6 +93,22 @@ export default class extends DecoratableMangaScraper {
         return chapters;
     }
 
+    protected GetPieceDimension(width: number, height: number, numCol: number): TDimension {
+        if (width < numCol || height < numCol) return null;
+        const s = this.Cs(numCol, 8);
+        return width > s && height > s && (width = Math.floor(width / s) * s, height = Math.floor(height / s) * s),
+        {
+            width: Math.floor(width / numCol),
+            height: Math.floor(height / numCol)
+        };
+    }
+
+    private Cs(numCol: number, scale: number): number {
+        numCol > scale && ([numCol, scale] = [scale, numCol]);
+        const t = (s: number, o: number) => s ? t(o % s, s) : o;
+        return numCol * scale / t(numCol, scale);
+    }
+
     public override async FetchPages(chapter: Chapter): Promise<Page<PageSeed>[]> {
         const request = await this.CreateRequest(`./web/episode/viewer?0&platform=3&episode_id=${chapter.Identifier}`);
         const { page_list, scramble_seed } = await FetchJSON<APIPages>(request);
@@ -105,25 +121,8 @@ export default class extends DecoratableMangaScraper {
 
         return DeScramble(blob, async (image, ctx) => {
 
-            function getPieceDimension(width: number, height: number, t: number): TDimension {
-
-                if (width < t || height < t) return null;
-                const s = Cs(t, 8);
-                return width > s && height > s && (width = Math.floor(width / s) * s, height = Math.floor(height / s) * s),
-                {
-                    width: Math.floor(width / t),
-                    height: Math.floor(height / t)
-                };
-            }
-
-            function Cs(e: number, i: number): number {
-                e > i && ([e, i] = [i, e]);
-                const t = (s, o) => s ? t(o % s, s) : o;
-                return e * i / t(e, i);
-            }
-
-            const xs = function* (e: number, i: number) {
-                yield* Is([...Array(e ** 2)].map((s, o) => o), i).map(
+            const pieceGenerator = function* (e: number, i: number) {
+                yield* GetUnscrambledData([...Array(e ** 2)].map((s, o) => o), i).map(
                     (s, o) => ({
                         source: {
                             x: s % e,
@@ -136,12 +135,12 @@ export default class extends DecoratableMangaScraper {
                     })
                 );
             };
-            function Is(e: number[], seed: number): number[] {
-                const t = Ls(seed);
-                return e.map(o => [t.next().value, o]).sort((o, r) => + (o[0] > r[0]) - + (r[0] > o[0])).map(o => o[1]);
+            function GetUnscrambledData(e: number[], seed: number): number[] {
+                const dataGenerator = UnscramblerFn(seed);
+                return e.map(o => [dataGenerator.next().value, o]).sort((o, r) => + (o[0] > r[0]) - + (r[0] > o[0])).map(o => o[1]);
             }
 
-            const Ls = function* (seed: number) {
+            const UnscramblerFn = function* (seed: number) {
                 const i = Uint32Array.of(seed);
                 for (; ;) i[0] ^= i[0] << 13,
                 i[0] ^= i[0] >>> 17,
@@ -150,19 +149,19 @@ export default class extends DecoratableMangaScraper {
             };
 
             ctx.drawImage(image, 0, 0);
-            const o = getPieceDimension(image.width, image.height, COL_NUM);
-            ctx.clearRect(0, 0, o.width * COL_NUM, o.height * COL_NUM);
-            for (const piece of xs(COL_NUM, page.Parameters.seed ?? 1)) {
+            const dimensions = this.GetPieceDimension(image.width, image.height, COL_NUM);
+            ctx.clearRect(0, 0, dimensions.width * COL_NUM, dimensions.height * COL_NUM);
+            for (const piece of pieceGenerator(COL_NUM, page.Parameters.seed ?? 1)) {
                 ctx.drawImage(
                     image,
-                    piece.source.x * o.width,
-                    piece.source.y * o.height,
-                    o.width,
-                    o.height,
-                    piece.dest.x * o.width,
-                    piece.dest.y * o.height,
-                    o.width,
-                    o.height
+                    piece.source.x * dimensions.width,
+                    piece.source.y * dimensions.height,
+                    dimensions.width,
+                    dimensions.height,
+                    piece.dest.x * dimensions.width,
+                    piece.dest.y * dimensions.height,
+                    dimensions.width,
+                    dimensions.height
                 );
             }
 
@@ -214,7 +213,7 @@ export default class extends DecoratableMangaScraper {
             typeof value != 'number' || (dictionary[key] = value.toString());
         const hashtable: string[] = [];
         for (const key of Object.keys(dictionary).sort()) {
-            hashtable.push(await this.DoubleSHA(key, dictionary[key] ));
+            hashtable.push(await this.DoubleSHA(key, dictionary[key]));
         }
         const hash = await this.SHA(hashtable.toString(), 'SHA-256');
         return await this.SHA(`${hash}${this.requestHashAppend}`, 'SHA-512');

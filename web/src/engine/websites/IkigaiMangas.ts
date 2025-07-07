@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './IkigaiMangas.webp';
+import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
 
 // TODO: Add Novel support
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
@@ -12,24 +12,23 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^https:\/\/(lector|visor)ikigai\.\w+\.(net|com|xyz|online)\/series\/[^/]+\/$/, 'article > img', (element: HTMLImageElement) => element.alt.trim())
+@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'article > img', (element: HTMLImageElement) => element.alt.trim())
 @Common.MangasMultiPageCSS('/series/?pagina={page}', 'section ul.grid li > a', 1, 1, 0, MangaInfoExtractor)
 @Common.PagesSinglePageCSS('div.w-full img[alt*="Page"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visorikigai.gameil.online', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
-    }
-
-    public override async Initialize(): Promise<void> {
-        const response = await fetch('https://visualikigai.com');
-        this.URI.href = new URL(response.url).origin;
-        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
+    public constructor () {
+        super('ikigaimangas', 'Ikigai Mangas', 'https://visorikigai.skteq.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request('https://visualikigai.com'), `window.location.origin`, 1500);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
