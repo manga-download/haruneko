@@ -2,6 +2,7 @@
 export { default as ACGN } from './ACGN';
 export { default as AdonisFansub } from './AdonisFansub';
 export { default as AduManga } from './AduManga';
+export { default as AethraScans } from './AethraScans';
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as AGS } from './AGS';
 export { default as AincardManga } from './AincardManga';
@@ -680,6 +681,7 @@ export { default as TempleScan } from './TempleScan';
 export { default as TempleScanEsp } from './TempleScanEsp';
 export { default as TencentComic } from './TencentComic';
 export { default as TenshiID } from './TenshiID';
+export { default as TenshiManga } from './TenshiManga';
 export { default as TheBlank } from './TheBlank';
 export { default as ThreeHentai } from './ThreeHentai';
 export { default as ThunderScans } from './ThunderScans';
