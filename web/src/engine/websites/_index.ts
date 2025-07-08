@@ -2,6 +2,7 @@
 export { default as ACGN } from './ACGN';
 export { default as AdonisFansub } from './AdonisFansub';
 export { default as AduManga } from './AduManga';
+export { default as AethraScans } from './AethraScans';
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as AGS } from './AGS';
 export { default as AincardManga } from './AincardManga';
