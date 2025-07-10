@@ -3,12 +3,8 @@ import icon from './AllMangaTo.webp';
 import { Chapter, Page } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
 import { Delay } from '../BackgroundTimers';
-
-type GraphQLResult<T> = {
-    data: T
-};
 
 type APIMangas = {
     mangas: {
@@ -20,16 +16,19 @@ type APIManga = {
     _id: string,
     englishName: string | null,
     name: string,
-    availableChaptersDetail: Record<string, string[]>
 }
 
 type APIChapters = {
-    manga: APIManga
+    episodeInfos: APIChapter[]
 }
 
-type ChapterID = {
-    id: string,
-    translation: string
+type APIChapter = {
+    episodeIdNum: number,
+    notes: string,
+    uploadDates: {
+        sub: string,
+        raw: string
+    }[]
 }
 
 type APIPages = {
@@ -43,13 +42,42 @@ type APIPages = {
     }
 }
 
+type SearchVariables = {
+    search: SearchPayload,
+    size: number,
+    page: number,
+    countryOrigin: string
+}
+
+type SearchPayload = {
+    isManga: boolean,
+    allowAdult: boolean,
+    allowUnknown: boolean
+}
+
+type ChapterListVariables = {
+    id: string,
+    chapterNumStart: number,
+    chapterNumEnd: number
+}
+
+type ChapterID = {
+    id: string,
+    translationType: string
+}
+
+type PageListVariables = {
+    id: string,
+    chapterNum: string,
+    translationType: string
+}
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     private readonly apiUrl = 'https://api.allanime.day/api';
 
     public constructor() {
-        super('allmangato', `AllManga.to`, 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Multilingual, Tags.Source.Aggregator);
+        super('allmangato', `AllManga.to`, 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -70,80 +98,115 @@ export default class extends DecoratableMangaScraper {
         for (let page = 1, run = true; run; page++) {
             await Delay(200);
             const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const jsonVariables = {
+        const query = `
+            query (
+                $search: SearchInput
+                $size: Int
+                $page: Int
+                $countryOrigin: VaildCountryOriginEnumType
+            ) {
+                mangas(
+                    search: $search
+                    limit: $size
+                    page: $page
+                    countryOrigin: $countryOrigin
+                ) {
+                    edges {
+                        _id
+                        name
+                        thumbnail
+                        englishName
+                    }
+                }
+            }        
+        `;
+
+        const variables: SearchVariables = {
             search: {
                 isManga: true,
                 allowAdult: true,
-                allowUnknown: true
+                allowUnknown: false,
             },
-            limit: 26, //impossible to change
+            size: 20,
             page: page,
-            translationType: 'sub',
             countryOrigin: 'ALL'
         };
-        const jsonExtensions = {
-            persistedQuery: {
-                version: 1,
-                sha256Hash: 'a27e57ef5de5bae714db701fb7b5cf57e13d57938fc6256f7d5c70a975d11f3d'
-            }
-        };
 
-        const data = await this.FetchGraphQL<APIMangas>(jsonVariables, jsonExtensions);
+        const data = await FetchGraphQL<APIMangas>(new Request(new URL(this.apiUrl)), '', query, variables);
         return data?.mangas?.edges ? data.mangas.edges.map(manga => new Manga(this, provider, manga._id, manga.englishName ?? manga.name)) : [];
+
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const jsonVariables = {
-            _id: manga.Identifier,
-        };
-        const jsonExtensions = {
-            persistedQuery: {
-                version: 1,
-                sha256Hash: '529b0770601c7e04c98566c7b7bb3f75178930ae18b3084592d8af2b591a009f'
+        const query = `
+            query ($id: String!, $chapterNumStart: Float!, $chapterNumEnd: Float!) {
+                episodeInfos(
+                    showId: $id
+                    episodeNumStart: $chapterNumStart
+                    episodeNumEnd: $chapterNumEnd
+                ) {
+                    episodeIdNum
+                    notes
+                    uploadDates
+                }
             }
+        `;
+
+        const variables: ChapterListVariables = {
+            id: `manga@${manga.Identifier}`,
+            chapterNumStart: 0,
+            chapterNumEnd: 9999
         };
-        const { manga: { availableChaptersDetail } } = await this.FetchGraphQL<APIChapters>(jsonVariables, jsonExtensions);
-        return Object.keys(availableChaptersDetail).reduce((accumulator: Chapter[], key) => {
-            const chapters = availableChaptersDetail[key].map(chapter => new Chapter(this, manga, JSON.stringify({ id: chapter, translation: key }), `Chapter ${chapter} [${key}]`));
+
+        const { episodeInfos } = await FetchGraphQL<APIChapters>(new Request(new URL(this.apiUrl)), '', query, variables);
+        episodeInfos.sort((a, b) => b.episodeIdNum - a.episodeIdNum);
+        return episodeInfos.reduce((accumulator: Chapter[], entry) => {
+            const chapters = Object.keys(entry.uploadDates).map(key => {
+                const title = `Chapter ${entry.episodeIdNum} ${entry.notes ?? ''} ${key != 'sub' ? '[raw]' : ''}`.trim();
+                return new Chapter(this, manga, JSON.stringify({ id: entry.episodeIdNum.toString(), translationType: key }), title);
+            });
             accumulator.push(...chapters);
             return accumulator;
         }, []);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { id, translation }: ChapterID = JSON.parse(chapter.Identifier);
-        const jsonVariables = {
-            mangaId: chapter.Parent.Identifier,
-            translationType: translation,
-            chapterString: id,
-            limit: 10,
-            offset: 0
-        };
-        const jsonExtensions = {
-            persistedQuery: {
-                version: 1,
-                sha256Hash: '121996b57011b69386b65ca8fc9e202046fc20bf68b8c8128de0d0e92a681195'
+        const { id: chapterId, translationType }: ChapterID = JSON.parse(chapter.Identifier);
+        const query = `
+            query (
+                $id: String!
+                $translationType: VaildTranslationTypeMangaEnumType!
+                $chapterNum: String!
+            ) {
+                chapterPages(
+                    mangaId: $id
+                    translationType: $translationType
+                    chapterString: $chapterNum
+                ) {
+                    edges {
+                        pictureUrls
+                        pictureUrlHead
+                    }
+                }
             }
+        `;
+
+        const variables: PageListVariables = {
+            id: chapter.Parent.Identifier,
+            chapterNum: chapterId,
+            translationType
         };
-        const { chapterPages: { edges } } = await this.FetchGraphQL<APIPages>(jsonVariables, jsonExtensions);
-        const source = edges.find(source => source.pictureUrlHead);
-        return source.pictureUrls.map(picture => new Page(this, chapter, new URL(picture.url, source.pictureUrlHead)));
-    }
 
-    private async FetchGraphQL<T extends JSONElement>(variables: JSONObject, extensions: JSONObject): Promise<T> {
-        const url = new URL(`?variables=${JSON.stringify(variables)}&extensions=${JSON.stringify(extensions)}`, this.apiUrl);
-        const { data } = await FetchJSON<GraphQLResult<T>>(new Request(url, {
-            headers: {
-                Origin: this.URI.origin
-            }
-        }));
-        return data;
+        const { chapterPages: { edges } } = await FetchGraphQL<APIPages>(new Request(new URL(this.apiUrl)), '', query, variables);
+        const server = edges.at(0);
+        if (!server.pictureUrlHead) server.pictureUrlHead = this.URI.origin;
+        const domain = (/^https?:\/\//).test(server.pictureUrlHead) ? server.pictureUrlHead : `https://${server.pictureUrlHead}`;
+        return server.pictureUrls.map(picture => new Page(this, chapter, new URL(picture.url, domain)));
     }
-
 }
