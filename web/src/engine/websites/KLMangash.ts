@@ -63,7 +63,7 @@ export default class extends DecoratableMangaScraper {
         const chapterID = data.match(/chapter_id\s*:\s*['"]([^'"]+)/).at(-1);
         const possibleLinks = new Array(256).fill(0).map((_, imageIndex) => new Page<PageParameters>(this, chapter, this.URI, { sp, chapterID, imageIndex }));
         return possibleLinks.takeUntil(async page => this.FetchZingPage(page.Parameters).then(data => data.includes('<img')));
-        // TODO: When running E2E test for specific chapter, the website will only provide the last 2 images (could this be flagged IP?)
+        // TODO: After running E2E test for specific chapter, the website will only provide the last 2 images (could this be flagged IP?)
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -80,7 +80,7 @@ export default class extends DecoratableMangaScraper {
             body: new URLSearchParams({
                 nonce_a: this.zingParams.nonce,
                 action: 'z_do_ajax',
-                _action: 'decode_images_100',
+                _action: 'decode_images_g',
                 p: params.sp,
                 img_index: `${params.imageIndex}`,
                 chapter_id: params.chapterID,
