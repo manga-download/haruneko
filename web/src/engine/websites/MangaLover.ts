@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangalover', '3asq (مانجا العاشق)', 'https://3asq.org', Tags.Media.Manga, Tags.Language.Arabic);
+        super('mangalover', '3asq (مانجا العاشق)', 'https://3asq.org', Tags.Media.Manga, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

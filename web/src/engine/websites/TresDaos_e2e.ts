@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Tres Daos'
     },
     container: {
-        url: 'https://3daos.mewingzone.com/manga/vengeance-of-the-heavenly-demon/',
+        url: 'https://threedaos.drublood.com/manga/vengeance-of-the-heavenly-demon/',
         id: '/manga/vengeance-of-the-heavenly-demon/',
         title: 'Vengeance of the Heavenly Demon'
     },

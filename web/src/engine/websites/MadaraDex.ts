@@ -19,16 +19,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL(chapter.Identifier, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchCSS<HTMLImageElement>(request, 'div.page-break img');
+        const data = await FetchCSS<HTMLImageElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div.page-break img');
         return data.map(element => {
-
-            const url = element.dataset?.src || element.dataset?.lazySrc || element.srcset || element.getAttribute('src');
-            const link = new URL(url.trim(), this.URI);
-            let referer = link.searchParams.get('domain') ?? this.URI.origin;
-            referer += '/';
-            return new Page(this, chapter, this.DeProxify(link), { Referer: referer });
+            const url = new URL(element.dataset?.src || element.dataset?.lazySrc || element.srcset || element.getAttribute('src'));
+            const referer = url.searchParams.get('domain') ? new URL(url.searchParams.get('domain')).href: this.URI.href;
+            return new Page(this, chapter, this.DeProxify(url), { Referer: referer });
         });
     }
 
@@ -41,11 +36,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-            const request = new Request(page.Link.href, {
+            const request = new Request(page.Link, {
                 signal: signal,
                 headers: {
                     Referer: page.Parameters.Referer,
-                    "User-Agent": 'Mozilla/5.0 (iPod; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.163 Mobile/15E148 Safari/604.1'
+                    'User-Agent': 'Mozilla/5.0 (iPod; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.163 Mobile/15E148 Safari/604.1'
                 }
             });
             const response = await Fetch(request);
