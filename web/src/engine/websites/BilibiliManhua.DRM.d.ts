@@ -5,6 +5,6 @@ export declare class DRMProvider {
         x: number;
         path: string;
     }[]): string;
-    ExtractImageData(response: Response): Promise<ArrayBuffer>;
+    ExtractImageData(pageUrl: string, pageIndex: number, chapterUrl: string): Promise<ArrayBuffer>;
     FetchTwirp<T extends JSONObject>(uri: URL, path: string, payload: JSONObject, payloadWithFingerprint?: boolean): Promise<T>;
 }
