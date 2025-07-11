@@ -6,27 +6,29 @@ import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResult<T> = {
-    data: T
-}
+    data: T;
+};
 
 type APIManga = {
     slug: string,
     title: string,
-    chapters: APIChapter[]
-}
+    chapters: APIChapter[];
+};
 
 type APIChapter = {
     title: string,
-    slug: string
-}
+    slug: string;
+};
 
 type APIPages = {
-    images: string[]
-}
+    images: string[];
+};
 
 function CleanTitle(title: string): string {
     return title.replace(/bahasa indonesia/i, '').trim();
 }
+
+// TODO: Check for possible revision
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
@@ -38,7 +40,7 @@ export default class extends DecoratableMangaScraper {
         secretKey: 'xxxoidj',
     };
 
-    public constructor() {
+    public constructor () {
         super('westmanga', 'WestManga', 'https://westmanga.me', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 

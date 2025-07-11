@@ -5,7 +5,7 @@ import { FetchCSS, FetchGraphQL, FetchWindowScript } from '../../platform/FetchP
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
-// TODO: Revision
+// TODO: Check for possible revision
 
 type APIMangas = {
     search: {

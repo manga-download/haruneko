@@ -8,18 +8,18 @@ import exifr from 'exifr';
 import DeScramble from '../transformers/ImageDescrambler';
 import { RateLimit } from '../taskpool/RateLimit';
 
-// TODO: Revision
+// TODO: Check for possible revision
 
 type PagesInfos = {
     pagesCount: number,
-    mangaID: string
-}
+    mangaID: string;
+};
 
 type ExifData = {
     ImageUniqueID: string,
     ImageWidth: number,
-    ImageHeight: number
-}
+    ImageHeight: number;
+};
 
 const PagesScript = `
     new Promise(resolve => {
@@ -42,7 +42,7 @@ function VolumeExtractor(row: HTMLTableRowElement) {
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
-        id: /javascript/.test(anchor.dataset.targetUrl) ? anchor.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[1] : anchor.dataset.targetUrl,
+        id: /javascript/.test(anchor.dataset.targetUrl) ? anchor.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[ 1 ] : anchor.dataset.targetUrl,
         title: (anchor.querySelector<HTMLElement>('.disp-id, tr.o_chapter td > div')?.textContent ?? anchor.text).trim()
     };
 }
@@ -54,7 +54,7 @@ export default class extends DecoratableMangaScraper {
         [ new RegExp(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`), 'body > div.row h3.type-md' ],
     ]);
 
-    public constructor() {
+    public constructor () {
         super('vizshonenjump', 'Viz - Shonen Jump', 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
         this.imageTaskPool.RateLimit = new RateLimit(4, 1);
     }
@@ -136,8 +136,8 @@ export default class extends DecoratableMangaScraper {
                         Math.floor((Math.floor(index / 8) + 1) * (blockHeight + 10)),
                         blockWidth,
                         blockHeight,
-                        Math.floor((shuffleMap[index] % 8 + 1) * blockWidth),
-                        Math.floor((Math.floor(shuffleMap[index] / 8) + 1) * blockHeight),
+                        Math.floor((shuffleMap[ index ] % 8 + 1) * blockWidth),
+                        Math.floor((Math.floor(shuffleMap[ index ] / 8) + 1) * blockHeight),
                         blockWidth,
                         blockHeight
                     );

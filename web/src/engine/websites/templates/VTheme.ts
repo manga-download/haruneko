@@ -34,6 +34,8 @@ type MangaID = {
 
 const pageScript = '[...document.querySelectorAll(".image-container img[data-image-index]")].map(image => image.src)';
 
+// TODO: Check for possible revision
+
 @Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
 export class VTheme extends DecoratableMangaScraper {

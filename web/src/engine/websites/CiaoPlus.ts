@@ -32,6 +32,8 @@ type PageSeed = {
     seed: number;
 };
 
+// TODO: Check for possible revision
+
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 

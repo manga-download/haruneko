@@ -7,6 +7,8 @@ import * as ReaderFront from './decorators/ReaderFront';
 const apiUrl = 'https://api.ravens-scans.com';
 const cdnUrl = 'https://img-cdn1.ravens-scans.com';
 
+// TODO: Check for possible revision
+
 @ReaderFront.MangaAJAX(/^{origin}\/work\/es\/[^/]+/, apiUrl)
 @ReaderFront.MangasSinglePageAJAX(apiUrl, [ 'es' ])
 @ReaderFront.ChaptersSinglePageAJAX(apiUrl)

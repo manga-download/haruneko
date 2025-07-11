@@ -9,29 +9,29 @@ import type { Priority } from '../../taskpool/DeferredTask';
 
 type APIResult<T> = {
     error?: {
-        code: string
+        code: string;
     },
     data: T,
-}
+};
 
 type APIManga = {
     id: number,
     alias: string,
     title: string,
     episodes: APIChapter[],
-}
+};
 
 type APIMangas = {
     contents?: APIManga[],
-    content?: APIManga[]
-}
+    content?: APIManga[];
+};
 
 type APIChapter = {
     id: string,
     alias: string,
     title: string,
     subTitle: string,
-}
+};
 
 type APIPages = {
     isScramble: boolean,
@@ -50,26 +50,28 @@ type APIUser = {
         accessToken: {
             token: string,
             expiredAt: number,
-        }
+        };
     },
 };
 
 type ScrambleParams = {
     scrambleIndex: number[],
     defaultHeight: number,
-}
+};
+
+// TODO: Check for possible revision
 
 export class BalconyDRM {
 
     readonly #apiURL: URL;
     readonly #platform = 'WEB';
-    private session: APIUser['user']['accessToken'];
+    private session: APIUser[ 'user' ][ 'accessToken' ];
 
-    constructor(private readonly webURL: URL, private readonly scope: string /* 'DELITOON_COM' */) {
+    constructor (private readonly webURL: URL, private readonly scope: string /* 'DELITOON_COM' */) {
         this.#apiURL = new URL('/api/balcony-api-v2/', webURL);
     }
 
-    #CreateRequest(endpoint: string, body: JSONElement | undefined = undefined):Request {
+    #CreateRequest(endpoint: string, body: JSONElement | undefined = undefined): Request {
         const uri = new URL(endpoint, this.#apiURL);
         uri.searchParams.set('isNotLoginAdult', 'true');
         const request = new Request(uri, body ? undefined : {
@@ -82,7 +84,7 @@ export class BalconyDRM {
         request.headers.set('Referer', this.webURL.origin);
         request.headers.set('X-Balcony-Id', this.scope);
         request.headers.set('X-Platform', this.#platform);
-        if(this.#HasValidSession) {
+        if (this.#HasValidSession) {
             request.headers.set('Authorization', 'Bearer ' + this.session.token);
         }
         return request;
@@ -108,7 +110,7 @@ export class BalconyDRM {
 export class DelitoonBase extends DecoratableMangaScraper {
 
     private readonly platform: string = 'WEB';
-    private activeUserSession: APIUser['user']['accessToken'] = undefined;
+    private activeUserSession: APIUser[ 'user' ][ 'accessToken' ] = undefined;
     private readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
     protected balconyID: string = 'DELITOON_COM';
     protected pagesEndpoint = './contents/viewer';
@@ -189,7 +191,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
 
     private async FetchScrambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
         const endpoint = new URL(`./contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
-        const { data } = await this.FetchBalconyJSON<string>(endpoint, { line: images[0].line });
+        const { data } = await this.FetchBalconyJSON<string>(endpoint, { line: images[ 0 ].line });
         const keyData = GetBytesFromUTF8(data);
         const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16), length: 256 };
         const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, [ 'decrypt' ]);
