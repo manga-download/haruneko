@@ -49,7 +49,6 @@ export { default as BarManga } from './BarManga';
 export { default as Batoto } from './Batoto';
 export { default as BigComics } from './BigComics';
 export { default as BilibiliManhua } from './BilibiliManhua';
-export { default as BlogTruyenMoi } from './BlogTruyenMoi';
 export { default as Bokugents } from './Bokugents';
 export { default as Bomtoon } from './Bomtoon';
 export { default as BomtoonCN } from './BomtoonCN';
