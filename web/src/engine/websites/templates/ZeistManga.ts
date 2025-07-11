@@ -31,9 +31,10 @@ export function PageLinkExtractor(image: HTMLImageElement): string {
 export class ZeistManga extends DecoratableMangaScraper {
 
     protected mangaSlugScript = `clwd.settings.cat;`;
+    protected mangaEntriesSlug = 'Series';
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return (await this.FetchEntries('Series')).map(entry => new Manga(this, provider, entry.pathname, entry.title));
+        return (await this.FetchEntries(this.mangaEntriesSlug)).map(entry => new Manga(this, provider, entry.pathname, entry.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

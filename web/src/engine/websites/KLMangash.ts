@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
     private zingParams: ZingParams;
 
     public constructor () {
-        super('klmangash', 'KLManga(.sh)', 'https://klmanga.hot', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('klmangash', 'KLManga(.sh)', 'https://klmanga.bot', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -63,7 +63,7 @@ export default class extends DecoratableMangaScraper {
         const chapterID = data.match(/chapter_id\s*:\s*['"]([^'"]+)/).at(-1);
         const possibleLinks = new Array(256).fill(0).map((_, imageIndex) => new Page<PageParameters>(this, chapter, this.URI, { sp, chapterID, imageIndex }));
         return possibleLinks.takeUntil(async page => this.FetchZingPage(page.Parameters).then(data => data.includes('<img')));
-        // TODO: After running E2E test for specific chapter, the website will only provide the last 2 images (could this be flagged IP?)
+        // TODO: After running E2E test for specific chapter, the website will only provide the last 2 images (could this be a flagged IP address?)
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {

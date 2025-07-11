@@ -2,32 +2,32 @@ import { Tags } from '../Tags';
 import icon from './PoseidonScans.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchNextJS} from '../platform/FetchProvider';
+import { FetchNextJS } from '../platform/FetchProvider';
 
 type HydratedManga = {
     manga: {
         slug: string,
         title: string,
-    }
+    };
 };
 
 type HydratedMangas = {
-    mangas: HydratedManga['manga'][]
+    mangas: HydratedManga[ 'manga' ][];
 };
 
 type HydratedChapters = {
-    chapters: { number: number }[]
+    chapters: { number: number; }[];
 };
 
 type HydratedPages = {
-    images: { originalUrl: string }[]
+    images: { originalUrl: string; }[];
 };
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
-        super('poseidonscans', 'Poseidon Scans', 'https://poseidonscans.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
+    public constructor () {
+        super('poseidonscans', 'Poseidon Scans', 'https://poseidonscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
