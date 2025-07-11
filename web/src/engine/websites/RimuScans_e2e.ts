@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture( {
     plugin: {
         id: 'rimuscans',
         title: 'RimuScans'
     },
     container: {
-        url: 'https://rimuscans.fr/manga/bones/',
+        url: 'https://rimuscans.com/manga/bones/',
         id: '/manga/bones/',
         title: 'Bones'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 1_963_861,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
