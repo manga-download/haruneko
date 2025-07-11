@@ -2,11 +2,8 @@ import { Tags } from '../Tags';
 import icon from './PoseidonScans.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchCSS, } from '../platform/FetchProvider';
 
-type APIResult<T> = {
-    data: T
-}
 type APIManga = {
     title: string,
     slug: string,
@@ -23,10 +20,9 @@ type JSONPage = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://poseidonscans.fr/api/';
 
     public constructor() {
-        super('poseidonscans', 'Poseidon Scans', 'https://poseidonscans.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
+        super('poseidonscans', 'Poseidon Scans', 'https://poseidonscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -39,18 +35,17 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL('/series', this.URI)), 'script:not([src])');
-        const mangas = this.ExtractData<APIManga[]>(scripts, 'mangas\\', 'mangas');
+        const mangas = this.ExtractData<APIManga[]>(scripts, 'CollectionPage', 'mangas');
         return mangas.map(manga => new Manga(this, provider, manga.slug, manga.title));
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaSlug = url.split('/').at(-1);
-        const { data: { title, slug } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./manga/${mangaSlug}`, this.apiUrl)));
+        const { slug, title } = await this.GetManga(url);
         return new Manga(this, provider, slug, title);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data: { chapters } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./manga/${manga.Identifier}`, this.apiUrl)));
+        const { chapters } = await this.GetManga(new URL(`./serie/${manga.Identifier}`, this.URI).href);
         return chapters.map(chapter => new Chapter(this, manga, `/serie/${manga.Identifier}/chapter/${chapter.number}`, `Chapitre ${chapter.number}`));
     }
 
@@ -58,6 +53,11 @@ export default class extends DecoratableMangaScraper {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(chapter.Identifier, this.URI)), 'script:not([src])');
         const images = this.ExtractData<JSONPage[]>(scripts, 'images\\', 'images');
         return images.map(image => new Page(this, chapter, new URL(image.originalUrl, this.URI)));
+    }
+
+    private async GetManga(url: string): Promise<APIManga> {
+        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(url)), 'script:not([src])');
+        return this.ExtractData<APIManga>(scripts, 'setLocalStorageChapters', 'manga');
     }
 
     private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
@@ -78,5 +78,4 @@ export default class extends DecoratableMangaScraper {
             return undefined;
         })(record) as T;
     }
-
 }
