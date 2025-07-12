@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Samurai Scan'
     },
     container: {
-        url: 'https://samurai.wordoco.com/rd/dios-marcial-estelar/',
+        url: 'https://samurai.rzword.xyz/rd/dios-marcial-estelar/',
         id: JSON.stringify({ post: '39', slug: '/rd/dios-marcial-estelar/' }),
         title: 'Dios Marcial Estelar'
     },

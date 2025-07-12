@@ -6,7 +6,7 @@ new TestFixture({
         title: 'SelfManga'
     },
     container: {
-        url: 'https://selfmanga.live/temnyi_dvoreckii_dodzinsi__ah__eta_prekrasnaia_koshachia_jizn_',
+        url: 'https://1.selfmanga.live/temnyi_dvoreckii_dodzinsi__ah__eta_prekrasnaia_koshachia_jizn_',
         id: '/temnyi_dvoreckii_dodzinsi__ah__eta_prekrasnaia_koshachia_jizn_',
         title: 'Темный Дворецкий додзинси: Ах, эта прекрасная кошачья жизнь!',
     },
