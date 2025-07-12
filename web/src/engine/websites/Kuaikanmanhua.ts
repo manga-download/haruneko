@@ -6,8 +6,8 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 type MangaID = {
     id: string,
-    title: string
-}
+    title: string;
+};
 
 const chapterScript = `
     new Promise(resolve => {
@@ -50,7 +50,7 @@ const mangascript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('kuaikanmanhua', `Kuaikanmanhua`, 'https://www.kuaikanmanhua.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Official);
     }
 
@@ -65,7 +65,5 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const data = await FetchWindowScript<MangaID>(new Request(url), mangascript);
         return new Manga(this, provider, data.id, data.title);
-
     }
-
 }

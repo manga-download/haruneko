@@ -8,30 +8,32 @@ type APIChapters = {
     chapters: {
         id: number,
         name: string,
-        number: number
-    }[]
-}
+        number: number;
+    }[];
+};
 
 type ChapterIdentifier = {
     id: number,
-    number: number
-}
+    number: number;
+};
 
 type APIPages = {
     chapter: {
         pages: {
             original: string,
-            colored: string
-        }[]
-    }
-}
+            colored: string;
+        }[];
+    };
+};
+
+// TODO: Check for possible revision (GraphQL)
 
 @Common.MangaCSS(/^{origin}\/[^/]/, 'h2.super-title')
 @Common.MangasSinglePagesCSS([ '/mangas' ], 'div.listing a.no-select', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('littlegarden', `Little Garden`, 'https://littlexgarden.com', Tags.Language.English, Tags.Language.French, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
 

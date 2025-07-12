@@ -23,17 +23,17 @@ const queryOneshots = `
 type APIOneshots = {
     seriesOneshot: {
         seriesSlice: {
-            seriesList: APIManga[]
-        }
-    }
-}
+            seriesList: APIManga[];
+        };
+    };
+};
 
 type APIManga = {
     title: string,
     firstEpisode: {
-        permalink: string
-    }
-}
+        permalink: string;
+    };
+};
 
 const querySeries = `
     query Earthstar_Series {
@@ -64,15 +64,17 @@ const querySeries = `
 type APISeries = {
     seriesOngoing: {
         seriesSlice: {
-            seriesList: APIManga[]
-        }
+            seriesList: APIManga[];
+        };
     },
     seriesFinished: {
         seriesSlice: {
-            seriesList: APIManga[]
-        }
-    }
-}
+            seriesList: APIManga[];
+        };
+    };
+};
+
+// TODO: Check for possible revision (GraphQL)
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.ChaptersMultiPagesAJAXV2()
@@ -81,7 +83,7 @@ type APISeries = {
 export default class extends DecoratableMangaScraper {
     private apiUrl = 'https://comic-earthstar.com/graphql';
 
-    public constructor() {
+    public constructor () {
         super('comicearthstar', `コミック アース・スター (Comic Earth Star)`, 'https://comic-earthstar.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 

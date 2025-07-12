@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Poseidon Scans'
     },
     container: {
-        url: 'https://poseidonscans.fr/serie/regression-of-the-close-combat-mage',
+        url: 'https://poseidonscans.com/serie/regression-of-the-close-combat-mage',
         id: 'regression-of-the-close-combat-mage',
         title: 'Regression of the Close Combat Mage'
     },

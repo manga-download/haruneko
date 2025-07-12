@@ -7,7 +7,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('futabanet', `がうがうモンスター (Futabanet Monster)`, 'https://gaugau.futabanet.jp' /*, Tags.Language.English, Tags ... */);
     }
 
@@ -67,6 +67,5 @@ class Futabanet extends SpeedBinb {
             };
         });
     }
-
 }
 */
