@@ -13,7 +13,7 @@ function PageExtractor(element: HTMLDivElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('acgn', '動漫戲說(ACGN.cc) - 免費線上漫畫,遊戲', 'https://comic.acgn.cc', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
@@ -29,5 +29,4 @@ export default class extends DecoratableMangaScraper {
         }
         return mangasList.distinct();
     }
-
 }

@@ -1,19 +1,16 @@
 import { Tags } from '../Tags';
 import icon from './KLManga.webp';
+import { RandomText } from '../Random';
 import { DecoratableMangaScraper, type Manga, type Chapter, type Page } from '../providers/MangaPlugin';
 import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
-
-function RandomString(length: number) {
-    return Array.from({ length }, () => Math.random().toString(36).at(-1)).join('');
-}
 
 @Common.MangaCSS(FlatManga.pathManga, FlatManga.queryMangaTitle)
 @Common.MangasSinglePagesCSS([ FlatManga.pathMangasSinglePage ], 'span[data-toggle="mangapop"] a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('klmanga', 'KLManga', 'https://klz9.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
@@ -22,7 +19,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FlatManga.FetchChaptersAJAX.call(this, manga, `/${RandomString(25)}.lstc?slug={manga}`, 'table td a.chapter');
+        return FlatManga.FetchChaptersAJAX.call(this, manga, `/${RandomText(25)}.lstc?slug={manga}`, 'table td a.chapter');
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -30,7 +27,7 @@ export default class extends DecoratableMangaScraper {
             this,
             chapter,
             /load_image\s*\(\s*(\d+)\s*,\s*'list-imga'\s*\)/g,
-            `/${RandomString(30)}.iog?cid={chapter}`,
+            `/${RandomText(30)}.iog?cid={chapter}`,
             'img.chapter-img:not([src*="olimposcan"]):not([src$=".gif"])',
             img => img.src);
     }

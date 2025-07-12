@@ -1,45 +1,43 @@
 // For websites using Mangahub.io API
-
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import { FetchCSS, FetchGraphQL, FetchWindowScript } from '../../platform/FetchProvider';
-import * as Common from '../decorators/Common';
+import { RandomHex } from '../../Random';
 import { RateLimit } from '../../taskpool/RateLimit';
+import { FetchCSS, FetchGraphQL, FetchWindowScript } from '../../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
+
+// TODO: Check for possible revision (GraphQL)
 
 type APIMangas = {
     search: {
         rows: {
             slug: string,
-            title: string
-        }[]
-    }
-}
+            title: string;
+        }[];
+    };
+};
 
 type APIChapters = {
     manga: {
         chapters: {
             number: number,
-            title: string
-        }[]
-    }
-}
+            title: string;
+        }[];
+    };
+};
 
 type APIPages = {
     chapter: {
-        pages: string
-    }
-}
+        pages: string;
+    };
+};
 
 type JSONPages = {
     i: string[],
-    p: string
-}
+    p: string;
+};
 
 function SetTokenCookie(token: string) {
     return `window.cookieStore.set('mhub_access', '${token}');`;
-}
-
-function RandomString(length: number) {
-    return Array.from({ length }, () => Math.random().toString(16).at(-1)).join('');
 }
 
 @Common.ImageAjax()
@@ -55,7 +53,7 @@ export class MangaHubBase extends DecoratableMangaScraper {
     }
 
     private async RenewApiKey() {
-        this.apiKey = RandomString(32);
+        this.apiKey = RandomHex(32);
         await FetchWindowScript(new Request(this.URI), SetTokenCookie(this.apiKey));
     }
 
@@ -102,7 +100,7 @@ export class MangaHubBase extends DecoratableMangaScraper {
                 pages
             }
         }`;
-        const { chapter: { pages } } = await this.FetchGraphQL<APIPages>( query );
+        const { chapter: { pages } } = await this.FetchGraphQL<APIPages>(query);
         const pagesJSON = JSON.parse(pages) as JSONPages;
         return pagesJSON.i.map(page => new Page(this, chapter, new URL(`${pagesJSON.p}${page}`, this.cdnURL)));
     }

@@ -5,44 +5,45 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
 type APIMangas = {
-    mangalar: APIManga[]
-}
+    mangalar: APIManga[];
+};
 
 type APIManga = {
     name: string,
     slug: string,
-    episodes: APIChapter[]
-}
+    episodes: APIChapter[];
+};
 
 type NextManga = {
     pageProps: {
         data: {
-            manga: APIManga
-        }
-    }
-}
+            manga: APIManga;
+        };
+    };
+};
 
 type APIChapter = {
     name: string,
-    slug: string
-}
+    slug: string;
+};
 
 type APIPages = {
     pageProps: {
         datab: {
             bolum: {
-                images: string[]
-            }
-        }
-    }
-}
+                images: string[];
+            };
+        };
+    };
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     private readonly apiUrl = 'https://api.turkmanga.online';
     private nextBuild = '';
 
-    public constructor() {
+    public constructor () {
         super('turkmanga', 'TurkManga', 'https://turkmanga.online', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
@@ -83,5 +84,4 @@ export default class extends DecoratableMangaScraper {
         const { pageProps: { datab: { bolum: { images } } } } = await FetchJSON<APIPages>(new Request(url));
         return images.map(page => new Page(this, chapter, new URL(page)));
     }
-
 }

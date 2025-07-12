@@ -14,7 +14,7 @@ function MangaLabelExtractor(element: HTMLImageElement): string {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('mangahubru', `MangaHub.ru`, 'https://mangahub.ru', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
@@ -34,5 +34,4 @@ export default class extends DecoratableMangaScraper {
             return new Chapter(this, manga, element.pathname, title);
         });
     }
-
 }

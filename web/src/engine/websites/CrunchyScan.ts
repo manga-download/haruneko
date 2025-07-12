@@ -26,7 +26,7 @@ export default class extends DecoratableMangaScraper {
 
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
         // TODO: Enable when implementation is complete ...
-        const data = []; // await this.#drm.CreateImageLinks(new URL(chapter.Identifier, this.URI));
+        const data = new Array(-1); // await this.#drm.CreateImageLinks(new URL(chapter.Identifier, this.URI));
         return data.map(image => new Page(this, chapter, new URL(image.url, this.URI), { Referer: image.referer }));
     }
 
