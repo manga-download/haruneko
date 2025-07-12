@@ -1,5 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
+// CASE: ???
 new TestFixture({
     plugin: {
         id: 'shonenmagazine',
@@ -18,5 +19,27 @@ new TestFixture({
         index: 0,
         size: 2_015_478,
         type: 'image/png'
+    }
+}).AssertWebsite();
+
+// CASE: ???
+new TestFixture({
+    plugin: {
+        id: 'shonenmagazine',
+        title: '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)'
+    },
+    container: {
+        url: 'https://pocket.shonenmagazine.com/title/00553/episode/209248',
+        id: '553',
+        title: '頭文字D',
+    },
+    child: {
+        id: '209248',
+        title: '【Vol.1】ハチロク買おーぜ',
+    },
+    entry: {
+        index: 0,
+        size: 760_906,
+        type: 'image/png',
     }
 }).AssertWebsite();

@@ -1,12 +1,16 @@
 import { Tags } from '../Tags';
 import icon from './DelitoonDE.webp';
-import { DelitoonBase } from './templates/DelitoonBase';
+import { BalconyDRM, DelitoonBase } from './templates/DelitoonBase';
+
+// TODO: Check for possible revision
 
 export default class extends DelitoonBase {
-    public constructor() {
+
+    public constructor () {
         super('delitoonde', `Delitoon (German)`, 'https://www.delitoon.de', Tags.Language.German, Tags.Media.Manhwa, Tags.Source.Official);
         this.balconyID = 'DELITOON_DE';
         this.mangaSearchVersion = 2;
+        this.drm = new BalconyDRM(this.URI, 'DELITOON_DE');
     }
 
     public override get Icon() {

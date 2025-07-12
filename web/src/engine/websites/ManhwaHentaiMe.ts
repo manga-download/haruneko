@@ -6,9 +6,9 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchHTML } from '../platform/FetchProvider';
 
 type MangaID = {
-     post: string;
-     slug: string;
-}
+    post: string;
+    slug: string;
+};
 
 const AnchorInfoExtractor = Common.AnchorInfoExtractor(false, 'span');
 
@@ -18,9 +18,9 @@ function CleanTitle(title: string): string {
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const container = anchor.closest<HTMLElement>('div.page-item-detail, div.manga');
-    const post = container?.querySelector<HTMLElement>('div[id*="manga-item-"]')?.getAttribute('id').match(/(\d+$)/)[1] || '';
+    const post = container?.querySelector<HTMLElement>('div[id*="manga-item-"]')?.getAttribute('id').match(/(\d+$)/).at(-1) || '';
     const id = JSON.stringify({ post, slug: anchor.pathname });
-    return { id, title: CleanTitle(anchor.text)};
+    return { id, title: CleanTitle(anchor.text) };
 }
 
 @Common.MangasMultiPageCSS('/home/page/{page}/', 'div.post-title h3 a, div.post-title h5 a', 1, 1, 0, MangaInfoExtractor)
@@ -28,7 +28,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor(id: string = 'manhwahentaime', label: string = 'ManhwaHentai.me', url: string = 'https://manhwahentai.me', tags: Tag[] = [Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English]) {
+    public constructor (id: string = 'manhwahentaime', label: string = 'ManhwaHentai.me', url: string = 'https://manhwahentai.me', tags: Tag[] = [ Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English ]) {
         super(id, label, url, ...tags);
     }
 
@@ -69,5 +69,4 @@ export default class extends DecoratableMangaScraper {
             return new Chapter(this, manga, id, title.replace(manga.Title, '').trim());
         });
     }
-
 }

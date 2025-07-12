@@ -6,17 +6,17 @@ new TestFixture({
         title: 'KLManga(.sh)'
     },
     container: {
-        url: 'https://klmanga.hot/manga-raw/ボールパークでつかまえて！-raw-free/',
+        url: 'https://klmanga.bot/manga-raw/ボールパークでつかまえて！-raw-free/',
         id: encodeURI('/manga-raw/ボールパークでつかまえて！-raw-free/'),
         title: 'ボールパークでつかまえて！'
     },
     child: {
-        id: encodeURI('/manga-raw/ボールパークでつかまえて！-raw-free/chapter-191/').toLowerCase(),
-        title: '【第191話】'
+        id: encodeURI('/manga-raw/ボールパークでつかまえて！-raw-free/chapter-193/').toLowerCase(),
+        title: '【第193話】'
     },
     entry: {
-        index: 0,
-        size: 244_210,
+        index: 11,
+        size: 244_768,
         type: 'image/webp'
     }
 }).AssertWebsite();

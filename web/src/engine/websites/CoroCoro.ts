@@ -39,9 +39,9 @@ type APIImage = {
     src: string
 }
 
-type CryptoParams = null | {
+type PageParameters = null | {
+    keyData: string,
     iv: string,
-    key: string,
 }
 
 export default class extends DecoratableMangaScraper {
@@ -83,17 +83,17 @@ export default class extends DecoratableMangaScraper {
         return chapters.map(chapter => new Chapter(this, manga, chapter.id.toString(), [ chapter.mainName, chapter.subName ].join(' ').trim()));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<CryptoParams>[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const request = this.CreateProtoRequest('chapter/viewer', { chapter_id: chapter.Identifier }, 'PUT');
         const { pages, aesIv, aesKey } = await FetchProto<ViewerView>(request, prototypes, 'ViewerView');
-        const params: CryptoParams = aesIv && aesKey ? { key: aesKey, iv: aesIv } : null;
+        const params: PageParameters = aesIv && aesKey ? { keyData: aesKey, iv: aesIv } : null;
         return pages.map(page => new Page(this, chapter, new URL(page.src), params));
     }
 
-    public override async FetchImage(page: Page<CryptoParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.Parameters.iv) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.Parameters.key), algorithm, false, [ 'decrypt' ]);
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.Parameters.keyData), algorithm, false, [ 'decrypt' ]);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, await data.arrayBuffer());
         return Common.GetTypedData(decrypted);
     }

@@ -2,22 +2,24 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../..
 import * as Common from '../decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 
+// TODO: Check for possible revision
+
 type FeedResults = {
     feed: {
         entry: {
             link: {
                 rel: string,
                 href: string,
-                title: string
+                title: string;
             }[],
-        }[]
-    }
-}
+        }[];
+    };
+};
 
 type MediaEntry = {
     pathname: string,
-    title: string
-}
+    title: string;
+};
 
 export function PageLinkExtractor(image: HTMLImageElement): string {
     return image.src.replace(/\/s\d+[^/]*(\/[^/]+$)/, '/s0$1');
@@ -27,10 +29,12 @@ export function PageLinkExtractor(image: HTMLImageElement): string {
 @Common.PagesSinglePageCSS('article#reader div.separator a img', PageLinkExtractor)
 @Common.ImageAjax()
 export class ZeistManga extends DecoratableMangaScraper {
+
     protected mangaSlugScript = `clwd.settings.cat;`;
+    protected mangaEntriesSlug = 'Series';
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return (await this.FetchEntries('Series')).map(entry => new Manga(this, provider, entry.pathname, entry.title));
+        return (await this.FetchEntries(this.mangaEntriesSlug)).map(entry => new Manga(this, provider, entry.pathname, entry.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -45,5 +49,4 @@ export class ZeistManga extends DecoratableMangaScraper {
             return { pathname: new URL(goodLink.href).pathname, title: goodLink.title.replace(parent?.Title, '').trim() };
         }).filter(entry => parent ? entry.pathname != parent.Identifier : true);
     }
-
 }

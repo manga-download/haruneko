@@ -10,12 +10,11 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('manganeed', 'MangaNeed', 'https://www.manganeed.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

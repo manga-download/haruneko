@@ -10,6 +10,10 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import protobuf from 'protobufjs';
 import { GetBytesFromHex } from '../BufferEncoder';
 
+type MangasByDayOfWeekResponse = {
+    mangas: ApiManga[]
+}
+
 type MangaDetailResponse = {
     manga: ApiManga,
     chapters: ChapterGroup[]
@@ -40,17 +44,15 @@ type ViewerPage = {
 
 type ApiImage = {
     imageUrl: string,
-    urlScheme: string,
     iv: string,
     encryptionKey: string,
-    imageWidth: number,
-    imageHeight: number,
     isExtraPage: boolean
 }
 
-type MangasByDayOfWeekResponse = {
-    mangas: ApiManga[]
-}
+type PageParameters = {
+    keyData?: string,
+    iv?: string
+};
 
 export default class extends DecoratableMangaScraper {
 
@@ -138,33 +140,19 @@ export default class extends DecoratableMangaScraper {
         }
         return data.pages
             .filter(page => page.image?.imageUrl && page.image.isExtraPage != true)
-            .map(page => new Page<ApiImage>(this, chapter, new URL(page.image.imageUrl, this.imgUrl), { ...page.image }));
+            .map(({ image }) => new Page<PageParameters>(this, chapter, new URL(image.imageUrl, this.imgUrl), { keyData: image.encryptionKey, iv: image.iv }));
     }
 
-    public override async FetchImage(page: Page<ApiImage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        const payload = page.Parameters;
-        if (!payload.encryptionKey) return data;
-        const encrypted = await data.arrayBuffer();
-        const decrypted = await this.DecryptPicture(new Uint8Array(encrypted), payload);
-        return Common.GetTypedData(decrypted);
+        const { keyData, iv } = page.Parameters;
+        return keyData && iv ? this.DecryptPicture(data, page.Parameters) : data;
     }
 
-    private async DecryptPicture(encrypted: Uint8Array, page: ApiImage): Promise<ArrayBuffer> {
-        const iv = GetBytesFromHex(page.iv);
-        const key = GetBytesFromHex(page.encryptionKey);
-
-        const secretKey = await crypto.subtle.importKey(
-            'raw',
-            key,
-            {
-                name: 'AES-CBC',
-                length: 128
-            }, true, ['encrypt', 'decrypt']);
-
-        return crypto.subtle.decrypt({
-            name: 'AES-CBC',
-            iv: iv
-        }, secretKey, encrypted);
+    private async DecryptPicture(encrypted: Blob, page: PageParameters): Promise<Blob> {
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.iv) };
+        const secretKey = await crypto.subtle.importKey('raw', GetBytesFromHex(page.keyData), algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, secretKey, await encrypted.arrayBuffer());
+        return Common.GetTypedData(decrypted);
     }
 }

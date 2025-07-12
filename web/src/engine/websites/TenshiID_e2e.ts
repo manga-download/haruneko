@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Tenshi.ID'
     },
     container: {
-        url: 'https://web.tenshiku.asia/komik/a-bad-person/',
+        url: 'https://01.tenshiku.asia/komik/a-bad-person/',
         id: '/komik/a-bad-person/',
         title: 'A Bad Person'
     },

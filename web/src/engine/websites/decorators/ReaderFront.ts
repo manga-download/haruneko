@@ -27,23 +27,23 @@ type APIMangas = {
         id: number,
         stub: string,
         name: string,
-        language: number
-    }[]
-}
+        language: number;
+    }[];
+};
 
 type APIManga = {
     work: {
         id: number,
         stub: number,
         name: string,
-        language: number
-    }
+        language: number;
+    };
 };
 
 type MangaIdentifier = {
     id: number,
     stub: string,
-    language: number
+    language: number;
 };
 
 type APIChapters = {
@@ -55,10 +55,10 @@ type APIChapters = {
             chapter: number,
             subchapter: number,
             name: string,
-            language: number
-        }[]
-    }
-}
+            language: number;
+        }[];
+    };
+};
 
 type APIPages = {
     chapterById: {
@@ -68,10 +68,12 @@ type APIPages = {
         },
         pages: {
             id: number,
-            filename: string
-        }[]
-    }
-}
+            filename: string;
+        }[];
+    };
+};
+
+// TODO: Check for possible revision (GraphQL)
 
 /***********************************************
  ******** Manga Extraction Methods ********
@@ -99,7 +101,7 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
     `;
 
     const variables: JSONObject = {
-        language: languageMap[language],
+        language: languageMap[ language ],
         stub: slug
     };
 
@@ -110,8 +112,8 @@ async function FetchMangaAJAX(this: MangaScraper, provider: MangaPlugin, url: st
         stub: work.stub
     });
 
-    const title = `${work.name.trim()} [${reverselanguageMap[work.language]}]`;
-    return new Manga(this, provider, id, title, tagsLanguageMap[work.language]);
+    const title = `${work.name.trim()} [${reverselanguageMap[ work.language ]}]`;
+    return new Manga(this, provider, id, title, tagsLanguageMap[ work.language ]);
 }
 
 /**
@@ -145,7 +147,7 @@ export function MangaAJAX(pattern: RegExp, apiUrl: string) {
 async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlugin, apiUrl: string, languages: string[]): Promise<Manga[]> {
     const mappedLanguages: number[] = [];
     for (const lang of languages) {
-        mappedLanguages.push(languageMap[lang]);
+        mappedLanguages.push(languageMap[ lang ]);
     }
 
     const variables = {
@@ -168,8 +170,8 @@ async function FetchMangasSinglePageAJAX(this: MangaScraper, provider: MangaPlug
             language: entry.language,
             stub: entry.stub
         });
-        const title = `${entry.name.trim()} [${reverselanguageMap[entry.language]}]`;
-        return new Manga(this, provider, id, title, tagsLanguageMap[entry.language]);
+        const title = `${entry.name.trim()} [${reverselanguageMap[ entry.language ]}]`;
+        return new Manga(this, provider, id, title, tagsLanguageMap[ entry.language ]);
     });
 
 }
@@ -229,7 +231,7 @@ async function FetchChapterSinglePageAJAX(this: MangaScraper, apiUrl: string, ma
             entry.name ? '-' : '',
             entry.name ?? '',
         ].join(' ').trim();
-        return new Chapter(this, manga, String(entry.id), title, tagsLanguageMap[mangaObj.language]);
+        return new Chapter(this, manga, String(entry.id), title, tagsLanguageMap[ mangaObj.language ]);
     });
 }
 
@@ -276,7 +278,7 @@ async function FetchPagesSinglePageAJAX(this: MangaScraper, apiUrl: string, cdnU
     `;
     const { chapterById: { pages, work: { uniqid: mangaID }, uniqid: chapterID } } = await FetchGraphQL<APIPages>(new Request(apiUrl), 'ChapterById', query, variables);
     return pages.map(page => {
-        const uri = new URL(['/works', mangaID, chapterID, page.filename].join('/'), cdnUrl);
+        const uri = new URL([ '/works', mangaID, chapterID, page.filename ].join('/'), cdnUrl);
         return new Page(this, chapter, uri);
     });
 }
