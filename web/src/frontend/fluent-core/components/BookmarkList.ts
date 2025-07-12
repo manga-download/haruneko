@@ -1,6 +1,7 @@
-import { FASTElement, html, css, observable, repeat } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
 import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
+import { CreateMediaItemTemplate } from './MediaItemEntry';
 
 const styles = css`
 
@@ -42,50 +43,13 @@ const styles = css`
         background-color: var(--colorNeutralBackground4);
     }
 
-    ul#entries {
-        list-style-type: none;
+    #entries {
         overflow-y: scroll;
         overflow-x: hidden;
         padding: 0;
         margin: 0;
     }
-
-    ul#entries li {
-        height: var(--fontSizeBase600);
-        padding: var(--spacingHorizontalXS);
-        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
-        gap: var(--spacingHorizontalXS);
-        display: grid;
-        align-items: center;
-        grid-template-rows: min-content;
-        grid-template-columns: min-content min-content 1fr;
-    }
-
-    ul#entries li > div {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-    ul#entries li:hover {
-        cursor: pointer;
-        background-color: var(--colorNeutralBackground1Hover);
-    }
-
-    .icon {
-        margin-right: var(--spacingHorizontalXS);
-        height: inherit;
-    }
 `;
-
-function CreateItemTemplate(container: BookmarkList) {
-    return html<Bookmark>`
-        <li class=${model => model?.IsOrphaned ? 'missing' : ''} @click=${model => container.SelectEntry(model)}>
-            <img class="icon" src="${model => model.Parent.Icon}"></img>
-            <div>${model => model.Title}</div>
-        </li>
-    `;
-}
 
 const template = html<BookmarkList>`
     <div id="header">
@@ -95,9 +59,8 @@ const template = html<BookmarkList>`
     <div id="searchcontrol">
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
-    <ul id="entries">
-        ${repeat(model => model.filtered, CreateItemTemplate)}
-    </ul>
+    <div id="entries">
+    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateMediaItemTemplate<Bookmark>(model.SelectEntry.bind(model), item => !item?.IsOrphaned)}></fluent-lazy-scroll>
 `;
 
 export class BookmarkList extends FASTElement {
@@ -131,7 +94,8 @@ export class BookmarkList extends FASTElement {
     }
 
     public FilterEntries() {
-        this.filtered = this.Entries.filter(entry => this.Match(entry.Title)).slice(0, 500); /* TODO: virtual scrolling */
+        // TODO: LazyScroll
+        this.filtered = this.Entries.filter(entry => this.Match(entry.Title));//.slice(0, 500);
     }
 
     private BookmarksChanged = function (this: BookmarkList) {

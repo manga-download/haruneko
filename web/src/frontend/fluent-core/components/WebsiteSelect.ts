@@ -9,43 +9,6 @@ import IconBrowse from '@fluentui/svg-icons/icons/open_20_regular.svg?raw';
 import IconAddFavorite from '@fluentui/svg-icons/icons/star_off_20_regular.svg?raw';
 import IconRemoveFavorite from '@fluentui/svg-icons/icons/star_20_filled.svg?raw';
 
-// #entries .entry
-const styleEntries = [
-    'height: 42px;',
-    'padding: var(--spacingHorizontalXS);',
-    'border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);',
-    'gap: var(--spacingHorizontalXS);',
-    'display: grid;',
-    'grid-template-rows: min-content 1fr;',
-    'grid-template-columns: min-content 1fr;',
-    // HACK: => hovered cursor
-    'cursor: pointer;',
-].join(' ');
-
-// #entries .entry:hover
-// cursor: pointer;
-// background-color: var(--colorNeutralBackground1Hover);
-
-// #entries .entry > div
-const styleTrim = [
-    'overflow: hidden;',
-    'white-space: nowrap;',
-    'text-overflow: ellipsis;',
-].join(' ');
-
-// #entries .entry > .title
-const styleTitle = styleTrim + ' font-weight: bold;';
-
-// .hint
-const styleHint = styleTrim + ' color: var(--colorNeutralForeground4);';
-
-// .icon
-const styleIcon = [
-    'margin-right: var(--spacingHorizontalXS);',
-    'height: inherit;',
-    'grid-row: 1 / -1;',
-].join(' ');
-
 const styles: ElementStyles = css`
 
     :host {
@@ -116,39 +79,6 @@ const styles: ElementStyles = css`
         margin: 0;
     }
 
-    /*
-    #entries .entry {
-        height: 42px;
-        padding: var(--spacingHorizontalXS);
-        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
-        gap: var(--spacingHorizontalXS);
-        display: grid;
-        grid-template-rows: min-content 1fr;
-        grid-template-columns: min-content 1fr;
-    }
-
-    #entries .entry > div {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-    #entries .entry > .title {
-        font-weight: bold;
-    }
-
-    #entries .entry:hover {
-        cursor: pointer;
-        background-color: var(--colorNeutralBackground1Hover);
-    }
-
-    .icon {
-        margin-right: var(--spacingHorizontalXS);
-        height: inherit;
-        grid-row: 1 / -1;
-    }
-    */
-
     .hint {
         color: var(--colorNeutralForeground4);
     }
@@ -163,16 +93,56 @@ const starred: ViewTemplate<WebsiteSelect> = html`
 `;
 
 // HACK: LazyScroll is a quick and dirty implementation, so the provided `ctx` is not correctly passed through
-//       => classes are not working, apply inline styles
+//       => CSS classes are not working, apply inline styles
 //       => manually query correct host and provide callback function
-function CreateItemTemplate(container: WebsiteSelect) {
-    return html<MediaContainer<MediaChild>>`
-    <div class="entry" style="${styleEntries}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${model => container.SelectEntry(model)}>
-        <img class="icon" style="${styleIcon}" src="${model => model.Icon}"></img>
-        <div class="title" style="${styleTitle}">${model => model.Title}</div>
-        <div class="hint" style="${styleHint}">${model => model.Identifier}</div>
-    </div>
-`;
+function CreateItemTemplate<T extends MediaContainer<MediaChild>>(onSelectCallback: (entry: T) => void, canSelectCallback = (_entry: T) => true) {
+
+    const styleEntry = [
+        'height: 42px',
+        'padding: var(--spacingHorizontalXS)',
+        'border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle)',
+        'gap: var(--spacingHorizontalXS)',
+        'display: grid',
+        'grid-template-rows: min-content 1fr',
+        'grid-template-columns: min-content 1fr',
+        // HACK: => hovered cursor
+        'cursor: pointer',
+    ].join(';');
+
+    const styleEntryDisabled = [
+        styleEntry,
+        'opacity: 0.5',
+    ].join(';');
+
+    const styleEntryIcon = [
+        'margin-right: var(--spacingHorizontalXS)',
+        'height: inherit',
+        'grid-row: 1 / -1',
+    ].join(';');
+
+    const styleTrim = [
+        'overflow: hidden',
+        'white-space: nowrap',
+        'text-overflow: ellipsis',
+    ].join(';');
+
+    const styleEntryTitle = [
+        styleTrim,
+        'font-weight: bold',
+    ].join(';');
+
+    const styleEntryHint = [
+        styleTrim,
+        'color: var(--colorNeutralForeground4)',
+    ].join(';');
+
+    return html<T>`
+        <div  style="${model => canSelectCallback(model) ? styleEntry : styleEntryDisabled}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${model => onSelectCallback(model)}>
+            <img style="${styleEntryIcon}" src="${model => model.Icon}"></img>
+            <div style="${styleEntryTitle}">${model => model.Title}</div>
+            <div style="${styleEntryHint}">${model => model.Identifier}</div>
+        </div>
+    `;
 }
 
 const template = html<WebsiteSelect>`
@@ -190,7 +160,7 @@ const template = html<WebsiteSelect>`
         <div id="searchcontrol">
             <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${model => model.Localization.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-        <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${CreateItemTemplate}></fluent-lazy-scroll>
+        <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateItemTemplate(model.SelectEntry)}></fluent-lazy-scroll>
     </div>
 `;
 
