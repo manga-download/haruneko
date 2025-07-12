@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Upando sozinho',
     },
     child: {
-        id: '/manga/Upando+sozinho/capitulo/10042',
+        id: '/manga/Upando-sozinho/capitulo/10042',
         title: 'Capítulo 200',
     },
     entry: {

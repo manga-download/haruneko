@@ -8,27 +8,27 @@ import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIMangaPage = {
     data: {
-        magazines: { id: number } []
-    }
-}
+        magazines: { id: number; }[];
+    };
+};
 
 type APIManga = {
     data: {
         official_work: {
             id: number,
-            name: string
-        }
-    }
-}
+            name: string;
+        };
+    };
+};
 
 type APIMangas = {
     data: {
         official_works: {
             id: number,
-            title : string
-        }[]
-    }
-}
+            title: string;
+        }[];
+    };
+};
 
 type APIChapters = {
     data: {
@@ -37,39 +37,40 @@ type APIChapters = {
             episode: {
                 id: number,
                 numbering_title: string,
-                sub_title : string
-            }
-        }[]
-    }
-}
+                sub_title: string;
+            };
+        }[];
+    };
+};
 
 type APISalt = {
     pageProps: {
-        salt : string
-    }
-}
+        salt: string;
+    };
+};
 
 type APIPages = {
     data: {
         reading_episode: {
-            pages: APIPage[]
-        }
-    }
-}
+            pages: APIPage[];
+        };
+    };
+};
 
 type APIPage = {
     url: string,
     key: string,
     gridsize: number,
     width: number,
-    height: number
-}
+    height: number;
+};
 
 export default class extends DecoratableMangaScraper {
+
     private readonly apiURL = 'https://comic.pixiv.net/api/app/';
     private nextBuild = 'qLzb8dhGOIox-xYNKI0tH';
 
-    public constructor() {
+    public constructor () {
         super('pixivcomics', `pixivコミック`, 'https://comic.pixiv.net', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
@@ -87,7 +88,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
-        const request = this.PrepareRequest(new URL('works/v5/' + uri.pathname.match(/\d+$/)[0], this.apiURL));
+        const request = this.PrepareRequest(new URL('works/v5/' + uri.pathname.match(/\d+$/).at(0), this.apiURL));
         const { data: { official_work: { id, name } } } = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, id.toString(), name);
     }
@@ -180,39 +181,37 @@ export default class extends DecoratableMangaScraper {
 
             for (let e = 0; e < 100; e++) shuffler.Next();
             for (let e = 0; e < d; e++) {
-                const t = u[e];
+                const t = u[ e ];
                 for (let e = c - 1; e >= 1; e--) {
-                    const i = shuffler.Next() % (e + 1),
-                        n = t[e];
-                    t[e] = t[i],
-                    t[i] = n;
+                    const i = shuffler.Next() % (e + 1), n = t[ e ];
+                    t[ e ] = t[ i ], t[ i ] = n;
                 }
             }
         }
         if (reverse) for (let e = 0; e < d; e++) {
-            const t = u[e],
+            const t = u[ e ],
                 i = t.map((e, i) => t.indexOf(i));
             if (i.some(e => e < 0)) throw Error('Failed to reverse shuffle table');
-            u[e] = i;
+            u[ e ] = i;
         }
         const h = new Uint8ClampedArray(scrambledData.length);
         for (let a = 0; a < height; a++) {
             const r = Math.floor(a / rowSize),
-                l = u[r];
+                l = u[ r ];
             for (let r = 0; r < c; r++) {
-                const s = l[r],
+                const s = l[ r ],
                     o = r * colSize,
                     d = (a * width + o) * t,
                     c = s * colSize,
                     u = (a * width + c) * t,
                     p = colSize * t;
-                for (let t = 0; t < p; t++) h[d + t] = scrambledData[u + t];
+                for (let t = 0; t < p; t++) h[ d + t ] = scrambledData[ u + t ];
             }
             {
                 const r = c * colSize,
                     s = (a * width + r) * t,
                     l = (a * width + width) * t;
-                for (let t = s; t < l; t++) h[t] = scrambledData[t];
+                for (let t = s; t < l; t++) h[ t ] = scrambledData[ t ];
             }
         }
         return h;
@@ -226,32 +225,20 @@ export default class extends DecoratableMangaScraper {
             }
         });
     }
-
 }
 
 class PixivShuffler {
+
     private readonly s = new Uint32Array(4);
 
     public Next() {
-        const e = 9 * this.Tj(5 * this.s[1] >>> 0, 7) >>> 0,
-            t = this.s[1] << 9 >>> 0;
-        return this.s[2] = (this.s[2] ^ this.s[0]) >>> 0,
-        this.s[3] = (this.s[3] ^ this.s[1]) >>> 0,
-        this.s[1] = (this.s[1] ^ this.s[2]) >>> 0,
-        this.s[0] = (this.s[0] ^ this.s[3]) >>> 0,
-        this.s[2] = (this.s[2] ^ t) >>> 0,
-        this.s[3] = this.Tj(this.s[3], 11),
-        e;
+        const e = 9 * this.Tj(5 * this.s[ 1 ] >>> 0, 7) >>> 0, t = this.s[ 1 ] << 9 >>> 0;
+        return this.s[ 2 ] = (this.s[ 2 ] ^ this.s[ 0 ]) >>> 0, this.s[ 3 ] = (this.s[ 3 ] ^ this.s[ 1 ]) >>> 0, this.s[ 1 ] = (this.s[ 1 ] ^ this.s[ 2 ]) >>> 0, this.s[ 0 ] = (this.s[ 0 ] ^ this.s[ 3 ]) >>> 0, this.s[ 2 ] = (this.s[ 2 ] ^ t) >>> 0, this.s[ 3 ] = this.Tj(this.s[ 3 ], 11), e;
     }
 
-    constructor(e: Uint32Array) {
+    constructor (e: Uint32Array) {
         //if (4 !== e.length) throw Error('seed.length !== 4 (seed.length: '.concat(e.length, ')'));
-        this.s = new Uint32Array(e),
-        0 === this.s[0] &&
-            0 === this.s[1] &&
-            0 === this.s[2] &&
-            0 === this.s[3] &&
-            (this.s[0] = 1);
+        this.s = new Uint32Array(e), 0 === this.s[ 0 ] && 0 === this.s[ 1 ] && 0 === this.s[ 2 ] && 0 === this.s[ 3 ] && (this.s[ 0 ] = 1);
     }
 
     private Tj(e: number, t: number) {

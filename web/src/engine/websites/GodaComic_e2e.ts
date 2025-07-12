@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Kage no Jitsuryokusha ni Naritakute'
     },
     child: {
-        id: './chapter/getcontent?m=2&c=47828',
+        id: '/chapter/getcontent?m=2&c=47828',
         title: 'Chapter 1'
     },
     entry: {

@@ -1,5 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
+// CASE: ???
 new TestFixture({
     plugin: {
         id: 'shonenmagazine',
@@ -21,6 +22,7 @@ new TestFixture({
     }
 }).AssertWebsite();
 
+// CASE: ???
 new TestFixture({
     plugin: {
         id: 'shonenmagazine',

@@ -39,8 +39,8 @@ type APIPages = {
     }[]
 }
 
-type CryptoParams = null | {
-    key: string,
+type PageParameters = null | {
+    keyData: string,
     iv: string
 }
 
@@ -78,29 +78,29 @@ export default class extends DecoratableMangaScraper {
         return chapters.map(chapter => new Chapter(this, manga, chapter.id.toString(), [chapter.titleName, chapter.subName].join(' ').trim()));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<CryptoParams>[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const request = new Request(new URL(`./manga/viewer_v2?chapter_id=${chapter.Identifier}&quality=high`, this.apiUrl), { method: 'POST' });
         const data = await FetchProto<APIPages>(request, protoTypes, 'MangaUpGlobal.MangaViewerV2View');
 
         if (!data.pageblocks) throw new Exception(W.Plugin_Common_Chapter_UnavailableError);
 
         return data.pageblocks.shift().pages.map(page => {
-            const params: CryptoParams = page.iv ? {
-                key: page.encryptionKey,
+            const params: PageParameters = page.iv ? {
+                keyData: page.encryptionKey,
                 iv: page.iv
             } : null;
-            return new Page<CryptoParams>(this, chapter, new URL(page.imageUrl, this.imagesCDN), params);
+            return new Page<PageParameters>(this, chapter, new URL(page.imageUrl, this.imagesCDN), params);
         });
     }
 
-    public override async FetchImage(page: Page<CryptoParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        const cryptoParams = page.Parameters;
-        if (cryptoParams?.iv) {
+        const { keyData, iv } = page.Parameters ?? {};
+        if (keyData && iv) {
             const encrypted = await blob.arrayBuffer();
-            const cipher = { name: 'AES-CBC', iv: GetBytesFromHex(cryptoParams.iv) };
-            const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoParams.key), cipher, false, ['decrypt']);
-            const decrypted = await crypto.subtle.decrypt(cipher, cryptoKey, encrypted);
+            const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
+            const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+            const decrypted = await crypto.subtle.decrypt(algorithm, cryptoKey, encrypted);
             return Common.GetTypedData(decrypted);
         } else return blob;
     }

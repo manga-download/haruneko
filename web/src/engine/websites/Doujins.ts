@@ -14,12 +14,11 @@ function ImageExtractor(node: HTMLImageElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('doujins', `Doujins`, 'https://doujins.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Erotica, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

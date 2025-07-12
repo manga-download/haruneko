@@ -14,7 +14,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'azoramanga', targetID: 'azoraworld' },
     { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
     { sourceID: 'bananascan', targetID: 'harmonyscan' },
-    { sourceID: 'blogtruyen', targetID: 'blogtruyenmoi' },
     { sourceID: 'cocomanhua', targetID: 'colamanga' },
     { sourceID: 'comicbushi', targetID: 'comicgrowl' },
     { sourceID: 'comicwalker', targetID: 'kadocomi' },
