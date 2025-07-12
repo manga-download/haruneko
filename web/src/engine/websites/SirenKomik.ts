@@ -11,12 +11,11 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('sirenkomik', 'SirenKomik', 'https://sirenkomik.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'ManhwaIndo'
     },
     container: {
-        url: 'https://id.manhwaindo.cx/series/9th-class-sword-master/',
+        url: 'https://manhwaindo.com/series/9th-class-sword-master/',
         id: '/series/9th-class-sword-master/',
         title: '9th Class Sword Master'
     },

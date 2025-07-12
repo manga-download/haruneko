@@ -1,4 +1,3 @@
-import '../AGS_e2e';
 import '../ArvenScans_e2e';
 import '../AsmodeusScans_e2e';
 import '../CasaComic_e2e';

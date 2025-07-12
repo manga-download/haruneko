@@ -1,19 +1,19 @@
 import { Tags } from '../Tags';
 import icon from './TecnoScan.webp';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
 
-@MangaStream.MangaCSS(/^https:\/\/(tecno|tenco|terco)-?[a-z]+\.xyz\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
-        super('tecnoscan', 'Tecno Scan', 'https://terco-toon.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+    public constructor () {
+        super('tecnoscan', 'Tecno Scan', 'https://tecnovoid.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

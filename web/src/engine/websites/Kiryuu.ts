@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('kiryuu', 'Kiryuu', 'https://kiryuu01.com', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('kiryuu', 'Kiryuu', 'https://kiryuu02.com', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

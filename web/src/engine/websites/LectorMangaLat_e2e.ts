@@ -6,7 +6,7 @@ new TestFixture({
         title: 'LectorManga (.Lat)'
     },
     container: {
-        url: 'https://lectormanga.lat/biblioteca/lily-of-the-valley/',
+        url: 'https://lectormangaa.com/biblioteca/lily-of-the-valley/',
         id: JSON.stringify({ post: '18933', slug: '/biblioteca/lily-of-the-valley/' }),
         title: 'Lily of the valley'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 610831,
+        size: 610_831,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

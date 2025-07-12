@@ -191,6 +191,20 @@ export default class extends DecoratableMangaScraper {
     }
 }
 
+async function TryDecrypt<T>(data: EncryptedData | T): Promise<T> {
+    return <T>(data['iv'] ? JSON.parse(await Decrypt((data as EncryptedData).data)) : data);
+}
+
+async function Decrypt(serialized: string): Promise<string> {
+    const encrypted = serialized.split('|');
+    const data = GetBytesFromBase64(encrypted[0]);
+    const algorithm = { name: 'AES-CBC', iv: GetBytesFromBase64(encrypted[2]) };
+    const hash = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(encrypted[3]));
+    const key = await crypto.subtle.importKey('raw', hash, algorithm, false, [ 'decrypt' ]);
+    const decrypted = await crypto.subtle.decrypt(algorithm, key, data);
+    return new TextDecoder('utf-8').decode(decrypted);
+}
+
 function TryUnpack<T>(data: PackedData | T): T {
     return <T>(data['isCompact'] === true || data['isCompact'] === false ? Unpack(data as PackedData) : data);
 }
@@ -225,18 +239,4 @@ function Unpack(t: PackedData, ...args: number[]) {
         }),
         o;
     }
-}
-
-async function TryDecrypt<T>(data: EncryptedData | T): Promise<T> {
-    return <T>(data['iv'] ? JSON.parse(await Decrypt((data as EncryptedData).data)) : data);
-}
-
-async function Decrypt(serialized: string): Promise<string> {
-    const encrypted = serialized.split('|');
-    const data = GetBytesFromBase64(encrypted[0]);
-    const cipher = { name: 'AES-CBC', iv: GetBytesFromBase64(encrypted[2]) };
-    const hash = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(encrypted[3]));
-    const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-CBC', length: 128 }, true, [ 'decrypt' ]);
-    const decrypted = await crypto.subtle.decrypt(cipher, key, data);
-    return new TextDecoder('utf-8').decode(decrypted);
 }
