@@ -7,16 +7,16 @@ new TestFixture({
     },
     container: {
         url: 'https://mangapark.org/title/10953-en-one-piece',
-        id: '10953',
-        title: 'One Piece [en]'
+        id: '/title/10953-en-one-piece',
+        title: 'One Piece'
     },
     child: {
-        id: '9625399',
+        id: '/title/10953-en-one-piece/9625399-vol-tbe-ch-1146',
         title: 'Vol.TBE Ch.1146'
     },
     entry: {
-        index: 0,
-        size: 615_041,
+        index: 1,
+        size: 276_869,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

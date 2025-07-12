@@ -15,8 +15,8 @@ type ImageData = {
     format : string
 }
 
-type CryptoKey = {
-    cryptoKey : string
+type PageParameters = {
+    keyData : string
 }
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
         const baseUrl = url.searchParams.get('directory');
         const ver = url.searchParams.get('ver');
 
-        const cryptoKey = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
+        const keyData = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
 
         const contentUrl = new URL(rasterScriptURL || verticalScriptURL || pageScriptURL, chapterUrl);
         contentUrl.searchParams.set('ver', ver);
@@ -72,26 +72,22 @@ export default class extends DecoratableMangaScraper {
         return Object.values(images).map(page => {
             const url = new URL(page.shift().src, baseUrl);
             url.searchParams.set('ver', ver);
-            return new Page<CryptoKey>(this, chapter, url, { cryptoKey });
+            return new Page<PageParameters>(this, chapter, url, { keyData });
         });
     }
 
-    public override async FetchImage(page: Page<CryptoKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const cryptoKey = page.Parameters.cryptoKey;
-        return cryptoKey ? await DecryptImage(blob, cryptoKey) : blob;
+        const keyData = page.Parameters.keyData;
+        return keyData ? await DecryptImage(blob, keyData) : blob;
     }
 }
 
-async function DecryptImage(blob: Blob, cryptoKey: string): Promise<Blob> {
+async function DecryptImage(blob: Blob, keyData: string): Promise<Blob> {
     const data = new Uint8Array(await blob.arrayBuffer());
-    const cipherText = data.slice(16);
-    const iv = data.slice(0, 16);
-    const aesKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoKey), 'AES-CBC', false, ['decrypt']);
-    const decrypted = await crypto.subtle.decrypt({
-        name: 'AES-CBC',
-        iv: iv
-    }, aesKey, cipherText);
+    const algorithm = { name: 'AES-CBC', iv: data.slice(0, 16) };
+    const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+    const decrypted = await crypto.subtle.decrypt(algorithm, key, data.slice(16));
 
     return Common.GetTypedData(decrypted);
 }

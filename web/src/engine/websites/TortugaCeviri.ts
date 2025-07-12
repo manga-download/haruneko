@@ -10,7 +10,7 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('tortugaceviri', 'Tortuga Çeviri', 'https://tortugaceviri.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
@@ -22,5 +22,4 @@ export default class extends DecoratableMangaScraper {
         const chapters = await Madara.FetchChaptersSinglePageAJAXv2.call(this, manga);
         return chapters.map(chapter => new Chapter(this, manga, chapter.Identifier, chapter.Title.replaceAll(manga.Title, '').trim()));
     }
-
 }

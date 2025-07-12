@@ -42,7 +42,7 @@ type APIPage = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly defaultKey = 'xxxmanga.woo.key';
+    private readonly keyData = GetBytesFromUTF8('xxxmanga.woo.key');
 
     public constructor() {
         super('copymanga', 'CopyManga', 'https://www.copy20.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
@@ -99,20 +99,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async Decrypt<T>(encryptedData: string): Promise<T> {
-        const key = GetBytesFromUTF8(this.defaultKey);
-        const iv = GetBytesFromUTF8(encryptedData.substring(0, 16));
-        const cipher = GetBytesFromHex(encryptedData.substring(16, encryptedData.length));
-        const secretKey = await crypto.subtle.importKey('raw', key, {
-            name: 'AES-CBC',
-            length: 128
-        }, true, ['decrypt']);
-
-        const data = await crypto.subtle.decrypt({
-            name: 'AES-CBC',
-            iv: iv
-        }, secretKey, cipher);
-
-        return JSON.parse(new TextDecoder().decode(data)) as T;
+        const encrypted = GetBytesFromHex(encryptedData.substring(16, encryptedData.length));
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromUTF8(encryptedData.substring(0, 16)) };
+        const key = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
+        return JSON.parse(new TextDecoder().decode(decrypted)) as T;
     }
 
     private CreateApiRequest(pathname: string): Request {
