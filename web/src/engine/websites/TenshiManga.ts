@@ -15,6 +15,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
+// TODO: Check for possible revision (FetchNextJS?)
+
 @Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-info img', (element) => element.getAttribute('alt').trim())
 @Common.MangasMultiPageCSS('search?page={page}', 'section[aria-label*="series"] div.card > div a:has(h2)')
 @Common.ChaptersSinglePageCSS('div.list-episode a', ChapterExtractor)
