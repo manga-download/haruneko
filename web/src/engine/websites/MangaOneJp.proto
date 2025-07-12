@@ -52,6 +52,8 @@ message Volume {
 
 //Pages
 message WebViewerResponse {
+	optional string aesKey = 3;
+	optional string aesIv = 4;
 	repeated PageProto pages = 1;
 	optional WebTitle currentTitle = 5;
 }

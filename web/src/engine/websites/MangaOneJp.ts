@@ -3,14 +3,11 @@ import icon from './MangaOneJp.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import protoTypes from './MangaOneJp.proto?raw';
-import { FetchCSS, FetchProto } from '../platform/FetchProvider';
+import { FetchProto } from '../platform/FetchProvider';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-
-type JSONViewerData = {
-    chapter_id: number,
-    type: string
-}
+import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromHex } from '../BufferEncoder';
 
 type WebRensaiListResponse = {
     dayOfWeekTitleLists: {
@@ -57,6 +54,8 @@ type ItemID = {
 }
 
 type WebViewerResponse = {
+    aesIv: string,
+    aesKey: string,
     currentTitle: APITitle,
     pages: PageProto[]
 }
@@ -67,7 +66,11 @@ type PageProto = {
     }
 }
 
-@Common.ImageAjax()
+type PageParameters = {
+    key: string,
+    iv: string
+}
+
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://manga-one.com/api/client';
 
@@ -80,15 +83,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/viewer/\\d+`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/\\d+/(chapter|volume)/\\d+`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        //There is no manga link, user can paste chapter url or volume url (with or without args)
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(url)), 'script:not([src])');
-        const { chapter_id, type } = this.ExtractData<JSONViewerData>(scripts, 'chapter_id', 'viewer_type');
-        const { currentTitle: { title } } = await this.GetWebViewerResponse(chapter_id, type);
-        return new Manga(this, provider, title.titleId.toString(), title.titleName);
+        const [ , mangaId, type, itemId ] = url.match(/\/manga\/(\d+)\/(chapter|volume)\/(\d+)/);
+        const { currentTitle: { title: { titleName } } } = await this.GetWebViewerResponse(mangaId, itemId, type);
+        return new Manga(this, provider, mangaId, titleName);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -117,45 +118,40 @@ export default class extends DecoratableMangaScraper {
         return chapters;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const { id, type }: ItemID = JSON.parse(chapter.Identifier);
 
-        let data = await this.GetWebViewerResponse(id, type);
+        let data = await this.GetWebViewerResponse(chapter.Parent.Identifier, id.toString(), type);
         if (!data.pages) {
-            data = await this.GetWebViewerResponse(id, type, true);
+            data = await this.GetWebViewerResponse(chapter.Parent.Identifier, id.toString(), type, true);
             if (!data.pages)
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return data.pages.filter(page => page.image)
-            .map(page => new Page(this, chapter, new URL(page.image.imageUrl)));
+            .map(page => new Page<PageParameters>(this, chapter, new URL(page.image.imageUrl), { key: data.aesKey, iv: data.aesIv }));
     }
 
-    private async GetWebViewerResponse(id: number, type: string, isTrial : boolean = false): Promise<WebViewerResponse> {
+    private async GetWebViewerResponse(mangaId: string, itemId: string, type: string, isTrial : boolean = false): Promise<WebViewerResponse> {
         const url = new URL(this.apiUrl);
-        url.searchParams.set('rq', type === 'volume' ? 'volume_viewer' : 'viewer');
-        url.searchParams.set(type === 'volume' ? 'volume_id_for_read' : 'chapter_id', id.toString());
+        url.searchParams.set('rq', 'viewer_v2');
+        url.searchParams.set('title_id', mangaId);
+        url.searchParams.set(type === 'volume' ? 'volume_id_for_read' : 'chapter_id', itemId);
         url.searchParams.set('viewer_type', type);
         if (isTrial) url.searchParams.set('is_trial', 'true');
         return await FetchProto<WebViewerResponse>(new Request(url, { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
     }
 
-    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string, asObject: boolean = true): T {
-        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
-        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
-        const record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        const { key, iv } = page.Parameters;
+        return key && iv ? this.DecryptPicture(data, page.Parameters) : data;
+    }
 
-        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
-            if (parent[keyName]) {
-                return asObject ? parent : parent[keyName];
-            }
-            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
-                const result = FindValueForKeyName(child);
-                if (result) {
-                    return result;
-                }
-            }
-            return undefined;
-        })(record) as T;
+    private async DecryptPicture(encrypted: Blob, page: PageParameters): Promise<Blob> {
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.iv) };
+        const secretKey = await crypto.subtle.importKey('raw', GetBytesFromHex(page.key), algorithm, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(algorithm, secretKey, await encrypted.arrayBuffer());
+        return Common.GetTypedData(decrypted);
     }
 
 }

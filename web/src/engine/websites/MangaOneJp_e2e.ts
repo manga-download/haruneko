@@ -7,17 +7,17 @@ new TestFixture({
         title: 'Manga One (Japan)',
     },
     container: {
-        url: 'https://manga-one.com/viewer/289669',
+        url: 'https://manga-one.com/manga/2169/chapter/291703',
         id: '2169',
         title: 'ホタルの嫁入り',
     },
     child: {
-        id: JSON.stringify({ id: 289669, type: 'chapter' }),
-        title: '第62話 子供の育て方'
+        id: JSON.stringify({ id: 291703, type: 'chapter' }),
+        title: '8巻コミックPR'
     },
     entry: {
         index: 0,
-        size: 117_492,
+        size: 81_222,
         type: 'image/webp'
     }
 }).AssertWebsite();
@@ -29,7 +29,7 @@ new TestFixture({
         title: 'Manga One (Japan)',
     },
     container: {
-        url: 'https://manga-one.com/viewer/3569?viewer_type=volume&is_trial=true&type=volume&sort_type=desc&page=1&limit=10',
+        url: 'https://manga-one.com/manga/2169/volume/3569',
         id: '2169',
         title: 'ホタルの嫁入り'
     },
@@ -39,7 +39,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 313_823,
-        type: 'image/jpeg'
+        size: 24_058,
+        type: 'image/webp'
     }
 }).AssertWebsite();
