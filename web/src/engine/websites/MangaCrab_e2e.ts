@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Manga Crab'
     },
     container: {
-        url: 'https://mangacrab2.yopres.com/series/mi-sistema-es-muy-serio/',
+        url: 'https://mangacrab.topmanhuas.org/series/mi-sistema-es-muy-serio/',
         id: '/series/mi-sistema-es-muy-serio/',
         title: 'Mi Sistema Es Muy serio'
     },

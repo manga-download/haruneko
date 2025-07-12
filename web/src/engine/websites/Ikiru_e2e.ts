@@ -11,8 +11,8 @@ new TestFixture({
         title: 'Martial Peak'
     },
     child: {
-        id: '/martial-peak-chapter-01/',
-        title: 'Chapter 01'
+        id: '/manga/martial-peak/chapter-1.261519/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,

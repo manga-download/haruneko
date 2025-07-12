@@ -2,13 +2,15 @@ import { Tags } from '../Tags';
 import icon from './DisasterScans.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type MangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchNextJS } from '../platform/FetchProvider';
 
-type JSONChapter = {
-    ChapterName: string,
-    ChapterNumber: string,
-    chapterID: number
-}
+type HydratedChapters = {
+    chapters: {
+        chapterID: number,
+        ChapterName: string,
+        ChapterNumber: string,
+    }[]
+};
 
 function MangaExtractor(element: HTMLMetaElement) {
     return element.content.split('- Disaster Scans').at(0).trim();
@@ -31,8 +33,6 @@ function PageLinkExtractor(this: MangaScraper, image: HTMLImageElement): string 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private nextBuild = '';
-
     public constructor() {
         super('disasterscans', 'Disaster Scans', 'https://disasterscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
@@ -42,31 +42,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(`${manga.Identifier}`, this.URI)), 'script:not([src])');
-        const chapters = this.ExtractData<JSONChapter[]>(scripts, 'ChapterNumber', 'chapters');
+        const request = new Request(new URL(`${manga.Identifier}`, this.URI));
+        const { chapters } = await FetchNextJS<HydratedChapters>(request, data => 'chapters' in data);
         return chapters.map(chapter => {
-            let title = `Chapter ${chapter.ChapterNumber}`;
-            title += chapter.ChapterName ? ` - ${chapter.ChapterName}` : '';
+            const title = [ `Chapter ${chapter.ChapterNumber}`, chapter.ChapterName ].filter(segment => segment).join(' - ');
             return new Chapter(this, manga, `${manga.Identifier}/${chapter.chapterID}-chapter-${chapter.ChapterNumber}`, title);
         });
-    }
-
-    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string): T {
-        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
-        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
-        const record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
-
-        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
-            if (parent[keyName]) {
-                return parent[keyName];
-            }
-            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
-                const result = FindValueForKeyName(child);
-                if (result) {
-                    return result;
-                }
-            }
-            return undefined;
-        })(record) as T;
     }
 }

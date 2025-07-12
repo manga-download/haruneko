@@ -35,7 +35,7 @@ new TestFixture({
     },
     child: {
         id: '/view_uploads/558145',
-        title: 'Capítulo 53.00  Adicta a la Feromona [FINAL] [Plot Twist No Fansub] (es)'
+        title: 'Capítulo 53.00 Adicta a la Feromona [FINAL] [Plot Twist No Fansub] (es)'
     },
     entry: {
         index: 1,
