@@ -1,8 +1,7 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 // CASE: Provided in Magazines
-new TestFixture ({
-
+new TestFixture({
     plugin: {
         id: 'zebrack',
         title: 'Zebrack(ゼブラック)'
@@ -43,7 +42,6 @@ new TestFixture({
         size: 88_836,
         type: 'image/jpeg'
     }
-
 }).AssertWebsite();
 
 // CASE: Provided in Gravures
@@ -66,7 +64,6 @@ new TestFixture({
         size: 197_698,
         type: 'image/jpeg'
     }
-
 }).AssertWebsite();
 
 // CASE: Provided in Volumes
@@ -89,5 +86,4 @@ new TestFixture({
         size: 276_381,
         type: 'image/jpeg'
     }
-
 }).AssertWebsite();

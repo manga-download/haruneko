@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,7 +6,7 @@ new TestFixture({
         title: 'Quantum Scans'
     },
     container: {
-        url: 'https://quantumscans.org/series/628e2319b4b/',
+        url: 'https://quantumtoon.com/series/628e2319b4b/',
         id: '/series/628e2319b4b/',
         title: 'Celestial Phase'
     },
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/

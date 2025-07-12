@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('tresdaos', 'Tres Daos', 'https://3daos.mewingzone.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('tresdaos', 'Tres Daos', 'https://threedaos.drublood.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
     public override get Icon() {
         return icon;

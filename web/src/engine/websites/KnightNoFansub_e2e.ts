@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Knight no Fansub'
     },
     container: {
-        url: 'https://visorkns.curiosidadtop.com/sr/solo-subo-de-nivel/',
+        url: 'https://kns.nieviral.xyz/sr/solo-subo-de-nivel/',
         id: JSON.stringify({ post: '1876', slug: '/sr/solo-subo-de-nivel/' }),
         title: 'Solo Level'
     },

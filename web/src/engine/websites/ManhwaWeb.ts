@@ -6,30 +6,31 @@ import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     data: APIManga[],
-    next: boolean
-}
+    next: boolean;
+};
 
 type APIManga = {
     _id: string,
     the_real_name: string,
-    chapters: APIChapter[]
-}
+    chapters: APIChapter[];
+};
 
 type APIChapter = {
     link: string,
     chapter: number,
-    img: string[]
-}
+    img: string[];
+};
 
 type APIPages = {
-    chapter: APIChapter
-}
+    chapter: APIChapter;
+};
 
 @Common.ImageAjax(undefined, true)
 export default class extends DecoratableMangaScraper {
-    public readonly apiUrl = 'https://manhwawebbackend-production.up.railway.app';
 
-    public constructor() {
+    private readonly apiUrl = 'https://manhwawebbackend-production.up.railway.app';
+
+    public constructor () {
         super('manhwaweb', 'ManhwaWeb', 'https://manhwaweb.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Novel, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
@@ -70,5 +71,4 @@ export default class extends DecoratableMangaScraper {
         const { chapter: { img } } = await FetchJSON<APIPages>(new Request(new URL(`/chapters/see/${chapter.Identifier}`, this.apiUrl)));
         return img.filter(page => page).map(page => new Page(this, chapter, new URL(page)));
     }
-
 }

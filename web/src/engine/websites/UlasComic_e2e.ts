@@ -11,12 +11,12 @@ new TestFixture({
         title: 'God Of Blackfield',
     },
     child: {
-        id: `/2024/05/chapter-01.html`,
-        title: 'Chapter 01',
+        id: '/2025/05/god-of-blackfield-chapter-273.html',
+        title: 'Chapter 273',
     },
     entry: {
         index: 0,
-        size: 747_486,
-        type: 'image/webp'
+        size: 303_394,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();

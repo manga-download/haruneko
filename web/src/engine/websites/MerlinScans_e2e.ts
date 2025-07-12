@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'merlinscans',
         title: 'Merlin Scans'
     },
     container: {
-        url: 'https://merlinscans.com/manga/akademinin-dehasi/',
-        id: '/manga/akademinin-dehasi/',
+        url: 'https://merlinscans.com/series/akademinin-dehasi',
+        id: '/series/akademinin-dehasi',
         title: 'Akademinin Dehası'
     },
     child: {
-        id: '/akademinin-dehasi-bolum-65/',
-        title: 'Bölüm 65'
+        id: '/series/akademinin-dehasi/chapter-65.00',
+        title: '65. Bölüm'
     },
     entry: {
-        index: 1,
+        index: 2,
         size: 553_600,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -6,17 +6,17 @@ new TestFixture({
         title: 'コミックグロウル (Comic Growl)'
     },
     container: {
-        url: 'https://comic-growl.com/episode/4856001361503716077',
-        id: '/episode/4856001361503716077',
-        title: 'LatteComi 悪役令嬢？ いいえお転婆娘です〜ざまぁなんて言いません〜アンソロジーコミック'
+        url: 'https://comic-growl.com/series/42831552a0d66',
+        id: '/series/42831552a0d66',
+        title: '魔法使いの嫁'
     },
     child: {
-        id: '/episode/4856001361503716077',
-        title: '悪役令嬢？ いいえお転婆娘です〜ざまぁなんて言いません〜 試し読み'
+        id: '/episodes/100daaf157782/',
+        title: '1'
     },
     entry: {
-        index: 0,
-        size: 5_489_763,
+        index: 6,
+        size: 1_685_881,
         type: 'image/png'
     }
 }).AssertWebsite();
