@@ -17,12 +17,11 @@ const chapterScript = `[...document.querySelectorAll('a.mangaDetails__episodeTit
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('starlightscan', 'Starlight Scan', 'https://starligthscan.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

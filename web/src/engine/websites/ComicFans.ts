@@ -6,32 +6,32 @@ import { FetchJSON } from '../platform/FetchProvider';
 
 type APIPagedResult<T> = {
     data: {
-        list: T
-    }
-}
+        list: T;
+    };
+};
 
 type APIResult<T> = {
-    data: T
-}
+    data: T;
+};
 
 type APIManga = {
     id: number,
-    title: string
-}
+    title: string;
+};
 
 type APIChapter = {
     id: number,
     title: string,
-    chapterOrder: number
-}
+    chapterOrder: number;
+};
 
 type APIPages = {
     data: {
         comicImageList: {
-            imageUrl: string
-        }[]
-    }
-}
+            imageUrl: string;
+        }[];
+    };
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.comicfans.io/comic-backend/api/v1/content/';
     private readonly cdnUrl = 'https://static.comicfans.io/';
 
-    public constructor() {
+    public constructor () {
         super('comicfans', 'ComicFans', 'https://comicfans.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaid = url.match(/\/comic\/(\d+)/)[1];
+        const mangaid = url.match(/\/comic\/(\d+)/).at(-1);
         const apiEndpoint = new URL(`books/${mangaid}`, this.apiUrl);
         const { data } = await FetchJSON<APIResult<APIManga>>(new Request(apiEndpoint));
         return new Manga(this, provider, data.id.toString(), data.title.trim());
@@ -82,7 +82,7 @@ export default class extends DecoratableMangaScraper {
             pageSize: '100'
         }).toString();
         const { data: { list } } = await FetchJSON<APIPagedResult<APIChapter[]>>(new Request(url));
-        return list.map(chapter => new Chapter(this, manga, chapter.id.toString(), [chapter.chapterOrder, chapter.title.trim()].join(' - ')));
+        return list.map(chapter => new Chapter(this, manga, chapter.id.toString(), [ chapter.chapterOrder, chapter.title.trim() ].join(' - ')));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -90,5 +90,4 @@ export default class extends DecoratableMangaScraper {
         const { data: { comicImageList } } = await FetchJSON<APIPages>(new Request(url));
         return comicImageList.map(page => new Page(this, chapter, new URL(page.imageUrl, this.cdnUrl)));
     }
-
 }

@@ -11,12 +11,11 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('constellarscans', 'Constellar Scans', 'https://constellarcomic.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }
