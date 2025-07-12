@@ -19,7 +19,7 @@ const pageScript = `
 
 type JSONPage = {
     path: string;
-}
+};
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -34,7 +34,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('uzaymanga', 'Uzay Manga', 'https://uzaymanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
@@ -46,9 +46,8 @@ export default class extends DecoratableMangaScraper {
 
         const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchWindowScript<string>(request, pageScript);
-        const jsonString = data.match(/(\[{"path":.*}\])}}/)[1];
+        const jsonString = data.match(/(\[{"path":.*}\])}}/).at(-1);
         const imagesData: JSONPage[] = JSON.parse(jsonString);
-        return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/upload/series/${ image.path }`)));
+        return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/upload/series/${image.path}`)));
     }
-
 }

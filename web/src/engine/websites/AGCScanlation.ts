@@ -22,12 +22,11 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('agcscanlation', `AGCScanlation`, 'http://www.agcscanlation.it', Tags.Language.Italian, Tags.Source.Scanlator, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

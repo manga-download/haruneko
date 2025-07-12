@@ -7,7 +7,7 @@ new TestFixture({
         title: '18comic'
     }, /* CloudFlare
     container: {
-        url: 'https://18comic.org/album/286/',
+        url: 'https://18comic.vip/album/286/',
         id: '/album/286/',
         title: '[沒有漢化][ゲズンタイト]HARWEST(COMIC クリベロン 2018年2月号 Vol.64)'
     },
@@ -29,7 +29,7 @@ new TestFixture({
         title: '18comic'
     }, /* CloudFlare
     container: {
-        url: 'https://18comic.org/album/557769/',
+        url: 'https://18comic.vip/album/557769/',
         id: '/album/557769/',
         title: '上流社會～我要成為人生勝利組～ [禁漫漢化組]'
     },

@@ -1,17 +1,17 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'sarcasmscans',
         title: 'Sarcasm Scans'
     },
     container: {
-        url: 'https://sarcasmscans.com/manga/distorted-soul/',
-        id: JSON.stringify({ post: '300', slug: '/manga/distorted-soul/' }),
-        title: 'Distorted Soul'
+        url: 'https://sarcasmscans.com/manga/twisted-soul/',
+        id: JSON.stringify({ post: '300', slug: '/manga/twisted-soul/' }),
+        title: 'Bozulmuş Ruh'
     },
     child: {
-        id: '/manga/distorted-soul/bolum-1/',
+        id: '/manga/twisted-soul/bolum-1/',
         title: 'bölüm 1'
     },
     entry: {
@@ -19,6 +19,4 @@ const config: Config = {
         size: 4_441_943,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

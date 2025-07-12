@@ -11,8 +11,8 @@ import DeScramble from '../transformers/ImageDescrambler';
 
 type PageScriptResult = {
     imagz: string[],
-    scrambled: number
-}
+    scrambled: number;
+};
 
 const pagescript = `
         new Promise((resolve, reject) => {
@@ -53,7 +53,7 @@ const pagescript = `
 @MangaStream.ChaptersSinglePageCSS()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('xcalibrscans', 'xCaliBR Scans', 'https://xcalibrscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
@@ -88,7 +88,7 @@ export default class extends DecoratableMangaScraper {
 
                 //create one Page for each 2 pictures
                 for (let i = 0; i < piclist.length - 1; i += 2) {
-                    const page = new Page(this, chapter, new URL(piclist[i], this.URI), { scrambled: data.scrambled, secondaryPic: piclist[i + 1] });
+                    const page = new Page(this, chapter, new URL(piclist.at(i), this.URI), { scrambled: data.scrambled, secondaryPic: piclist.at(i + 1) });
                     pages.push(page);
                 }
                 //get remaining picture if number was odd
@@ -119,7 +119,7 @@ export default class extends DecoratableMangaScraper {
                 promises.push(this.FetchBlob(page.Link.href, priority, signal));
                 promises.push(this.FetchBlob((page.Parameters.secondaryPic) as string, priority, signal));
 
-                const [blobMainImage, blobSecondImage] = await Promise.all(promises);
+                const [ blobMainImage, blobSecondImage ] = await Promise.all(promises);
 
                 const b1 = await createImageBitmap(blobMainImage);
                 const b2 = await createImageBitmap(blobSecondImage);
@@ -144,5 +144,4 @@ export default class extends DecoratableMangaScraper {
             return response.blob();
         }, priority, signal);
     }
-
 }

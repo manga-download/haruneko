@@ -12,7 +12,7 @@ import * as Madara from './decorators/WordPressMadara';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sweettimescan', `Sweet Time Scan`, 'https://sweetscan.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('sweettimescan', `Sweet Time Scan`, 'https://sweetscan.net', Tags.Language.Portuguese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

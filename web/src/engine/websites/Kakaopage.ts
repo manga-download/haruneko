@@ -10,28 +10,28 @@ type APIChapters = {
             node: {
                 single: {
                     productId: number,
-                    title: string
-                }
-            }
+                    title: string;
+                };
+            };
         }[],
         pageInfo: {
             hasNextPage: boolean,
-            endCursor: string
-        }
-    }
-}
+            endCursor: string;
+        };
+    };
+};
 
 type APiPages = {
     viewerInfo: {
         viewerData: {
             imageDownloadData: {
                 files: {
-                    secureUrl: string
-                }[]
-            }
-        }
-    }
-}
+                    secureUrl: string;
+                }[];
+            };
+        };
+    };
+};
 
 const gqlChapterQuery = `
     query contentHomeProductList(
@@ -91,13 +91,15 @@ const gqlPageQuery = `
     }
 `;
 
+// TODO: Check for possible revision (GraphQL)
+
 @Common.MangasNotSupported()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://bff-page.kakao.com';
 
-    public constructor() {
+    public constructor () {
         super('kakaopage', 'Page Kakao (카카오페이지)', 'https://page.kakao.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Official);
     }
 
@@ -112,7 +114,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/content\/(\d+)/).at(1);
         const data = await FetchCSS<HTMLTitleElement>(new Request(url), 'title');
-        return new Manga(this, provider, id, data[0].text.split(' - ').at(0).trim());
+        return new Manga(this, provider, id, data[ 0 ].text.split(' - ').at(0).trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -124,7 +126,7 @@ export default class extends DecoratableMangaScraper {
             after: <string>undefined,
         };
 
-        for(let run = true; run;) {
+        for (let run = true; run;) {
             const { contentHomeProductList: { edges, pageInfo: { hasNextPage, endCursor } } } = await FetchGraphQL<APIChapters>(this.CreateRequest(), 'contentHomeProductList', gqlChapterQuery, gqlVariables);
             const chapters = edges.map(chapter => new Chapter(this, manga, chapter.node.single.productId.toString(), chapter.node.single.title.replace(manga.Title, '').trim()));
             chapterList.push(...chapters);

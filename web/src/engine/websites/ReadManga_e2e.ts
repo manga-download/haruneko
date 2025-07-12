@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,7 +6,7 @@ new TestFixture({
         title: 'ReadManga'
     },
     container: {
-        url: 'https://zz.readmanga.io/vseveduchii_chitatel__A5664', // Randomly redirects to 'https://web.usagi.one/omniscient_reader_s_viewpoint'
+        url: 'https://t.readmanga.io/vseveduchii_chitatel__A5664', // Randomly redirects to 'https://web.usagi.one/omniscient_reader_s_viewpoint'
         id: '/vseveduchii_chitatel__A5664',
         title: 'Всеведущий читатель'
     },
@@ -28,7 +27,7 @@ new TestFixture({
         title: 'ReadManga'
     },
     container: {
-        url: 'https://zz.readmanga.io/van_pis__A5664', // Randomly redirects to 'https://web.usagi.one/van_pis'
+        url: 'https://t.readmanga.io/van_pis__A5664', // Randomly redirects to 'https://web.usagi.one/van_pis'
         id: '/van_pis__A5664',
         title: 'Ван Пис'
     },
@@ -42,4 +41,3 @@ new TestFixture({
         type: 'image/png'
     }
 }).AssertWebsite();
-*/
