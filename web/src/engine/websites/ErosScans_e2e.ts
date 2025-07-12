@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Eros Scans'
     },
     container: {
-        url: 'https://eros-fabltoon.xyz/manga/absolute-sword-sense/',
+        url: 'https://eros-void.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },
     child: {
-        id: '/absolute-sword-sense-chapter-92/',
+        id: '/absolute-sword-sense-chapter-92-3/',
         title: 'Chapter 92'
     },
     entry: {
-        index: 1,
-        size: 994_822,
+        index: 0,
+        size: 832_576,
         type: 'image/webp'
     }
 }).AssertWebsite();

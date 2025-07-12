@@ -5,38 +5,41 @@ import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../..
 import * as Common from '../decorators/Common';
 
 type APIMangas = {
-    posts: APIManga[]
-}
+    posts: APIManga[];
+};
 
 type APISingleManga = {
-    post: APIManga
-}
+    post: APIManga;
+};
 
 type APIManga = {
     id: number,
     slug: string,
     postTitle: string,
-    chapters?: APIChapter[]
-}
+    chapters?: APIChapter[];
+};
 
 type APIChapter = {
     id: number,
     slug: string,
     number: number,
     title: string,
-    isLocked: boolean
-}
+    isLocked: boolean;
+};
 
 type MangaID = {
     id: string,
     slug: string,
-}
+};
 
-const pageScript = `[...document.querySelectorAll('section img[loading]')].map(image => image.src);`;
+const pageScript = '[...document.querySelectorAll(".image-container img[data-image-index]")].map(image => image.src)';
+
+// TODO: Check for possible revision
 
 @Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
 export class VTheme extends DecoratableMangaScraper {
+
     protected apiUrl = new URL('/api/', this.URI);
 
     public override ValidateMangaURL(url: string): boolean {

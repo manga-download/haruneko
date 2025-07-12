@@ -11,7 +11,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'apolltoons', 'mundomanhwa' ],
     [ 'bacamangaorg', 'bacamanga' ],
     [ 'bananascan', 'harmonyscan' ],
-    [ 'blogtruyen', 'blogtruyenmoi' ],
     [ 'cocomanhua', 'colamanga' ],
     [ 'comicbushi', 'comicgrowl' ],
     [ 'comicwalker', 'kadocomi' ],
