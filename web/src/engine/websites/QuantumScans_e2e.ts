@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Quantum Scans'
     },
     container: {
-        url: 'https://quantumscans.org/series/celestial-phenomenon',
+        url: 'https://quantumtoon.com/series/celestial-phenomenon',
         id: JSON.stringify({ id: '5', slug: 'celestial-phenomenon' }),
         title: 'Celestial Phenomenon'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 775_821,
+        size: 4_544_610,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
