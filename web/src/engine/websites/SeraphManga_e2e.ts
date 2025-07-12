@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Seraph Manga'
     },
     container: {
-        url: 'https://www.seraphmanga.com/manga/ben-regresor-degilim/',
+        url: 'https://seraphmanga.com/manga/ben-regresor-degilim/',
         id: '/manga/ben-regresor-degilim/',
         title: 'Ben Regresör Değilim'
     },

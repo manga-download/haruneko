@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'readfreecomics',
         title: 'ReadFreeComics'
     },
     container: {
-        url: 'https://readfreecomics.com/webtoon-comic/martial-peak/',
-        id: JSON.stringify({ post: '6948', slug: '/webtoon-comic/martial-peak/' }),
+        url: 'https://readfreecomics.com/webtoon-comic/martial-peak-001/',
+        id: JSON.stringify({ post: '1882', slug: '/webtoon-comic/martial-peak-001/' }),
         title: 'Martial Peak'
     },
     child: {
-        id: '/webtoon-comic/martial-peak/chapter-1/',
-        title: 'Chapter 1'
+        id: '/webtoon-comic/martial-peak-001/chapter-01/',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 0,
-        size: 165_260,
+        index: 3,
+        size: 137_286,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -4,9 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.text.split('.Bölüm')[0].trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.text.split('.Bölüm')[0].trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/webtoon\//, 'div#movie-card h2.movie__title')
@@ -17,7 +18,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('trwebtoon', `TR Webtoon`, 'https://trwebtoon.com', Tags.Language.Turkish, Tags.Media.Manhwa, Tags.Source.Scanlator);
+        super('trwebtoon', `TR Webtoon`, 'https://trmanga.com', Tags.Language.Turkish, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

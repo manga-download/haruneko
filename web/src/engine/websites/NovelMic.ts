@@ -9,7 +9,7 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('novelmic', 'NovelMic', 'https://novelmic.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
     public override get Icon() {
@@ -29,5 +29,4 @@ export default class extends DecoratableMangaScraper {
         const mangas = await Madara.FetchMangasMultiPageAJAX.call(this, provider);
         return mangas.map(manga => new Manga(this, provider, manga.Identifier, manga.Title.replace(/Webcomics|Comics/i, '').trim()));
     }
-
 }

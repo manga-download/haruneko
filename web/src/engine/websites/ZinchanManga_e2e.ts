@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Zinchan Manga'
     },
     container: {
-        url: 'https://zinchangmanga.com/manga/savior-of-monday-2/',
-        id: JSON.stringify({ post: '5002', slug: '/manga/savior-of-monday-2/' }),
+        url: 'https://zinchangmanga.com/manga/savior-of-monday/',
+        id: JSON.stringify({ post: '5003', slug: '/manga/savior-of-monday/' }),
         title: 'Savior of Monday'
     },
     child: {
-        id: '/manga/savior-of-monday-2/chapter-56/',
-        title: 'Chapter 56'
+        id: '/manga/savior-of-monday/chapter-28/',
+        title: 'Chapter 28'
     },
     entry: {
-        index: 2,
-        size: 93_258,
-        type: 'image/jpeg'
+        index: 0,
+        size: 254_758,
+        type: 'image/webp'
     }
 }).AssertWebsite();
