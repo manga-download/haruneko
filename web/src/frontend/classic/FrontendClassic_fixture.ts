@@ -25,21 +25,24 @@ export class TestFixture extends FrontendFixture {
         await super.SetText(selectorWebsiteFilter, search);
     }
 
-    public async SelectWebsite(id: string) {
+    /**
+     * Click the option in the website selection list that corresponds to the given website plugin {@link id}.
+     */
+    public async SelectWebsite(id: string, timeout = 1000) {
         const selector = `#Plugin [role="listbox"] #${id}[role="option"] .title`;
         const page = await super.GetPage();
         await page.click(selectorWebsiteFilter); // Requiured to open the drop-down
-        await page.waitForSelector(selector, { timeout: 1000 });
+        await page.waitForSelector(selector, { timeout });
         await page.click(selector);
     }
 
     /**
      * Click the button to update the media titles from the currently selected website.
      */
-    public async UpdateWebsiteMediaTitles() {
+    public async UpdateWebsiteMediaTitles(timeout = 5000) {
         const page = await super.GetPage();
         await page.click(selectorMediaUpdateButton);
-        await page.waitForSelector(selectorMediaTitleLabels, { timeout: 5000 });
+        await page.waitForSelector(selectorMediaTitleLabels, { timeout });
     }
 
     /**
@@ -64,8 +67,8 @@ export class TestFixture extends FrontendFixture {
         const selectorBookmarkButton = 'button:first-child';
         const page = await super.GetPage();
         const elements = await page.$$(selectorMediaTitleLabels);
-        for(const element of elements) {
-            if(await element.$eval(selectorMediaText, (a: HTMLAnchorElement) => a.innerText) === text) {
+        for (const element of elements) {
+            if (await element.$eval(selectorMediaText, (a: HTMLAnchorElement) => a.innerText) === text) {
                 const button = await element.$(selectorBookmarkButton);
                 return button.click();
             }
@@ -80,8 +83,8 @@ export class TestFixture extends FrontendFixture {
         const selectorMediaText = 'a.title';
         const page = await super.GetPage();
         const elements = await page.$$(`${selectorMediaTitleLabels} ${selectorMediaText}`);
-        for(const element of elements) {
-            if(await element.evaluate((anchor: HTMLAnchorElement) => anchor.innerText) === text) {
+        for (const element of elements) {
+            if (await element.evaluate((anchor: HTMLAnchorElement) => anchor.innerText) === text) {
                 return element.click();
             }
         }

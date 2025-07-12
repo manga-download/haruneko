@@ -18,13 +18,13 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/https:\/\/(toonkor|tkor)\d+\.com\/[^/]+$/, 'table.bt_view1 td.bt_title')
-@Common.MangasSinglePagesCSS([ '/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목'], 'div.section-item-title a#title')
+@Common.MangasSinglePagesCSS([ '/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목' ], 'div.section-item-title a#title')
 @Common.ChaptersSinglePageCSS('td.content__title', ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('toonkor', `Toonkor`, 'https://tkor11.com', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
@@ -37,5 +37,4 @@ export default class extends DecoratableMangaScraper {
         this.URI.href = new URL(response.url).origin;
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
-
 }
