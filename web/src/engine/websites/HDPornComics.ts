@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
 function MangaLabelExtractor(element: HTMLMetaElement): string {
-    return element.content.split('|')[ 0 ].trim().replace(/comic porn$/i, '').trim();
+    return element.content.split('|').at(0).trim().replace(/comic porn$/i, '').trim();
 }
 function PageExtractor(element: HTMLAnchorElement): string {
     return element.href;

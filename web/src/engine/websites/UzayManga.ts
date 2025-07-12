@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
 
         const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchWindowScript<string>(request, pageScript);
-        const jsonString = data.match(/(\[{"path":.*}\])}}/)[ 1 ];
+        const jsonString = data.match(/(\[{"path":.*}\])}}/).at(-1);
         const imagesData: JSONPage[] = JSON.parse(jsonString);
         return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/upload/series/${image.path}`)));
     }

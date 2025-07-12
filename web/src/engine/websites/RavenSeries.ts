@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement): string {
-    return element.textContent.split('|')[ 0 ].trim();
+    return element.textContent.split('|').at(0).trim();
 }
 
 function ChapterExtractor(element: HTMLAnchorElement) {
@@ -30,7 +30,7 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor () {
-        super('ravenseries', `RavenSeries`, 'https://ravensword.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('ravenseries', 'RavenSeries', 'https://ravensword.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

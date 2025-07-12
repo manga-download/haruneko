@@ -18,7 +18,7 @@ function CleanTitle(title: string): string {
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const container = anchor.closest<HTMLElement>('div.page-item-detail, div.manga');
-    const post = container?.querySelector<HTMLElement>('div[id*="manga-item-"]')?.getAttribute('id').match(/(\d+$)/)[ 1 ] || '';
+    const post = container?.querySelector<HTMLElement>('div[id*="manga-item-"]')?.getAttribute('id').match(/(\d+$)/).at(-1) || '';
     const id = JSON.stringify({ post, slug: anchor.pathname });
     return { id, title: CleanTitle(anchor.text) };
 }

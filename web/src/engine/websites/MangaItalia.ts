@@ -8,7 +8,7 @@ import { FetchCSS } from '../platform/FetchProvider';
 function ChapterExtractor(element: HTMLElement) {
     return {
         id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.querySelector('h5').textContent.trim().split('\n')[ 0 ]
+        title: element.querySelector('h5').textContent.trim().split('\n').at(0),
     };
 }
 function MangaLabelExtractor(element: HTMLTitleElement) {

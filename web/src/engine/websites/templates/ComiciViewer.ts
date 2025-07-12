@@ -109,7 +109,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
         const decoded: number[][] = [];
         const encoded = scramble.replace(/\s+/g, '').slice(1).slice(0, -1).split(',');
         for (let i = 0; i < this.scrambleMatrix.length; i++) {
-            decoded.push(this.scrambleMatrix[ encoded[ i ] ]);
+            decoded.push(this.scrambleMatrix[ encoded.at(i) ]);
         }
         return decoded;
     }

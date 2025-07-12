@@ -65,9 +65,9 @@ export default class extends DecoratableMangaScraper {
             const { body: { illustId, illustTitle } } = await FetchJSON<APIResult<APIIlust>>(new Request(new URL(`./illust/${id}?lang=en`, this.apiURL)));
             return new Manga(this, provider, `artwork-${illustId}`, illustTitle.trim());
         } else {
-            const id = mangaUrl.pathname.match(/\/series\/(\d+)/)[ 1 ];
+            const id = mangaUrl.pathname.match(/\/series\/(\d+)/).at(-1);
             const { body: { illustSeries } } = await FetchJSON<APIResult<APISerie>>(new Request(new URL(`./series/${id}?p=1&lang=en`, this.apiURL)));
-            const title = illustSeries.filter(s => s.id === id).map(s => s.title.trim()).pop();
+            const title = illustSeries.filter(s => s.id === id).map(s => s.title.trim()).at(-1);
             return new Manga(this, provider, id, title.trim());
         }
     }
@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList: Chapter[] = [];
         if (manga.Identifier.startsWith('artwork-')) {
-            return [ new Chapter(this, manga, manga.Identifier.match(/artwork-(\d+)$/).at(1), manga.Title) ];
+            return [ new Chapter(this, manga, manga.Identifier.match(/artwork-(\d+)$/).at(-1), manga.Title) ];
         } else {
             for (let page = 1, run = true; run; page++) {
                 const chapters = await this.FetchChaptersFromPage(manga, page);

@@ -77,24 +77,19 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const chapterid: ChapterID = JSON.parse(chapter.Identifier);
         const { result: { images } } = await FetchJSON<APIPages>(this.PrepareRequest(new URL(`./ajax/read/${chapterid.itemtype}/${chapterid.itemid}`, this.URI)));
-        return images.map(imageArray => {
-            if (imageArray.at[ 2 ] < 1) {
-                return new Page<PageParameters>(this, chapter, new URL(imageArray.at[ 0 ]), { Referer: this.URI.href });
-            }
-            return new Page<PageParameters>(this, chapter, new URL(imageArray.at[ 0 ]), { Referer: this.URI.href, blockScramblingOffset: imageArray.at[ 2 ] });
-        });
+        return images.map(([ url, _, offset ]) => new Page<PageParameters>(this, chapter, new URL(url), { Referer: this.URI.href, blockScramblingOffset: offset }));
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return page.Parameters?.blockScramblingOffset ? DeScramble(blob, (source, target) => Render(source, target, page.Parameters.blockScramblingOffset)) : blob;
+        return page.Parameters?.blockScramblingOffset > 0 ? DeScramble(blob, (source, target) => Render(source, target, page.Parameters.blockScramblingOffset)) : blob;
     }
 
     private PrepareRequest(endpoint: URL): Request {
         return new Request(endpoint, {
             headers: {
-                Referer: this.URI.href,
-                'X-Requested-With': 'XMLHttpRequest'
+                'Referer': this.URI.href,
+                'X-Requested-With': 'XMLHttpRequest',
             }
         });
     }

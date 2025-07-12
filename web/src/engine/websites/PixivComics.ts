@@ -88,7 +88,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
-        const request = this.PrepareRequest(new URL('works/v5/' + uri.pathname.match(/\d+$/)[ 0 ], this.apiURL));
+        const request = this.PrepareRequest(new URL('works/v5/' + uri.pathname.match(/\d+$/).at(0), this.apiURL));
         const { data: { official_work: { id, name } } } = await FetchJSON<APIManga>(request);
         return new Manga(this, provider, id.toString(), name);
     }

@@ -28,7 +28,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor () {
-        super('iqiyi', `iqiyi`, 'https://www.iqiyi.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('iqiyi', 'iqiyi', 'https://www.iqiyi.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const manhuaId = new URL(manga.Identifier, this.URI).href.match(/_(([a-z]|[0-9])*)/)[ 1 ];
+        const manhuaId = new URL(manga.Identifier, this.URI).href.match(/_(([a-z]|[0-9])*)/).at(-1);
         const requestChaps = new Request(new URL(`/manhua/catalog/${manhuaId}/`, this.URI));
         const { data: { episodes } } = await FetchJSON<APIChapters>(requestChaps);
         return episodes.map(element => new Chapter(this, manga, `/manhua/reader/${manhuaId}_${element.episodeId}.html`, [ element.episodeOrder, element.episodeTitle.trim() ].join(' ')));

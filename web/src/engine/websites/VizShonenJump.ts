@@ -42,7 +42,7 @@ function VolumeExtractor(row: HTMLTableRowElement) {
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
-        id: /javascript/.test(anchor.dataset.targetUrl) ? anchor.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)[ 1 ] : anchor.dataset.targetUrl,
+        id: /javascript/.test(anchor.dataset.targetUrl) ? anchor.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/).at(1) : anchor.dataset.targetUrl,
         title: (anchor.querySelector<HTMLElement>('.disp-id, tr.o_chapter td > div')?.textContent ?? anchor.text).trim()
     };
 }

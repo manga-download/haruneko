@@ -88,7 +88,7 @@ export default class extends DecoratableMangaScraper {
 
                 //create one Page for each 2 pictures
                 for (let i = 0; i < piclist.length - 1; i += 2) {
-                    const page = new Page(this, chapter, new URL(piclist[ i ], this.URI), { scrambled: data.scrambled, secondaryPic: piclist[ i + 1 ] });
+                    const page = new Page(this, chapter, new URL(piclist.at(i), this.URI), { scrambled: data.scrambled, secondaryPic: piclist.at(i + 1) });
                     pages.push(page);
                 }
                 //get remaining picture if number was odd
