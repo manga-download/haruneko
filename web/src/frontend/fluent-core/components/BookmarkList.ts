@@ -80,6 +80,7 @@ export class BookmarkList extends FASTElement {
 
     @observable Entries: Bookmark[] = [];
     EntriesChanged() {
+        // TODO: Sort entries?
         this.FilterEntries();
     }
     @observable Match: (text: string) => boolean = () => true;

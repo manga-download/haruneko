@@ -61,6 +61,8 @@ const template = html<DownloadManager>`
     </div>
 `;
 
+// TODO: Lazy Scroll?
+
 export class DownloadManager extends FASTElement {
 
     @LocalizationProviderRegistration Localization: ILocalizationProvider;

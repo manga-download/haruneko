@@ -98,37 +98,6 @@ const styles = css`
         padding: 0;
         margin: 0;
     }
-
-    /*
-    #entries .entry {
-        padding: var(--spacingHorizontalXS);
-        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
-        gap: var(--spacingHorizontalXS);
-        display: grid;
-        align-items: center;
-        grid-template-rows: min-content;
-        grid-template-columns: min-content 1fr min-content;
-    }
-
-    #entries .entry > div {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-    #entries .entry .controls {
-        visibility: hidden;
-        display: flex;
-    }
-
-    #entries .entry:hover {
-        background-color: var(--colorNeutralBackground1Hover);
-    }
-
-    #entries .entry:hover .controls {
-        visibility: visible;
-    }
-    */
 `;
 
 function CreateItemTemplate(container: MediaItemList) {
@@ -176,7 +145,7 @@ const template = html<MediaItemList>`
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
-    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${CreateItemTemplate}></fluent-lazy-scroll>
+    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateItemTemplate(model)}></fluent-lazy-scroll>
 `;
 
 export class MediaItemList extends FASTElement {

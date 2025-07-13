@@ -160,7 +160,7 @@ const template = html<WebsiteSelect>`
         <div id="searchcontrol">
             <fluent-searchbox id="searchbox" ${ref('searchbox')} placeholder="${model => model.Localization.Locale.Frontend_FluentCore_WebsiteSelect_SearchBox_Placeholder()}" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
         </div>
-        <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateItemTemplate(model.SelectEntry)}></fluent-lazy-scroll>
+        <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateItemTemplate(model.SelectEntry.bind(model))}></fluent-lazy-scroll>
     </div>
 `;
 
