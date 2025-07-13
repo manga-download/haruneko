@@ -613,6 +613,7 @@ export { default as SamuraiScan } from './SamuraiScan';
 export { default as Sany } from './Sany';
 export { default as SapphireScan } from './SapphireScan';
 export { default as SarcasmScans } from './SarcasmScans';
+export { default as SauceManhwa } from './SauceManhwa';
 export { default as ScanManga } from './ScanManga';
 export { default as ScantradUnion } from './ScantradUnion';
 export { default as ScanVF } from './ScanVF';
