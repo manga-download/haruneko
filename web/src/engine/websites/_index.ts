@@ -183,6 +183,7 @@ export { default as GorakuWeb } from './GorakuWeb';
 export { default as GourmetScans } from './GourmetScans';
 export { default as GrabberZone } from './GrabberZone';
 export { default as Grimelek } from './Grimelek';
+export { default as GrimScans } from './GrimScans';
 export { default as GTOTheGreatSite } from './GTOTheGreatSite';
 export { default as GuruKomik } from './GuruKomik';
 export { default as Hachirumi } from './Hachirumi';
