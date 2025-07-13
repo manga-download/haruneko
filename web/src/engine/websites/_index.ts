@@ -743,6 +743,7 @@ export { default as VyManga } from './VyManga';
 export { default as WebAce } from './WebAce';
 export { default as WebComicsApp } from './WebComicsApp';
 export { default as WebDexScans } from './WebDexScans';
+export { default as WebMangaOku } from './WebMangaOku';
 export { default as WebNovel } from './WebNovel';
 export { default as WebtoonHatti } from './WebtoonHatti';
 export { default as WebtoonScan } from './WebtoonScan';
