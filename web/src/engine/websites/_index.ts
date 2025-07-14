@@ -383,7 +383,6 @@ export { default as MangaLover } from './MangaLover';
 export { default as MangaMana } from './MangaMana';
 export { default as MangaMovil } from './MangaMovil';
 export { default as MangaNato } from './MangaNato';
-export { default as MangaNeed } from './MangaNeed';
 export { default as ManganeloInfo } from './ManganeloInfo';
 export { default as MangaOkuTR } from './MangaOkuTR';
 export { default as MangaOni } from './MangaOni';
