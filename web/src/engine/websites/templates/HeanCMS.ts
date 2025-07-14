@@ -63,7 +63,7 @@ export class HeanCMS extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = new URL(url).pathname.split('/').at(-1);
-        const { title, series_slug, id } = await FetchJSON<APIManga>(this.CreateRequest(new URL(`${this.apiUrl}/series/${slug}`)));
+        const { title, series_slug, id } = await this.FetchAPI<APIManga>(`./series/${slug}`);
         return new Manga(this, provider, JSON.stringify({
             id: id.toString(),
             slug: series_slug
@@ -82,14 +82,13 @@ export class HeanCMS extends DecoratableMangaScraper {
     }
 
     private async GetMangaFromPage(provider: MangaPlugin, page: number, adult: boolean): Promise<Manga[]> {
-        const request = this.CreateRequest(new URL(`${this.apiUrl}/query?perPage=100&page=${page}&adult=${adult}`));
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(request);
+        const { data } = await this.FetchAPI<APIResult<APIManga[]>>(`./query?perPage=100&page=${page}&adult=${adult}`);
         return !data.length ? [] : data.map((manga) => new Manga(this, provider, JSON.stringify({ id: manga.id.toString(), slug: manga.series_slug }), manga.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaid: APIMediaID = JSON.parse(manga.Identifier);
-        const { data } = await FetchJSON<APIResult<APIChapter[]>>(this.CreateRequest(new URL(`${this.apiUrl}/chapter/query?series_id=${mangaid.id}&perPage=9999&page=1`)));
+        const { data } = await this.FetchAPI<APIResult<APIChapter[]>>(`./chapter/query?series_id=${mangaid.id}&perPage=9999&page=1`);
         return data.map(chapter => new Chapter(this, manga, JSON.stringify({
             id: chapter.id.toString(),
             slug: chapter.chapter_slug,
@@ -99,18 +98,18 @@ export class HeanCMS extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<PageType>[]> {
         const chapterid: APIMediaID = JSON.parse(chapter.Identifier);
         const mangaid: APIMediaID = JSON.parse(chapter.Parent.Identifier);
-        const data = await FetchJSON<APIPages>(this.CreateRequest(new URL(`${this.apiUrl}/chapter/${mangaid.slug}/${chapterid.slug}`)));
+        const { data, paywall, chapter: { chapter_type, chapter_data, storage } } = await this.FetchAPI<APIPages>(`./chapter/${mangaid.slug}/${chapterid.slug}`);
 
-        if (data.paywall) {
+        if (paywall) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
 
-        if (data.chapter.chapter_type.toLowerCase() === 'novel') {
+        if (chapter_type.toLowerCase() === 'novel') {
             throw new Exception(R.Plugin_HeanCMS_ErrorNovelsNotSupported);
         }
         //old API vs new
-        const listImages = Array.isArray(data.data) ? data.data as string[] : data.chapter.chapter_data.images ? data.chapter.chapter_data.images : data.chapter.chapter_data.files.map(file => file.url);
-        return listImages.map(image => new Page<PageType>(this, chapter, this.ComputePageUrl(image, data.chapter.storage), { type: data.chapter.chapter_type }));
+        const listImages = Array.isArray(data) ? data as string[] : chapter_data.images ? chapter_data.images : chapter_data.files.map(file => file.url);
+        return listImages.map(image => new Page<PageType>(this, chapter, this.ComputePageUrl(image, storage), { type: chapter_type }));
     }
 
     protected ComputePageUrl(image: string, storage: string): URL {
@@ -127,10 +126,12 @@ export class HeanCMS extends DecoratableMangaScraper {
         } else throw new Exception(R.Plugin_HeanCMS_ErrorNovelsNotSupported);
     }
 
-    private CreateRequest(endpoint: URL): Request {
-        return new Request(endpoint, {headers: {
-            Referer: this.URI.href
-        }});
+    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        const request = new Request(new URL(endpoint, this.apiUrl), {
+            headers: {
+                Referer: this.URI.href
+            }
+        });
+        return await FetchJSON(request) as T;
     }
-
 }
