@@ -28,6 +28,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
+// TODO: Check for possible revision (FetchNextJS)
+
 @Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-details h1')
 @Common.MangasMultiPageCSS('/?page={page}', 'div.overflow-hidden.grid.grid-cols-1 > div > a')
 @Common.ChaptersSinglePageCSS('div.list-episode a', ChapterExtractor)
